@@ -696,7 +696,7 @@ def test_fetch_events(requests_mock):
     # Simulate a token already obtained via auth()
     client._access_token = "test-bearer-token"
 
-    # --- CQL search (default, no args) ---
+    # --- CQL search (default, no args) — single page, no next token ---
     sdk_batch = _make_sdk_event_result([dict(TAEGIS_EVENT)], next_token=None)
     with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
         mock_service = MagicMock()
@@ -709,16 +709,22 @@ def test_fetch_events(requests_mock):
 
     assert len(response.outputs) == 1
     assert response.outputs[0]["id"] == TAEGIS_EVENT["id"]
-    assert response.outputs[0].get("next") is None
+    # No next token injected into rows in auto-pagination mode
+    assert "next" not in response.outputs[0]
 
-    # --- CQL search with explicit query and limit ---
-    sdk_batch_with_next = _make_sdk_event_result([dict(TAEGIS_EVENT)], next_token=TAEGIS_EVENT_NEXT_PAGE)
+    # --- CQL search with explicit query — auto-paginates across two pages ---
+    event_page1 = dict(TAEGIS_EVENT)
+    event_page2 = dict(TAEGIS_EVENT)
+    event_page2["id"] = "event-page2-id"
+    sdk_batch_page1 = _make_sdk_event_result([event_page1], next_token=TAEGIS_EVENT_NEXT_PAGE)
+    sdk_batch_page2 = _make_sdk_event_result([event_page2], next_token=None)
     with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
         mock_service.__enter__ = MagicMock(return_value=mock_service)
         mock_service.__exit__ = MagicMock(return_value=False)
-        mock_service.events.subscription.event_query.return_value = sdk_batch_with_next
+        mock_service.events.subscription.event_query.return_value = sdk_batch_page1
+        mock_service.events.subscription.event_page.return_value = sdk_batch_page2
 
         response = fetch_events_command(
             client=client,
@@ -726,26 +732,31 @@ def test_fetch_events(requests_mock):
             args={"cql_query": "FROM process EARLIEST=-1d | head 10", "limit": 10},
         )
 
-    assert len(response.outputs) == 1
-    assert response.outputs[0].get("next") == TAEGIS_EVENT_NEXT_PAGE
+    # Both pages should be merged into a single result list
+    assert len(response.outputs) == 2
+    assert response.outputs[0]["id"] == TAEGIS_EVENT["id"]
+    assert response.outputs[1]["id"] == "event-page2-id"
+    mock_service.events.subscription.event_page.assert_called_once_with(TAEGIS_EVENT_NEXT_PAGE)
 
-    # --- Fetch next page using cursor ---
-    sdk_page_batch = _make_sdk_event_result([dict(TAEGIS_EVENT)], next_token=None)
+    # --- Auto-pagination stops at limit even when more pages exist ---
+    sdk_batch_limited = _make_sdk_event_result([event_page1], next_token=TAEGIS_EVENT_NEXT_PAGE)
     with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
         mock_service.__enter__ = MagicMock(return_value=mock_service)
         mock_service.__exit__ = MagicMock(return_value=False)
-        mock_service.events.subscription.event_page.return_value = sdk_page_batch
+        mock_service.events.subscription.event_query.return_value = sdk_batch_limited
 
         response = fetch_events_command(
             client=client,
             env=TAEGIS_ENVIRONMENT,
-            args={"next": TAEGIS_EVENT_NEXT_PAGE},
+            # limit=1 means we already have enough after the first page
+            args={"limit": 1},
         )
 
     assert len(response.outputs) == 1
-    assert response.outputs[0]["id"] == TAEGIS_EVENT["id"]
+    # event_page should NOT have been called since limit was already reached
+    mock_service.events.subscription.event_page.assert_not_called()
 
     # --- Fetch by IDs ---
     mock_event = MagicMock()

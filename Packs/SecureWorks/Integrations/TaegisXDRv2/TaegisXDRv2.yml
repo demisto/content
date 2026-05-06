@@ -550,15 +550,13 @@ script:
   - name: taegis-fetch-events
     arguments:
     - name: ids
-      description: A comma-separated list of event IDs to return. When provided, the command fetches events by ID using the Taegis SDK HTTP query endpoint.
+      description: A comma-separated list of event IDs to return.
       isArray: true
-    - name: cql_query
-      description: "The Taegis CQL query string to use for searching events. Examples: \"FROM dnsquery WHERE query_name MATCHES ('*.xyz', '*.top') EARLIEST=-24h\", \"FROM process WHERE image_path IN ('cmd.exe', 'powershell.exe') EARLIEST=-7d\". If not defined, defaults to \"FROM * EARLIEST=-1m | head {limit}\"."
     - name: limit
-      description: The maximum number of events to return per page. Used as the page_size for the SDK subscription query and appended as \"| head {limit}\" to the default CQL query. For user-provided cql_query strings, embed the limit directly (e.g., "| head 100").
+      description: The maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., "| head 100").
       defaultValue: "50"
-    - name: next
-      description: The pagination cursor token returned from a previous taegis-fetch-events call (found in the "next" field of each returned event). Pass this value to retrieve the next page of results.
+    - name: cql_query
+      description: The Taegis CQL query string to use for searching events (e.g. "FROM process EARLIEST=-1d | head 10"). If not defined, defaults to "FROM * EARLIEST=-1m | head 50".
     - name: tenant_id
       description: The tenant to run against if using an MSP. If no tenant is provided, the tenant of the generated credentials is used.
     outputs:
@@ -601,10 +599,7 @@ script:
     - contextPath: TaegisXDR.Events.protocol
       description: The network protocol (netflow events).
       type: String
-    - contextPath: TaegisXDR.Events.next
-      description: The pagination cursor token for retrieving the next page of results. Pass this value as the "next" argument in a subsequent call.
-      type: String
-    description: "This is a beta command. Fetches Taegis events using the Taegis SDK (WebSocket subscription transport). Supports CQL search, fetch-by-ID, and cursor-based pagination. If no cql_query is provided, defaults to \"FROM * EARLIEST=-1m | head {limit}\". CQL timestamp field guidance: use event_time for incident reconstruction (exact attacker step sequence); use EARLIEST=-1m for real-time monitoring (last 60 seconds); use ingest_time for compliance/audit (when Secureworks received the record); use ingest_time for offline host sync (data from a laptop just reconnected)."
+    description: 'This is a beta command, which lets you implement and test pre-release software. Since the command is beta, it might contain bugs. Updates to the command during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the command to help us identify issues, fix them, and continually improve. Fetches Taegis events using a CQL query string or a list of event IDs. Automatically paginates through all result pages up to the specified limit. If no cql_query is provided, defaults to "FROM * EARLIEST=-1m | head 50".'
   - name: taegis-add-evidence-to-investigation
     arguments:
     - name: id

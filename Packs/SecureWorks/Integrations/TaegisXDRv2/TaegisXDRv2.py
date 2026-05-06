@@ -1765,17 +1765,12 @@ def _event_results_to_rows(batch: List[EventQueryResults]) -> list[dict]:
 
     Each EventQueryResults object contains a ``result`` field of type
     EventQueryResult, which in turn holds a ``rows`` list of raw event dicts.
-    The ``next`` pagination cursor is attached at the EventQueryResults level
-    and is injected into every row so callers can retrieve the next page.
     """
     rows: list[dict] = []
-    next_token = _get_next_page_token(batch)
     for result_obj in batch:
         if result_obj.result and result_obj.result.rows:
             for row in result_obj.result.rows:
                 row_dict: dict = dict(row) if not isinstance(row, dict) else row
-                # Attach the pagination cursor so it is visible in context output
-                row_dict["next"] = next_token
                 rows.append(row_dict)
     return rows
 
@@ -1783,20 +1778,14 @@ def _event_results_to_rows(batch: List[EventQueryResults]) -> list[dict]:
 def fetch_events_command(client: Client, env: str, args=None):
     """Fetch Taegis events using the Taegis SDK (WebSocket subscription transport).
 
-    Supports three modes:
-    - **ids**: Fetch specific events by ID using the SDK HTTP query (``service.events.query.events``).
-    - **next**: Retrieve the next page of results using a pagination cursor
-      (``service.events.subscription.event_page``).
+    Supports two operational modes:
+    - **ids**: Fetch specific events by IDs using the SDK HTTP query (``service.events.query.events``).
     - **cql_query / default**: Run a CQL search via WebSocket subscription
-      (``service.events.subscription.event_query``).
+      (``service.events.subscription.event_query``) with automatic pagination until
+      ``limit`` total events are collected or no further pages are available.
 
     The SDK is initialised with the bearer token already obtained by ``client.auth()``
     so no additional authentication round-trip is required.
-
-    Pagination:
-        The ``next`` cursor token is embedded in every returned event row under the
-        key ``next``.  Pass this value back as the ``next`` argument to retrieve the
-        following page.  When ``next`` is ``None`` there are no more pages.
 
     CQL timestamp guidance:
 
@@ -1830,23 +1819,27 @@ def fetch_events_command(client: Client, env: str, args=None):
             for evt in sdk_results or []:
                 events.append(evt.to_dict() if hasattr(evt, "to_dict") else dict(evt))
 
-        elif args.get("next"):
-            # Retrieve the next page via WebSocket subscription
-            next_token: str = args["next"]
-            demisto.debug(f"fetch_events_command: fetching next page with cursor {next_token}")
-            batch: List[EventQueryResults] = service.events.subscription.event_page(next_token)
-            events = _event_results_to_rows(batch)
-
         else:
-            # CQL search via WebSocket subscription
+            # CQL search via WebSocket subscription with automatic pagination
             options = EventQueryOptions(
                 page_size=limit,
+                max_rows=limit,
                 skip_cache=True,
                 timestamp_ascending=False,
             )
             demisto.debug(f"fetch_events_command: running CQL query: {cql_query}")
             batch = service.events.subscription.event_query(cql_query, options=options)
-            events = _event_results_to_rows(batch)
+            events.extend(_event_results_to_rows(batch))
+
+            next_token: Optional[str] = _get_next_page_token(batch)
+            while next_token and len(events) < limit:
+                demisto.debug(f"fetch_events_command: fetching next page with token {next_token}")
+                batch = service.events.subscription.event_page(next_token)
+                events.extend(_event_results_to_rows(batch))
+                next_token = _get_next_page_token(batch)
+
+            # Trim to the requested limit in case pages overshoot
+            events = events[:limit]
 
     if not events:
         readable_output = "No events found."
@@ -1887,6 +1880,7 @@ def fetch_events_command(client: Client, env: str, args=None):
         outputs_key_field="id",
         outputs=events,
         readable_output=readable_output,
+        raw_response=events,
     )
 
 

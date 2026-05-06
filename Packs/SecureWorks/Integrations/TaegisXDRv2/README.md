@@ -680,10 +680,9 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of event IDs to return. When provided, events are fetched by ID using the Taegis SDK HTTP query endpoint. | False |
-| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head {limit}`. | False |
-| limit | The maximum number of events to return per page. Used as the SDK subscription page size and appended as `\| head {limit}` to the default CQL query. For user-provided `cql_query` strings, embed the limit directly (e.g., `\| head 100`). Default is 50. | False |
-| next | The pagination cursor token returned from a previous `taegis-fetch-events` call (found in the `next` field of each returned event). Pass this value to retrieve the next page of results. | False |
+| ids | A comma-separated list of event IDs to return. | False |
+| limit | The maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., `\| head 100`). Default is 50. | False |
+| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head 50`. | False |
 | tenant_id | The tenant to run against if using an MSP. If no tenant is provided, the tenant of the generated credentials is used. | False |
 
 #### CQL Query Time Field Reference
@@ -702,7 +701,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 !taegis-fetch-events cql_query="FROM process EARLIEST=-1d | head 10"
 !taegis-fetch-events cql_query="FROM dnsquery WHERE query_name MATCHES ('*.xyz', '*.top') EARLIEST=-24h" limit=100
 !taegis-fetch-events ids="event-12345-67890,event-12345-67891"
-!taegis-fetch-events next="eyJvZmZzZXQiOiAxMH0="
 ```
 
 #### Context Example
@@ -723,8 +721,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
                     "parent_process_id": "456",
                     "image_path": "C:\\Windows\\System32\\cmd.exe",
                     "commandline": "cmd.exe /c \"whoami\"",
-                    "username": "admin_user",
-                    "next": "CursorToken_Batch01_Seq99"
+                    "username": "admin_user"
                 },
                 {
                     "id": "event-12345-67891",
@@ -737,8 +734,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
                     "source_ip": "1.1.1.1",
                     "destination_ip": "8.8.8.8",
                     "destination_port": 53,
-                    "protocol": "UDP",
-                    "next": "CursorToken_Batch01_Seq99"
+                    "protocol": "UDP"
                 }
             ]
         }
@@ -763,7 +759,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | TaegisXDR.Events.destination_ip | String | The destination IP address (netflow events). |
 | TaegisXDR.Events.destination_port | Number | The destination port number (netflow events). |
 | TaegisXDR.Events.protocol | String | The network protocol (netflow events). |
-| TaegisXDR.Events.next | String | Pagination cursor token for retrieving the next page of results. |
 
 ### taegis-update-alert-status
 
