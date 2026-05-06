@@ -256,6 +256,16 @@ def test_get_service_principal_command(requests_mock, mocked_client):
             {"data": {"appRoleAssignmentRequired": True}},
         ),
         ({"id": "TEST", "app_id": "TEST"}, "/TEST", {"data": {}}),
+        (
+            {"id": "TEST", "reply_urls": "https://example.com,https://example.org"},
+            "/TEST",
+            {"data": {"replyUrls": ["https://example.com", "https://example.org"]}},
+        ),
+        (
+            {"id": "TEST", "reply_urls": "https://example.com"},
+            "/TEST",
+            {"data": {"replyUrls": ["https://example.com"]}},
+        ),
     ],
 )
 def test_update_service_principals_command(mocker, requests_mock, mocked_client, args, expected_id, expected_args):

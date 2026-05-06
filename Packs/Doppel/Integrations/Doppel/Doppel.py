@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import json
 import uuid
 from datetime import datetime, timedelta
+import dateparser
 
 """Doppel for Cortex XSOAR (aka Demisto)
 
@@ -223,6 +224,10 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     # Truncate to microseconds since Python's datetime only supports up to 6 digits
     last_update_str = last_update_str[:26] + "Z"
     last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    if not last_update:
+        demisto.debug(f"Warning: Could not parse timestamp: {last_update_str}")
+        return None, []
+
     demisto.debug(f"Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}")
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
     demisto.debug(f"Received alert data for {doppel_alert_id}")
@@ -236,13 +241,12 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
             recent_audit_log_datetime_str = most_recent_audit_log["timestamp"]
             recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
             demisto.debug(f"The event was modified recently on {recent_audit_log_datetime}")
-            if recent_audit_log_datetime > last_update:
-                updated_doppel_alert["id"] = doppel_alert_id
-                entries: list = [
-                    {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
-                ]
-                demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
-                return updated_doppel_alert, entries
+            updated_doppel_alert["id"] = doppel_alert_id
+            entries: list = [
+                {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
+            ]
+            demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
+            return updated_doppel_alert, entries
     return None, []
 
 
@@ -565,6 +569,7 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
                 created_at_str = alert.get("created_at")
                 created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
                 alert.update(mirroring_object)
+
                 incident = {
                     "name": f"Doppel Incident {uuid.uuid4()}",
                     "type": DOPPEL_ALERT,
@@ -602,12 +607,33 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 
-def get_modified_remote_data_command(client: Client, args: dict[str, Any]):
-    demisto.debug("Command get-modified-remote-data is not implemented")
-    raise NotImplementedError(
-        'The command "get-modified-remote-data" is not implemented, \
-        as Doppel does provide the API to fetch updated alerts.'
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Checks for remote modifications since the last update timestamp
+    and returns a list of modified incident IDs.
+    """
+
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(  # type: ignore[union-attr]
+        DOPPEL_API_DATE_FORMAT
     )
+
+    query_params = {
+        "last_activity_timestamp": last_update,
+    }
+
+    try:
+        results = client.get_alerts(params=query_params)
+        alerts = results.get("alerts", [])
+
+        modified_incident_ids = [str(alert.get("id")) for alert in alerts if alert.get("id")]
+
+        demisto.debug(f"Found {len(modified_incident_ids)} modified remote incidents. Incidents: {modified_incident_ids}")
+        return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+    except Exception as e:
+        demisto.error(f"Error in get-modified-remote-data: {e}")
+        return GetModifiedRemoteDataResponse([])
 
 
 def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
