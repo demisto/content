@@ -47,10 +47,8 @@
         "EM"
     ],
     "supportedModules": [
-        "agentix",
-        "cloud_posture",
-        "cloud",
-        "cloud_runtime_security",
+        "asm",
+        "exposure_management",
         "xsiam"
     ]
 }
