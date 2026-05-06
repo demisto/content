@@ -1380,3 +1380,60 @@ Get parents of a Google Drive file.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GoogleDrive.File.Parents | String | The IDs of the parent folders which contain the file. |
+
+### google-drive-file-move
+
+***
+Moves a file from one folder to another by modifying its parent folder references. Used for quarantine workflows.
+
+#### Base Command
+
+`google-drive-file-move`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | The ID of the file to move. | Required | 
+| add_parent_id | The ID of the destination folder to move the file into. | Required | 
+| remove_parent_id | The ID of the current parent folder to remove the file from. | Required | 
+| user_id | The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.id | String | The file ID. | 
+| GoogleDrive.File.name | String | The name of the file. | 
+| GoogleDrive.File.mimeType | String | The MIME type of the file. | 
+| GoogleDrive.File.parents | Unknown | The list of parent folder IDs. | 
+
+### google-drive-file-create
+
+***
+Creates a new metadata-only file or folder without uploading content. Use for creating quarantine folders or tombstone placeholder files.
+
+#### Base Command
+
+`google-drive-file-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The name of the file or folder to create. | Required | 
+| mime_type | The MIME type of the file. Use "application/vnd.google-apps.folder" to create a folder. Default is "application/vnd.google-apps.folder". Default is application/vnd.google-apps.folder. | Optional | 
+| user_id | The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used. | Optional | 
+| parent | The ID of the parent folder. If not specified, the file will be created in the user's root folder. | Optional | 
+| description | A short description of the file or folder. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.id | String | The ID of the created file or folder. | 
+| GoogleDrive.File.name | String | The name of the created file or folder. | 
+| GoogleDrive.File.mimeType | String | The MIME type of the created file or folder. | 
+| GoogleDrive.File.parents | Unknown | The list of parent folder IDs. | 
+
