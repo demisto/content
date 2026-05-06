@@ -15,6 +15,11 @@ from CommonServerUserPython import *
 def run_append_indicator_field_script(indicators_values: list, tags: list) -> CommandResults:
     """
     Run the 'appendIndicatorField' script in order to add the given tags to the given indicators.
+
+    Each indicator value is processed individually to avoid a server-side bug where the
+    'indicatorsValues' parameter is split by commas — which corrupts URL indicator values
+    that contain commas (e.g. "http://example.com/path?a=1,2,3").
+
     Args:
         indicators_values: The values of the indicators. For example, for an IP indicator, 1.1.1.1.
         tags: The values to add to the indicators tags.
@@ -22,7 +27,8 @@ def run_append_indicator_field_script(indicators_values: list, tags: list) -> Co
     Returns: A CommandResults object contains the readable output string.
 
     """
-    execute_command("appendIndicatorField", {"indicatorsValues": indicators_values, "field": "tags", "fieldValue": tags})
+    for indicator_value in indicators_values:
+        execute_command("appendIndicatorField", {"indicatorsValues": indicator_value, "field": "tags", "fieldValue": tags})
 
     readable_output = tableToMarkdown(
         "The following tags were added successfully:", [{"Indicator": indicator, "Tags": tags} for indicator in indicators_values]

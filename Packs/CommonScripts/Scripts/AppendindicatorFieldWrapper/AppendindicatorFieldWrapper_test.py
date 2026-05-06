@@ -10,7 +10,8 @@ def test_run_append_indicator_field_script(mocker):
     When:
         Running the 'run_append_indicator_field_script' function.
     Then:
-        Verify that the readable output is as expected.
+        - Verify that the readable output is as expected.
+        - Verify that 'appendIndicatorField' is called once per indicator (not once for all).
 
     """
     import AppendindicatorFieldWrapper
@@ -18,7 +19,7 @@ def test_run_append_indicator_field_script(mocker):
     indicators_values = ["test_indicator1", "test_indicator2"]
     tags = ["test_tag1", "test_tag2"]
 
-    mocker.patch.object(AppendindicatorFieldWrapper, "execute_command")
+    execute_command_mock = mocker.patch.object(AppendindicatorFieldWrapper, "execute_command")
     response = AppendindicatorFieldWrapper.run_append_indicator_field_script(indicators_values, tags)
 
     assert (
@@ -26,6 +27,46 @@ def test_run_append_indicator_field_script(mocker):
         "|---|---|\n| test_indicator1 | test_tag1,<br>test_tag2 |\n| test_indicator2 |"
         " test_tag1,<br>test_tag2 |\n"
     )
+    # Each indicator must be processed individually to avoid the server-side comma-split bug
+    assert execute_command_mock.call_count == len(indicators_values)
+    for i, indicator_value in enumerate(indicators_values):
+        call_args = execute_command_mock.call_args_list[i]
+        assert call_args[0][0] == "appendIndicatorField"
+        assert call_args[0][1]["indicatorsValues"] == indicator_value
+
+
+def test_run_append_indicator_field_script_url_with_commas(mocker):
+    """
+    Given:
+        - A URL indicator whose value contains commas
+          (e.g. "http://example.com/path825,295,688,41525479,2004").
+        - A tag to append.
+    When:
+        Running the 'run_append_indicator_field_script' function.
+    Then:
+        - Verify that 'appendIndicatorField' is called exactly once with the full URL value,
+          not split into multiple partial values by the comma in the URL.
+        - This is a regression test for XSUP-57677: the server splits 'indicatorsValues' by
+          comma, so passing the full URL as a single string (not joined with other values)
+          prevents the "Indicator not found" error.
+    """
+    import AppendindicatorFieldWrapper
+
+    url_with_commas = "http://secure.oldschool.com-yy.cz/assisted-login825,295,688,41525479,2004"
+    indicators_values = [url_with_commas]
+    tags = ["test-tag"]
+
+    execute_command_mock = mocker.patch.object(AppendindicatorFieldWrapper, "execute_command")
+    response = AppendindicatorFieldWrapper.run_append_indicator_field_script(indicators_values, tags)
+
+    # Must be called exactly once with the full URL — not split into partial comma-separated tokens
+    assert execute_command_mock.call_count == 1
+    call_args = execute_command_mock.call_args_list[0]
+    assert call_args[0][0] == "appendIndicatorField"
+    assert call_args[0][1]["indicatorsValues"] == url_with_commas
+
+    assert "The following tags were added successfully" in response.readable_output
+    assert url_with_commas in response.readable_output
 
 
 @pytest.mark.parametrize(
