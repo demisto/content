@@ -9589,7 +9589,7 @@ def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
         trigger = definition.get("trigger", {})
         hr_data.append(
             {
-                "ID": definition.get("id"),
+                "Definition ID": definition.get("id"),
                 "Name": definition.get("name"),
                 "Description": definition.get("description"),
                 "Trigger Event": trigger.get("event"),
@@ -9602,7 +9602,7 @@ def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Workflow Definitions",
         t=hr_data,
-        headers=["ID", "Name", "Description", "Trigger Event", "Trigger Name", "Trigger Schedule", "Trigger Type"],
+        headers=["Definition ID", "Name", "Description", "Trigger Event", "Trigger Name", "Trigger Schedule", "Trigger Type"],
         removeNull=True,
     )
 
@@ -9645,12 +9645,12 @@ def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
 
     # Build human-readable output
     # The API returns resources as a list of execution ID strings, not dicts.
-    hr_data = [{"Resource": resource} for resource in resources]
+    hr_data = [{"Execution ID": resource} for resource in resources]
 
     readable_output = tableToMarkdown(
         name="Workflow Execution",
         t=hr_data,
-        headers=["Resource"],
+        headers=["Execution ID"],
         removeNull=True,
     )
 
@@ -9677,7 +9677,7 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
     if definition_name := args.get("definition_name"):
         filter_parts.append(f"definition_name:~'{definition_name}'")
     if execution_id := args.get("execution_id"):
-        filter_parts.append(f"execution_id:'{execution_id}'")
+        filter_parts.append(f"id:'{execution_id}'")
 
     filter_query = "+".join(filter_parts)
     demisto.debug(f"[Workflow] list_workflow_executions_command: built {filter_query=}")

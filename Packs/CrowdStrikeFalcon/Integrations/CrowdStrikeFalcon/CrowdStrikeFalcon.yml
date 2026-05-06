@@ -5180,11 +5180,11 @@ script:
   - arguments:
     - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html, and for list of available properties see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3'
       name: filter
-    - description: The workflow definition ID. When provided, adds id:''<value>'' to the filter.
+    - description: The workflow definition ID. If 'filter' is provided, this argument is ignored.
       name: definition_id
-    - description: Filter by activity ID. When provided, adds activity_id:''<value>'' to the filter.
+    - description: Filter by activity ID. If 'filter' is provided, this argument is ignored.
       name: activity_id
-    - description: Filter by workflow name. When provided, adds name:~''<value>'' to the filter.
+    - description: Filter by workflow name. If 'filter' is provided, this argument is ignored.
       name: name
     - description: Filter by workflow description. When provided, adds description:~''<value>'' to the filter.
       name: description
@@ -5214,18 +5214,17 @@ script:
       name: source_event_url
     - description: The JSON body to pass to the workflow execution. Can be an empty object {}.
       name: body
-      defaultValue: '{}'
     description: 'Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find workflows to run. Note: This command executes on-demand workflows only.'
     name: cs-falcon-workflow-execute
     outputs: []
   - arguments:
     - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html, and for list of available properties see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3' 
       name: filter
-    - description: Filter by workflow definition ID. When provided, adds definition_id:''<value>'' to the filter.
+    - description: Filter by workflow definition ID. If 'filter' is provided, this argument is ignored.
       name: definition_id
-    - description: Filter by workflow definition name. When provided, adds definition_name:~''<value>'' to the filter.
+    - description: Filter by workflow definition name. If 'filter' is provided, this argument is ignored.
       name: definition_name
-    - description: Filter by execution ID. When provided, adds execution_id:''<value>'' to the filter.
+    - description: Filter by execution ID. If 'filter' is provided, this argument is ignored.
       name: execution_id
     - description: The offset to start retrieving records from.
       name: offset
@@ -5235,7 +5234,7 @@ script:
       defaultValue: '50'
     - description: 'The property to sort by in the format property.direction (e.g., created_at.desc). String with comma-separated values for multiple sorts.'
       name: sort
-    description: Lists workflow executions from CrowdStrike Falcon.
+    description: 'Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execute to find executions IDs.'
     name: cs-falcon-list-workflow-executions
     outputs: []
   - arguments:
@@ -5243,7 +5242,7 @@ script:
       name: ids
       required: true
       isArray: true
-    description: Gets detailed results for specific workflow executions.
+    description: Gets detailed results for specific workflow executions. Use cs-falcon-list-workflow-executions to find execution IDs.
     name: cs-falcon-list-workflow-execution-results
     outputs: []
   - arguments:
@@ -5258,7 +5257,7 @@ script:
       predefined:
       - cancel
       - resume
-    description: Performs an action (cancel or resume) on one or more workflow executions.
+    description: Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
     name: cs-falcon-workflow-execution-action
     outputs: []
   dockerimage: demisto/py3-tools:1.0.0.7436613
