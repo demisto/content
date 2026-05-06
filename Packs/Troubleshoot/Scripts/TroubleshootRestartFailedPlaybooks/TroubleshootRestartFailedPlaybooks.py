@@ -56,7 +56,12 @@ def get_failed_tasks_for_alert(alert_id: str) -> list[dict]:
     Returns:
         A list of failed task dictionaries.
     """
-    allowed_types = {"regular", "condition", "collection"}
+    # Include "playbook" so we surface failures that occur on a sub-playbook
+    # task itself (e.g., the sub-playbook failed to start). The downstream
+    # `filter_playbook_failures` step will collapse a sub-playbook failure
+    # into its real underlying task whenever the inner failed task is also
+    # present in the response, so we don't end up restarting both.
+    allowed_types = {"regular", "condition", "collection", "playbook"}
     uri = f"inv-playbook/{alert_id}"
 
     try:
@@ -273,7 +278,8 @@ def restart_all_failed_tasks(
 
             total_restarted += 1
 
-            # Throttle: sleep after every group_size tasks
+            # Throttle: pause for `sleep_time` seconds after every `group_size` task restarts
+            # to avoid overloading the engine queue when scanning many alerts.
             if total_restarted % group_size == 0:
                 demisto.debug(f"Reached group size {group_size}, sleeping for {sleep_time} seconds.")
                 time.sleep(sleep_time)  # pylint: disable=E9003
