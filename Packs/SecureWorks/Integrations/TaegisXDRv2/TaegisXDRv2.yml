@@ -621,7 +621,7 @@ script:
     - contextPath: TaegisXDR.InvestigationEvidenceUpdate
       description: The investigation that received the update.
     description: Add alerts and events to an existing investigation.
-  dockerimage: devdemisto/taegis-sdk-python:1.0.0.8783267
+  dockerimage: demisto/taegis-sdk-python:1.0.0.8787245
   isfetch: true
   runonce: false
   subtype: python3
