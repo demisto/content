@@ -856,7 +856,7 @@ def test_fetch_events_no_events_returned(mocker: MockerFixture, all_incident: bo
         return_value={
             "max_fetch": "10",
             "first_fetch": first_fetch_str,
-            "url": "https://test.ironscales.com",
+            "url": "test_url",
             "collect_all_events": all_incident,
         },
     )
