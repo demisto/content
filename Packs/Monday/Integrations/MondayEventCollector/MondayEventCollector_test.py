@@ -950,6 +950,27 @@ class TestEmptyBoardsResponse:
         result = client.check_empty_page("query", "token")
         assert result is True
 
+    def test_check_empty_page_returns_true_when_data_is_none(self, mocker):
+        """
+        Given:
+            - Monday.com API returns a response where the "data" field is explicitly None
+        When:
+            check_empty_page is called on an ActivityLogsClient
+        Then:
+            It should return True (treat as empty page) instead of raising AttributeError
+        """
+        mocker.patch.object(demisto, "debug")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": None}
+
+        # Call the actual method by using the real class method with the mock
+        client = ActivityLogsClient.__new__(ActivityLogsClient)
+        client.get_activity_logs_request = mock_client.get_activity_logs_request
+
+        result = client.check_empty_page("query", "token")
+        assert result is True
+
     def test_test_connection_handles_empty_boards_gracefully(self, mocker):
         """
         Given:

@@ -131,7 +131,7 @@ class ActivityLogsClient(BaseClient):
         """
         try:
             response = self.get_activity_logs_request(query, access_token)
-            boards = response.get("data", {}).get("boards", [])
+            boards = (response.get("data") or {}).get("boards", [])
             if not boards:
                 demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}No boards returned in check_empty_page.")
                 return True
