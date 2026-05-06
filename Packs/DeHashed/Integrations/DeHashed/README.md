@@ -4,8 +4,7 @@ This integration allows you to check if your personal information such as your e
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Username | In the "Username" field enter your email address. In the "Password" field enter your API key.<br/>For generating an API key, see https://www.dehashed.com. | True |
-| Password |  | True |
+| API Key | For generating an API Key, see https://www.dehashed.com. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS) |  | False |
