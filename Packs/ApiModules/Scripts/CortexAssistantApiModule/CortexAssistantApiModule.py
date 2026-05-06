@@ -435,8 +435,16 @@ class AssistantMessagingHandler:
     # Maximum number of previous messages to include as conversation context
     MAX_CONTEXT_MESSAGES = 5
 
-    def __init__(self):
-        """Initialize the messaging handler"""
+    def __init__(self, survey_text: str = "", survey_link: str = ""):
+        """
+        Initialize the messaging handler.
+
+        Args:
+            survey_text: Text to display for the survey link in responses.
+            survey_link: URL for the survey link in responses.
+        """
+        self.survey_text = survey_text
+        self.survey_link = survey_link
 
     # ============================================================================
     # Abstract methods - must be implemented by platform-specific subclasses
@@ -1807,6 +1815,27 @@ class AssistantMessagingHandler:
         demisto.results("Agent response sent successfully.")
         return assistant_context
 
+    def _create_survey_link_block(self) -> dict | None:
+        """
+        Creates a context block with a clickable survey link.
+        Only returns a block if both survey_text and survey_link are configured.
+
+        Returns:
+            A Slack context block dict with the survey link, or None if not configured.
+        """
+        if not self.survey_text or not self.survey_link:
+            return None
+
+        return {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": f"<{self.survey_link}|{self.survey_text}>",
+                }
+            ],
+        }
+
     def _send_single_response(
         self,
         channel_id: str,
@@ -1848,6 +1877,12 @@ class AssistantMessagingHandler:
         if AssistantMessageType.is_model_type(message_type):
             if AssistantMessageType.is_approval_type(message_type):
                 blocks.extend(self.create_approval_ui())
+
+            # Add survey link if configured (before feedback buttons)
+            if self.survey_text and self.survey_link:
+                survey_block = self._create_survey_link_block()
+                if survey_block:
+                    blocks.append(survey_block)
 
             if message_id:
                 blocks.append(self.create_feedback_ui(message_id))

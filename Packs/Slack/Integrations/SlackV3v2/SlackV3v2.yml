@@ -155,6 +155,18 @@ configuration:
   section: Agentic Assistant
   required: false
   additionalinfo: Enable Cortex Assistant AI integration in Slack. When enabled, users can mention the bot to interact with AI agents for security analysis, threat intelligence, and automated responses.
+- display: Survey link text
+  name: survey_text
+  type: 0
+  section: Agentic Assistant
+  required: false
+  additionalinfo: Text to display for the survey link in Assistant AI responses. If both this and the survey link URL are configured, a clickable link will appear alongside the feedback buttons.
+- display: Survey link URL
+  name: survey_link
+  type: 0
+  section: Agentic Assistant
+  required: false
+  additionalinfo: URL for the survey link in Assistant AI responses. If both this and the survey link text are configured, a clickable link will appear alongside the feedback buttons.
 - display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0

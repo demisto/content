@@ -109,9 +109,9 @@ class SlackAssistantHandler(AssistantMessagingHandler):
     Handles all Assistant interactions specific to Slack platform.
     """
 
-    def __init__(self):
+    def __init__(self, survey_text: str = "", survey_link: str = ""):
         """Initialize the Slack Assistant handler"""
-        super().__init__()
+        super().__init__(survey_text=survey_text, survey_link=survey_link)
 
     # ============================================================================
     # Implementation of abstract methods from AssistantMessagingHandler
@@ -3660,6 +3660,10 @@ def init_globals(command_name: str = ""):
     COMMON_CHANNELS = parse_common_channels(common_channels)
     DISABLE_CACHING = params.get("disable_caching", False)
     ENABLED_AI_ASSISTANT = params.get("enabled_ai_assistant", True)
+
+    # Configure survey link on the assistant handler
+    slack_assistant_handler.survey_text = params.get("survey_text", "")
+    slack_assistant_handler.survey_link = params.get("survey_link", "")
 
     # Formats the error message for the 'Channel Not Found' errors
     error_str = "The channel was not found"
