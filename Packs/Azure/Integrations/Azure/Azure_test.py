@@ -298,9 +298,9 @@ def test_set_postgres_config_command(mocker, client, mock_params):
         ("azure-webapp-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
         ("azure-function-app-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
         ("azure-appservice-webapp-config-update", "Azure.AppService.WebAppConfiguration"),
-        ("azure-appservice-webapp-conf-update-http2-quick-action", "Azure.AppService.WebAppConfiguration"),
-        ("azure-appservice-webapp-conf-disable-remote-debugging-quick-action", "Azure.AppService.WebAppConfiguration"),
-        ("azure-appservice-webapp-conf-update-min-tls-version-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-update-http2-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-disable-remote-debugging-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-update-min-tls-version-quick-action", "Azure.AppService.WebAppConfiguration"),
     ],
 )
 def test_set_webapp_config_command(mocker, client, mock_params, command, expected_prefix):

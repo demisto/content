@@ -4726,7 +4726,7 @@ script:
       type: String
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
-  - name: azure-appservice-webapp-conf-disable-remote-debugging-quick-action
+  - name: azure-appservice-webapp-config-disable-remote-debugging-quick-action
     description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     prettyname: Disable Remote Debugging on Web App
     hidden: true
@@ -5350,7 +5350,7 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
-  - name: azure-appservice-webapp-conf-update-min-tls-version-quick-action
+  - name: azure-appservice-webapp-config-update-min-tls-version-quick-action
     description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     prettyname: Set Web App Minimum TLS Version
     hidden: true
