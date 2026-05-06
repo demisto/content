@@ -2015,7 +2015,8 @@ def github_trigger_workflow_command():
             inputs (str): The inputs of the workflow.
 
         Returns:
-            CommandResults object with informative printout if trigger the workflow succeeded or not.
+            CommandResults with the workflow run details when the API returns a JSON body,
+            or a plain success message when the API returns 204 No Content.
     """
     args = demisto.args()
     owner = args.get("owner") or USER
@@ -2025,16 +2026,76 @@ def github_trigger_workflow_command():
     inputs = json.loads(args.get("inputs", "{}"), strict=False)
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
     data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
-
-    if response.status_code == 204:
-        return_results(CommandResults(readable_output="Workflow triggered successfully."))
-    else:
+    # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
+    if isinstance(response, dict):
+        outputs = {
+            "ID": response.get("workflow_run_id") or response.get("id"),
+            "RunUrl": response.get("run_url") or response.get("url"),
+            "HtmlUrl": response.get("html_url"),
+        }
         return_results(
-            CommandResults(raw_response=response, readable_output=f"Failed to trigger workflow. {response.json().get('message')}")
+            CommandResults(
+                outputs_prefix="GitHub.WorkflowRun",
+                outputs_key_field="ID",
+                outputs=outputs,
+                raw_response=response,
+                readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
+            )
         )
+    else:
+        return_results(CommandResults(readable_output="Workflow triggered successfully."))
+
+
+def github_get_workflow_run_command():
+    """Gets a specific workflow run (dispatched event) in a repository.
+
+    Args:
+        owner (str): The GitHub owner (organization or username) of the repository.
+        repository (str): The GitHub repository name.
+        run_id (str): The unique identifier of the workflow run.
+
+    Returns:
+        CommandResults with the workflow run details.
+    """
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    run_id = args.get("run_id")
+
+    suffix = f"/repos/{owner}/{repository}/actions/runs/{run_id}"
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
+
+    response = http_request("GET", url_suffix=suffix, headers=headers)
+
+    output = {
+        "ID": response.get("id"),
+        "Name": response.get("name"),
+        "HeadBranch": response.get("head_branch"),
+        "HeadSha": response.get("head_sha"),
+        "DisplayTitle": response.get("display_title"),
+        "RunNumber": response.get("run_number"),
+        "Event": response.get("event"),
+        "Status": response.get("status"),
+        "Conclusion": response.get("conclusion"),
+        "WorkflowID": response.get("workflow_id"),
+        "CreatedAt": response.get("created_at"),
+        "UpdatedAt": response.get("updated_at"),
+        "Url": response.get("url"),
+        "HtmlUrl": response.get("html_url"),
+    }
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.WorkflowRun",
+            outputs_key_field="ID",
+            outputs=output,
+            raw_response=response,
+            readable_output=tableToMarkdown(f"Workflow Run {run_id}", output, removeNull=True),
+        )
+    )
 
 
 def github_cancel_workflow_command():
@@ -2256,6 +2317,7 @@ COMMANDS = {
     "github-trigger-workflow": github_trigger_workflow_command,
     "github-cancel-workflow": github_cancel_workflow_command,
     "github-list-workflows": github_list_workflows_command,
+    "github-get-workflow-run": github_get_workflow_run_command,
     "github-delete-file": github_delete_file_command,
     "github-revoke-credentials": github_revoke_credentials_command,
 }
