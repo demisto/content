@@ -34,5 +34,8 @@ ignore=DS108
 [file:ContentClientApiModule.yml]
 ignore=BA125
 
+[file:README.md]
+ignore=BA125
+
 [file:BaseContentApiModule.yml]
 ignore=BA125
