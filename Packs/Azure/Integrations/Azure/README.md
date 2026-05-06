@@ -1847,31 +1847,30 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the virtual machine belongs. | Required |
-| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
-| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group to which the virtual machine belongs. | Required | 
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. |
-| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. |
-| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. |
-| Azure.Compute.VirtualMachines.Size | number | The size of the deployed virtual machine \(in gigabytes\). |
-| Azure.Compute.VirtualMachines.OS | string | The OS running on the given virtual machine. |
-| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
-| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
-| Azure.Compute.VirtualMachines.properties.hardwareProfile.vmSize | string | The size or SKU of the virtual machine, defining CPU, memory, and storage capacity. |
-| Azure.Compute.VirtualMachines.properties.provisioningState | string | The current provisioning state of the virtual machine \(e.g., Succeeded, Updating, Failed\). |
-| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
-| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
-| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
-| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
-| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. |
-| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
-| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
+| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. | 
+| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. | 
+| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. | 
+| Azure.Compute.VirtualMachines.Size | number | The size of the deployed virtual machine \(in gigabytes\). | 
+| Azure.Compute.VirtualMachines.OS | string | The OS running on the given virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. | 
+| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | Specifies the hardware settings for the virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. | 
+| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. | 
+| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. | 
+| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. | 
+| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. | 
+| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. | 
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. | 
 
 ### azure-compute-vm-power-off
 
@@ -1884,12 +1883,12 @@ Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virt
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                   | **Required** |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| subscription_id | The subscription ID.                                                                                                                                                              | Required |
+| **Argument Name** | **Description** | **Required** |
+| --- |---| --- |
+| subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command. | Required |
-| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.   | Required |
-| skip_shutdown | Set to True to request non-graceful VM shutdown. Default value is False. Possible values are: true, false. Default is false.                                                      | Optional |
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -2004,41 +2003,34 @@ Updates a key vault in the specified subscription. The required permissions are:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | Key Vault name. | Required |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The name of the resource group. | Required |
-| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
-| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
+| vault_name | Key Vault name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional | 
+| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.KeyVault.Vault.id | String | Resource ID. |
-| Azure.KeyVault.Vault.name | String | Key Vault name. |
-| Azure.KeyVault.Vault.type | String | Resource type in Azure. |
-| Azure.KeyVault.Vault.location | String | Key Vault location. |
-| Azure.KeyVault.Vault.tags | unknown | Resource tags. |
-| Azure.KeyVault.Vault.properties.sku | String | SKU details. |
-| Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
-| Azure.KeyVault.Vault.properties.accessPolicies | unknown | An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. |
-| Azure.KeyVault.Vault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
-| Azure.KeyVault.Vault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
-| Azure.KeyVault.Vault.properties.accessPolicies.permissions | unknown | Permissions the identity has for keys, secrets and certificates. |
-| Azure.KeyVault.Vault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. |
-| Azure.KeyVault.Vault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. |
-| Azure.KeyVault.Vault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. |
-| Azure.KeyVault.Vault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. |
-| Azure.KeyVault.Vault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. |
-| Azure.KeyVault.Vault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. |
-| Azure.KeyVault.Vault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. |
-| Azure.KeyVault.Vault.properties.provisioningState | String | The current provisioning state. |
-| Azure.KeyVault.Vault.properties.privateEndpointConnections | unknown | List of private endpoint connections associated with the key vault. |
-| Azure.KeyVault.Vault.properties.networkAcls | unknown | Rules governing the accessibility of the key vault from specific network locations. |
-| Azure.KeyVault.Vault.properties.networkAcls.bypass | String | What traffic can bypass network rules. |
-| Azure.KeyVault.Vault.properties.networkAcls.defaultAction | String | The default action when no rules match from ipRules and virtualNetworkRules. |
-| Azure.KeyVault.Vault.properties.networkAcls.ipRules | unknown | The list of IP address rules. |
-| Azure.KeyVault.Vault.properties.networkAcls.virtualNetworkRules | unknown | The list of virtual network rules. |
+| Azure.KeyVault.Vault.id | String | Resource ID. | 
+| Azure.KeyVault.Vault.name | String | Key Vault name. | 
+| Azure.KeyVault.Vault.type | String | Resource type in Azure. | 
+| Azure.KeyVault.Vault.location | String | Key Vault location. | 
+| Azure.KeyVault.Vault.tags | unknown | Resource tags. | 
+| Azure.KeyVault.Vault.properties.sku | String | SKU details. | 
+| Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. | 
+| Azure.KeyVault.Vault.properties.accessPolicies | Unknown | An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. | 
+| Azure.KeyVault.Vault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. | 
+| Azure.KeyVault.Vault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. | 
+| Azure.KeyVault.Vault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. | 
+| Azure.KeyVault.Vault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. | 
+| Azure.KeyVault.Vault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. | 
+| Azure.KeyVault.Vault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. | 
+| Azure.KeyVault.Vault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. | 
+| Azure.KeyVault.Vault.properties.provisioningState | String | The current provisioning state. | 
+| Azure.KeyVault.Vault.properties.privateEndpointConnections | unknown | List of private endpoint connections associated with the key vault. | 
+| Azure.KeyVault.Vault.properties.networkAcls | Unknown | Rules governing the accessibility of the key vault from specific network locations. | 
 
 ### azure-rm-resource-groups-list
 
@@ -2127,30 +2119,27 @@ Gets network interfaces in a resource group. Required permissions: Microsoft.Net
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+| resource_group_name | The resource group name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface's name. |
-| Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface's ID. |
-| Azure.VirtualNetworks.NetworkInterfaces.kind | String | The kind of the network interface. |
-| Azure.VirtualNetworks.NetworkInterfaces.etag | String | The ETag of the network interface. |
-| Azure.VirtualNetworks.NetworkInterfaces.location | String | The location of the network interface. |
-| Azure.VirtualNetworks.NetworkInterfaces.managedBy | String | The entity that manages the network interface. |
-| Azure.VirtualNetworks.NetworkInterfaces.tags | String | The tags associated with the network interface. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.name | List | The name of the IP configuration resource that is unique within a resource group. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.id | List | The IP configuration resource ID. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.etag | List | The ETag of the IP configuration. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.type | List | The type of the IP configuration resource. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | List | List of tap configurations. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. |
-| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface's name. | 
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface's ID. | 
+| Azure.VirtualNetworks.NetworkInterfaces.kind | String | The kind of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | The ETag of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The location of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.managedBy | String | The entity that manages the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.tags | String | The tags associated with the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations | Unknown | A list of IPConfigurations of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | List | List of tap configurations. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). | 
 
 ### azure-vn-public-ip-addresses-list
 
@@ -2232,21 +2221,21 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                           | **Required** |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| subscription_id | The subscription ID.                                                                                                                                                                                                                                                                                      | Required |
-| resource_group_name | Resource group name.                                                                                                                                                                                                                                                                                      | Required |
-| security_group_name | The name of the security group.                                                                                                                                                                                                                                                                           | Required |
-| security_rule_name | The name of the rule to create.                                                                                                                                                                                                                                                                           | Required |
-| direction | The direction of the rule. Possible values are: Inbound, Outbound.                                                                                                                                                                                                                                        | Required |
-| access | Whether to allow the traffic. Possible values are: Allow, Deny. Default is Allow.                                                                                                                                                                                                                         | Optional |
-| protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any.                                                                                                                                                                                                        | Optional |
-| source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any.                                                                                               | Optional |
-| priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority.                                                                                                                                      | Required |
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (`*`) to allow traffic on any port. Default is `*`.      | Optional |
-| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any.                                                                                  | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- |---| --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to create. | Required |
+| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Required |
+| access | Whether to allow the traffic. Possible values are: Allow, Deny. Default is Allow. | Optional |
+| protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
+| source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
+| priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (`*`) to allow traffic on any port. Default is `*`.   | Optional |
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
 | destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (`*`) to allow traffic on any port. Default is `*`. | Optional |
-| description | A description to add to the rule.                                                                                                                                                                                                                                                                         | Optional |
+| description | A description to add to the rule. | Optional |
 
 #### Context Output
 

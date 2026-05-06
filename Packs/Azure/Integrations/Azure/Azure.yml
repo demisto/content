@@ -2161,16 +2161,8 @@ script:
       description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: Azure.KeyVault.Vault.properties.accessPolicies
-      description: An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
+      description: An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
       type: Unknown
-    - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.tenantId
-      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
-      type: String
-    - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.objectId
-      description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
-      type: String
-    - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.permissions
-      description: Permissions the identity has for keys, secrets and certificates.
     - contextPath: Azure.KeyVault.Vault.properties.enabledForDeployment
       description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
       type: Boolean
@@ -2199,16 +2191,7 @@ script:
       description: List of private endpoint connections associated with the key vault.
     - contextPath: Azure.KeyVault.Vault.properties.networkAcls
       description: Rules governing the accessibility of the key vault from specific network locations.
-    - contextPath: Azure.KeyVault.Vault.properties.networkAcls.bypass
-      description: What traffic can bypass network rules.
-      type: String
-    - contextPath: Azure.KeyVault.Vault.properties.networkAcls.defaultAction
-      description: The default action when no rules match from ipRules and virtualNetworkRules.
-      type: String
-    - contextPath: Azure.KeyVault.Vault.properties.networkAcls.ipRules
-      description: The list of IP address rules.
-    - contextPath: Azure.KeyVault.Vault.properties.networkAcls.virtualNetworkRules
-      description: The list of virtual network rules.
+      type: Unknown
   - arguments:
     - description: Server name.
       name: server_name
@@ -3479,18 +3462,9 @@ script:
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
       description: The network interface's provisioning state.
       type: String
-    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.name
-      description: The name of the IP configuration resource that is unique within a resource group.
-      type: List
-    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.id
-      description: The IP configuration resource ID.
-      type: List
-    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.etag
-      description: The ETag of the IP configuration.
-      type: List
-    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.type
-      description: The type of the IP configuration resource.
-      type: List
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+      description: A list of IPConfigurations of the network interface.
+      type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations
       description: List of tap configurations.
       type: List
@@ -3733,7 +3707,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set to True to request non-graceful VM shutdown. Default value is False.
+      description: Set to True to request non-graceful VM shutdown.
       name: skip_shutdown
       predefined:
         - 'true'
@@ -3862,9 +3836,9 @@ script:
     - contextPath: Azure.Compute.VirtualMachines.networkProfile.networkInterfaces
       description: The list of network interfaces attached to this virtual machine.
       type: string
-    - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile.vmSize
-      description: The size or SKU of the virtual machine, defining CPU, memory, and storage capacity.
-      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
+      description: Specifies the hardware settings for the virtual machine.
+      type: Unknown
     - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
       description: The operating system configuration of the virtual machine, including admin credentials and hostname.
       type: string
