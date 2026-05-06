@@ -9509,6 +9509,7 @@ def test_workflow_execution_action_command(mocker):
     result = workflow_execution_action_command(args)
 
     assert "1 workflow execution(s) cancelled" in result.readable_output
+    assert "exec-001" in result.readable_output
     assert "Errors" not in result.readable_output
     assert result.outputs is None
 
@@ -9556,8 +9557,50 @@ def test_workflow_execution_action_command_partial_success(mocker):
     result = workflow_execution_action_command(args)
 
     assert "1 workflow execution(s) cancelled" in result.readable_output
+    assert "proper_id" in result.readable_output
     assert "Errors" in result.readable_output
     assert "fake_id" in result.readable_output
     assert "404" in result.readable_output
     assert "Not Found" in result.readable_output
     assert result.outputs is None
+
+
+def test_list_workflow_definitions_command_filter_priority(mocker):
+    """
+    Test that when filter arg is provided, convenience args are ignored.
+    Given: Both filter and name args provided.
+    When: Running list_workflow_definitions_command.
+    Then: Verify only the filter arg is used, name is ignored.
+    """
+    from CrowdStrikeFalcon import list_workflow_definitions_command
+
+    mock_response = {"resources": []}
+    http_mock = mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"filter": "enabled:True", "name": "ShouldBeIgnored", "limit": "10"}
+    list_workflow_definitions_command(args)
+
+    call_args = http_mock.call_args
+    params = call_args.kwargs.get("params") or call_args[1].get("params") or call_args[0][2] if len(call_args[0]) > 2 else None
+    # The filter should be exactly "enabled:True", not containing "name:~'ShouldBeIgnored'"
+    assert "ShouldBeIgnored" not in str(params)
+
+
+def test_list_workflow_executions_command_filter_priority(mocker):
+    """
+    Test that when filter arg is provided, convenience args are ignored.
+    Given: Both filter and definition_id args provided.
+    When: Running list_workflow_executions_command.
+    Then: Verify only the filter arg is used, definition_id is ignored.
+    """
+    from CrowdStrikeFalcon import list_workflow_executions_command
+
+    mock_response = {"resources": []}
+    http_mock = mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"filter": "status:'completed'", "definition_id": "ShouldBeIgnored", "limit": "10"}
+    list_workflow_executions_command(args)
+
+    call_args = http_mock.call_args
+    params = call_args.kwargs.get("params") or call_args[1].get("params") or call_args[0][2] if len(call_args[0]) > 2 else None
+    assert "ShouldBeIgnored" not in str(params)

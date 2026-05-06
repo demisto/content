@@ -6779,13 +6779,13 @@ Lists workflow definitions from CrowdStrike Falcon.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
-| definition_id | The workflow definition ID. When provided, adds id:'&lt;value&gt;' to the filter. | Optional |
-| activity_id | Filter by activity ID. When provided, adds activity_id:'&lt;value&gt;' to the filter. | Optional |
-| name | Filter by workflow name. When provided, adds name:~'&lt;value&gt;' to the filter (partial match). | Optional |
-| description | Filter by workflow description. When provided, adds description:~'&lt;value&gt;' to the filter (partial match). | Optional |
+| definition_id | The workflow definition ID. If 'filter' is provided, this argument is ignored. | Optional |
+| activity_id | Filter by activity ID. If 'filter' is provided, this argument is ignored. | Optional |
+| name | Filter by workflow name. If 'filter' is provided, this argument is ignored. | Optional |
+| description | Filter by workflow description. When provided, adds description:~'&lt;value&gt;' to the filter. | Optional |
 | offset | The offset to start retrieving records from. Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
-| sort | The property to sort by in the format property.direction (e.g., name.desc, time.asc). Comma-separated for multiple sorts. | Optional |
+| sort | The property to sort by in the format property.direction (e.g., name.desc, time.asc). String with comma-separated values for multiple sorts. | Optional |
 
 #### Context Output
 
@@ -6826,7 +6826,7 @@ Executes an on-demand workflow. Use `cs-falcon-list-workflow-definitions` to fin
 ### cs-falcon-list-workflow-executions
 
 ***
-Lists workflow executions from CrowdStrike Falcon.
+Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execute to find executions IDs.
 
 #### Base Command
 
@@ -6837,12 +6837,12 @@ Lists workflow executions from CrowdStrike Falcon.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
-| definition_id | Filter by workflow definition ID. When provided, adds definition_id:'&lt;value&gt;' to the filter. | Optional |
-| definition_name | Filter by workflow definition name. When provided, adds definition_name:~'&lt;value&gt;' to the filter (partial match). | Optional |
-| execution_id | Filter by execution ID. When provided, adds execution_id:'&lt;value&gt;' to the filter. | Optional |
+| definition_id | Filter by workflow definition ID. If 'filter' is provided, this argument is ignored. | Optional |
+| definition_name | Filter by workflow definition name. If 'filter' is provided, this argument is ignored. | Optional |
+| execution_id | Filter by execution ID. If 'filter' is provided, this argument is ignored. | Optional |
 | offset | The offset to start retrieving records from. Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
-| sort | The property to sort by in the format property.direction (e.g., created_at.desc). Comma-separated for multiple sorts. | Optional |
+| sort | The property to sort by in the format property.direction (e.g., created_at.desc). String with comma-separated values for multiple sorts. | Optional |
 
 #### Context Output
 
@@ -6855,7 +6855,7 @@ Lists workflow executions from CrowdStrike Falcon.
 ### cs-falcon-list-workflow-execution-results
 
 ***
-Gets detailed results for specific workflow executions.
+Gets detailed results for specific workflow executions. Use cs-falcon-list-workflow-executions to find execution IDs.
 
 #### Base Command
 
@@ -6878,7 +6878,7 @@ Gets detailed results for specific workflow executions.
 ### cs-falcon-workflow-execution-action
 
 ***
-Performs an action (cancel or resume) on one or more workflow executions.
+Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
 
 #### Base Command
 

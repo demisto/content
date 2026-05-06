@@ -9559,21 +9559,21 @@ def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
     Lists workflow definitions from CrowdStrike Falcon.
     Builds an FQL filter from convenience arguments and calls the API.
     """
-    # Build FQL filter from convenience arguments
-    filter_parts: list[str] = []
-
     if raw_filter := args.get("filter"):
-        filter_parts.append(raw_filter)
-    if definition_id := args.get("definition_id"):
-        filter_parts.append(f"id:'{definition_id}'")
-    if activity_id := args.get("activity_id"):
-        filter_parts.append(f"activity_id:'{activity_id}'")
-    if name := args.get("name"):
-        filter_parts.append(f"name:~'{name}'")
-    if description := args.get("description"):
-        filter_parts.append(f"description:~'{description}'")
-
-    filter_query = "+".join(filter_parts)
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"id:'{definition_id}'")
+        if activity_id := args.get("activity_id"):
+            filter_parts.append(f"activity_id:'{activity_id}'")
+        if name := args.get("name"):
+            filter_parts.append(f"name:~'{name}'")
+        if description := args.get("description"):
+            filter_parts.append(f"description:~'{description}'")
+        filter_query = "+".join(filter_parts)
     demisto.debug(f"[Workflow] list_workflow_definitions_command: built {filter_query=}")
     offset = args.get("offset", "0")
     limit = arg_to_number(args.get("limit", 50)) or 50
@@ -9629,6 +9629,7 @@ def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
     execution_cid = argToList(args.get("execution_cid"))
     key = args.get("key")
     source_event_url = args.get("source_event_url")
+    # body is mendatory in the http request - if not provided, we set to empty dict
     body = args.get("body", "{}")
 
     response = execute_workflow(
@@ -9667,19 +9668,19 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
     Lists workflow executions from CrowdStrike Falcon.
     Builds an FQL filter from convenience arguments and calls the API.
     """
-    # Build FQL filter from convenience arguments
-    filter_parts: list[str] = []
-
     if raw_filter := args.get("filter"):
-        filter_parts.append(raw_filter)
-    if definition_id := args.get("definition_id"):
-        filter_parts.append(f"definition_id:'{definition_id}'")
-    if definition_name := args.get("definition_name"):
-        filter_parts.append(f"definition_name:~'{definition_name}'")
-    if execution_id := args.get("execution_id"):
-        filter_parts.append(f"id:'{execution_id}'")
-
-    filter_query = "+".join(filter_parts)
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"definition_id:'{definition_id}'")
+        if definition_name := args.get("definition_name"):
+            filter_parts.append(f"definition_name:~'{definition_name}'")
+        if execution_id := args.get("execution_id"):
+            filter_parts.append(f"id:'{execution_id}'")
+        filter_query = "+".join(filter_parts)
     demisto.debug(f"[Workflow] list_workflow_executions_command: built {filter_query=}")
     offset = args.get("offset", "0")
     limit = arg_to_number(args.get("limit", 50)) or 50
@@ -9823,9 +9824,16 @@ def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
     # Extract errors if any
     errors = response.get("errors", [])
 
+    # Calculate succeeded IDs
+    error_ids = {error.get("id") for error in errors if error.get("id")}
+    succeeded_ids = [id_ for id_ in ids if id_ not in error_ids]
+
     # Build readable output
     hr_parts: list[str] = []
-    hr_parts.append(f"{resources_affected} workflow execution(s) {action_past_tense}.")
+    if succeeded_ids:
+        hr_parts.append(f"{len(succeeded_ids)} workflow execution(s) {action_past_tense}: {', '.join(succeeded_ids)}")
+    else:
+        hr_parts.append(f"0 workflow execution(s) {action_past_tense}.")
 
     if errors:
         hr_parts.append("\n**Errors:**")
