@@ -7,7 +7,8 @@ configuration:
 - additionalinfo: |-
     In the "Username" field enter your email address. In the "Password" field enter your API key.
     For generating an API key, see https://www.dehashed.com.
-  display: Username
+  displaypassword: API Key
+  hiddenusername: true
   name: credentials
   required: true
   type: 9

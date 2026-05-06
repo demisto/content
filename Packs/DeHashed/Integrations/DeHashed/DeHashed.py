@@ -185,7 +185,7 @@ def compute_score(entries: list[dict[str, Any]], dbot_score_config: str) -> int:
 class Credentials(ContentBaseModel):
     """Credentials model for API authentication."""
 
-    identifier: str
+    # username field omitted because `hiddenusername: true` in YML
     password: SecretStr
 
 

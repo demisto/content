@@ -48,7 +48,6 @@ def client() -> "DehashedClient":
 
     params = DehashedParams(
         credentials=Credentials(
-            identifier="test-id",
             password=SecretStr("test-key"),
         ),
     )  # type: ignore[call-arg]
@@ -451,31 +450,15 @@ class TestCredentials:
         from pydantic import SecretStr
         from DeHashed import Credentials
 
-        creds = Credentials(identifier="test-id", password=password)  # type: ignore[arg-type]
+        creds = Credentials(password=password)  # type: ignore[arg-type]
 
         assert isinstance(creds.password, SecretStr)
         assert creds.password.get_secret_value() == password
 
-    def test_identifier_field(self) -> None:
-        """
-        Given:
-            - An identifier string.
-        When:
-            - Constructing a Credentials model.
-        Then:
-            - The identifier field is set correctly.
-        """
-        from pydantic import SecretStr
-        from DeHashed import Credentials
-
-        creds = Credentials(identifier="my-id", password=SecretStr("secret"))
-
-        assert creds.identifier == "my-id"
-
     def test_credentials_missing_password_raises(self) -> None:
         """
         Given:
-            - Only an identifier.
+            - No password provided.
         When:
             - Constructing Credentials.
         Then:
@@ -485,23 +468,7 @@ class TestCredentials:
         from DeHashed import Credentials
 
         with pytest.raises(DemistoException, match="password"):
-            Credentials(identifier="test-id")  # type: ignore[call-arg]
-
-    def test_credentials_missing_identifier_raises(self) -> None:
-        """
-        Given:
-            - Only a password.
-        When:
-            - Constructing Credentials.
-        Then:
-            - Raises DemistoException mentioning `identifier`.
-        """
-        from pydantic import SecretStr
-        from CommonServerPython import DemistoException
-        from DeHashed import Credentials
-
-        with pytest.raises(DemistoException, match="identifier"):
-            Credentials(password=SecretStr("secret"))  # type: ignore[call-arg]
+            Credentials()  # type: ignore[call-arg]
 
 
 class TestDehashedParams:
@@ -520,7 +487,7 @@ class TestDehashedParams:
         from DeHashed import DehashedParams, Credentials
 
         params = DehashedParams(
-            credentials=Credentials(identifier="my-id", password=SecretStr("my-secret")),
+            credentials=Credentials(password=SecretStr("my-secret")),
         )  # type: ignore[call-arg]
 
         assert isinstance(params.api_key, SecretStr)
@@ -539,7 +506,7 @@ class TestDehashedParams:
         from DeHashed import DehashedParams, Credentials
 
         params = DehashedParams(
-            credentials=Credentials(identifier="my-id", password=SecretStr("my-secret")),
+            credentials=Credentials(password=SecretStr("my-secret")),
         )  # type: ignore[call-arg]
 
         assert params.email_dbot_score == "SUSPICIOUS"
@@ -557,7 +524,7 @@ class TestDehashedParams:
         from DeHashed import DehashedParams, Credentials
 
         params = DehashedParams(
-            credentials=Credentials(identifier="my-id", password=SecretStr("my-secret")),
+            credentials=Credentials(password=SecretStr("my-secret")),
             email_dbot_score="MALICIOUS",
         )  # type: ignore[call-arg]
 
@@ -576,7 +543,7 @@ class TestDehashedParams:
         from DeHashed import DehashedParams, Credentials
 
         params = DehashedParams(
-            credentials=Credentials(identifier="my-id", password=SecretStr("my-secret")),
+            credentials=Credentials(password=SecretStr("my-secret")),
         )  # type: ignore[call-arg]
 
         assert params.integration_reliability is None
@@ -834,7 +801,7 @@ class TestDehashedExecutionConfig:
             demisto,
             "params",
             return_value={
-                "credentials": {"identifier": "test-id", "password": "test-key"},
+                "credentials": {"password": "test-key"},
                 "email_dbot_score": "MALICIOUS",
             },
         )
@@ -844,7 +811,6 @@ class TestDehashedExecutionConfig:
         params = config.params
 
         assert isinstance(params, DehashedParams)
-        assert params.credentials.identifier == "test-id"
         assert params.email_dbot_score == "MALICIOUS"
 
     def test_dehashed_search_args_property(self, mocker: MockerFixture) -> None:
@@ -862,7 +828,7 @@ class TestDehashedExecutionConfig:
         mocker.patch.object(
             demisto,
             "params",
-            return_value={"credentials": {"identifier": "test-id", "password": "test-key"}},
+            return_value={"credentials": {"password": "test-key"}},
         )
         mocker.patch.object(
             demisto,
@@ -893,7 +859,7 @@ class TestDehashedExecutionConfig:
         mocker.patch.object(
             demisto,
             "params",
-            return_value={"credentials": {"identifier": "test-id", "password": "test-key"}},
+            return_value={"credentials": {"password": "test-key"}},
         )
         mocker.patch.object(demisto, "args", return_value={"email": "a@b.co"})
 
