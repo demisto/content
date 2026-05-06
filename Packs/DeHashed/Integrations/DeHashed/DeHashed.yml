@@ -102,20 +102,35 @@ script:
     - contextPath: DeHashed.Search.Name
       description: Name of the object.
       type: String
-    - contextPath: DeHashed.Search.Vin
-      description: Vehicle identification of the object.
-      type: Number
     - contextPath: DeHashed.Search.Address
       description: Address of the object.
       type: String
-    - contextPath: DeHashed.Search.IpDddress
+    - contextPath: DeHashed.Search.IpAddress
       description: IP address of the object.
       type: Number
     - contextPath: DeHashed.Search.Phone
       description: Phone number of the object.
       type: Number
-    - contextPath: DeHashed.Search.ObtainedFrom
-      description: Source of the object.
+    - contextPath: DeHashed.Search.Dob
+      description: Date of birth.
+      type: String
+    - contextPath: DeHashed.Search.LicensePlate
+      description: License plate.
+      type: String
+    - contextPath: DeHashed.Search.Company
+      description: Company name.
+      type: String
+    - contextPath: DeHashed.Search.Url
+      description: Associated URL.
+      type: String
+    - contextPath: DeHashed.Search.Social
+      description: Social media handle.
+      type: String
+    - contextPath: DeHashed.Search.CryptocurrencyAddress
+      description: Cryptocurrency address.
+      type: String
+    - contextPath: DeHashed.Search.DatabaseName
+      description: Source database/breach name (drives DBot score).
       type: String
     - contextPath: Dehashed.LastQuery.ResultsFrom
       description: The value of the "results_from" argument that was passed in the last query.
@@ -157,20 +172,35 @@ script:
     - contextPath: DeHashed.Search.Name
       description: Name of the object.
       type: String
-    - contextPath: DeHashed.Search.Vin
-      description: Vehicle identification of the object.
-      type: Number
     - contextPath: DeHashed.Search.Address
       description: Address of the object.
       type: String
-    - contextPath: DeHashed.Search.IpDddress
+    - contextPath: DeHashed.Search.IpAddress
       description: IP address of the object.
       type: Number
     - contextPath: DeHashed.Search.Phone
       description: Phone number of the object.
       type: Number
-    - contextPath: DeHashed.Search.ObtainedFrom
-      description: Source of the object.
+    - contextPath: DeHashed.Search.Dob
+      description: Date of birth.
+      type: String
+    - contextPath: DeHashed.Search.LicensePlate
+      description: License plate.
+      type: String
+    - contextPath: DeHashed.Search.Company
+      description: Company name.
+      type: String
+    - contextPath: DeHashed.Search.Url
+      description: Associated URL.
+      type: String
+    - contextPath: DeHashed.Search.Social
+      description: Social media handle.
+      type: String
+    - contextPath: DeHashed.Search.CryptocurrencyAddress
+      description: Cryptocurrency address.
+      type: String
+    - contextPath: DeHashed.Search.DatabaseName
+      description: Source database/breach name (drives DBot score).
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
