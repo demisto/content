@@ -8,7 +8,7 @@ To create a new user:
 1. Log in in as admin in [Keeper Admin Console](https://keepersecurity.com/console/).
 2. Go to the **Admin** panel, found in the left side bar.
 3. Press on **Add User**, and complete the registration process.
-4. Once the user has been created, press on the **Edit** icon, and in the **User Actions** dropdown, click **Disable 2FA** (2FA is currently not supported).
+4. Once the user has been created, press on the **Edit** icon, and in the **User Actions** dropdown, disable **Disable two-factor authentication** (currently not supported) and enable **Auto-approve Devices from Recognized IP Address(es)**.
 
 ### Authentication Process
 
