@@ -978,7 +978,7 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
     )
 
 
-def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
+def tc_get_indicator_command(client: Client, args: dict) -> None:
     indicator = args.get("indicator", "")
     fields_to_return = argToList(args.get("fields_to_return") or [])
     indicator_id = ""
@@ -1009,7 +1009,7 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
         associated_indicators = response[0].get("associatedIndicators")
         associated_groups = response[0].get("associatedGroups")
 
-        return_results(
+        results: list = [
             {
                 "Type": entryTypes["note"],
                 "ContentsFormat": formats["json"],
@@ -1023,10 +1023,10 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
                 ),
                 "EntryContext": ec,
             }
-        )
+        ]
 
         if associated_groups:
-            return_results(
+            results.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
                         "ThreatConnect Associated Groups for indicator: {}".format(args.get("indicator", "")),
@@ -1038,7 +1038,7 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
             )
 
         if associated_indicators:
-            return_results(
+            results.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
                         "ThreatConnect Associated Indicators for indicator: {}".format(args.get("indicator", "")),
@@ -1050,7 +1050,7 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
             )
 
         if include_tags:
-            return_results(
+            results.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
                         "ThreatConnect Tags for indicator: {}".format(args.get("indicator", "")),
@@ -1062,7 +1062,7 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
             )
 
         if include_attributes:
-            return_results(
+            results.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
                         "ThreatConnect Attributes for indicator: {}".format(args.get("indicator", "")),
@@ -1074,16 +1074,18 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
             )
 
         if include_observations:
-            return_results(
+            results.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
-                        "ThreatConnect Observations for indicator: {}".format(args.get("id", "")),
+                        "ThreatConnect Observations for indicator: {}".format(args.get("indicator", "")),
                         include_observations,
                         headerTransform=pascalToSpace,
                     ),
                     raw_response=include_observations,
                 )
             )
+
+        return_results(results)
 
 
 def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
