@@ -383,6 +383,32 @@ def test_parse_nginx_time_to_seconds(time_str, expected_seconds):
 
 
 @pytest.mark.parametrize(
+    "time_str, expected_seconds",
+    [
+        ("5 minutes", 300),
+        ("30 minutes", 1800),
+        ("1 hour", 3600),
+        ("2 hours", 7200),
+        ("1 day", 86400),
+        ("3 days", 259200),
+    ],
+)
+def test_parse_nginx_time_to_seconds_human_readable(time_str, expected_seconds):
+    """
+    Given:  a human-readable relative time string used by integrations such as EDL
+            (e.g. "5 minutes", "1 hour", "3 days").
+    When:   parse_nginx_time_to_seconds is called with that string.
+    Then:   the value is converted to the corresponding number of seconds
+            (allowing a small tolerance because dateparser computes against "now").
+    """
+    from NGINXApiModule import parse_nginx_time_to_seconds
+
+    result = parse_nginx_time_to_seconds(time_str)
+    # Allow ~2s tolerance for the live now() computation done inside the function.
+    assert abs(result - expected_seconds) <= 2
+
+
+@pytest.mark.parametrize(
     "time_str",
     [
         "",

@@ -1,6 +1,7 @@
 import os
 import subprocess
 import traceback
+from math import ceil
 from multiprocessing import Process
 from pathlib import Path
 from signal import SIGUSR1
@@ -334,7 +335,7 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
 
 
 def parse_nginx_time_to_seconds(time_str: str) -> int:
-    """Parses an NGINX time string into seconds.
+    """Parses an NGINX time string (or a human-readable equivalent) into seconds.
 
     NGINX uses suffixes to denote time units (e.g., ``"3600"``, ``"1h"``,
     ``"30m"``, ``"60s"``). Supported suffixes are ``s`` (seconds), ``m``
@@ -342,15 +343,19 @@ def parse_nginx_time_to_seconds(time_str: str) -> int:
     and ``y`` (years). If no suffix is supplied, the value is treated as
     seconds.
 
+    Additionally, human-readable values used by some integrations (e.g., EDL's
+    ``cache_refresh_rate`` parameter such as ``"5 minutes"``, ``"1 hour"``,
+    ``"2 days"``) are also supported by falling back to ``dateparser``.
+
     Args:
-        time_str (str): The NGINX time string to parse.
+        time_str (str): The time string to parse.
 
     Returns:
         int: The time converted to seconds.
 
     Raises:
         DemistoException: If ``time_str`` is empty, whitespace-only, ``None``,
-            or otherwise cannot be parsed as a valid NGINX time value.
+            or otherwise cannot be parsed as a valid time value.
     """
     if not time_str or not (time_str := time_str.strip()):
         raise DemistoException(f"Invalid NGINX time format: {time_str}")
@@ -373,7 +378,16 @@ def parse_nginx_time_to_seconds(time_str: str) -> int:
     if unit in units and value_str.isdigit():
         return int(value_str) * units[unit]
 
-    # If it doesn't match expected format, try to return as int or raise error
+    # If it doesn't match the NGINX-native format, try parsing it as a
+    # human-readable relative time (e.g., "5 minutes", "1 hour", "2 days").
+    try:
+        seconds = ceil((datetime.now() - dateparser.parse(time_str)).total_seconds())  # type: ignore[operator]
+        if seconds > 0:
+            return seconds
+    except Exception:
+        pass
+
+    # Last resort: try to interpret the value as an integer number of seconds.
     try:
         return int(time_str)
     except (ValueError, TypeError):
