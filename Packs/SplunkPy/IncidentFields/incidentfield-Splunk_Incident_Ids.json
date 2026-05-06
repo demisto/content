@@ -14,7 +14,7 @@
     "id": "incident_splunkincidentids",
     "isReadOnly": false,
     "locked": false,
-    "name": "Incident IDs",
+    "name": "Splunk Incident IDs",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -318,7 +318,7 @@
                 "name": "Investigation Summary",
                 "sections": [
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
                         "i": "investigation-details-section",
@@ -608,7 +608,7 @@
                 "name": "Findings",
                 "sections": [
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 4,
                         "hideName": false,
                         "i": "investigation-findings-incident-ids",
@@ -664,26 +664,18 @@
                     {
                         "displayType": "ROW",
                         "h": 6,
-                        "hideName": false,
+                        "hideName": true,
                         "i": "investigation-consolidated-findings-section",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "splunkconsolidatedfindings",
-                                "height": 200,
-                                "id": "investigation-splunkconsolidatedfindings-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Consolidated Findings",
+                        "query": "SplunkConvertConsolidatedFindingsToMD",
+                        "queryType": "script",
                         "static": false,
+                        "type": "dynamic",
                         "w": 3,
                         "x": 0,
                         "y": 4

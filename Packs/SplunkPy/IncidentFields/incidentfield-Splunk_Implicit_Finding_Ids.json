@@ -14,7 +14,7 @@
     "id": "incident_splunkimplicitfindingids",
     "isReadOnly": false,
     "locked": false,
-    "name": "Implicit Finding IDs",
+    "name": "Splunk Implicit Finding IDs",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -71,16 +71,26 @@ configuration:
   name: fetch_event_types
   type: 16
   section: Collect
+  advanced: true
   required: false
   defaultvalue: Finding
   options:
   - Finding
   - Investigation
   additionalinfo: Select which Splunk event types to ingest as incidents. Each fetched event is tagged with `splunk_es_event_type` so the classifier can map it to the correct incident type. Default `Finding` preserves existing behavior.
+- display: First fetch timestamp (Investigations)
+  name: investigations_first_fetch
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 7 days
+  additionalinfo: The amount of time to go back when performing the first investigations fetch (e.g., 12 hours, 7 days, 3 months).
 - display: Investigations fetch query
   name: investigations_fetch_query
   type: 0
   section: Collect
+  advanced: true
   required: false
   defaultvalue: |
     | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&CUSTOM_FILTER_PLACEHOLDER"
@@ -89,17 +99,10 @@ configuration:
   name: investigations_max_fetch
   type: 0
   section: Collect
+  advanced: true
   required: false
   defaultvalue: '50'
-  advanced: true
   additionalinfo: Maximum number of investigations to fetch per cycle. Hard-clamped to 100 (Splunk Mission Control v2 endpoint maximum).
-- display: First fetch timestamp (Investigations)
-  name: investigations_first_fetch
-  type: 0
-  section: Collect
-  required: false
-  defaultvalue: 7 days
-  additionalinfo: The amount of time to go back when performing the first investigations fetch (e.g., 12 hours, 7 days, 3 months).
 - display: Extract Fields - CSV fields that will be parsed out of raw finding events
   name: extractFields
   type: 0

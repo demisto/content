@@ -14,7 +14,7 @@
     "id": "incident_splunkincidentorigin",
     "isReadOnly": false,
     "locked": false,
-    "name": "Incident Origin",
+    "name": "Splunk Incident Origin",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

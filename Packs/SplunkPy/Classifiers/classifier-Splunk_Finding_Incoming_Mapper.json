@@ -1,5 +1,5 @@
 {
-    "description": "Maps Splunk Finding incoming fields.",
+    "description": "Maps Splunk Finding and Splunk Investigation (Mission Control v2) incoming fields. Routed by the SplunkPy v2 classifier via the rawJSON.splunk_es_event_type tag.",
     "feed": false,
     "id": "Splunk Finding - Incoming Mapper",
     "mapping": {
@@ -159,6 +159,152 @@
                 },
                 "Splunk Notes": {
                     "simple": "splunk_notes"
+                }
+            }
+        },
+        "Splunk Investigation": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "simple": "name"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "create_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "owner": {
+                    "simple": "owner"
+                },
+                "Item Owner": {
+                    "simple": "owner"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "investigation_guid"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "Splunk Investigation GUID": {
+                    "simple": "investigation_guid"
+                },
+                "Splunk Investigation ID": {
+                    "simple": "investigation_id"
+                },
+                "Splunk Investigation Name": {
+                    "simple": "name"
+                },
+                "Splunk Incident Origin": {
+                    "simple": "incident_origin"
+                },
+                "Splunk Investigation Type": {
+                    "simple": "investigation_type"
+                },
+                "Splunk Disposition": {
+                    "complex": {
+                        "filters": [],
+                        "root": "disposition_name",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "disposition"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Splunk Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status_name",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "status"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Splunk Urgency": {
+                    "simple": "urgency"
+                },
+                "Splunk Notes": {
+                    "simple": "splunk_notes"
+                },
+                "Splunk Sensitivity": {
+                    "simple": "sensitivity"
+                },
+                "Splunk Incident IDs": {
+                    "simple": "incident_ids"
+                },
+                "Splunk Excluded Finding IDs": {
+                    "simple": "excluded_finding_ids"
+                },
+                "Splunk Implicit Finding IDs": {
+                    "simple": "implicit_finding_ids"
+                },
+                "Splunk Intermediate Finding IDs": {
+                    "simple": "intermediate_finding_ids"
+                },
+                "Splunk Consolidated Findings": {
+                    "simple": "consolidated_findings"
+                },
+                "Risk Score": {
+                    "simple": "risk_score"
+                },
+                "Splunk Risk Object": {
+                    "simple": "risk_object"
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Destination IP": {
+                    "simple": "dest"
+                },
+                "User": {
+                    "simple": "user"
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "update_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Splunk ES Event Type": {
+                    "simple": "splunk_es_event_type"
                 }
             }
         }

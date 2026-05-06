@@ -15,7 +15,7 @@
     "id": "incident_splunkeseventtype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Event Type",
+    "name": "Splunk ES Event Type",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -14,7 +14,7 @@
     "id": "incident_splunkinvestigationtype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Investigation Type",
+    "name": "Splunk Investigation Type",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

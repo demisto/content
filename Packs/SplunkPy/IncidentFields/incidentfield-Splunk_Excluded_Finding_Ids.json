@@ -14,7 +14,7 @@
     "id": "incident_splunkexcludedfindingids",
     "isReadOnly": false,
     "locked": false,
-    "name": "Excluded Finding IDs",
+    "name": "Splunk Excluded Finding IDs",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

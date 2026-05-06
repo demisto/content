@@ -14,7 +14,7 @@
     "id": "incident_splunkintermediatefindingids",
     "isReadOnly": false,
     "locked": false,
-    "name": "Intermediate Finding IDs",
+    "name": "Splunk Intermediate Finding IDs",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
