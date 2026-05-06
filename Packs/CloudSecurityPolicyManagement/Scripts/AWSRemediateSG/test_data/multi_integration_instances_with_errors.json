@@ -1,0 +1,16 @@
+[
+    {
+        "Type": 4,
+        "Metadata": {
+            "instance": "AWS_instance_1"
+        },
+        "Contents": "Sample integration command error message"
+    },
+    {
+        "Type": 4,
+        "Metadata": {
+            "instance": "AWS_instance_2"
+        },
+        "Contents": "Sample integration command error message"
+    }
+]
