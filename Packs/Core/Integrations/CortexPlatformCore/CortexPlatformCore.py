@@ -3591,16 +3591,13 @@ def resolve_playbook_id(client: Client, playbook: str) -> str:
         DemistoException: If the value does not match any known playbook name or ID.
     """
     pbs_metadata: list = client.get_playbooks_metadata() or []
-
     name_to_id: dict[str, str] = {}
     known_ids: set[str] = set()
     for pb in pbs_metadata:
         pb_name = pb.get("name", "")
         pb_id = pb.get("id", "")
-        if pb_id:
-            known_ids.add(pb_id)
-        if pb_name and pb_id:
-            name_to_id[pb_name] = pb_id
+        known_ids.add(pb_id)
+        name_to_id[pb_name] = pb_id
 
     if playbook in known_ids:
         demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
