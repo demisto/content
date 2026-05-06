@@ -2082,7 +2082,8 @@ Create a Blocked Sender Policy.
 ### mimecast-update-block-sender-policy
 
 ***
-Updates the specified policy.
+Updates an existing Blocked Senders policy. This command performs a full policy replacement at the API level. Arguments that are explicitly provided will overwrite the current policy values. Arguments that are left blank will be automatically preserved from the existing policy. To modify only specific fields, provide the `policy_id` and the fields to be changed — all other fields will remain unchanged.
+**Note**: Each policy supports a single sender value (`fromValue`). To block additional senders, separate policies should be created using the `mimecast-create-block-sender-policy` command.
 
 #### Base Command
 
