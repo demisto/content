@@ -1,7 +1,9 @@
-from typing import Any
+from typing import Any, List, Optional
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from taegis_sdk_python import GraphQLService
+from taegis_sdk_python.services.events.types import EventQueryOptions, EventQueryResults
 
 """ CONSTANTS """
 
@@ -85,24 +87,13 @@ SHARELINK_TYPES = {
     "playbookInstanceId",
     "playbookExecutionId",
 }
-DEFAULT_EVENT_FIELDS = """
-    id
-    metadata {
-        event_type
-        event_time
-        tenant_id
-        sensor_id
-    }
-    parent_process_id
-    image_path
-    commandline
-    username
-    source_ip
-    destination_ip
-    destination_port
-    protocol
-    next
-"""
+# Maps integration environment display names to Taegis SDK environment identifiers
+SDK_ENVIRONMENT_MAP = {
+    "us1 (charlie)": "charlie",
+    "us2 (delta)": "delta",
+    "us3 (foxtrot)": "foxtrot",
+    "eu (echo)": "echo",
+}
 
 DEFAULT_FIRST_FETCH_INTERVAL = "1 day"
 
@@ -115,7 +106,8 @@ class Client(BaseClient):
     Secureworks Taegis XDR Client class for implementing API logic with Taegis
     """
 
-    _auth_header = {"access_token": "None"}
+    _auth_header: dict[str, str] = {}
+    _access_token: str = ""
 
     def __init__(
         self,
@@ -147,10 +139,16 @@ class Client(BaseClient):
         )
 
         token = response.get("access_token", None)
+        self._access_token = token or ""
         self._auth_header = {
             "Authorization": f"Bearer {token}",
             "x-tenant-context": self.tenant_id,
         }
+
+    @property
+    def access_token(self) -> str:
+        """Return the bearer token obtained during auth()."""
+        return self._access_token
 
     def graphql_run(self, query: str, variables: dict[str, Any] = None):
         """Perform a GraphQL query
@@ -1750,92 +1748,107 @@ def unarchive_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def _get_next_page_token(batch: List[EventQueryResults]) -> Optional[str]:
+    """Extract the pagination cursor from a batch of EventQueryResults.
+
+    The Taegis SDK may return the cursor in any result object within the batch,
+    so we search all of them and return the first non-None value found.
+    """
+    try:
+        return next(iter({r.next for r in batch if r.next is not None}))
+    except StopIteration:
+        return None
+
+
+def _event_results_to_rows(batch: List[EventQueryResults]) -> list[dict]:
+    """Flatten EventQueryResults objects into a list of raw event row dicts.
+
+    Each EventQueryResults object contains a ``result`` field of type
+    EventQueryResult, which in turn holds a ``rows`` list of raw event dicts.
+    The ``next`` pagination cursor is attached at the EventQueryResults level
+    and is injected into every row so callers can retrieve the next page.
+    """
+    rows: list[dict] = []
+    next_token = _get_next_page_token(batch)
+    for result_obj in batch:
+        if result_obj.result and result_obj.result.rows:
+            for row in result_obj.result.rows:
+                row_dict: dict = dict(row) if not isinstance(row, dict) else row
+                # Attach the pagination cursor so it is visible in context output
+                row_dict["next"] = next_token
+                rows.append(row_dict)
+    return rows
+
+
 def fetch_events_command(client: Client, env: str, args=None):
+    """Fetch Taegis events using the Taegis SDK (WebSocket subscription transport).
+
+    Supports three modes:
+    - **ids**: Fetch specific events by ID using the SDK HTTP query (``service.events.query.events``).
+    - **next**: Retrieve the next page of results using a pagination cursor
+      (``service.events.subscription.event_page``).
+    - **cql_query / default**: Run a CQL search via WebSocket subscription
+      (``service.events.subscription.event_query``).
+
+    The SDK is initialised with the bearer token already obtained by ``client.auth()``
+    so no additional authentication round-trip is required.
+
+    Pagination:
+        The ``next`` cursor token is embedded in every returned event row under the
+        key ``next``.  Pass this value back as the ``next`` argument to retrieve the
+        following page.  When ``next`` is ``None`` there are no more pages.
+
+    CQL timestamp guidance:
+
+    | Scenario              | Use This Field  | Why?                                                        |
+    |-----------------------|-----------------|-------------------------------------------------------------|
+    | Incident Reconstruction | event_time    | See the exact sequence of the attacker's steps.             |
+    | Real-time Monitoring  | EARLIEST=-1m    | See everything that hits the platform in the last 60 s.     |
+    | Compliance/Audit      | ingest_time     | Prove when Secureworks actually received the record.        |
+    | Offline Host Sync     | ingest_time     | Find data from a laptop just turned back on after a weekend.|
     """
-    Fetch Taegis events using a CQL query string with optional pagination support.
-    Mirrors the Taegis SDK event_query / event_page functionality.
+    limit: int = arg_to_number(args.get("limit", 50)) or 50
+    cql_query: str = args.get("cql_query") or f"FROM * EARLIEST=-1m | head {limit}"
 
-    For standard CQL searches, the limit is passed as a GraphQL variable ($limit).
-    For user-provided queries, the limit should be embedded directly in the CQL string.
-    Pagination is handled via the 'next' cursor token returned in each event object.
-    """
-    limit = arg_to_number(args.get("limit", 50))
-    offset = arg_to_number(args.get("offset", 0))
-    cql_query: str | None = args.get("cql_query")
+    sdk_env: str = SDK_ENVIRONMENT_MAP.get(env, "charlie")
+    tenant_id: Optional[str] = args.get("tenant_id") or client.tenant_id or None
 
-    fields: str = args.get("fields") or DEFAULT_EVENT_FIELDS
+    service = GraphQLService(
+        environment=sdk_env,
+        tenant_id=tenant_id,
+    )
 
-    if args.get("ids"):
-        # Fetch events by IDs — no CQL query involved
-        variables: dict[str, Any] = {
-            "ids": argToList(args.get("ids")),
-        }
-        query = f"""
-        query eventsServiceRetrieveEventsById($ids: [String!]) {{
-            eventsServiceRetrieveEventsById(
-                in: {{
-                    iDs: $ids
-                }}
-            ) {{
-                {fields}
-            }}
-        }}
-        """
-        result = client.graphql_run(query=query, variables=variables)
-        try:
-            events = result["data"]["eventsServiceRetrieveEventsById"]
-        except (KeyError, TypeError) as e:
-            demisto.debug(f"fetch_events_command (ids) exception: {e}\nFull result: {result}")
-            raise ValueError(f"Failed to fetch events by ID: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
+    events: list[dict] = []
 
-    elif args.get("next"):
-        # Fetch next page using pagination cursor — no CQL query involved
-        variables = {"next": args.get("next")}
-        query = f"""
-        query eventsServiceEventPage($next: String!) {{
-            eventsServiceEventPage(next: $next) {{
-                {fields}
-            }}
-        }}
-        """
-        result = client.graphql_run(query=query, variables=variables)
-        try:
-            events = result["data"]["eventsServiceEventPage"]
-        except (KeyError, TypeError) as e:
-            demisto.debug(f"fetch_events_command (next page) exception: {e}\nFull result: {result}")
-            raise ValueError(f"Failed to fetch events page: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
+    with service(access_token=client.access_token):
+        if args.get("ids"):
+            # Fetch by IDs — uses the standard HTTP query endpoint (not a subscription)
+            event_ids: list[str] = argToList(args.get("ids"))
+            demisto.debug(f"fetch_events_command: fetching by IDs {event_ids}")
+            sdk_results = service.events.query.events(ids=event_ids)
+            # query.events returns List[Event]; convert each to a plain dict
+            for evt in sdk_results or []:
+                events.append(evt.to_dict() if hasattr(evt, "to_dict") else dict(evt))
 
-    else:
-        # Standard CQL query — assign default only here
-        if not cql_query:
-            cql_query = f"FROM * EARLIEST=-1m | head {limit}"
-        variables = {
-            "cql_query": cql_query,
-            "limit": limit,
-            "offset": offset,
-        }
-        query = f"""
-        query eventsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {{
-            eventsServiceSearch(
-                in: {{
-                    cql_query: $cql_query,
-                    limit: $limit,
-                    offset: $offset
-                }}
-            ) {{
-                {fields}
-            }}
-        }}
-        """
-        result = client.graphql_run(query=query, variables=variables)
-        try:
-            events = result["data"]["eventsServiceSearch"]
-        except (KeyError, TypeError) as e:
-            demisto.debug(f"fetch_events_command (cql_query) exception: {e}\nFull result: {result}")
-            raise ValueError(f"Failed to fetch events: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
+        elif args.get("next"):
+            # Retrieve the next page via WebSocket subscription
+            next_token: str = args["next"]
+            demisto.debug(f"fetch_events_command: fetching next page with cursor {next_token}")
+            batch: List[EventQueryResults] = service.events.subscription.event_page(next_token)
+            events = _event_results_to_rows(batch)
+
+        else:
+            # CQL search via WebSocket subscription
+            options = EventQueryOptions(
+                page_size=limit,
+                skip_cache=True,
+                timestamp_ascending=False,
+            )
+            demisto.debug(f"fetch_events_command: running CQL query: {cql_query}")
+            batch = service.events.subscription.event_query(cql_query, options=options)
+            events = _event_results_to_rows(batch)
 
     if not events:
-        events = []
         readable_output = "No events found."
     else:
         readable_events = [
@@ -1852,7 +1865,6 @@ def fetch_events_command(client: Client, env: str, args=None):
             }
             for e in events
         ]
-
         readable_output = tableToMarkdown(
             "Taegis Events",
             readable_events,
@@ -1870,15 +1882,12 @@ def fetch_events_command(client: Client, env: str, args=None):
             removeNull=True,
         )
 
-    results = CommandResults(
+    return CommandResults(
         outputs_prefix="TaegisXDR.Events",
         outputs_key_field="id",
         outputs=events,
         readable_output=readable_output,
-        raw_response=result,
     )
-
-    return results
 
 
 def test_module(client: Client) -> str:

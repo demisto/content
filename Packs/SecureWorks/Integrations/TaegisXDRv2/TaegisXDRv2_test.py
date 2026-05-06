@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import MagicMock, patch
 
 from CommonServerPython import DemistoException
 
@@ -675,47 +676,105 @@ def test_create_sharelink(requests_mock):
         assert create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
+def _make_sdk_event_result(rows: list, next_token: str | None = None):
+    """Build a mock EventQueryResults object as returned by the Taegis SDK subscription."""
+    result_obj = MagicMock()
+    result_obj.rows = rows
+    batch_item = MagicMock()
+    batch_item.next = next_token
+    batch_item.result = result_obj
+    return [batch_item]
+
+
 def test_fetch_events(requests_mock):
-    """Tests taegis-fetch-events command function"""
+    """Tests taegis-fetch-events command function using mocked Taegis SDK calls."""
 
-    client = mock_client(requests_mock, FETCH_EVENTS_RESPONSE)
+    base_url = "https://api.ctpx.secureworks.com"
+    requests_mock.post(f"{base_url}/graphql", json={})
+    requests_mock.get(f"{base_url}/assets/version", json={})
+    client = Client(client_id="TestID", client_secret="TestSecret", base_url=base_url)
+    # Simulate a token already obtained via auth()
+    client._access_token = "test-bearer-token"
 
-    # Successful query with default cql_query (no args)
-    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
-    assert response.outputs == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
+    # --- CQL search (default, no args) ---
+    sdk_batch = _make_sdk_event_result([dict(TAEGIS_EVENT)], next_token=None)
+    with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
+        mock_service = MagicMock()
+        mock_service_cls.return_value = mock_service
+        mock_service.__enter__ = MagicMock(return_value=mock_service)
+        mock_service.__exit__ = MagicMock(return_value=False)
+        mock_service.events.subscription.event_query.return_value = sdk_batch
+
+        response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
     assert len(response.outputs) == 1
-    assert response.outputs[0] == TAEGIS_EVENT
-
-    # Successful query with explicit cql_query
-    args = {
-        "cql_query": "FROM process EARLIEST=-1d | head 10",
-        "limit": 10,
-        "offset": 0,
-    }
-    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
-    # next cursor is embedded in the last event object
+    assert response.outputs[0]["id"] == TAEGIS_EVENT["id"]
     assert response.outputs[0].get("next") is None
 
-    # Query with next page token returned
-    client = mock_client(requests_mock, FETCH_EVENTS_NEXT_PAGE_RESPONSE)
-    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs[0].get("next") == TAEGIS_EVENT_NEXT_PAGE
+    # --- CQL search with explicit query and limit ---
+    sdk_batch_with_next = _make_sdk_event_result([dict(TAEGIS_EVENT)], next_token=TAEGIS_EVENT_NEXT_PAGE)
+    with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
+        mock_service = MagicMock()
+        mock_service_cls.return_value = mock_service
+        mock_service.__enter__ = MagicMock(return_value=mock_service)
+        mock_service.__exit__ = MagicMock(return_value=False)
+        mock_service.events.subscription.event_query.return_value = sdk_batch_with_next
+
+        response = fetch_events_command(
+            client=client,
+            env=TAEGIS_ENVIRONMENT,
+            args={"cql_query": "FROM process EARLIEST=-1d | head 10", "limit": 10},
+        )
+
     assert len(response.outputs) == 1
+    assert response.outputs[0].get("next") == TAEGIS_EVENT_NEXT_PAGE
 
-    # Fetch by IDs
-    client = mock_client(requests_mock, FETCH_EVENTS_BY_ID_RESPONSE)
-    args_by_id = {"ids": [TAEGIS_EVENT["id"]]}
-    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args_by_id)
-    assert response.outputs == FETCH_EVENTS_BY_ID_RESPONSE["data"]["eventsServiceRetrieveEventsById"]
+    # --- Fetch next page using cursor ---
+    sdk_page_batch = _make_sdk_event_result([dict(TAEGIS_EVENT)], next_token=None)
+    with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
+        mock_service = MagicMock()
+        mock_service_cls.return_value = mock_service
+        mock_service.__enter__ = MagicMock(return_value=mock_service)
+        mock_service.__exit__ = MagicMock(return_value=False)
+        mock_service.events.subscription.event_page.return_value = sdk_page_batch
 
-    # Fetch next page using cursor
-    client = mock_client(requests_mock, FETCH_EVENTS_PAGE_RESPONSE)
-    args_next = {"next": TAEGIS_EVENT_NEXT_PAGE}
-    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args_next)
-    assert response.outputs == FETCH_EVENTS_PAGE_RESPONSE["data"]["eventsServiceEventPage"]
+        response = fetch_events_command(
+            client=client,
+            env=TAEGIS_ENVIRONMENT,
+            args={"next": TAEGIS_EVENT_NEXT_PAGE},
+        )
 
-    # Query failure
-    client = mock_client(requests_mock, FETCH_EVENTS_BAD_RESPONSE)
-    with pytest.raises(ValueError, match="Failed to fetch events: invalid CQL query"):
-        assert fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert len(response.outputs) == 1
+    assert response.outputs[0]["id"] == TAEGIS_EVENT["id"]
+
+    # --- Fetch by IDs ---
+    mock_event = MagicMock()
+    mock_event.to_dict.return_value = dict(TAEGIS_EVENT)
+    with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
+        mock_service = MagicMock()
+        mock_service_cls.return_value = mock_service
+        mock_service.__enter__ = MagicMock(return_value=mock_service)
+        mock_service.__exit__ = MagicMock(return_value=False)
+        mock_service.events.query.events.return_value = [mock_event]
+
+        response = fetch_events_command(
+            client=client,
+            env=TAEGIS_ENVIRONMENT,
+            args={"ids": [TAEGIS_EVENT["id"]]},
+        )
+
+    assert len(response.outputs) == 1
+    assert response.outputs[0]["id"] == TAEGIS_EVENT["id"]
+
+    # --- No events returned ---
+    with patch("TaegisXDRv2.GraphQLService") as mock_service_cls:
+        mock_service = MagicMock()
+        mock_service_cls.return_value = mock_service
+        mock_service.__enter__ = MagicMock(return_value=mock_service)
+        mock_service.__exit__ = MagicMock(return_value=False)
+        mock_service.events.subscription.event_query.return_value = []
+
+        response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    assert response.outputs == []
+    assert "No events found" in response.readable_output

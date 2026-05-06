@@ -680,12 +680,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of event IDs to return. | False |
-| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head 50`. | False |
-| limit | The maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., `\| head 100`). Default is 50. | False |
-| offset | The number of events to skip before returning results. Default is 0. | False |
-| next | The pagination cursor token returned from a previous `taegis-fetch-events` call. Use this to retrieve the next page of results. | False |
-| fields | The fields to return from the query. | False |
+| ids | A comma-separated list of event IDs to return. When provided, events are fetched by ID using the Taegis SDK HTTP query endpoint. | False |
+| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head {limit}`. | False |
+| limit | The maximum number of events to return per page. Used as the SDK subscription page size and appended as `\| head {limit}` to the default CQL query. For user-provided `cql_query` strings, embed the limit directly (e.g., `\| head 100`). Default is 50. | False |
+| next | The pagination cursor token returned from a previous `taegis-fetch-events` call (found in the `next` field of each returned event). Pass this value to retrieve the next page of results. | False |
 | tenant_id | The tenant to run against if using an MSP. If no tenant is provided, the tenant of the generated credentials is used. | False |
 
 #### CQL Query Time Field Reference

@@ -317,36 +317,3 @@ TAEGIS_EVENT = {
     "next": None,
 }
 
-TAEGIS_EVENT_WITH_NEXT = {
-    **TAEGIS_EVENT,
-    "next": TAEGIS_EVENT_NEXT_PAGE,
-}
-
-FETCH_EVENTS_RESPONSE = {
-    "data": {
-        "eventsServiceSearch": [TAEGIS_EVENT],
-    }
-}
-
-FETCH_EVENTS_NEXT_PAGE_RESPONSE = {
-    "data": {
-        "eventsServiceSearch": [TAEGIS_EVENT_WITH_NEXT],
-    }
-}
-
-FETCH_EVENTS_BY_ID_RESPONSE = {
-    "data": {
-        "eventsServiceRetrieveEventsById": [TAEGIS_EVENT],
-    }
-}
-
-FETCH_EVENTS_PAGE_RESPONSE = {
-    "data": {
-        "eventsServiceEventPage": [TAEGIS_EVENT],
-    }
-}
-
-FETCH_EVENTS_BAD_RESPONSE = {
-    "data": {},
-    "errors": [{"message": "invalid CQL query", "path": ["eventsServiceSearch"]}],
-}
