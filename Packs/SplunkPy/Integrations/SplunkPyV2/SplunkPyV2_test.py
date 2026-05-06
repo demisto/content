@@ -5699,3 +5699,37 @@ def test_update_investigation_or_finding_partial_fields():
         "public/v2/investigations/finding-abc",
         body=json.dumps({"owner": "admin", "urgency": "high"}),
     )
+
+
+def test_update_investigation_or_finding_with_finding_time():
+    """
+    Given:
+        - A mock Splunk service, valid update fields, and a finding_time value.
+    When:
+        - update_investigation_or_finding is called with finding_time provided and the first
+          service.post call succeeds.
+    Then:
+        - service.post is called exactly once.
+        - The call includes notable_time equal to the provided finding_time (no fallback to "now").
+        - The result matches the expected response.
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "closed"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+    finding_time = "2024-01-15T12:34:56.000+00:00"
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="closed",
+        finding_time=finding_time,
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "closed"}),
+        notable_time=finding_time,
+    )

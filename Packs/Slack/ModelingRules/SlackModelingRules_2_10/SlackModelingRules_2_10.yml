@@ -4,6 +4,5 @@ name: Slack Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
-- agentix
 - xsiam
 tags: 'slack'
