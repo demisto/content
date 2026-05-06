@@ -1,12 +1,20 @@
 # Google Gemini Integration
 
-This integration provides access to Google Gemini's large language models for AI-powered analysis and chat capabilities in Cortex XSOAR. Supports both Google AI Studio (API key) and Google Cloud Vertex AI (service account) authentication.
+This integration provides access to Google Gemini's large language models for AI-powered analysis and chat capabilities in Cortex XSOAR or XSIAM. Supports both Google AI Studio (API key) and Google Cloud Vertex AI (service account) authentication.
 
 ## Configure GoogleGemini in Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Google Gemini.
 3. Click **Add instance** to create and configure a new integration instance.
+
+## Configure GoogleGemini in Cortex XSIAM
+
+1. Go to Marketplace
+2. Search for GoogleGemini
+3. Add ContentPack
+4. Search for GoogleGemini in Data Source and Integrations
+5. Create new instance
 
 ### Instance Configuration Parameters
 
@@ -137,7 +145,7 @@ The command returns the AI model's response as human-readable output in the War 
 ## Troubleshooting and Tips
 
 - Ensure your API key has access to the Generative Language API.
-- Verify your Cortex XSOAR instance can access the configured endpoint.
+- Verify your Cortex XSOAR or XSIAM instance can access the configured endpoint.
 - Check that the specified model is available in your region.
 - Review usage quotas and rate limits for your API key or project.
 - The integration attempts to use models not included in the official list and issues a warning.
