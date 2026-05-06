@@ -5851,11 +5851,6 @@ def upload_custom_ioc_command(
 
     entry_objects_list = []
     for ioc in iocs:
-        demisto.debug(
-            f"upload_custom_ioc_command: IOC {ioc.get('value')} - "
-            f"requested mobile_action={mobile_action}, "
-            f"API returned mobile_action={ioc.get('mobile_action')}"
-        )
         ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
         ec[0]["Filename"] = ioc.get("metadata", {}).get("filename")
         entry_objects_list.append(

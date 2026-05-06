@@ -2856,7 +2856,7 @@ def test_upload_custom_ioc_command_mobile_action(requests_mock):
     mock = requests_mock.post(f"{SERVER_URL}/iocs/entities/indicators/v1", status_code=200, json={"result": "ok"})
 
     upload_custom_ioc_command(
-        action="no_action", platforms="mac,linux", ioc_type="domain", value="test.com", mobile_action="prevent"
+        action="no_action", platforms="mac,android", ioc_type="domain", value="test.com", mobile_action="prevent"
     )
 
     body = mock.last_request.json()

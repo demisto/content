@@ -1684,6 +1684,7 @@ script:
     - auto: PREDEFINED
       description: |-
         The action to take on mobile devices when a host observes the custom IOC.
+        Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.
         - no_action: The indicator is saved for future use, but no action is taken (no severity required).
         - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
         - detect: The connection is allowed and a detection is generated.
@@ -1788,6 +1789,7 @@ script:
     - auto: PREDEFINED
       description: |-
         The action to take on mobile devices when a host observes the custom IOC.
+        Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.
         - no_action: The indicator is saved for future use, but no action is taken (no severity required).
         - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
         - detect: The connection is allowed and a detection is generated.
