@@ -15326,7 +15326,7 @@ def test_document_get_command_success(mocker):
 
     result = SSM.document_get_command(mock_client, args)
 
-    assert result.outputs_prefix == "AWS.SSM.Document"
+    assert result.outputs_prefix == "AWS.SSM.Documents"
     assert result.outputs_key_field == "Name"
     assert result.outputs["Name"] == "AWS-RunShellScript"
     mock_client.describe_document.assert_called_once_with(Name="AWS-RunShellScript")
