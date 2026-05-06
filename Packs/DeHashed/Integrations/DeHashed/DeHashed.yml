@@ -43,6 +43,7 @@ display: DeHashed
 name: DeHashed
 script:
   commands:
+
   - arguments:
     - auto: PREDEFINED
       description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument.
@@ -123,6 +124,7 @@ script:
     - contextPath: Dehashed.LastQuery.DisplayedResults
       description: The number of entries that were displayed in Cortex XSOAR from the last query.
       type: Number
+
   - arguments:
     - default: true
       description: The email address to check.
@@ -180,7 +182,8 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+
+  dockerimage: demisto/fastapi:0.125.0.8198656
   runonce: false
   script: '-'
   subtype: python3
