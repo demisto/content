@@ -374,27 +374,28 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
     """
     sign_on_logs: list = []
     page = 1  # We assume that we will need to make one call at least
-    total_fetched = 0  # Keep track of the total number of events fetched
     res, total_pages = client.retrieve_events(from_time=from_date, to_time=to_date, page=1, count=999)
     sign_on_events_from_api = res.get("Workday_Account_Signon", [])
     sign_on_logs.extend(sign_on_events_from_api)
-    demisto.debug(f"Request indicates a total of {total_pages} pages to paginate.")
+    total_fetched = len(sign_on_events_from_api)
+    demisto.debug(f"Request indicates a total of {total_pages} pages to paginate. Fetched {total_fetched} events from page 1.")
     pages_remaining = total_pages - 1
 
     while (page <= total_pages and pages_remaining != 0) and res:
         page += 1
-        # Calculate the remaining number of events to fetch
         remaining_to_fetch = limit_to_fetch - total_fetched
         if remaining_to_fetch <= 0:
+            demisto.debug(f"Reached fetch limit of {limit_to_fetch}. Stopping pagination.")
             break
-        res, _ = client.retrieve_events(from_time=from_date, to_time=to_date, page=page, count=limit_to_fetch)
-        pages_remaining -= 1
+        res, _ = client.retrieve_events(from_time=from_date, to_time=to_date, page=page, count=remaining_to_fetch)
+        sign_on_events_from_api = res.get("Workday_Account_Signon", [])
         fetched_count = len(sign_on_events_from_api)
         total_fetched += fetched_count
-
-        demisto.debug(f"Fetched {len(sign_on_events_from_api)} sign on logs.")
+        demisto.debug(f"Fetched {fetched_count} sign on logs from page {page}.")
         sign_on_logs.extend(sign_on_events_from_api)
-        demisto.debug(f"{pages_remaining} pages left to fetch.")
+        pages_remaining -= 1
+        demisto.debug(f"{pages_remaining} pages left to fetch. Total fetched so far: {total_fetched}.")
+
     return sign_on_logs
 
 
