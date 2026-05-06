@@ -8078,9 +8078,13 @@ class SSM:
         # Build aggregator — Groups must live in a nested sub-aggregator under Expression.
         # AWS enforces: Groups cannot coexist with Expression in the same aggregator object.
         if aggregator_groups_raw:
+            try:
+                aggregator_groups = json.loads(aggregator_groups_raw)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"aggregator_groups must be a valid JSON string: {e}") from e
             aggregator = {
                 "Expression": aggregator_expression,
-                "Aggregators": [{"Groups": json.loads(aggregator_groups_raw)}],
+                "Aggregators": [{"Groups": aggregator_groups}],
             }
         else:
             aggregator = remove_empty_elements(
@@ -8366,7 +8370,7 @@ class SSM:
             return CommandResults(readable_output="No SSM documents found.")
 
         outputs = {
-            "AWS.SSM.Documents(val.Name && val.Name == obj.Name)": documents,
+            "AWS.SSM.Document(val.Name && val.Name == obj.Name)": documents,
             "AWS.SSM(true)": {"DocumentsNextToken": response.get("NextToken")},
         }
 
@@ -8549,6 +8553,7 @@ class SSM:
             target_maps = [{k: v} for k, v in raw_target_maps.items()] or None
 
             parameters_str: str = args.get("parameters") or ""
+            parameters = parse_key_values_2_dict(parameters_str) if parameters_str else None
             kwargs = remove_empty_elements(
                 {
                     "DocumentName": args.get("document_name"),
@@ -8558,7 +8563,7 @@ class SSM:
                     "MaxConcurrency": args.get("max_concurrency"),
                     "MaxErrors": args.get("max_errors"),
                     "TargetParameterName": args.get("target_parameter_name"),
-                    "Parameters": parse_key_values_2_dict(parameters_str) if parameters_str else None,
+                    "Parameters": parameters,
                     "Tags": parse_tag_field(args.get("tags")) if args.get("tags") else None,
                     "Targets": targets,
                     "TargetLocations": target_locations,
@@ -8567,7 +8572,9 @@ class SSM:
                     "AlarmConfiguration": alarm_configuration,
                 }
             )
-            print_debug_logs(client, f"Starting SSM automation execution with {kwargs=}")
+            # Redact Parameters from debug log as they may contain sensitive data
+            safe_kwargs = {k: v for k, v in kwargs.items() if k != "Parameters"}
+            print_debug_logs(client, f"Starting SSM automation execution with {safe_kwargs=}")
 
             response = client.start_automation_execution(**kwargs)
             execution_id = response.get("AutomationExecutionId", "")

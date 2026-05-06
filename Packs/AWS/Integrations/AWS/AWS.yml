@@ -10624,7 +10624,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Command.ExpiresAfter
         description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.Command.Parameters
         description: The parameter values to be inserted in the document when running the command.
         type: Object
@@ -10636,7 +10636,7 @@ script:
         type: Object
       - contextPath: AWS.SSM.Command.RequestedDateTime
         description: The date and time the command was requested.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.Command.Status
         description: The status of the command.
         type: String
@@ -11362,10 +11362,10 @@ script:
         type: String
       - contextPath: AWS.SSM.AutomationExecution.ExecutionStartTime
         description: The time the execution started.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.AutomationExecution.ExecutionEndTime
         description: The time the execution finished.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionStatus
         description: The status of the execution.
         type: String
@@ -11600,7 +11600,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Command.ExpiresAfter
         description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed.
-        type: Number
+        type: Date
       - contextPath: AWS.SSM.Command.Parameters
         description: The parameter values to be inserted in the document when running the command.
         type: Unknown
@@ -11615,7 +11615,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Command.RequestedDateTime
         description: The date and time the command was requested.
-        type: Number
+        type: Date
       - contextPath: AWS.SSM.Command.Status
         description: The status of the command.
         type: String
