@@ -6765,6 +6765,10 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 }
 ```
 
+## Workflow Commands
+
+The following commands are available from the CrowdStrike Falcon integration. Note that for these commands, the required API client scope is: `Workflows - Read and Write`.
+
 ### cs-falcon-list-workflow-definitions
 
 ***
@@ -6782,7 +6786,7 @@ Lists workflow definitions from CrowdStrike Falcon.
 | definition_id | The workflow definition ID. If 'filter' is provided, this argument is ignored. | Optional |
 | activity_id | Filter by activity ID. If 'filter' is provided, this argument is ignored. | Optional |
 | name | Filter by workflow name. If 'filter' is provided, this argument is ignored. | Optional |
-| description | Filter by workflow description. When provided, adds description:~'&lt;value&gt;' to the filter. | Optional |
+| description | Filter by workflow description. If 'filter' is provided, this argument is ignored. | Optional |
 | offset | The offset to start retrieving records from. Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | sort | The property to sort by in the format property.direction (e.g., name.desc, time.asc). String with comma-separated values for multiple sorts. | Optional |

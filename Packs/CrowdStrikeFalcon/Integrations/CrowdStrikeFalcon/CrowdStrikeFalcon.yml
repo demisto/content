@@ -5186,7 +5186,7 @@ script:
       name: activity_id
     - description: Filter by workflow name. If 'filter' is provided, this argument is ignored.
       name: name
-    - description: Filter by workflow description. When provided, adds description:~''<value>'' to the filter.
+    - description: Filter by workflow description. If 'filter' is provided, this argument is ignored.
       name: description
     - description: The offset to start retrieving records from.
       name: offset
