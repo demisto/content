@@ -987,7 +987,7 @@ def test_module_ok(mocker: MockerFixture, client: "DehashedClient") -> None:
     result = test_module(client)
 
     assert result == "ok"
-    client.general_search.assert_called_once_with(query="email:example@example.com")  # type: ignore[attr-defined]
+    client.general_search.assert_called_once_with(query="email:example@example.com", page=1, size=1)  # type: ignore[attr-defined]
 
 
 def test_module_authentication_error(mocker: MockerFixture, client: "DehashedClient") -> None:

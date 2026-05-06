@@ -288,7 +288,7 @@ def test_module(client: DehashedClient) -> str:
     """
     try:
         demisto.debug("[Testing] Testing API connectivity")
-        client.general_search(query="email:example@example.com")
+        client.general_search(query="email:example@example.com", page=1, size=1)
         demisto.debug("[Testing] API connectivity test passed")
 
     except Exception as e:
