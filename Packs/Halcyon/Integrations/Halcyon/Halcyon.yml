@@ -18,7 +18,7 @@ configuration:
   display: Username
   required: true
   type: 9
-  additionalinfo: 'Username and password associated with your Halcyon account.'
+  additionalinfo: 'Username and password associated with your Halcyon accounts.'
   displaypassword: Password
   section: Connect
   hiddenusername: false
