@@ -1,3 +1,4 @@
+import traceback
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -1158,7 +1159,6 @@ class Client(CoreClient):
                     },
                 ],
                 "full_alert_fields": True,
-                # "fields_to_exclude": ["network_artifacts", "file_artifacts"],
             }
         }
         demisto.debug(f"Calling get_multiple_incidents_extra_data with case_ids={case_ids}")
@@ -1723,8 +1723,8 @@ def extract_ids(case_extra_data: dict, data_key: str = "issues", field_name: str
         return []
 
     container = case_extra_data.get(data_key, {})
-    data = container.get("data", {}) if container else {}
-    ids = [str(item.get(field_name)) for item in data if isinstance(item, dict) and field_name in item]
+    data = container.get("data", []) if container else []
+    ids = [str(item[field_name]) for item in data if isinstance(item, dict) and item.get(field_name) is not None]
     demisto.debug(f"Extracted {field_name}s: {ids}")
     return ids
 
@@ -1760,7 +1760,7 @@ def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     }
 
 
-def add_cases_extra_data(client: Client, cases_list: list) -> list:
+def add_cases_extra_data(client: Client, cases_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Enrich a list of cases with extra data using a single bulk API call.
 
@@ -1774,13 +1774,19 @@ def add_cases_extra_data(client: Client, cases_list: list) -> list:
     Returns:
         list: The same cases_list with 'CaseExtraData' added to each case.
     """
-    case_ids = [case.get("case_id") for case in cases_list]
+    case_ids = [str(case["case_id"]) for case in cases_list if case.get("case_id") is not None]
     demisto.debug(f"Fetching bulk extra data for case_ids={case_ids}")
+
+    if not case_ids:
+        demisto.debug("No valid case IDs to fetch extra data for, skipping API call.")
+        for case in cases_list:
+            case["CaseExtraData"] = {}
+        return cases_list
 
     try:
         response = client.get_multiple_cases_extra_data(case_ids)
     except Exception as e:
-        demisto.debug(f"Failed to retrieve bulk extra data for case IDs {case_ids}: {e}")
+        demisto.debug(f"Failed to retrieve bulk extra data for case IDs {case_ids}: {e}\n{traceback.format_exc()}")
         for case in cases_list:
             case["CaseExtraData"] = {}
         return cases_list
@@ -1798,8 +1804,8 @@ def add_cases_extra_data(client: Client, cases_list: list) -> list:
     demisto.debug(f"Bulk extra data parsed for {len(extra_data_by_case_id)} cases")
 
     for case in cases_list:
-        case_id = case.get("case_id")
-        case["CaseExtraData"] = extra_data_by_case_id.get(str(case_id), {})
+        case_id = str(case.get("case_id", ""))
+        case["CaseExtraData"] = extra_data_by_case_id.get(case_id, {})
 
     return cases_list
 
@@ -1967,7 +1973,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     return filter_builder
 
 
-def get_cases_command(client: Client, args):
+def get_cases_command(client: Client, args: dict[str, Any]):
     """
     Retrieves cases from Cortex platform based on provided filtering criteria.
 

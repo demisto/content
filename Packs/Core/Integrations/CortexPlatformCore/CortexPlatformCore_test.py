@@ -3803,50 +3803,91 @@ def test_extract_ids_multiple_valid_issues():
     assert result == ["12345", "67890", "11111"]
 
 
-def test_get_case_extra_data_with_all_fields_present(mocker):
+def test_extract_ids_skips_none_values():
     """
     Given:
-        A mock client and case data with all possible fields present.
+        Case extra data containing items where the ID field is None.
     When:
-        The get_case_extra_data function is called.
+        The extract_ids function is called.
+    Then:
+        Items with None IDs should be excluded instead of being cast to the string "None".
+    """
+    from CortexPlatformCore import extract_ids
+
+    case_extra_data: dict = {
+        "issues": {
+            "data": [
+                {"issue_id": "12345", "title": "Valid Issue"},
+                {"issue_id": None, "title": "None Issue"},
+                {"issue_id": "67890", "title": "Another Valid Issue"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["12345", "67890"]
+
+
+def test_parse_single_case_extra_data_with_all_fields_present():
+    """
+    Given:
+        Case incident data with all possible fields present.
+    When:
+        The parse_single_case_extra_data function is called.
     Then:
         All fields should be correctly extracted and returned in the result.
     """
-    from CortexPlatformCore import get_case_extra_data
+    from CortexPlatformCore import parse_single_case_extra_data
 
-    mock_client = mocker.Mock()
-    mock_client._base_url = "original_url"
-
-    mock_case_data = {
-        "case": {
+    case_incident_data = {
+        "incident": {
+            "incident_id": "123",
             "notes": "Test notes",
             "xdr_url": "https://example.com/xdr",
             "starred_manually": True,
             "manual_description": "Case manual description",
             "detection_time": "2023-01-01T00:00:00Z",
         },
-        "manual_description": "Global manual description",
-        "network_artifacts": [{"id": "net1", "type": "ip"}],
-        "file_artifacts": [{"id": "file1", "hash": "abc123"}],
+        "alerts": {
+            "total_count": 2,
+            "data": [
+                {"alert_id": "issue1", "name": "Alert 1"},
+                {"alert_id": "issue2", "name": "Alert 2"},
+            ],
+        },
+        "network_artifacts": {"total_count": 1, "data": [{"id": "net1", "type": "ip"}]},
+        "file_artifacts": {"total_count": 1, "data": [{"id": "file1", "hash": "abc123"}]},
     }
 
-    mock_command_result = mocker.Mock()
-    mock_command_result.outputs = mock_case_data
-
-    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=["issue1", "issue2"])
-
-    args = {"case_id": "123"}
-    result = get_case_extra_data(mock_client, args)
+    result = parse_single_case_extra_data(case_incident_data)
 
     assert result["issue_ids"] == ["issue1", "issue2"]
-    assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
-    assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
+    assert result["network_artifacts"] == {"total_count": 1, "data": [{"id": "net1", "type": "ip"}]}
+    assert result["file_artifacts"] == {"total_count": 1, "data": [{"id": "file1", "hash": "abc123"}]}
     assert result["notes"] == "Test notes"
     assert result["xdr_url"] == "https://example.com/xdr"
     assert result["starred_manually"] is True
-    assert result["manual_description"] == "Global manual description"
+    assert result["manual_description"] == "Case manual description"
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
+
+
+def test_add_cases_extra_data_empty_case_ids(mocker: MockerFixture):
+    """
+    Given:
+        A cases list where all case_id values are None.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        The API should not be called and each case should get an empty CaseExtraData dict.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    cases_list = [{"case_id": None, "case_name": "Test"}]
+
+    result = add_cases_extra_data(mock_client, cases_list)
+
+    mock_client.get_multiple_cases_extra_data.assert_not_called()
+    assert result[0]["CaseExtraData"] == {}
 
 
 def test_add_cases_extra_data_single_case(mocker: MockerFixture):
@@ -3991,6 +4032,49 @@ def test_add_cases_extra_data_api_failure(mocker: MockerFixture):
 
     assert len(result) == 1
     assert result[0]["CaseExtraData"] == {}
+
+
+def test_add_cases_extra_data_partial_api_response(mocker: MockerFixture):
+    """
+    Given:
+        A mock client that returns extra data for only one of two requested cases.
+    When:
+        The add_cases_extra_data function is called with two cases.
+    Then:
+        The case with data should have populated CaseExtraData, and the missing case should get an empty dict.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client.get_multiple_cases_extra_data.return_value = {
+        "reply": {
+            "incidents": [
+                {
+                    "incident": {
+                        "incident_id": "111",
+                        "notes": "Some notes",
+                        "xdr_url": "https://example.com",
+                        "detection_time": None,
+                        "starred_manually": False,
+                        "manual_description": None,
+                    },
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                }
+            ]
+        }
+    }
+
+    cases_list = [
+        {"case_id": "111", "case_name": "Case A"},
+        {"case_id": "222", "case_name": "Case B"},
+    ]
+    result = add_cases_extra_data(mock_client, cases_list)
+
+    assert result[0]["CaseExtraData"]["notes"] == "Some notes"
+    assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
+    assert result[1]["CaseExtraData"] == {}
 
     def test_determine_assignee_filter_field_none(self):
         from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
