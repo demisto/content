@@ -9460,17 +9460,8 @@ def test_list_workflow_execution_results_command_partial_errors(mocker):
     from CrowdStrikeFalcon import list_workflow_execution_results_command
 
     mock_response = {
-        "meta": {
-            "query_time": 8.1e-8,
-            "powered_by": "workflow-api",
-            "trace_id": "01193598-4a4b-41e2-970a-cb7135629d3f"
-        },
-        "errors": [
-            {
-                "code": 404,
-                "message": "execution ID 'ae6b9021abff1dc526093dbcb5e66bda' not found"
-            }
-        ],
+        "meta": {"query_time": 8.1e-8, "powered_by": "workflow-api", "trace_id": "01193598-4a4b-41e2-970a-cb7135629d3f"},
+        "errors": [{"code": 404, "message": "execution ID 'ae6b9021abff1dc526093dbcb5e66bda' not found"}],
         "resources": [
             {
                 "execution_id": "ae6b9021abff1dc526093dbcb5e66bd2",
@@ -9486,7 +9477,7 @@ def test_list_workflow_execution_results_command_partial_errors(mocker):
                     }
                 ],
             }
-        ]
+        ],
     }
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
 
@@ -9511,15 +9502,7 @@ def test_workflow_execution_action_command(mocker):
     """
     from CrowdStrikeFalcon import workflow_execution_action_command
 
-    mock_response = {
-        "meta": {
-            "writes": {
-                "resources_affected": 1
-            }
-        },
-        "errors": [],
-        "resources": []
-    }
+    mock_response = {"meta": {"writes": {"resources_affected": 1}}, "errors": [], "resources": []}
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
 
     args = {"ids": "exec-001", "action_name": "cancel"}
@@ -9560,24 +9543,12 @@ def test_workflow_execution_action_command_partial_success(mocker):
     mock_response = {
         "meta": {
             "query_time": 6.3e-8,
-            "pagination": {
-                "offset": 0,
-                "limit": 0,
-                "total": 0
-            },
-            "writes": {
-                "resources_affected": 1
-            },
+            "pagination": {"offset": 0, "limit": 0, "total": 0},
+            "writes": {"resources_affected": 1},
             "powered_by": "workflow-api",
-            "trace_id": "b7b085fc-5203-4d7e-a53d-6e6820a47123"
+            "trace_id": "b7b085fc-5203-4d7e-a53d-6e6820a47123",
         },
-        "errors": [
-            {
-                "code": 404,
-                "message": "Not Found",
-                "id": "fake_id"
-            }
-        ]
+        "errors": [{"code": 404, "message": "Not Found", "id": "fake_id"}],
     }
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
 

@@ -9587,15 +9587,17 @@ def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
     hr_data = []
     for definition in definitions:
         trigger = definition.get("trigger", {})
-        hr_data.append({
-            "ID": definition.get("id"),
-            "Name": definition.get("name"),
-            "Description": definition.get("description"),
-            "Trigger Event": trigger.get("event"),
-            "Trigger Name": trigger.get("name"),
-            "Trigger Schedule": trigger.get("schedule"),
-            "Trigger Type": trigger.get("type"),
-        })
+        hr_data.append(
+            {
+                "ID": definition.get("id"),
+                "Name": definition.get("name"),
+                "Description": definition.get("description"),
+                "Trigger Event": trigger.get("event"),
+                "Trigger Name": trigger.get("name"),
+                "Trigger Schedule": trigger.get("schedule"),
+                "Trigger Type": trigger.get("type"),
+            }
+        )
 
     readable_output = tableToMarkdown(
         name="Workflow Definitions",
@@ -9694,25 +9696,37 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
         activities = execution.get("activities", [])
         if activities:
             for activity in activities:
-                hr_data.append({
-                    "Execution ID": execution_id_val,
-                    "Activity Node ID": activity.get("node_id"),
-                    "Activity Start Timestamp": activity.get("start_timestamp"),
-                    "Activity End Timestamp": activity.get("end_timestamp"),
-                    "Activity Status": activity.get("status"),
-                    "Activity Name": activity.get("name"),
-                    "Activity Type": activity.get("type"),
-                })
+                hr_data.append(
+                    {
+                        "Execution ID": execution_id_val,
+                        "Activity Node ID": activity.get("node_id"),
+                        "Activity Start Timestamp": activity.get("start_timestamp"),
+                        "Activity End Timestamp": activity.get("end_timestamp"),
+                        "Activity Status": activity.get("status"),
+                        "Activity Name": activity.get("name"),
+                        "Activity Type": activity.get("type"),
+                    }
+                )
         else:
-            hr_data.append({
-                "Execution ID": execution_id_val,
-                "Status": execution.get("status"),
-            })
+            hr_data.append(
+                {
+                    "Execution ID": execution_id_val,
+                    "Status": execution.get("status"),
+                }
+            )
 
     readable_output = tableToMarkdown(
         name="Workflow Executions",
         t=hr_data,
-        headers=["Execution ID", "Activity Node ID", "Activity Start Timestamp", "Activity End Timestamp", "Activity Status", "Activity Name", "Activity Type"],
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity Name",
+            "Activity Type",
+        ],
         removeNull=True,
     )
 
@@ -9743,21 +9757,32 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
         execution_id = result.get("execution_id")
         activities = result.get("activities", [])
         for activity in activities:
-            hr_data.append({
-                "Execution ID": execution_id,
-                "Activity Node ID": activity.get("node_id"),
-                "Activity Start Timestamp": activity.get("start_timestamp"),
-                "Activity End Timestamp": activity.get("end_timestamp"),
-                "Activity Status": activity.get("status"),
-                "Activity ID": activity.get("id"),
-                "Activity Name": activity.get("name"),
-                "Activity Type": activity.get("type"),
-            })
+            hr_data.append(
+                {
+                    "Execution ID": execution_id,
+                    "Activity Node ID": activity.get("node_id"),
+                    "Activity Start Timestamp": activity.get("start_timestamp"),
+                    "Activity End Timestamp": activity.get("end_timestamp"),
+                    "Activity Status": activity.get("status"),
+                    "Activity ID": activity.get("id"),
+                    "Activity Name": activity.get("name"),
+                    "Activity Type": activity.get("type"),
+                }
+            )
 
     readable_output = tableToMarkdown(
         name="Workflow Execution Results",
         t=hr_data,
-        headers=["Execution ID", "Activity Node ID", "Activity Start Timestamp", "Activity End Timestamp", "Activity Status", "Activity ID", "Activity Name", "Activity Type"],
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity ID",
+            "Activity Name",
+            "Activity Type",
+        ],
         removeNull=True,
     )
 
@@ -9817,8 +9842,10 @@ def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
 
     readable_output = "\n".join(hr_parts)
 
-    demisto.debug(f"[Workflow] workflow_execution_action_command: {action_name} completed, "
-                  f"{resources_affected} affected, {len(errors)} errors for {len(ids)} ids")
+    demisto.debug(
+        f"[Workflow] workflow_execution_action_command: {action_name} completed, "
+        f"{resources_affected} affected, {len(errors)} errors for {len(ids)} ids"
+    )
 
     return CommandResults(
         readable_output=readable_output,
