@@ -3602,14 +3602,14 @@ def resolve_playbook_id(client: Client, playbook: str) -> str:
         if pb_name and pb_id:
             name_to_id[pb_name] = pb_id
 
+    if playbook in known_ids:
+        demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
+        return playbook
+    
     if playbook in name_to_id:
         resolved_id = name_to_id[playbook]
         demisto.debug(f"Resolved playbook name '{playbook}' to ID '{resolved_id}'.")
         return resolved_id
-
-    if playbook in known_ids:
-        demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
-        return playbook
 
     raise DemistoException(
         f"Playbook '{playbook}' was not found. "
@@ -3657,9 +3657,9 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     response = client.run_playbook(issue_ids, playbook_id)
 
     if response:
-        error_parts = [f"Issue ID {issue_id}: {msg.replace('alert', 'issue')}" for issue_id, msg in response.items()]
-        result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(error_parts)
-        demisto.debug(f"Playbook run errors: {error_parts}")
+        pb_failed_on_issue = [f"Issue ID {issue_id}: {msg.replace('alert', 'issue')}" for issue_id, msg in response.items()]
+        result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(pb_failed_on_issue)
+        demisto.debug(f"Playbook run errors: {pb_failed_on_issue}")
     else:
         result = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
 
