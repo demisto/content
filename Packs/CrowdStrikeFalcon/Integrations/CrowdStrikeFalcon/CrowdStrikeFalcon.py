@@ -1205,7 +1205,7 @@ def get_workflow_execution_results(ids: list[str]) -> dict:
         Response JSON containing execution results.
     """
     params = {"ids": ids}
-    return http_request("GET", "/workflows/entities/execution-results/v1", params=params)
+    return http_request("GET", "/workflows/entities/execution-results/v1", params=params, status_code=404)
 
 
 def perform_workflow_execution_action(ids: list[str], action_name: str) -> dict:
@@ -1221,7 +1221,7 @@ def perform_workflow_execution_action(ids: list[str], action_name: str) -> dict:
     """
     params = {"action_name": action_name}
     body = {"ids": ids}
-    return http_request("POST", "/workflows/entities/execution-actions/v1", params=params, json=body)
+    return http_request("POST", "/workflows/entities/execution-actions/v1", params=params, json=body, status_code=404)
 
 
 """ COMMAND SPECIFIC FUNCTIONS """
@@ -9643,12 +9643,12 @@ def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
 
     # Build human-readable output
     # The API returns resources as a list of execution ID strings, not dicts.
-    hr_data = [{"Resources": resource} for resource in resources]
+    hr_data = [{"Resource": resource} for resource in resources]
 
     readable_output = tableToMarkdown(
         name="Workflow Execution",
         t=hr_data,
-        headers=["Resources"],
+        headers=["Resource"],
         removeNull=True,
     )
 
@@ -9761,6 +9761,16 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
         removeNull=True,
     )
 
+    # Append errors if any (e.g., some IDs not found)
+    errors = response.get("errors", [])
+    if errors:
+        error_lines = ["\n**Errors:**"]
+        for error in errors:
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            error_lines.append(f"- Code: {error_code}, Message: {error_message}")
+        readable_output += "\n".join(error_lines)
+
     return CommandResults(
         outputs_prefix="CrowdStrike.Workflows.ExecutionResults",
         outputs_key_field="execution_id",
@@ -9773,6 +9783,7 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
 def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
     """
     Performs an action (cancel or resume) on one or more workflow executions.
+    Handles partial success where some IDs are affected and others return errors.
     """
     ids = argToList(args.get("ids"))
     action_name = args.get("action_name", "")
@@ -9785,8 +9796,29 @@ def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
     response = perform_workflow_execution_action(ids=ids, action_name=action_name)
 
     action_past_tense = "cancelled" if action_name == "cancel" else "resumed"
-    readable_output = f"Workflow executions {ids} have been {action_past_tense}."
-    demisto.debug(f"[Workflow] workflow_execution_action_command: {action_past_tense} {len(ids)} executions")
+
+    # Extract resources_affected from meta.writes
+    resources_affected = response.get("meta", {}).get("writes", {}).get("resources_affected", 0)
+
+    # Extract errors if any
+    errors = response.get("errors", [])
+
+    # Build readable output
+    hr_parts: list[str] = []
+    hr_parts.append(f"{resources_affected} workflow execution(s) {action_past_tense}.")
+
+    if errors:
+        hr_parts.append("\n**Errors:**")
+        for error in errors:
+            error_id = error.get("id", "Unknown")
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            hr_parts.append(f"- ID: {error_id} — Code: {error_code}, Message: {error_message}")
+
+    readable_output = "\n".join(hr_parts)
+
+    demisto.debug(f"[Workflow] workflow_execution_action_command: {action_name} completed, "
+                  f"{resources_affected} affected, {len(errors)} errors for {len(ids)} ids")
 
     return CommandResults(
         readable_output=readable_output,

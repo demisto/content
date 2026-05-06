@@ -9450,27 +9450,84 @@ def test_list_workflow_execution_results_command(mocker):
     assert "Get case details" in result.readable_output
 
 
+def test_list_workflow_execution_results_command_partial_errors(mocker):
+    """
+    Test cs-falcon-list-workflow-execution-results command with partial errors.
+    Given: Two execution IDs, one valid and one not found.
+    When: Running list_workflow_execution_results_command.
+    Then: Verify the command returns results for the valid ID and shows errors for the invalid one.
+    """
+    from CrowdStrikeFalcon import list_workflow_execution_results_command
+
+    mock_response = {
+        "meta": {
+            "query_time": 8.1e-8,
+            "powered_by": "workflow-api",
+            "trace_id": "01193598-4a4b-41e2-970a-cb7135629d3f"
+        },
+        "errors": [
+            {
+                "code": 404,
+                "message": "execution ID 'ae6b9021abff1dc526093dbcb5e66bda' not found"
+            }
+        ],
+        "resources": [
+            {
+                "execution_id": "ae6b9021abff1dc526093dbcb5e66bd2",
+                "activities": [
+                    {
+                        "node_id": "GetCaseDetails",
+                        "start_timestamp": "2026-03-10T15:10:24.024Z",
+                        "end_timestamp": "2026-03-10T15:10:24.374Z",
+                        "status": "Completed",
+                        "id": "3dc4a68cf25bf32ceec6588c6d5c8989",
+                        "name": "Get case details",
+                        "type": "cases",
+                    }
+                ],
+            }
+        ]
+    }
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"ids": "ae6b9021abff1dc526093dbcb5e66bd2,ae6b9021abff1dc526093dbcb5e66bda"}
+    result = list_workflow_execution_results_command(args)
+
+    assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResults"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["execution_id"] == "ae6b9021abff1dc526093dbcb5e66bd2"
+    assert "GetCaseDetails" in result.readable_output
+    assert "Errors" in result.readable_output
+    assert "404" in result.readable_output
+    assert "ae6b9021abff1dc526093dbcb5e66bda" in result.readable_output
+
+
 def test_workflow_execution_action_command(mocker):
     """
     Test cs-falcon-workflow-execution-action command.
-
-    Given:
-        - Execution IDs and action_name=cancel.
-    When:
-        - Running workflow_execution_action_command.
-    Then:
-        - Verify the command returns expected readable output.
+    Given: Execution IDs and action_name=cancel, all IDs valid.
+    When: Running workflow_execution_action_command.
+    Then: Verify the command returns expected readable output with resources_affected count.
     """
     from CrowdStrikeFalcon import workflow_execution_action_command
 
-    mock_response = {"resources": []}
+    mock_response = {
+        "meta": {
+            "writes": {
+                "resources_affected": 1
+            }
+        },
+        "errors": [],
+        "resources": []
+    }
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
 
     args = {"ids": "exec-001", "action_name": "cancel"}
     result = workflow_execution_action_command(args)
 
-    assert "cancelled" in result.readable_output
-    assert result.outputs is None  # No context output for action command
+    assert "1 workflow execution(s) cancelled" in result.readable_output
+    assert "Errors" not in result.readable_output
+    assert result.outputs is None
 
 
 def test_workflow_execution_action_command_invalid_action(mocker):
@@ -9489,3 +9546,47 @@ def test_workflow_execution_action_command_invalid_action(mocker):
     args = {"ids": "exec-001", "action_name": "invalid"}
     with pytest.raises(DemistoException, match="Invalid action_name"):
         workflow_execution_action_command(args)
+
+
+def test_workflow_execution_action_command_partial_success(mocker):
+    """
+    Test cs-falcon-workflow-execution-action command with partial success.
+    Given: Two execution IDs, one valid and one invalid (fake_id).
+    When: Running workflow_execution_action_command.
+    Then: Verify the command shows resources_affected count and error details for the failed ID.
+    """
+    from CrowdStrikeFalcon import workflow_execution_action_command
+
+    mock_response = {
+        "meta": {
+            "query_time": 6.3e-8,
+            "pagination": {
+                "offset": 0,
+                "limit": 0,
+                "total": 0
+            },
+            "writes": {
+                "resources_affected": 1
+            },
+            "powered_by": "workflow-api",
+            "trace_id": "b7b085fc-5203-4d7e-a53d-6e6820a47123"
+        },
+        "errors": [
+            {
+                "code": 404,
+                "message": "Not Found",
+                "id": "fake_id"
+            }
+        ]
+    }
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"ids": "proper_id,fake_id", "action_name": "cancel"}
+    result = workflow_execution_action_command(args)
+
+    assert "1 workflow execution(s) cancelled" in result.readable_output
+    assert "Errors" in result.readable_output
+    assert "fake_id" in result.readable_output
+    assert "404" in result.readable_output
+    assert "Not Found" in result.readable_output
+    assert result.outputs is None
