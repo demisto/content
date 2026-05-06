@@ -1951,15 +1951,15 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | Azure.CosmosDB.DBAccounts.location | String | The location of the resource group to which the resource belongs. |
 | Azure.CosmosDB.DBAccounts.kind | String | The database account type. |
 | Azure.CosmosDB.DBAccounts.identity.type | String | The type of identity used for the resource. |
-| Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. |
-| Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. |
-| Azure.CosmosDB.DBAccounts.properties.apiProperties | Dictionary | API specific properties. |
+| Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities | Unknown | The list of user identities associated with the resource. |
+| Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration | Unknown | Analytical storage specific properties. |
+| Azure.CosmosDB.DBAccounts.properties.apiProperties | Unknown | API specific properties. |
 | Azure.CosmosDB.DBAccounts.properties.backupPolicy | unknown | The policy for taking backups on an account. |
-| Azure.CosmosDB.DBAccounts.properties.capabilities | List | List of Cosmos DB capabilities for the account. |
-| Azure.CosmosDB.DBAccounts.properties.capacity | Integer | Properties related to capacity enforcement on an account. |
+| Azure.CosmosDB.DBAccounts.properties.capabilities | Unknown | List of Cosmos DB capabilities for the account. |
+| Azure.CosmosDB.DBAccounts.properties.capacity | Number | Properties related to capacity enforcement on an account. |
 | Azure.CosmosDB.DBAccounts.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
 | Azure.CosmosDB.DBAccounts.properties.consistencyPolicy | String | The consistency policy for the Cosmos DB database account. |
-| Azure.CosmosDB.DBAccounts.properties.cors | List | The CORS policy for the Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.cors | Unknown | The CORS policy for the Cosmos DB database account. |
 | Azure.CosmosDB.DBAccounts.properties.createMode | String | The mode of account creation. |
 | Azure.CosmosDB.DBAccounts.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. |
 | Azure.CosmosDB.DBAccounts.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. |
@@ -1975,21 +1975,21 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | Azure.CosmosDB.DBAccounts.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. |
 | Azure.CosmosDB.DBAccounts.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. |
 | Azure.CosmosDB.DBAccounts.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. |
-| Azure.CosmosDB.DBAccounts.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. |
+| Azure.CosmosDB.DBAccounts.properties.failoverPolicies | Unknown | An array that contains the regions ordered by their failover priorities. |
 | Azure.CosmosDB.DBAccounts.properties.instanceId | String | A unique identifier assigned to the database account. |
-| Azure.CosmosDB.DBAccounts.properties.ipRules | List | List of IP rules. |
+| Azure.CosmosDB.DBAccounts.properties.ipRules | Unknown | List of IP rules. |
 | Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. |
 | Azure.CosmosDB.DBAccounts.properties.keyVaultKeyUri | String | The URI of the key vault. |
-| Azure.CosmosDB.DBAccounts.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. |
-| Azure.CosmosDB.DBAccounts.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. |
+| Azure.CosmosDB.DBAccounts.properties.keysMetadata | Unknown | Metadata related to each access key for the given Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.locations | Unknown | An array that contains all of the locations enabled for the Cosmos DB account. |
 | Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion | String | The minimum allowed TLS version. |
 | Azure.CosmosDB.DBAccounts.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. |
-| Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. |
-| Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections | List | List of private endpoint connections. |
+| Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds | Unknown | List of resource IDs that are allowed to bypass firewall checks. |
+| Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections | Unknown | List of private endpoint connections. |
 | Azure.CosmosDB.DBAccounts.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. |
-| Azure.CosmosDB.DBAccounts.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
-| Azure.CosmosDB.DBAccounts.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
+| Azure.CosmosDB.DBAccounts.properties.readLocations | Unknown | An array that contains the read locations enabled for the Cosmos DB account. |
+| Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules | Unknown | List of Virtual Network ACL rules. |
+| Azure.CosmosDB.DBAccounts.properties.writeLocations | Unknown | An array that contains the write locations enabled for the Cosmos DB account. |
 
 ### azure-keyvault-vault-update
 
