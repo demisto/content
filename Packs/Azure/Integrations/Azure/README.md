@@ -1765,7 +1765,7 @@ Gets all security rules in a network security group. The command is deprecated, 
 ### azure-storage-blob-property-get
 
 ***
-Retrieve Blob properties.  Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
+Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
@@ -2043,7 +2043,7 @@ Updates a key vault in the specified subscription. The required permissions are:
 ### azure-rm-resource-groups-list
 
 ***
-Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read
+Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read.
 
 #### Base Command
 
@@ -2271,7 +2271,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 ### azure-vn-security-rule-delete
 
 ***
-Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete
+Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete.
 
 #### Base Command
 
@@ -2332,7 +2332,7 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 ### azure-vn-security-rule-update
 
 ***
-Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write
+Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -2448,7 +2448,7 @@ Gets the properties of a given network interface. Required permissions: Microsof
 ### azure-vn-public-ip-address-get
 
 ***
-Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read
+Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read.
 
 #### Base Command
 

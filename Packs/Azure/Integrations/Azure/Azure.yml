@@ -170,7 +170,7 @@ script:
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
   - name: azure-vn-security-rule-update
-    description: "Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write"
+    description: "Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -922,7 +922,7 @@ script:
       description: Blob name.
       type: String
   - name: azure-storage-blob-property-get
-    description: "Retrieve Blob properties.  Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    description: "Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     arguments:
     - description: The name of the Blob Container.
       name: container_name
@@ -2560,21 +2560,21 @@ script:
       type: String
     - contextPath: Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities
       description: The list of user identities associated with the resource.
-      type: Dictionary
-    - contextPath: Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration.schemaType
-      description: The analytical storage schema types.
-      type: String
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration
+      description: Analytical storage specific properties.
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.apiProperties
       description: API specific properties.
-      type: Dictionary
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.backupPolicy
       description: The policy for taking backups on an account.
     - contextPath: Azure.CosmosDB.DBAccounts.properties.capabilities
       description: List of Cosmos DB capabilities for the account.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.capacity
       description: Properties related to capacity enforcement on an account.
-      type: Integer
+      type: Number
     - contextPath: Azure.CosmosDB.DBAccounts.properties.connectorOffer
       description: The Cassandra connector offer type for the Cosmos DB database account.
       type: String
@@ -2583,7 +2583,7 @@ script:
       type: String
     - contextPath: Azure.CosmosDB.DBAccounts.properties.cors
       description: The CORS policy for the Cosmos DB database account.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.createMode
       description: The mode of account creation.
       type: String
@@ -2631,13 +2631,13 @@ script:
       type: Boolean
     - contextPath: Azure.CosmosDB.DBAccounts.properties.failoverPolicies
       description: An array that contains the regions ordered by their failover priorities.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.instanceId
       description: A unique identifier assigned to the database account.
       type: String
     - contextPath: Azure.CosmosDB.DBAccounts.properties.ipRules
       description: List of IP rules.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled
       description: Whether the Virtual Network ACL rules are enabled.
       type: Boolean
@@ -2646,10 +2646,10 @@ script:
       type: String
     - contextPath: Azure.CosmosDB.DBAccounts.properties.keysMetadata
       description: Metadata related to each access key for the given Cosmos DB database account.
-      type: Dictionary
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.locations
       description: An array that contains all of the locations enabled for the Cosmos DB account.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion
       description: The minimum allowed TLS version.
       type: String
@@ -2658,22 +2658,22 @@ script:
       type: String
     - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds
       description: List of resource IDs that are allowed to bypass firewall checks.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections
       description: List of private endpoint connections.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.provisioningState
       description: The status of the Cosmos DB account at the time the operation was called.
       type: String
     - contextPath: Azure.CosmosDB.DBAccounts.properties.readLocations
       description: An array that contains the read locations enabled for the Cosmos DB account.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules
       description: List of Virtual Network ACL rules.
-      type: List
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
-      type: List
+      type: Unknown
   - name: azure-nsg-security-groups-list
     description: List all network security groups. The command is deprecated, please use azure-vn-security-groups-list.
     deprecated: true
@@ -3245,7 +3245,7 @@ script:
       - description: The name of the rule to delete.
         name: security_rule_name
         required: true
-  - description: "Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete"
+  - description: "Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete."
     name: azure-vn-security-rule-delete
     arguments:
     - description: The subscription ID.
@@ -3314,7 +3314,7 @@ script:
       - contextPath: Azure.NSGResourceGroup.tags.type
         description: 'The type tag associated with the Azure Network Security Groups resource group.'
         type: String
-  - description: "Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read"
+  - description: "Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read."
     name: azure-rm-resource-groups-list
     arguments:
     - description: The subscription ID.
@@ -4050,7 +4050,7 @@ script:
       description: The SKU of the public IP address associated with the configuration, defining its performance tier.
       type: String
   - name: azure-vn-public-ip-address-get
-    description: "Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read"
+    description: "Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read."
     arguments:
     - description: The subscription ID.
       name: subscription_id
