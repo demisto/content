@@ -2100,9 +2100,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
             "Test module is not available for the authorization code flow. Use the msg-auth-test command instead."
         )
 
-    response = client.ms_client.http_request(
-        method="GET", url_suffix="security/alerts_v2", params={"$top": 1}, resp_type="response"
-    )
+    response = client.ms_client.http_request(method="GET", url_suffix=CMD_URL, params={"$top": 1}, resp_type="response")
     try:
         data = response.json() if response.text else {}
         if not response.ok:
