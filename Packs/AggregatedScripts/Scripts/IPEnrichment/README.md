@@ -1,4 +1,4 @@
-Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IP and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.
+Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IPv4 (IPv6 is not supported) and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.
 Note: This script is supported in Cortex XSOAR 8.0 and later, and in Cortex XSIAM.
 
 ## Script Data
@@ -17,7 +17,7 @@ Note: This script is supported in Cortex XSOAR 8.0 and later, and in Cortex XSIA
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| ip_list | A comma-separated list of IPs to enrich. |
+| ip_list | A comma-separated list of IPv4 addresses to enrich. |
 | external_enrichment | Whether to call external integrations for enrichment: - 'true': enrich using enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\) and run internal commands. - 'false': use only existing TIM data and run internal commands; skip external integrations. If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided. |
 | verbose | Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed. |
 | brands | A list of integration brands to run enrichment against.  <br/>Example: \`"VirusTotal \(API v3\), AlienVault OTX v2"\`.<br/>- If provided, only the selected brands are used.<br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.<br/>- In order to run get-endpoint-data add Core to the brands list.<br/>- In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.<br/>To see the available brands for the \`ip\` command, run: \`\!ProvidesCommand command=ip\`.<br/> |
