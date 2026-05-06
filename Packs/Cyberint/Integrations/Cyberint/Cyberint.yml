@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-provider: CheckPoint Software Technologies
+provider: Check Point Software Technologies
 sectionorder:
 - Connect
 - Collect
@@ -472,14 +472,14 @@ script:
       required: true
       isArray: false
     - auto: PREDEFINED
-      description: Reason for updating the alert status to 'closed'. Only required in case the 'closed' value was chosen for the 'status' argument. Note that for the 'other' value, it's required to specify the value for the 'closure_reason_description' argument.
+      description: Reason for updating the alert status to 'closed'. Only required in case the 'closed' value was chosen for the 'status' argument. Note that for the 'Other' value, it's required to specify the value for the 'closure_reason_description' argument.
       name: closure_reason
       predefined:
-      - resolved
-      - no_longer_a_threat
-      - irrelevant_alert_subtype
-      - false_positive
-      - other
+      - Resolved
+      - No Longer a Threat
+      - Irrelevant Alert Subtype
+      - False Positive
+      - Other
       isArray: false
       required: false
     - description: "Free text for closure reason. Only required in case the 'other' value was chosen for the 'closure_reason' argument. "
@@ -601,7 +601,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.12.12.6663663
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   runonce: false
   script: '-'

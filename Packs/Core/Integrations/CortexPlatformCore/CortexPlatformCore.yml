@@ -505,7 +505,7 @@ script:
             - Vulnerability Policy
             - AI Security Posture
         - auto: PREDEFINED
-          description: Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
+          description: This argument is deprecated. Use *start_time* instead. Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
           name: time_frame
           predefined:
             - 60 minutes
@@ -517,6 +517,7 @@ script:
             - 14 days
             - 30 days
             - custom
+          deprecated: true
         - description: The name assigned to the user_id during agent runtime. Accepts a comma-separated list.
           isArray: true
           name: user_name
@@ -618,15 +619,21 @@ script:
           predefined:
             - DESC
             - ASC
-        - defaultValue: "0"
-          description: The first page number to retrieve issues from.
+        - description: This argument is deprecated. Use *page* instead. The first page number to retrieve issues from.
           name: offset
-        - defaultValue: "50"
-          description: The last page number to retrieve issues from.
+          deprecated: true
+        - description: This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from.
           name: limit
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+          deprecated: true
+        - defaultValue: "0"
+          description: The page number for the issues to return for pagination. 
+          name: page
+        - defaultValue: "50"
+          description: The number of issues to return per page.
+          name: page_size
+        - description: Supports epoch timestamp, simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: start_time
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: end_time
         - auto: PREDEFINED
           description: Whether the issue is starred.
@@ -640,7 +647,8 @@ script:
         - description: The category of the issue. Accepts a comma-separated list.
           isArray: true
           name: issue_category
-        - description: The domain of the issue. Accepts a comma-separated list.
+        - auto: PREDEFINED
+          description: The domain of the issue. Accepts a comma-separated list.
           isArray: true
           name: issue_domain
           predefined:
@@ -678,7 +686,7 @@ script:
           isArray: true
           name: asset_ids
         - description: |
-            The assignee of the issue. Accepts a comma-separated list.
+            The assignee of the issue. Accepts a comma-separated list of either assignee emails or names, not both.
             Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
           isArray: true
           name: assignee
@@ -691,26 +699,50 @@ script:
         - contextPath: Core.Issue.internal_id
           description: The unique ID of the issue.
           type: String
+        - contextPath: Core.Issue.Identity_type
+          description: The identity type of the account.
+          type: String
         - contextPath: Core.Issue.source_insert_ts
           description: The detection timestamp.
           type: Number
         - contextPath: Core.Issue.issue_name
           description: The name of the issue.
           type: String
-        - contextPath: Core.Issue.severity
-          description: The severity of the issue.
-          type: String
         - contextPath: Core.Issue.issue_category
           description: The category of the issue.
           type: String
-        - contextPath: Core.Issue.issue_action_status
-          description: The issue action status.
-          type: String
-        - contextPath: Core.Issue.issue_action_status_readable
-          description: The issue action status in readable format.
-          type: String
         - contextPath: Core.Issue.issue_description
           description: The issue description.
+          type: String
+        - contextPath: Core.Issue.agent_id
+          description: The agent (endpoint) ID associated with the issue.
+          type: List
+        - contextPath: Core.Issue.asset_ids
+          description: The asset IDs related to the issue.
+          type: List
+        - contextPath: Core.Issue.severity
+          description: The severity of the issue.
+          type: String
+        - contextPath: Core.Issue.issue_domain
+          description: The domain of the issue.
+          type: String
+        - contextPath: Core.Issue.case_ids
+          description: The case IDs associated with the issue.
+          type: List
+        - contextPath: Core.Issue.issue_source
+          description: The source of the issue.
+          type: String
+        - contextPath: Core.Issue.starred
+          description: Whether the issue is starred.
+          type: Boolean
+        - contextPath: Core.Issue.status.progress
+          description: The progress status of the issue.
+          type: String
+        - contextPath: Core.Issue.assigned_to_pretty
+          description: The pretty name of the user assigned to the issue.
+          type: String
+        - contextPath: Core.Issue.assigned_to
+          description: The user assigned to the issue.
           type: String
         - contextPath: Core.Issue.agent_ip_addresses
           description: The host IP address.
@@ -724,9 +756,33 @@ script:
         - contextPath: Core.Issue.mitre_technique_id_and_name
           description: The MITRE attack technique.
           type: String
-        - contextPath: Core.Issue.starred
-          description: Whether the issue is starred.
-          type: Boolean
+        - contextPath: Core.Issue.issue_action_status 
+          description: The issue action status.
+          type: String
+        - contextPath: Core.Issue.issue_action_status_readable
+          description: The issue action status in readable format.
+          type: String
+        - contextPath: Core.Issue.action_file_macro_sha256
+          description: File Macro SHA256 hash of the action file macro.
+          type: String
+        - contextPath: Core.Issue.action_process_image_sha256
+          description: Action process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.causality_actor_process_image_sha256
+          description: Causality actor process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.os_actor_process_image_sha256
+          description: OS Parent SHA256 hash of the OS actor process image.
+          type: String
+        - contextPath: Core.Issue.actor_process_image_sha256
+          description: Actor process image SHA256 hash.
+          type: String
+        - contextPath: Core.IssueMetadata.returned_count
+          description: The actual number of issues that match all filter criteria and returned in this specific response.
+          type: Number
+        - contextPath: Core.IssueMetadata.filtered_count
+          description: The total number of issues in the system that match all filter criteria.
+          type: Number
     - arguments:
         - description: Asset unique identifier.
           name: asset_id
@@ -1804,6 +1860,9 @@ script:
         - contextPath: Core.IssueRecommendations.suggested_code_block
           description: Code block fix suggestion.
           type: String
+        - contextPath: Core.IssueRecommendations.network_reachability
+          description: The Network reachability information for the issue.
+          type: Json
     - arguments:
       - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
         name: issue_ids
@@ -1894,7 +1953,7 @@ script:
           isArray: true
         # Condition Filters (Findings Criteria)
         - name: conditions_finding_type
-          description: "Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks."
+          description: "Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks. Also accepts raw API values: CAS_CVE_SCANNER, CAS_IAC_SCANNER, CAS_LICENSE_SCANNER, CAS_OPERATIONAL_RISK_SCANNER, CAS_SECRET_SCANNER, CAS_SAST_SCANNER, CAS_CI_CD_RISK_SCANNER."
           isArray: true
         - name: conditions_severity
           description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
@@ -2052,6 +2111,8 @@ script:
             - High
             - Medium
             - Low
+        - name: suggestion_id
+          description: The ID of a policy suggestion to associate with this policy. When provided, links the created policy to the AI-generated suggestion it was based on.
     - arguments:
         - name: case_id_list
           description: A comma-separated list of case IDs to filter by.
@@ -2210,6 +2271,9 @@ script:
         - contextPath: Core.Case.resolve_comment
           description: Comments added when resolving the case. May be null.
           type: String
+        - contextPath: Core.Case.resolve_reason
+          description: The reason for resolving the case (e.g. known_issue, duplicate, false_positive, other, true_positive, security_testing). May be null.
+          type: String
         - contextPath: Core.Case.resolved_timestamp
           description: Timestamp when the case was resolved.
           type: Number
@@ -2287,12 +2351,16 @@ script:
           type: Date
         - contextPath: Core.CasesMetadata.returned_count
           description: The actual number of cases that match all filter criteria and returned in this specific response.
-          type: String
+          type: Number
         - contextPath: Core.CasesMetadata.filtered_count
           description: The total number of cases in the system that match all filter criteria.
+          type: Number
     - name: core-get-appsec-issues
       description: "Retrieves application security issues based on specified filters."
       arguments:
+        - name: issue_category
+          description: "Filter by specific issue categories. Accepts a comma-separated list. Supported values: vulnerabilities, secrets, iac, weaknesses, operational_risk, licenses, cicd. If not specified, all applicable issue categories are queried based on the provided filters."
+          isArray: true
         - name: limit
           description: "The maximum number of issues to return."
           defaultValue: "50"
@@ -2457,6 +2525,12 @@ script:
         - contextPath: Core.AppsecIssue.repository_name
           description: The name of the repository where the issue was found.
           type: String
+        - contextPath: Core.AppsecIssue.package_version
+          description: The version of the vulnerable package.
+          type: String
+        - contextPath: Core.AppsecIssue.fix_version
+          description: The version that fixes the vulnerability.
+          type: String
         - contextPath: Core.AppsecIssue.repository_organization
           description: The organization of the repository where the issue was found.
           type: String
@@ -2472,6 +2546,9 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+        - contextPath: Core.AppsecIssue.repository_is_public
+          description: Whether the repository associated with the issue is public.
+          type: Boolean
     - name: core-get-endpoint-support-file
       description: "Retrieves endpoint support files based on specified endpoint IDs."
       hidden: true
@@ -2563,7 +2640,10 @@ script:
             - "false"
         - name: custom_fields
           description: |
-            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            A JSON encoded string representing custom field name-value pairs to update.
+            Preferred format: a JSON object where each key is a field name and each value is the field value (e.g., `{"field1": "value1", "multiselect_field": ["a", "b"]}`).
+            Legacy format also supported: a list of single-key objects (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            For multiSelect fields, the value must be a JSON array (e.g., `["option1", "option2"]`).
           type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
@@ -2846,7 +2926,6 @@ script:
       description: Retrieves endpoints based on the provided filters.
       hidden: true
       supportedModules:
-        - ENT_PLUS
         - cloud
         - cloud_runtime_security
         - cloud_posture
@@ -4130,24 +4209,153 @@ script:
       name: core-delete-profile
       hidden: true
       outputs: []
+    - arguments:
+        - description: Comma-separated list of broker VM names to filter by.
+          name: broker_vm_names
+          isArray: true
+        - description: Maximum number of brokers to return.
+          name: limit
+          defaultValue: "50"
+      name: core-list-brokers
+      description: Retrieves information about broker VMs configured on the system.
+      hidden: true
+      outputs:
+        - contextPath: Core.Broker.DEVICE_NAME
+          description: The name of the broker VM device.
+          type: String
+        - contextPath: Core.Broker.APPS
+          description: List of applications configured on the broker.
+          type: Array
+    - name: core-create-endpoint-policy
+      description: Creates a new endpoint policy and applies it to specified endpoints. Automatically handles priority conflicts by shifting existing policies when needed.
+      hidden: true
+      arguments:
+        - name: policy_name
+          description: The name for the new endpoint policy.
+          required: true
+          type: String
+        - name: target_endpoint_names
+          description: A comma-separated list of endpoint names to apply the policy to.
+          isArray: true
+          type: String
+        - name: target_endpoint_ids
+          description: A comma-separated list of endpoint ids to apply the policy to. The policy will target these specific endpoints.
+          isArray: true
+          type: String
+        - name: platform
+          description: The platform type for the policy. Determines which operating system the policy applies to.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - windows
+            - mac
+            - linux
+            - android
+            - ios
+            - serverless
+          type: String
+        - name: description
+          description: Description of the policy's purpose and scope.
+          type: String
+        - name: priority
+          description: The priority level for the policy (higher numbers indicate higher priority). If not specified, the system automatically assigns the highest priority available for the platform. If the specified priority already exists, existing policies will be shifted down automatically.
+          type: Number
+        - name: exploit_profile
+          description: The name of the exploit protection profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: malware_profile
+          description: The name of the malware protection profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: agent_settings_profile
+          description: The name of the agent settings profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: restrictions_profile
+          description: The name of the restrictions profile to use. Default is "Default".
+          defaultValue: "Default"
+          type: String
+        - name: exceptions_profile
+          description: The name of the exceptions profile to use. Default is "Default (No Exceptions)".
+          defaultValue: "Default (No Exceptions)"
+          type: String
+      outputs:
+        - contextPath: Core.EndpointPolicy.PolicyName
+          description: The name of the created policy.
+          type: String
+        - contextPath: Core.EndpointPolicy.Platform
+          description: The platform type of the policy.
+          type: String
+        - contextPath: Core.EndpointPolicy.Priority
+          description: The priority level assigned to the policy.
+          type: Number
+        - contextPath: Core.EndpointPolicy.TargetEndpoints
+          description: The list of endpoint names targeted by the policy.
+          type: Array
+        - contextPath: Core.EndpointPolicy.ExploitProfile
+          description: The exploit protection profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.MalwareProfile
+          description: The malware protection profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.AgentSettingsProfile
+          description: The agent settings profile name.
+          type: String
+        - contextPath: Core.EndpointPolicy.Description
+          description: The policy description.
+          type: String
+    - name: core-delete-endpoint-policy
+      description: Deletes one or more existing endpoint policies from the policy table.
+      hidden: true
+      arguments:
+        - name: policy_name
+          description: A comma-separated list of the policy names to delete. Either this or policy_id must be provided.
+          type: String
+          isArray: true
+        - name: policy_id
+          description: A comma-separated list of the policy IDs to delete. Either this or policy_name must be provided.
+          type: String
+          isArray: true
+        - name: platform
+          description: The platform type to narrow down the policy search. Required to identify the correct policy.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - windows
+            - mac
+            - linux
+            - android
+            - ios
+            - serverless
+          type: String
+      outputs:
+        - contextPath: Core.DeletedEndpointPolicy.PolicyName
+          description: The name of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.PolicyID
+          description: The ID of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.Platform
+          description: The platform type of the deleted policy.
+          type: String
+        - contextPath: Core.DeletedEndpointPolicy.Priority
+          description: The priority level of the deleted policy.
+          type: Number
+        - contextPath: Core.DeletedEndpointPolicy.Deleted
+          description: Confirmation flag that the policy was deleted (always true).
+          type: Boolean
   runonce: false
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.6387824
+  dockerimage: demisto/google-cloud-storage:1.0.0.7837600
 tests:
   - No tests
 fromversion: 6.2.0
 marketplaces:
 - platform
 supportedModules:
-- "C1"
-- "C3"
-- "X0"
-- "X1"
-- "X3"
-- "X5"
-- "ENT_PLUS"
 - xsiam
 - agentix
 - cloud

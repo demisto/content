@@ -2,7 +2,7 @@
     "name": "Uptycs",
     "description": "Fetches data from the Uptycs database.",
     "support": "partner",
-    "currentVersion": "1.0.22",
+    "currentVersion": "1.0.24",
     "author": "Uptycs Inc.",
     "url": "https://www.uptycs.com",
     "email": "support@uptycs.com",
@@ -23,11 +23,8 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
-    ]
+    ],
+    "defaultDataSource": "UptycsEventCollector"
 }

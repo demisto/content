@@ -11,7 +11,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
 | Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
 | Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Endpoint Incidents filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | Mobile Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | IOM filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
@@ -32,7 +31,8 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Close Mirrored XSOAR Incident | When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR. | False |
 | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored. | False |
 | Fetch types | Choose what to fetch -  You can choose any combination. Note:<br/>Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
-| Fetch Asset types | Choose which asset sources to ingest into the XSIAM Unified Asset Inventory - You can choose any combination. Options: 'Spotlight', 'CNAPP Alerts' | False |
+| Fetch types | Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
+| Fetch Asset types | The asset sources to ingest into the Cortex Unified Asset Inventory. | False |
 | Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
 | Events Fetch Interval |  | False |
@@ -63,6 +63,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 - Falcon Container Image - Read
+- Recon - Read and Write
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -5236,6 +5237,7 @@ Create an ODS scan and wait for the results.
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 | cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 | cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| polling | Whether to poll for scan results. Default is True. | Optional |
 
 #### Context Output
 

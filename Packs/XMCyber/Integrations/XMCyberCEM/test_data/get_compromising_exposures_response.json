@@ -1,0 +1,122 @@
+{
+    "data": [
+        {
+            "technique": "Exploit::PrintNightmare",
+            "techniqueType": "hackingTechnique",
+            "operationalTeams": [
+                "Vulnerabilities"
+            ],
+            "exposureType": "CVE",
+            "isImplicit": null,
+            "description": "A remote code execution vulnerability exists wherein the sample service improperly performs privileged file operations.",
+            "mitre": [
+                {
+                    "name": "T1210",
+                    "link": "https://example.com/Technique/T1210"
+                },
+                {
+                    "name": "T1068",
+                    "link": "https://example.com/Technique/T1068"
+                }
+            ],
+            "mitreTactic": [
+                "Lateral Movement",
+                "Privilege Escalation"
+            ],
+            "displayName": "PrintNightmare - sample (CVE-2021-34527)",
+            "chokePoints": 33,
+            "severity": {
+                "level": "high"
+            },
+            "complexity": {
+                "level": "Low",
+                "value": 2
+            },
+            "entities": 34,
+            "criticalAssets": 70,
+            "recommended": false,
+            "cveId": [
+                "CVE-2021-34527"
+            ]
+        },
+        {
+            "technique": "abcd",
+            "techniqueType": "hackingTechnique",
+            "operationalTeams": [
+                "Vulnerabilities"
+            ],
+            "exposureType": "CVE",
+            "isImplicit": null,
+            "description": "A remote code execution vulnerability exists in Remote Desktop Services.",
+            "mitre": [
+                {
+                    "name": "T1210",
+                    "link": "https://example.com/Technique/T1210"
+                }
+            ],
+            "mitreTactic": [
+                "Lateral Movement"
+            ],
+            "displayName": "abcd",
+            "chokePoints": 5,
+            "severity": {
+                "level": "high"
+            },
+            "complexity": {
+                "level": "Low",
+                "value": 2
+            },
+            "entities": 5,
+            "criticalAssets": 43,
+            "recommended": true,
+            "cveId": [
+                "CVE-2019-1222",
+                "CVE-2019-1226"
+            ]
+        },
+        {
+            "technique": "activeDirectoryNoPac",
+            "techniqueType": "hackingTechnique",
+            "operationalTeams": [
+                "Vulnerabilities"
+            ],
+            "exposureType": "CVE",
+            "isImplicit": null,
+            "description": "An attacker who exploits the NoPac vulnerability can take control of the Domain Controller and your entire domain.",
+            "mitre": [
+                {
+                    "name": "T1210",
+                    "link": "https://example.com/Technique/T1210"
+                }
+            ],
+            "mitreTactic": [
+                "Lateral Movement"
+            ],
+            "displayName": "NoPac (CVE-2021-42278, CVE-2021-42287)",
+            "chokePoints": 2,
+            "severity": {
+                "level": "high"
+            },
+            "complexity": {
+                "level": "Low",
+                "value": 2
+            },
+            "entities": 2,
+            "criticalAssets": 38,
+            "recommended": true,
+            "cveId": [
+                "CVE-2021-42278",
+                "CVE-2021-42287"
+            ]
+        }
+    ],
+    "paging": {
+        "page": 1,
+        "pageSize": 3,
+        "total": 30,
+        "totalPages": 10
+    },
+    "extraData": {
+        "totalAssets": 135
+    }
+}

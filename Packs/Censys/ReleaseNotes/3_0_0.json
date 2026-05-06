@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Authentication now requires an API Token and Organization ID, and the API ID and Secret parameters are no longer supported. The integration now uses Censys API V3, which results in changes to the context outputs. Some context paths were renamed or removed as they are no longer supported by the API. Additionally, the Domain score logic was updated."
+}

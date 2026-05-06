@@ -3029,6 +3029,7 @@ def add_investigation_note(
     investigation_or_finding_id: str,
     content: str,
     note_type: str | None = None,
+    finding_time: str | None = None,
 ):
     """Add a note to a Splunk investigation or finding via the v2 investigations API endpoint.
 
@@ -3037,6 +3038,9 @@ def add_investigation_note(
         investigation_or_finding_id: The ID of the investigation or finding
         content: The content of the note
         note_type: Optional type of the note (e.g., "Task")
+        finding_time (str | None): The time associated with the finding event. When provided,
+            used as the notable_time parameter on the first API call. If not provided, the first
+            call is made without notable_time and falls back to notable_time="now" on failure.
 
     Returns:
         dict: The JSON response from the API
@@ -3048,12 +3052,25 @@ def add_investigation_note(
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}/notes"
 
     demisto.debug(f"Adding note to investigation/finding {investigation_or_finding_id}")
-    query_params = {"notable_time": "now"}
-    response = service.post(endpoint, body=json.dumps(body), **query_params)
+
+    # Build optional kwargs for the first call: include notable_time only when finding_time is provided
+    first_call_kwargs: dict[str, str] = {}
+    if finding_time is not None:
+        first_call_kwargs["notable_time"] = finding_time
+
+    try:
+        response = service.post(endpoint, body=json.dumps(body), **first_call_kwargs)
+    except Exception as e:
+        demisto.debug(
+            f"Failed to add note to investigation/finding {investigation_or_finding_id} "
+            f"{'with notable_time=' + finding_time if finding_time else 'without notable_time param'}, "
+            f"retrying with notable_time=now. Error: {e!s}"
+        )
+        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+
     response_data = response.body.read()
     result = json.loads(response_data)
     demisto.debug(f"Note added successfully: {result}")
-
     return result
 
 
@@ -3064,6 +3081,7 @@ def update_investigation_or_finding(
     urgency: str | None = None,
     status: str | None = None,
     disposition: str | None = None,
+    finding_time: str | None = None,
 ):
     """
     Update a Splunk investigation or finding via the v2 investigations API endpoint.
@@ -3078,6 +3096,9 @@ def update_investigation_or_finding(
         urgency (str | None): New urgency level
         status (str | None): New status
         disposition (str | None): New disposition
+        finding_time (str | None): The time associated with the finding event. When provided,
+            used as the notable_time parameter on the first API call. If not provided, the first
+            call is made without notable_time and falls back to notable_time="now" on failure.
 
     Returns:
         dict: The JSON response from the API
@@ -3101,32 +3122,31 @@ def update_investigation_or_finding(
         demisto.debug(f"No fields to update for investigation/finding {investigation_or_finding_id}")
         return {"success": False, "message": "No fields provided to update"}
 
-    # Add notable_time query parameter
-    query_params = {"notable_time": "now"}
-
-    # Build the relative endpoint path
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}"
 
     demisto.debug(
         f"Updating investigation/finding {investigation_or_finding_id} via v2 API. " f"Endpoint: {endpoint}, Body: {body}"
     )
 
+    # Build optional kwargs for the first call: include notable_time only when finding_time is provided
+    first_call_kwargs: dict[str, str] = {}
+    if finding_time is not None:
+        first_call_kwargs["notable_time"] = finding_time
+
     try:
-        # Use service.post() to send POST request to the management port (8089)
-        # Parameters are passed as POST form fields
-        response = service.post(endpoint, body=json.dumps(body), **query_params)
-
-        # Parse the response
-        response_data = response.body.read()
-        result = json.loads(response_data)
-
-        demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
-        return result
-
+        response = service.post(endpoint, body=json.dumps(body), **first_call_kwargs)
     except Exception as e:
-        error_msg = f"Failed to update investigation/finding {investigation_or_finding_id} via v2 API: {e!s}"
-        demisto.error(error_msg)
-        raise Exception(error_msg)
+        demisto.debug(
+            f"Failed to update investigation/finding {investigation_or_finding_id} "
+            f"{'with notable_time=' + finding_time if finding_time else 'without notable_time param'}, "
+            f"retrying with notable_time=now. Error: {e!s}"
+        )
+        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+
+    response_data = response.body.read()
+    result = json.loads(response_data)
+    demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
+    return result
 
 
 def severity_to_level(severity: str | None) -> int | float:
@@ -3679,7 +3699,7 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
     status = args.get("status")
     urgency = args.get("urgency")
     owner = args.get("owner")
-    disposition = args.get("disposition", "")
+    disposition = args.get("disposition")
 
     # Map the status label to the status id if needed
     if status and status in DEFAULT_STATUSES:
@@ -3690,6 +3710,7 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
         disposition = DEFAULT_DISPOSITIONS[disposition]
 
     note = args.get("note")
+    finding_time = args.get("finding_time")
 
     # Track results for each event ID
     results = []
@@ -3706,6 +3727,7 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
                 urgency=urgency,
                 status=status,
                 disposition=disposition,
+                finding_time=finding_time,
             )
 
             # Add note separately if provided
@@ -3715,6 +3737,7 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
                         service=service,
                         investigation_or_finding_id=event_id,
                         content=note,
+                        finding_time=finding_time,
                     )
                     results.append(f"Successfully updated finding {event_id} (including note)")
                 except Exception as e:

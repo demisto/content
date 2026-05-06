@@ -1,6 +1,9 @@
 commonfields:
   id: SumoLogicSEC
   version: -1
+sectionorder:
+- Collect
+- Connect  
 name: SumoLogicSEC
 display: Sumo Logic Cloud SIEM
 category: Analytics & SIEM
@@ -12,54 +15,65 @@ configuration:
   type: 0
   required: true
   additionalinfo: https://api.<deployment>.sumologic.com/api
+  section: Connect
 - display: Sumo Logic Instance Endpoint
   name: instance_endpoint
   type: 0
   additionalinfo: https://<yoursubdomain>.<deployment>.sumologic.com
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Access ID
   name: access_id
   type: 0
   required: true
+  section: Connect
 - display: Access Key
   name: access_key
   type: 4
   required: true
+  section: Connect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
+  section: Collect
 - display: Fetch Limit
   name: max_fetch
   defaultvalue: "20"
   type: 0
   additionalinfo: Fetch limit must not be greater than 200
   required: false
+  section: Collect
 - display: Override default fetch query
   name: fetch_query
   type: 0
   additionalinfo: Default fetch query is status:in("new", "inprogress")
   required: false
+  section: Collect
 - display: First fetch time
   name: first_fetch
   defaultvalue: 1 day
   type: 0
   required: false
+  section: Collect
 - display: Pull associated Sumo Logic Signals as Incidents
   additionalinfo: Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents
   defaultvalue: "false"
   name: pull_signals
   type: 8
   required: false
+  section: Collect
 - display: Incident Mirroring Direction
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Sumo Logic SIEM to Cortex XSOAR), Outgoing (from Cortex XSOAR to Sumo Logic SIEM), or Incoming and Outgoing (from/to Cortex XSOAR and Sumo Logic SIEM).'
   defaultvalue: None
@@ -94,6 +108,7 @@ configuration:
   type: 0
   additionalinfo: Record Summary Fields included when fetching Insights
   required: false
+  section: Collect
 script:
   script: ''
   type: python
@@ -860,7 +875,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

@@ -622,11 +622,18 @@ def fetch_incidents(
     last_incident_id = last_run.get("last_fetched_id")
     last_fetch_timestamp = last_run.get("last_fetch")
 
-    if last_fetch_timestamp:
-        last_fetch_timestamp = int(last_fetch_timestamp) * 1000
-    else:
+    if not last_fetch_timestamp:
+        demisto.debug(f"Detected empty {last_fetch_timestamp=} (first fetch). Converting {first_fetch_time=}.")
         first_fetch_datetime = cast(datetime, dateparser.parse(first_fetch_time))
         last_fetch_timestamp = int(first_fetch_datetime.timestamp() * 1000)
+
+    else:
+        last_fetch_timestamp = int(last_fetch_timestamp)
+        if len(str(last_fetch_timestamp)) == 10:
+            demisto.debug(f"Detected epoch in seconds of {last_fetch_timestamp=}, converting to milliseconds.")
+            last_fetch_timestamp *= 1000
+        else:
+            demisto.debug(f"Detected epoch in milliseconds of {last_fetch_timestamp=}, keeping as is.")
 
     time_now = int(datetime.timestamp(datetime.now()) * 1000)
 
@@ -668,8 +675,7 @@ def fetch_incidents(
             demisto.debug(f"Incident {incident_id} missing createdBy.date, skipping")
             continue
 
-        incident_created_timestamp = created_date / 1000
-        incident_created_time = datetime.fromtimestamp(incident_created_timestamp)
+        incident_created_time = datetime.fromtimestamp(created_date / 1000)
 
         incident = {
             "name": incident_name,
@@ -678,7 +684,7 @@ def fetch_incidents(
             "incident_id": incident_id,
         }
         incidents.append(incident)
-        next_fetch_timestamp = max(incident_created_timestamp, next_fetch_timestamp)
+        next_fetch_timestamp = max(created_date, next_fetch_timestamp)
 
     demisto.debug(f"Processed {len(incidents)} incidents after filtering.")
 

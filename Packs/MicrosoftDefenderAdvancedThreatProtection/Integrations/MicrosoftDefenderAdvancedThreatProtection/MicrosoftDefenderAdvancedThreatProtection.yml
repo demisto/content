@@ -3581,8 +3581,7 @@ script:
       - Low
       - Medium
       - High
-    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      defaultValue: 14 days
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days). If not provided, the indicator will not expire.'
       name: expiration_time
     - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: indicator_description
@@ -3734,8 +3733,7 @@ script:
       - Low
       - Medium
       - High
-    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      defaultValue: 14 days
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days). If not provided, the indicator will not expire.'
       name: expiration_time
     - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: indicator_description
@@ -5928,7 +5926,7 @@ script:
     - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
-  dockerimage: demisto/crypto:1.0.0.4578119
+  dockerimage: demisto/crypto:1.0.0.7704170
   isfetch: true
   runonce: false
   script: '-'

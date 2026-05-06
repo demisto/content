@@ -12,7 +12,7 @@ comment: Returns the content of the List with the given Name as a string or JSON
 commonfields:
   id: GetListContent
   version: -1
-enabled: false
+enabled: true
 name: GetListContent
 outputs:
 script: '-'
