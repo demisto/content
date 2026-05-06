@@ -8370,7 +8370,7 @@ class SSM:
             return CommandResults(readable_output="No SSM documents found.")
 
         outputs = {
-            "AWS.SSM.Document(val.Name && val.Name == obj.Name)": documents,
+            "AWS.SSM.Documents(val.Name && val.Name == obj.Name)": documents,
             "AWS.SSM(true)": {"DocumentsNextToken": response.get("NextToken")},
         }
 
@@ -8426,7 +8426,7 @@ class SSM:
             return CommandResults(readable_output=f"No document found with name '{args.get('document_name')}'.")
 
         return CommandResults(
-            outputs_prefix="AWS.SSM.Document",
+            outputs_prefix="AWS.SSM.Documents",
             outputs_key_field="Name",
             outputs=document,
             readable_output=tableToMarkdown(

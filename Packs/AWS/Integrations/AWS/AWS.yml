@@ -11017,64 +11017,64 @@ script:
           - JSON
           - TEXT
     outputs:
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Hash
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Hash
         description: The Sha256 or Sha1 hash created by the system when the document was created.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.HashType
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.HashType
         description: The hash type of the document. Valid values are Sha256 or Sha1.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Name
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Name
         description: The name of an attachment.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Size
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Size
         description: The size of an attachment in bytes.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Url
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Url
         description: The URL location of the attachment content.
         type: String
-      - contextPath: AWS.SSM.Document.Name
+      - contextPath: AWS.SSM.Documents.Name
         description: The name of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.DisplayName
+      - contextPath: AWS.SSM.Documents.DisplayName
         description: An optional field specifying a user-defined, friendly name for the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.VersionName
+      - contextPath: AWS.SSM.Documents.VersionName
         description: The version of the artifact associated with the document.
         type: String
-      - contextPath: AWS.SSM.Document.CreatedDate
+      - contextPath: AWS.SSM.Documents.CreatedDate
         description: The date the document was created.
         type: String
-      - contextPath: AWS.SSM.Document.Status
+      - contextPath: AWS.SSM.Documents.Status
         description: The status of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.StatusInformation
+      - contextPath: AWS.SSM.Documents.StatusInformation
         description: A message returned by AWS that explains the Status value.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentVersion
+      - contextPath: AWS.SSM.Documents.DocumentVersion
         description: The document version.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentType
+      - contextPath: AWS.SSM.Documents.DocumentType
         description: The type of document.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentFormat
+      - contextPath: AWS.SSM.Documents.DocumentFormat
         description: The document format, either JSON or YAML.
         type: String
-      - contextPath: AWS.SSM.Document.ReviewStatus
+      - contextPath: AWS.SSM.Documents.ReviewStatus
         description: The current status of a document review.
         type: String
-      - contextPath: AWS.SSM.Document.Content
+      - contextPath: AWS.SSM.Documents.Content
         description: The contents of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.Name
+      - contextPath: AWS.SSM.Documents.Requires.Name
         description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
         type: String
-      - contextPath: AWS.SSM.Document.Requires.RequireType
+      - contextPath: AWS.SSM.Documents.Requires.RequireType
         description: The document type of the required SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.Version
+      - contextPath: AWS.SSM.Documents.Requires.Version
         description: The document version required by the current document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.VersionName
+      - contextPath: AWS.SSM.Documents.Requires.VersionName
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
 
