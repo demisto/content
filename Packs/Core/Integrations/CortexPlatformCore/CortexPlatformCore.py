@@ -3605,7 +3605,7 @@ def resolve_playbook_id(client: Client, playbook: str) -> str:
     if playbook in known_ids:
         demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
         return playbook
-    
+
     if playbook in name_to_id:
         resolved_id = name_to_id[playbook]
         demisto.debug(f"Resolved playbook name '{playbook}' to ID '{resolved_id}'.")
