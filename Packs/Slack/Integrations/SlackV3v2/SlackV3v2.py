@@ -109,6 +109,8 @@ class SlackAssistantHandler(AssistantMessagingHandler):
     Handles all Assistant interactions specific to Slack platform.
     """
 
+    PLATFORM_NAME = "Slack"
+
     def __init__(self):
         """Initialize the Slack Assistant handler"""
         super().__init__()
@@ -3432,12 +3434,19 @@ def conversation_history() -> None:
     limit = arg_to_number(args.get("limit"))
     from_time = args.get("from_time")
     page_token = args.get("page_token")
+    thread_id = args.get("thread_id")
 
     if not conversation_id and not conversation_name:
         raise ValueError("Either conversation_id or conversation_name must be provided.")
 
     if not conversation_id:
         conversation_id = resolve_conversation_id_from_name(conversation_name)
+
+    # When thread_id is provided, delegate to conversation replies logic
+    if thread_id:
+        demisto.args()["channel_id"] = conversation_id
+        demisto.args()["thread_timestamp"] = thread_id
+        return conversation_replies()
 
     body = {"channel": conversation_id, "limit": limit}
     if from_time:

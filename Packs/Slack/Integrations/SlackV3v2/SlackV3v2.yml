@@ -512,6 +512,9 @@ script:
       name: from_time
     - description: Token to retrieve the next page of results.
       name: page_token
+    - description: The timestamp of the thread to retrieve replies for. When provided, the command behaves like slack-get-conversation-replies.
+      name: thread_id
+      hidden: true
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
     outputs:

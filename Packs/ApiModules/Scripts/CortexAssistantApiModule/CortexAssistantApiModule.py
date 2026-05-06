@@ -1,4 +1,4 @@
-from typing import ClassVar, Optional
+from typing import Optional
 from enum import Enum, IntEnum
 from dataclasses import dataclass
 from datetime import datetime, UTC
@@ -120,6 +120,15 @@ class BackendResponse:
     error_code: int | None = None
 
 
+# Timeout durations (in seconds) for each conversation status.
+_STATUS_TIMEOUTS: dict[str, int] = {
+    "awaiting_backend_response": 1 * 60,  # 1 minute
+    "responding_with_plan": 5 * 60,  # 5 minutes
+    "awaiting_agent_selection": 7 * 24 * 60 * 60,  # 7 days
+    "awaiting_sensitive_action_approval": 14 * 24 * 60 * 60,  # 14 days
+}
+
+
 class AssistantStatus(str, Enum):
     """
     Manages the status of Assistant AI interactions.
@@ -135,13 +144,6 @@ class AssistantStatus(str, Enum):
     RESPONDING_WITH_PLAN = "responding_with_plan"
     AWAITING_AGENT_SELECTION = "awaiting_agent_selection"
     AWAITING_SENSITIVE_ACTION_APPROVAL = "awaiting_sensitive_action_approval"
-
-    TIMEOUTS: ClassVar[dict[str, int]] = {
-        "awaiting_backend_response": 1 * 60,  # 1 minute
-        "responding_with_plan": 5 * 60,  # 5 minutes
-        "awaiting_agent_selection": 7 * 24 * 60 * 60,  # 7 days
-        "awaiting_sensitive_action_approval": 14 * 24 * 60 * 60,  # 14 days
-    }
 
     @classmethod
     def is_awaiting_user_action(cls, status: str) -> bool:
@@ -167,7 +169,7 @@ class AssistantStatus(str, Enum):
         Returns:
             Timeout duration in seconds, or 0 if status is invalid
         """
-        return cls.TIMEOUTS.get(status, 0)
+        return _STATUS_TIMEOUTS.get(status, 0)
 
     @classmethod
     def is_expired(cls, status: str, last_updated: float) -> bool:
@@ -329,6 +331,7 @@ class AssistantMessages:
 
     # Generic error messages
     GENERIC_ERROR = "❌ An error occurred. Please try again later or contact your administrator if the issue persists."
+    CONVERSATION_NOT_FOUND_ERROR = "❌ This conversation is no longer active."
     SYSTEM_ERROR = "❌ A system error occurred. Please try again later or contact your administrator if the issue persists."
 
     # Reset session messages
@@ -411,7 +414,7 @@ _ERROR_TYPE_TO_USER_MESSAGE: dict[BackendErrorType, str] = {
     BackendErrorType.USER_NOT_FOUND: AssistantMessages.USER_NOT_FOUND,
     BackendErrorType.PERMISSION_DENIED: AssistantMessages.NO_ASSISTANT_PERMISSIONS,
     BackendErrorType.WRONG_USER: AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK,
-    BackendErrorType.CONVERSATION_NOT_FOUND: AssistantMessages.SYSTEM_ERROR,
+    BackendErrorType.CONVERSATION_NOT_FOUND: AssistantMessages.CONVERSATION_NOT_FOUND_ERROR,
     BackendErrorType.UNKNOWN: AssistantMessages.SYSTEM_ERROR,
 }
 
@@ -434,6 +437,9 @@ class AssistantMessagingHandler:
 
     # Maximum number of previous messages to include as conversation context
     MAX_CONTEXT_MESSAGES = 5
+
+    # Platform name - subclasses should override this
+    PLATFORM_NAME = "Unknown"
 
     def __init__(self):
         """Initialize the messaging handler"""
@@ -893,7 +899,6 @@ class AssistantMessagingHandler:
                     channel_id,
                     AssistantMessages.RESET_SESSION_SUCCESS,
                     thread_id=thread_id,
-                    ephemeral=True,
                     user_id=user_id,
                 )
                 return True, assistant
@@ -1371,6 +1376,27 @@ class AssistantMessagingHandler:
 
         return "\n".join(context_lines)
 
+    def format_source_chat_context(self, channel_id: str, thread_id: str) -> str:
+        """
+        Formats source chat metadata into a context string.
+        Includes the platform name, channel ID, and thread ID so the backend
+        knows where this conversation originated.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+
+        Returns:
+            Formatted source chat context string
+        """
+        return (
+            "--- Source chat context ---\n"
+            f"This chat was initiated from {self.PLATFORM_NAME}.\n"
+            f"channel_id: {channel_id}\n"
+            f"thread_id: {thread_id}\n"
+            "--- End of source chat context ---"
+        )
+
     async def get_conversation_context_formatted(
         self,
         channel_id: str,
@@ -1528,11 +1554,15 @@ class AssistantMessagingHandler:
                     # Send agent selection UI
                     await self.send_message_async(channel_id, "", thread_id, blocks=agent_selection_blocks)
 
+                    # Prepend source chat metadata so the backend knows where this conversation originated
+                    source_context = self.format_source_chat_context(channel_id, thread_id)
+                    message_with_metadata = f"{source_context}\n{message_with_context}"
+
                     # Lock the conversation with agent selection status
                     assistant[assistant_id_key] = {
                         "date": thread_id,
                         "user": user_id,
-                        "message": message_with_context,
+                        "message": message_with_metadata,
                         "channel_id": channel_id,
                         "thread_id": thread_id,
                         "status": AssistantStatus.AWAITING_AGENT_SELECTION.value,
