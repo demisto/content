@@ -256,6 +256,16 @@ def _extract_message_id(incident: dict) -> str:
     """
     Best-effort extraction of the SNS MessageId from an incident dict for
     log/Module-Health correlation. Returns '<unknown>' if it can't be parsed.
+
+    Args:
+        incident (dict): An incident payload as produced by
+            ``handle_notification()``.
+
+    Returns:
+        str: The SNS ``MessageId`` extracted from ``incident['rawJSON']``, or
+        the literal string ``'<unknown>'`` when ``rawJSON`` is absent, not
+        valid JSON, missing the ``MessageId`` key, or has a falsy
+        ``MessageId`` value.
     """
     try:
         raw = json.loads(incident.get("rawJSON") or "{}")

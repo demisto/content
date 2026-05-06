@@ -13,6 +13,7 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
 | Store sample events for mapping | Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead. | False |
 | Use system proxy settings |  | False |
 | Process notifications and fetch in parallel | Enable only when high-volume SNS bursts cause the integration to exceed the AWS SNS 15-second delivery SLA, leading to duplicate incidents from AWS retries. When enabled, notifications are acknowledged with HTTP 200 immediately and incident creation runs in the background. This is not a recommended default — keep it disabled unless your environment specifically requires parallel processing, since running concurrent background tasks increases container memory and CPU usage. | False |
+| Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the \*\*Test\*\* button more than once, a failure may occur mistakenly indicating that the port is already in use. | True |
 
 ## Commands
 
