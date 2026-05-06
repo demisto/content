@@ -1649,6 +1649,8 @@ script:
       - mac
       - windows
       - linux
+      - android
+      - ios
       required: true
     - auto: PREDEFINED
       description: The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action.
@@ -1680,7 +1682,7 @@ script:
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     - auto: PREDEFINED
-      description: 'Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
+      description: 'Action to take when an Android or iOS host observes the custom IOC. Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
       name: mobile_action
       predefined:
       - no_action
@@ -1779,7 +1781,7 @@ script:
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     - auto: PREDEFINED
-      description: 'Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
+      description: 'Action to take when an Android or iOS host observes the custom IOC. Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
       name: mobile_action
       predefined:
       - no_action

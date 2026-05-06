@@ -2886,6 +2886,27 @@ def test_upload_custom_ioc_command_no_mobile_action(requests_mock):
     assert "mobile_action" not in body["indicators"][0]
 
 
+def test_upload_custom_ioc_command_mobile_action_without_mobile_platform():
+    """
+    Test that providing mobile_action without a mobile platform raises an error
+
+    Given:
+        - A mobile_action provided without android or ios in platforms
+
+    When:
+        - The user tries to upload a custom IOC with mobile_action but only desktop platforms
+
+    Then:
+        - Raise a ValueError indicating a mobile platform is required
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+
+    with pytest.raises(ValueError, match="mobile_action requires a mobile platform"):  # noqa: E501
+        upload_custom_ioc_command(
+            action="no_action", platforms="windows,linux", ioc_type="domain", value="test.com", mobile_action="prevent"
+        )
+
+
 def test_lift_host_containment_command_default(requests_mock, mocker):
     """
     Test cs-falcon-lift-host-containment with default behavior (lift_containment)
