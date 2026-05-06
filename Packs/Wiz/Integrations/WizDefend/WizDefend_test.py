@@ -1363,8 +1363,8 @@ def test_query_api_empty_response(mocker, mock_api_empty_response):
         # Call the function
         result = WizDefend.query_api("test_query", {}, WizApiResponse.DETECTIONS)
 
-        # Verify result is empty dict
-        assert result == {}
+        # Verify result is an empty list (so callers can iterate without a type guard)
+        assert result == []
     finally:
         # Restore original function
         WizDefend.get_entries = orig_get_entries
@@ -2749,6 +2749,127 @@ def test_set_threat_comment(mock_return_error, mock_return_results, mock_args, s
             error_message = mock_return_error.call_args[0][0]
             assert "Failed to set the comment Test comment" in error_message
             assert not mock_return_results.called
+
+
+def test_truncate_note():
+    from WizDefend import truncate_note, MAX_NOTE_LENGTH
+
+    # Short notes are unchanged
+    assert truncate_note("short note") == "short note"
+    assert truncate_note("") == ""
+    assert truncate_note(None) is None
+
+    # Exactly at limit is unchanged
+    exact = "a" * MAX_NOTE_LENGTH
+    assert truncate_note(exact) == exact
+
+    # Over limit gets truncated
+    long_text = "a" * (MAX_NOTE_LENGTH + 1)
+    result = truncate_note(long_text)
+    assert len(result) <= MAX_NOTE_LENGTH
+    assert result.endswith("... [truncated]")
+    assert len(result) == MAX_NOTE_LENGTH
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value={"id": "note-123"})
+def test_set_issue_note_truncates_long_note(mock_get_entries):
+    long_note = "a" * (MAX_NOTE_LENGTH + 1)
+    set_issue_note(str(uuid.uuid4()), long_note)
+
+    call_args = mock_get_entries.call_args
+    sent_text = call_args[0][1]["input"]["text"]
+    assert len(sent_text) <= MAX_NOTE_LENGTH
+    assert sent_text.endswith("... [truncated]")
+
+
+def test_build_fallback_description_with_rule():
+    detection = {
+        "id": "det-123",
+        "severity": "CRITICAL",
+        "ruleMatch": {"rule": {"name": "suspicious activity detected"}},
+    }
+    result = build_fallback_description(detection)
+    assert result == "CRITICAL severity detection triggered by rule 'suspicious activity detected' (ID: det-123)"
+
+
+def test_build_fallback_description_without_rule():
+    detection = {"id": "det-456", "severity": "HIGH"}
+    result = build_fallback_description(detection)
+    assert result == "HIGH severity detection (ID: det-456)"
+
+
+def test_build_fallback_description_minimal():
+    result = build_fallback_description({})
+    assert result == "Unknown severity detection (ID: Unknown)"
+
+
+def test_build_incidents_includes_details():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "CRITICAL",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "description": "Suspicious activity detected",
+        "ruleMatch": {"rule": {"name": "test rule", "sourceType": "THREAT_DETECTION", "securitySubCategories": []}},
+    }
+    result = build_incidents(detection)
+    assert result[DemistoParams.DETAILS] == "Suspicious activity detected"
+
+
+def test_build_incidents_null_description_gets_empty_string():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "HIGH",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "ruleMatch": {"rule": {"name": "test rule", "sourceType": "THREAT_DETECTION", "securitySubCategories": []}},
+    }
+    result = build_incidents(detection)
+    assert result[DemistoParams.DETAILS] == ""
+
+
+# ===== GAP #11: get_filtered_detections null description fallback flow =====
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_detections")
+@patch(
+    "Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters",
+    return_value=(True, None, {"severity": ["HIGH"]}),
+)
+def test_get_filtered_detections_null_description_gets_fallback(mock_validate, mock_query):
+    """Test that get_filtered_detections populates fallback description for detections with null description"""
+    detection_no_desc = {
+        "id": "det-no-desc-001",
+        "severity": "HIGH",
+        "ruleMatch": {"rule": {"name": "lateral movement detected"}},
+        "createdAt": "2022-01-02T15:46:34Z",
+    }
+    mock_query.return_value = [detection_no_desc]
+
+    result = get_filtered_detections(severity="HIGH", add_detection_url=False)
+
+    assert len(result) == 1
+    expected = "HIGH severity detection triggered by rule 'lateral movement detected' (ID: det-no-desc-001)"
+    assert result[0]["description"] == expected
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_detections")
+@patch(
+    "Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters",
+    return_value=(True, None, {"severity": ["CRITICAL"]}),
+)
+def test_get_filtered_detections_existing_description_unchanged(mock_validate, mock_query):
+    """Test that get_filtered_detections does NOT overwrite an existing description"""
+    detection_with_desc = {
+        "id": "det-with-desc-001",
+        "severity": "CRITICAL",
+        "description": "Original description from API",
+        "ruleMatch": {"rule": {"name": "some rule"}},
+        "createdAt": "2022-01-02T15:46:34Z",
+    }
+    mock_query.return_value = [detection_with_desc]
+
+    result = get_filtered_detections(severity="CRITICAL", add_detection_url=False)
+
+    assert result[0]["description"] == "Original description from API"
 
 
 @pytest.mark.parametrize(
@@ -4161,8 +4282,8 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
         ), f"{scenario_name}: get_api_after_parameter should return last_run_time ({time}) after reset"
 
         assert (
-            fetch_manager.get_api_before_parameter() == "2022-01-03T12:00:00Z"
-        ), f"{scenario_name}: get_api_before_parameter should return current time after reset"
+            fetch_manager.get_api_before_parameter() == "2022-01-03T11:50:00Z"
+        ), f"{scenario_name}: get_api_before_parameter should return current time - fetch_interval after reset"
 
         assert (
             fetch_manager.get_api_cursor_parameter() is None
@@ -4207,6 +4328,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "cursor789",
         ),
         # Valid fresh fetch scenarios (no cursor, valid or missing fields)
+        # expected_before is now current_time - fetch_interval (10m) = 11:50:00Z
         (
             "valid_fresh_fetch_with_after_before",
             None,
@@ -4215,7 +4337,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2021-12-31T00:00:00Z",
             False,
             "2022-01-03T08:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         (
@@ -4226,7 +4348,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2021-12-31T00:00:00Z",
             False,
             "2022-01-03T08:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         (
@@ -4237,7 +4359,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2022-01-03T05:00:00Z",
             False,
             "2022-01-03T10:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         # Edge cases that should NOT trigger reset
@@ -4249,7 +4371,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2021-12-31T00:00:00Z",
             False,
             "2022-01-03T02:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         (
@@ -4358,7 +4480,7 @@ def test_boundary_conditions_no_reset():
 
         # Should return the original values
         assert fetch_manager.get_api_after_parameter() == exactly_10_hours_ago
-        assert fetch_manager.get_api_before_parameter() == "2022-01-03T12:00:00Z"  # Current time for fresh fetch
+        assert fetch_manager.get_api_before_parameter() == "2022-01-03T11:50:00Z"  # Current time - fetch_interval for fresh fetch
         assert not fetch_manager.should_continue_previous_run()  # No cursor
 
 
@@ -4464,7 +4586,7 @@ def test_fetch_incident_save_pagination_context_no_reset(mock_set_last_run):
             assert call_args[DemistoParams.TIME] == "2022-01-03T12:00:00Z"
             assert call_args[WizApiResponse.END_CURSOR] == "new_cursor_value"
             assert call_args[WizApiVariables.AFTER] == "2022-01-03T08:00:00Z"  # stored_after preserved
-            assert call_args[WizApiVariables.BEFORE] == "2022-01-03T08:00:00Z"  # ALSO stored_after (this is the key behavior)
+            assert call_args[WizApiVariables.BEFORE] == "2022-01-03T10:00:00Z"  # stored_before preserved
 
         finally:
             WizDefend.API_END_CURSOR = original_cursor
@@ -4502,6 +4624,68 @@ def test_fetch_incident_clear_pagination_context_no_reset(mock_set_last_run):
 
         finally:
             WizDefend.API_END_CURSOR = original_cursor
+
+
+@freeze_time("2022-01-03T12:00:00Z")
+@patch.object(demisto, "setLastRun")
+def test_fetch_incident_before_locked_across_multipage_fetches(mock_set_last_run):
+    """Regression: `before` (the API window's upper bound) must remain byte-identical
+    across page1 -> page2 -> clear. The original bug was `_save_pagination_context`
+    saving `BEFORE: self.stored_after` instead of `self.stored_before`, which let the
+    upper bound drift mid-pagination — silently widening the fetch window per page.
+
+    Single-call tests would still pass if a future refactor recomputed
+    `stored_before = utcnow()` on each page; this multi-call test locks the
+    contract that `before` is set ONCE (when pagination starts) and rides through
+    every save until the final clear, where it gets promoted to the new `after`."""
+    locked_before = "2022-01-03T11:00:00Z"
+    locked_after = "2022-01-03T08:00:00Z"
+
+    # Page 1 save: pagination just started, locked_before is in last_run.
+    page1_state = {
+        WizApiResponse.END_CURSOR: "page1_cursor",
+        WizApiVariables.AFTER: locked_after,
+        WizApiVariables.BEFORE: locked_before,
+        DemistoParams.TIME: locked_after,
+    }
+
+    original_cursor = WizDefend.API_END_CURSOR
+    try:
+        # --- Page 1 save (still paginating to page 2) ---
+        WizDefend.API_END_CURSOR = "page2_cursor"
+        with patch.object(demisto, "getLastRun", return_value=page1_state):
+            FetchIncident()._save_pagination_context()
+
+        page1_saved = mock_set_last_run.call_args_list[0][0][0]
+        assert page1_saved[WizApiVariables.BEFORE] == locked_before, "page1 save must preserve locked before"
+        assert page1_saved[WizApiVariables.AFTER] == locked_after, "page1 save must preserve after"
+
+        # --- Page 2 save (still paginating to page 3) — getLastRun returns page1's saved state ---
+        WizDefend.API_END_CURSOR = "page3_cursor"
+        with patch.object(demisto, "getLastRun", return_value=page1_saved):
+            FetchIncident()._save_pagination_context()
+
+        page2_saved = mock_set_last_run.call_args_list[1][0][0]
+        assert page2_saved[WizApiVariables.BEFORE] == locked_before, "page2 save must STILL preserve locked before"
+        assert page2_saved[WizApiVariables.AFTER] == locked_after, "page2 save must preserve after"
+
+        # --- Clear (pagination complete) — getLastRun returns page2's state ---
+        WizDefend.API_END_CURSOR = None
+        with patch.object(demisto, "getLastRun", return_value=page2_saved):
+            FetchIncident()._clear_pagination_context()
+
+        cleared = mock_set_last_run.call_args_list[2][0][0]
+        # Window-handoff contract: clear promotes locked_before -> AFTER (next window's lower bound).
+        # If `before` had drifted during pagination, this hand-off would create overlap or gaps.
+        assert cleared[WizApiVariables.AFTER] == locked_before, (
+            "clear must promote the LOCKED before to the new after — proves before never drifted"
+        )
+        assert cleared[WizApiVariables.BEFORE] == "2022-01-03T12:00:00Z", "clear sets new before to api_start_run_time"
+        assert cleared[WizApiResponse.END_CURSOR] is None
+
+        assert mock_set_last_run.call_count == 3
+    finally:
+        WizDefend.API_END_CURSOR = original_cursor
 
 
 @pytest.mark.parametrize(
@@ -4769,7 +4953,7 @@ def test_fetch_incident_api_variables(after, before, end_cursor, need_reset):
         if need_reset:
             # After reset, values should be from reset_params logic
             expected_after_from_reset = "2022-01-03T06:00:00Z"  # last_run_time
-            expected_before_from_reset = "2022-01-03T12:00:00Z"  # current time
+            expected_before_from_reset = "2022-01-03T11:50:00Z"  # current time - fetch_interval (10m)
             expected_cursor_from_reset = None  # cursor cleared
 
             assert (
@@ -4795,11 +4979,11 @@ def test_fetch_incident_api_variables(after, before, end_cursor, need_reset):
 
             # Expected before_time logic:
             # - If continuing pagination (end_cursor exists): use stored_before
-            # - If fresh fetch: use current time
+            # - If fresh fetch: use current time - fetch_interval (10m lag)
             if end_cursor:  # Pagination
                 expected_before = before  # Should use stored_before directly
             else:  # Fresh fetch
-                expected_before = "2022-01-03T12:00:00Z"  # current time
+                expected_before = "2022-01-03T11:50:00Z"  # current time - 10m fetch interval
 
             # Expected end_cursor: should match input
             expected_cursor = end_cursor
@@ -4964,9 +5148,10 @@ def test_reset_params_comprehensive(
                 assert error_message_contains in error_call_args
 
         # Check validation calls for None last_run_time cases
+        # validate_fetch_interval is called in __init__ (_get_fetch_interval_minutes) and in reset_params
         if last_run_time is None and not exception_during_calc:
             expected_param = fetch_interval_param if fetch_interval_param is not None else str(FETCH_INTERVAL_MINIMUM_MIN)
-            mock_validate_fetch_interval.assert_called_once_with(expected_param)
+            mock_validate_fetch_interval.assert_called_with(expected_param)
 
         # Verify info logging for reset and completion
         assert mock_info.call_count >= 2  # At least "Resetting fetch parameters" and "Reset fetch incidents parameter complete"
@@ -5185,3 +5370,75 @@ def test_get_single_detection_all_cases(
             # If we expect success but shouldn't call return_results,
             # it means we need to handle this case differently
             pass
+
+
+# ===== ruleMatch null safety tests =====
+
+
+@pytest.mark.parametrize(
+    "rule_match,expected_has_rule",
+    [
+        pytest.param(None, False, id="ruleMatch_null"),
+        pytest.param({}, False, id="ruleMatch_empty"),
+        pytest.param({"rule": None}, False, id="rule_null"),
+        pytest.param({"rule": {"name": "test"}}, True, id="rule_present"),
+    ],
+)
+def test_build_fallback_description_rulematch_null_safety(rule_match, expected_has_rule):
+    detection = {"id": "det-1", "severity": "HIGH"}
+    if rule_match is not None:
+        detection["ruleMatch"] = rule_match
+    else:
+        detection["ruleMatch"] = None
+
+    result = build_fallback_description(detection)
+    assert "HIGH severity detection" in result
+    if expected_has_rule:
+        assert "triggered by rule" in result
+    else:
+        assert "triggered by rule" not in result
+
+
+def test_build_incidents_rulematch_null():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "HIGH",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "ruleMatch": None,
+    }
+    result = build_incidents(detection)
+    assert "Unknown Rule" in result[DemistoParams.NAME]
+
+
+def test_build_incidents_rulematch_rule_null():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "HIGH",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "ruleMatch": {"rule": None},
+    }
+    result = build_incidents(detection)
+    assert "Unknown Rule" in result[DemistoParams.NAME]
+
+
+@pytest.mark.parametrize(
+    "detection,expected",
+    [
+        pytest.param(None, None, id="detection_None"),
+        pytest.param({}, None, id="detection_empty"),
+        pytest.param({"ruleMatch": None}, None, id="ruleMatch_None"),
+        pytest.param({"ruleMatch": {}}, None, id="ruleMatch_empty"),
+        pytest.param({"ruleMatch": {"rule": None}}, None, id="rule_None"),
+        pytest.param({"ruleMatch": {"rule": {}}}, None, id="rule_empty"),
+        pytest.param({"ruleMatch": {"rule": {"name": None}}}, None, id="name_None"),
+        pytest.param({"ruleMatch": {"rule": {"name": "MyRule"}}}, "MyRule", id="happy_path"),
+    ],
+)
+def test_safe_rule_name(detection, expected):
+    """Helper covers every null position in the ruleMatch.rule.name chain.
+    Two separate hardening commits had to fix successive null paths in this chain
+    (`ruleMatch=None`, then `ruleMatch={"rule":None}`); centralizing means future
+    Wiz-side schema variations only need one update."""
+    from WizDefend import _safe_rule_name
+
+    assert _safe_rule_name(detection) == expected

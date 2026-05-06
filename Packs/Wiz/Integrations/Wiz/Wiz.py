@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from CommonServerPython import *
@@ -8,9 +9,10 @@ DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
 WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
+MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.4.0"
+WIZ_VERSION = "1.5.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -185,6 +187,28 @@ query IssuesTable(
           name
         }
       }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
+MODIFIED_ISSUE_IDS_QUERY = """
+query ModifiedIssueIds(
+  $filterBy: IssueFilters
+  $first: Int
+  $after: String
+  $orderBy: IssueOrder
+) {
+  issues:issuesV2(filterBy: $filterBy
+    first: $first
+    after: $after
+    orderBy: $orderBy) {
+    nodes {
+      id
+      statusChangedAt
     }
     pageInfo {
       hasNextPage
@@ -588,7 +612,6 @@ fragment CloudEventRuntimeDetails on CloudEventRuntimeDetails {
     }
   }
   rawDetails
-  runtimeExecutionDataId
   type
   context {
     ... on CloudEventRuntimeTypeFileContext {
@@ -1542,6 +1565,10 @@ class WizInputParam:
     SEARCH = "search"
     SUBSCRIPTION_EXTERNAL_IDS = "subscription_external_ids"
     PROVIDER_UNIQUE_IDS = "provider_unique_ids"
+    PROJECT_IDS = "project_ids"
+    NATIVE_TYPES = "native_types"
+    UPDATED_AT_BEFORE = "updated_at_before"
+    UPDATED_AT_AFTER = "updated_at_after"
     STATUS = "status"
 
 
@@ -1579,6 +1606,90 @@ class WizIssueType:
     def values(cls):
         """Get all available detection origins"""
         return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
+
+
+class WizMirrorDirection:
+    """Mirror direction values — maps config dropdown to XSOAR direction codes."""
+    NONE = None
+    INCOMING = "In"
+    OUTGOING = "Out"
+    BOTH = "Both"
+
+    DIRECTION_MAP = {
+        "None": NONE,
+        "Incoming": INCOMING,
+        "Outgoing": OUTGOING,
+        "Incoming And Outgoing": BOTH,
+    }
+
+    @classmethod
+    def from_params(cls):
+        """Get mirror direction from integration params."""
+        direction_str = demisto.params().get(WizMirrorParam.DIRECTION, "None")
+        if direction_str not in cls.DIRECTION_MAP:
+            demisto.debug(f"Invalid mirror_direction value: '{direction_str}', defaulting to None")
+        return cls.DIRECTION_MAP.get(direction_str)
+
+
+class WizMirrorParam:
+    """Parameter names for mirror configuration."""
+    DIRECTION = "mirror_direction"
+    LIMIT = "mirror_limit"
+    COMMENT_TAG = "comment_tag"
+
+    LIMIT_MIN = 1
+    LIMIT_MAX = 500
+    LIMIT_DEFAULT = 50
+
+
+class WizMirrorField:
+    """Field names used in mirror metadata (added to rawJSON)."""
+    DIRECTION = "mirror_direction"
+    INSTANCE = "mirror_instance"
+    ID = "mirror_id"
+    TAGS = "mirror_tags"
+
+
+XSOAR_MIRROR_MARKER = "Mirrored from Cortex XSOAR"
+DEFAULT_RESOLUTION_REASON = "WONT_FIX"
+
+WIZ_MIRRORED_FIELDS = ["status", "notes", "dueAt", "resolutionReason"]
+
+# XSOAR's built-in `closeReason` singleSelect values → Wiz `resolutionReason` enum.
+# The outgoing mapper declares `resolutionReason <- resolutionReason`, but the Wiz Issue
+# incident type has no XSOAR field by that name, so the mapper alone never carries the
+# analyst's chosen reason. We translate XSOAR's `closeReason` (always populated on close)
+# as a fallback so the user-selected close intent reaches Wiz instead of defaulting to WONT_FIX.
+XSOAR_CLOSE_REASON_TO_WIZ = {
+    "Resolved": "ISSUE_FIXED",
+    "False Positive": "FALSE_POSITIVE",
+    "Duplicate": "WONT_FIX",
+    "Other": "WONT_FIX",
+}
+
+
+def _resolve_wiz_reason(delta, data=None):
+    """Resolve Wiz `resolutionReason` from a mirror delta, with `closeReason` fallback.
+
+    Order of precedence:
+      1. `delta.resolutionReason` — wins if a future XSOAR config adds the proper field.
+      2. `data.closeReason` (then `delta.closeReason`) — translated via XSOAR_CLOSE_REASON_TO_WIZ.
+      3. None — caller falls back to DEFAULT_RESOLUTION_REASON.
+    """
+    if delta:
+        explicit = delta.get("resolutionReason")
+        if explicit:
+            return explicit
+
+    close_reason = None
+    if data:
+        close_reason = data.get("closeReason")
+    if not close_reason and delta:
+        close_reason = delta.get("closeReason")
+
+    if not close_reason:
+        return None
+    return XSOAR_CLOSE_REASON_TO_WIZ.get(close_reason)
 
 
 def set_authentication_endpoint(auth_endpoint):
@@ -1678,6 +1789,42 @@ def checkAPIerrors(query, variables):
     return response_json
 
 
+FETCH_ALL_ISSUES_BUDGET_SECONDS = 240  # 5-min Docker timeout - 60s safety margin
+
+
+def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_BUDGET_SECONDS):
+    """
+    Fetch all issue nodes from a paginated issues query.
+
+    Bounded by `deadline_seconds` (default 240) to avoid the 5-min Docker
+    script timeout that hard-kills the process. On budget exhaustion, returns
+    the partial result accumulated so far and logs a warning. Callers that
+    require completeness should narrow their filter; callers that tolerate
+    partial results (mirror is the exception — it has its own single-page
+    code path) get an actionable signal instead of a script crash.
+    """
+    variables = dict(variables)
+    started = time.monotonic()
+
+    response_json = checkAPIerrors(query, variables)
+    nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes", []))
+
+    while response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage"):
+        if time.monotonic() - started > deadline_seconds:
+            demisto.info(
+                f"_fetch_all_issue_nodes: hit {deadline_seconds}s budget after {len(nodes)} nodes; "
+                "returning partial result. Narrow your filter to retrieve more."
+            )
+            break
+        variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
+        response_json = checkAPIerrors(query, variables)
+        page_nodes = response_json.get("data", {}).get("issues", {}).get("nodes", [])
+        if page_nodes:
+            nodes += page_nodes
+
+    return nodes
+
+
 def translate_severity(issue):
     """
     Translate issue severity to demisto
@@ -1717,6 +1864,8 @@ def build_incidents(issue):
         incident_name = f"{rule_name or 'Unknown Rule'} - {issue_id}"
         created_at = issue.get("createdAt", "")
         severity = translate_severity(issue)
+
+        _attach_mirror_metadata(issue)
 
         incident = {
             "name": incident_name,
@@ -1967,14 +2116,7 @@ def fetch_issues(max_fetch):
     demisto.info(f"Fetching Issues for {variables}")
 
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
-    response_json = checkAPIerrors(query, variables)
-
-    issues = response_json["data"]["issues"]["nodes"]
-    while response_json["data"]["issues"]["pageInfo"]["hasNextPage"]:
-        variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
-        response_json = checkAPIerrors(query, variables)
-        if response_json["data"]["issues"]["nodes"] != []:
-            issues += response_json["data"]["issues"]["nodes"]
+    issues = _fetch_all_issue_nodes(query, variables)
 
     incidents = []
     for issue in issues:
@@ -2120,23 +2262,12 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     demisto.info(f"Query is {query}")
     demisto.info(f"Issue variables is {issue_variables}")
 
-    response_json = checkAPIerrors(query, issue_variables)
-
-    demisto.info(f"The API response is {response_json}")
-
-    issues = {}
-    if response_json["data"]["issues"]["nodes"] != []:
-        issues = response_json["data"]["issues"]["nodes"]
-    while response_json["data"]["issues"]["pageInfo"]["hasNextPage"]:
-        issue_variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
-        response_json = checkAPIerrors(query, issue_variables)
-        if response_json["data"]["issues"]["nodes"] != []:
-            issues += response_json["data"]["issues"]["nodes"]
-
+    issues = _fetch_all_issue_nodes(query, issue_variables)
     return issues
 
 
-def get_resources(search, entity_type, subscription_external_ids, provider_unique_ids):
+def get_resources(search, entity_type, subscription_external_ids, provider_unique_ids,
+                   project_ids=None, native_types=None, updated_at_before=None, updated_at_after=None):
     """
     Retrieves Resources
     """
@@ -2144,15 +2275,22 @@ def get_resources(search, entity_type, subscription_external_ids, provider_uniqu
         f"Entity type is {entity_type}\n"
         f"Search is {search}\n"
         f"Subscription External IDs is {subscription_external_ids}\n"
-        f"Provider Unique IDs is {provider_unique_ids}"
+        f"Provider Unique IDs is {provider_unique_ids}\n"
+        f"Project IDs is {project_ids}\n"
+        f"Native Types is {native_types}\n"
+        f"Updated At Before is {updated_at_before}\n"
+        f"Updated At After is {updated_at_after}"
     )
     error_msg = ""
 
-    if not search and not entity_type and not subscription_external_ids and not provider_unique_ids:
+    if (not search and not entity_type and not subscription_external_ids and not provider_unique_ids
+            and not project_ids and not native_types and not updated_at_before and not updated_at_after):
         error_msg = (
             f"You should pass (at least) one of the following parameters:\n\t{WizInputParam.SEARCH}\n\t"
             f"{WizInputParam.ENTITY_TYPE}\n\t{WizInputParam.SUBSCRIPTION_EXTERNAL_IDS}\n\t"
-            f"{WizInputParam.PROVIDER_UNIQUE_IDS}\n"
+            f"{WizInputParam.PROVIDER_UNIQUE_IDS}\n\t{WizInputParam.PROJECT_IDS}\n\t"
+            f"{WizInputParam.NATIVE_TYPES}\n\t{WizInputParam.UPDATED_AT_BEFORE}\n\t"
+            f"{WizInputParam.UPDATED_AT_AFTER}\n"
         )
 
     if error_msg:
@@ -2171,6 +2309,19 @@ def get_resources(search, entity_type, subscription_external_ids, provider_uniqu
     if provider_unique_ids:
         provider_unique_ids_formatted = [str(x) for x in re.split(r"[,\s]+", provider_unique_ids.strip())]
         variables["filterBy"]["providerUniqueId"] = provider_unique_ids_formatted
+    if project_ids:
+        project_ids_formatted = [str(x) for x in re.split(r"[,\s]+", project_ids.strip())]
+        variables["filterBy"]["projectId"] = project_ids_formatted
+    if native_types:
+        native_types_formatted = [str(x) for x in re.split(r"[,\s]+", native_types.strip())]
+        variables["filterBy"]["nativeType"] = native_types_formatted
+    if updated_at_before or updated_at_after:
+        updated_at: Dict[str, str] = {}
+        if updated_at_before:
+            updated_at["before"] = updated_at_before
+        if updated_at_after:
+            updated_at["after"] = updated_at_after
+        variables["filterBy"]["updatedAt"] = updated_at
 
     try:
         response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
@@ -2227,7 +2378,11 @@ def reject_issue(issue_id, reject_reason, reject_comment):
 
 def resolve_issue(issue_id, resolution_reason, resolution_note):
     """
-    Reject a Wiz Issue
+    Resolve a Wiz Threat Detection Issue.
+
+    `status=RESOLVED` is only valid for Threat Detection issues. Non-Threat-Detection
+    types (Toxic Combination, Cloud Configuration, Attack Surface) are auto-resolved
+    when the underlying problem is fixed; use wiz-reject-issue for those types.
     """
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
@@ -2235,11 +2390,20 @@ def resolve_issue(issue_id, resolution_reason, resolution_note):
 
     issue_object = _get_issue(issue_id, is_evidence=False)
 
-    issue_type = issue_object["data"]["issues"]["nodes"][0]["type"]
+    nodes = (issue_object or {}).get("data", {}).get("issues", {}).get("nodes") or []
+    if not nodes:
+        return f"Issue not found: {issue_id}"
+
+    issue_type = nodes[0].get("type")
 
     if issue_type != "THREAT_DETECTION":
-        demisto.error(f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}.")
-        return f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}."
+        msg = (
+            f"Only a Threat Detection Issue can be resolved.\n"
+            f"Received an Issue of type {issue_type}.\n"
+            f"Use wiz-reject-issue for non-Threat-Detection issues."
+        )
+        demisto.error(msg)
+        return msg
 
     return reject_or_resolve_issue(issue_id, resolution_reason, resolution_note, "RESOLVED")
 
@@ -2261,7 +2425,7 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
 
     variables = {
         "issueId": issue_id,
-        "patch": {"status": status, "note": reject_or_resolve_comment, "resolutionReason": reject_or_resolve_reason},
+        "patch": {"status": status, "note": truncate_note(reject_or_resolve_comment), "resolutionReason": reject_or_resolve_reason},
     }
     query = UPDATE_ISSUE_QUERY
 
@@ -2336,6 +2500,18 @@ def _get_issue(issue_id, is_evidence=False):
     return issue_response
 
 
+def truncate_note(text):
+    """
+    Truncate a note to MAX_NOTE_LENGTH characters.
+    If truncated, appends '... [truncated]' within the limit.
+    """
+    if not text or len(text) <= MAX_NOTE_LENGTH:
+        return text
+
+    suffix = "... [truncated]"
+    return text[: MAX_NOTE_LENGTH - len(suffix)] + suffix
+
+
 def set_issue_comment(issue_id, comment):
     """
     Set a note on Wiz Issue
@@ -2345,6 +2521,7 @@ def set_issue_comment(issue_id, comment):
     if not is_valid_id:
         return message
 
+    comment = truncate_note(comment)
     issue_variables = {"input": {"issueId": issue_id, "text": comment}}
     issue_query = CREATE_COMMENT_QUERY
 
@@ -2385,10 +2562,11 @@ def clear_issue_note(issue_id):
 
     issue_object = _get_issue(issue_id)
 
-    issue_notes = issue_object["data"]["issues"]["nodes"][0]["notes"]
+    issue_notes = issue_object["data"]["issues"]["nodes"][0].get("notes") or []
     demisto.info(f"The issue notes are: {issue_notes}")
 
     query = DELETE_NOTE_QUERY
+    response = None
     for note in issue_notes:
         variables = {"input": {"id": note["id"]}}
 
@@ -2566,6 +2744,278 @@ def copy_to_forensics_account(resource_id):
         return response_json
 
 
+def get_mapping_fields_command():
+    mapping_response = GetMappingFieldsResponse()
+    incident_type_scheme = SchemeTypeMapping(type_name="Wiz Issue")
+    for field in WIZ_MIRRORED_FIELDS:
+        incident_type_scheme.add_field(field)
+    mapping_response.add_scheme_type(incident_type_scheme)
+    return mapping_response
+
+
+MIRROR_CURSOR_KEY = "mirror_cursor"
+
+
+def get_modified_remote_data_command(args):
+    """
+    Returns IDs of issues whose status changed since `last_update`.
+
+    Single-page-per-call to stay under the 5-min Docker timeout. A persistent
+    cursor in integration context (`mirror_cursor`) lets us drain large backlogs
+    across consecutive mirror cycles instead of one giant call.
+
+    Filter semantics:
+      - filterBy.statusChangedAt.after is exclusive
+      - When filterBy.statusChangedAt is set, results auto-order by statusChangedAt ASC
+      - Issues with no statusChangedAt are filtered out automatically
+
+    Known limitation: if multiple issues share the same microsecond-precision
+    status_changed_at and a page boundary splits them, the trailing tied issues
+    on the next page are skipped (the `>` filter excludes the cursor value). In
+    practice rare; would require simultaneous bulk status changes from multiple
+    writers. Documented test: test_get_modified_remote_data_microsecond_tie_known_loss.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update or ""
+
+    raw_limit = demisto.params().get(WizMirrorParam.LIMIT, WizMirrorParam.LIMIT_DEFAULT)
+    try:
+        raw_limit = int(raw_limit)
+    except (ValueError, TypeError):
+        raw_limit = WizMirrorParam.LIMIT_DEFAULT
+    mirror_limit = max(WizMirrorParam.LIMIT_MIN, min(raw_limit, WizMirrorParam.LIMIT_MAX))
+
+    ctx = demisto.getIntegrationContext() or {}
+    saved_cursor = ctx.get(MIRROR_CURSOR_KEY, "") or ""
+
+    # Compare via datetime, not lex: XSOAR's lastUpdate is second-precision while
+    # saved_cursor is microsecond-precision (Wiz). Lex-max would pick bare-Z over
+    # the chronologically-later microsecond value (`Z` > `.`), rewinding the cursor.
+    last_update_dt = _parse_iso_timestamp(last_update)
+    saved_cursor_dt = _parse_iso_timestamp(saved_cursor)
+    if saved_cursor_dt and (not last_update_dt or saved_cursor_dt >= last_update_dt):
+        cursor = saved_cursor
+    else:
+        cursor = last_update or saved_cursor
+
+    demisto.debug(
+        f"get_modified_remote_data: cursor={cursor} "
+        f"(last_update={last_update}, saved_cursor={saved_cursor}, limit={mirror_limit})"
+    )
+
+    variables = {
+        "first": mirror_limit,
+        "filterBy": {"statusChangedAt": {"after": cursor}},
+        "orderBy": {"field": "STATUS_CHANGED_AT", "direction": "ASC"},
+    }
+
+    response_json = checkAPIerrors(MODIFIED_ISSUE_IDS_QUERY, variables)
+    nodes = response_json.get("data", {}).get("issues", {}).get("nodes", []) or []
+
+    modified_ids = [n["id"] for n in nodes if n.get("id")]
+
+    if nodes:
+        page_max = max((n["statusChangedAt"] for n in nodes if n.get("statusChangedAt")), default="")
+        if page_max:
+            page_max_dt = _parse_iso_timestamp(page_max)
+            saved_dt = _parse_iso_timestamp(saved_cursor)
+            if not saved_dt or (page_max_dt and page_max_dt > saved_dt):
+                ctx[MIRROR_CURSOR_KEY] = page_max
+                demisto.setIntegrationContext(ctx)
+                demisto.debug(f"get_modified_remote_data: cursor advanced to {page_max}")
+
+    has_next_page = response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage", False)
+    demisto.debug(
+        f"get_modified_remote_data: returned {len(modified_ids)} ids, hasNextPage={has_next_page}, "
+        f"new cursor={ctx.get(MIRROR_CURSOR_KEY, '')}"
+    )
+
+    return GetModifiedRemoteDataResponse(modified_ids)
+
+
+def get_remote_data_command(args):
+    parsed_args = GetRemoteDataArgs(args)
+    issue_id = parsed_args.remote_incident_id
+    last_update = parsed_args.last_update
+
+    demisto.debug(f"get_remote_data: issue_id={issue_id}, last_update={last_update}")
+
+    issues = get_issue(issue_id)
+    if not issues or isinstance(issues, str):
+        return GetRemoteDataResponse({}, [])
+
+    issue = issues[0]
+    _attach_mirror_metadata(issue)
+
+    entries = _build_new_note_entries(issue, last_update)
+    return GetRemoteDataResponse(issue, entries)
+
+
+def _attach_mirror_metadata(issue):
+    """Add mirror metadata fields to issue dict."""
+    mirror_direction = WizMirrorDirection.from_params()
+    if mirror_direction:
+        issue[WizMirrorField.DIRECTION] = mirror_direction
+        issue[WizMirrorField.INSTANCE] = demisto.integrationInstance()
+        issue[WizMirrorField.ID] = issue.get("id")
+        issue[WizMirrorField.TAGS] = [demisto.params().get(WizMirrorParam.COMMENT_TAG, "comments")]
+
+
+def _parse_iso_timestamp(value):
+    """Parse an ISO-8601 timestamp tolerating `Z` suffix and fractional seconds.
+
+    Lex-comparison of ISO strings is unsafe across precisions: `.` (0x2E) sorts
+    before `Z` (0x5A), so `"2025-01-01T00:00:00.500000Z" < "2025-01-01T00:00:00Z"`
+    even though it's chronologically later. Wiz returns microsecond precision
+    while XSOAR's lastUpdate is second-precision — comparing them as strings
+    silently drops notes added in the sub-second window.
+    """
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
+def _build_new_note_entries(issue, last_update):
+    """Build war room entries for notes added since last_update.
+
+    First sync (no last_update) returns []: we intentionally avoid back-filling
+    the entire pre-existing note history into a fresh war room. Subsequent
+    syncs surface only notes newer than the previous sync.
+    """
+    entries = []
+    if not last_update:
+        return entries
+
+    last_update_dt = _parse_iso_timestamp(last_update)
+    for note in issue.get("notes") or []:
+        if XSOAR_MIRROR_MARKER in note.get("text", ""):
+            continue
+        note_time = note.get("updatedAt") or note.get("createdAt", "")
+        note_dt = _parse_iso_timestamp(note_time)
+        is_newer = (note_dt and last_update_dt and note_dt > last_update_dt) or (
+            not (note_dt and last_update_dt) and note_time > last_update
+        )
+        if is_newer:
+            author = ""
+            if note.get("user"):
+                author = note["user"].get("name", "")
+            elif note.get("serviceAccount"):
+                author = f"[SA] {note['serviceAccount'].get('name', '')}"
+
+            entries.append({
+                "Type": entryTypes["note"],
+                "Contents": f"**{author}** ({note_time}):\n{note.get('text', '')}",
+                "ContentsFormat": formats["markdown"],
+                "Note": True,
+            })
+
+    return entries
+
+
+def update_remote_system_command(args):
+    parsed_args = UpdateRemoteSystemArgs(args)
+    remote_id = parsed_args.remote_incident_id
+
+    if not remote_id:
+        demisto.debug("update_remote_system: no remote_id, skipping")
+        return remote_id
+
+    demisto.debug(f"update_remote_system: remote_id={remote_id}")
+
+    incident_closed = parsed_args.inc_status == IncidentStatus.DONE
+
+    if parsed_args.incident_changed and parsed_args.delta:
+        _handle_field_changes(remote_id, parsed_args.delta, data=parsed_args.data, skip_status=incident_closed)
+
+    if incident_closed:
+        resolution_reason = _resolve_wiz_reason(parsed_args.delta, parsed_args.data)
+        _handle_incident_closed(remote_id, resolution_reason=resolution_reason)
+
+    if parsed_args.entries:
+        _handle_outgoing_entries(remote_id, parsed_args.entries)
+
+    return remote_id
+
+
+def _handle_field_changes(remote_id, delta, data=None, skip_status=False):
+    """Push field-level changes (status, due date) to Wiz."""
+    new_status = delta.get("status")
+    if new_status and not skip_status:
+        _mirror_status_to_wiz(remote_id, new_status, delta, data=data)
+
+    if "dueAt" in delta:
+        new_due_date = delta.get("dueAt")
+    elif "wizissueduedate" in delta:
+        new_due_date = delta.get("wizissueduedate")
+    else:
+        new_due_date = None
+    if new_due_date is not None:
+        if new_due_date:
+            set_issue_due_date(issue_id=remote_id, due_at=new_due_date)
+        else:
+            clear_issue_due_date(issue_id=remote_id)
+
+
+def _mirror_status_to_wiz(issue_id, xsoar_status, delta, data=None):
+    """Map XSOAR status string to Wiz issue status mutation."""
+    status_lower = str(xsoar_status).lower()
+
+    try:
+        if status_lower in ("resolved", "done", "closed"):
+            resolution_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
+            reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
+        elif status_lower in ("rejected",):
+            reject_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
+            reject_or_resolve_issue(issue_id, reject_reason, "Status mirrored from Cortex XSOAR", "REJECTED")
+        elif status_lower in ("active", "open", "reopened"):
+            reopen_issue(issue_id=issue_id, reopen_note="")
+        elif status_lower in ("in_progress", "in progress"):
+            issue_in_progress(issue_id=issue_id)
+        else:
+            demisto.debug(f"_mirror_status_to_wiz: unmapped status '{xsoar_status}'")
+    except Exception as e:
+        demisto.error(f"_mirror_status_to_wiz: failed to update status to '{xsoar_status}': {e}")
+
+
+def _handle_incident_closed(remote_id, resolution_reason=None):
+    """Handle XSOAR incident closed → resolve Wiz issue."""
+    reason = resolution_reason or DEFAULT_RESOLUTION_REASON
+    demisto.debug(f"_handle_incident_closed: resolving {remote_id} with reason={reason}")
+    try:
+        reject_or_resolve_issue(remote_id, reason, "Resolved from Cortex XSOAR", "RESOLVED")
+    except Exception as e:
+        demisto.info(f"_handle_incident_closed: failed (may already be resolved): {e}")
+
+
+def _handle_outgoing_entries(remote_id, entries):
+    """Push tagged XSOAR entries as Wiz issue notes.
+
+    Defense-in-depth: even though XSOAR's mirror engine only forwards entries
+    matching `dbotMirrorTags` (set from `comment_tag`), we re-check the tag here
+    to prevent leaking arbitrary war-room content to Wiz if a customer renames
+    `comment_tag` mid-flight (old incidents still carry the prior tag value) or
+    if XSOAR's tag-filtering behavior changes in a future version.
+    """
+    comment_tag = demisto.params().get(WizMirrorParam.COMMENT_TAG, "comments")
+    for entry in entries:
+        contents = entry.get("contents", "")
+        if not contents:
+            continue
+        entry_tags = entry.get("tags") or []
+        if comment_tag not in entry_tags:
+            demisto.debug(f"_handle_outgoing_entries: skipping entry without '{comment_tag}' tag (tags={entry_tags})")
+            continue
+        user = entry.get("user", "XSOAR") or "XSOAR"
+        text = f"({user}): {contents}\n\n{XSOAR_MIRROR_MARKER}"
+        try:
+            set_issue_comment(issue_id=remote_id, comment=text)
+        except Exception as e:
+            demisto.error(f"_handle_outgoing_entries: failed to add comment: {e}")
+
+
 def is_valid_uuid(uuid_string):
     if not isinstance(uuid_string, str):
         uuid_string = str(uuid_string)
@@ -2648,11 +3098,19 @@ def main():
             resources_entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
             resources_subscription_external_ids = demisto_args.get(WizInputParam.SUBSCRIPTION_EXTERNAL_IDS)
             resources_provider_unique_ids = demisto_args.get(WizInputParam.PROVIDER_UNIQUE_IDS)
+            resources_project_ids = demisto_args.get(WizInputParam.PROJECT_IDS)
+            resources_native_types = demisto_args.get(WizInputParam.NATIVE_TYPES)
+            resources_updated_at_before = demisto_args.get(WizInputParam.UPDATED_AT_BEFORE)
+            resources_updated_at_after = demisto_args.get(WizInputParam.UPDATED_AT_AFTER)
             resources = get_resources(
                 search=resources_search,
                 entity_type=resources_entity_type,
                 subscription_external_ids=resources_subscription_external_ids,
                 provider_unique_ids=resources_provider_unique_ids,
+                project_ids=resources_project_ids,
+                native_types=resources_native_types,
+                updated_at_before=resources_updated_at_before,
+                updated_at_after=resources_updated_at_after,
             )
             command_result = CommandResults(readable_output=resources, raw_response=resources)
             return_results(command_result)
@@ -2756,6 +3214,19 @@ def main():
             copy_mutation_response = copy_to_forensics_account(resource_id=resource_id)
             command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
+
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
+
+        elif command == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(demisto.args()))
+
+        elif command == "get-remote-data":
+            return_results(get_remote_data_command(demisto.args()))
+
+        elif command == "update-remote-system":
+            return_results(update_remote_system_command(demisto.args()))
+
         else:
             raise Exception("Unrecognized command: " + command)
     except Exception as err:
