@@ -1,9 +1,5 @@
 import re
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-from CommonServerUserPython import *
 
 """IMPORTS"""
 import json
@@ -92,6 +88,10 @@ TIMEOUT = int(PARAMS.get("timeout") or 60)
 MAP_LABELS = PARAMS.get("map_labels", True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
+
+#Adding for the FIELDS integration
+FIELDS = PARAMS.get("fetch_fields", "")
+FIELDS_LIST = [f.strip() for f in FIELDS.split(",") if f.strip()] if FIELDS else []
 
 
 def get_value_by_dot_notation(dictionary, key):
@@ -375,10 +375,25 @@ def get_hit_table(hit):
         "_score": hit.get("_score"),
     }
     headers = ["_index", "_id", "_type", "_score"]
+
+    # Add _source fields to the table context (original behavior preserved)
     if hit.get("_source") is not None:
         for source_field in hit.get("_source"):
             table_context[str(source_field)] = hit.get("_source").get(str(source_field))
             headers.append(source_field)
+
+    # Add normalized Elasticsearch fields to the table context
+    # Fields are prefixed with "fields." to distinguish them from _source values
+    if hit.get("fields") is not None:
+        for field_name, field_value in hit.get("fields").items():
+            normalized_key = f"fields.{field_name}"
+            # Elasticsearch always returns field values as lists,
+            # we unwrap single-element lists for readability
+            if isinstance(field_value, list):
+                table_context[normalized_key] = field_value[0] if len(field_value) == 1 else field_value
+            else:
+                table_context[normalized_key] = field_value
+            headers.append(normalized_key)
 
     return table_context, headers
 
@@ -842,19 +857,34 @@ def integration_health_check(proxies):
     return "Testing was successful."
 
 
-def incident_label_maker(source):
+def incident_label_maker(source, fields=None):
     """Creates labels for the created incident.
 
     Args:
         source(dict): the _source fields of a hit.
+        fields (dict): the normalized fields returned by Elasticsearch.
 
     Returns:
         (list).The labels.
     """
     labels = []
+    # Add _source fields as labels
     for field, value in source.items():
         encoded_value = value if isinstance(value, str) else json.dumps(value)
         labels.append({"type": str(field), "value": encoded_value})
+
+    # Add normalized Elasticsearch fields as labels
+    # Fields are prefixed with "fields." to distinguish them from _source values
+    if fields:
+        for field, value in fields.items():
+            # Elasticsearch always returns field values as lists,
+            # even for single values. We unwrap single-element lists.
+            if isinstance(value, list):
+                encoded_value = value[0] if len(value) == 1 else json.dumps(value)
+            else:
+                encoded_value = value if isinstance(value, str) else json.dumps(value)
+            # Prefix with "fields." to avoid collision with _source fields
+            labels.append({"type": f"fields.{str(field)}", "value": str(encoded_value)})
 
     return labels
 
@@ -875,8 +905,23 @@ def results_to_incidents_timestamp(response, last_fetch):
     incidents = []
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
+
+        # Retrieve normalized fields returned by Elasticsearch.
+        # These may contain runtime fields or normalized date values
+        # not present in _source.
+        fields = hit.get("fields")
+
         if source is not None:
             time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+
+            # Fallback: if TIME_FIELD is not found in _source,
+            # try to retrieve it from normalized fields.
+            # This handles cases where TIME_FIELD is a runtime field.
+            if time_field_value is None and fields:
+                field_value = fields.get(TIME_FIELD)
+                if isinstance(field_value, list) and field_value:
+                    # Unwrap single-element list returned by Elasticsearch fields API
+                    time_field_value = field_value[0]
 
             if time_field_value is not None:
                 # if timestamp convert to iso format date and save the timestamp
@@ -923,8 +968,24 @@ def results_to_incidents_datetime(response, last_fetch):
 
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
+
+        # Retrieve normalized fields returned by Elasticsearch.
+        # These may contain runtime fields or normalized date values
+        # not present in _source.
+        fields = hit.get("fields")
+
         if source is not None:
             time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+
+            # Fallback: if TIME_FIELD is not found in _source,
+            # try to retrieve it from normalized fields.
+            # This handles cases where TIME_FIELD is a runtime field.
+            if time_field_value is None and fields:
+                field_value = fields.get(TIME_FIELD)
+                if isinstance(field_value, list) and field_value:
+                    # Unwrap single-element list returned by Elasticsearch fields API
+                    time_field_value = field_value[0]
+
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
@@ -947,7 +1008,8 @@ def results_to_incidents_datetime(response, last_fetch):
                         inc["dbotMirrorId"] = hit.get("_id")
 
                     if MAP_LABELS:
-                        inc["labels"] = incident_label_maker(hit.get("_source"))
+                        # Pass both _source and normalized fields to label maker
+                        inc["labels"] = incident_label_maker(hit.get("_source"), fields=fields)
 
                     incidents.append(inc)
                 else:
@@ -1081,6 +1143,13 @@ def fetch_incidents(proxies):
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
+
+        # Request all normalized fields alongside _source.
+        # fields=["*"] tells Elasticsearch to return all fields in their
+        # normalized form (e.g., dates formatted, runtime fields computed).
+        # _source=True ensures the original _source is also returned.
+        #search = search.extra(fields=["*"], _source=True)
+        search = search.extra(fields=FIELDS_LIST, _source=True)
 
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
