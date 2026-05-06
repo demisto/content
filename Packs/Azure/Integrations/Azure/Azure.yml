@@ -581,8 +581,9 @@ script:
       - description: The storage account name.
         name: account_name
         required: true
-  - description: Run this command to update a specific blob container.
+  - description: Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
     name: azure-storage-blob-containers-update
+    deprecated: true
     outputs:
       - contextPath: Azure.StorageBlobContainer.id
         description: Fully qualified resource ID for the resource.
@@ -633,6 +634,59 @@ script:
           - Blob
           - Container
           - None
+
+  - name: azure-storage-blob-container-update
+    description: Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The container name.
+      name: container_name
+      required: true
+    - description: Uses the specified encryption scope by default for all writes to the container.
+      name: default_encryption_scope
+    - auto: PREDEFINED
+      description: Blocks overriding the container’s default encryption scope.
+      name: deny_encryption_scope_override
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Specifies the access level.
+      name: public_access
+      predefined:
+        - Blob
+        - Container
+        - None
+    outputs:
+    - contextPath: Azure.Storage.Container.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.Storage.Container.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.Storage.Container.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.Storage.Container.properties.metadata
+      description: A name-value pair to associate with the container as metadata.
+      type: String
+    - contextPath: Azure.Storage.Container.properties.publicAccess
+      description: Specifies whether data in the container may be accessed publicly and the access level.
+      type: String
+    - contextPath: Azure.Storage.Container.properties.hasImmutabilityPolicy
+      description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
+      type: Boolean
+    - contextPath: Azure.Storage.Container.properties.hasLegalHold
+      description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
+      type: Boolean
 
   - arguments:
     - description: The name of the Container.

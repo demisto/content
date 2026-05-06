@@ -148,6 +148,59 @@ def test_update_security_rule_command(mocker, client, mock_params):
     assert result.outputs.get("properties", {}).get("access") == "Allow"
 
 
+def test_update_security_rule_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a security rule using the deprecated command.
+    When: The update_security_rule_command function is called with the deprecated command name.
+    Then: The function should return the updated rule information with the deprecated prefix.
+    """
+
+    # Prepare mock responses
+    rule_response = {
+        "name": "test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/\
+            securityRules/test-rule",
+        "properties": {
+            "protocol": "Tcp",
+            "sourcePortRange": "*",
+            "destinationPortRange": "443",
+            "sourceAddressPrefix": "Internet",
+            "destinationAddressPrefix": "10.0.0.0/24",
+            "access": "Allow",
+            "priority": 100,
+            "direction": "Inbound",
+            "description": "Test rule",
+        },
+    }
+
+    mocker.patch.object(client, "get_rule", return_value=rule_response)
+    mocker.patch.object(client, "create_or_update_rule", return_value=rule_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rule-update")
+
+    # Call the function
+    args = {
+        "security_group_name": "test-sg",
+        "security_rule_name": "test-rule",
+        "action": "Allow",
+        "direction": "Inbound",
+        "protocol": "Tcp",
+        "source": "Internet",
+        "destination": "10.0.0.0/24",
+        "destination_ports": "443",
+        "priority": "100",
+        "description": "Test rule",
+        "access": "Allow",
+    }
+
+    result = update_security_rule_command(client, mock_params, args)
+
+    # Verify results
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-rule"
+    assert result.outputs.get("properties", {}).get("access") == rule_response.get("properties", {}).get("access")
+
+
 def test_storage_account_update_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update a storage account.
@@ -587,6 +640,36 @@ def test_update_key_vault_command(mocker, client, mock_params):
     assert result.outputs["properties"]["enablePurgeProtection"] is True
 
 
+def test_update_key_vault_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update Key Vault properties using the deprecated command.
+    When: The update_key_vault_command function is called with the deprecated command name.
+    Then: The function should return the updated Key Vault properties with the deprecated prefix.
+    """
+
+    # Prepare mock response
+    keyvault_response = {
+        "name": "test-keyvault",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.KeyVault/vaults/test-keyvault",
+        "properties": {"enableSoftDelete": True, "enablePurgeProtection": True},
+    }
+
+    mocker.patch.object(client, "update_key_vault_request", return_value=keyvault_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-key-vault-update")
+
+    # Call the function
+    args = {"vault_name": "test-keyvault", "enable_soft_delete": "true", "enable_purge_protection": "true"}
+
+    result = update_key_vault_command(client, mock_params, args)
+
+    # Verify results
+    assert result.outputs_prefix == "Azure.KeyVault"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-keyvault"
+    assert result.outputs["properties"]["enableSoftDelete"] is True
+    assert result.outputs["properties"]["enablePurgeProtection"] is True
+
+
 def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update SQL database threat policy.
@@ -619,6 +702,44 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
 
     # Verify results
     assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "default"
+    assert result.outputs["properties"]["emailAccountAdmins"] is True
+
+
+def test_sql_db_threat_policy_update_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update SQL database threat policy using the deprecated command.
+    When: The sql_db_threat_policy_update_command function is called with the deprecated command name.
+    Then: The function should return the updated threat policy with the deprecated prefix.
+    """
+
+    # Prepare mock responses
+    current_policy = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
+            securityAlertPolicies/default",
+        "properties": {"emailAccountAdmins": False},
+    }
+
+    updated_policy = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
+            securityAlertPolicies/default",
+        "properties": {"emailAccountAdmins": True},
+    }
+
+    mocker.patch.object(client, "sql_db_threat_policy_get", return_value=current_policy)
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value=updated_policy)
+    mocker.patch("Azure.demisto.command", return_value="azure-sql-db-threat-policy-update")
+
+    # Call the function
+    args = {"server_name": "test-server", "db_name": "test-db", "email_account_admins_enabled": "true"}
+
+    result = sql_db_threat_policy_update_command(client, mock_params, args)
+
+    # Verify results
+    assert result.outputs_prefix == "Azure.SqlDBThreatPolicy"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
     assert result.outputs["properties"]["emailAccountAdmins"] is True
@@ -692,6 +813,35 @@ def test_cosmosdb_update_command(mocker, client, mock_params):
 
     # Verify results
     assert result.outputs_prefix == "Azure.CosmosDB.DBAccounts"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-cosmos"
+    assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
+
+
+def test_cosmosdb_update_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update Cosmos DB settings using the deprecated command.
+    When: The cosmosdb_update_command function is called with the deprecated command name.
+    Then: The function should return the updated Cosmos DB settings with the deprecated prefix.
+    """
+
+    # Prepare mock response
+    cosmos_response = {
+        "name": "test-cosmos",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DocumentDB/databaseAccounts/test-cosmos",
+        "properties": {"disableKeyBasedMetadataWriteAccess": True},
+    }
+
+    mocker.patch.object(client, "cosmos_db_update", return_value=cosmos_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-cosmos-db-update")
+
+    # Call the function
+    args = {"account_name": "test-cosmos", "disable_key_based_metadata_write_access": "true"}
+
+    result = cosmosdb_update_command(client, mock_params, args)
+
+    # Verify results
+    assert result.outputs_prefix == "Azure.CosmosDB"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-cosmos"
     assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
@@ -2187,6 +2337,34 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert "Public IP Addresses List" in result_all.readable_output
 
 
+def test_nsg_public_ip_addresses_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_public_ip_addresses_response.json file using the deprecated command.
+    When: nsg_public_ip_addresses_list_command is called with the deprecated command name.
+    Then: It should return the public IP addresses data with the deprecated prefix.
+    """
+    from Azure import nsg_public_ip_addresses_list_command
+
+    mock_response = util_load_json("test_data/list_public_ip_addresses_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_public_ip_addresses_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"limit": "2", "all_results": "false"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-public-ip-addresses-list")
+
+    result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGPublicIPAddress"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert "name" in result.outputs[0]
+    assert "id" in result.outputs[0]
+
+
 def test_nsg_network_interfaces_list_command(mocker):
     """
     Given: An Azure client mock and the list_networks_interfaces_response.json file.
@@ -2240,6 +2418,31 @@ def test_nsg_network_interfaces_list_command(mocker):
     assert "Network Interfaces List" in result_all.readable_output
 
 
+def test_nsg_network_interfaces_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_networks_interfaces_response.json file using the deprecated command.
+    When: nsg_network_interfaces_list_command is called with the deprecated command name.
+    Then: It should return the network interfaces data with the deprecated prefix.
+    """
+    from Azure import nsg_network_interfaces_list_command
+
+    mock_response = util_load_json("test_data/list_networks_interfaces_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_networks_interfaces_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"limit": "1", "all_results": "false"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-network-interfaces-list")
+
+    result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+
+
 def test_nsg_resource_group_list_command(mocker):
     """
     Given: An Azure client mock and the list_resource_groups_response.json file.
@@ -2290,6 +2493,36 @@ def test_nsg_resource_group_list_command(mocker):
     assert isinstance(result_default, CommandResults)
     assert len(result_default.outputs) == 1
     assert result_default.outputs[0]["id"] == "/subscriptions/subscription1/resourceGroups/resourceGroup1"
+
+
+def test_nsg_resource_group_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_resource_groups_response.json file using the deprecated command.
+    When: nsg_resource_group_list_command is called with the deprecated command name.
+    Then: It should return the resource group data with the deprecated prefix.
+    """
+    from Azure import nsg_resource_group_list_command
+
+    mock_response = util_load_json("test_data/list_resource_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_groups_request.return_value = mock_response
+
+    params = {"subscription_id": "subscription1"}
+    args = {"limit": "1"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-resource-group-list")
+
+    result: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGResourceGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+
+    first = result.outputs[0]
+    assert first["name"] == "resourceGroup1"
+    assert first["location"] == "centralus"
 
 
 def test_nsg_security_rule_create_command(mocker):
@@ -2359,6 +2592,42 @@ def test_nsg_security_rule_create_command(mocker):
     assert f"The security rule {args['security_rule_name']} was created successfully" in result.readable_output
 
 
+def test_nsg_security_rule_create_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and arguments for creating a security rule using the deprecated command.
+    When: nsg_security_rule_create_command is called with the deprecated command name.
+    Then: It should return the created rule data with the deprecated prefix.
+    """
+    from Azure import nsg_security_rule_create_command
+
+    mock_response = util_load_json("test_data/create_or_update_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.create_or_update_rule.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {
+        "security_group_name": "testnsg",
+        "security_rule_name": "rule1",
+        "action": "Deny",
+        "direction": "Outbound",
+        "priority": 100,
+        "protocol": "Any",
+        "source": "10.0.0.0/8",
+        "destination": "11.0.0.0/8",
+        "destination_ports": "8080",
+    }
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rule-create")
+
+    result: CommandResults = nsg_security_rule_create_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "rule1"
+
+
 def test_nsg_security_rule_get_command(mocker):
     """
     Given: An Azure client mock and a security rule JSON.
@@ -2402,6 +2671,32 @@ def test_nsg_security_rule_get_command(mocker):
     # Check readable_output is generated
     assert result.readable_output
     assert f"Rule {args['security_rule_name']}" in result.readable_output
+
+
+def test_nsg_security_rule_get_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and a security rule JSON using the deprecated command.
+    When: nsg_security_rule_get_command is called with the deprecated command name.
+    Then: It should return the rule data with the deprecated prefix.
+    """
+    from Azure import nsg_security_rule_get_command
+
+    mock_rule = util_load_json("test_data/get_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.get_rule.return_value = mock_rule
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"security_group_name": "testnsg", "security_rule_name": "wow"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rule-get")
+
+    result: CommandResults = nsg_security_rule_get_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "wow"
 
 
 def test_nsg_security_groups_list_command(mocker):
@@ -2451,6 +2746,32 @@ def test_nsg_security_groups_list_command(mocker):
     # The readable_output should contain the NSG names
     for group in result.outputs:
         assert group["name"] in result.readable_output
+
+
+def test_nsg_security_groups_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_network_security_groups_response.json file using the deprecated command.
+    When: nsg_security_groups_list_command is called with the deprecated command name.
+    Then: It should return the security groups data with the deprecated prefix.
+    """
+    from Azure import nsg_security_groups_list_command
+
+    mock_response = util_load_json("test_data/list_network_security_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_network_security_groups.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-groups-list")
+
+    result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_response["value"])
 
 
 def test_nsg_security_rule_delete_command(mocker):
@@ -2740,7 +3061,7 @@ def test_storage_blob_containers_update_command(mocker):
     )
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_prefix == "Azure.Storage.BlobContainers"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response
     assert result.raw_response == mock_response
@@ -2755,6 +3076,32 @@ def test_storage_blob_containers_update_command(mocker):
     expected_headers = ["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"]
     for header in expected_headers:
         assert header in result.readable_output
+
+
+def test_storage_blob_containers_update_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the update_blob_container.json file using the deprecated command.
+    When: storage_blob_containers_update_command is called with the deprecated command name.
+    Then: It should return the updated container data with the deprecated prefix.
+    """
+    from Azure import storage_blob_containers_update_command
+
+    mock_response = util_load_json("test_data/update_blob_container.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_containers_create_update_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage", "container_name": "testcontainer"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-containers-update")
+
+    result: CommandResults = storage_blob_containers_update_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
 
 
 def test_extract_azure_resource_info():
@@ -3073,6 +3420,73 @@ def test_storage_container_blob_tag_get_command(mocker, client, mock_params):
     assert "Tag" in result.outputs
 
 
+def test_storage_container_blob_tag_get_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get tags for a blob using the deprecated command.
+    When: The storage_container_blob_tag_get_command function is called with valid parameters and the deprecated command name.
+    Then: The function should call the client's storage_container_blob_tag_get_request method and return the tags with the
+    deprecated prefix.
+    """
+    # Mock arguments
+    args = {"container_name": "testcontainer", "blob_name": "testblob.txt", "account_name": "testaccount"}
+
+    # Mock XML response
+    xml_response = """<?xml version="1.0" encoding="utf-8"?>
+    <Tags>
+        <TagSet>
+            <Tag>
+                <Key>tag1</Key>
+                <Value>value1</Value>
+            </Tag>
+            <Tag>
+                <Key>tag2</Key>
+                <Value>value2</Value>
+            </Tag>
+        </TagSet>
+    </Tags>"""
+
+    # Mock the client's storage_container_blob_tag_get_request method
+    mocker.patch.object(client, "storage_container_blob_tag_get_request", return_value=xml_response)
+
+    # Mock ElementTree parsing
+    mock_tree = mocker.Mock()
+    mock_root = mocker.Mock()
+    mock_tree.getroot.return_value = mock_root
+
+    # Create mock Tag elements
+    tag1 = mocker.Mock()
+    tag1.findtext.side_effect = lambda x: "tag1" if x == "Key" else "value1"
+    tag2 = mocker.Mock()
+    tag2.findtext.side_effect = lambda x: "tag2" if x == "Key" else "value2"
+
+    # Set up the iteration over Tag elements
+    mock_root.iter.return_value = [tag1, tag2]
+
+    mocker.patch("Azure.ET.ElementTree", return_value=mock_tree)
+    mocker.patch("Azure.defused_ET.fromstring", return_value=mock_root)
+
+    # Mock tableToMarkdown
+    mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
+
+    # Mock demisto.command
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-container-blob-tag-get")
+
+    # Call the function
+    result = storage_container_blob_tag_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_tag_get_request was called with correct parameters
+    client.storage_container_blob_tag_get_request.assert_called_once_with("testcontainer", "testblob.txt", "testaccount")
+
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Mocked Table"
+    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "testcontainer"
+    assert result.outputs["Blob"]["name"] == "testblob.txt"
+    assert "Tag" in result.outputs["Blob"]
+
+
 def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to set tags for a blob.
@@ -3152,6 +3566,55 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     assert result.outputs["ContainerName"] == "testcontainer"
     assert result.outputs["name"] == "testblob.txt"
     assert "Property" in result.outputs
+
+
+def test_storage_container_blob_property_get_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get properties for a blob using the deprecated command.
+    When: The storage_container_blob_property_get_command function is called with valid parameters and the
+        deprecated command name.
+    Then: The function should call the client's storage_container_blob_property_get_request method and return the properties
+        with the deprecated prefix.
+    """
+    # Mock arguments
+    args = {"container_name": "testcontainer", "blob_name": "testblob.txt", "account_name": "testaccount"}
+
+    # Mock response headers
+    mock_headers = CaseInsensitiveDict(
+        {
+            "Content-Length": "1024",
+            "Content-Type": "text/plain",
+            "Etag": "0x8D8B92EFCFD9B41",
+            "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+            "x-ms-creation-time": "Wed, 14 Aug 2024 09:00:00 GMT",
+        }
+    )
+
+    # Mock the client's storage_container_blob_property_get_request method
+    mock_response = mocker.Mock()
+    mock_response.headers = mock_headers
+    mocker.patch.object(client, "storage_container_blob_property_get_request", return_value=mock_response)
+
+    # Mock tableToMarkdown
+    mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
+
+    # Mock demisto.command
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-container-blob-property-get")
+
+    # Call the function
+    result = storage_container_blob_property_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_property_get_request was called with correct parameters
+    client.storage_container_blob_property_get_request.assert_called_once_with("testcontainer", "testblob.txt", "testaccount")
+
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Mocked Table"
+    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "testcontainer"
+    assert result.outputs["Blob"]["name"] == "testblob.txt"
+    assert "Property" in result.outputs["Blob"]
 
 
 def test_storage_container_blob_property_set_command(mocker, client, mock_params):
@@ -3396,6 +3859,35 @@ def test_start_vm_command(mocker):
     assert "vm1" in result.readable_output
 
 
+def test_start_vm_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and VM name using the deprecated command.
+    When: start_vm_command is called with the deprecated command name.
+    Then: It should call validate_provisioning_state and start_vm_request,
+          and return correct CommandResults with the deprecated prefix.
+    """
+    from Azure import start_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-instance-start")
+
+    result = start_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.start_vm_request.assert_called_once_with("sub-id", "rg1", "vm1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM starting"
+    assert "vm1" in result.readable_output
+
+
 def test_poweroff_vm_command(mocker):
     """
     Given: A subscription, resource group, VM name, and optional skip_shutdown.
@@ -3416,6 +3908,35 @@ def test_poweroff_vm_command(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM stopping"
+    assert "vm1" in result.readable_output
+
+
+def test_poweroff_vm_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, VM name, and optional skip_shutdown using the deprecated command.
+    When: poweroff_vm_command is called with the deprecated command name.
+    Then: It should call validate_provisioning_state and poweroff_vm_request,
+          and return correct CommandResults with the deprecated prefix.
+    """
+    from Azure import poweroff_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "skip_shutdown": True}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-instance-power-off")
+
+    result = poweroff_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.poweroff_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", True)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "vm1"
     assert result.outputs["resourceGroup"] == "rg1"
@@ -3457,6 +3978,49 @@ def test_get_vm_command(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["properties"]["vmId"] == "vm123"
+    assert result.outputs["properties"]["provisioningState"] == "Succeeded"
+    assert result.outputs["properties"]["storageProfile"]["osDisk"]["osType"] == "Linux"
+    assert result.outputs["properties"]["instanceView"]["statuses"][0]["displayStatus"] == "VM running"
+    assert "vm1" in result.readable_output
+
+
+def test_get_vm_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and VM name using the deprecated command.
+    When: get_vm_command is called with the deprecated command name.
+    Then: It should call get_vm_request and return correct CommandResults
+          with the deprecated prefix.
+    """
+    from Azure import get_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "expand": ""}
+
+    mock_response = {
+        "location": "eastus",
+        "tags": {"env": "prod"},
+        "properties": {
+            "vmId": "vm123",
+            "provisioningState": "Succeeded",
+            "storageProfile": {"osDisk": {"diskSizeGB": 128, "osType": "Linux"}},
+            "instanceView": {"statuses": [{"code": "PowerState/running", "displayStatus": "VM running"}]},
+            "networkProfile": {"networkInterfaces": [{"id": "nic1"}]},
+            "userData": "userdata",
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_vm_request", return_value=mock_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-instance-details-get")
+
+    result = get_vm_command(mock_client, params, args)
+
+    mock_client.get_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", expand="")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
     assert result.outputs_key_field == "name"
     assert result.outputs["properties"]["vmId"] == "vm123"
     assert result.outputs["properties"]["provisioningState"] == "Succeeded"
@@ -3515,6 +4079,54 @@ def test_get_network_interface_command(mocker):
     assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["publicIPAddress"]["id"] == "public-ip-id"
     assert result.outputs["properties"]["ipConfigurations"][0]["etag"] == "12345"  # etag cleaned
     assert "nic1" in result.readable_output
+
+
+def test_get_network_interface_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and network interface name using the deprecated command.
+    When: get_network_interface_command is called with the deprecated command name.
+    Then: It should call get_network_interface_request and return correct CommandResults
+          with the deprecated prefix.
+    """
+    from Azure import get_network_interface_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "network_interface_name": "nic1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1",
+        "name": "nic1",
+        "location": "eastus",
+        "properties": {
+            "macAddress": "00:11:22:33:44:55",
+            "primary": True,
+            "networkSecurityGroup": {"id": "nsg-id"},
+            "nicType": "Standard",
+            "virtualMachine": {"id": "vm-id"},
+            "dnsSettings": {"internalDomainNameSuffix": "internal.local"},
+            "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "id": "ipconfig-id",
+                    "properties": {"privateIPAddress": "10.0.0.4", "publicIPAddress": {"id": "public-ip-id"}},
+                    "etag": 'W/"12345"',
+                }
+            ],
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_network_interface_request", return_value=mock_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-network-interface-details-get")
+
+    result = get_network_interface_command(mock_client, mock_params, args)
+
+    mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "nic1"
 
 
 def test_get_single_ip_details_from_list_of_ip_details():
@@ -3579,6 +4191,46 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
     assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
     assert result.outputs["etag"] == "12345"
+    assert "ip1" in result.readable_output
+
+
+def test_get_public_ip_details_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and public IP name using the deprecated command.
+    When: get_public_ip_details_command is called with the deprecated command name.
+    Then: It should call get_public_ip_details_request and return correct CommandResults
+          with the deprecated prefix.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "address_name": "ip1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+        "name": "ip1",
+        "location": "eastus",
+        "etag": 'W/"12345"',
+        "properties": {
+            "ipAddress": "1.2.3.4",
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "ipConfiguration": {"id": "config-id"},
+            "dnsSettings": {"domainNameLabel": "label1", "fqdn": "ip1.eastus.cloudapp.azure.com"},
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_public_ip_details_request", return_value=mock_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-public-ip-details-get")
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_key_field == "id"
     assert "ip1" in result.readable_output
 
 
@@ -4114,6 +4766,44 @@ def test_nsg_security_rules_list_command_success(mocker):
     assert "rule1" in result.readable_output
     assert "rule2" in result.readable_output
     mock_client.list_security_rules.assert_called_once_with("test-sub-id", "test-rg", "test-nsg")
+
+
+def test_nsg_security_rules_list_command_deprecated(mocker):
+    """
+    Given: The command arguments using the deprecated command.
+    When: Calling azure-nsg-security-rules-list command with the deprecated command name.
+    Then: The command should successfully process and return network security rules with the deprecated prefix.
+    """
+    mock_client = mocker.Mock()
+    mock_response = {
+        "value": [
+            {
+                "name": "rule1",
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule1",
+                "properties": {"direction": "Inbound", "priority": 100, "access": "Allow"},
+            },
+            {
+                "name": "rule2",
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule2",
+                "properties": {"direction": "Outbound", "priority": 200, "access": "Deny"},
+            },
+        ]
+    }
+    mock_client.list_security_rules.return_value = mock_response
+
+    params = {}
+    args = {"subscription_id": "test-sub-id", "resource_group_name": "test-rg", "network_security_group_name": "test-nsg"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rules-list")
+
+    result = nsg_security_rules_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response["value"]
 
 
 def test_nsg_security_rules_list_command_empty_response(mocker):

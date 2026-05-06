@@ -89,7 +89,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-public-ip-addresses-list",
         "azure-vn-public-ip-address-get",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update", "azure-storage-blob-container-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
@@ -2104,7 +2104,7 @@ class AzureClient:
 
         parameter: (dict) args
             The command arguments passed to either the `azure-compute-vm-start` (azure-vm-instance-start) or
-            `azure-vm-poweroff-instance` commands
+            `azure-compute-vm-power-off` (azure-vm-instance-power-off) commands
 
         returns:
             None
@@ -2759,9 +2759,12 @@ def storage_blob_containers_update_command(client: AzureClient, params: dict, ar
         "Resource Group": resource_group,
         "Public Access": response.get("properties", {}).get("publicAccess"),
     }
+    command = demisto.command()
+    old_name = "azure-storage-blob-containers-update"
+    outputs_prefix = "Azure.StorageBlobContainer" if command == old_name else "Azure.Storage.BlobContainers"
 
     return CommandResults(
-        outputs_prefix="Azure.StorageBlobContainer",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -4988,6 +4991,7 @@ def main():  # pragma: no cover
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
             "azure-storage-blob-containers-update": storage_blob_containers_update_command,
+            "azure-storage-blob-container-update": storage_blob_containers_update_command,
             "azure-storage-container-property-get": storage_container_property_get_command,
             "azure-storage-container-create": storage_container_create_command,
             "azure-storage-container-delete": storage_container_delete_command,
