@@ -16,7 +16,7 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TypedDict
 from zipfile import ZIP_DEFLATED, ZipFile
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -24,24 +24,33 @@ from urllib3.util.retry import Retry
 
 INDEX_ZIP_URL = "https://marketplace-dist.storage.googleapis.com/content/packs/index.zip"
 BUCKET_PACKS_URL = "https://marketplace-dist.storage.googleapis.com/content/packs"
-MAX_WORKERS = 5
+MAX_WORKERS_PACKS = 10
+MAX_WORKERS_DOCKER = 5
 RETRY_TOTAL = 3
 RETRY_BACKOFF_FACTOR = 1  # seconds between retries
 
 
-class PackInfo(TypedDict):
+class PackInfo(TypedDict, total=False):
     """Structured metadata for a single pack extracted from index.zip.
 
-    These fields mirror the keys previously used from id_set.json ``Packs`` entries:
+    These fields mirror the keys previously used from id_set.json ``Packs`` entries,
+    plus additional metadata fields available in index.zip to support generic filtering
+    via :func:`should_filter_out_pack`.
 
-    ==================  =======================  ============================
-    PackInfo field       id_set.json key          index.zip metadata key
-    ==================  =======================  ============================
-    id                   (dict key)               id
-    version              current_version          currentVersion
-    author               author                   author
-    deprecated           *(string check on name)* deprecated  (boolean)
-    ==================  =======================  ============================
+    ====================  =======================  ============================
+    PackInfo field         id_set.json key          index.zip metadata key
+    ====================  =======================  ============================
+    id                     (dict key)               id
+    name                   name                     name
+    current_version        current_version          currentVersion
+    author                 author                   author
+    certification          certification             certification
+    tags                   tags                     tags
+    use_cases              use_cases                useCases
+    categories             categories               categories
+    marketplaces           marketplaces             marketplaces
+    deprecated             *(string check on name)* deprecated  (boolean)
+    ====================  =======================  ============================
 
     .. note::
         **Behavioral change from id_set.json → index.zip:**
@@ -49,19 +58,34 @@ class PackInfo(TypedDict):
         ``"(Deprecated)" in pack_data["name"]``.  The index.zip metadata
         provides an explicit ``deprecated`` boolean field, which is the
         canonical source and more reliable.
+
+    .. note::
+        Field names use ``snake_case`` to match the id_set.json convention,
+        preserving backward compatibility with :func:`should_filter_out_pack`
+        callers that may filter on these fields.
     """
 
+    # Required fields (always present)
     id: str
-    version: str
+    name: str
+    current_version: str
     author: str
     deprecated: bool
+    # Optional fields (may be absent in some metadata entries)
+    certification: str
+    tags: list[str]
+    use_cases: list[str]
+    categories: list[str]
+    marketplaces: list[str]
 
 
 def load_index_packs(verify_ssl: bool) -> dict[str, PackInfo]:
     """Downloads index.zip from the marketplace bucket and extracts pack metadata.
 
-    Extracts the following fields from each pack's metadata.json into a PackInfo:
-    ``id``, ``currentVersion``, ``author``, ``deprecated``.
+    Extracts all available metadata fields from each pack's metadata.json into
+    a :class:`PackInfo`.  Field names use ``snake_case`` to match the id_set.json
+    convention (e.g. ``currentVersion`` → ``current_version``).
+
     The dict is keyed by the pack's display name (``name`` or ``display_name``).
 
     Returns:
@@ -73,20 +97,33 @@ def load_index_packs(verify_ssl: bool) -> dict[str, PackInfo]:
     packs: dict[str, PackInfo] = {}
     with ZipFile(io.BytesIO(r.content), "r") as z:
         for name in z.namelist():
-            entry = PurePosixPath(name)
-            # Match paths like "index/<PackName>/metadata.json" (not versioned metadata files)
-            if entry.match("index/*/metadata.json") and len(entry.parts) == 3:
-                pack_folder_name = entry.parts[1]
+            # Match paths like "index/<PackName>/metadata.json" using string ops (faster than PurePosixPath)
+            parts = name.rstrip("/").split("/")
+            if len(parts) == 3 and parts[0] == "index" and parts[2] == "metadata.json":
+                pack_folder_name = parts[1]
                 try:
                     metadata = json.loads(z.read(name))
                     pack_id = metadata.get("id", pack_folder_name)
                     display_name = metadata.get("name") or metadata.get("display_name", pack_id)
-                    packs[display_name] = PackInfo(
+                    pack_info = PackInfo(
                         id=pack_id,
-                        version=metadata.get("currentVersion", ""),
+                        name=display_name,
+                        current_version=metadata.get("currentVersion", ""),
                         author=metadata.get("author", ""),
                         deprecated=metadata.get("deprecated", False),
                     )
+                    # Populate optional fields when present in metadata
+                    if "certification" in metadata:
+                        pack_info["certification"] = metadata["certification"]
+                    if "tags" in metadata:
+                        pack_info["tags"] = metadata["tags"]
+                    if "useCases" in metadata:
+                        pack_info["use_cases"] = metadata["useCases"]
+                    if "categories" in metadata:
+                        pack_info["categories"] = metadata["categories"]
+                    if "marketplaces" in metadata:
+                        pack_info["marketplaces"] = metadata["marketplaces"]
+                    packs[display_name] = pack_info
                 except (json.JSONDecodeError, KeyError):
                     continue
     print(f"Loaded metadata for {len(packs)} packs from index.zip")  # noqa: T201
@@ -105,7 +142,7 @@ def extract_docker_images_from_pack_zips(packs_dir: str) -> set:
     """Extract docker image references from downloaded pack zip files.
 
     Only scans YAML files under ``Integrations/`` and ``Scripts/`` directories
-    inside each pack zip for ``dockerimage`` or ``dockerimage45`` fields.
+    inside each pack zip for ``dockerimage`` fields.
 
     Args:
         packs_dir: Directory containing downloaded pack zip files.
@@ -126,14 +163,15 @@ def extract_docker_images_from_pack_zips(packs_dir: str) -> set:
                 for name in z.namelist():
                     if not name.endswith((".yml", ".yaml")):
                         continue
-                    entry = PurePosixPath(name)
+                    # Use string split instead of PurePosixPath for speed
+                    parts = name.split("/")
                     # Only process YAML files under Integrations/ or Scripts/ directories
-                    if len(entry.parts) < 2:
+                    if len(parts) < 2:
                         continue
-                    content_type = entry.parts[0]
+                    content_type = parts[0]
                     if content_type not in ("Integrations", "Scripts"):
                         continue
-                    item_name = entry.parts[1] if len(entry.parts) > 1 else entry.stem
+                    item_name = parts[1] if len(parts) > 1 else parts[-1].rsplit(".", 1)[0]
                     try:
                         content = z.read(name).decode("utf-8", errors="ignore")
                         matches = docker_image_pattern.findall(content)
@@ -211,16 +249,24 @@ def download_and_save_packs(
     output_path: str,
     verify_ssl: bool,
     use_default_filter: bool = False,
-) -> None:
+    extract_docker: bool = False,
+) -> set:
     """Download and save packs under output_path.
 
     Uses index.zip metadata for pack ID and version resolution.
+    When ``extract_docker`` is True, docker images are extracted from the
+    downloaded pack zips **before** they are bundled — avoiding a costly
+    unzip-rezip cycle.
 
     Args:
         pack_names: Mapping of display_name -> PackInfo.
         output_path: Directory to save the packs zip.
         verify_ssl: Whether to verify SSL certificates.
         use_default_filter: When True, filter to only Cortex XSOAR authored, non-deprecated packs.
+        extract_docker: When True, extract docker image references from downloaded packs.
+
+    Returns:
+        set: Docker image references found (empty if ``extract_docker`` is False).
     """
     print("Starting to download packs")  # noqa: T201
 
@@ -232,7 +278,7 @@ def download_and_save_packs(
             print(f"\t{pack_d_name} filtered out. Skipping pack download.")  # noqa: T201
             continue
 
-        pack_version = pack_info["version"]
+        pack_version = pack_info["current_version"]
         if not pack_version:
             print(f"\tCouldn't determine version for {pack_d_name}. Skipping pack download.")  # noqa: T201
             continue
@@ -241,20 +287,21 @@ def download_and_save_packs(
 
     if not packs_to_download:
         print("\tNo packs to download after filtering.")  # noqa: T201
-        return
+        return set()
 
     def _download_pack(pack_d_name: str, pack_id: str, pack_version: str, dest_dir: str, session: requests.Session) -> str | None:
         """Download a single pack with retry support. Returns the file path on success, None on failure."""
         print(f"\tDownloading {pack_d_name} Pack (id={pack_id}, version={pack_version})")  # noqa: T201
         url = f"{BUCKET_PACKS_URL}/{pack_id}/{pack_version}/{pack_id}.zip"
-        r = session.get(url, verify=verify_ssl)
+        r = session.get(url, verify=verify_ssl, stream=True)
         if r.status_code != 200:
             print(f"\tFailed to download {pack_d_name} (HTTP {r.status_code}). Skipping.")  # noqa: T201
             return None
         file_path = Path(dest_dir) / f"{pack_id}.zip"
         with open(file_path, "wb") as f:
-            f.write(r.content)
-        return file_path
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+        return str(file_path)
 
     session = requests.Session()
     retry_strategy = Retry(
@@ -265,9 +312,10 @@ def download_and_save_packs(
     session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
     session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
 
+    docker_images: set = set()
     temp_dir = tempfile.TemporaryDirectory()
     try:
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS_PACKS) as executor:
             futures = {
                 executor.submit(_download_pack, d_name, p_id, version, temp_dir.name, session): d_name
                 for d_name, p_id, version in packs_to_download
@@ -278,9 +326,13 @@ def download_and_save_packs(
                     future.result()
                 except Exception as e:
                     print(f"\tError downloading {pack_name}: {e}")  # noqa: T201
+        # Extract docker images from downloaded packs BEFORE zipping (avoids double extraction)
+        if extract_docker:
+            docker_images = extract_docker_images_from_pack_zips(temp_dir.name)
         zip_folder(temp_dir.name, output_path)
     finally:
         temp_dir.cleanup()
+    return docker_images
 
 
 def download_and_save_docker_images(docker_images: set, output_path: str) -> None:
@@ -306,7 +358,7 @@ def download_and_save_docker_images(docker_images: set, output_path: str) -> Non
 
     temp_dir = tempfile.TemporaryDirectory()
     try:
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS_DOCKER) as executor:
             futures = {executor.submit(_pull_and_save, image, temp_dir.name): image for image in docker_images}
             for future in as_completed(futures):
                 image_name = futures[future]
@@ -349,7 +401,11 @@ def main():
     options = options_handler()
     output_path = options.output_path
     packs = options.packs or ""
-    if Path(packs).is_file():
+    try:
+        is_file = Path(packs).is_file()
+    except OSError:
+        is_file = False
+    if is_file:
         pack_display_names = []
         with open(packs) as file:
             for line in file:
@@ -363,31 +419,21 @@ def main():
     pack_names = get_pack_names(pack_display_names, index_packs)
 
     Path(output_path).mkdir(parents=True, exist_ok=True)
+    docker_images: set = set()
+
     if not options.skip_packs and pack_names:
-        download_and_save_packs(
+        # Download packs and optionally extract docker images in one pass (no double extraction)
+        docker_images = download_and_save_packs(
             pack_names,
             str(Path(output_path) / "packs"),
             verify_ssl,
             use_default_filter=not bool(packs),
+            extract_docker=not options.skip_docker,
         )
     else:
         print("Skipping packs.zip creation")  # noqa: T201
 
     if pack_names and not options.skip_docker:
-        # Extract docker images from the downloaded pack zips
-        packs_zip_path = Path(output_path) / "packs.zip"
-        if packs_zip_path.exists():
-            # Extract packs.zip to a temp dir to scan for docker images
-            packs_temp_dir = tempfile.TemporaryDirectory()
-            try:
-                with ZipFile(packs_zip_path, "r") as z:
-                    z.extractall(packs_temp_dir.name)
-                docker_images = extract_docker_images_from_pack_zips(packs_temp_dir.name)
-            finally:
-                packs_temp_dir.cleanup()
-        else:
-            print("Warning: packs.zip not found, cannot extract docker images. Run without -sp first.")  # noqa: T201
-            docker_images = set()
         if docker_images:
             download_and_save_docker_images(docker_images, str(Path(output_path) / "docker"))
         else:

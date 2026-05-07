@@ -48,6 +48,11 @@ MOCK_RAW_METADATA: dict[str, dict] = {
         "currentVersion": "1.2.3",
         "author": "Cortex XSOAR",
         "deprecated": False,
+        "certification": "certified",
+        "tags": ["Security"],
+        "useCases": ["Phishing"],
+        "categories": ["Data Enrichment & Threat Intelligence"],
+        "marketplaces": ["xsoar", "marketplacev2"],
     },
     "mock_pack_2": {
         "id": "mock_pack_2",
@@ -67,9 +72,11 @@ MOCK_RAW_METADATA: dict[str, dict] = {
 
 # Expected output of load_index_packs: display_name -> PackInfo
 MOCK_INDEX_PACKS: dict[str, PackInfo] = {
-    "Mock Pack": PackInfo(id="mock_pack", version="1.2.3", author="Cortex XSOAR", deprecated=False),
-    "Mock Pack 2": PackInfo(id="mock_pack_2", version="2.0.0", author="Community", deprecated=False),
-    "Deprecated Pack": PackInfo(id="deprecated_pack", version="0.1.0", author="Cortex XSOAR", deprecated=True),
+    "Mock Pack": PackInfo(id="mock_pack", name="Mock Pack", current_version="1.2.3", author="Cortex XSOAR", deprecated=False),
+    "Mock Pack 2": PackInfo(id="mock_pack_2", name="Mock Pack 2", current_version="2.0.0", author="Community", deprecated=False),
+    "Deprecated Pack": PackInfo(
+        id="deprecated_pack", name="Deprecated Pack", current_version="0.1.0", author="Cortex XSOAR", deprecated=True
+    ),
 }
 
 PACK1_DATA_MOCK = {
@@ -143,9 +150,20 @@ class TestLoadIndexPacks:
         assert len(result) == 3
         assert "Mock Pack" in result
         assert result["Mock Pack"]["id"] == "mock_pack"
-        assert result["Mock Pack"]["version"] == "1.2.3"
+        assert result["Mock Pack"]["current_version"] == "1.2.3"
+        assert result["Mock Pack"]["name"] == "Mock Pack"
         assert result["Deprecated Pack"]["deprecated"] is True
         assert result["Mock Pack 2"]["author"] == "Community"
+        # Verify optional fields are populated when present in metadata
+        assert result["Mock Pack"]["certification"] == "certified"
+        assert result["Mock Pack"]["tags"] == ["Security"]
+        assert result["Mock Pack"]["use_cases"] == ["Phishing"]
+        assert result["Mock Pack"]["categories"] == ["Data Enrichment & Threat Intelligence"]
+        assert result["Mock Pack"]["marketplaces"] == ["xsoar", "marketplacev2"]
+        # Verify optional fields are absent when not in metadata
+        assert "certification" not in result["Mock Pack 2"]
+        assert "tags" not in result["Mock Pack 2"]
+        assert "use_cases" not in result["Mock Pack 2"]
 
     @patch("download_packs_and_docker_images.requests.request")
     def test_load_index_packs_empty_zip(self, mock_request: MagicMock) -> None:
