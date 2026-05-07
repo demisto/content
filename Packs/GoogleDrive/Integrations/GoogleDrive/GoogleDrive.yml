@@ -74,6 +74,7 @@ configuration:
   display: Incident type
   type: 13
   required: false
+  section: Collect
 - name: max_fetch
   display: Max Incidents
   defaultvalue: 50
@@ -3181,7 +3182,7 @@ script:
     - contextPath: GoogleDrive.File.parents
       description: The list of parent folder IDs.
       type: Unknown
-  dockerimage: demisto/googleapi-python3:1.0.0.115338
+  dockerimage: demisto/googleapi-python3:1.0.0.8516410
   isfetch: true
   runonce: false
   script: "-"
