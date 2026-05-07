@@ -11,7 +11,7 @@ from AWSSNSListener import (
     handle_notification,
     is_valid_integration_credentials,
 )
-from CommonServerPython import DemistoException, argToBoolean
+from CommonServerPython import DemistoException
 
 VALID_PAYLOAD = {
     "Type": "Notification",
@@ -337,4 +337,3 @@ def test_create_incident_background_acquires_semaphore(mocker):
 
     semaphore_mock.__enter__.assert_called_once()
     semaphore_mock.__exit__.assert_called_once()
-
