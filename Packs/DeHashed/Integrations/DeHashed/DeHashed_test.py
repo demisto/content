@@ -569,7 +569,7 @@ class TestDehashedSearchArgs:
             asset_type="email",
             value="a@b.co",
             operation="is",
-            page=page_input,  # type: ignore[arg-type]
+            page=page_input,
         )  # type: ignore[call-arg]
 
         assert args.page == expected_page
@@ -653,7 +653,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="asset_type"):
-            DehashedSearchArgs(asset_type="bogus", value="x", operation="is")  # type: ignore[arg-type, call-arg]
+            DehashedSearchArgs(asset_type="bogus", value="x", operation="is")  # type: ignore[call-arg]
 
     def test_invalid_operation_raises(self) -> None:
         """
@@ -668,7 +668,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="operation"):
-            DehashedSearchArgs(asset_type="email", value="x", operation="bogus")  # type: ignore[arg-type, call-arg]
+            DehashedSearchArgs(asset_type="email", value="x", operation="bogus")  # type: ignore[call-arg]
 
 
 class TestEmailArgs:
@@ -685,7 +685,7 @@ class TestEmailArgs:
         """
         from DeHashed import EmailArgs
 
-        args = EmailArgs(email="a@b.co,c@d.co")  # type: ignore[arg-type, call-arg]
+        args = EmailArgs(email="a@b.co,c@d.co")  # type: ignore[arg-type]
 
         assert args.email == ["a@b.co", "c@d.co"]
 
@@ -700,7 +700,7 @@ class TestEmailArgs:
         """
         from DeHashed import EmailArgs
 
-        args = EmailArgs(email=["a@b.co"])  # type: ignore[call-arg]
+        args = EmailArgs(email=["a@b.co"])
 
         assert args.email == ["a@b.co"]
 
@@ -1027,9 +1027,9 @@ def test_dehashed_search_transformed_entries_outputs(mocker: MockerFixture, clie
     args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
 
     results = dehashed_search_command(client, args)
-    transformed: list[dict[str, Any]] = results[1].outputs  # type: ignore[assignment]
+    transformed: list[dict[str, Any]] = results[1].outputs  # type: ignore[assignment, index]
 
-    expected = [_transform_entry(e) for e in mock_response["entries"]]  # type: ignore[index, call-overload]
+    expected = [_transform_entry(e) for e in mock_response["entries"]]  # type: ignore[arg-type, call-overload]
     assert transformed == expected
 
 
@@ -1092,7 +1092,7 @@ def test_dehashed_search_query_construction_per_operator(
     mock_response = load_mock_response("dehashed-search/response_two_entries_no_db.json")
     general_search_mock = mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type=asset_type, value=value, operation=operation)  # type: ignore[arg-type, call-arg]
+    args = DehashedSearchArgs(asset_type=asset_type, value=value, operation=operation)  # type: ignore[call-arg]
 
     dehashed_search_command(client, args)
 
@@ -1138,7 +1138,7 @@ def test_dehashed_search_results_range_slices_output(mocker: MockerFixture, clie
     assert last_query["DisplayedResults"] == 1
     assert last_query["TotalResults"] == 2
 
-    search_outputs: list[dict[str, Any]] = results[1].outputs  # type: ignore[assignment]
+    search_outputs: list[dict[str, Any]] = results[1].outputs  # type: ignore[assignment, index]
     assert len(search_outputs) == 1
 
 
@@ -1240,7 +1240,7 @@ def test_email_command_returns_search_outputs(mocker: MockerFixture, client: "De
     mock_response = load_mock_response("email/response.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["target@example.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["target@example.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
@@ -1271,7 +1271,7 @@ def test_email_command_dbot_score_suspicious(mocker: MockerFixture, client: "Deh
     mock_response = load_mock_response("email/response_two_entries_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["testgamil.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
@@ -1302,7 +1302,7 @@ def test_email_command_dbot_score_malicious(mocker: MockerFixture, client: "Deha
     mock_response = load_mock_response("email/response_two_entries_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["testgamil.com"])
 
     results = email_command(client, args, email_dbot_score="MALICIOUS", reliability="B - Usually reliable")
 
@@ -1341,7 +1341,7 @@ def test_email_command_dbot_score_none_when_no_breaches(
     mock_response = load_mock_response(fixture_path)
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["testgamil.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
@@ -1385,7 +1385,7 @@ def test_email_command_reliability_propagated_parametrized(
     mock_response = load_mock_response("email/response_one_entry_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["testgamil.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=reliability)
 
@@ -1412,7 +1412,7 @@ def test_email_command_reliability_none_omits_field(mocker: MockerFixture, clien
     mock_response = load_mock_response("email/response_one_entry_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["testgamil.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
@@ -1442,7 +1442,7 @@ def test_email_command_breach_description_includes_unique_sources(mocker: Mocker
     mock_response = load_mock_response("email/response.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["target@example.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["target@example.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
@@ -1468,7 +1468,7 @@ def test_email_command_email_domain_extraction(mocker: MockerFixture, client: "D
     mock_response = load_mock_response("email/response_user_at_example.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["user@example.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["user@example.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
@@ -1494,7 +1494,7 @@ def test_email_command_email_without_at_sets_no_domain(mocker: MockerFixture, cl
     mock_response = load_mock_response("email/response_empty.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["nodomain"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["nodomain"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
@@ -1520,7 +1520,7 @@ def test_email_command_query_construction(mocker: MockerFixture, client: "Dehash
     mock_response = load_mock_response("email/response_one_entry_a_at_b.json")
     general_search_mock = mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["a@b.co"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["a@b.co"])
 
     email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
@@ -1547,7 +1547,7 @@ def test_email_command_unexpected_response_raises(mocker: MockerFixture, client:
 
     mocker.patch.object(client, "general_search", return_value=["bad"])
 
-    args = EmailArgs(email=["a@b.co"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["a@b.co"])
 
     with pytest.raises(DemistoException, match="Got unexpected output from api"):
         email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
@@ -1569,7 +1569,7 @@ def test_email_command_dbot_score_none_when_no_breaches_readable_output(mocker: 
     mock_response = load_mock_response("email/response_empty.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["testgamil.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
@@ -1604,7 +1604,7 @@ def test_email_command_multiple_emails_returns_per_email_results(mocker: MockerF
 
     general_search_mock = mocker.patch.object(client, "general_search", side_effect=[found_response, missing_response])
 
-    args = EmailArgs(email=["found@example.com", "missing@example.com"])  # type: ignore[call-arg]
+    args = EmailArgs(email=["found@example.com", "missing@example.com"])
 
     results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
