@@ -57,65 +57,54 @@ def client() -> "DehashedClient":
 # region helpers
 
 
-def test_build_search_query_raises_on_empty_values() -> None:
+def test_build_search_query_raises_on_empty_value() -> None:
     """
     Given:
-        - An empty list of values.
+        - An empty `value` string.
     When:
         - Calling _build_search_query.
     Then:
-        - Raises DemistoException with the v1-compatible 'must get "value" as an argument' message.
+        - Raises DemistoException with the 'must get "value" as an argument' message.
     """
     from DeHashed import _build_search_query, DemistoException
 
     with pytest.raises(DemistoException, match='This command must get "value" as an argument.'):
-        _build_search_query("email", [], "is")
+        _build_search_query("email", "", "is")
 
 
 @pytest.mark.parametrize(
-    "asset_type, values, operation, expected_query",
+    "asset_type, value, operation, expected_query",
     [
-        pytest.param("email", ["a@b.co"], "is", 'email:"a@b.co"', id="is_single_email"),
-        pytest.param("all_fields", ["testgamil.co"], "is", '"testgamil.co"', id="is_single_all_fields"),
-        pytest.param(
-            "email",
-            ["testgamil.co", "test1gmail.com"],
-            "is",
-            'email:"testgamil.co" "test1gmail.com"',
-            id="is_multi_email",
-        ),
-        pytest.param("all_fields", ["testgamil.co"], "contains", "testgamil.co", id="contains_single_all_fields"),
-        pytest.param("email", ["foo"], "contains", "email:foo", id="contains_single_email"),
-        pytest.param("name", ["test1", "test2"], "contains", "name:(test1 OR test2)", id="contains_multi_name"),
-        pytest.param("all_fields", ["joh?n(ath[oa]n)"], "regex", "joh?n(ath[oa]n)", id="regex_single_all_fields"),
-        pytest.param("vin", ["abc"], "regex", "vin:abc", id="regex_single_vin"),
-        pytest.param(
-            "vin",
-            ["joh?n(ath[oa]n)", "joh?n11(ath[oa]n)"],
-            "regex",
-            "vin:joh?n(ath[oa]n) joh?n11(ath[oa]n)",
-            id="regex_multi_vin",
-        ),
+        pytest.param("email", "a@b.co", "is", 'email:"a@b.co"', id="is_single_email"),
+        pytest.param("all_fields", "testgamil.co", "is", '"testgamil.co"', id="is_single_all_fields"),
+        pytest.param("all_fields", "testgamil.co", "contains", "testgamil.co", id="contains_single_all_fields"),
+        pytest.param("email", "foo", "contains", "email:foo", id="contains_single_email"),
+        pytest.param("all_fields", "joh?n(ath[oa]n)", "regex", "joh?n(ath[oa]n)", id="regex_single_all_fields"),
+        pytest.param("vin", "abc", "regex", "vin:abc", id="regex_single_vin"),
     ],
 )
 def test_build_search_query_parametrized(
     asset_type: str,
-    values: list[str],
+    value: str,
     operation: str,
     expected_query: str,
 ) -> None:
     """
     Given:
-        - Various combinations of `asset_type`, `values`, and `operation` covering single/multi values
-          across `is`, `contains`, and `regex` operators.
+        - Various combinations of `asset_type`, `value`, and `operation` covering
+          `is`, `contains`, and `regex` operators with a single string `value`.
     When:
         - Calling _build_search_query.
     Then:
-        - Returns the v1-compatible query string per the documented rules.
+        - Returns the query string per the documented rules:
+          - `is`         -> wraps the value in double quotes.
+          - `contains`   -> uses the raw value.
+          - `regex`      -> uses the raw value (regex relies on the client `regex=True` flag).
+          - `all_fields` -> omits the leading `"<asset_type>:"` prefix.
     """
     from DeHashed import _build_search_query
 
-    assert _build_search_query(asset_type, values, operation) == expected_query
+    assert _build_search_query(asset_type, value, operation) == expected_query
 
 
 def test_filter_results_explicit_in_range() -> None:
@@ -517,44 +506,46 @@ class TestDehashedSearchArgs:
         """
         from DeHashed import DehashedSearchArgs
 
-        args = DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is")  # type: ignore[call-arg]
+        args = DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is")  # type: ignore[call-arg]
 
         assert args.asset_type == "email"
-        assert args.value == ["a@b.co"]
+        assert args.value == "a@b.co"
         assert args.operation == "is"
         assert args.page == 1
         assert args.results_from == 1
         assert args.results_to == 50
 
-    def test_value_csv_split(self) -> None:
+    def test_value_passthrough_string(self) -> None:
         """
         Given:
-            - A CSV string `value="a,b,c"`.
+            - A plain string `value="a@b.co"`.
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - `value` is split into `["a", "b", "c"]` via argToList.
+            - `value` is stored verbatim as a string (no list-splitting / no quoting —
+              quoting is applied later in `_build_search_query` based on `operation`).
         """
         from DeHashed import DehashedSearchArgs
 
-        args = DehashedSearchArgs(asset_type="email", value="a,b,c", operation="is")  # type: ignore[arg-type, call-arg]
+        args = DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is")  # type: ignore[call-arg]
 
-        assert args.value == ["a", "b", "c"]
+        assert args.value == "a@b.co"
 
-    def test_value_list_passthrough(self) -> None:
+    def test_value_with_commas_preserved(self) -> None:
         """
         Given:
-            - A pre-built list `value=["a", "b"]`.
+            - A string containing commas `value="a,b,c"`.
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - `value` is unchanged.
+            - `value` is preserved as the literal string `"a,b,c"` — there is no
+              CSV-splitting / multi-value handling in the new query construction logic.
         """
         from DeHashed import DehashedSearchArgs
 
-        args = DehashedSearchArgs(asset_type="email", value=["a", "b"], operation="is")  # type: ignore[call-arg]
+        args = DehashedSearchArgs(asset_type="email", value="a,b,c", operation="is")  # type: ignore[call-arg]
 
-        assert args.value == ["a", "b"]
+        assert args.value == "a,b,c"
 
     @pytest.mark.parametrize(
         "page_input, expected_page",
@@ -576,7 +567,7 @@ class TestDehashedSearchArgs:
 
         args = DehashedSearchArgs(
             asset_type="email",
-            value=["a@b.co"],
+            value="a@b.co",
             operation="is",
             page=page_input,  # type: ignore[arg-type]
         )  # type: ignore[call-arg]
@@ -603,7 +594,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="page"):
-            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", page=page_input)  # type: ignore[call-arg]
+            DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is", page=page_input)  # type: ignore[call-arg]
 
     @pytest.mark.parametrize(
         "results_from_input",
@@ -625,7 +616,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="results_from"):
-            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", results_from=results_from_input)  # type: ignore[call-arg]
+            DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is", results_from=results_from_input)  # type: ignore[call-arg]
 
     @pytest.mark.parametrize(
         "results_to_input",
@@ -647,7 +638,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="results_to"):
-            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", results_to=results_to_input)  # type: ignore[call-arg]
+            DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is", results_to=results_to_input)  # type: ignore[call-arg]
 
     def test_invalid_asset_type_raises(self) -> None:
         """
@@ -662,7 +653,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="asset_type"):
-            DehashedSearchArgs(asset_type="bogus", value=["x"], operation="is")  # type: ignore[arg-type, call-arg]
+            DehashedSearchArgs(asset_type="bogus", value="x", operation="is")  # type: ignore[arg-type, call-arg]
 
     def test_invalid_operation_raises(self) -> None:
         """
@@ -677,7 +668,7 @@ class TestDehashedSearchArgs:
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="operation"):
-            DehashedSearchArgs(asset_type="email", value=["x"], operation="bogus")  # type: ignore[arg-type, call-arg]
+            DehashedSearchArgs(asset_type="email", value="x", operation="bogus")  # type: ignore[arg-type, call-arg]
 
 
 class TestEmailArgs:
@@ -793,7 +784,7 @@ class TestDehashedExecutionConfig:
 
         assert isinstance(args, DehashedSearchArgs)
         assert args.asset_type == "email"
-        assert args.value == ["a@b.co"]
+        assert args.value == "a@b.co"
         assert args.operation == "is"
 
     def test_email_args_property(self, mocker: MockerFixture) -> None:
@@ -992,7 +983,7 @@ def test_dehashed_search_returns_two_command_results(mocker: MockerFixture, clie
     }
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type="all_fields", value=["testgamil.co"], operation="is")  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
 
     results = dehashed_search_command(client, args)
 
@@ -1028,7 +1019,7 @@ def test_dehashed_search_last_query_outputs(mocker: MockerFixture, client: "Deha
     }
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type="all_fields", value=["testgamil.co"], operation="is")  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
 
     results = dehashed_search_command(client, args)
 
@@ -1054,7 +1045,7 @@ def test_dehashed_search_transformed_entries_outputs(mocker: MockerFixture, clie
     mock_response = load_mock_response("dehashed-search/response.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type="all_fields", value=["testgamil.co"], operation="is")  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
 
     results = dehashed_search_command(client, args)
     transformed: list[dict[str, Any]] = results[1].outputs  # type: ignore[assignment]
@@ -1085,7 +1076,7 @@ def test_dehashed_search_total_results_propagated(mocker: MockerFixture, client:
     }
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type="all_fields", value=["testgamil.co"], operation="is")  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
 
     results = dehashed_search_command(client, args)
 
@@ -1096,50 +1087,34 @@ def test_dehashed_search_total_results_propagated(mocker: MockerFixture, client:
 @pytest.mark.parametrize(
     "asset_type, value, operation, expected_query, expected_regex",
     [
-        pytest.param("all_fields", ["testgamil.co"], "is", '"testgamil.co"', None, id="is_single_all_fields"),
-        pytest.param("all_fields", ["testgamil.co"], "contains", "testgamil.co", None, id="contains_single_all_fields"),
-        pytest.param("all_fields", ["joh?n(ath[oa]n)"], "regex", "joh?n(ath[oa]n)", True, id="regex_single_all_fields"),
-        pytest.param(
-            "email",
-            ["testgamil.co", "test1gmail.com"],
-            "is",
-            'email:"testgamil.co" "test1gmail.com"',
-            None,
-            id="is_multi_email",
-        ),
-        pytest.param("name", ["test1", "test2"], "contains", "name:(test1 OR test2)", None, id="contains_multi_name"),
-        pytest.param(
-            "vin",
-            ["joh?n(ath[oa]n)", "joh?n11(ath[oa]n)"],
-            "regex",
-            "vin:joh?n(ath[oa]n) joh?n11(ath[oa]n)",
-            True,
-            id="regex_multi_vin",
-        ),
+        pytest.param("all_fields", "testgamil.co", "is", '"testgamil.co"', None, id="is_single_all_fields"),
+        pytest.param("all_fields", "testgamil.co", "contains", "testgamil.co", None, id="contains_single_all_fields"),
+        pytest.param("all_fields", "joh?n(ath[oa]n)", "regex", "joh?n(ath[oa]n)", True, id="regex_single_all_fields"),
+        pytest.param("email", "a@b.co", "is", 'email:"a@b.co"', None, id="is_single_email"),
+        pytest.param("name", "test1", "contains", "name:test1", None, id="contains_single_name"),
+        pytest.param("vin", "joh?n(ath[oa]n)", "regex", "vin:joh?n(ath[oa]n)", True, id="regex_single_vin"),
     ],
 )
 def test_dehashed_search_query_construction_per_operator(
     mocker: MockerFixture,
     client: "DehashedClient",
     asset_type: str,
-    value: list[str],
+    value: str,
     operation: str,
     expected_query: str,
     expected_regex: bool | None,
 ) -> None:
     """
     Given:
-        - Various combinations of `asset_type`, `value`, and `operation` covering single/multi values
-          across `is`, `contains`, and `regex` operators.
+        - Combinations of `asset_type`, `value`, and `operation` covering the
+          `is`, `contains`, and `regex` operators with a single string `value`.
     When:
         - Calling dehashed_search_command (with default `page=1`).
     Then:
-        - `client.general_search` is invoked with the v1-compatible query string,
+        - `client.general_search` is invoked with the constructed query string,
           `page=1` (the field default), `size=REQUEST_PAGE_SIZE` (1000 — the
           dehashed-search command always fetches a full page from the API), and
           `regex=True` only when `operation == "regex"` (else `None`).
-          Consolidates the six old `test_search_command_using_*` tests into one
-          focused parametrized port at the client boundary.
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs, REQUEST_PAGE_SIZE
 
@@ -1194,7 +1169,7 @@ def test_dehashed_search_results_range_slices_output(mocker: MockerFixture, clie
 
     args = DehashedSearchArgs(
         asset_type="vin",
-        value=["joh?n(ath[oa]n)", "joh?n11(ath[oa]n)"],
+        value="joh?n(ath[oa]n)",
         operation="regex",
         results_from=1,
         results_to=1,
@@ -1228,7 +1203,7 @@ def test_dehashed_search_no_entries_returns_no_results_message(mocker: MockerFix
     mock_response = load_mock_response("dehashed-search/response_empty.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type="email", value=["nobody@example.com"], operation="is")  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="email", value="nobody@example.com", operation="is")  # type: ignore[call-arg]
 
     result = dehashed_search_command(client, args)
 
@@ -1250,7 +1225,7 @@ def test_dehashed_search_unexpected_response_raises(mocker: MockerFixture, clien
 
     mocker.patch.object(client, "general_search", return_value=["not", "a", "dict"])
 
-    args = DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is")  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is")  # type: ignore[call-arg]
 
     with pytest.raises(DemistoException, match="Got unexpected output from api"):
         dehashed_search_command(client, args)
@@ -1277,7 +1252,7 @@ def test_dehashed_search_passes_page_to_client(mocker: MockerFixture, client: "D
     }
     general_search_mock = mocker.patch.object(client, "general_search", return_value=mock_response)
 
-    args = DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", page=3)  # type: ignore[call-arg]
+    args = DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is", page=3)  # type: ignore[call-arg]
 
     results = dehashed_search_command(client, args)
 

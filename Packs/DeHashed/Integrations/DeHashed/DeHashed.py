@@ -38,37 +38,22 @@ Operation = Literal["is", "contains", "regex"]
 # region Helpers
 
 
-def _build_search_query(asset_type: str, values: list[str], operation: str) -> str:
+def _build_search_query(asset_type: str, value: str, operation: str) -> str:
     """
-    Builds the DeHashed query string from the user-provided ``asset_type``, ``values``, and ``operation``.
+    Builds the DeHashed query string from the user-provided ``asset_type``, ``value``, and ``operation``.
 
     Args:
         asset_type (str): The asset type (e.g. "email", "all_fields").
-        values (list[str]): The list of values to search for.
+        values (str): The value to search for.
         operation (str): The operation - "is", "contains", or "regex".
 
     Returns:
         str: The constructed query string.
     """
-    if not values:
+    if not value:
         raise DemistoException('This command must get "value" as an argument.')
 
-    query_value = ""
-    if len(values) > 1:
-        if operation == "is":
-            query_value = " ".join(f'"{v}"' for v in values)
-        elif operation == "contains":
-            joined = " OR ".join(values)
-            query_value = f"({joined})"
-        elif operation == "regex":
-            query_value = " ".join(f"{v}" for v in values)
-    else:
-        if operation == "is":
-            query_value = f'"{values[0]}"'
-        elif operation == "contains":
-            query_value = values[0]
-        elif operation == "regex":
-            query_value = f"{values[0]}"
+    query_value = f'"{value}"' if operation == "is" else value
 
     return query_value if asset_type == "all_fields" else f"{asset_type}:{query_value}"
 
@@ -293,16 +278,11 @@ def test_module(client: DehashedClient) -> str:
 
 class DehashedSearchArgs(ContentBaseModel):
     asset_type: AssetType = Field(alias="asset_type")
-    value: list[str] = Field(alias="value")
+    value: str = Field(alias="value")
     operation: Operation = Field(alias="operation")
     page: int = Field(1, alias="page")
     results_from: int = Field(1, alias="results_from")
     results_to: int = Field(50, alias="results_to")
-
-    @validator("value", pre=True, allow_reuse=True)
-    @classmethod
-    def validate_value(cls, v):
-        return argToList(v)
 
     @validator("page", pre=True, allow_reuse=True)
     @classmethod
@@ -447,7 +427,7 @@ def email_command(
     email_addresses = args.email
     indicator_value = email_addresses[0]
 
-    query_string = _build_search_query("email", email_addresses, "contains")
+    query_string = _build_search_query("email", indicator_value, "contains")
     demisto.debug(f"[email] Built query string: {query_string!r}")
 
     result = client.general_search(
