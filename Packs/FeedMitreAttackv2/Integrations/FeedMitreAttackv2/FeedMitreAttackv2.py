@@ -46,7 +46,6 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     "weaponization": ThreatIntel.KillChainPhases.WEAPONIZATION,
     "act-on-objectives": ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     "command-and-control": ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
-    "stealth": ThreatIntel.KillChainPhases.STEALTH,
 }
 FILTER_OBJS = {  # pragma: no cover
     "Tactic": {"name": "tactic", "filter": Filter("type", "=", "x-mitre-tactic")},
@@ -128,10 +127,7 @@ class Client:
 
                 else:
                     tactic_name = tactic["phase_name"].title().replace("-", " ").replace("And", "and")
-                    tactic_mitre_id = self.tactic_name_to_mitre_id.get(tactic_name)
-                    if not tactic_mitre_id:
-                        demisto.debug(f"MA: Tactic '{tactic_name}' not found in tactic_name_to_mitre_id mapping, skipping.")
-                        continue
+                    tactic_mitre_id = self.tactic_name_to_mitre_id[tactic_name]
                     tactic = f"{tactic_mitre_id} - {tactic_name}"
                     tactics.append(
                         EntityRelationship(

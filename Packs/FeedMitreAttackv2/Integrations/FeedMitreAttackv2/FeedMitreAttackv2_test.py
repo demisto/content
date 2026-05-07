@@ -397,53 +397,6 @@ def test_remove_citations(description, expected_result):
     assert actual_result == expected_result
 
 
-def test_create_indicator_with_unknown_tactic_name(mocker):
-    """
-    Given:
-        An Attack Pattern whose kill_chain_phases contains a tactic phase name ('stealth')
-        that is NOT present in the client's tactic_name_to_mitre_id mapping.
-    When:
-        Calling client.create_indicator().
-    Then:
-        The indicator is created successfully without raising a KeyError.
-        The unknown tactic is skipped (not added to relationships) and a debug message is logged.
-    """
-    from FeedMitreAttackv2 import Client
-
-    client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
-    # Only known tactics are pre-populated; 'Stealth' is intentionally absent
-    client.tactic_name_to_mitre_id = {
-        "Defense Evasion": "TA0005",
-    }
-
-    mitre_item_json = {
-        "id": "attack-pattern--test-stealth-1234",
-        "name": "Some Technique",
-        "type": "attack-pattern",
-        "created": "2024-01-01T00:00:00.000Z",
-        "modified": "2024-01-01T00:00:00.000Z",
-        "description": "A technique that uses stealth.",
-        "external_references": [
-            {"source_name": "mitre-attack", "external_id": "T9999", "url": "https://attack.mitre.org/techniques/T9999"},
-        ],
-        "kill_chain_phases": [
-            {"kill_chain_name": "mitre-attack", "phase_name": "defense-evasion"},
-            {"kill_chain_name": "mitre-attack", "phase_name": "stealth"},  # new unknown tactic
-        ],
-        "x_mitre_platforms": ["Windows"],
-    }
-
-    mocker.patch("FeedMitreAttackv2.demisto.debug")
-
-    # Should not raise KeyError
-    indicator = client.create_indicator("Attack Pattern", "Some Technique", mitre_item_json)
-
-    assert indicator["value"] == "Some Technique"
-    # Only the known tactic (Defense Evasion) should appear in relationships; 'Stealth' is skipped
-    assert len(indicator["relationships"]) == 1
-    assert indicator["relationships"][0]["entityB"] == "TA0005 - Defense Evasion"
-
-
 def test_show_feeds_command(mocker):
     """
     Given:
