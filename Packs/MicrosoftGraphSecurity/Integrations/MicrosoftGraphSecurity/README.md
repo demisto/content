@@ -161,7 +161,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.DetectionSource | String | Alert detection source. |
 | MsGraph.Alert.DetectorId | String | Alert detector ID. |
 | MsGraph.Alert.Determination | Unknown | Alert determination. |
-| MsGraph.Alert.Evidence.\@odata.Type | String | Alert evidence. |
+| MsGraph.Alert.Evidence.@odata.Type | String | Alert evidence. |
 | MsGraph.Alert.Evidence.AzureAdDeviceId | String | Evidence Azure device ID. |
 | MsGraph.Alert.Evidence.CreatedDate | Date | Evidence creation time. |
 | MsGraph.Alert.Evidence.DefenderAvStatus | String | Evidence Defender AV status. |
@@ -227,7 +227,7 @@ Get details for a specific alert.
 | MsGraph.Alert.Severity | string | Alert severity. |
 | MsGraph.Alert.CreatedDate | date | Alert created date. |
 | MsGraph.Alert.Status | string | Alert status. |
-| MsGraph.Alert.\@odata.Context | String | Alert odata context. |
+| MsGraph.Alert.@odata.Context | String | Alert odata context. |
 | MsGraph.Alert.ActorDisplayName | Unknown | Alert actor name. |
 | MsGraph.Alert.AlertWebUrl | String | Alert web URL. |
 | MsGraph.Alert.AssignedTo | Unknown | Alert assignee. |
@@ -239,7 +239,7 @@ Get details for a specific alert.
 | MsGraph.Alert.DetectionSource | String | Alert detection source. |
 | MsGraph.Alert.DetectorId | String | Alert detector ID. |
 | MsGraph.Alert.Determination | Unknown | Alert determination. |
-| MsGraph.Alert.Evidence.\@odata.Type | String | Alert evidence. |
+| MsGraph.Alert.Evidence.@odata.Type | String | Alert evidence. |
 | MsGraph.Alert.Evidence.CreatedDate | Date | Evidence creation time. |
 | MsGraph.Alert.Evidence.DetectionStatus | Unknown | Evidence detection status. |
 | MsGraph.Alert.Evidence.ImageFile.FileName | String | Evidence image file name. |

@@ -30,16 +30,6 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
-- defaultvalue: Alerts v2
-  display: MS graph security alert API Version
-  name: api_version
-  type: 15
-  options:
-  - Alerts v2
-  section: Connect
-  required: false
-  hidden: true
-  deprecated: true
 - name: creds_auth_id
   type: 9
   section: Connect
@@ -179,15 +169,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Fetch incidents of the given providers only.
-  additionalinfo: Deprecated. This parameter was used for Legacy Alerts which has been removed. Use "Fetch incidents of the given service sources only" instead.
-  name: fetch_providers
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-  hidden: true
-  deprecated: true
 - display: Fetched incidents filter
   additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
@@ -283,20 +264,8 @@ script:
     - contextPath: MsGraph.Alert.CreatedDate
       description: Alert created date.
       type: date
-    - contextPath: MsGraph.Alert.EventDate
-      description: Deprecated. Was used for Legacy Alerts only.
-      type: date
     - contextPath: MsGraph.Alert.Status
       description: Alert status.
-      type: string
-    - contextPath: MsGraph.Alert.Vendor
-      description: Deprecated. Was used for Legacy Alerts only.
-      type: string
-    - contextPath: MsGraph.Alert.MalwareStates
-      description: Deprecated. Was used for Legacy Alerts only.
-      type: string
-    - contextPath: MsGraph.Alert.Provider
-      description: Deprecated. Was used for Legacy Alerts only.
       type: string
     - contextPath: MsGraph.Alert.ActorDisplayName
       description: Alert actor name.
@@ -446,17 +415,8 @@ script:
     - contextPath: MsGraph.Alert.CreatedDate
       description: Alert created date.
       type: date
-    - contextPath: MsGraph.Alert.EventDate
-      description: Deprecated. Was used for Legacy Alerts only.
-      type: date
     - contextPath: MsGraph.Alert.Status
       description: Alert status.
-      type: string
-    - contextPath: MsGraph.Alert.Vendor
-      description: Deprecated. Was used for Legacy Alerts only.
-      type: string
-    - contextPath: MsGraph.Alert.Provider
-      description: Deprecated. Was used for Legacy Alerts only.
       type: string
     - contextPath: MsGraph.Alert.@odata.Context
       description: Alert odata context.
