@@ -12,6 +12,8 @@ url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
 python = "^3.10,<3.12"
+anyio = "^4.13.0"
+httpx = "^0.28.1"
 
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
