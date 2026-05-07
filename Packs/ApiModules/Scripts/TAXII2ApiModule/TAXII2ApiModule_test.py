@@ -1368,7 +1368,6 @@ class TestParsingIndicators:
         taxii_2_client.update_custom_fields = True
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response_with_update_custom_fields
 
-
     # Parsing SDO Indicators
 
     def test_parse_identity(self, taxii_2_client):
