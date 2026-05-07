@@ -210,31 +210,34 @@ class Client(BaseClient):
 
         Armis tokens have a fixed 30-minute TTL (confirmed by Armis).
         We proactively refresh at 25 minutes to avoid mid-cycle 401 errors.
-        This avoids the extra API call that is_valid_access_token() makes.
 
-        Falls back to is_valid_access_token() if no timestamp is available (e.g., first run
-        or token saved before this change was deployed).
+        If no timestamp is available (e.g., first run, or upgrade from a version that did not
+        save token_generated_at), we treat the token as stale and force a refresh. This is
+        safer than a live API ping which can succeed for a token that is seconds from expiry.
 
         Args:
-            access_token (str): The access token to check.
+            access_token (str): The access token to check (kept for signature compatibility).
 
         Returns:
             bool: True if the token is still fresh (< 25 min old), False if it needs refresh.
         """
         integration_context = demisto.getIntegrationContext()
         token_generated_at_str = integration_context.get("token_generated_at")
-        if token_generated_at_str:
-            try:
-                token_generated_at = datetime.fromisoformat(token_generated_at_str)
-                age_seconds = (datetime.utcnow() - token_generated_at).total_seconds()
-                is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
-                demisto.debug(f"Token age: {age_seconds:.0f}s, fresh: {is_fresh} (threshold: {TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS}s)")
-                return is_fresh
-            except Exception as ex:
-                demisto.debug(f"Could not parse token_generated_at '{token_generated_at_str}': {ex}, falling back to API validation")
-        # No timestamp available - fall back to live API check
-        demisto.debug("No token_generated_at found, falling back to is_valid_access_token() API check")
-        return self.is_valid_access_token(access_token)
+        if not token_generated_at_str:
+            # No timestamp - force refresh (safer than trusting the existing token)
+            demisto.debug("No token_generated_at in integration context - forcing refresh")
+            return False
+        try:
+            token_generated_at = datetime.fromisoformat(token_generated_at_str)
+        except Exception as ex:
+            demisto.debug(f"Could not parse token_generated_at '{token_generated_at_str}': {ex} - forcing refresh")
+            return False
+        age_seconds = (datetime.utcnow() - token_generated_at).total_seconds()
+        is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
+        demisto.debug(
+            f"Token age: {age_seconds:.0f}s, fresh: {is_fresh} (threshold: {TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS}s)"
+        )
+        return is_fresh
 
     def apply_access_token(self, access_token=None):
         """Apply access token to client instance (updates headers and internal state).
@@ -272,10 +275,13 @@ class Client(BaseClient):
 
         # Use token refresh lock to ensure only one thread refreshes at a time
         with self._context_manager.acquire_token_refresh_lock():
-            # Double-check: another thread might have refreshed while we were waiting
+            # Double-check: another thread might have refreshed while we were waiting.
+            # Use timestamp-based freshness (_is_token_still_fresh) instead of a live API ping
+            # (is_valid_access_token) — the live ping can return success for a token that is
+            # within seconds of expiring, which then 401s a few seconds later mid-fetch.
             current_token = self._context_manager.get_access_token()
-            if current_token and current_token != self._access_token and self.is_valid_access_token(current_token):
-                # Token was updated by another thread and is valid
+            if current_token and current_token != self._access_token and self._is_token_still_fresh(current_token):
+                # Token was updated by another thread and is still fresh per our timestamp
                 demisto.debug(
                     f"Thread {threading.current_thread().name}: Token was refreshed by another thread, using updated token"
                 )
@@ -476,23 +482,6 @@ class Client(BaseClient):
             demisto.info(f"caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
-
-    def is_valid_access_token(self, access_token):
-        """Checks if current available access token is valid.
-
-        Args:
-            access_token (str): Access token to validate.
-
-        Returns:
-            Boolean: True if access token is valid, False otherwise.
-        """
-        try:
-            headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "false", "length": 1, "orderBy": "time"}
-            self._http_request(url_suffix="/search/", method="GET", params=params, headers=headers)
-        except Exception:
-            return False
-        return True
 
     def get_access_token(self):
         """Generates access token for Armis API.

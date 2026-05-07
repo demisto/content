@@ -22,7 +22,7 @@ def dummy_client(mocker):
     """
     A dummy client fixture for testing.
     """
-    mocker.patch.object(Client, "is_valid_access_token", return_value=True)
+    mocker.patch.object(Client, "_is_token_still_fresh", return_value=True)
     return Client(base_url="test_base_url", api_key="test_api_key", access_token="test_access_token", verify=False, proxy=False)
 
 
@@ -835,7 +835,7 @@ class TestMultithreading:
             - The client should be initialized with the provided access token.
         """
         context_manager = IntegrationContextManager()
-        mocker.patch.object(Client, "is_valid_access_token", return_value=True)
+        mocker.patch.object(Client, "_is_token_still_fresh", return_value=True)
 
         client = Client(base_url="test_url", api_key="test_key", access_token="test_token", context_manager=context_manager)
 
@@ -856,7 +856,7 @@ class TestMultithreading:
             - The token refresh should be coordinated to prevent multiple simultaneous refreshes.
         """
         context_manager = IntegrationContextManager()
-        mocker.patch.object(Client, "is_valid_access_token", return_value=True)
+        mocker.patch.object(Client, "_is_token_still_fresh", return_value=True)
         mocker.patch.object(Client, "get_access_token", return_value="new_token")
 
         client = Client(base_url="test_url", api_key="test_key", access_token="old_token", context_manager=context_manager)
