@@ -67,18 +67,18 @@ script:
       name: value
       required: true
     - auto: PREDEFINED
-      description: Search operator. Can be "is", "contains", or "regex".
+      description: The search operator.
       name: operation
       predefined:
       - is
       - contains
       - regex
       required: true
-    - description: The number of page to return. Each page contains a maximum of 10,000 results. entries.
+    - description: The number of page to return. Each page contains a maximum of 10,000 results.
       name: page
-    - description: Starting result number to display. Default is 1. Dehashed response can include more than 5,000 results.
+    - description: Starting result number to display. Default is 1.
       name: results_from
-    - description: Ending result number to display. Default is 50. Dehashed response can include more than 5,000 results.
+    - description: Ending result number to display. Default is 50.
       name: results_to
     description: Performs a search to check if information is compromised.
     name: dehashed-search
@@ -106,7 +106,7 @@ script:
       type: String
     - contextPath: DeHashed.Search.IpAddress
       description: IP address of the object.
-      type: Number
+      type: String
     - contextPath: DeHashed.Search.Phone
       description: Phone number of the object.
       type: Number
@@ -176,7 +176,7 @@ script:
       type: String
     - contextPath: DeHashed.Search.IpAddress
       description: IP address of the object.
-      type: Number
+      type: String
     - contextPath: DeHashed.Search.Phone
       description: Phone number of the object.
       type: Number

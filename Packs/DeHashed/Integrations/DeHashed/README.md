@@ -30,10 +30,10 @@ Performs a search to check if information is compromised.
 | --- | --- | --- |
 | asset_type | If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument. Possible values are: email, ip_address, username, hashed_password, name, vin, address, phone, all_fields. | Required |
 | value | The searched value. | Required |
-| operation | Search operator. Can be "is", "contains", or "regex". Possible values are: is, contains, regex. | Required |
-| page | The number of page to return. Each page contains a maximum of 10,000 results. entries. | Optional |
-| results_from | Starting result number to display. Default is 1. Dehashed response can include more than 5,000 results. | Optional |
-| results_to | Ending result number to display. Default is 50. Dehashed response can include more than 5,000 results. | Optional |
+| operation | The search operator. Possible values are: is, contains, regex. | Required |
+| page | The number of page to return. Each page contains a maximum of 10,000 results. | Optional |
+| results_from | Starting result number to display. Default is 1. | Optional |
+| results_to | Ending result number to display. Default is 50. | Optional |
 
 #### Context Output
 
@@ -46,7 +46,7 @@ Performs a search to check if information is compromised.
 | DeHashed.Search.HashedPassword | String | Hashed password of the object. |
 | DeHashed.Search.Name | String | Name of the object. |
 | DeHashed.Search.Address | String | Address of the object. |
-| DeHashed.Search.IpAddress | Number | IP address of the object. |
+| DeHashed.Search.IpAddress | String | IP address of the object. |
 | DeHashed.Search.Phone | Number | Phone number of the object. |
 | DeHashed.Search.Dob | String | Date of birth. |
 | DeHashed.Search.LicensePlate | String | License plate. |
@@ -62,10 +62,10 @@ Performs a search to check if information is compromised.
 
 #### Command Example
 
-!dehashed-search asset_type=all_fields operation=contains value=or-gal@gmail.com results_to=4 results_from=1
-!dehashed-search asset_type=email operation=is value=or-gal@gmail.com page=1
-!dehashed-search asset_type=name operation=contains value=gal,gil,test1 results_from=2 results_to=30 page=3
-!dehashed-search asset_type=name operation=regex value=joh?n(ath[oa]n)
+`!dehashed-search asset_type=all_fields operation=contains value=or-gal@gmail.com results_to=4 results_from=1`
+`!dehashed-search asset_type=email operation=is value=or-gal@gmail.com page=1`
+`!dehashed-search asset_type=name operation=contains value=gal,gil,test1 results_from=2 results_to=30 page=3`
+`!dehashed-search asset_type=name operation=regex value=joh?n(ath[oa]n)`
 
 #### Human Readable Output
 
@@ -95,7 +95,7 @@ Checks if an email address was compromised.
 | DeHashed.Search.HashedPassword | String | Hashed password of the object. |
 | DeHashed.Search.Name | String | Name of the object. |
 | DeHashed.Search.Address | String | Address of the object. |
-| DeHashed.Search.IpAddress | Number | IP address of the object. |
+| DeHashed.Search.IpAddress | String | IP address of the object. |
 | DeHashed.Search.Phone | Number | Phone number of the object. |
 | DeHashed.Search.Dob | String | Date of birth. |
 | DeHashed.Search.LicensePlate | String | License plate. |
@@ -112,6 +112,6 @@ Checks if an email address was compromised.
 
 #### Command Example
 
-!email email=or-gal@gmail.com
+`!email email=or-gal@gmail.com`
 
 #### Human Readable Output
