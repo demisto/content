@@ -2271,9 +2271,9 @@ class STIX2XSOARParser(BaseClient):
         }
         fields = self.set_default_fields(indicator_obj)
         tags = list(self.tags)
-        if self.update_custom_fields:
-            for label in ioc_obj_copy.get("labels", []):
-                tags.append(label)
+        # create tags from labels:
+        for label in ioc_obj_copy.get("labels", []):
+            tags.append(label)
 
         # add description if able
         if "description" in ioc_obj_copy:
