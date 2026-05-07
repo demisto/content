@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-import AWSSNSListener
 from AWSSNSListener import (
     RETRY_ATTEMPTS,
     SNSCertificateManager,
