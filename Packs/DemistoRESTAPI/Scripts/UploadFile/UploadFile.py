@@ -2,13 +2,13 @@ from CommonServerPython import *
 
 
 def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = "", target: str = "entry"):
+    print(f"Got {incident_id=}")
     if "incident" in target or "case" in target:
         service_name = "incident"
     else:
         service_name = "entry"
     if "case" in target:
-        raw_id = incident_id.split('-')[1]
-        incident_id = f"INCIDENT-{raw_id}"
+        incident_id = f"INCIDENT-{incident_id}"
     return demisto.executeCommand(
         "core-api-multipart", {"uri": f"{service_name}/upload/{incident_id}", "entryID": entry_id, "body": body, "using": using}
     )
