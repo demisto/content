@@ -998,7 +998,7 @@ def test_dehashed_search_returns_two_command_results(mocker: MockerFixture, clie
 
     assert isinstance(results, list)
     assert len(results) == 2
-    assert results[0].outputs_prefix == "DeHashed.LastQuery"
+    assert results[0].outputs_prefix == "DeHashed.LastQuery(true)"
     assert results[1].outputs_prefix == "DeHashed.Search"
     assert results[1].outputs_key_field == "Id"
 

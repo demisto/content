@@ -394,7 +394,8 @@ def dehashed_search_command(client: DehashedClient, args: DehashedSearchArgs) ->
 
     return [
         CommandResults(
-            outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.LastQuery",
+            # NOTE: `(true)` forces a full overwrite of the LastQuery context on each run.
+            outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.LastQuery(true)",
             outputs=last_query,
             readable_output=readable_output,
             raw_response=result,
