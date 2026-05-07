@@ -232,10 +232,15 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-container-blob-get",
         "azure-storage-blob-get",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": ["azure-storage-blob-tag-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
+        "azure-storage-container-blob-tag-get",
+        "azure-storage-blob-tag-get",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
         "azure-storage-container-blob-create",
         "azure-storage-blob-create",
+        "azure-storage-container-blob-property-set",
+        "azure-storage-blob-property-set",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
         "azure-storage-container-blob-tag-set",
@@ -4903,14 +4908,32 @@ def get_azure_client(params: dict, args: dict, command: str):
 
 def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
     """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
-    if "storage-container" in command or "storage-blob" in command:
+    # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
+    extra_commands = [
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+        "azure-storage-blob-tag-set",
+    ]
+    if "storage-container" in command or command in extra_commands:
         return STORAGE_SCOPE, [TokenScope.STORAGE]
     return DEFAULT_SCOPE, [TokenScope.DEFAULT]
 
 
 def get_command_resource(command: str) -> str:
     """Get the resource for the command. Default is management_azure."""
-    if "storage-container" in command or "storage-blob" in command:
+    # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
+    extra_commands = [
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+        "azure-storage-blob-tag-set",
+    ]
+    if "storage-container" in command or command in extra_commands:
         return STORAGE_RESOURCE
     return DEFAULT_RESOURCE
 
@@ -4970,6 +4993,7 @@ def main():  # pragma: no cover
             "azure-storage-container-blob-property-get": storage_container_blob_property_get_command,
             "azure-storage-blob-property-get": storage_container_blob_property_get_command,
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
+            "azure-storage-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-container-public-access-block": storage_container_block_public_access_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,

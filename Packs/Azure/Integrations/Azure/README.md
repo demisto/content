@@ -654,8 +654,8 @@ Updates a key vault in the specified subscription. The command is deprecated, pl
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vault_name | Key Vault name. | Required |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The name of the resource group. | Required |
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The name of the resource group. | Optional |
 | enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
 | enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
 
@@ -911,12 +911,12 @@ Delete a security rule. The command is deprecated, please use azure-vn-security-
 
 #### Context Output
 
-There is no context output for this command. The command is deprecated, please use azure-storage-blob-container-update.
+There is no context output for this command.
 
 ### azure-storage-blob-containers-update
 
 ***
-Run this command to update a specific blob container.
+Run this command to update a specific blob container.  The command is deprecated, please use azure-storage-blob-container-update.
 
 #### Base Command
 
@@ -1765,7 +1765,7 @@ Gets all security rules in a network security group. The command is deprecated, 
 ### azure-storage-blob-property-get
 
 ***
-Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
+Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
 #### Base Command
 
@@ -2232,9 +2232,9 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
 | source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
 | priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
 | destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
 | description | A description to add to the rule. | Optional |
 
 #### Context Output
@@ -2337,9 +2337,9 @@ Update a security rule. If one does not exist, it will be created. Required perm
 | security_rule_name | The name of the rule to be updated. | Required |
 | direction | The direction of the rule. Possible values are: Inbound, Outbound. | Optional |
 | protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. | Optional |
-| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional |
-| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional |
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional |
+| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. | Optional |
+| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. | Optional |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional |
 | destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional |
 | destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional |
 | description | A description to add to the rule. | Optional |
@@ -2580,7 +2580,7 @@ Updates the tags for the specified Blob. The command can replace the entire tags
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
-| append | Wether to append tags to the existing tags or not. Default is false. Possible values are: true, false. | Optional |
+| append | Whether to append tags to the existing tags or not. Default is false. Possible values are: true, false. | Optional |
 
 #### Context Output
 
