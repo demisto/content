@@ -919,12 +919,7 @@ def test_module_ok(mocker: MockerFixture, client: "DehashedClient") -> None:
     """
     from DeHashed import test_module
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [],
-        "took": "1ms",
-        "total": 0,
-    }
+    mock_response = load_mock_response("test-module/response_empty.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     result = test_module(client)
@@ -972,15 +967,7 @@ def test_dehashed_search_returns_two_command_results(mocker: MockerFixture, clie
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["a@b.co"], "database_name": "DB-A"},
-            {"id": "id_2", "email": ["c@d.co"], "phone": ["1", "2"], "database_name": "DB-B"},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("dehashed-search/response_two_entries_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
@@ -1008,15 +995,7 @@ def test_dehashed_search_last_query_outputs(mocker: MockerFixture, client: "Deha
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["a@b.co"], "database_name": "DB-A"},
-            {"id": "id_2", "email": ["c@d.co"], "database_name": "DB-B"},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("dehashed-search/response_two_entries_with_db_simple.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
@@ -1065,15 +1044,7 @@ def test_dehashed_search_total_results_propagated(mocker: MockerFixture, client:
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["a@b.co"]},
-            {"id": "id_2", "email": ["c@d.co"]},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("dehashed-search/response_two_entries_no_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = DehashedSearchArgs(asset_type="all_fields", value="testgamil.co", operation="is")  # type: ignore[call-arg]
@@ -1118,15 +1089,7 @@ def test_dehashed_search_query_construction_per_operator(
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs, REQUEST_PAGE_SIZE
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["a@b.co"]},
-            {"id": "id_2", "email": ["c@d.co"]},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("dehashed-search/response_two_entries_no_db.json")
     general_search_mock = mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = DehashedSearchArgs(asset_type=asset_type, value=value, operation=operation)  # type: ignore[arg-type, call-arg]
@@ -1156,15 +1119,7 @@ def test_dehashed_search_results_range_slices_output(mocker: MockerFixture, clie
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["a@b.co"]},
-            {"id": "id_2", "email": ["c@d.co"]},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("dehashed-search/response_two_entries_no_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = DehashedSearchArgs(
@@ -1244,12 +1199,7 @@ def test_dehashed_search_passes_page_to_client(mocker: MockerFixture, client: "D
     """
     from DeHashed import dehashed_search_command, DehashedSearchArgs, REQUEST_PAGE_SIZE
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [{"id": "id_1", "email": ["a@b.co"]}],
-        "took": "1ms",
-        "total": 1,
-    }
+    mock_response = load_mock_response("dehashed-search/response_one_entry.json")
     general_search_mock = mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = DehashedSearchArgs(asset_type="email", value="a@b.co", operation="is", page=3)  # type: ignore[call-arg]
