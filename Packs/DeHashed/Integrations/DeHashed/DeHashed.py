@@ -194,7 +194,7 @@ class DehashedParams(BaseParams):
 
     credentials: Credentials
     email_dbot_score: str = Field("SUSPICIOUS", alias="email_dbot_score")
-    integration_reliability: str | None = Field(None, alias="integration_reliability")
+    integration_reliability: str = Field("B - Usually reliable", alias="integration_reliability")
 
     @property
     def api_key(self):
