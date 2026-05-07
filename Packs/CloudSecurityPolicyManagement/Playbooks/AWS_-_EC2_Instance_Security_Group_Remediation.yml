@@ -38,7 +38,7 @@ tasks:
       id: 7ce15ff3-2f9e-47c4-8198-314a20199f91
       version: -1
       name: Identify Affected EC2 Interface and Security Groups
-      description: Automation to determine which interface on an EC2 instance has a given public IP and identify associated security groups.
+      description: Determines which interface on an EC2 instance has a specific public IP and identify its associated security groups.
       scriptName: AWSIdentifySGPublicExposure
       type: regular
       iscommand: false
