@@ -2,7 +2,7 @@ exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|docs
 files: ''
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v6.0.0
   hooks:
   - id: check-json
   - id: check-yaml
@@ -21,21 +21,21 @@ repos:
     exclude: Integrations/.*/README.md|Scripts/.*/README.md
   - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
-  rev: 1.8.2
+  rev: 1.8.5
   hooks:
   - id: poetry-check
     args:
     - --lock
     files: ^pyproject.toml$
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.5.0
+  rev: v2.6.0
   hooks:
   - id: pycln
     min_py_version: '3.7'
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.8.0
+  rev: v0.15.12
   hooks:
   - id: ruff-format
     min_py_version: '3.7'
