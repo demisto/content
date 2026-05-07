@@ -1,6 +1,6 @@
-id: SpecterOpsBHE
+id: SpecterOpsBloodHoundEnterprise
 version: -1
-name: SpecterOpsBHE
+name: SpecterOpsBloodHoundEnterprise
 starttaskid: "0"
 tasks:
   "0":
@@ -40,12 +40,12 @@ tasks:
     task:
       id: a6bf4571-f72b-4659-b0cd-d76fee80d05d
       version: -1
-      name: bhe-object-id-get
+      name: bloodhound-object-id-get
       description: Fetches the object ID using the object name.
-      script: SpecterOpsBHE|||bhe-object-id-get
+      script: SpecterOpsBloodHoundEnterprise|||bloodhound-object-id-get
       type: regular
       iscommand: true
-      brand: SpecterOpsBHE
+      brand: SpecterOpsBloodHoundEnterprise
     nexttasks:
       '#none#':
       - "3"
@@ -107,12 +107,12 @@ tasks:
     task:
       id: 4e231c98-8283-41a3-b785-c889ac1f6c65
       version: -1
-      name: bhe-asset-info-get
+      name: bloodhound-asset-info-get
       description: Fetches asset information using the object ID.
-      script: SpecterOpsBHE|||bhe-asset-info-get
+      script: SpecterOpsBloodHoundEnterprise|||bloodhound-asset-info-get
       type: regular
       iscommand: true
-      brand: SpecterOpsBHE
+      brand: SpecterOpsBloodHoundEnterprise
     nexttasks:
       '#none#':
       - "4"
@@ -145,12 +145,12 @@ tasks:
     task:
       id: fb78ab7f-fa7f-4856-a06e-a7e4e43a9e74
       version: -1
-      name: bhe-path-exist
+      name: bloodhound-path-exist
       description: Checks if a path exists between the two nodes.
-      script: SpecterOpsBHE|||bhe-path-exist
+      script: SpecterOpsBloodHoundEnterprise|||bloodhound-path-exist
       type: regular
       iscommand: true
-      brand: SpecterOpsBHE
+      brand: SpecterOpsBloodHoundEnterprise
     nexttasks:
       '#none#':
       - "2"

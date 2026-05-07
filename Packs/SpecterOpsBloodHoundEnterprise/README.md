@@ -2,7 +2,7 @@
 
 ## Overview
 
-BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBHE content pack enables automated retrieval of attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation, investigation, and remediation workflows.
+BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOps BloodHound Enterprise content pack enables automated retrieval of attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation, investigation, and remediation workflows.
 
 This pack provides comprehensive integration capabilities that help security teams proactively identify privilege escalation paths, automate incident response, and reduce the attack surface in enterprise environments.
 
@@ -54,9 +54,9 @@ When investigating a security incident or performing threat hunting, analysts ca
 **Workflow:**
 
 1. Analyst identifies a suspicious user or computer during investigation
-2. Uses `bhe-object-id-get` to find the object ID
-3. Uses `bhe-asset-info-get` to retrieve detailed asset information
-4. Uses `bhe-path-exist` to check if paths exist to high-value targets
+2. Uses `bloodhound-object-id-get` to find the object ID
+3. Uses `bloodhound-asset-info-get` to retrieve detailed asset information
+4. Uses `bloodhound-path-exist` to check if paths exist to high-value targets
 5. Takes appropriate remediation actions based on findings
 
 ### 3. Compliance and Risk Assessment
@@ -83,28 +83,28 @@ This pack includes the following components:
 
 ### Integration
 
-- **SpecterOpsBHE**: Main integration for connecting to BloodHound Enterprise API
+- **SpecterOps BloodHound Enterprise**: Main integration for connecting to BloodHound Enterprise API
   - Fetches attack path findings automatically
   - Provides commands for querying objects and assets
   - Supports filtering by environment and finding category
 
 ### Playbooks
 
-- **SpecterOpsBHE**: Automated playbook for investigating and responding to attack path incidents
+- **SpecterOpsBloodHoundEnterprise**: Automated playbook for investigating and responding to attack path incidents
   - Enriches incident data with object information
   - Provides structured investigation workflow
   - Supports manual and automated remediation tracking
 
 ### Incident Types
 
-- **SpecterOpsBHE Attack Path**: Dedicated incident type for BloodHound Enterprise attack path findings
+- **SpecterOpsBloodHoundEnterprise Attack Path**: Dedicated incident type for BloodHound Enterprise attack path findings
   - Custom fields for attack path metadata
   - Severity mapping based on BloodHound Enterprise severity levels
   - Structured data for impact and exposure metrics
 
 ### Layouts
 
-- **SpecterOpsBHE Attack Path Layout**: Custom layout for viewing and managing attack path incidents
+- **SpecterOpsBloodHoundEnterprise Attack Path Layout**: Custom layout for viewing and managing attack path incidents
   - Displays attack path details
   - Shows affected security principals
   - Provides access to remediation guidance
@@ -120,8 +120,8 @@ This pack includes the following components:
 
 ### Installation
 
-1. Install the SpecterOpsBHE pack from the Cortex XSOAR Marketplace
-2. Configure the SpecterOpsBHE integration instance:
+1. Install the SpecterOps BloodHound Enterprise pack from the Cortex XSOAR Marketplace
+2. Configure the SpecterOps BloodHound Enterprise integration instance:
    - **BloodHound Enterprise Domain**: Your BHE tenant URL (e.g., `https://example.bloodhoundenterprise.io`)
    - **Token ID**: Your BloodHound Enterprise API Token ID
    - **Token Key**: Your BloodHound Enterprise API Token Key
@@ -129,7 +129,7 @@ This pack includes the following components:
    - **Finding Category**: Filter by finding category or use "all" for all categories
    - **Fetch incidents**: Enable to automatically fetch attack paths
    - **Incidents Fetch Interval**: Set the interval for fetching (default: 10 minutes)
-   - **Incident type**: Set to "SpecterOpsBHE Attack Path"
+   - **Incident type**: Set to "SpecterOpsBloodHoundEnterprise Attack Path"
 
 ### Obtaining API Credentials
 
@@ -164,30 +164,30 @@ Once configured with "Fetch incidents" enabled, the integration will:
 
 #### Get Object ID by Name
 
-Use the `bhe-object-id-get` command to retrieve the unique object ID for a security principal (user, computer, group, etc.) by providing its name. This is useful when you need to look up an object ID before performing other operations.
+Use the `bloodhound-object-id-get` command to retrieve the unique object ID for a security principal (user, computer, group, etc.) by providing its name. This is useful when you need to look up an object ID before performing other operations.
 
 **Command:**
 
-!bhe-object-id-get object_names="USERNAME@example.com"
+!bloodhound-object-id-get object_names="USERNAME@example.com"
 
 The command returns the object ID, status, and message for each object name provided. You can query multiple objects by providing a comma-separated list.
 
 #### Get Asset Information
 
-Use the `bhe-asset-info-get` command to retrieve comprehensive information about a security principal using its object ID. This includes details such as name, type, domain, enabled status, group memberships, and other properties.
+Use the `bloodhound-asset-info-get` command to retrieve comprehensive information about a security principal using its object ID. This includes details such as name, type, domain, enabled status, group memberships, and other properties.
 
 **Command:**
 
-!bhe-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"
+!bloodhound-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"
 
 The command returns the asset information, status, and message for each object IDs provided. You can query multiple objects by providing a comma-separated list.
 
 #### Check Path Existence
 
-Use the `bhe-path-exist` command to verify if an attack path exists between two security principals. This helps validate relationships and understand potential privilege escalation routes.
+Use the `bloodhound-path-exist` command to verify if an attack path exists between two security principals. This helps validate relationships and understand potential privilege escalation routes.
 
 **Command:**
 
-!bhe-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"
+!bloodhound-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"
 
 The command returns a boolean value indicating whether a path exists between the specified nodes, along with status and message information.

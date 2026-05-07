@@ -1,11 +1,11 @@
 commonfields:
-  id: SpecterOpsBHE
+  id: SpecterOpsBloodHoundEnterprise
   version: -1
-name: SpecterOpsBHE
-display: SpecterOpsBHE
+name: SpecterOpsBloodHoundEnterprise
+display: SpecterOps BloodHound Enterprise
 category: Network Security
-description: Use the SpecterOpsBHE integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
-detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBHE integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
+description: Use the SpecterOpsBloodHoundEnterprise integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
+detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBloodHoundEnterprise integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
 configuration:
 - display: BloodHound Enterprise Domain
   name: url
@@ -64,66 +64,66 @@ configuration:
   required: false
 script:
   commands:
-  - name: bhe-object-id-get
+  - name: bloodhound-object-id-get
     arguments:
     - name: object_names
       required: true
       description: The object name associated with object ID.
       isArray: true
     outputs:
-    - contextPath: SpecterOpsBHE.Object.Status
+    - contextPath: SpecterOpsBloodHoundEnterprise.Object.Status
       description: The status of the object ID lookup (success or error).
       type: string
-    - contextPath: SpecterOpsBHE.Object.Message
+    - contextPath: SpecterOpsBloodHoundEnterprise.Object.Message
       description: The message describing the result of the lookup.
       type: string
-    - contextPath: SpecterOpsBHE.Object.ObjectID
+    - contextPath: SpecterOpsBloodHoundEnterprise.Object.ObjectID
       description: The unique object ID of the found object.
       type: string
-    - contextPath: 'SpecterOpsBHE.Object.ObjectName'
+    - contextPath: 'SpecterOpsBloodHoundEnterprise.Object.ObjectName'
       description: The name of the object that was searched.
       type: string
     description: Fetches the object ID using the object name.
-  - name: bhe-asset-info-get
+  - name: bloodhound-asset-info-get
     arguments:
     - name: object_ids
       required: true
       description: The object ID to fetch asset information.
       isArray: true
     outputs:
-    - contextPath: SpecterOpsBHE.Asset.Status
+    - contextPath: SpecterOpsBloodHoundEnterprise.Asset.Status
       description: The status of the asset information fetch (success or error).
       type: string
-    - contextPath: SpecterOpsBHE.Asset.Message
+    - contextPath: SpecterOpsBloodHoundEnterprise.Asset.Message
       description: The message describing the result of the asset information fetch.
       type: string
-    - contextPath: SpecterOpsBHE.Asset.ObjectID
+    - contextPath: SpecterOpsBloodHoundEnterprise.Asset.ObjectID
       description: The object ID for which asset information was fetched.
       type: string
-    - contextPath: SpecterOpsBHE.Asset.Data
+    - contextPath: SpecterOpsBloodHoundEnterprise.Asset.Data
       description: The raw asset data containing all asset information fields (name, type, objectid, domain, enabled, email, and other properties).
       type: unknown
     description: Fetches asset information using the object ID.
-  - name: bhe-path-exist
+  - name: bloodhound-path-exist
     arguments:
     - name: from_principal
       description: The start node.
     - name: to_principal
       description: The end node.
     outputs:
-    - contextPath: SpecterOpsBHE.Path.FromPrincipal
+    - contextPath: SpecterOpsBloodHoundEnterprise.Path.FromPrincipal
       description: The start node (from principal) used in the path check.
       type: String
-    - contextPath: SpecterOpsBHE.Path.ToPrincipal
+    - contextPath: SpecterOpsBloodHoundEnterprise.Path.ToPrincipal
       description: The end node (to principal) used in the path check.
       type: String
-    - contextPath: SpecterOpsBHE.Path.Status
+    - contextPath: SpecterOpsBloodHoundEnterprise.Path.Status
       description: The status of the path check (success or error).
       type: String
-    - contextPath: SpecterOpsBHE.Path.Message
+    - contextPath: SpecterOpsBloodHoundEnterprise.Path.Message
       description: The message describing the result of the path check.
       type: String
-    - contextPath: SpecterOpsBHE.Path.Data
+    - contextPath: SpecterOpsBloodHoundEnterprise.Path.Data
       description: Whether a path exists between the nodes (True or False).
       type: Boolean
     description: Checks if a path exists between the two nodes.

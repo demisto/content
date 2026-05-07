@@ -1,5 +1,5 @@
 """
-SpecterOpsBHE integration for Cortex XSOAR - Unit Tests file
+SpecterOps BloodHound Enterprise integration for Cortex XSOAR - Unit Tests file
 """
 
 from unittest.mock import Mock, patch
@@ -8,8 +8,8 @@ from urllib.parse import urljoin
 import demistomock as demisto
 import pytest
 import requests
-import SpecterOpsBHE
-from SpecterOpsBHE import (
+import SpecterOpsBloodHoundEnterprise
+from SpecterOpsBloodHoundEnterprise import (
     BAD_REQUEST,
     ENDPOINTS,
     FORBIDDEN_REQUEST,
@@ -235,7 +235,7 @@ class TestClient:
         assert result is not None
         assert "user:pass@" in result["http"]
 
-    @patch("SpecterOpsBHE.demisto.error")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto.error")
     def test_build_proxy_dict_invalid_url(self, mock_error):
         """Test _build_proxy_dict with invalid proxy URL"""
         client = Client(
@@ -295,7 +295,7 @@ class TestClient:
         assert result == {"data": []}
         assert mock_execute.call_count == 2
 
-    @patch("SpecterOpsBHE.demisto.error")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto.error")
     @patch.object(Client, "_execute_single_request")
     def test_api_request_proxy_error(self, mock_execute, mock_error, mock_client):
         """Test _api_request handles proxy errors"""
@@ -305,7 +305,7 @@ class TestClient:
         assert "Proxy error" in str(exc_info.value)
         mock_error.assert_called()
 
-    @patch("SpecterOpsBHE.demisto.error")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto.error")
     @patch.object(Client, "_execute_single_request")
     def test_api_request_connection_error(self, mock_execute, mock_error, mock_client):
         """Test _api_request handles connection errors"""
@@ -433,7 +433,7 @@ class TestHelperFunctions:
             "Short remediation",
         )
         assert incident["name"] == "TEST - test.domain.com - Test Attack Path"
-        assert incident["type"] == "SpecterOpsBHE Attack Path"
+        assert incident["type"] == "SpecterOpsBloodHoundEnterprise Attack Path"
         assert incident["severity"] == 3  # high severity
         assert "rawJSON" in incident
 
@@ -637,7 +637,7 @@ class TestPathFunctions:
         result = _get_last_timestamp_for_finding_type(last_run, "domain1:finding1", "domain1")
         assert result == "2024-01-01T00:00:00Z"
 
-    @patch("SpecterOpsBHE.get_attack_path_details_page")
+    @patch("SpecterOpsBloodHoundEnterprise.get_attack_path_details_page")
     def test_paginate_and_filter_attack_paths(self, mock_get_page, mock_client):
         """Test _paginate_and_filter_attack_paths"""
         # First page with newer paths
@@ -661,8 +661,8 @@ class TestPathFunctions:
         assert len(result) == 2
         assert finding_type_latest_dates["domain1:finding1"] == "2024-01-03T00:00:00Z"
 
-    @patch("SpecterOpsBHE._paginate_and_filter_attack_paths")
-    @patch("SpecterOpsBHE._get_last_timestamp_for_finding_type")
+    @patch("SpecterOpsBloodHoundEnterprise._paginate_and_filter_attack_paths")
+    @patch("SpecterOpsBloodHoundEnterprise._get_last_timestamp_for_finding_type")
     def test_fetch_attack_path_details(self, mock_get_timestamp, mock_paginate, mock_client):
         """Test fetch_attack_path_details"""
         mock_get_timestamp.return_value = "2024-01-01T00:00:00Z"
@@ -722,7 +722,7 @@ class TestAssetFunctions:
         assert result["nonexistent"]["message"] == "Object ID Not found."
         assert result["nonexistent"]["data"] is None
 
-    @patch("SpecterOpsBHE.demisto.error")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto.error")
     @patch.object(Client, "_api_request")
     def test_get_object_id_error(self, mock_api_request, mock_error, mock_client):
         """Test get_object_id with error"""
@@ -734,7 +734,7 @@ class TestAssetFunctions:
         assert result["test"]["data"] is None
         mock_error.assert_called()
 
-    @patch("SpecterOpsBHE.demisto.error")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto.error")
     @patch.object(Client, "_api_request")
     def test_get_object_id_partial_success(self, mock_api_request, mock_error, mock_client):
         """Test get_object_id with partial success (one succeeds, one fails)"""
@@ -782,7 +782,7 @@ class TestAssetFunctions:
         assert result["status"] == "error"
         assert "not available" in result["message"].lower()
 
-    @patch("SpecterOpsBHE._handle_fetch_asset_information")
+    @patch("SpecterOpsBloodHoundEnterprise._handle_fetch_asset_information")
     def test_fetch_asset_info(self, mock_fetch, mock_client):
         """Test fetch_asset_info function"""
         mock_fetch.return_value = {"status": "success", "data": {"name": "test"}}
@@ -847,8 +847,8 @@ class TestIncidentCreation:
         result = create_incidents(mock_client, attack_path_details, domains, attack_paths_info)
         assert result == []
 
-    @patch("SpecterOpsBHE._group_attack_paths_by_domain")
-    @patch("SpecterOpsBHE._extract_bhe_instance")
+    @patch("SpecterOpsBloodHoundEnterprise._group_attack_paths_by_domain")
+    @patch("SpecterOpsBloodHoundEnterprise._extract_bhe_instance")
     def test_create_incidents(self, mock_extract, mock_group, mock_client):
         """Test create_incidents with valid data"""
         mock_extract.return_value = "TEST"
@@ -882,7 +882,7 @@ class TestIncidentCreation:
 
         result = create_incidents(mock_client, attack_path_details, domains, attack_paths_info)
         assert len(result) > 0
-        assert result[0]["type"] == "SpecterOpsBHE Attack Path"
+        assert result[0]["type"] == "SpecterOpsBloodHoundEnterprise Attack Path"
 
 
 class TestLockMechanism:
@@ -901,7 +901,7 @@ class TestLockMechanism:
         import time
 
         demisto.setIntegrationContext({"lock_time": str(time.time())})
-        SpecterOpsBHE.LOCK_TIMEOUT = 600
+        SpecterOpsBloodHoundEnterprise.LOCK_TIMEOUT = 600
         result = acquire_lock()
         assert result is False
 
@@ -921,57 +921,57 @@ class TestTestModule:
     def test_test_module_success(self, mock_test, mock_client):
         """Test test_module with successful connection"""
         mock_test.return_value = Mock()
-        result = SpecterOpsBHE.test_module(mock_client)
+        result = SpecterOpsBloodHoundEnterprise.test_module(mock_client)
         assert result == "ok"
 
     @patch.object(Client, "test_connection")
     def test_test_module_unauthorized(self, mock_test, mock_client):
         """Test test_module with unauthorized error"""
         mock_test.side_effect = BloodHoundUnauthorizedException("Unauthorized")
-        result = SpecterOpsBHE.test_module(mock_client)
+        result = SpecterOpsBloodHoundEnterprise.test_module(mock_client)
         assert "Unauthorized" in result
 
     @patch.object(Client, "test_connection")
     def test_test_module_bad_request(self, mock_test, mock_client):
         """Test test_module with bad request"""
         mock_test.side_effect = BloodHoundBadRequestException("Bad Request")
-        result = SpecterOpsBHE.test_module(mock_client)
+        result = SpecterOpsBloodHoundEnterprise.test_module(mock_client)
         assert "Bad Request" in result
 
     @patch.object(Client, "test_connection")
     def test_test_module_forbidden(self, mock_test, mock_client):
         """Test test_module with forbidden error"""
         mock_test.side_effect = BloodHoundForbiddenException("Forbidden")
-        result = SpecterOpsBHE.test_module(mock_client)
+        result = SpecterOpsBloodHoundEnterprise.test_module(mock_client)
         assert "Forbidden" in result
 
     @patch.object(Client, "test_connection")
     def test_test_module_server_error(self, mock_test, mock_client):
         """Test test_module with server error"""
         mock_test.side_effect = BloodHoundServerErrorException("Server Error")
-        result = SpecterOpsBHE.test_module(mock_client)
+        result = SpecterOpsBloodHoundEnterprise.test_module(mock_client)
         assert "Server error" in result
 
     @patch.object(Client, "test_connection")
     def test_test_module_dns_error(self, mock_test, mock_client):
         """Test test_module with DNS resolution error"""
         mock_test.side_effect = Exception("Name does not resolve")
-        result = SpecterOpsBHE.test_module(mock_client)
+        result = SpecterOpsBloodHoundEnterprise.test_module(mock_client)
         assert "Invalid domain" in result
 
 
 class TestFetchIncidents:
     """Test cases for fetch_incidents function"""
 
-    @patch("SpecterOpsBHE.release_lock")
-    @patch("SpecterOpsBHE.create_incidents")
-    @patch("SpecterOpsBHE.fetch_attack_path_details")
-    @patch("SpecterOpsBHE.fetch_path_info")
-    @patch("SpecterOpsBHE.filter_finding_types")
-    @patch("SpecterOpsBHE.collect_available_types")
-    @patch("SpecterOpsBHE.filter_domains")
-    @patch("SpecterOpsBHE.get_available_domains")
-    @patch("SpecterOpsBHE.acquire_lock")
+    @patch("SpecterOpsBloodHoundEnterprise.release_lock")
+    @patch("SpecterOpsBloodHoundEnterprise.create_incidents")
+    @patch("SpecterOpsBloodHoundEnterprise.fetch_attack_path_details")
+    @patch("SpecterOpsBloodHoundEnterprise.fetch_path_info")
+    @patch("SpecterOpsBloodHoundEnterprise.filter_finding_types")
+    @patch("SpecterOpsBloodHoundEnterprise.collect_available_types")
+    @patch("SpecterOpsBloodHoundEnterprise.filter_domains")
+    @patch("SpecterOpsBloodHoundEnterprise.get_available_domains")
+    @patch("SpecterOpsBloodHoundEnterprise.acquire_lock")
     def test_fetch_incidents_success(
         self,
         mock_acquire,
@@ -1001,16 +1001,16 @@ class TestFetchIncidents:
         fetch_incidents(mock_client)
         mock_release.assert_called_once()
 
-    @patch("SpecterOpsBHE.acquire_lock")
+    @patch("SpecterOpsBloodHoundEnterprise.acquire_lock")
     def test_fetch_incidents_lock_not_acquired(self, mock_acquire, mock_client):
         """Test fetch_incidents when lock cannot be acquired"""
         mock_acquire.return_value = False
         fetch_incidents(mock_client)
         # Should return early without processing
 
-    @patch("SpecterOpsBHE.release_lock")
-    @patch("SpecterOpsBHE.get_available_domains")
-    @patch("SpecterOpsBHE.acquire_lock")
+    @patch("SpecterOpsBloodHoundEnterprise.release_lock")
+    @patch("SpecterOpsBloodHoundEnterprise.get_available_domains")
+    @patch("SpecterOpsBloodHoundEnterprise.acquire_lock")
     def test_fetch_incidents_domain_fetch_failure(self, mock_acquire, mock_get_domains, mock_release, mock_client):
         """Test fetch_incidents when domain fetch fails"""
         mock_acquire.return_value = True
@@ -1022,9 +1022,9 @@ class TestFetchIncidents:
 class TestMainFunction:
     """Test cases for main function"""
 
-    @patch("SpecterOpsBHE.return_results")
-    @patch("SpecterOpsBHE.test_module")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.return_results")
+    @patch("SpecterOpsBloodHoundEnterprise.test_module")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_test_module(self, mock_demisto, mock_test_module, mock_return_results):
         """Test main function with test-module command"""
         mock_demisto.params.return_value = {
@@ -1039,14 +1039,14 @@ class TestMainFunction:
         mock_demisto.args.return_value = {}
         mock_test_module.return_value = "ok"
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_test_module.assert_called_once()
 
-    @patch("SpecterOpsBHE.return_results")
-    @patch("SpecterOpsBHE.get_object_id")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.return_results")
+    @patch("SpecterOpsBloodHoundEnterprise.get_object_id")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_get_object_id(self, mock_demisto, mock_get_object_id, mock_return_results):
-        """Test main function with bhe-object-id-get command"""
+        """Test main function with bloodhound-object-id-get command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1054,17 +1054,17 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-object-id-get"
+        mock_demisto.command.return_value = "bloodhound-object-id-get"
         mock_demisto.args.return_value = {"object_names": "test1,test2"}
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_get_object_id.assert_called_once()
 
-    @patch("SpecterOpsBHE.return_results")
-    @patch("SpecterOpsBHE.fetch_asset_info")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.return_results")
+    @patch("SpecterOpsBloodHoundEnterprise.fetch_asset_info")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_fetch_asset_info(self, mock_demisto, mock_fetch_asset_info, mock_return_results):
-        """Test main function with bhe-asset-info-get command"""
+        """Test main function with bloodhound-asset-info-get command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1072,17 +1072,17 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-asset-info-get"
+        mock_demisto.command.return_value = "bloodhound-asset-info-get"
         mock_demisto.args.return_value = {"object_ids": "123,456"}
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_fetch_asset_info.assert_called_once()
 
-    @patch("SpecterOpsBHE.return_results")
-    @patch("SpecterOpsBHE.check_path_exists_between_nodes")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.return_results")
+    @patch("SpecterOpsBloodHoundEnterprise.check_path_exists_between_nodes")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_does_path_exist(self, mock_demisto, mock_does_path_exist, mock_return_results):
-        """Test main function with bhe-path-exist command"""
+        """Test main function with bloodhound-path-exist command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1090,16 +1090,16 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-path-exist"
+        mock_demisto.command.return_value = "bloodhound-path-exist"
         mock_demisto.args.return_value = {"from_principal": "node1", "to_principal": "node2"}
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_does_path_exist.assert_called_once()
 
-    @patch("SpecterOpsBHE.return_results")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.return_results")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_does_path_exist_missing_args(self, mock_demisto, mock_return_results):
-        """Test main function with bhe-path-exist missing arguments"""
+        """Test main function with bloodhound-path-exist missing arguments"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
             "token_id": "test_id",
@@ -1107,14 +1107,14 @@ class TestMainFunction:
             "finding_domain": "all",
             "finding_category": "all",
         }
-        mock_demisto.command.return_value = "bhe-path-exist"
+        mock_demisto.command.return_value = "bloodhound-path-exist"
         mock_demisto.args.return_value = {}
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_return_results.assert_called()
 
-    @patch("SpecterOpsBHE.fetch_incidents")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.fetch_incidents")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_fetch_incidents(self, mock_demisto, mock_fetch_incidents):
         """Test main function with fetch-incidents command"""
         mock_demisto.params.return_value = {
@@ -1127,11 +1127,11 @@ class TestMainFunction:
         mock_demisto.command.return_value = "fetch-incidents"
         mock_demisto.args.return_value = {}
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_fetch_incidents.assert_called_once()
 
-    @patch("SpecterOpsBHE.return_error")
-    @patch("SpecterOpsBHE.demisto")
+    @patch("SpecterOpsBloodHoundEnterprise.return_error")
+    @patch("SpecterOpsBloodHoundEnterprise.demisto")
     def test_main_unknown_command(self, mock_demisto, mock_return_error):
         """Test main function with unknown command"""
         mock_demisto.params.return_value = {
@@ -1144,7 +1144,7 @@ class TestMainFunction:
         mock_demisto.command.return_value = "unknown-command"
         mock_demisto.args.return_value = {}
 
-        SpecterOpsBHE.main()
+        SpecterOpsBloodHoundEnterprise.main()
         mock_return_error.assert_called_once()
 
 
@@ -1206,7 +1206,7 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_fetch_primary_response_directory_type(self, mock_api_request, mock_client):
         """Test _fetch_primary_response with directory type"""
-        from SpecterOpsBHE import _fetch_primary_response
+        from SpecterOpsBloodHoundEnterprise import _fetch_primary_response
 
         mock_api_request.return_value = {"data": {"name": "test", "type": "User"}}
         result = _fetch_primary_response(mock_client, "123", "User")
@@ -1216,7 +1216,7 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_fetch_primary_response_azure_type(self, mock_api_request, mock_client):
         """Test _fetch_primary_response with Azure type"""
-        from SpecterOpsBHE import _fetch_primary_response
+        from SpecterOpsBloodHoundEnterprise import _fetch_primary_response
 
         mock_api_request.return_value = {"data": {"name": "test", "type": "AZUser"}}
         result = _fetch_primary_response(mock_client, "123", "AZUser")
@@ -1225,7 +1225,7 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_fetch_primary_response_base_type(self, mock_api_request, mock_client):
         """Test _fetch_primary_response with base type"""
-        from SpecterOpsBHE import _fetch_primary_response
+        from SpecterOpsBloodHoundEnterprise import _fetch_primary_response
 
         mock_api_request.return_value = {"data": {"name": "test"}}
         result = _fetch_primary_response(mock_client, "123", "UnknownType")
@@ -1234,7 +1234,7 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_handle_azure_types(self, mock_api_request, mock_client):
         """Test _handle_azure_types function"""
-        from SpecterOpsBHE import _handle_azure_types
+        from SpecterOpsBloodHoundEnterprise import _handle_azure_types
 
         primary_response = {"data": {}}
         mock_api_request.return_value = {"count": 5}
@@ -1288,20 +1288,20 @@ class TestEdgeCases:
         incident = _create_incident_dict("TEST", "test.domain.com", "Test Path", event, "low", "2024-01-01T00:00:00Z", "", "")
         assert incident["severity"] == 1  # low
 
-    @patch("SpecterOpsBHE.time.time")
+    @patch("SpecterOpsBloodHoundEnterprise.time.time")
     def test_acquire_lock_with_last_fetch(self, mock_time):
         """Test acquire_lock when last_fetch_time is recent"""
         mock_time.return_value = 1000.0
-        SpecterOpsBHE.LOCK_TIMEOUT = 600
+        SpecterOpsBloodHoundEnterprise.LOCK_TIMEOUT = 600
         demisto.setIntegrationContext({"last_fetch_time": "500.0"})  # Within timeout
         result = acquire_lock()
         assert result is False  # Should not acquire lock
 
-    @patch("SpecterOpsBHE.time.time")
+    @patch("SpecterOpsBloodHoundEnterprise.time.time")
     def test_acquire_lock_after_timeout(self, mock_time):
         """Test acquire_lock when lock has timed out"""
         mock_time.return_value = 2000.0
-        SpecterOpsBHE.LOCK_TIMEOUT = 600
+        SpecterOpsBloodHoundEnterprise.LOCK_TIMEOUT = 600
         demisto.setIntegrationContext({"lock_time": "1000.0"})  # Lock expired
         result = acquire_lock()
         assert result is True  # Should acquire lock

@@ -259,7 +259,7 @@ class Client(BaseClient):
             digester = hmac.new(digester.digest(), None, hashlib.sha256)
 
             headers = {
-                "User-Agent": "BloodHound Enterprise - XSOAR Integration",
+                "User-Agent": "XSOAR-BHE-Application/v1.0.0",
                 "Authorization": f"bhesignature {self.__token_id}",
                 "RequestDate": datetime_formatted,
                 "Signature": base64.b64encode(digester.digest()).decode(),
@@ -1172,7 +1172,7 @@ def _create_incident_dict(
     """
     return {
         "name": f"{bhe_instance} - {domain_name} - {path_title}",
-        "type": "SpecterOpsBHE Attack Path",
+        "type": "SpecterOpsBloodHoundEnterprise Attack Path",
         "severity": SEVERITY_MAP.get(severity, 1),
         "occurred": current_time,
         "rawJSON": json.dumps(event),
@@ -1634,7 +1634,7 @@ def bhe_path_exist_command(bhe_client: Client, args: dict) -> None:
 
     return_results(
         CommandResults(
-            outputs_prefix="SpecterOpsBHE.Path",
+            outputs_prefix="SpecterOpsBloodHoundEnterprise.Path",
             outputs=raw_result,
             readable_output=readable_output,
             raw_response=raw_result,
@@ -1679,7 +1679,7 @@ def bhe_asset_info_get_command(bhe_client: Client, args: dict) -> None:
 
     return_results(
         CommandResults(
-            outputs_prefix="SpecterOpsBHE.Asset",
+            outputs_prefix="SpecterOpsBloodHoundEnterprise.Asset",
             outputs=fetch_result,
             readable_output=readable_output,
             raw_response=fetch_result,
@@ -1719,7 +1719,7 @@ def bhe_object_id_get_command(bhe_client: Client, args: dict) -> None:
     )
     return_results(
         CommandResults(
-            outputs_prefix="SpecterOpsBHE.Object",
+            outputs_prefix="SpecterOpsBloodHoundEnterprise.Object",
             outputs=object_result,
             readable_output=readable_output,
             raw_response=object_result,
@@ -1790,13 +1790,13 @@ def main():
             result = test_module(bhe_client)
             return_results(result)
 
-        elif command == "bhe-object-id-get":
+        elif command == "bloodhound-object-id-get":
             bhe_object_id_get_command(bhe_client, args)
 
-        elif command == "bhe-asset-info-get":
+        elif command == "bloodhound-asset-info-get":
             bhe_asset_info_get_command(bhe_client, args)
 
-        elif command == "bhe-path-exist":
+        elif command == "bloodhound-path-exist":
             bhe_path_exist_command(bhe_client, args)
 
         elif command == "fetch-incidents":

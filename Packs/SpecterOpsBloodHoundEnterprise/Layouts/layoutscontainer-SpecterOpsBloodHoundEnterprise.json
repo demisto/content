@@ -336,8 +336,8 @@
         ]
     },
     "group": "incident",
-    "id": "SpecterOps-Layout",
-    "name": "SpecterOps-Layout",
+    "id": "SpecterOpsBloodHoundEnterprise-Layout",
+    "name": "SpecterOpsBloodHoundEnterprise-Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",

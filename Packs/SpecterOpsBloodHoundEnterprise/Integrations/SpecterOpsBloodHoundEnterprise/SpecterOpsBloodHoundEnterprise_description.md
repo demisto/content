@@ -1,9 +1,9 @@
 ## BloodHound Enterprise
-BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBHE integration enables automated retrieval of attack path findings from BloodHound into Cortex XSOAR, streamlining incident creation and investigation.
+BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOps BloodHound Enterprise integration enables automated retrieval of attack path findings from BloodHound into Cortex XSOAR, streamlining incident creation and investigation.
 
-### Set up a SpecterOpsBHE integration instance
+### Set up a SpecterOps BloodHound Enterprise integration instance
 
-Configure a SpecterOpsBHE integration instance by providing the following mandatory details:
+Configure a SpecterOps BloodHound Enterprise integration instance by providing the following mandatory details:
 - **(Required)** BloodHound Enterprise Domain (for example, https://example.bloodhoundenterprise.io)
 - **(Required)** Token ID 
 - **(Required)** Token Key
@@ -13,9 +13,9 @@ Configure a SpecterOpsBHE integration instance by providing the following mandat
 - Finding environment
 - Finding category
 
-### Configure the Instance to Fetch Attack Paths from BHE
+### Configure the Instance to Fetch Attack Paths from BloodHound Enterprise
 - **(Required)** Select the **Fetches incidents** checkbox.
-- Set the **Incident Type** to SpecterOpsBHE Attack Path.
+- Set the **Incident Type** to SpecterOpsBloodHoundEnterprise Attack Path.
 - **(Required)** Choose the **Incidents Fetch Interval** for fetching attack paths (Default is 10 mins).
 
 ### Get the BloodHound Enterprise API Token ID and Token Key

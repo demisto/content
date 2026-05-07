@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* SpecterOpsBHE
+* SpecterOps BloodHound Enterprise
 
 ### Scripts
 
@@ -18,9 +18,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* bhe-asset-info-get
-* bhe-object-id-get
-* bhe-path-exist
+* bloodhound-asset-info-get
+* bloodhound-object-id-get
+* bloodhound-path-exist
 * closeInvestigation
 
 ## Playbook Inputs
@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SpecterOpsBHE](SpecterOpsBHE/Playbooks/doc_files/playbook-ss.png)
+![SpecterOps BloodHound Enterprise](SpecterOpsBloodHoundEnterprise/Playbooks/doc_files/playbook-ss.png)

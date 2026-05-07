@@ -1,7 +1,7 @@
 {
 	"IncidentTypes": [
 		{
-			"id": "SpecterOpsBHE Attack Path",
+			"id": "SpecterOpsBloodHoundEnterprise Attack Path",
 			"version": -1,
 			"cacheVersn": 0,
 			"sequenceNumber": 2027125,
@@ -20,10 +20,10 @@
 			"commitMessage": "",
 			"shouldCommit": false,
 			"locked": false,
-			"name": "SpecterOpsBHE Attack Path",
-			"prevName": "SpecterOpsBHE Attack Path",
+			"name": "SpecterOpsBloodHoundEnterprise Attack Path",
+			"prevName": "SpecterOpsBloodHoundEnterprise Attack Path",
 			"color": "#bed474",
-			"playbookId": "SpecterOpsBHE",
+			"playbookId": "SpecterOpsBloodHoundEnterprise",
 			"hours": 0,
 			"days": 0,
 			"weeks": 0,
@@ -39,7 +39,7 @@
 			"disabled": false,
 			"reputationCalc": 0,
 			"onChangeRepAlg": 0,
-			"layout": "SpecterOps-Layout",
+			"layout": "SpecterOpsBloodHoundEnterprise-Layout",
 			"detached": false,
 			"extractSettings": {
 				"mode": "Specific",
