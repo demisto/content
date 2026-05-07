@@ -9,6 +9,7 @@ from CommonServerPython import *
 from pytest_mock import MockerFixture
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError
+from datetime import UTC
 
 RETURN_ERROR_TARGET = "SplunkPyV2.return_error"
 
@@ -323,6 +324,28 @@ class Jobs:
         return job
 
 
+class _MagicKVStore:
+    """Minimal stand-in for ``service.kvstore`` used by tests.
+
+    The production code reaches the KV-store via ``service.kvstore["mc_notes"].data.query(query=...)``
+    (see :func:`SplunkPyV2.enrich_with_splunk_notes_v2`). The test ``Service`` mock historically did
+    not expose ``kvstore``, which made the v2 helper raise an ``AttributeError`` and spill a
+    ``demisto.error(...)`` line into stdout — flagged by the strict autouse ``check_std_out_err``
+    fixture in :mod:`conftest`.
+
+    This stand-in returns a benign empty result for any collection access so the helper short-circuits
+    via the "no notes found" branch without touching real Splunk infrastructure.
+    Tests that need to assert specific KV-store behavior can still override ``service.kvstore`` (or
+    the higher-level helper) with their own mock — this default is only the safety net.
+    """
+
+    def __getitem__(self, _name):  # ``service.kvstore["mc_notes"]``
+        return MagicMock(data=MagicMock(query=MagicMock(return_value=[])))
+
+    def __contains__(self, _name):  # ``"mc_notes" in service.kvstore``
+        return True
+
+
 class Service:
     def __init__(self, status):
         self.jobs = Jobs(status, self)
@@ -330,6 +353,8 @@ class Service:
         self.disable_v2_api = False
         self.namespace = {"app": "test", "owner": "test", "sharing": "global"}
         self._abspath = lambda x, **kwargs: x
+        # See :class:`_MagicKVStore` docstring for rationale.
+        self.kvstore = _MagicKVStore()
 
     def get(self, path_segment, owner=None, app=None, headers=None, sharing=None, **query):
         return {"status": "200", "body": "test", "headers": {"content-type": "application/json"}, "reason": "OK"}
@@ -682,6 +707,8 @@ class TestFetchRemovingIrrelevantIncidents:
     class Service:
         def __init__(self):
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
+            # Stand-in for service.kvstore — see _MagicKVStore docstring at module top.
+            self.kvstore = _MagicKVStore()
 
     def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
         """
@@ -735,6 +762,8 @@ class TestFetchForLateIndexedEvents:
     class Service:
         def __init__(self):
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
+            # Stand-in for service.kvstore — see _MagicKVStore docstring at module top.
+            self.kvstore = _MagicKVStore()
 
     # If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
     # and kwargs_oneshot['offset'] == 0
@@ -1089,6 +1118,68 @@ def test_reset_enriching_fetch_mechanism(mocker):
     set_mocker = mocker.patch("SplunkPyV2.set_integration_context")
     splunk.reset_enriching_fetch_mechanism()
     assert set_mocker.call_args[0][0] == {}
+
+
+def test_given_enrichment_enabled_when_fetch_then_dedup_ids_persisted_in_final_setLastRun(mocker):
+    """
+    Regression test for the dedup-IDs-lost-when-enrichment-enabled bug.
+
+    Given:
+        - Enrichments are enabled (so the FindingsFetchHandler routes through
+          ``run_enrichment_mechanism`` instead of the plain ``fetch_findings``
+          path).
+        - ``run_enrichment_mechanism`` is stubbed to return a non-empty
+          ``last_run_delta`` containing the dedup keys
+          (``next_run_found_incidents_ids``, ``next_run_earliest_time``).
+
+    When:
+        - The dispatcher ``fetch_incidents`` runs one cycle.
+
+    Then:
+        - The final ``demisto.setLastRun`` (the dispatcher's single emit at the
+          end of the cycle) must carry the dedup IDs and time cursor produced
+          by the enrichment mechanism.
+
+        Previously, the dispatcher snapshotted ``demisto.getLastRun()`` BEFORE
+        invoking the handler and then re-wrote that stale snapshot at the end
+        of the cycle, wiping out any inner ``setLastRun`` performed by
+        ``run_enrichment_mechanism``. The fix lets the enrichment path return
+        its delta through ``FetchResult.last_run_delta`` so the dispatcher
+        merges and persists it in the final emit.
+    """
+    # GIVEN — enrichment enabled and stable last-run/params plumbing.
+    mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", new=[splunk.DRILLDOWN_ENRICHMENT])
+    mocker.patch.object(demisto, "getLastRun", return_value={"next_run_earliest_time": "2018-10-24T14:13:20.000+00:00"})
+    mocker.patch.object(demisto, "params", return_value={"fetch_event_types": "Finding"})
+    mocker.patch.object(demisto, "incidents")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(splunk, "get_integration_context", return_value={})
+
+    # The enrichment helper returns (incidents, last_run_delta). We surface a
+    # delta with the dedup keys we expect to see at the end of the cycle.
+    expected_dedup_ids = {"event-id-1": {"occurred_time": "2018-10-24T14:23:20.000+00:00"}}
+    expected_delta = {
+        "next_run_earliest_time": "2018-10-24T14:23:20.000+00:00",
+        "next_run_latest_time": None,
+        "offset": 0,
+        "next_run_found_incidents_ids": expected_dedup_ids,
+        splunk.DUMMY: splunk.DUMMY,
+    }
+    mocker.patch.object(splunk, "run_enrichment_mechanism", return_value=([], expected_delta))
+
+    # WHEN — dispatcher runs one cycle.
+    service = mocker.MagicMock()
+    mapper = splunk.UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper=mapper)
+
+    # THEN — the final setLastRun must carry the dedup keys returned by the
+    # enrichment mechanism (i.e. the dispatcher merged them in, not overwrote them).
+    assert set_last_run_mock.call_count == 1
+    final_last_run = set_last_run_mock.call_args[0][0]
+    assert final_last_run["next_run_found_incidents_ids"] == expected_dedup_ids
+    assert final_last_run["next_run_earliest_time"] == "2018-10-24T14:23:20.000+00:00"
+    assert final_last_run["offset"] == 0
+    assert final_last_run.get(splunk.DUMMY) == splunk.DUMMY
 
 
 @pytest.mark.parametrize(
@@ -2274,6 +2365,8 @@ def test_get_modified_remote_data_command_close_incident(
     class Service:
         def __init__(self):
             self.jobs = Jobs()
+            # Stand-in for service.kvstore — see _MagicKVStore docstring at module top.
+            self.kvstore = _MagicKVStore()
 
     expected_entries = {"EntryContext": {"mirrorRemoteId": "id"}, "Type": EntryType.NOTE, "ContentsFormat": EntryFormat.JSON}
     args = {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"}
@@ -4220,8 +4313,17 @@ def test_fetch_findings_with_notes(mocker):
     mock_kv_store = MagicMock()
     mock_kv_store.data.query.return_value = mock_notes_data
 
-    # Mock helper functions
-    mocker.patch("SplunkPyV2.get_fetch_time_window", return_value=("", ""))
+    # Mock helper functions.
+    # `fetch_findings` now derives an epoch float from the fetch-window start
+    # to scope the v2 KV-store note query (`enrich_with_splunk_notes_v2`),
+    # so the helper must return real ISO timestamps (not empty strings).
+    mocker.patch(
+        "SplunkPyV2.get_fetch_time_window",
+        return_value=(
+            "2021-02-09T15:41:30.589575+02:00",
+            "2021-02-09T17:41:30.589575+02:00",
+        ),
+    )
     mocker.patch("SplunkPyV2.remove_irrelevant_incident_ids")
     mocker.patch("SplunkPyV2.format_splunk_note_for_xsoar", return_value="Note from fetch")
 
@@ -5720,10 +5822,7 @@ class TestPrepareInvestigationsQuery:
     merged into the URL inside `| rest "..."`.
     """
 
-    DEFAULT_URL = (
-        '/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true'
-        '&CUSTOM_FILTER_PLACEHOLDER'
-    )
+    DEFAULT_URL = "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true" "&CUSTOM_FILTER_PLACEHOLDER"
     DEFAULT_QUERY = f'| rest "{DEFAULT_URL}"'
 
     def test_given_placeholder_when_called_then_substituted_with_all_four_params(self):
@@ -5750,9 +5849,7 @@ class TestPrepareInvestigationsQuery:
         """Given a `| rest "<url>"` clause with no existing query string,
         when called, then the four managed params are appended cleanly."""
         query = '| rest "/path/v2/investigations"'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 5
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 5)
         assert "create_time_min=2025-01-01T00%3A00%3A00Z" in out  # urlencoded
         assert "limit=10" in out
         assert "offset=5" in out
@@ -5761,9 +5858,7 @@ class TestPrepareInvestigationsQuery:
         """Given a URL with unrelated existing params, when called, then they are preserved
         and the managed params are added."""
         query = '| rest "/path?foo=bar&baz=qux"'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
         assert "foo=bar" in out
         assert "baz=qux" in out
         assert "limit=10" in out
@@ -5772,9 +5867,7 @@ class TestPrepareInvestigationsQuery:
         """Given a `| rest '<url>'` clause with single quotes,
         when called, then the single-quote style is preserved and params are merged."""
         query = "| rest '/path/v2/investigations'"
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
         # Quotes preserved (single, not double).
         assert out.startswith("| rest '/")
         assert out.endswith("'")
@@ -5784,9 +5877,7 @@ class TestPrepareInvestigationsQuery:
         """Given a multi-line SPL with newline between `| rest` and the quote,
         when called, then it still matches and rewrites correctly."""
         query = '| rest\n    "/path/v2/investigations"'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
         assert "limit=10" in out
         assert "/path/v2/investigations?" in out
 
@@ -5795,9 +5886,7 @@ class TestPrepareInvestigationsQuery:
         when called, then both are overridden and a debug log names the overridden keys."""
         debug_mock = mocker.patch.object(splunk.demisto, "debug")
         query = '| rest "/path?create_time_min=OLD&limit=999&keep=me"'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
         assert "create_time_min=OLD" not in out
         assert "limit=999" not in out
         assert "limit=10" in out
@@ -5810,35 +5899,27 @@ class TestPrepareInvestigationsQuery:
     def test_given_url_with_fragment_when_called_then_fragment_preserved(self):
         """Given a URL with a #fragment, when called, then the fragment is preserved."""
         query = '| rest "/path?foo=bar#section1"'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
         assert "#section1" in out
 
     def test_given_trailing_splunk_args_when_called_then_args_preserved(self):
         """Given `| rest "URL" splunk_server=local count=0` (extra trailing args),
         when called, then trailing args are preserved untouched."""
         query = '| rest "/path/v2/investigations" splunk_server=local count=0'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
-        assert out.endswith(' splunk_server=local count=0')
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
+        assert out.endswith(" splunk_server=local count=0")
         assert "limit=10" in out
 
     def test_given_no_rest_clause_when_called_then_raises(self):
         """Given a query missing the `| rest "..."` clause entirely,
         when called, then DemistoException is raised."""
         with pytest.raises(splunk.DemistoException, match="rest"):
-            splunk.prepare_investigations_query(
-                "search index=main", "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-            )
+            splunk.prepare_investigations_query("search index=main", "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
 
     def test_given_uppercase_rest_when_called_then_matches_case_insensitively(self):
         """Given `| REST "..."` (uppercase), when called, then the regex matches."""
         query = '| REST "/path/v2/investigations"'
-        out = splunk.prepare_investigations_query(
-            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
-        )
+        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
         assert "limit=10" in out
 
     def test_given_limit_above_cap_when_called_then_clamped_to_100(self):
@@ -5914,8 +5995,8 @@ class TestToMcIso8601Utc:
     def test_given_aware_datetime_when_normalized_then_canonical_z(self):
         """Given a tz-aware datetime, when normalized, then canonical Z output with
         zero-padded 6-digit microseconds."""
-        from datetime import timezone as _tz
-        dt = datetime(2025, 1, 1, 12, 0, 0, tzinfo=_tz.utc)
+
+        dt = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
         assert splunk.to_mc_iso8601_utc(dt) == "2025-01-01T12:00:00.000000Z"
 
 
@@ -5936,9 +6017,11 @@ class TestFetchHandlerFactory:
 
     def _stub(self, event_type: str):
         """Define a minimal concrete FetchHandler subclass usable in build()."""
+
         class _StubHandler(splunk.FetchHandler):
             def fetch(self, service, last_run, mapper, params):  # noqa: D401
                 return splunk.FetchResult(incidents=[], last_run_delta={})
+
         _StubHandler.event_type = event_type
         _StubHandler.__name__ = f"Stub{event_type}Handler"
         return _StubHandler
@@ -6479,10 +6562,14 @@ class TestInvestigationsFetchHandler:
         # Defensive: silence demisto.error so the conftest no-stdout fixture is
         # satisfied if a handler-level exception is logged.
         mocker.patch.object(demisto, "error")
-        mocker.patch.object(splunk, "get_fetch_time_window", return_value=(
-            "2025-01-01T00:00:00.000000+00:00",
-            "2025-01-08T00:00:00.000000+00:00",
-        ))
+        mocker.patch.object(
+            splunk,
+            "get_fetch_time_window",
+            return_value=(
+                "2025-01-01T00:00:00.000000+00:00",
+                "2025-01-08T00:00:00.000000+00:00",
+            ),
+        )
         return params
 
     def test_given_rows_when_fetch_then_all_incidents_tagged_Investigation(self, mocker):
@@ -6574,15 +6661,19 @@ class TestInvestigationsFetchHandler:
 
     def test_given_rows_with_guid_when_fetch_then_enrich_with_splunk_notes_called(self, mocker):
         """Given fetched rows with `investigation_guid`, when the handler runs,
-        then `enrich_with_splunk_notes` is called with a guid-keyed map and
+        then `enrich_with_splunk_notes_v2` is called with a guid-keyed map and
         `is_fetch=True` (mirrors the Findings enrichment pattern; status doc
-        Phase 3b, lines 1562–1567)."""
+        Phase 3b, lines 1562–1567).
+
+        The handler was switched from the legacy ``enrich_with_splunk_notes``
+        helper to the v2 KV-store variant; this test asserts the new contract.
+        """
         # GIVEN
         params = self._common_setup(mocker)
         row = _sample_investigation_row()
         row["investigation_id"] = "ES-NOTES-1"
         service = self._service_returning([row], mocker)
-        enrich_spy = mocker.patch.object(splunk, "enrich_with_splunk_notes")
+        enrich_spy = mocker.patch.object(splunk, "enrich_with_splunk_notes_v2")
         handler = splunk.InvestigationsFetchHandler()
         # WHEN
         handler.fetch(service, last_run={}, mapper=self._mapper(), params=params)
@@ -6595,6 +6686,10 @@ class TestInvestigationsFetchHandler:
         assert passed_map[row["investigation_guid"]] is row
         # is_fetch must be True for the fetch path (vs. the modified-remote-data path).
         assert call_args.kwargs.get("is_fetch") is True
+        # v2 helper additionally takes a `last_update_splunk_timestamp` epoch float
+        # so it can scope the KV-store query by `update_time`.
+        assert "last_update_splunk_timestamp" in call_args.kwargs
+        assert isinstance(call_args.kwargs["last_update_splunk_timestamp"], float)
 
     def test_given_handler_failure_when_fetch_then_logs_error_and_reraises(self, mocker):
         """Given the inner `_do_fetch` raises, when `fetch` runs, then
@@ -6603,17 +6698,13 @@ class TestInvestigationsFetchHandler:
         # GIVEN
         self._common_setup(mocker)
         boom = RuntimeError("simulated downstream failure")
-        mocker.patch.object(
-            splunk.InvestigationsFetchHandler, "_do_fetch", side_effect=boom
-        )
+        mocker.patch.object(splunk.InvestigationsFetchHandler, "_do_fetch", side_effect=boom)
         # The common setup already patches demisto.error; recapture it as a spy.
         error_spy = mocker.patch.object(demisto, "error")
         handler = splunk.InvestigationsFetchHandler()
         # WHEN / THEN — exception re-raised.
         with pytest.raises(RuntimeError, match="simulated downstream failure"):
-            handler.fetch(
-                service=MagicMock(), last_run={}, mapper=self._mapper(), params={}
-            )
+            handler.fetch(service=MagicMock(), last_run={}, mapper=self._mapper(), params={})
         # AND — error was logged with the handler/event-type prefix.
         error_spy.assert_called_once()
         logged = error_spy.call_args.args[0]
@@ -6745,9 +6836,7 @@ class TestFetchIncidentsDispatcher:
         # GIVEN — only Findings stub registered, default fetch_event_types absent
         splunk.FetchHandlerFactory._registry = {}
         finding_inc = {"name": "f", "rawJSON": json.dumps({"splunk_es_event_type": "Finding"})}
-        finding_capture = self._install_stub(
-            "Finding", None, [finding_inc], {"next_run_earliest_time": "2025-01-08"}
-        )
+        finding_capture = self._install_stub("Finding", None, [finding_inc], {"next_run_earliest_time": "2025-01-08"})
         mocker.patch.object(demisto, "params", return_value={"fetchQuery": "x"})
         mocker.patch.object(demisto, "getLastRun", return_value={"time": "2025-01-01"})
         incidents_mock = mocker.patch.object(demisto, "incidents")
@@ -6766,9 +6855,7 @@ class TestFetchIncidentsDispatcher:
         # GIVEN
         splunk.FetchHandlerFactory._registry = {}
         inv_inc = {"name": "i", "rawJSON": json.dumps({"splunk_es_event_type": "Investigation"})}
-        inv_capture = self._install_stub(
-            "Investigation", "investigations", [inv_inc], {"offset": 50, "time": "2025-01-08"}
-        )
+        inv_capture = self._install_stub("Investigation", "investigations", [inv_inc], {"offset": 50, "time": "2025-01-08"})
         # Also register Finding so unknown filtering doesn't leak.
         self._install_stub("Finding", None, [], {})
         mocker.patch.object(demisto, "params", return_value={"fetch_event_types": "Investigation"})
@@ -6800,7 +6887,8 @@ class TestFetchIncidentsDispatcher:
         self._install_stub("Finding", None, [finding_inc], {"next_run_earliest_time": "F"})
         self._install_stub("Investigation", "investigations", [inv_inc], {"offset": 100})
         mocker.patch.object(
-            demisto, "params",
+            demisto,
+            "params",
             return_value={"fetch_event_types": "Finding,Investigation"},
         )
         mocker.patch.object(demisto, "getLastRun", return_value={})
@@ -6823,7 +6911,8 @@ class TestFetchIncidentsDispatcher:
         self._install_stub("Finding", None, [finding_inc], {})
         self._install_stub("Investigation", "investigations", [inv_inc], {})
         mocker.patch.object(
-            demisto, "params",
+            demisto,
+            "params",
             return_value={"fetch_event_types": "Finding, Investigation"},
         )
         mocker.patch.object(demisto, "getLastRun", return_value={})
@@ -6852,9 +6941,7 @@ class TestFetchIncidentsDispatcher:
                 raise boom
 
         splunk.FetchHandlerFactory.register("Investigation", _RaisingHandler)
-        mocker.patch.object(
-            demisto, "params", return_value={"fetch_event_types": "Investigation"}
-        )
+        mocker.patch.object(demisto, "params", return_value={"fetch_event_types": "Investigation"})
         mocker.patch.object(demisto, "getLastRun", return_value={})
         incidents_mock = mocker.patch.object(demisto, "incidents")
         set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
@@ -6906,9 +6993,7 @@ class TestListModifiedInvestigations:
             - Both rows are returned, and the URL hit on the service contains
               `update_time_min=2026-04-29T10:00:00Z`.
         """
-        service = self._service_returning(
-            {"entry": [{"investigation_guid": "g-1"}, {"investigation_guid": "g-2"}]}
-        )
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1"}, {"investigation_guid": "g-2"}]})
         result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
         assert [r["investigation_guid"] for r in result] == ["g-1", "g-2"]
         # `update_time_min` is forwarded as a kwarg on `service.get(...)`,
@@ -6940,9 +7025,7 @@ class TestListModifiedInvestigations:
         Then:
             - That row is silently skipped (not present in the result).
         """
-        service = self._service_returning(
-            {"entry": [{"unrelated_field": "value"}, {"investigation_guid": "g-keep"}]}
-        )
+        service = self._service_returning({"entry": [{"unrelated_field": "value"}, {"investigation_guid": "g-keep"}]})
         result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
         assert len(result) == 1
         assert result[0].get("investigation_guid") == "g-keep"
@@ -6958,9 +7041,7 @@ class TestListModifiedInvestigations:
               INVESTIGATIONS_MAX_LIMIT).
         """
         service = self._service_returning({"entry": []})
-        splunk.list_modified_investigations(
-            service, update_time_min="2026-04-29T10:00:00Z", page_size=999
-        )
+        splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z", page_size=999)
         # `limit` is forwarded as a kwarg on `service.get(...)`; assert it was
         # clamped to INVESTIGATIONS_MAX_LIMIT (100) before being passed on.
         assert service.get.call_args.kwargs["limit"] == 100
@@ -6982,17 +7063,15 @@ class TestListModifiedInvestigations:
 
         # Patch the per-page fetch helper directly so the test does not need to
         # juggle multi-call MagicMock side_effects on `service.get`.
-        page_spy = mocker.patch.object(
-            splunk, "_fetch_modified_investigations_page", side_effect=[first_page, second_page]
-        )
+        page_spy = mocker.patch.object(splunk, "_fetch_modified_investigations_page", side_effect=[first_page, second_page])
 
         result = splunk.list_modified_investigations(
             MagicMock(), update_time_min="2026-04-29T10:00:00Z", page_size=page_size, max_total=10
         )
 
         assert page_spy.call_count == 2
-        assert page_spy.call_args_list[0].args[3] == 0           # first offset
-        assert page_spy.call_args_list[1].args[3] == page_size   # advanced offset
+        assert page_spy.call_args_list[0].args[3] == 0  # first offset
+        assert page_spy.call_args_list[1].args[3] == page_size  # advanced offset
         assert [r["investigation_guid"] for r in result] == ["g-1", "g-2", "g-3"]
 
     def test_given_max_total_reached_when_paginating_then_loop_stops_at_cap(self, mocker):
@@ -7014,9 +7093,7 @@ class TestListModifiedInvestigations:
                 {"investigation_guid": f"g-{offset}-b"},
             ]
 
-        page_spy = mocker.patch.object(
-            splunk, "_fetch_modified_investigations_page", side_effect=_page
-        )
+        page_spy = mocker.patch.object(splunk, "_fetch_modified_investigations_page", side_effect=_page)
 
         result = splunk.list_modified_investigations(
             MagicMock(), update_time_min="2026-04-29T10:00:00Z", page_size=2, max_total=3
@@ -7056,20 +7133,14 @@ class TestListModifiedInvestigations:
             - The returned row's `owner` field is rewritten to "xsoar_user", matching
               the Findings owner-mapping behaviour in get_modified_remote_data_command.
         """
-        service = self._service_returning(
-            {"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]}
-        )
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]})
         mapper = MagicMock()
         mapper.should_map = True
         mapper.get_xsoar_user_by_splunk.return_value = "xsoar_user"
         # Delegate to the real helper so we exercise the same code path Findings use.
-        mapper.map_owner_to_xsoar_user.side_effect = (
-            lambda rows: splunk.UserMappingObject.map_owner_to_xsoar_user(mapper, rows)
-        )
+        mapper.map_owner_to_xsoar_user.side_effect = lambda rows: splunk.UserMappingObject.map_owner_to_xsoar_user(mapper, rows)
 
-        result = splunk.list_modified_investigations(
-            service, update_time_min="2026-04-29T10:00:00Z", mapper=mapper
-        )
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z", mapper=mapper)
 
         assert result[0]["owner"] == "xsoar_user"
         mapper.get_xsoar_user_by_splunk.assert_called_once_with("splunk_user")
@@ -7084,18 +7155,12 @@ class TestListModifiedInvestigations:
         Then:
             - The row's `owner` is left untouched (no mapping lookup performed).
         """
-        service = self._service_returning(
-            {"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]}
-        )
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]})
         mapper = MagicMock()
         mapper.should_map = False
-        mapper.map_owner_to_xsoar_user.side_effect = (
-            lambda rows: splunk.UserMappingObject.map_owner_to_xsoar_user(mapper, rows)
-        )
+        mapper.map_owner_to_xsoar_user.side_effect = lambda rows: splunk.UserMappingObject.map_owner_to_xsoar_user(mapper, rows)
 
-        result = splunk.list_modified_investigations(
-            service, update_time_min="2026-04-29T10:00:00Z", mapper=mapper
-        )
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z", mapper=mapper)
 
         assert result[0]["owner"] == "splunk_user"
         mapper.get_xsoar_user_by_splunk.assert_not_called()
@@ -7111,15 +7176,45 @@ class TestListModifiedInvestigations:
             - The owner value is returned untouched, preserving the previous
               behaviour for callers that have not opted into user mapping.
         """
-        service = self._service_returning(
-            {"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]}
-        )
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]})
 
-        result = splunk.list_modified_investigations(
-            service, update_time_min="2026-04-29T10:00:00Z"
-        )
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
 
         assert result[0]["owner"] == "splunk_user"
+
+    def test_given_full_v2_row_when_called_then_rows_returned_in_canonical_parsed_shape(self):
+        """
+        Given:
+            - The v2 endpoint returns a representative Mission Control v2 row
+              (`_sample_investigation_row`) carrying:
+                * a nested `findings.incident_ids` array,
+                * a nested `consolidated_findings` dict,
+                * none of the fetch-time normalisations applied.
+        When:
+            - list_modified_investigations is called.
+        Then:
+            - Every returned row carries the canonical fetch-time shape produced
+              by `parse_investigation`:
+                * `splunk_es_event_type == "Investigation"` (classifier tag),
+                * `incident_ids` lifted to top level,
+                * `consolidated_findings` JSON-serialised to a string.
+            - This guarantees mirror-in payloads match what the original fetch
+              flow emits via the Investigation class, so the classifier/mapper
+              receive consistently-shaped data on both code paths.
+        """
+        service = self._service_returning([_sample_investigation_row()])
+
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+
+        assert len(result) == 1
+        parsed_row = result[0]
+        # Classifier routing tag stamped by parse_investigation.
+        assert parsed_row[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+        # `findings.incident_ids` lifted to top level.
+        assert parsed_row["incident_ids"] == ["F-1", "F-2"]
+        # `consolidated_findings` serialised to JSON string (vs the dict in the raw row).
+        assert isinstance(parsed_row["consolidated_findings"], str)
+        assert json.loads(parsed_row["consolidated_findings"]) == {"summary": "n/a"}
 
 
 class TestGetModifiedRemoteDataInvestigations:
@@ -7152,17 +7247,21 @@ class TestGetModifiedRemoteDataInvestigations:
               can route each to its own get-remote-data handler.
         """
         kwargs = self._build_kwargs(mocker)
-        mocker.patch.object(
-            demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Finding,Investigation"}
-        )
+        mocker.patch.object(demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Finding,Investigation"})
         finding_rows = [
             {"rule_id": "F-1", "event_id": "F-1", "review_time": "1737547610.56"},
             {"rule_id": "F-2", "event_id": "F-2", "review_time": "1737547611.56"},
         ]
         mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=finding_rows)
         mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+        # The mirror-in dedup loop in `get_modified_remote_data_command` filters
+        # out any investigation row missing `investigation_guid` OR `update_time`
+        # (these together form the dedup cache key). Provide both so the row
+        # survives the dedup filter and is appended to the response.
         helper_spy = mocker.patch.object(
-            splunk, "list_modified_investigations", return_value=[{"investigation_guid": "g-1"}]
+            splunk,
+            "list_modified_investigations",
+            return_value=[{"investigation_guid": "g-1", "update_time": 1737547610.56}],
         )
         results_spy = mocker.patch.object(demisto, "results")
 
@@ -7184,9 +7283,7 @@ class TestGetModifiedRemoteDataInvestigations:
               instances that have not opted into Investigation mirror-in.
         """
         kwargs = self._build_kwargs(mocker)
-        mocker.patch.object(
-            demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Finding"}
-        )
+        mocker.patch.object(demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Finding"})
         mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=[])
         mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
         helper_spy = mocker.patch.object(splunk, "list_modified_investigations")

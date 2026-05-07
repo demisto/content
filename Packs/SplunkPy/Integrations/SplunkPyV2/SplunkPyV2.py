@@ -9,7 +9,7 @@ import urllib.parse
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import dateparser
@@ -223,8 +223,7 @@ class UserMappingObject:
                     xsoar_user = self.get_xsoar_user_by_splunk(splunk_user)
                     row["owner"] = xsoar_user
                     demisto.debug(
-                        f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} "
-                        f"for row {row.get(EVENT_ID)}."
+                        f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} " f"for row {row.get(EVENT_ID)}."
                     )
 
 
@@ -415,7 +414,7 @@ def get_fetch_time_window(params, service, last_run_fetch_window_start_time: str
     if not fetch_window_start_time:
         demisto.debug(f"[SplunkPy] First fetch - calculated earliest time: {fetch_window_start_time}")
         parse_setting = {"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
-        first_fetch =  params.get("first_fetch", "10 minutes")
+        first_fetch = params.get("first_fetch", "10 minutes")
         if parsed_time := dateparser.parse(first_fetch, settings=parse_setting):  # type: ignore[arg-type]
             fetch_window_start_time = parsed_time.strftime(ISO_FORMAT_TZ_AWARE)
         else:
@@ -887,35 +886,46 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject):
     ``Finding``), run them in registration order, merge their incidents and
     last-run deltas, then perform a single ``demisto.incidents()`` /
     ``demisto.setLastRun()`` emit at the end.
+
+    Logging contract (single source of truth for fetch-cycle observability):
+        - One INFO line per handler with its event_type, produced count and
+          its last_run delta keys.
+        - One INFO line at the end of the cycle summarising the totals AND
+          the relevant slice of the final ``last_run`` for every event type
+          actually fetched (Findings keys live at the top level; per-handler
+          last-run scopes are surfaced under their ``last_run_key``).
+        - Per-event-type details (windows, offsets, dedup IDs) are emitted
+          here so both Findings and Investigations are reflected in the same
+          log line and operators don't need to cross-reference helpers.
     """
     params = demisto.params()
     selected = argToList(params.get("fetch_event_types")) or ["Finding"]
     handlers = FetchHandlerFactory.build(selected)
-    demisto.debug(
-        f"dispatcher: selected event types={selected}; "
-        f"built handlers={[h.event_type for h in handlers]}"
-    )
+    demisto.debug(f"fetch_incidents: selected={selected} handlers={[h.event_type for h in handlers]}")
 
     last_run = demisto.getLastRun() or {}
     new_last_run: dict[str, Any] = dict(last_run)
     all_incidents: list[dict[str, Any]] = []
+    per_handler_counts: dict[str, int] = {}
 
     for handler in handlers:
         scope = last_run.get(handler.last_run_key, {}) if handler.last_run_key else last_run
         demisto.debug(
-            f"handler={type(handler).__name__} event_type={handler.event_type} "
-            f"last_run_scope_keys={list(scope.keys()) if isinstance(scope, dict) else []}"
+            f"fetch_incidents: invoking {handler.event_type} handler "
+            f"scope_keys={list(scope.keys()) if isinstance(scope, dict) else []}"
         )
         try:
             result = handler.fetch(service, scope, mapper, params)
         except Exception as e:
-            demisto.error(
-                f"handler={type(handler).__name__} event_type={handler.event_type} failed: {e}"
-            )
+            # Surface BOTH the handler class name AND the event_type — the
+            # class name is the most precise breadcrumb for finding the call
+            # site in source, while event_type is the operator-friendly label.
+            demisto.error(f"fetch_incidents: handler={type(handler).__name__} " f"event_type={handler.event_type} failed: {e}")
             raise
+        per_handler_counts[handler.event_type] = len(result.incidents)
         demisto.info(
-            f"handler={type(handler).__name__} produced={len(result.incidents)} incidents; "
-            f"last_run_delta_keys={list(result.last_run_delta.keys())}"
+            f"fetch_incidents: {handler.event_type} produced={len(result.incidents)} "
+            f"delta_keys={list(result.last_run_delta.keys())}"
         )
         all_incidents.extend(result.incidents)
         if handler.last_run_key:
@@ -924,12 +934,48 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject):
         else:
             new_last_run.update(result.last_run_delta)
 
+    # Single end-of-cycle summary covering BOTH event types. Operators no
+    # longer need to look inside helpers (`fetch_findings`, `_do_fetch`) to
+    # confirm what was persisted — this line carries the per-event-type cursor
+    # state straight from the final `setLastRun` payload.
     demisto.info(
-        f"dispatcher: total incidents={len(all_incidents)}; "
-        f"new_last_run_keys={list(new_last_run.keys())}"
+        f"fetch_incidents: total_incidents={len(all_incidents)} per_type={per_handler_counts}"
+        f" | last_run_summary={_summarize_last_run_for_log(new_last_run, [h.event_type for h in handlers])}"
     )
     demisto.incidents(all_incidents)
     demisto.setLastRun(new_last_run)
+
+
+def _summarize_last_run_for_log(last_run: dict[str, Any], event_types: list[str]) -> dict[str, Any]:
+    """Build a compact, log-friendly view of ``last_run`` for the dispatcher's
+    end-of-cycle summary.
+
+    For each fetched event type we surface the cursor fields the on-call
+    typically wants to see (window start/end, offset, dedup-IDs count, plus
+    the late-indexed pagination flag for Findings). Findings keys live at the
+    top level of ``last_run``; Investigations live under
+    ``last_run["investigations"]``.
+    """
+    summary: dict[str, Any] = {}
+    if "Finding" in event_types:
+        finding_ids = last_run.get("next_run_found_incidents_ids") or {}
+        summary["Finding"] = {
+            "earliest": last_run.get("next_run_earliest_time"),
+            "latest": last_run.get("next_run_latest_time"),
+            "offset": last_run.get("offset"),
+            "dedup_ids": len(finding_ids) if isinstance(finding_ids, dict) else 0,
+            "late_indexed_pagination": last_run.get("late_indexed_pagination"),
+        }
+    if "Investigation" in event_types:
+        inv = last_run.get("investigations") or {}
+        inv_ids = inv.get("found_incidents_ids") or {}
+        summary["Investigation"] = {
+            "earliest": inv.get("next_run_earliest_time"),
+            "latest": inv.get("next_run_latest_time"),
+            "offset": inv.get("offset"),
+            "dedup_ids": len(inv_ids) if isinstance(inv_ids, dict) else 0,
+        }
+    return summary
 
 
 # =========== Findings handler internal helpers ===========
@@ -940,10 +986,12 @@ def _fetch_findings_via_handler(service: client.Service, mapper: UserMappingObje
 
     Branches on whether enrichments are enabled. When off, delegates to
     :func:`fetch_findings` and propagates the resulting :class:`FetchResult`.
-    When on, :func:`run_enrichment_mechanism` performs its own
-    ``demisto.incidents`` / ``demisto.setLastRun`` side-effects; this helper
-    returns an empty :class:`FetchResult` so the dispatcher's final emit is a
-    no-op overlay on top.
+    When on, delegates to :func:`run_enrichment_mechanism`, which returns both
+    the produced incidents and the last-run delta (containing the time-window
+    cursor and ``next_run_found_incidents_ids`` for dedup) so the dispatcher
+    persists them in its single final ``demisto.setLastRun`` call. This
+    avoids the dispatcher's stale ``last_run`` snapshot from overwriting the
+    dedup IDs that the enrichment cycle just produced.
     """
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context() or {}
@@ -955,14 +1003,15 @@ def _fetch_findings_via_handler(service: client.Service, mapper: UserMappingObje
                 "to clear stale data and reset the enrichment mechanism."
             )
             fetch_incidents_for_mapping(integration_context)
-            # Set DUMMY-only last_run here so the dispatcher's final setLastRun
-            # is a pass-through and does not overlay un-DUMMYed keys.
-            demisto.setLastRun({DUMMY: DUMMY})
-            return FetchResult(incidents=[], last_run_delta={})
+            # Surface a DUMMY-only delta so the dispatcher's final setLastRun
+            # writes only the DUMMY marker and does not overlay un-DUMMYed keys.
+            return FetchResult(incidents=[], last_run_delta={DUMMY: DUMMY})
         demisto.debug("running run_enrichment_mechanism")
-        # Enrichment-mode emits incidents itself; surface empty last_run_delta to avoid double-emit.
-        enriched_incidents = run_enrichment_mechanism(service, integration_context, mapper)
-        return FetchResult(incidents=enriched_incidents or [], last_run_delta={})
+        enriched_incidents, enrichment_last_run_delta = run_enrichment_mechanism(service, integration_context, mapper)
+        return FetchResult(
+            incidents=enriched_incidents or [],
+            last_run_delta=enrichment_last_run_delta or {},
+        )
 
     demisto.debug("enrichments not enabled running fetch_findings")
     return fetch_findings(
@@ -1101,24 +1150,17 @@ def to_mc_iso8601_utc(ts: "str | datetime") -> str:
             normalized = ts[:-1] + "+00:00" if ts.endswith("Z") else ts
             dt = datetime.fromisoformat(normalized)
         except ValueError as e:
-            raise DemistoException(
-                f"to_mc_iso8601_utc: failed to parse ISO 8601 timestamp '{ts}': {e}"
-            ) from e
+            raise DemistoException(f"to_mc_iso8601_utc: failed to parse ISO 8601 timestamp '{ts}': {e}") from e
     elif isinstance(ts, datetime):
         dt = ts
     else:
-        raise DemistoException(
-            f"to_mc_iso8601_utc: unsupported input type {type(ts).__name__}; "
-            "expected str or datetime."
-        )
+        raise DemistoException(f"to_mc_iso8601_utc: unsupported input type {type(ts).__name__}; " "expected str or datetime.")
 
     if dt.tzinfo is None:
-        raise DemistoException(
-            f"to_mc_iso8601_utc: naive timestamp '{ts}' rejected."
-        )
+        raise DemistoException(f"to_mc_iso8601_utc: naive timestamp '{ts}' rejected.")
 
     # Convert to UTC.
-    dt_utc = dt.astimezone(timezone.utc)
+    dt_utc = dt.astimezone(UTC)
     # Always emit canonical 6-digit microsecond precision so the output shape is
     # stable for downstream consumers (last-run cursors, dedup keys, audit logs)
     # regardless of whether the source timestamp carried sub-second precision.
@@ -1162,18 +1204,13 @@ def prepare_investigations_query(
     # Placeholder path.
     if PLACEHOLDER in user_query:
         params_str = "&".join(f"{k}={v}" for k, v in managed.items())
-        demisto.debug(
-            f"prepare_investigations_query: placeholder substitution; "
-            f"params={list(managed)}"
-        )
+        demisto.debug(f"prepare_investigations_query: placeholder substitution; " f"params={list(managed)}")
         return user_query.replace(PLACEHOLDER, params_str)
 
     # Append / merge path.
     match = _REST_CLAUSE_RE.search(user_query)
     if not match:
-        raise DemistoException(
-            'investigations_fetch_query must contain a `| rest "<url>"` (or \'<url>\') clause.'
-        )
+        raise DemistoException("investigations_fetch_query must contain a `| rest \"<url>\"` (or '<url>') clause.")
     url = match.group(3)
 
     parts = urlsplit(url)
@@ -1181,16 +1218,12 @@ def prepare_investigations_query(
     existing_keys = {k for k, _ in existing}
     overridden = [k for k in _OVERRIDABLE_KEYS if k in existing_keys]
     if overridden:
-        demisto.debug(
-            f"prepare_investigations_query: overriding pre-existing URL params={overridden}"
-        )
+        demisto.debug(f"prepare_investigations_query: overriding pre-existing URL params={overridden}")
     merged = [(k, v) for k, v in existing if k not in managed] + list(managed.items())
     new_query_string = urlencode(merged, doseq=True)
-    new_url = urlunsplit(
-        (parts.scheme, parts.netloc, parts.path, new_query_string, parts.fragment)
-    )
+    new_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query_string, parts.fragment))
 
-    return user_query[: match.start(3)] + new_url + user_query[match.end(3):]
+    return user_query[: match.start(3)] + new_url + user_query[match.end(3) :]
 
 
 # =========== Investigations model ===========
@@ -1225,7 +1258,7 @@ def collapse_dotted_keys_to_nested(data: dict[str, Any], prefix: str) -> dict[st
 
     nested: dict[str, Any] = {}
     for full_key in dotted_keys:
-        inner_key = full_key[len(prefix):]
+        inner_key = full_key[len(prefix) :]
         nested[inner_key] = data.pop(full_key)
 
     # Preserve any pre-existing nested dict by merging dotted keys into it.
@@ -1253,11 +1286,7 @@ def collapse_all_dotted_keys_to_nested(data: dict[str, Any]) -> dict[str, Any]:
     The input dict is mutated in place and also returned for convenience.
     """
     # Snapshot first — we mutate `data` while iterating.
-    prefixes = {
-        k.split(".", 1)[0] + "."
-        for k in list(data.keys())
-        if isinstance(k, str) and "." in k
-    }
+    prefixes = {k.split(".", 1)[0] + "." for k in list(data.keys()) if isinstance(k, str) and "." in k}
     for prefix in prefixes:
         collapse_dotted_keys_to_nested(data, prefix)
     return data
@@ -1286,7 +1315,6 @@ def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
         A new ``dict`` with the parsed/flattened fields.
     """
     parsed: dict[str, Any] = dict(row)
-    
 
     # Collapse ALL dotted-key prefixes into nested dicts (e.g.
     # `consolidated_findings.x`, `findings.y`, `<anything>.z`). This keeps
@@ -1300,9 +1328,7 @@ def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
         try:
             parsed["consolidated_findings"] = json.dumps(consolidated)
         except (TypeError, ValueError) as exc:
-            demisto.debug(
-                f"parse_investigation: consolidated_findings not JSON-serializable; leaving as-is. err={exc}"
-            )
+            demisto.debug(f"parse_investigation: consolidated_findings not JSON-serializable; leaving as-is. err={exc}")
 
     # Type tag consumed by the classifier.
     parsed[SPLUNK_ES_EVENT_TYPE_FIELD] = Investigation.event_type
@@ -1429,7 +1455,7 @@ class FetchResult:
 class FetchHandler(ABC):
     """Abstract base for per-event-type fetch handlers."""
 
-    event_type: str = ""               # "Finding" | "Investigation"
+    event_type: str = ""  # "Finding" | "Investigation"
     last_run_key: "str | None" = None  # None = top-level last-run namespace
 
     @abstractmethod
@@ -1503,17 +1529,14 @@ class InvestigationsFetchHandler(FetchHandler):
 
     # Default SPL fallback for instances upgraded without re-saving config.
     _DEFAULT_SPL: str = (
-        '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations'
-        '?search_format=true&CUSTOM_FILTER_PLACEHOLDER"'
+        '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations' '?search_format=true&CUSTOM_FILTER_PLACEHOLDER"'
     )
 
     def fetch(self, service, last_run, mapper, params) -> "FetchResult":
         try:
             return self._do_fetch(service, last_run, mapper, params)
         except Exception as e:
-            demisto.error(
-                f"handler=InvestigationsFetchHandler event_type=Investigation failed: {e}"
-            )
+            demisto.error(f"handler=InvestigationsFetchHandler event_type=Investigation failed: {e}")
             raise
 
     def _do_fetch(
@@ -1529,10 +1552,8 @@ class InvestigationsFetchHandler(FetchHandler):
         # We deliberately reuse the same window helper Findings uses so the
         # `investigations_first_fetch` parameter participates in the standard
         # first-fetch path.
-        params_for_window = dict(params,first_fetch=params["investigations_first_fetch"])
-        earliest, latest = get_fetch_time_window(
-            params_for_window, service, earliest_raw, latest_raw
-        )
+        params_for_window = dict(params, first_fetch=params["investigations_first_fetch"])
+        earliest, latest = get_fetch_time_window(params_for_window, service, earliest_raw, latest_raw)
 
         ts_min = to_mc_iso8601_utc(earliest)
         ts_max = to_mc_iso8601_utc(latest)
@@ -1542,10 +1563,7 @@ class InvestigationsFetchHandler(FetchHandler):
         limit = min(max_fetch_raw, INVESTIGATIONS_MAX_LIMIT)
         offset = arg_to_number(last_run.get("offset")) or 0
 
-        demisto.debug(
-            f"InvestigationsFetchHandler: earliest={ts_min} latest={ts_max} "
-            f"limit={limit} offset={offset}"
-        )
+        demisto.debug(f"InvestigationsFetchHandler: earliest={ts_min} latest={ts_max} " f"limit={limit} offset={offset}")
 
         # 3. Build SPL.
         user_query = params.get("investigations_fetch_query") or self._DEFAULT_SPL
@@ -1572,9 +1590,7 @@ class InvestigationsFetchHandler(FetchHandler):
         # Investigation notes reference their parent via `incident_id`, while
         # `enrich_with_splunk_notes` also accepts that key transparently.
         if rows:
-            investigation_guid_to_row = {
-                str(row["investigation_guid"]): row for row in rows if row.get("investigation_guid")
-            }
+            investigation_guid_to_row = {str(row["investigation_guid"]): row for row in rows if row.get("investigation_guid")}
             if investigation_guid_to_row:
                 # enrich_with_splunk_notes(service, investigation_guid_to_row, is_fetch=True)
                 # Convert `earliest` (ISO_FORMAT_TZ_AWARE string) to an epoch float so
@@ -1587,9 +1603,7 @@ class InvestigationsFetchHandler(FetchHandler):
                     is_fetch=True,
                 )
 
-        last_run_fetched_ids: dict[str, dict[str, str]] = dict(
-            last_run.get("found_incidents_ids", {}) or {}
-        )
+        last_run_fetched_ids: dict[str, dict[str, str]] = dict(last_run.get("found_incidents_ids", {}) or {})
 
         incidents: list[dict[str, Any]] = []
         ids_to_add: list[str] = []
@@ -1622,16 +1636,11 @@ class InvestigationsFetchHandler(FetchHandler):
         for incident_id in ids_to_add:
             last_run_fetched_ids[incident_id] = {"occurred_time": latest}
 
-        last_run_fetched_ids = remove_irrelevant_incident_ids(
-            last_run_fetched_ids, earliest, latest
-        )
+        last_run_fetched_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, earliest, latest)
 
         # 8. Cursor: advance by `limit` when full page, reset otherwise.
         next_offset = offset + limit if len(rows) >= limit else 0
-        demisto.debug(
-            f"investigations: limit={limit} offset={offset} received={len(rows)} "
-            f"-> next_offset={next_offset}"
-        )
+        demisto.debug(f"investigations: limit={limit} offset={offset} received={len(rows)} " f"-> next_offset={next_offset}")
 
         # When we advance the cursor we keep the same window (caller should
         # re-issue with the same min/max next cycle). When we reset, we
@@ -1651,8 +1660,7 @@ class InvestigationsFetchHandler(FetchHandler):
             "found_incidents_ids": last_run_fetched_ids,
         }
         demisto.info(
-            f"InvestigationsFetchHandler: produced={len(incidents)} incidents; "
-            f"last_run_delta_keys={list(delta.keys())}"
+            f"InvestigationsFetchHandler: produced={len(incidents)} incidents; " f"last_run_delta_keys={list(delta.keys())}"
         )
         return FetchResult(incidents=incidents, last_run_delta=delta)
 
@@ -2567,7 +2575,7 @@ def is_mirror_in_enabled() -> bool:
 
 def run_enrichment_mechanism(
     service: client.Service, integration_context: dict[str, Any], mapper: UserMappingObject
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Execute the enriching fetch mechanism
     1. We first handle submitted findings that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched findings, we fetch new findings
@@ -2578,24 +2586,38 @@ def run_enrichment_mechanism(
     Args:
         service (splunklib.client.Service): Splunk service object.
         integration_context (dict): The integration context
+        mapper (UserMappingObject): The user-mapping helper.
+
+    Returns:
+        A tuple of ``(incidents, last_run_delta)``:
+          * ``incidents`` — the list of incidents produced this cycle, to be
+            emitted once by the dispatcher (mixed-mode safe).
+          * ``last_run_delta`` — the partial last-run dict produced by the
+            inner :func:`fetch_findings` call (time-window cursor +
+            ``next_run_found_incidents_ids`` for dedup, plus the ``DUMMY``
+            marker). The dispatcher merges this into its single final
+            ``demisto.setLastRun`` so the dedup IDs survive across cycles.
+            Empty when no new fetch was performed this cycle (i.e. we were
+            still draining the submitted/handled pipeline).
     """
     incidents: list = []
+    last_run_delta: dict[str, Any] = {}
     cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
         handled_findings = handle_submitted_findings(service, cache_object)
         if cache_object.done_submitting() and cache_object.done_handling():
-            # fetch_findings returns a FetchResult; persist the delta here so the
-            # enrichment flow (DUMMY marker, pagination cursor, found-incident-ids) is preserved.
+            # fetch_findings returns a FetchResult; surface the delta to the
+            # caller (dispatcher) instead of persisting here, so the dispatcher's
+            # final setLastRun does not overwrite our dedup IDs / time cursor
+            # with its stale pre-fetch snapshot.
             findings_result = fetch_findings(
                 service=service,
                 cache_object=cache_object,
                 enrich_findings=True,
                 mapper=mapper,
             )
-            current_last_run = demisto.getLastRun() or {}
-            current_last_run.update(findings_result.last_run_delta)
-            demisto.setLastRun(current_last_run)
+            last_run_delta = dict(findings_result.last_run_delta or {})
             if is_mirror_in_enabled():
                 # if mirror-in enabled, we need to store in cache the fetched findings ASAP,
                 # as they need to be able to update by the mirror in process
@@ -2616,8 +2638,9 @@ def run_enrichment_mechanism(
         handled_but_not_created_incidents = cache_object.organize()
         cache_object.dump_to_integration_context()
         incidents += [finding.to_incident(mapper) for finding in handled_but_not_created_incidents]
-    # Return incidents so the dispatcher performs a single emit per cycle (mixed-mode safe).
-    return incidents
+    # Return incidents + last_run_delta so the dispatcher performs a single
+    # emit / setLastRun per cycle (mixed-mode safe + dedup-IDs preserved).
+    return incidents, last_run_delta
 
 
 def store_incidents_for_mapping(incidents: list[dict[str, Any]]) -> None:
@@ -2852,7 +2875,6 @@ def enrich_with_splunk_notes(
         else:
             demisto.debug(f"enrich_with_splunk_notes: Skipping note without matching entity: {note}")
 
-
     # Sort notes by update time and update the notes in each entity
     extensive_log(f"enrich_with_splunk_notes: entity_notes = {entity_notes}")
     for entity_id, splunk_notes in entity_notes.items():
@@ -2920,8 +2942,7 @@ def enrich_with_splunk_notes_v2(
 
     query = json.dumps(query_filter)
     demisto.debug(
-        f"enrich_with_splunk_notes_v2: Querying mc_notes KV store directly for {len(entity_ids)} entities, "
-        f"{query=}"
+        f"enrich_with_splunk_notes_v2: Querying mc_notes KV store directly for {len(entity_ids)} entities, " f"{query=}"
     )
 
     try:
@@ -3182,9 +3203,7 @@ def get_modified_remote_data_command(
     if "Investigation" in selected_types:
         iso8601_z_min = to_mc_iso8601_utc(last_update_dt)
         modified_investigations = list_modified_investigations(service, iso8601_z_min, mapper=mapper)
-        demisto.debug(
-            f"mirror-in: appending {len(modified_investigations)} modified investigation rows"
-        )
+        demisto.debug(f"mirror-in: appending {len(modified_investigations)} modified investigation rows")
 
         # Enrich with Splunk notes (same pattern as Findings). The notes endpoint
         # references investigations via `incident_id`, which `enrich_with_splunk_notes`
@@ -3212,24 +3231,18 @@ def get_modified_remote_data_command(
             modified_investigations = deduped_investigations
 
             guid_to_investigation: dict[str, dict[str, Any]] = {
-                str(inv["investigation_guid"]): inv
-                for inv in modified_investigations
-                if inv.get("investigation_guid")
+                str(inv["investigation_guid"]): inv for inv in modified_investigations if inv.get("investigation_guid")
             }
             if guid_to_investigation:
                 # investigation_notes = enrich_with_splunk_notes(
                 #     service, guid_to_investigation, original_last_update_timestamp
                 # )
-                investigation_notes = enrich_with_splunk_notes_v2(
-                    service, guid_to_investigation, original_last_update_timestamp
-                )
+                investigation_notes = enrich_with_splunk_notes_v2(service, guid_to_investigation, original_last_update_timestamp)
                 entries.extend(investigation_notes)
 
         modified_data.extend(modified_investigations)
         if len(modified_investigations) >= MIRROR_LIMIT:
-            demisto.info(
-                f"mirror-in: the number of mirrored investigations reached the limit of: {MIRROR_LIMIT}"
-            )
+            demisto.info(f"mirror-in: the number of mirrored investigations reached the limit of: {MIRROR_LIMIT}")
 
     # Persist the cache of events (findings + investigations) processed in this run
     # for the next iteration. Done once after both blocks to avoid an extra
@@ -3265,9 +3278,7 @@ def update_remote_system_command(
     entries = parsed_args.entries
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
-        demisto.debug(
-            f"Got the following delta keys {list(delta.keys())} to update incident corresponding to entity {entity_id}"
-        )
+        demisto.debug(f"Got the following delta keys {list(delta.keys())} to update incident corresponding to entity {entity_id}")
 
         changed_data: dict[str, Any] = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
@@ -4060,11 +4071,7 @@ def _fetch_modified_investigations_page(
     paginating loop stays small and the helper itself is easy to mock in tests.
     """
     endpoint = "public/v2/investigations"
-    params = assign_params(
-        update_time_min=update_time_min,
-        limit=limit,
-        offset=offset
-    )
+    params = assign_params(update_time_min=update_time_min, limit=limit, offset=offset)
     demisto.debug(f"list_modified_investigations: hitting endpoint={endpoint}?{urlencode(params)}")
     response = service.get("public/v2/investigations", app="missioncontrol", owner="nobody", **params)
     payload = json.loads(response.body.read())
@@ -4104,46 +4111,57 @@ def list_modified_investigations(
             not pass a mapper.
 
     Returns:
-        A list of full investigation row ``dict`` objects (deduped by
-        ``investigation_guid``/``investigation_id``). Rows missing both id
-        fields are silently skipped (mirror-in needs a stable id to route the
-        update). Returns an empty list on any exception.
+        A list of parsed investigation row ``dict`` objects (deduped by
+        ``investigation_guid``/``investigation_id``). Each row is normalised
+        through :func:`parse_investigation` so the shape matches what the
+        original fetch flow produces (collapsed dotted keys, lifted
+        ``incident_ids``, JSON-serialised ``consolidated_findings``,
+        ``splunk_es_event_type`` tag) — keeping mirror-in payloads aligned
+        with classifier/mapper expectations. Rows missing both id fields are
+        silently skipped (mirror-in needs a stable id to route the update).
+        Returns an empty list on any exception.
     """
     try:
         clamped_page_size = min(int(page_size), INVESTIGATIONS_MAX_LIMIT)
-        kept: list[dict[str, Any]] = []
-        seen_ids: set[str] = set()
+        collected_investigations: list[dict[str, Any]] = []
+        seen_investigation_ids: set[str] = set()
         offset = 0
-        while len(kept) < max_total:
-            page = _fetch_modified_investigations_page(
-                service, update_time_min, clamped_page_size, offset
-            )
+        while len(collected_investigations) < max_total:
+            page = _fetch_modified_investigations_page(service, update_time_min, clamped_page_size, offset)
             for row in page:
                 stable_id = row.get("investigation_guid") or row.get("investigation_id")
                 if not stable_id:
                     continue
-                if stable_id in seen_ids:
+                if stable_id in seen_investigation_ids:
                     continue
-                seen_ids.add(stable_id)
-                kept.append(row)
-                if len(kept) >= max_total:
+                seen_investigation_ids.add(stable_id)
+                collected_investigations.append(row)
+                if len(collected_investigations) >= max_total:
                     break
             # Short page → no more rows; advance otherwise.
             if len(page) < clamped_page_size:
                 break
             offset += clamped_page_size
 
+        # Normalise each row through `parse_investigation` so every caller
+        # (mirror-in today, any future caller) sees the same canonical shape
+        # the original fetch flow emits — collapsed dotted keys, lifted
+        # `incident_ids`, JSON-serialised `consolidated_findings`, and the
+        # `splunk_es_event_type` tag. Done before owner mapping so the mapper
+        # sees the same row shape it would during fetch.
+        collected_investigations = [parse_investigation(row) for row in collected_investigations]
+
         # Owner mapping (Splunk → XSOAR), parallel to the Findings flow. The
         # helper is a no-op when the mapper is missing or `should_map` is False,
         # so this is safe to call unconditionally.
-        if mapper is not None and kept:
-            mapper.map_owner_to_xsoar_user(kept)
+        if mapper is not None and collected_investigations:
+            mapper.map_owner_to_xsoar_user(collected_investigations)
 
         demisto.debug(
-            f"list_modified_investigations: collected {len(kept)} rows across "
+            f"list_modified_investigations: collected {len(collected_investigations)} rows across "
             f"offset cursor (page_size={clamped_page_size}, max_total={max_total})"
         )
-        return kept
+        return collected_investigations
     except Exception as exc:
         demisto.error(f"list_modified_investigations: failed to query v2 endpoint: {exc}")
         return []
