@@ -1,0 +1,77 @@
+args:
+- name: max_alerts
+  description: Maximum number of non-closed alerts to scan for failed tasks. The maximum allowed value is 200; any larger value will be clamped to 200.
+  defaultValue: "200"
+- name: days_back
+  description: Only scan non-closed alerts that were modified within this number of days back. Defaults to 3.
+  defaultValue: "3"
+- name: group_size
+  description: Number of tasks to restart before pausing. Helps avoid overwhelming the system.
+  defaultValue: "10"
+- name: sleep_time
+  description: Number of seconds to pause between each group of restarted tasks.
+  defaultValue: "10"
+outputs:
+- contextPath: TroubleshootRestartFailedPlaybooks.TotalRestarted
+  description: Total number of tasks that were successfully restarted.
+  type: Number
+- contextPath: TroubleshootRestartFailedPlaybooks.TotalFailed
+  description: Total number of tasks that failed to restart.
+  type: Number
+- contextPath: TroubleshootRestartFailedPlaybooks.TotalAlerts
+  description: Total number of alerts that were scanned.
+  type: Number
+- contextPath: TroubleshootRestartFailedPlaybooks.RestartedTask.IncidentID
+  description: The alert ID where the task was restarted.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.RestartedTask.TaskID
+  description: The ID of the restarted task.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.RestartedTask.TaskName
+  description: The name of the restarted task.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.RestartedTask.PlaybookName
+  description: The playbook name containing the restarted task.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.FailedToRestart.IncidentID
+  description: The alert ID where the task failed to restart.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.FailedToRestart.TaskID
+  description: The ID of the task that failed to restart.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.FailedToRestart.TaskName
+  description: The name of the task that failed to restart.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.FailedToRestart.PlaybookName
+  description: The playbook name containing the task that failed to restart.
+  type: String
+- contextPath: TroubleshootRestartFailedPlaybooks.FailedToRestart.Error
+  description: The error message explaining why the task failed to restart.
+  type: String
+comment: |-
+  Scans all non-closed alerts for playbook tasks in Error state and restarts them from the specific failed task.
+  The script reopens each errored task and re-executes it, allowing the playbook to continue from where it stopped.
+  Includes throttling support via the group_size and sleep_time arguments: after every group_size task restarts the script pauses for sleep_time seconds to avoid overloading the engine queue when scanning many alerts.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+commonfields:
+  id: TroubleshootRestartFailedPlaybooks
+  version: -1
+name: TroubleshootRestartFailedPlaybooks
+dependson:
+  must:
+  - core-api-get
+script: '-'
+subtype: python3
+tags:
+- DemistoAPI
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 5.0.0
+enabled: true
+tests:
+- No tests (auto formatted)
