@@ -286,7 +286,7 @@ class Client:
         if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # pylint: disable=no-member
             salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
-            verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
+            verify_password_response = password_step.verify_password(self.keeper_params, resp.encryptedLoginToken)
             # Disabling pylint due to external class declaration
             if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # pylint: disable=no-member
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
