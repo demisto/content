@@ -1281,7 +1281,7 @@ def test_email_command_returns_search_outputs(mocker: MockerFixture, client: "De
     When:
         - Calling email_command for `target@example.com`.
     Then:
-        - Returns a `CommandResults` with `outputs_prefix=="DeHashed.Search"`,
+        - Returns a `list[CommandResults]` with one entry whose `outputs_prefix=="DeHashed.Search"`,
           `outputs_key_field=="Id"`, `outputs` populated from `_transform_entry`,
           and an attached `Common.EMAIL` indicator.
     """
@@ -1292,8 +1292,11 @@ def test_email_command_returns_search_outputs(mocker: MockerFixture, client: "De
 
     args = EmailArgs(email=["target@example.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.outputs_prefix == "DeHashed.Search"
     assert response.outputs_key_field == "Id"
     assert response.outputs is not None
@@ -1315,21 +1318,16 @@ def test_email_command_dbot_score_suspicious(mocker: MockerFixture, client: "Deh
     from CommonServerPython import Common
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["testgamil.com"], "database_name": "DB-A"},
-            {"id": "id_2", "email": ["testgamil.com"], "database_name": "DB-B"},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("email/response_two_entries_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.outputs_prefix == "DeHashed.Search"
     assert response.outputs_key_field == "Id"
     assert response.indicator is not None
@@ -1351,21 +1349,16 @@ def test_email_command_dbot_score_malicious(mocker: MockerFixture, client: "Deha
     from CommonServerPython import Common
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["testgamil.com"], "database_name": "DB-A"},
-            {"id": "id_2", "email": ["testgamil.com"], "database_name": "DB-B"},
-        ],
-        "took": "1ms",
-        "total": 2,
-    }
+    mock_response = load_mock_response("email/response_two_entries_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="MALICIOUS", reliability="B - Usually reliable")
+    results = email_command(client, args, email_dbot_score="MALICIOUS", reliability="B - Usually reliable")
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     assert response.indicator.dbot_score.score == Common.DBotScore.BAD  # type: ignore[attr-defined]
     assert response.indicator.dbot_score.score == 3  # type: ignore[attr-defined]
@@ -1400,8 +1393,11 @@ def test_email_command_dbot_score_none_when_no_breaches(
 
     args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     assert response.indicator.dbot_score.score == Common.DBotScore.NONE  # type: ignore[attr-defined]
     assert response.indicator.dbot_score.score == 0  # type: ignore[attr-defined]
@@ -1436,22 +1432,18 @@ def test_email_command_reliability_propagated_parametrized(
     from CommonServerPython import DBotScoreReliability
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [
-            {"id": "id_1", "email": ["testgamil.com"], "database_name": "DB-A"},
-        ],
-        "took": "1ms",
-        "total": 1,
-    }
+    mock_response = load_mock_response("email/response_one_entry_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=reliability)
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=reliability)
 
     expected_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     assert response.indicator.dbot_score.reliability == expected_reliability  # type: ignore[attr-defined]
 
@@ -1467,18 +1459,16 @@ def test_email_command_reliability_none_omits_field(mocker: MockerFixture, clien
     """
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [{"id": "id_1", "email": ["testgamil.com"], "database_name": "DB-A"}],
-        "took": "1ms",
-        "total": 1,
-    }
+    mock_response = load_mock_response("email/response_one_entry_with_db.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     # When reliability=None the integration code does not set the kwarg,
     # so the indicator's DBotScore.reliability should not be a valid reliability string.
@@ -1504,8 +1494,11 @@ def test_email_command_breach_description_includes_unique_sources(mocker: Mocker
 
     args = EmailArgs(email=["target@example.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     description = response.indicator.dbot_score.malicious_description  # type: ignore[attr-defined]
     assert description == "Found in 2 breach(es): TestBreach-A, TestBreach-B"
@@ -1522,18 +1515,16 @@ def test_email_command_email_domain_extraction(mocker: MockerFixture, client: "D
     """
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [{"id": "id_1", "email": ["user@example.com"], "database_name": "DB-A"}],
-        "took": "1ms",
-        "total": 1,
-    }
+    mock_response = load_mock_response("email/response_user_at_example.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["user@example.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     assert response.indicator.domain == "example.com"  # type: ignore[attr-defined]
 
@@ -1550,18 +1541,16 @@ def test_email_command_email_without_at_sets_no_domain(mocker: MockerFixture, cl
     """
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [],
-        "took": "1ms",
-        "total": 0,
-    }
+    mock_response = load_mock_response("email/response_empty.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["nodomain"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     assert response.indicator.domain is None  # type: ignore[attr-defined]
 
@@ -1576,14 +1565,9 @@ def test_email_command_query_construction(mocker: MockerFixture, client: "Dehash
         - `client.general_search` is called with `query="email:a@b.co"`, `regex=None`,
           and all other optional params set to None.
     """
-    from DeHashed import email_command, EmailArgs
+    from DeHashed import email_command, EmailArgs, MAX_REQUEST_PAGE_SIZE
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [{"id": "id_1", "email": ["a@b.co"], "database_name": "DB-A"}],
-        "took": "1ms",
-        "total": 1,
-    }
+    mock_response = load_mock_response("email/response_one_entry_a_at_b.json")
     general_search_mock = mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["a@b.co"])  # type: ignore[call-arg]
@@ -1593,7 +1577,7 @@ def test_email_command_query_construction(mocker: MockerFixture, client: "Dehash
     general_search_mock.assert_called_once_with(
         query="email:a@b.co",
         page=None,
-        size=None,
+        size=MAX_REQUEST_PAGE_SIZE,
         wildcard=None,
         regex=None,
         de_dupe=None,
@@ -1632,21 +1616,77 @@ def test_email_command_dbot_score_none_when_no_breaches_readable_output(mocker: 
     from CommonServerPython import Common
     from DeHashed import email_command, EmailArgs
 
-    mock_response: dict[str, Any] = {
-        "balance": 100,
-        "entries": [],
-        "took": "1ms",
-        "total": 0,
-    }
+    mock_response = load_mock_response("email/response_empty.json")
     mocker.patch.object(client, "general_search", return_value=mock_response)
 
     args = EmailArgs(email=["testgamil.com"])  # type: ignore[call-arg]
 
-    response = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
 
+    assert isinstance(results, list)
+    assert len(results) == 1
+    response = results[0]
     assert response.indicator is not None
     assert response.indicator.dbot_score.score == Common.DBotScore.NONE  # type: ignore[attr-defined]
-    assert response.readable_output == "No matching results found"
+    assert response.readable_output == "No matching results found for testgamil.com"
+
+
+def test_email_command_multiple_emails_returns_per_email_results(mocker: MockerFixture, client: "DehashedClient") -> None:
+    """
+    Given:
+        - `EmailArgs(email=["found@example.com", "missing@example.com"])` - one email has
+          breach entries, the other has no entries.
+    When:
+        - Calling email_command.
+    Then:
+        - A list of two `CommandResults` is returned, one per email.
+        - The first email has its own `Common.EMAIL` indicator with SUSPICIOUS DBotScore
+          and outputs populated from `_transform_entry`.
+        - The second email has its own `Common.EMAIL` indicator with NONE DBotScore and
+          a per-email "No matching results found for missing@example.com" readable output.
+        - `client.general_search` is called once per email with a per-email scoped query.
+    """
+    from CommonServerPython import Common
+    from DeHashed import email_command, EmailArgs
+
+    found_response = load_mock_response("email/response_found_multi.json")
+    missing_response = load_mock_response("email/response_missing_multi.json")
+
+    general_search_mock = mocker.patch.object(client, "general_search", side_effect=[found_response, missing_response])
+
+    args = EmailArgs(email=["found@example.com", "missing@example.com"])  # type: ignore[call-arg]
+
+    results = email_command(client, args, email_dbot_score="SUSPICIOUS", reliability="B - Usually reliable")
+
+    # Two CommandResults — one per email.
+    assert isinstance(results, list)
+    assert len(results) == 2
+
+    # First email: breaches found.
+    found = results[0]
+    assert found.outputs_prefix == "DeHashed.Search"
+    assert found.outputs_key_field == "Id"
+    assert found.outputs is not None
+    assert len(found.outputs) == 2  # type: ignore[arg-type]
+    assert found.indicator is not None
+    assert found.indicator.address == "found@example.com"  # type: ignore[attr-defined]
+    assert found.indicator.dbot_score.indicator == "found@example.com"  # type: ignore[attr-defined]
+    assert found.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS  # type: ignore[attr-defined]
+
+    # Second email: no entries — indicator surfaced with NONE score.
+    missing = results[1]
+    assert missing.indicator is not None
+    assert missing.indicator.address == "missing@example.com"  # type: ignore[attr-defined]
+    assert missing.indicator.dbot_score.indicator == "missing@example.com"  # type: ignore[attr-defined]
+    assert missing.indicator.dbot_score.score == Common.DBotScore.NONE  # type: ignore[attr-defined]
+    assert missing.readable_output == "No matching results found for missing@example.com"
+
+    # Each email queried separately.
+    assert general_search_mock.call_count == 2
+    first_call_kwargs = general_search_mock.call_args_list[0].kwargs
+    second_call_kwargs = general_search_mock.call_args_list[1].kwargs
+    assert first_call_kwargs["query"] == "email:found@example.com"
+    assert second_call_kwargs["query"] == "email:missing@example.com"
 
 
 # endregion

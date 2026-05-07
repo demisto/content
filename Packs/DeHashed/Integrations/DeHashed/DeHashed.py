@@ -15,6 +15,7 @@ BASE_CONTEXT_OUTPUT_PREFIX = "DeHashed"
 BASE_URL = "https://api.dehashed.com/v2/"
 
 REQUEST_PAGE_SIZE = 1000
+MAX_REQUEST_PAGE_SIZE = 10_000
 
 # DBotScore severity labels (instance config values).
 SCORE_SUSPICIOUS_LABEL = "SUSPICIOUS"
@@ -408,12 +409,14 @@ def email_command(
     args: EmailArgs,
     email_dbot_score: str,
     reliability: str | None,
-) -> CommandResults:
+) -> list[CommandResults]:
     """
     Executes the email command.
 
-    Performs a DeHashed search for the provided email addresses and returns
-    a DBotScore alongside the search entries, preserving the original behavior.
+    Iterates over each email address in ``args.email`` and performs a separate
+    DeHashed search per email. For each email a dedicated ``CommandResults`` is
+    returned, including a ``Common.EMAIL`` indicator with its own
+    ``Common.DBotScore`` scoped to that email's search results.
 
     Args:
         client (DehashedClient): The DeHashed API client.
@@ -422,77 +425,86 @@ def email_command(
         reliability (str | None): The configured reliability of the source.
 
     Returns:
-        CommandResults: The results of the command execution.
+        list[CommandResults]: A list of ``CommandResults``, one per email address
+        in ``args.email``. Each entry contains its own indicator, DBotScore, and
+        per-email outputs/readable output.
     """
-    email_addresses = args.email
-    indicator_value = email_addresses[0]
+    command_results: list[CommandResults] = []
 
-    query_string = _build_search_query("email", indicator_value, "contains")
-    demisto.debug(f"[email] Built query string: {query_string!r}")
+    for indicator_value in args.email:
+        query_string = _build_search_query("email", indicator_value, "contains")
+        demisto.debug(f"[email] Built query string for {indicator_value!r}: {query_string!r}")
 
-    result = client.general_search(
-        query=query_string,
-        page=None,
-        size=None,
-        wildcard=None,
-        regex=None,
-        de_dupe=None,
-    )
-
-    if not isinstance(result, dict):
-        raise DemistoException(f"Got unexpected output from api: {result}")
-
-    query_data: list[dict[str, Any]] = result.get("entries") or []
-    transformed_entries = [_transform_entry(entry) for entry in query_data]
-
-    score = compute_score(query_data, email_dbot_score)
-    sources = [entry.get("database_name") for entry in query_data if entry.get("database_name")]
-
-    description: str | None = None
-    if score >= Common.DBotScore.SUSPICIOUS:
-        unique_sources = sorted({s for s in sources if s})
-        description = f"Found in {len(unique_sources)} breach(es): {', '.join(unique_sources)}"
-
-    dbot_kwargs: dict[str, Any] = {
-        "indicator": indicator_value,
-        "indicator_type": DBotScoreType.EMAIL,
-        "integration_name": BASE_CONTEXT_OUTPUT_PREFIX,
-        "score": score,
-    }
-    if reliability:
-        dbot_kwargs["reliability"] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    if description:
-        dbot_kwargs["malicious_description"] = description
-    dbot_score_obj = Common.DBotScore(**dbot_kwargs)
-
-    common_email = Common.EMAIL(
-        address=indicator_value,
-        domain=indicator_value.split("@")[1] if "@" in indicator_value else None,
-        description=description,
-        dbot_score=dbot_score_obj,
-    )
-
-    if not transformed_entries:
-        return CommandResults(
-            indicator=common_email,
-            readable_output="No matching results found",
-            raw_response=result,
+        result = client.general_search(
+            query=query_string,
+            page=None,
+            size=MAX_REQUEST_PAGE_SIZE,
+            wildcard=None,
+            regex=None,
+            de_dupe=None,
         )
 
-    readable_output = tableToMarkdown(
-        f"DeHashed Search - got total results: {result.get('total')}",
-        transformed_entries,
-        headerTransform=pascalToSpace,
-    )
+        if not isinstance(result, dict):
+            raise DemistoException(f"Got unexpected output from api: {result}")
 
-    return CommandResults(
-        outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Search",
-        outputs_key_field="Id",
-        outputs=transformed_entries,
-        indicator=common_email,
-        readable_output=readable_output,
-        raw_response=result,
-    )
+        query_data: list[dict[str, Any]] = result.get("entries") or []
+        transformed_entries = [_transform_entry(entry) for entry in query_data]
+
+        score = compute_score(query_data, email_dbot_score)
+        sources = [entry.get("database_name") for entry in query_data if entry.get("database_name")]
+
+        description: str | None = None
+        if score >= Common.DBotScore.SUSPICIOUS:
+            unique_sources = sorted({s for s in sources if s})
+            description = f"Found in {len(unique_sources)} breach(es): {', '.join(unique_sources)}"
+
+        dbot_kwargs: dict[str, Any] = {
+            "indicator": indicator_value,
+            "indicator_type": DBotScoreType.EMAIL,
+            "integration_name": BASE_CONTEXT_OUTPUT_PREFIX,
+            "score": score,
+        }
+        if reliability:
+            dbot_kwargs["reliability"] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        if description:
+            dbot_kwargs["malicious_description"] = description
+        dbot_score_obj = Common.DBotScore(**dbot_kwargs)
+
+        common_email = Common.EMAIL(
+            address=indicator_value,
+            domain=indicator_value.split("@")[1] if "@" in indicator_value else None,
+            description=description,
+            dbot_score=dbot_score_obj,
+        )
+
+        if not transformed_entries:
+            command_results.append(
+                CommandResults(
+                    indicator=common_email,
+                    readable_output=f"No matching results found for {indicator_value}",
+                    raw_response=result,
+                )
+            )
+            continue
+
+        readable_output = tableToMarkdown(
+            f"DeHashed Search for {indicator_value} - got total results: {result.get('total')}",
+            transformed_entries,
+            headerTransform=pascalToSpace,
+        )
+
+        command_results.append(
+            CommandResults(
+                outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Search",
+                outputs_key_field="Id",
+                outputs=transformed_entries,
+                indicator=common_email,
+                readable_output=readable_output,
+                raw_response=result,
+            )
+        )
+
+    return command_results
 
 
 # endregion
