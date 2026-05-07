@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AWS - EC2 Instance Security Group Remediation
-description: "This playbook identifies the Security Group(s) used on the EC2 interface with the given public IP. It then determines which rules allow access to the interface on the given port and protocol and creates a new copy of the Security Group that has only the identified rules removed. The EC2 interface is then updated to use the modified security group(s). The original Security Groups are left unmodified so that the remediated copy is only applied to the exposed EC2 instance.\n"
+description: "This playbook identifies the security groups used on an EC2 interface with a specific public IP. It determines which rules allow access via the given port and protocol, creates a copy of the security groups with those rules removed, and updates the interface to use the modified security groups. The original security groups are left unmodified, and the remediated copy is applied to the exposed EC2 instance.\n"
 starttaskid: '0'
 tasks:
   '0':
@@ -75,7 +75,7 @@ tasks:
       id: 850bd4f2-e424-49ea-8e19-1cc4f2f67dce
       version: -1
       name: Remediate Security Group Exposure(s)
-      description: Automation to duplicate Security Groups with rules modified to remove public exposure of the given port.  The updated list of security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
+      description: Duplicates security groups whose rules were modified to remove public exposure of the specified port. The list of duplicate security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
       scriptName: AWSRemediateSG
       type: regular
       iscommand: false
@@ -128,7 +128,7 @@ tasks:
       id: b44e79cd-68e8-411d-8ba1-2d56479f69b2
       version: -1
       name: Update Security Groups on EC2 Network Interface
-      description: Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
+      description: Modifies a specified network interface attribute. You can specify only one attribute at a time. You can use this script to attach and detach security groups from an existing EC2 instance.
       script: AWS|||aws-ec2-network-interface-attribute-modify
       type: regular
       iscommand: true
@@ -292,7 +292,7 @@ tasks:
       id: 76b18da4-82aa-4ec4-87b1-dfda90e531d8
       version: -1
       name: Post That No Remediation Was Needed to War Room
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -302,7 +302,7 @@ tasks:
       - '11'
     scriptarguments:
       value:
-        simple: "## Remediation Not Needed\nThis exposure has already been remediated through other means, as no rules allowing access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id} were identified in the Security Group(s) assigned to the analyzed network interface.\n\nAWS Account ID: ${Core.CoreAsset.xdm__asset__realm}\nAWS Region: ${Core.CoreAsset.xdm__asset__cloud__region}\n\n**Network Interface Analyzed**\n${AWSPublicExposure.SGAssociations.NetworkInterfaceID}"
+        simple: "## Remediation not needed\nNo rules allowing access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id} were identified in the security groups assigned to the analyzed network interface.\n\nAWS Account ID: ${Core.CoreAsset.xdm__asset__realm}\nAWS region: ${Core.CoreAsset.xdm__asset__cloud__region}\n\n**Network interface analyzed**\n${AWSPublicExposure.SGAssociations.NetworkInterfaceID}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 1110\n  }\n}"
@@ -459,7 +459,7 @@ tasks:
       id: 6aa045e0-7d2f-4518-8f94-a5056d9b889f
       version: -1
       name: Post Remediation Summary to War Room
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -469,7 +469,7 @@ tasks:
       - '11'
     scriptarguments:
       value:
-        simple: "## Remediation Complete\nThis exposure has been remediated by re-creating the AWS EC2 Security Group(s) causing the exposure to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id}.\n\nAWS Account ID: ${Core.CoreAsset.xdm__asset__realm}\nAWS Region: ${Core.CoreAsset.xdm__asset__cloud__region}\n\n**Remediation Steps Taken**\n- Created fixed copies of the Security Groups shown in the table below\n- Updated EC2 Network Interface ${AWSPublicExposure.SGAssociations.NetworkInterfaceID} to use the newly created Security Groups.  Any assigned Security Group(s) that did not contain rules causing this exposure are still assigned to the interface.\n\n${remediation_action}"
+        simple: "## Remediation complete\nThis exposure has been remediated by modifying the AWS EC2 security groups causing the exposure in order to block access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id}.\n\nAWS Account ID: ${Core.CoreAsset.xdm__asset__realm}\nAWS region: ${Core.CoreAsset.xdm__asset__cloud__region}\n\n**Remediation steps taken**\n- Created fixed copies of the security groups shown in the table below\n- Updated EC2 network interface ${AWSPublicExposure.SGAssociations.NetworkInterfaceID} to use the newly modified security groups.  Any assigned security groups that did not contain rules causing this exposure are still assigned to the interface.\n\n${remediation_action}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1110\n  }\n}"
@@ -517,7 +517,7 @@ tasks:
       id: 6bd8c099-4882-4800-9060-28d1ebda9fdf
       version: -1
       name: Set Remediation Action Details - No Action Needed
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -531,7 +531,7 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: This exposure has already been remediated through other means, as no rules allowing access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id} were identified in the Security Group(s) assigned to the analyzed network interface.
+        simple: No rules allowing access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id} were identified in the security groups assigned to the analyzed network interface.
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 770\n  }\n}"
@@ -548,33 +548,33 @@ inputs:
 - key: AssetID
   value: {}
   required: true
-  description: The Asset ID of the VM Instance
+  description: The asset ID of the VM Instance.
   playbookInputQuery:
 - key: PublicIP
   value: {}
   required: true
-  description: The Public IP whose exposure to remediate.
+  description: The public IP address to remediate for public exposure.
   playbookInputQuery:
 - key: RemotePort
   value: {}
   required: true
-  description: TCP/UDP port number to be restricted.
+  description: The TCP/UDP port number to be restricted.
   playbookInputQuery:
 - key: RemoteProtocol
   value: {}
   required: true
-  description: Protocol to be restricted (tcp/udp).
+  description: The protocol to be restricted (tcp/udp).
   playbookInputQuery:
 - key: RemediationAllowRanges
   value:
     simple: 10.0.0.0/16,172.16.0.0/12,192.168.0.0/16
   required: false
-  description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the VPC and bastion hosts) but other networks can be added as needed.
+  description: A comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically these are private IP ranges (to allow access within the VPC and bastion hosts), but other networks can be added as needed.
   playbookInputQuery:
 - key: IntegrationInstance
   value: {}
   required: false
-  description: AWS integration instance to use if multiple instances are configured (optional).
+  description: The AWS integration instance to use if multiple instances are configured (optional).
   playbookInputQuery:
 inputSections:
 - inputs:
@@ -585,19 +585,19 @@ inputSections:
   - RemediationAllowRanges
   - IntegrationInstance
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: The generic group for inputs.
 outputSections:
 - outputs:
   - remediatedFlag
   - remediation_action
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: The generic group for outputs.
 outputs:
 - contextPath: remediatedFlag
-  description: Output key to determine if remediation was successfully done.
+  description: Whether remediation was successfully done.
   type: boolean
 - contextPath: remediation_action
-  description: Textual summary of remediation action(s) that were performed.
+  description: The summary of remediation actions that were performed.
   type: string
 adopted: true
 fromversion: 6.10.0

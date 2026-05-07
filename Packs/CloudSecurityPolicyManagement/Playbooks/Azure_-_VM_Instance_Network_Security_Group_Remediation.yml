@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Azure - VM Instance Network Security Group Remediation
-description: "This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.\n\nConditions and limitations:\n- Limited to one resource group.\n- Identifies the NSG rule that is exposing the VM to the public internet based on IPv4/IPv6 addresses. Service tags are not supported.\n- 2 priorities lower than the offending rule priority must be available.\n- Adds rules to NSGs associated to NICs."
+description: "This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules give access to only a private IP address range and block traffic exposed to the public internet using the private IP of the VM, as explained in the ([Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.\n\nConditions and limitations:\n- Limited to a single resource group.\n- Identifies the NSG rule exposing the VM to the public internet via IPv4/IPv6 (service tags are not supported).\n- Requires at least two available priority slots lower than the offending rule.\n- Applies only to NSGs associated with NICs."
 starttaskid: '0'
 tasks:
   '0':
@@ -73,7 +73,7 @@ tasks:
       id: 87132a2b-723e-40c2-8d02-98150ce2f878
       version: -1
       name: Is Azure Integration Enabled?
-      description: Verify the required Azure integration is configured and enabled.
+      description: Verifies the required Azure integration is configured and enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -175,7 +175,7 @@ tasks:
       id: 9c563845-7b64-4374-879f-42601e2f2cab
       version: -1
       name: Set variable for existing allow rule name
-      description: Set a variable for the existing allow rule.
+      description: Sets a variable for the existing allow rule.
       scriptName: Set
       type: regular
       iscommand: false
@@ -259,7 +259,7 @@ tasks:
       id: c5593217-2436-43d8-81f0-df7d3d9ba6b7
       version: -1
       name: Update existing remediation allow rule
-      description: Update a security rule. If one does not exist, it will be created.
+      description: Updates a security rule. If one does not exist, it will be created.
       script: Azure|||azure-nsg-security-rule-update
       type: regular
       iscommand: true
@@ -507,7 +507,7 @@ tasks:
       id: 654c17fc-99e0-4794-86cc-f74c572207b2
       version: -1
       name: Set variable for existing deny rule name
-      description: Set a variable for the existing deny rule.
+      description: Sets a variable for the existing deny rule.
       scriptName: Set
       type: regular
       iscommand: false
@@ -591,7 +591,7 @@ tasks:
       id: e9873880-d591-49ab-8659-a43d7ec8ffc6
       version: -1
       name: Update existing remediation deny rule
-      description: Update a security rule. If one does not exist, it will be created.
+      description: Updates a security rule. If one does not exist, it will be created.
       script: Azure|||azure-nsg-security-rule-update
       type: regular
       iscommand: true
@@ -839,7 +839,7 @@ tasks:
       id: 54375985-e1aa-4213-8ea9-8b62a2f81ab5
       version: -1
       name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
-      description: Create a security rule.
+      description: Creates a security rule.
       script: Azure|||azure-nsg-security-rule-create
       type: regular
       iscommand: true
@@ -924,7 +924,7 @@ tasks:
       id: 6ddb5660-a578-4de0-b253-c2759807561d
       version: -1
       name: Add block rule for port ${inputs.RemotePort}
-      description: Create a security rule.
+      description: Creates a security rule.
       script: Azure|||azure-nsg-security-rule-create
       type: regular
       iscommand: true
@@ -1035,7 +1035,7 @@ tasks:
       id: 08409d8f-01a8-4286-8620-8624587fa453
       version: -1
       name: Set remediatedFlag to true
-      description: Set remediatedFlag to true
+      description: Sets remediatedFlag to true
       scriptName: Set
       type: regular
       iscommand: false
@@ -1068,7 +1068,7 @@ tasks:
       id: 3d1e347b-42fb-4da2-8a77-6888bf0483f6
       version: -1
       name: Set remediatedFlag to false
-      description: Set remediatedFlag to false
+      description: Sets remediatedFlag to false
       scriptName: Set
       type: regular
       iscommand: false
@@ -1147,7 +1147,7 @@ tasks:
       id: ae565719-c44e-4393-8aa4-87784ee9603e
       version: -1
       name: Store ID of Public IP Instance
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.13 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.13/Cortex-XSOAR-On-prem-Documentation/Create-a-script."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1236,7 +1236,7 @@ tasks:
       id: 2922951e-cffd-491f-8ade-fc2fe89dd0bb
       version: -1
       name: Store Interface Name where Public IP Is Used
-      description: Store Interface Name where Public IP Is Used
+      description: Stores the interface name where the public IP Is used.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1279,7 +1279,7 @@ tasks:
       id: 018c6f47-d8eb-4290-8e6c-7c65ba17b6d2
       version: -1
       name: Identify Offending Rule and Available Priorities For New Rules
-      description: This script identifies the first inbound Allow rule in the specified NSG that matches the criteria for network exposure. It returns details about the identified rule as well as a list of available priority numbers to insert new security rules with a higher priority.
+      description: Identifies the first inbound allow rule in the specified NSG that matches the criteria for network exposure. It returns details about the identified rule as well as a list of available priority numbers to insert new security rules with a higher priority.
       scriptName: AzureIdentifyNSGExposureRule
       type: regular
       iscommand: false
@@ -1324,7 +1324,7 @@ tasks:
       id: fee64318-0f38-476b-862d-0f66f022e9be
       version: -1
       name: Store Name of NSG Used By Identified Interface
-      description: Store Name of NSG Used By Identified Interface
+      description: Stores the name of of the NSG used by the identified interface.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1376,7 +1376,7 @@ tasks:
       id: cb4a8e87-3f99-4618-82ef-e7c472040265
       version: -1
       name: Store Private IP(s) of Exposed NIC
-      description: Store Private IP(s) of Exposed NIC
+      description: Stores private IPs of the exposed NIC.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1444,7 +1444,7 @@ tasks:
       id: e888a1aa-d44a-4b77-8729-6cf2d0402a4e
       version: -1
       name: Was a Public IP Address Identified?
-      description: Check that the public IP address has been identified.
+      description: Checks that the public IP address has been identified.
       type: condition
       iscommand: false
       brand: ''
@@ -1479,7 +1479,7 @@ tasks:
       id: 3d3cfef0-18e0-4a75-85cd-ab5c197d2f95
       version: -1
       name: Post Remediation Summary to War Room
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -1489,7 +1489,7 @@ tasks:
       - '5'
     scriptarguments:
       value:
-        simple: "## Remediation Complete\nThis exposure has been remediated by modifying Azure Network Security Groups to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${VirtualMachineName}.\n\nAzure Subscription ID: ${Core.CoreAsset.xdm__asset__realm}.\nAzure Resource Group: ${ResourceGroupName}.\nNetwork Security Group assigned to VM NIC: ${NSGName}.\nRule Name Permitting Exposure: ${AzurePublicExposure.MatchingRuleName}.\n\n**Remediation Steps Taken:**\n${remediation_action}"
+        simple: "## Remediation complete\nThis exposure has been remediated by modifying Azure network security groups to block access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${VirtualMachineName}.\n\nAzure subscription ID: ${Core.CoreAsset.xdm__asset__realm}.\nAzure resource group: ${ResourceGroupName}.\nNetwork security group assigned to VM NIC: ${NSGName}.\nRule name permitting exposure: ${AzurePublicExposure.MatchingRuleName}.\n\n**Remediation steps taken:**\n${remediation_action}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 4020\n  }\n}"
@@ -1508,7 +1508,7 @@ tasks:
       id: de8ba3f2-52ef-4030-8bca-6c7d9c62fdef
       version: -1
       name: Add Updated Allow Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1522,7 +1522,7 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: "${remediation_action}\n- Updated Existing Allow Rule: ${existingAllowRule.name}"
+        simple: "${remediation_action}\n- Updated existing allow rule: ${existingAllowRule.name}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 2630\n  }\n}"
@@ -1541,7 +1541,7 @@ tasks:
       id: 6661f14a-8011-4f94-871e-3045f184f6f4
       version: -1
       name: Add Allow Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1555,7 +1555,7 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: "${remediation_action}\n- Created New NSG Allow Rule: cortex-remediation-allow-port-${inputs.RemoteProtocol}-${inputs.RemotePort}"
+        simple: "${remediation_action}\n- Created new NSG allow rule: cortex-remediation-allow-port-${inputs.RemoteProtocol}-${inputs.RemotePort}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 2630\n  }\n}"
@@ -1574,7 +1574,7 @@ tasks:
       id: 59d0d78b-beb3-4418-849a-9d057285b81b
       version: -1
       name: Add Deny Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1588,7 +1588,7 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: "${remediation_action}\n- Updated Existing Deny Rule: ${existingDenyRule.name}"
+        simple: "${remediation_action}\n- Updated existing deny rule: ${existingDenyRule.name}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 3466.875\n  }\n}"
@@ -1607,7 +1607,7 @@ tasks:
       id: 58443ad6-d985-4ff8-8f22-a395dc3d8fe9
       version: -1
       name: Add Deny Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1621,7 +1621,7 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: "${remediation_action}\n- Created New NSG Deny Rule: cortex-remediation-deny-port-${inputs.RemoteProtocol}-${inputs.RemotePort}"
+        simple: "${remediation_action}\n- Created new NSG deny rule: cortex-remediation-deny-port-${inputs.RemoteProtocol}-${inputs.RemotePort}"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 3466.875\n  }\n}"
@@ -1640,7 +1640,7 @@ tasks:
       id: 947fddbc-d554-40da-896f-7561ed7355f8
       version: -1
       name: Fetch VM Asset Details
-      description: Get asset information.
+      description: Gets asset information.
       script: Cortex Core - Platform|||core-get-asset-details
       type: regular
       iscommand: true
@@ -1671,7 +1671,7 @@ tasks:
       id: 6da81cde-9c9d-47f1-8862-445fbcc05b86
       version: -1
       name: Store Azure Resource Group Name
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1721,7 +1721,7 @@ tasks:
       id: 357d5c6e-163a-4f4e-8df7-69b7220be346
       version: -1
       name: Store Virtual Machine Name
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1763,7 +1763,7 @@ tasks:
       id: ee06d1db-a0ff-4ce3-9077-70ed31804854
       version: -1
       name: Add Existing Allow Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1777,7 +1777,7 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: "${remediation_action}\n- Found Existing Allow Rule: ${existingAllowRule.name}. No modification needed."
+        simple: "${remediation_action}\n- Found existing allow rule: ${existingAllowRule.name}. No modification needed."
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 2630\n  }\n}"
@@ -1796,7 +1796,7 @@ tasks:
       id: c75bb571-5c15-41d4-8412-ce7581d330de
       version: -1
       name: Set variable for existing allow rule name
-      description: Set a variable for the existing allow rule.
+      description: Sets a variable for the existing allow rule.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1880,7 +1880,7 @@ tasks:
       id: 36c8ae63-f695-4c21-86e6-4ada7a55bea3
       version: -1
       name: Set variable for existing deny rule name
-      description: Set a variable for the existing deny rule.
+      description: Sets a variable for the existing deny rule.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1964,7 +1964,7 @@ tasks:
       id: e78eb21e-2544-47e9-8f8b-890d9b6745f5
       version: -1
       name: Add Deny Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1997,7 +1997,7 @@ tasks:
       id: 3ebdcc42-6960-4615-91a4-34d280e00f2c
       version: -1
       name: Was an Interface Name Identified?
-      description: Check that the public IP address has been identified.
+      description: Checks that the public IP address has been identified.
       type: condition
       iscommand: false
       brand: ''
@@ -2032,7 +2032,7 @@ tasks:
       id: 72ea955e-40d8-4cbf-a3a6-030777658eb6
       version: -1
       name: Print Message That An IP Address Could Not Be Identified
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -2042,7 +2042,7 @@ tasks:
       - '47'
     scriptarguments:
       value:
-        simple: No Public IP Address object could be found matching ${inputs.PublicIP}. Remediation cannot be performed.
+        simple: No public IP address object could be found matching ${inputs.PublicIP}. Remediation cannot be performed.
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 810,\n    \"y\": 950\n  }\n}"
@@ -2061,7 +2061,7 @@ tasks:
       id: 3906d36c-d876-4ef3-bc2e-56150b94a6e7
       version: -1
       name: Print Message That An Interface Name Could Not Be Identified
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -2071,7 +2071,7 @@ tasks:
       - '47'
     scriptarguments:
       value:
-        simple: No Network Interface object could be found associated with Public IP Address ID ${ExposedPublicIpID}. Remediation cannot be performed.
+        simple: No network interface object could be found associated with public IP address ID ${ExposedPublicIpID}. Remediation cannot be performed.
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 810,\n    \"y\": 1315\n  }\n}"
@@ -2088,12 +2088,12 @@ inputs:
 - key: AssetID
   value: {}
   required: true
-  description: The Asset ID of the VM Instance
+  description: The asset ID of the VM Instance.
   playbookInputQuery:
 - key: PublicIP
   value: {}
   required: true
-  description: The Public IP whose exposure to remediate.
+  description: The public IP address to remediate for public exposure.
   playbookInputQuery:
 - key: RemoteProtocol
   value: {}
@@ -2108,13 +2108,13 @@ inputs:
 - key: IntegrationInstance
   value: {}
   required: false
-  description: Azure Network Security Groups integration instance to use if you have multiple instances configured (optional).
+  description: The Azure Network Security Groups integration instance to use if you have multiple instances configured (optional).
   playbookInputQuery:
 - key: RemediationAllowRanges
   value:
     simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
   required: false
-  description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the vnet and bastion hosts) but other networks can be added as needed.
+  description: A comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically these are private IP ranges (to allow access within the vnet and bastion hosts), but other networks can be added as needed.
   playbookInputQuery:
 inputSections:
 - inputs:
@@ -2125,19 +2125,19 @@ inputSections:
   - IntegrationInstance
   - RemediationAllowRanges
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: The generic group for inputs.
 outputSections:
 - outputs:
   - remediatedFlag
   - remediation_action
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: The generic group for outputs.
 outputs:
 - contextPath: remediatedFlag
-  description: Output key to determine if remediation was successfully done.
+  description: Whether remediation was successfully done.
   type: boolean
 - contextPath: remediation_action
-  description: Textual summary of remediation action(s) that were performed.
+  description: The summary of remediation actions that were performed.
   type: string
 adopted: true
 fromversion: 6.10.0

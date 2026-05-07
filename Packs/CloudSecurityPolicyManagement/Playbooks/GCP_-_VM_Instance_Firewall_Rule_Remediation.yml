@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: GCP - VM Instance Firewall Rule Remediation
-description: This playbook adds new VPC Firewall rules with access only from private IP address range and blocks traffic that’s exposed to public internet. For example, if RDP is exposed this playbook adds new firewall rules that only allows traffic from private IP address and blocks rest of the RDP traffic. New Allow and Block rules created by this playbook target only the exposed asset.
+description: This playbook adds new VPC firewall rules to restrict access to private IP address ranges and block traffic exposed to the public internet. For example, if RDP is exposed this playbook adds new firewall rules that allow traffic only from private IP addresses and it blocks all other RDP traffic. New allow and block rules created by this playbook target only the exposed asset.
 starttaskid: "0"
 tasks:
   "0":
@@ -93,7 +93,7 @@ tasks:
       id: d7fb0ee2-f6d8-43d4-8eb7-67181d79d788
       version: -1
       name: Store Rule Suffix
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -223,7 +223,7 @@ tasks:
       id: 5ee7d6be-a337-4d82-862e-83032994e2ea
       version: -1
       name: Is GCP Integration Enabled?
-      description: Verify the required GCP integration is configured and enabled.
+      description: Verifies the required GCP integration is configured and enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -284,7 +284,7 @@ tasks:
       id: 5370e5cd-5981-437a-a2bb-ee6dc7493195
       version: -1
       name: Has A Remediation Allow Rule Already Been Created?
-      description: Check if a rule for allowing continued internal access this port/protocol is already created.
+      description: Checks if a rule for allowing continued internal access to this port/protocol is already created.
       type: condition
       iscommand: false
       brand: ""
@@ -337,7 +337,7 @@ tasks:
       id: 2c3fd448-9046-4452-9c51-eec0bb1b3c24
       version: -1
       name: Has A Remediation Block Rule Already Been Created?
-      description: Check if a rule for blocking this port/protocol is already created.
+      description: Checks if a rule for blocking this port/protocol is already created.
       type: condition
       iscommand: false
       brand: ""
@@ -594,7 +594,7 @@ tasks:
       id: e31ca196-9093-4013-ae32-a2283c8b05f7
       version: -1
       name: Get VM Instance Network Tags
-      description: Returns the specified Instance resource. To get a list of available instances, make a list() request.
+      description: Returns the specified instance resource. To get a list of available instances, make a list() request.
       script: GCP|||gcp-compute-instance-get
       type: regular
       iscommand: true
@@ -635,7 +635,7 @@ tasks:
       id: 89d15c1b-d677-482a-9035-13765a401b9c
       version: -1
       name: Is Remediation Tag Already Assigned to VM Instance?
-      description: Does this VM already have the tag for applying the block rule?
+      description: Verifies whether this VM already has the tag for applying the block rule.
       type: condition
       iscommand: false
       brand: ""
@@ -797,7 +797,7 @@ tasks:
       id: b4d39aae-46bf-42de-bafe-7f3221192ce1
       version: -1
       name: Post Remediation Summary to War Room
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -809,7 +809,7 @@ tasks:
       value:
         simple: |-
           ## Remediation Complete
-          This exposure has been remediated by modifying GCP VPC Firewall Rules to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${Core.CoreAsset.xdm__asset__strong_id}.
+          This exposure has been remediated by modifying GCP VPC firewall rules to block access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${Core.CoreAsset.xdm__asset__strong_id}.
 
           GCP Project ID: ${Core.CoreAsset.xdm__asset__realm}
           GCP Network: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.networkInterfaces.network.[0]}
@@ -841,7 +841,7 @@ tasks:
       id: fa4120ca-369a-41f6-8c1b-0fcf247717c5
       version: -1
       name: Set remediatedFlag to true
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -880,7 +880,7 @@ tasks:
       id: 7ab1b34e-855b-4e6a-ad58-253ec75a4dfb
       version: -1
       name: Set remediatedFlag to false
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -919,7 +919,7 @@ tasks:
       id: ff63625d-a698-431e-ac3d-1641a05fda0c
       version: -1
       name: Add Allow Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -935,7 +935,7 @@ tasks:
       value:
         simple: |-
           ${remediation_action}
-          - Found existing VPC Firewall Allow rule cortex-remediation-allow-${RuleSuffix} which can allow continued internal access.
+          - Found existing VPC firewall allow rule cortex-remediation-allow-${RuleSuffix} which can allow continued internal access.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -960,7 +960,7 @@ tasks:
       id: 3de8d8ef-6325-43a4-ac43-88f60fc0fe39
       version: -1
       name: Add Allow Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -976,7 +976,7 @@ tasks:
       value:
         simple: |-
           ${remediation_action}
-          - Created new VPC Firewall Allow rule cortex-remediation-allow-${RuleSuffix} to allow continued internal access.
+          - Created new VPC firewall allow rule cortex-remediation-allow-${RuleSuffix} to allow continued internal access.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1001,7 +1001,7 @@ tasks:
       id: 41235eb8-c3b5-43b4-b343-9a6e81a0bbde
       version: -1
       name: Add Block Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1017,7 +1017,7 @@ tasks:
       value:
         simple: |-
           ${remediation_action}
-          - Created new VPC Firewall Block rule cortex-remediation-block-${RuleSuffix} to block public exposure.
+          - Created new VPC firewall block rule cortex-remediation-block-${RuleSuffix} to block public exposure.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1042,7 +1042,7 @@ tasks:
       id: 6e80bf37-bdc1-479c-9dde-afebfb3b3649
       version: -1
       name: Add Block Rule Name to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1058,7 +1058,7 @@ tasks:
       value:
         simple: |-
           ${remediation_action}
-          - Found existing VPC Firewall rule cortex-remediation-block-${RuleSuffix} which can block public exposure.
+          - Found existing VPC firewall rule cortex-remediation-block-${RuleSuffix} which can block public exposure.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1083,7 +1083,7 @@ tasks:
       id: 897d5210-3544-45d2-9f48-f1c69560ca73
       version: -1
       name: Add Existing Network Tag to Remediation Action Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1099,7 +1099,7 @@ tasks:
       value:
         simple: |-
           ${remediation_action}
-          - Found network tag for remediation (cortex-remediation-${inputs.RemotePort}-${inputs.RemoteProtocol}) already applied to VM for VPC Firewall rule matching.
+          - Found network tag for remediation (cortex-remediation-${inputs.RemotePort}-${inputs.RemoteProtocol}) already applied to VM for VPC firewall rule matching.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1124,7 +1124,7 @@ tasks:
       id: 5f0fac7a-fa08-4fb2-90f7-37f4fdc3377e
       version: -1
       name: Add New Network Tag to Remediation Details
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1140,7 +1140,7 @@ tasks:
       value:
         simple: |-
           ${remediation_action}
-          - Added network tag for remediation (cortex-remediation-${inputs.RemotePort}-${inputs.RemoteProtocol}) for VPC Firewall rule matching.
+          - Added network tag for remediation (cortex-remediation-${inputs.RemotePort}-${inputs.RemoteProtocol}) for VPC firewall rule matching.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1165,7 +1165,7 @@ tasks:
       id: fd457a70-2cb5-4063-8ad0-4a01ac36d2e5
       version: -1
       name: Fetch VM Asset Details
-      description: Get asset information.
+      description: Gets asset information.
       script: Cortex Core - Platform|||core-get-asset-details
       type: regular
       iscommand: true
@@ -1211,7 +1211,7 @@ inputs:
 - key: AssetID
   value: {}
   required: true
-  description: The Asset ID of the VM Instance
+  description: The asset ID of the VM instance.
   playbookInputQuery:
 - key: RemotePort
   value: {}
@@ -1226,13 +1226,13 @@ inputs:
 - key: IntegrationInstance
   value: {}
   required: false
-  description: GCP integration instance to use if multiple instances are configured (optional).
+  description: The GCP integration instance to use if multiple instances are configured (optional).
   playbookInputQuery:
 - key: RemediationAllowRanges
   value:
     simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
   required: false
-  description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the VPC and bastion hosts) but other networks can be added as needed.
+  description: A comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically these are private IP ranges (to allow access within the VPC and bastion hosts), but other networks can be added as needed.
   playbookInputQuery:
 inputSections:
 - inputs:
@@ -1242,19 +1242,19 @@ inputSections:
   - IntegrationInstance
   - RemediationAllowRanges
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: The generic group for inputs.
 outputSections:
 - outputs:
   - remediatedFlag
   - remediation_action
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: The generic group for outputs.
 outputs:
 - contextPath: remediatedFlag
-  description: Output key to determine if remediation was successfully done.
+  description: Whether remediation was successfully done.
   type: boolean
 - contextPath: remediation_action
-  description: Textual summary of remediation action(s) that were performed.
+  description: The summary of remediation actions that were performed.
   type: string
 adopted: true
 tests:
