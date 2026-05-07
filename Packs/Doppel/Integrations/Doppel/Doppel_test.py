@@ -768,16 +768,22 @@ def test_doppel_create_abuse_alert_command_failure(mocker):
 
 def test_get_modified_remote_data_command(mocker):
     """
-    Test that `get_modified_remote_data_command` raises NotImplementedError.
+    Test that `get_modified_remote_data_command` returns modified incident IDs.
     """
+    mock_client = MagicMock()
+    mock_alerts = [
+        {"id": "alert-001", "name": "Alert 1"},
+        {"id": "alert-002", "name": "Alert 2"},
+    ]
+    mock_client.get_alerts.return_value = {"alerts": mock_alerts}
 
-    # Mock the required arguments
-    mock_client = mocker.Mock()
-    args = {}
+    args = {"lastUpdate": "2025-02-24T14:30:00Z"}
 
-    # Assert that the function raises NotImplementedError
-    with pytest.raises(NotImplementedError, match='The command "get-modified-remote-data" is not implemented'):
-        get_modified_remote_data_command(mock_client, args)
+    mocker.patch.object(demisto, "debug")
+
+    result = get_modified_remote_data_command(mock_client, args)
+
+    assert result.modified_incident_ids == ["alert-001", "alert-002"]
 
 
 def test_doppel_update_alert_both_alert_id_and_entity(mocker):
