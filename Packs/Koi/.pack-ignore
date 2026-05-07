@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 [file:README.md]
 ignore=BA125
+=======
+[file:Koi.yml]
+ignore=BA129
+>>>>>>> origin/master
