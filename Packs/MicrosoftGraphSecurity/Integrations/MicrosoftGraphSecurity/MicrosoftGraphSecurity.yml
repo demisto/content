@@ -30,6 +30,16 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+- defaultvalue: Alerts v2
+  display: MS graph security alert API Version
+  name: api_version
+  type: 15
+  options:
+  - Alerts v2
+  section: Connect
+  required: false
+  hidden: true
+  deprecated: true
 - name: creds_auth_id
   type: 9
   section: Connect
@@ -163,12 +173,21 @@ configuration:
   required: false
   defaultvalue: '10'
 - display: Fetch incidents of the given service sources only.
-  additionalinfo: Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all service sources will be fetched.
+  additionalinfo: Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all service sources will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
   advanced: true
   required: false
+- display: Fetch incidents of the given providers only.
+  additionalinfo: Deprecated. This parameter was used for Legacy Alerts which has been removed. Use "Fetch incidents of the given service sources only" instead.
+  name: fetch_providers
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden: true
+  deprecated: true
 - display: Fetched incidents filter
   additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
@@ -264,8 +283,20 @@ script:
     - contextPath: MsGraph.Alert.CreatedDate
       description: Alert created date.
       type: date
+    - contextPath: MsGraph.Alert.EventDate
+      description: Deprecated. Was used for Legacy Alerts only.
+      type: date
     - contextPath: MsGraph.Alert.Status
       description: Alert status.
+      type: string
+    - contextPath: MsGraph.Alert.Vendor
+      description: Deprecated. Was used for Legacy Alerts only.
+      type: string
+    - contextPath: MsGraph.Alert.MalwareStates
+      description: Deprecated. Was used for Legacy Alerts only.
+      type: string
+    - contextPath: MsGraph.Alert.Provider
+      description: Deprecated. Was used for Legacy Alerts only.
       type: string
     - contextPath: MsGraph.Alert.ActorDisplayName
       description: Alert actor name.
@@ -392,6 +423,11 @@ script:
       description: The Alert ID - Provider-generated GUID/unique identifier.
       name: alert_id
       required: true
+    - defaultValue: All
+      description: 'Deprecated. Was used for Legacy Alerts only.'
+      name: fields_to_include
+      hidden: true
+      deprecated: true
     description: Get details for a specific alert.
     name: msg-get-alert-details
     outputs:
@@ -410,8 +446,17 @@ script:
     - contextPath: MsGraph.Alert.CreatedDate
       description: Alert created date.
       type: date
+    - contextPath: MsGraph.Alert.EventDate
+      description: Deprecated. Was used for Legacy Alerts only.
+      type: date
     - contextPath: MsGraph.Alert.Status
       description: Alert status.
+      type: string
+    - contextPath: MsGraph.Alert.Vendor
+      description: Deprecated. Was used for Legacy Alerts only.
+      type: string
+    - contextPath: MsGraph.Alert.Provider
+      description: Deprecated. Was used for Legacy Alerts only.
       type: string
     - contextPath: MsGraph.Alert.@odata.Context
       description: Alert odata context.
@@ -649,6 +694,36 @@ script:
       - newAlert
       - inProgress
       - resolved
+    - description: Deprecated. Was used for Legacy Alerts only.
+      name: closed_date_time
+      hidden: true
+      deprecated: true
+    - description: Deprecated. Was used for Legacy Alerts only.
+      name: comments
+      hidden: true
+      deprecated: true
+    - auto: PREDEFINED
+      description: Deprecated. Was used for Legacy Alerts only.
+      name: feedback
+      predefined:
+      - unknown
+      - truePositive
+      - falsePositive
+      - benignPositive
+      hidden: true
+      deprecated: true
+    - description: Deprecated. Was used for Legacy Alerts only.
+      name: tags
+      hidden: true
+      deprecated: true
+    - description: Deprecated. Was used for Legacy Alerts only.
+      name: vendor_information
+      hidden: true
+      deprecated: true
+    - description: Deprecated. Was used for Legacy Alerts only.
+      name: provider_information
+      hidden: true
+      deprecated: true
     - auto: PREDEFINED
       description: Use this field to update the alert's classification.
       name: classification

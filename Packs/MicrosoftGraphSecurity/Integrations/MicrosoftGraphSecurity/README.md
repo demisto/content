@@ -21,7 +21,7 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 * The following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 * The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
 * When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
-* When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
+* When using Threat Assessment for information protection, the following limits apply to any request:
   * For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
 
   | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
@@ -53,7 +53,7 @@ More information about defining this permission can be found [here](https://lear
 2. ThreatAssessment.ReadWrite.All - Delegated
 3. User.Read.All - Delegated
 
-## Configure Microsoft Graph Security on Cortex XSOAR
+## Configure Microsoft Graph Security on Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Graph Security.
@@ -87,7 +87,7 @@ More information about defining this permission can be found [here](https://lear
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msg-auth-test
@@ -161,7 +161,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.DetectionSource | String | Alert detection source. |
 | MsGraph.Alert.DetectorId | String | Alert detector ID. |
 | MsGraph.Alert.Determination | Unknown | Alert determination. |
-| MsGraph.Alert.Evidence.@odata.Type | String | Alert evidence. |
+| MsGraph.Alert.Evidence.\@odata.Type | String | Alert evidence. |
 | MsGraph.Alert.Evidence.AzureAdDeviceId | String | Evidence Azure device ID. |
 | MsGraph.Alert.Evidence.CreatedDate | Date | Evidence creation time. |
 | MsGraph.Alert.Evidence.DefenderAvStatus | String | Evidence Defender AV status. |
@@ -227,7 +227,7 @@ Get details for a specific alert.
 | MsGraph.Alert.Severity | string | Alert severity. |
 | MsGraph.Alert.CreatedDate | date | Alert created date. |
 | MsGraph.Alert.Status | string | Alert status. |
-| MsGraph.Alert.@odata.Context | String | Alert odata context. |
+| MsGraph.Alert.\@odata.Context | String | Alert odata context. |
 | MsGraph.Alert.ActorDisplayName | Unknown | Alert actor name. |
 | MsGraph.Alert.AlertWebUrl | String | Alert web URL. |
 | MsGraph.Alert.AssignedTo | Unknown | Alert assignee. |
@@ -239,7 +239,7 @@ Get details for a specific alert.
 | MsGraph.Alert.DetectionSource | String | Alert detection source. |
 | MsGraph.Alert.DetectorId | String | Alert detector ID. |
 | MsGraph.Alert.Determination | Unknown | Alert determination. |
-| MsGraph.Alert.Evidence.@odata.Type | String | Alert evidence. |
+| MsGraph.Alert.Evidence.\@odata.Type | String | Alert evidence. |
 | MsGraph.Alert.Evidence.CreatedDate | Date | Evidence creation time. |
 | MsGraph.Alert.Evidence.DetectionStatus | Unknown | Evidence detection status. |
 | MsGraph.Alert.Evidence.ImageFile.FileName | String | Evidence image file name. |
