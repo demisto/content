@@ -1,15 +1,15 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: This playbook handles exposure issue remediation for cloud hosted Virtual Machines by modifying cloud network security settings to block public access to the exposed service port.
+description: This playbook remediates public exposure for GCP hosted virtual machines by modifying network security settings to block public access to the exposed service port.
 id: 'Cortex EM - GCP VM Exposure Remediation'
 inputSections:
-- description: Generic group for inputs
+- description: The generic group for inputs.
   inputs: []
   name: General (Inputs group)
 inputs: []
 name: Cortex EM - GCP VM Exposure Remediation
 outputSections:
-- description: Generic group for outputs
+- description: The generic group for outputs.
   name: General (Outputs group)
   outputs: []
 outputs: []
@@ -132,7 +132,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Remediation didn't complete. This could be due to missing cloud integrations or instances (such as AWS), or other issues. Please investigate further to determine the exact cause.
+      description: Remediation failed to complete. Verify that the required cloud integrations (for example, AWS) are installed and configured, and the instances are accessible. Check the integration logs for more details.
       id: 37d1e87e-e487-42df-8536-4693cbb7b282
       iscommand: false
       name: Automated Remediation Failed. See Work Plan for more information.
@@ -166,10 +166,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Cortex Core - Platform
-      description: Get asset information.
+      description: Gets asset information.
       id: 1eadf675-f777-40ae-92fe-847f3b212cbd
       iscommand: true
-      name: Get Asset Details
+      name: Gets Asset Details
       script: Cortex Core - Platform|||core-get-asset-details
       type: regular
       version: -1
@@ -269,7 +269,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       id: 416082bd-f454-44ab-9773-037a0ec9be10
       iscommand: false
       name: Store Related Assets
@@ -304,7 +304,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Cortex Core - Platform
-      description: Get asset information.
+      description: Gets asset information.
       id: 4f9e318b-e62b-482a-a909-f32f6f59ec72
       iscommand: true
       name: Get Related Asset Details
@@ -349,7 +349,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check that VM asset details were fetched.
+      description: Checks that VM asset details were fetched.
       id: 28a270bc-1966-4092-862c-32bd5d6ec26d
       iscommand: false
       name: Is there a VM Instance Asset?
@@ -427,7 +427,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This playbook adds new VPC Firewall rules with access only from private IP address range and blocks traffic that’s exposed to public internet. For example, if RDP is exposed this playbook adds new firewall rules that only allows traffic from private IP address and blocks rest of the RDP traffic. New Allow and Block rules created by this playbook target only the exposed asset.
+      description: This playbook adds new VPC firewall rules to restrict access to private IP address ranges and block traffic exposed to the public internet. For example, if RDP is exposed this playbook adds new firewall rules that allow traffic only from private IP addresses and it blocks all other RDP traffic. New allow and block rules created by this playbook target only the exposed asset.
       id: d1c3a744-fbc2-4f8b-b1a7-0494f6f2be18
       iscommand: false
       name: Remediate Exposure via GCP VPC Firewall Rules

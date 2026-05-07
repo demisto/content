@@ -1,15 +1,15 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: This playbook handles exposure issue remediation for cloud hosted Virtual Machines by modifying cloud network security settings to block public access to the exposed service port.
+description: This playbook remediates public exposure for Azure hosted virtual machines by modifying network security settings to block public access to the exposed service port.
 id: 'Cortex EM - Azure VM Exposure Remediation'
 inputSections:
-- description: Generic group for inputs
+- description: The generic group for inputs.
   inputs: []
   name: General (Inputs group)
 inputs: []
 name: Cortex EM - Azure VM Exposure Remediation
 outputSections:
-- description: Generic group for outputs
+- description: The generic group for outputs.
   name: General (Outputs group)
   outputs: []
 outputs: []
@@ -132,10 +132,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Remediation didn't complete. This could be due to missing cloud integrations or instances (such as AWS), or other issues. Please investigate further to determine the exact cause.
+      description: Remediation failed to complete. Verify that the required cloud integrations (for example, AWS) are installed and configured, and the instances are accessible. Check the integration logs for more details.
       id: 5708da0a-ca14-4950-9c13-066edd7fa2f6
       iscommand: false
-      name: Automated Remediation Failed. See Work Plan for more information.
+      name: Automated remediation failed. See the Work Plan for more information.
       type: regular
       version: -1
     taskid: 5708da0a-ca14-4950-9c13-066edd7fa2f6
@@ -166,7 +166,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Cortex Core - Platform
-      description: Get asset information.
+      description: Gets asset information.
       id: 1eadf675-f777-40ae-92fe-847f3b212cbd
       iscommand: true
       name: Get Asset Details
@@ -269,7 +269,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered.
+      description: Sets a value in context under the key you entered.
       id: 416082bd-f454-44ab-9773-037a0ec9be10
       iscommand: false
       name: Store Related Assets
@@ -304,7 +304,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Cortex Core - Platform
-      description: Get asset information.
+      description: Gets asset information.
       id: 4f9e318b-e62b-482a-a909-f32f6f59ec72
       iscommand: true
       name: Get Related Asset Details
@@ -349,7 +349,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check that VM asset details were fetched.
+      description: Checks that VM asset details were fetched.
       id: 775387bc-7b30-4716-aea8-eedf9db69b83
       iscommand: false
       name: Is there a VM Instance Asset?
@@ -443,12 +443,12 @@ tasks:
     task:
       brand: ""
       description: |-
-        This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
+        This playbook adds new Azure network security group (NSG) rules to NSGs attached to a NIC. The new rules give access to only a private IP address range and block traffic exposed to the public internet using the private IP of the VM, as explained in the ([Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
 
         Conditions and limitations:
-        - Limited to one resource group.
-        - 2 priorities lower than the offending rule priority must be available.
-        - Adds rules to NSGs associated to NICs.
+        - Limited to a single resource group.
+        - Requires at least two available priority slots lower than the offending rule.
+        - Applies only to NSGs associated with NICs.
       id: 77d798fe-f5ac-4757-a873-b28f1c9c64c7
       iscommand: false
       name: Remediate Exposure via Azure NSG Rules
