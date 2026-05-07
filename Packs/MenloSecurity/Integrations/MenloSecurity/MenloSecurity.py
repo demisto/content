@@ -226,8 +226,7 @@ def get_events_for_log_type(
         # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
         first_event_sample = str(page_events[0])[:300] if page_events else "N/A"
         demisto.debug(
-            f"[{thread_name}] Got {len(page_events)} {log_type_ui} events. "
-            f"First event sample: {first_event_sample}"
+            f"[{thread_name}] Got {len(page_events)} {log_type_ui} events. " f"First event sample: {first_event_sample}"
         )
 
         # Per the API docs, each element in the events list is {"event": {...}}.
