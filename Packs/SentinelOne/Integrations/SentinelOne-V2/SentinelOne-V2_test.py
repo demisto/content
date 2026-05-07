@@ -9,6 +9,23 @@ import builtins
 sentinelone_v2 = import_module("SentinelOne-V2")
 main = sentinelone_v2.main
 
+UAM_ALERT_ID = "01tc8est-test-7a6f-beeb-eddummya986"
+THREAT_ID = "2421825212122725692"
+BASE_URL = "https://usea1.sentinelone.net"
+BASE_PARAMS = {"token": "token", "url": BASE_URL, "api_version": "2.1"}
+GRAPHQL_URL = f"{BASE_URL}/web/api/v2.1/unifiedalerts/graphql"
+THREATS_URL = f"{BASE_URL}/web/api/v2.1/threats"
+
+
+def _make_client() -> "sentinelone_v2.Client":
+    """Return a minimal Client instance for unit tests."""
+    return sentinelone_v2.Client(
+        base_url=f"{BASE_URL}/web/api/v2.1",
+        verify=False,
+        proxy=False,
+        headers={"Authorization": "ApiToken token"},
+    )
+
 
 def util_load_json(path):
     # Always resolve path relative to this test file's directory
@@ -1992,7 +2009,12 @@ def test_get_mapping_fields_command():
     """
     result = sentinelone_v2.get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == "SentinelOne Incident"
-    assert list(result.scheme_types_mappings[0].fields.keys()) == ["analystVerdict", "incidentStatus"]
+    assert list(result.scheme_types_mappings[0].fields.keys()) == [
+        "analystVerdict",
+        "incidentStatus",
+        "uamStatus",
+        "uamAnalystVerdict",
+    ]
 
 
 def test_get_dv_query_status(mocker, requests_mock):
@@ -2150,3 +2172,260 @@ def test_get_agent_mac(mocker, requests_mock):
     assert command_results.outputs[0].get("agent_id") == "agentId_test"
     assert command_results.outputs[0].get("ip") == "ip_test"
     assert command_results.outputs[0].get("mac") == "mac_test"
+
+
+def test_is_uam_alert_returns_true_for_node_key():
+    """
+    When:
+        A mirrored object contains a 'node' key (UAM alert GraphQL edge).
+    Then:
+        _is_uam_alert returns True.
+    """
+    assert sentinelone_v2._is_uam_alert({"node": {"id": UAM_ALERT_ID, "status": "NEW"}}) is True
+
+
+def test_is_uam_alert_returns_false_for_threat():
+    """
+    When:
+        A mirrored object has no 'node' key (THREAT REST API response).
+    Then:
+        _is_uam_alert returns False.
+    """
+    assert sentinelone_v2._is_uam_alert({"threatInfo": {"incidentStatus": "unresolved"}}) is False
+
+
+def test_to_incident_uam_alert_promotes_id():
+    """
+    When:
+        to_incident is called with type='UAM Alert' and node.id set.
+    Then:
+        data['id'] is promoted to top level so XSOAR sets dbotMirrorId correctly,
+        name / occurred / severity are mapped correctly.
+    """
+    data = {
+        "node": {
+            "id": UAM_ALERT_ID,
+            "name": "Test Alert",
+            "severity": "HIGH",
+            "createdAt": "2026-02-24T11:35:23.392Z",
+            "realTime": {"scope": {"account": {}, "group": {}, "site": {}}},
+            "detectionTime": {"cloud": None, "kubernetes": None},
+            "asset": {},
+        }
+    }
+    incident = sentinelone_v2.to_incident("UAM Alert", data)
+
+    assert data["id"] == UAM_ALERT_ID
+    assert incident["name"] == "Sentinel One UAM Alert: Test Alert"
+    assert incident["occurred"] == "2026-02-24T11:35:23.392Z"
+    assert incident["severity"] == 3  # HIGH → 3
+
+
+def test_get_remote_data_uam_alert_normalizes_status_and_verdict(mocker, requests_mock):
+    """
+    When:
+        get-remote-data is called with a UUID-format incident id (UAM alert).
+    Then:
+        The GraphQL endpoint is called, status/analystVerdict are normalized to
+        XSOAR display labels, and the mirrored object contains a 'node' key.
+    """
+    raw = util_load_json("test_data/uam_alert_by_id_response.json")
+    requests_mock.post(GRAPHQL_URL, json=raw)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={**BASE_PARAMS, "close_incident": False},
+    )
+    mocker.patch.object(demisto, "command", return_value="get-remote-data")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"id": UAM_ALERT_ID, "lastUpdate": "2026-01-01T00:00:00Z"},
+    )
+    mock_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    mock_results.assert_called_once()
+    response = mock_results.call_args[0][0]
+    mirrored_object = response.mirrored_object
+
+    assert mirrored_object["node"]["status"] == "In progress"
+    assert mirrored_object["node"]["analystVerdict"] == "True positive - Ransomware"
+    assert mirrored_object["incident_type"] == "SentinelOne Incident"
+
+
+def test_get_remote_data_threat_routes_to_threats_api(mocker, requests_mock):
+    """
+    When:
+        get-remote-data is called with a numeric incident id (THREAT).
+    Then:
+        The threats REST API is called (not GraphQL) and the mirrored object
+        has no 'node' key.
+    """
+    threat_response = {"data": [{"id": THREAT_ID, "threatInfo": {"incidentStatus": "unresolved"}}]}
+    requests_mock.get(THREATS_URL, json=threat_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={**BASE_PARAMS, "close_incident": False},
+    )
+    mocker.patch.object(demisto, "command", return_value="get-remote-data")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"id": THREAT_ID, "lastUpdate": "2026-01-01T00:00:00Z"},
+    )
+    mock_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    mock_results.assert_called_once()
+    response = mock_results.call_args[0][0]
+    mirrored_object = response.mirrored_object
+
+    assert mirrored_object.get("id") == THREAT_ID
+    assert "node" not in mirrored_object
+
+
+def test_update_remote_system_uam_status_via_delta(mocker, requests_mock):
+    """
+    When:
+        update-remote-system is called with sentineloneuamalertstatus in delta
+        and sentineloneuamalertid in data.
+    Then:
+        The UAM alert status mutation is called with the correct alert ID and
+        the API enum value (not the display label).
+    """
+    mutation_response = {"data": {"alertTriggerActions": {"actions": [{"success": [UAM_ALERT_ID], "failure": []}]}}}
+    requests_mock.post(GRAPHQL_URL, json=mutation_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value=BASE_PARAMS,
+    )
+    mocker.patch.object(demisto, "command", return_value="update-remote-system")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "remoteId": UAM_ALERT_ID,
+            "incidentChanged": "true",
+            "delta": {"sentineloneuamalertstatus": "Resolved"},
+            "data": {"sentineloneuamalertid": UAM_ALERT_ID},
+            "entries": [],
+            "status": 1,
+        },
+    )
+    mock_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    mock_results.assert_called_once()
+    sent_body = requests_mock.last_request.json()
+    # Verify the mutation was called with the API enum value
+    assert "RESOLVED" in sent_body["query"] or sent_body.get("variables", {}).get("status") == "RESOLVED"
+
+
+def test_update_remote_system_uam_no_change_skips_api_call(mocker, requests_mock):
+    """
+    When:
+        update-remote-system is called with incidentChanged=false.
+    Then:
+        No API call is made to SentinelOne.
+    """
+    requests_mock.post(GRAPHQL_URL, json={})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value=BASE_PARAMS,
+    )
+    mocker.patch.object(demisto, "command", return_value="update-remote-system")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "remoteId": UAM_ALERT_ID,
+            "incidentChanged": "false",
+            "delta": {},
+            "data": {"sentineloneuamalertid": UAM_ALERT_ID},
+            "entries": [],
+            "status": 1,
+        },
+    )
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    assert requests_mock.call_count == 0
+
+
+def test_get_uam_alert_by_id_uses_graphql_variables(mocker, requests_mock):
+    """
+    When:
+        get_uam_alert_by_id is called with a UAM alert UUID.
+    Then:
+        POSTs to the GraphQL endpoint with variables={'id': alert_id} (not f-string),
+        and returns a dict with 'node' wrapping the raw alert data.
+    """
+    raw = util_load_json("test_data/uam_alert_by_id_response.json")
+    graphql_mock = requests_mock.post(
+        GRAPHQL_URL,
+        json=raw,
+    )
+    mocker.patch.object(demisto, "params", return_value=BASE_PARAMS)
+    client = _make_client()
+
+    result = client.get_uam_alert_by_id(UAM_ALERT_ID)
+
+    sent_body = graphql_mock.last_request.json()
+    assert sent_body.get("variables") == {"id": UAM_ALERT_ID}
+    assert "alert(id: $id)" in sent_body["query"]
+    assert result["node"]["id"] == UAM_ALERT_ID
+    assert result["node"]["status"] == "IN_PROGRESS"
+
+
+def test_update_uam_alert_status(mocker, requests_mock):
+    requests_mock.post(
+        GRAPHQL_URL,
+        json={"data": {"alertTriggerActions": {"actions": [{"success": [{"id": UAM_ALERT_ID}], "failure": []}]}}},
+    )
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value=BASE_PARAMS,
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-update-uam-alert-status")
+    mocker.patch.object(demisto, "args", return_value={"alert_ids": UAM_ALERT_ID, "status": "Resolved"})
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{"ID": UAM_ALERT_ID, "Status": "Resolved", "Updated": True}]
+
+
+def test_update_uam_alert_verdict(mocker, requests_mock):
+    requests_mock.post(
+        GRAPHQL_URL,
+        json={"data": {"alertTriggerActions": {"actions": [{"success": [{"id": UAM_ALERT_ID}], "failure": []}]}}},
+    )
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value=BASE_PARAMS,
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-update-uam-alert-verdict")
+    mocker.patch.object(
+        demisto, "args", return_value={"alert_ids": UAM_ALERT_ID, "analyst_verdict": "True positive - Ransomware"}
+    )
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{"ID": UAM_ALERT_ID, "AnalystVerdict": "True positive - Ransomware", "Updated": True}]
