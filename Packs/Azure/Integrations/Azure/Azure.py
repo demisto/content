@@ -229,8 +229,18 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
+        "azure-storage-container-blob-get",
+        "azure-storage-blob-get",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": ["azure-storage-blob-tag-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
+        "azure-storage-container-blob-create",
+        "azure-storage-blob-create",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
+        "azure-storage-container-blob-tag-set",
+        "azure-storage-blob-tag-set",
+    ],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -4950,10 +4960,13 @@ def main():  # pragma: no cover
             "azure-storage-container-create": storage_container_create_command,
             "azure-storage-container-delete": storage_container_delete_command,
             "azure-storage-container-blob-create": storage_container_blob_create_command,
+            "azure-storage-blob-create": storage_container_blob_create_command,
             "azure-storage-container-blob-get": storage_container_blob_get_command,
+            "azure-storage-blob-get": storage_container_blob_get_command,
             "azure-storage-container-blob-tag-get": storage_container_blob_tag_get_command,
             "azure-storage-blob-tag-get": storage_container_blob_tag_get_command,
             "azure-storage-container-blob-tag-set": storage_container_blob_tag_set_command,
+            "azure-storage-blob-tag-set": storage_container_blob_tag_set_command,
             "azure-storage-container-blob-property-get": storage_container_blob_property_get_command,
             "azure-storage-blob-property-get": storage_container_blob_property_get_command,
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,

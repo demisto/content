@@ -1535,7 +1535,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-create
 
 ***
-Retrieve Blob from Container.
+Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create.
 
 #### Base Command
 
@@ -1559,7 +1559,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-get
 
 ***
-Retrieve Blob from Container.
+Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get.
 
 #### Base Command
 
@@ -1621,7 +1621,7 @@ Retrieve the tags of the specified Blob. The command is deprecated, please use a
 ### azure-storage-container-blob-tag-set
 
 ***
-Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags.
+Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set.
 
 #### Base Command
 
@@ -2223,19 +2223,19 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required | 
-| resource_group_name | Resource group name. | Required | 
-| security_group_name | The name of the security group. | Required | 
-| security_rule_name | The name of the rule to create. | Required | 
-| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Required | 
-| access | Whether to allow the traffic. Possible values are: Allow, Deny. Default is Allow. | Optional | 
-| protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional | 
-| source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional | 
-| priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required | 
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is *. | Optional | 
-| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional | 
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is *. | Optional | 
-| description | A description to add to the rule. | Optional | 
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to create. | Required |
+| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Required |
+| access | Whether to allow the traffic. Possible values are: Allow, Deny. Default is Allow. | Optional |
+| protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
+| source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
+| priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
+| description | A description to add to the rule. | Optional |
 
 #### Context Output
 
@@ -2331,39 +2331,39 @@ Update a security rule. If one does not exist, it will be created. Required perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required | 
-| resource_group_name | The name of the resource group. | Required | 
-| security_group_name | The name of the security group. | Required | 
-| security_rule_name | The name of the rule to be updated. | Required | 
-| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Optional | 
-| protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. | Optional | 
-| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional | 
-| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional | 
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional | 
-| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
-| description | A description to add to the rule. | Optional | 
-| access | The network traffic is allowed or denied. Possible values are: Allow, Deny. | Optional | 
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to be updated. | Required |
+| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Optional |
+| protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. | Optional |
+| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional |
+| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional |
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional |
+| description | A description to add to the rule. | Optional |
+| access | The network traffic is allowed or denied. Possible values are: Allow, Deny. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. | 
-| Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. | 
-| Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. | 
-| Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. | 
-| Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. | 
-| Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". | 
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. | 
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. | 
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. | 
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. | 
-| Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. | 
-| Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. | 
-| Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". | 
-| Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. | 
-| Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". | 
+| Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. |
+| Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. |
+| Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. |
+| Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. |
+| Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. |
+| Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. |
+| Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
+| Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
 ### azure-vn-security-rules-list
 
@@ -2483,22 +2483,105 @@ Updates container properties as specified in request body. Properties not mentio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required | 
-| resource_group_name | The resource group name. | Required | 
-| account_name | The storage account name. | Required | 
-| container_name | The container name. | Required | 
-| default_encryption_scope | Uses the specified encryption scope by default for all writes to the container. | Optional | 
-| deny_encryption_scope_override | Blocks overriding the container’s default encryption scope. Possible values are: true, false. | Optional | 
-| public_access | Specifies the access level. Possible values are: Blob, Container, None. | Optional | 
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The container name. | Required |
+| default_encryption_scope | Uses the specified encryption scope by default for all writes to the container. | Optional |
+| deny_encryption_scope_override | Blocks overriding the container’s default encryption scope. Possible values are: true, false. | Optional |
+| public_access | Specifies the access level. Possible values are: Blob, Container, None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.Container.id | String | Fully qualified resource ID for the resource. | 
-| Azure.Storage.Container.name | String | The name of the resource. | 
-| Azure.Storage.Container.type | String | The resource type. | 
-| Azure.Storage.Container.properties.metadata | String | A name-value pair to associate with the container as metadata. | 
-| Azure.Storage.Container.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. | 
-| Azure.Storage.Container.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. | 
-| Azure.Storage.Container.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. | 
+| Azure.Storage.Container.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.Container.name | String | The name of the resource. |
+| Azure.Storage.Container.type | String | The resource type. |
+| Azure.Storage.Container.properties.metadata | String | A name-value pair to associate with the container as metadata. |
+| Azure.Storage.Container.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
+| Azure.Storage.Container.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
+| Azure.Storage.Container.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+
+### azure-storage-blob-create
+
+***
+Create a new Blob under the specified Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
+
+#### Base Command
+
+`azure-storage-blob-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The name of the Blob Container. | Required |
+| file_entry_id | The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output. | Required |
+| blob_name | The name of the Blob to create. Default is the file name. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-blob-get
+
+***
+Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
+
+#### Base Command
+
+`azure-storage-blob-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The name of the Blob Container. | Required |
+| blob_name | The name of the Blob to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | String | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | Unknown | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
+
+### azure-storage-blob-tag-set
+
+***
+Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write.
+
+#### Base Command
+
+`azure-storage-blob-tag-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_name | The name of the Blob Container. | Required |
+| blob_name | The name of the blob. | Required |
+| tags | Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags. | Required |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| append | Wether to append tags to the existing tags or not. Default is false. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

@@ -779,8 +779,30 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve Blob from Container.
+    description: Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create.
+    deprecated: true
     name: azure-storage-container-blob-create
+
+  - name: azure-storage-blob-create
+    description: "Create a new Blob under the specified Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    arguments:
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output.
+      name: file_entry_id
+      required: true
+    - description: The name of the Blob to create. Default is the file name.
+      name: blob_name
 
   - arguments:
     - description: The name of the Blob Container.
@@ -798,8 +820,59 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve Blob from Container.
+    description: Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get.
     name: azure-storage-container-blob-get
+    deprecated: true
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: Unknown
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+
+  - name: azure-storage-blob-get
+    description: "Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    arguments:
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the Blob to retrieve.
+      name: blob_name
+      required: true
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -922,8 +995,38 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags.
+    description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set.
     name: azure-storage-container-blob-tag-set
+    deprecated: true
+
+  - name: azure-storage-blob-tag-set
+    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
+      name: tags
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Wether to append tags to the existing tags or not. Default is false.
+      name: append
+      defaultValue: False
+      predefined:
+        - 'true'
+        - 'false'
 
   - arguments:
     - description: The name of the Blob Container.
