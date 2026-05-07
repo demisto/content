@@ -7,10 +7,10 @@
     "url": "",
     "email": "",
     "created": "2026-04-08T21:25:31Z",
-    "categories": [],
+    "categories": ["Analytics & SIEM"],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Elastic", "Kibana"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
