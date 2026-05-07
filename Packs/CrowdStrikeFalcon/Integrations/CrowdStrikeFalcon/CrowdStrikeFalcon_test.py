@@ -8972,10 +8972,8 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler_cls.assert_called_once()
         mock_handler.flush_remaining.assert_awaited_once()
 
-        # Verify state was saved with cleared completed_severities (all done)
+        # Verify state was saved (completed_severities will be cleared by fetch_spotlight_assets)
         assert mock_update_state.called
-        final_call = mock_update_state.call_args_list[-1]
-        assert final_call.kwargs["completed_severities"] == []
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_by_severity_parallel_one_severity_fails(self, mocker, capfd):
