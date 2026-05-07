@@ -774,6 +774,7 @@ class ThreatIntel:
         WEAPONIZATION = "Weaponization"
         ACT_ON_OBJECTIVES = "Actions on Objectives"
         COMMAND_AND_CONTROL = "Command \u0026 Control"
+        STEALTH = "Stealth"
 
 
 def is_debug_mode():
