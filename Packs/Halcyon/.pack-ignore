@@ -4,6 +4,3 @@ ignore=IN136
 
 [file:Halcyon.py]
 ignore=IN136
-
-[file:README.md]
-ignore=BA125
