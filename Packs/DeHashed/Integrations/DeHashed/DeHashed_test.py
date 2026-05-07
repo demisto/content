@@ -118,52 +118,6 @@ def test_build_search_query_parametrized(
     assert _build_search_query(asset_type, values, operation) == expected_query
 
 
-def test_validate_filter_parameters_ok() -> None:
-    """
-    Given:
-        - A valid 1 <= results_from <= results_to range.
-    When:
-        - Calling _validate_filter_parameters(results_from_value=1, results_to_value=10).
-    Then:
-        - Returns None (no exception raised).
-    """
-    from DeHashed import _validate_filter_parameters
-
-    assert _validate_filter_parameters(results_from_value=1, results_to_value=10) is None
-
-
-@pytest.mark.parametrize(
-    "results_from_value, results_to_value, expected_substring",
-    [
-        pytest.param(5, 0, '"results_to" expected to be greater than zero', id="results_to_zero"),
-        pytest.param(0, 5, '"results_from" expected to be greater than zero', id="results_from_zero"),
-        pytest.param(
-            10,
-            5,
-            '"results_from" expected to be less than or equal to "results_to"',
-            id="from_greater_than_to",
-        ),
-    ],
-)
-def test_validate_filter_parameters_raises_parametrized(
-    results_from_value: int,
-    results_to_value: int,
-    expected_substring: str,
-) -> None:
-    """
-    Given:
-        - Invalid `(results_from_value, results_to_value)` combinations passed positionally.
-    When:
-        - Calling _validate_filter_parameters.
-    Then:
-        - Raises DemistoException with the expected diagnostic substring.
-    """
-    from DeHashed import _validate_filter_parameters, DemistoException
-
-    with pytest.raises(DemistoException, match=expected_substring):
-        _validate_filter_parameters(results_from_value, results_to_value)
-
-
 def test_filter_results_explicit_in_range() -> None:
     """
     Given:
@@ -202,7 +156,7 @@ def test_filter_results_to_beyond_len() -> None:
 
     assert sliced == entries
     assert results_from == 1
-    assert results_to == 50
+    assert results_to == 2
 
 
 def test_filter_results_explicit_range() -> None:
@@ -223,23 +177,6 @@ def test_filter_results_explicit_range() -> None:
     assert sliced == entries[0:1]
     assert results_from == 1
     assert results_to == 1
-
-
-def test_filter_results_invalid_raises() -> None:
-    """
-    Given:
-        - A 2-entry list and `results_from=0`, `results_to=5`.
-    When:
-        - Calling _filter_results.
-    Then:
-        - Raises DemistoException mentioning `"results_from"`.
-    """
-    from DeHashed import _filter_results, DemistoException
-
-    entries = [{"id": "id_1"}, {"id": "id_2"}]
-
-    with pytest.raises(DemistoException, match='"results_from"'):
-        _filter_results(entries, 0, 5)
 
 
 def test_transform_entry_flattens_lists() -> None:
@@ -530,14 +467,15 @@ class TestDehashedParams:
 
         assert params.email_dbot_score == "MALICIOUS"
 
-    def test_integration_reliability_default_none(self) -> None:
+    def test_integration_reliability_default(self) -> None:
         """
         Given:
             - No `integration_reliability` passed.
         When:
             - Constructing DehashedParams.
         Then:
-            - `integration_reliability` is None by default.
+            - `integration_reliability` defaults to "B - Usually reliable" (matches the
+              integration YAML default — see DehashedParams field default).
         """
         from pydantic import SecretStr
         from DeHashed import DehashedParams, Credentials
@@ -546,7 +484,7 @@ class TestDehashedParams:
             credentials=Credentials(password=SecretStr("my-secret")),
         )  # type: ignore[call-arg]
 
-        assert params.integration_reliability is None
+        assert params.integration_reliability == "B - Usually reliable"
 
     def test_params_missing_credentials_raises(self) -> None:
         """
@@ -574,7 +512,8 @@ class TestDehashedSearchArgs:
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - Optional fields default to None.
+            - Required fields are set; optional `page`, `results_from`, `results_to`
+              fall back to their integer field defaults (`1`, `1`, `50`).
         """
         from DeHashed import DehashedSearchArgs
 
@@ -583,9 +522,9 @@ class TestDehashedSearchArgs:
         assert args.asset_type == "email"
         assert args.value == ["a@b.co"]
         assert args.operation == "is"
-        assert args.page is None
-        assert args.results_from is None
-        assert args.results_to is None
+        assert args.page == 1
+        assert args.results_from == 1
+        assert args.results_to == 50
 
     def test_value_csv_split(self) -> None:
         """
@@ -622,17 +561,16 @@ class TestDehashedSearchArgs:
         [
             pytest.param(3, 3, id="int"),
             pytest.param("4", 4, id="string"),
-            pytest.param(None, None, id="none"),
         ],
     )
-    def test_page_coercion_parametrized(self, page_input: int | str | None, expected_page: int | None) -> None:
+    def test_page_coercion_parametrized(self, page_input: int | str, expected_page: int) -> None:
         """
         Given:
-            - Various page inputs (int, string-int, None).
+            - Page inputs of various supported types (int, string-int).
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - `page` is coerced to int via arg_to_number, or remains None.
+            - `page` is coerced to int via `arg_to_number`.
         """
         from DeHashed import DehashedSearchArgs
 
@@ -659,7 +597,7 @@ class TestDehashedSearchArgs:
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - Raises DemistoException (validator wraps ValueError).
+            - Raises DemistoException (validator wraps ValueError) — `page` must be > 0.
         """
         from CommonServerPython import DemistoException
         from DeHashed import DehashedSearchArgs
@@ -667,35 +605,49 @@ class TestDehashedSearchArgs:
         with pytest.raises(DemistoException, match="page"):
             DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", page=page_input)  # type: ignore[call-arg]
 
-    def test_results_from_validator(self) -> None:
+    @pytest.mark.parametrize(
+        "results_from_input",
+        [
+            pytest.param(0, id="zero"),
+            pytest.param(-1, id="negative"),
+        ],
+    )
+    def test_results_from_validator(self, results_from_input: int) -> None:
         """
         Given:
-            - `results_from=0`.
+            - `results_from=0` or `results_from=-1`.
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - Raises DemistoException mentioning `results_from`.
+            - Raises DemistoException mentioning `results_from` — must be > 0.
         """
         from CommonServerPython import DemistoException
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="results_from"):
-            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", results_from=0)  # type: ignore[call-arg]
+            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", results_from=results_from_input)  # type: ignore[call-arg]
 
-    def test_results_to_validator(self) -> None:
+    @pytest.mark.parametrize(
+        "results_to_input",
+        [
+            pytest.param(0, id="zero"),
+            pytest.param(-1, id="negative"),
+        ],
+    )
+    def test_results_to_validator(self, results_to_input: int) -> None:
         """
         Given:
-            - `results_to=0`.
+            - `results_to=0` or `results_to=-1`.
         When:
             - Constructing DehashedSearchArgs.
         Then:
-            - Raises DemistoException mentioning `results_to`.
+            - Raises DemistoException mentioning `results_to` — must be > 0.
         """
         from CommonServerPython import DemistoException
         from DeHashed import DehashedSearchArgs
 
         with pytest.raises(DemistoException, match="results_to"):
-            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", results_to=0)  # type: ignore[call-arg]
+            DehashedSearchArgs(asset_type="email", value=["a@b.co"], operation="is", results_to=results_to_input)  # type: ignore[call-arg]
 
     def test_invalid_asset_type_raises(self) -> None:
         """
@@ -1180,13 +1132,16 @@ def test_dehashed_search_query_construction_per_operator(
         - Various combinations of `asset_type`, `value`, and `operation` covering single/multi values
           across `is`, `contains`, and `regex` operators.
     When:
-        - Calling dehashed_search_command.
+        - Calling dehashed_search_command (with default `page=1`).
     Then:
-        - `client.general_search` is invoked with the v1-compatible query string and `regex=True` only
-          when `operation == "regex"` (else `None`). Consolidates the six old `test_search_command_using_*`
-          tests into one focused parametrized port at the client boundary.
+        - `client.general_search` is invoked with the v1-compatible query string,
+          `page=1` (the field default), `size=REQUEST_PAGE_SIZE` (1000 — the
+          dehashed-search command always fetches a full page from the API), and
+          `regex=True` only when `operation == "regex"` (else `None`).
+          Consolidates the six old `test_search_command_using_*` tests into one
+          focused parametrized port at the client boundary.
     """
-    from DeHashed import dehashed_search_command, DehashedSearchArgs
+    from DeHashed import dehashed_search_command, DehashedSearchArgs, REQUEST_PAGE_SIZE
 
     mock_response: dict[str, Any] = {
         "balance": 100,
@@ -1205,8 +1160,8 @@ def test_dehashed_search_query_construction_per_operator(
 
     general_search_mock.assert_called_once_with(
         query=expected_query,
-        page=None,
-        size=None,
+        page=1,
+        size=REQUEST_PAGE_SIZE,
         wildcard=None,
         regex=expected_regex,
         de_dupe=None,
@@ -1308,10 +1263,11 @@ def test_dehashed_search_passes_page_to_client(mocker: MockerFixture, client: "D
     When:
         - Calling dehashed_search_command.
     Then:
-        - `client.general_search` is called with `page=3` and the
-          `LastQuery.PageNumber` reflects the same value.
+        - `client.general_search` is called with `page=3`, `size=REQUEST_PAGE_SIZE`
+          (1000 — the dehashed-search command always fetches a full page from the
+          API), and the `LastQuery.PageNumber` reflects the requested page.
     """
-    from DeHashed import dehashed_search_command, DehashedSearchArgs
+    from DeHashed import dehashed_search_command, DehashedSearchArgs, REQUEST_PAGE_SIZE
 
     mock_response: dict[str, Any] = {
         "balance": 100,
@@ -1328,7 +1284,7 @@ def test_dehashed_search_passes_page_to_client(mocker: MockerFixture, client: "D
     general_search_mock.assert_called_once_with(
         query='email:"a@b.co"',
         page=3,
-        size=None,
+        size=REQUEST_PAGE_SIZE,
         wildcard=None,
         regex=None,
         de_dupe=None,

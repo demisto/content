@@ -4,7 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Any, Literal
-from pydantic import Field, SecretStr, validator  # pylint: disable=no-name-in-module
+from pydantic import Field, SecretStr, root_validator, validator  # pylint: disable=no-name-in-module
 
 from ContentClientApiModule import *
 from BaseContentApiModule import *
@@ -13,6 +13,8 @@ from BaseContentApiModule import *
 
 BASE_CONTEXT_OUTPUT_PREFIX = "DeHashed"
 BASE_URL = "https://api.dehashed.com/v2/"
+
+REQUEST_PAGE_SIZE = 1000
 
 # DBotScore severity labels (instance config values).
 SCORE_SUSPICIOUS_LABEL = "SUSPICIOUS"
@@ -71,41 +73,26 @@ def _build_search_query(asset_type: str, values: list[str], operation: str) -> s
     return query_value if asset_type == "all_fields" else f"{asset_type}:{query_value}"
 
 
-def _validate_filter_parameters(results_from_value: int, results_to_value: int) -> None:
-    """
-    Validates the ``results_from`` / ``results_to`` parameters for client-side slicing.
-    """
-    if results_to_value <= 0:
-        raise DemistoException(f'Argument "results_to" expected to be greater than zero, but given: {results_to_value}')
-    if results_from_value <= 0:
-        raise DemistoException(f'Argument "results_from" expected to be greater than zero, but given: {results_from_value}')
-    if results_to_value < results_from_value:
-        raise DemistoException('Argument "results_from" expected to be less than or equal to "results_to"')
-
-
 def _filter_results(
     entries: list[dict[str, Any]],
-    results_from: int | None,
-    results_to: int | None,
+    results_from: int,
+    results_to: int,
 ) -> tuple[list[dict[str, Any]], int, int]:
     """
     Performs the client-side slicing of search entries given a 1-based inclusive range.
 
     Args:
         entries (list[dict[str, Any]]): The full list of entries from the API.
-        results_from (int | None): 1-based start index (inclusive). Defaults to 1.
-        results_to (int | None): 1-based end index (inclusive). Defaults to 50.
+        results_from (int): 1-based start index (inclusive).
+        results_to (int): 1-based end index (inclusive).
 
     Returns:
         tuple[list[dict[str, Any]], int, int]: A tuple of the sliced entries,
             the resolved ``results_from``, and the resolved ``results_to``.
     """
-    if results_from is None:
-        results_from = 1
-    if results_to is None:
-        results_to = 50
-
-    _validate_filter_parameters(results_from, results_to)
+    total_entries = len(entries)
+    if results_to > total_entries:
+        results_to = total_entries
 
     return entries[results_from - 1 : results_to], results_from, results_to
 
@@ -308,9 +295,9 @@ class DehashedSearchArgs(ContentBaseModel):
     asset_type: AssetType = Field(alias="asset_type")
     value: list[str] = Field(alias="value")
     operation: Operation = Field(alias="operation")
-    page: int | None = Field(None, alias="page")
-    results_from: int | None = Field(None, alias="results_from")
-    results_to: int | None = Field(None, alias="results_to")
+    page: int = Field(1, alias="page")
+    results_from: int = Field(1, alias="results_from")
+    results_to: int = Field(50, alias="results_to")
 
     @validator("value", pre=True, allow_reuse=True)
     @classmethod
@@ -321,7 +308,7 @@ class DehashedSearchArgs(ContentBaseModel):
     @classmethod
     def validate_page(cls, v):
         result = arg_to_number(v)
-        if result is not None and result <= 0:
+        if result is None or result <= 0:
             raise ValueError('"page" expected to be greater than zero.')
         return result
 
@@ -329,7 +316,7 @@ class DehashedSearchArgs(ContentBaseModel):
     @classmethod
     def validate_results_from(cls, v):
         result = arg_to_number(v)
-        if result is not None and result <= 0:
+        if result is None or result <= 0:
             raise ValueError('"results_from" expected to be greater than zero.')
         return result
 
@@ -337,9 +324,20 @@ class DehashedSearchArgs(ContentBaseModel):
     @classmethod
     def validate_results_to(cls, v):
         result = arg_to_number(v)
-        if result is not None and result <= 0:
+        if result is None or result <= 0:
             raise ValueError('"results_to" expected to be greater than zero.')
         return result
+
+    @root_validator(allow_reuse=True)
+    @classmethod
+    def validate_range(cls, values):
+        results_from = values.get("results_from")
+        results_to = values.get("results_to")
+
+        if results_to < results_from:
+            raise DemistoException('"results_from" expected to be less than or equal to "results_to"')
+
+        return values
 
 
 def dehashed_search_command(client: DehashedClient, args: DehashedSearchArgs) -> list[CommandResults] | CommandResults:
@@ -362,7 +360,7 @@ def dehashed_search_command(client: DehashedClient, args: DehashedSearchArgs) ->
     result = client.general_search(
         query=query_string,
         page=args.page,
-        size=None,
+        size=REQUEST_PAGE_SIZE,
         wildcard=None,
         regex=True if args.operation == "regex" else None,
         de_dupe=None,
@@ -378,18 +376,17 @@ def dehashed_search_command(client: DehashedClient, args: DehashedSearchArgs) ->
     filtered_results, results_from, results_to = _filter_results(query_data, args.results_from, args.results_to)
     demisto.debug(f"[dehashed-search] Transforming {len(filtered_results)} entries to v1-compat shape.")
     transformed_entries = [_transform_entry(entry) for entry in filtered_results]
-    page_number = args.page or 1
 
     last_query = {
         "ResultsFrom": results_from,
         "ResultsTo": results_to,
         "DisplayedResults": len(filtered_results),
         "TotalResults": result.get("total"),
-        "PageNumber": page_number,
+        "PageNumber": args.page,
     }
 
     readable_output = tableToMarkdown(
-        f"DeHashed Search - got total results: {result.get('total')}, page number: {page_number}"
+        f"DeHashed Search - got total results: {result.get('total')}, page number: {args.page}"
         f", page size is: {len(filtered_results)}. returning results from {results_from} to {results_to}.",
         transformed_entries,
         headerTransform=pascalToSpace,

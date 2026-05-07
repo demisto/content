@@ -74,7 +74,7 @@ script:
       - contains
       - regex
       required: true
-    - description: The number of page to return. Each page contains a maximum of 10,000 results.
+    - description: The number of page to return. Each page contains 1,000 results.
       name: page
     - description: Starting result number to display. Default is 1.
       name: results_from
