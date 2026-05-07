@@ -110,7 +110,7 @@ class Client(ContentClient):
         if paging_identifiers:
             body["pagingIdentifiers"] = paging_identifiers
 
-        return self.post(url_suffix=self._api_path, params=params, json_data=body)
+        return self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="json")
 
 
 """ HELPER FUNCTIONS """
@@ -210,6 +210,12 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] Empty response for {log_type_ui} — no data.")
             break
 
+        # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
+        demisto.debug(
+            f"[{thread_name}] {log_type_ui} response: type={type(response).__name__}, "
+            f"keys={list(response.keys()) if isinstance(response, dict) else 'N/A'}"
+        )
+
         result = response.get("result", {})
         page_events = result.get("events", [])
 
@@ -217,7 +223,12 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] No more events for {log_type_ui}.")
             break
 
-        demisto.debug(f"[{thread_name}] Got {len(page_events)} {log_type_ui} events.")
+        # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
+        first_event_sample = str(page_events[0])[:300] if page_events else "N/A"
+        demisto.debug(
+            f"[{thread_name}] Got {len(page_events)} {log_type_ui} events. "
+            f"First event sample: {first_event_sample}"
+        )
 
         # Per the API docs, each element in the events list is {"event": {...}}.
         source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
