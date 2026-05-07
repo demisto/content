@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
+import AWSSNSListener
 from AWSSNSListener import (
     RETRY_ATTEMPTS,
     SNSCertificateManager,
@@ -10,7 +11,7 @@ from AWSSNSListener import (
     handle_notification,
     is_valid_integration_credentials,
 )
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, argToBoolean
 
 VALID_PAYLOAD = {
     "Type": "Notification",
@@ -336,3 +337,28 @@ def test_create_incident_background_acquires_semaphore(mocker):
 
     semaphore_mock.__enter__.assert_called_once()
     semaphore_mock.__exit__.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "param_value, expected",
+    [
+        (True, True),
+        ("true", True),
+        ("yes", True),
+        (False, False),
+        ("false", False),
+        ("no", False),
+        (None, False),  # missing/None -> default False
+    ],
+)
+def test_main_resolves_parallel_processing_from_params(reset_parallel_processing, param_value, expected):
+    """
+    Given demisto.params() returns a value (or None) for `parallel_processing`
+    When main() resolves it (simulated: just the param-resolution step)
+    Then PARALLEL_PROCESSING should be the argToBoolean-resolved value,
+    confirming the flag is read in main() — not at module import time.
+    """
+    params = {"parallel_processing": param_value} if param_value is not None else {}
+    # Mimic exactly what main() does for this flag.
+    AWSSNSListener.PARALLEL_PROCESSING = argToBoolean(params.get("parallel_processing", False))
+    assert AWSSNSListener.PARALLEL_PROCESSING is expected

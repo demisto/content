@@ -25,13 +25,9 @@ RETRY_ATTEMPTS = 3
 RETRY_BACKOFF_SEC = 2
 # Caps how many demisto.createIncidents() calls run in parallel across all
 # background tasks within a single container. Only used when PARALLEL_PROCESSING
+# is True.
 INCIDENT_CREATE_SEMAPHORE = threading.BoundedSemaphore(20)
-# Opt-in flag: when True, Notification handling returns HTTP 200 immediately
-# and incident creation runs in a FastAPI BackgroundTasks worker thread.
-# When False (default), incident creation runs synchronously inside the request
-# handler, preserving the legacy behavior. See the YAML parameter
-# `parallel_processing` for the user-facing toggle.
-PARALLEL_PROCESSING = argToBoolean(PARAMS.get("parallel_processing", False))
+PARALLEL_PROCESSING = False
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
@@ -454,8 +450,10 @@ def test_module():  # pragma: no cover
 
 
 def main():  # pragma: no cover
+    global PARALLEL_PROCESSING
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
+        PARALLEL_PROCESSING = argToBoolean(PARAMS.get("parallel_processing", False))
         if demisto.command() == "test-module":
             return return_results(test_module())
         try:
