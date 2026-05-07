@@ -56,11 +56,6 @@ def get_failed_tasks_for_alert(alert_id: str) -> list[dict]:
     Returns:
         A list of failed task dictionaries.
     """
-    # Include "playbook" so we surface failures that occur on a sub-playbook
-    # task itself (e.g., the sub-playbook failed to start). The downstream
-    # `filter_playbook_failures` step will collapse a sub-playbook failure
-    # into its real underlying task whenever the inner failed task is also
-    # present in the response, so we don't end up restarting both.
     allowed_types = {"regular", "condition", "collection", "playbook"}
     uri = f"inv-playbook/{alert_id}"
 
