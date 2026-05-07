@@ -141,6 +141,21 @@ Argument Validation Models and Command Functions
 For each command, define a Pydantic model that inherits from `ContentBaseModel` to parse, validate, and clean command
 arguments. Then implement the corresponding command function that uses the validated arguments.
 
+NOTE: Pydantic v1 is in use. Due to how Python modules are loaded in the XSOAR runtime,
+`@validator` and `@root_validator` decorators must be declared with `allow_reuse=True`, and the
+decorated function must be a `@classmethod`.
+
+Examples:
+    @validator("argument", pre=True, allow_reuse=True)
+    @classmethod
+    def validate_argument(cls, v):
+        return str(v)
+
+    @root_validator(allow_reuse=True)
+    @classmethod
+    def validate_model(cls, values):
+        return values
+
 Command functions perform the mapping between inputs and outputs to the Client class functions inputs and outputs. As a
 best practice, they should not contain calls to `demisto.args()`, `demisto.results()`, `return_error`, and
 `demisto.command()` as those should be handled through the `main()` function. However, in command functions, use
@@ -381,6 +396,7 @@ class HelloWorldParams(BaseParams):
         return max_fetch
 
     @validator("url", allow_reuse=True)
+    @classmethod
     def clean_url(cls, v):  # pylint: disable=no-self-argument
         """Remove trailing forward slash from the 'URL' parameter"""
         return v.rstrip("/")
@@ -1480,6 +1496,7 @@ class HelloworldAlertListArgs(ContentBaseModel):
     severity: HelloWorldSeverity | None = None
 
     @root_validator(allow_reuse=True)
+    @classmethod
     def check_alert_id_or_severity(cls, values: dict):  # pylint: disable=no-self-argument
         has_alert_id = bool(values.get("alert_id"))
         has_severity = bool(values.get("severity"))
@@ -1538,6 +1555,7 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
     should_push_events: bool = False
 
     @validator("start_time", allow_reuse=True)
+    @classmethod
     def validate_start_time(cls, v) -> str | None:  # pylint: disable=no-self-argument
         """Convert start_time to ISO 8601 timestamp string."""
         if v:
@@ -1545,6 +1563,7 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
         return None
 
     @validator("should_push_events", allow_reuse=True)
+    @classmethod
     def validate_should_push_events(cls, v):  # pylint: disable=no-self-argument
         """Ensure should_push_events is valid for the current tenant."""
         should_push_events = argToBoolean(v)
@@ -1596,6 +1615,7 @@ class HelloworldAlertNoteCreateArgs(ContentBaseModel):
     note_text: str
 
     @validator("alert_id", allow_reuse=True)
+    @classmethod
     def validate_alert_id(cls, v):  # pylint: disable=no-self-argument
         """Ensure alert_id is a valid positive integer."""
         if v is None or v <= 0:
