@@ -1,7 +1,6 @@
 {
     "id": "incident_rubrikfilesatrisk",
     "version": -1,
-    "modified": "2026-04-03T11:15:42.429603116+05:30",
     "name": "Rubrik Files At Risk",
     "ownerOnly": false,
     "cliName": "rubrikfilesatrisk",

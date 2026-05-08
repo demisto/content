@@ -25,20 +25,6 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
-            "rubrikcdmclusterid": {
-                "extractAsIsIndicatorTypeId": "",
-                "isExtractingAllIndicatorTypes": false,
-                "extractIndicatorTypesIDs": [
-                    "domainRepUnified"
-                ]
-            },
-            "rubrikobjectaccountname": {
-                "extractAsIsIndicatorTypeId": "",
-                "isExtractingAllIndicatorTypes": false,
-                "extractIndicatorTypesIDs": [
-                    "domainRepUnified"
-                ]
-            },
             "rubrikobjectlocation": {
                 "extractAsIsIndicatorTypeId": "",
                 "isExtractingAllIndicatorTypes": false,

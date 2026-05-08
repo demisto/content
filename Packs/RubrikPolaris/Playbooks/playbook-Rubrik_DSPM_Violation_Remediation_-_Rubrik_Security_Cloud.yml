@@ -104,7 +104,7 @@ tasks:
       id: 7f1e5c47-a834-434a-8762-8b1e0567ccbb
       version: -1
       name: Set the delete keys
-      description: Set the delete keys in context.
+      description: Set the custom context keys to delete.
       scriptName: Set
       type: regular
       iscommand: false
@@ -143,7 +143,7 @@ tasks:
       id: 53fc5e22-126e-471f-8375-c9f361b12ade
       version: -1
       name: Clear Previous Inputs
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Delete the custom keys from the context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -610,6 +610,8 @@ tasks:
       - "14"
       "Yes":
       - "12"
+      '#default#':
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -972,11 +974,6 @@ tasks:
           root: FileInformation
     separatecontext: true
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {

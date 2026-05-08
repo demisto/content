@@ -1,7 +1,6 @@
 {
     "id": "incident_rubrikviolationstatus",
     "version": -1,
-    "modified": "2026-04-02T16:27:53.699838605+05:30",
     "name": "Rubrik Violation Status",
     "ownerOnly": false,
     "cliName": "rubrikviolationstatus",
@@ -37,5 +36,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0"
 }

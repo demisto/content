@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6b431228-ff52-464c-8b1d-2f9344e72518
+    taskid: b6be4dbb-26b6-4681-80cb-549c462cf62b
     type: start
     task:
-      id: 6b431228-ff52-464c-8b1d-2f9344e72518
+      id: b6be4dbb-26b6-4681-80cb-549c462cf62b
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 29bfeb26-4287-4cbb-85f4-46d8c185093c
+    taskid: 044e014c-1e1d-4a94-8b0c-355d279eaa39
     type: condition
     task:
-      id: 29bfeb26-4287-4cbb-85f4-46d8c185093c
+      id: 044e014c-1e1d-4a94-8b0c-355d279eaa39
       version: -1
       name: Are O365 File Management and Microsoft Graph Search integrations enabled?
       description: Checks whether the O365 File Management and Microsoft Graph Search integrations are enabled and active.
@@ -122,13 +122,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c3de4fcd-ad0f-4e89-8677-867c3ac6f2f3
+    taskid: 975d5cab-3a30-41bb-893b-aa74f5ce0c1c
     type: regular
     task:
-      id: c3de4fcd-ad0f-4e89-8677-867c3ac6f2f3
+      id: 975d5cab-3a30-41bb-893b-aa74f5ce0c1c
       version: -1
       name: Set the delete keys
-      description: Set the delete keys in context.
+      description: Set the custom context keys to delete.
       scriptName: Set
       type: regular
       iscommand: false
@@ -161,13 +161,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2e3240a9-ae35-4604-87df-0015402f4ca0
+    taskid: 9edb20bb-7979-4192-80df-17cb11f8e5cb
     type: regular
     task:
-      id: 2e3240a9-ae35-4604-87df-0015402f4ca0
+      id: 9edb20bb-7979-4192-80df-17cb11f8e5cb
       version: -1
       name: Clear Previous Inputs
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Delete the custom keys from the context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -205,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 11a89e67-0a5e-4b92-8f27-1de412a05935
+    taskid: d3b90177-bb3f-4cfe-8d80-7d4f19efa188
     type: regular
     task:
-      id: 11a89e67-0a5e-4b92-8f27-1de412a05935
+      id: d3b90177-bb3f-4cfe-8d80-7d4f19efa188
       version: -1
       name: Get the ID of the file
       description: 'Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.'
@@ -262,10 +262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 31cd04dd-4ecf-4490-895c-18608946b968
+    taskid: 80807f19-20bf-42fa-8a25-09886a503bdf
     type: regular
     task:
-      id: 31cd04dd-4ecf-4490-895c-18608946b968
+      id: 80807f19-20bf-42fa-8a25-09886a503bdf
       version: -1
       name: Download the file
       description: Downloads the file contents of the drive item.
@@ -274,6 +274,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "19"
       '#none#':
       - "13"
     scriptarguments:
@@ -301,7 +303,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.file_name
+                  simple: inputs.file_path
                 iscontext: true
             - operator: containsGeneral
               left:
@@ -344,7 +346,7 @@ tasks:
           - operator: FirstArrayElement
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -361,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5e29246a-884a-4f8e-82d9-ed2e6104104f
+    taskid: 44bde0c7-eb9f-48a6-8bdf-727c90af30ca
     type: regular
     task:
-      id: 5e29246a-884a-4f8e-82d9-ed2e6104104f
+      id: 44bde0c7-eb9f-48a6-8bdf-727c90af30ca
       version: -1
       name: Upload the file to the quarantine folder
       description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
@@ -373,6 +375,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "19"
       '#none#':
       - "11"
     scriptarguments:
@@ -457,7 +461,7 @@ tasks:
           - operator: trim
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -474,10 +478,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 879fc981-fb7d-490e-8515-13e0f098bb29
+    taskid: 133bc62f-b374-4074-8ea1-f7ea36e661aa
     type: regular
     task:
-      id: 879fc981-fb7d-490e-8515-13e0f098bb29
+      id: 133bc62f-b374-4074-8ea1-f7ea36e661aa
       version: -1
       name: Delete the file from its original location
       description: Deletes an item from OneDrive.
@@ -486,6 +490,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "19"
       '#none#':
       - "14"
     scriptarguments:
@@ -543,11 +549,11 @@ tasks:
           - operator: FirstArrayElement
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 170,
           "y": 2100
         }
       }
@@ -560,13 +566,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 424f76f7-1f78-4ef7-8c81-d7002c55ea16
+    taskid: 85258227-bfa1-4e4b-84c5-07368d3c0cb7
     type: collection
     task:
-      id: 424f76f7-1f78-4ef7-8c81-d7002c55ea16
+      id: 85258227-bfa1-4e4b-84c5-07368d3c0cb7
       version: -1
       name: Collect the quarantine folder ID
-      description: "Collects the quarantine folder ID required to upload \nthe file.\n\nFor resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.\nFor resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.\n\nIf the quarantine folder does not exist, User can create the folder using the msgraph-create-new-folder command."
+      description: "Collects the quarantine folder ID required to upload \nthe file.\n\nTo get the folder ID use the msgraph-list-drive-content command for object type as drive.\n\nIf the quarantine folder does not exist, User can create the folder using the msgraph-create-new-folder command."
       type: collection
       iscommand: false
       brand: ""
@@ -578,7 +584,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
+          "x": 120,
           "y": 1750
         }
       }
@@ -627,10 +633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: bf83aece-3a5f-4035-8bd8-1d2d00e77fb8
+    taskid: 613e6e79-020f-4d24-8d6d-9c4d5b80e7e4
     type: condition
     task:
-      id: bf83aece-3a5f-4035-8bd8-1d2d00e77fb8
+      id: 613e6e79-020f-4d24-8d6d-9c4d5b80e7e4
       version: -1
       name: Is quarantine folder ID present in the playbook inputs?
       description: Checks whether the quarantine folder ID is present in the playbook inputs.
@@ -673,10 +679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e18fb5ed-df51-45f0-8bf7-af94a8162160
+    taskid: e1224a8a-f962-4afe-8a43-b9678a401c7e
     type: title
     task:
-      id: e18fb5ed-df51-45f0-8bf7-af94a8162160
+      id: e1224a8a-f962-4afe-8a43-b9678a401c7e
       version: -1
       name: Done
       type: title
@@ -689,7 +695,7 @@ tasks:
       {
         "position": {
           "x": 947.5,
-          "y": 2270
+          "y": 2440
         }
       }
     note: false
@@ -701,10 +707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 16ea42e1-375a-4dff-88b6-457704b93961
+    taskid: 744efc39-a816-4dc1-82b9-daf5aa660c57
     type: condition
     task:
-      id: 16ea42e1-375a-4dff-88b6-457704b93961
+      id: 744efc39-a816-4dc1-82b9-daf5aa660c57
       version: -1
       name: Is file information present in the playbook inputs?
       description: Checks whether the file path is present in the playbook inputs.
@@ -755,10 +761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 34b68a8e-e5b5-4251-8144-fe064bfa9324
+    taskid: 964eeed3-727e-4cda-8edd-c9c3f40ec317
     type: collection
     task:
-      id: 34b68a8e-e5b5-4251-8144-fe064bfa9324
+      id: 964eeed3-727e-4cda-8edd-c9c3f40ec317
       version: -1
       name: Collect the file information
       description: Collects the file path to quarantine.
@@ -836,10 +842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 787621a2-89b5-4866-8b80-c263d163a5ce
+    taskid: b9936cad-e9d8-49f1-80c2-9608788bd8e4
     type: condition
     task:
-      id: 787621a2-89b5-4866-8b80-c263d163a5ce
+      id: b9936cad-e9d8-49f1-80c2-9608788bd8e4
       version: -1
       name: Is file information found?
       description: Checks whether the file was found in OneDrive/SharePoint using the provided file path.
@@ -900,10 +906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 23788c54-5cf4-4396-805e-92f5d8378565
+    taskid: 208a731d-65bc-4f7d-8656-8ad17e0a69d3
     type: regular
     task:
-      id: 23788c54-5cf4-4396-805e-92f5d8378565
+      id: 208a731d-65bc-4f7d-8656-8ad17e0a69d3
       version: -1
       name: Print file not found message
       description: Prints text to war room (Markdown supported)
@@ -951,9 +957,64 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a012738f-c154-4a31-88b8-37368473472a
+    type: regular
+    task:
+      id: a012738f-c154-4a31-88b8-37368473472a
+      version: -1
+      name: Print failed to quarantine the file
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Failed to quarantine the file at the specified path '
+              suffix:
+                value:
+                  simple: ' in OneDrive/SharePoint.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "10_19_#error#": 0.43,
+      "11_19_#error#": 0.46,
       "13_10_yes": 0.48,
       "13_12_#default#": 0.49,
       "15_16_#default#": 0.49,
@@ -961,13 +1022,14 @@ view: |-
       "17_18_#default#": 0.57,
       "17_8_yes": 0.57,
       "1_14_#default#": 0.41,
-      "1_2_yes": 0.43
+      "1_2_yes": 0.43,
+      "8_19_#error#": 0.49
     },
     "paper": {
       "dimensions": {
-        "height": 2295,
-        "width": 940,
-        "x": 387.5,
+        "height": 2465,
+        "width": 1207.5,
+        "x": 120,
         "y": 40
       }
     }

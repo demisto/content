@@ -229,6 +229,13 @@
             "transformers": []
           }
         },
+        "occurred": {
+          "complex": {
+            "filters": [],
+            "root": "createdAt",
+            "transformers": []
+          }
+        },
         "Policy Description": {
           "complex": {
             "accessor": "description",
@@ -363,14 +370,6 @@
         "Rubrik Object Region": {
           "complex": {
             "accessor": "region",
-            "filters": [],
-            "root": "resourceMetadata.metadata",
-            "transformers": []
-          }
-        },
-        "Rubrik Object location": {
-          "complex": {
-            "accessor": "physicalHost",
             "filters": [],
             "root": "resourceMetadata.metadata",
             "transformers": []

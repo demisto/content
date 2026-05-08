@@ -1,7 +1,7 @@
 id: Rubrik Quarantine Files General
 version: -1
 name: Rubrik Quarantine Files General
-description: This playbook quarantines files using Microsoft Graph Search (O365 File Management) integration.
+description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +70,7 @@ tasks:
       id: cb1c25f5-bcf1-4487-8b03-33ca1809c13b
       version: -1
       name: Set the delete keys
-      description: Set the delete keys in context.
+      description: Set the custom context keys to delete.
       scriptName: Set
       type: regular
       iscommand: false
@@ -109,7 +109,7 @@ tasks:
       id: 026ea04e-8aba-4fa3-855a-17036c17b904
       version: -1
       name: Clear Previous Inputs
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Delete the custom keys from the context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -156,7 +156,7 @@ tasks:
       description: |-
         Collects the quarantine folder ID required to upload the file.
 
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        To get the folder ID use the msgraph-list-drive-content command for object type as drive.
 
         If the quarantine folder does not exist, User can create the folder using the msgraph-create-new-folder command.
       type: collection
@@ -345,7 +345,7 @@ inputs:
 - key: file_information
   value: {}
   required: false
-  description: The file information to quarantine.
+  description: "The list of files to quarantine. Each entry should contain the file name and its path.\nExample: [{\"file_name\": \"<file_name>\", \"file_path\": \"<file_path>\"}]"
   playbookInputQuery:
 - key: quarantine_folder_id
   value: {}
