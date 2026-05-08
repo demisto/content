@@ -1,0 +1,1025 @@
+commonfields:
+  id: DFIRe
+  version: -1
+name: DFIRe
+display: DFIRe
+category: Forensics & Malware Analysis
+description: Integration with DFIRe (Digital Forensics and Incident Response) platform for case management and IOC indicator tracking.
+configuration:
+- name: url
+  display: Server URL
+  type: 0
+  required: true
+  defaultvalue: https://your-dfire-instance.example.com
+- name: apikey
+  display: API Key
+  type: 4
+  required: true
+  additionalinfo: Bearer API key (dfire_ak_...). Create under Settings > API Keys.
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.7090913
+  feed: false
+  commands:
+  - name: dfire-search
+    description: Search across all DFIRe data (cases, indicators, notes, items). Supports AND, OR, NOT operators.
+    arguments:
+    - name: query
+      description: Search query (min 2 characters).
+      required: true
+    outputs:
+    - contextPath: DFIRe.Search.id
+      description: The result ID.
+      type: String
+    - contextPath: DFIRe.Search.type
+      description: The result type (e.g. case, indicator, note).
+      type: String
+    - contextPath: DFIRe.Search.title
+      description: The result title.
+      type: String
+    - contextPath: DFIRe.Search.snippet
+      description: Matching text snippet.
+      type: String
+    - contextPath: DFIRe.Search.rank
+      description: Search relevance rank.
+      type: Number
+    - contextPath: DFIRe.Search.url
+      description: URL to the result in DFIRe.
+      type: String
+    - contextPath: DFIRe.Search.date
+      description: Result date.
+      type: Date
+  - name: dfire-case-type-list
+    description: List available case types and their IDs.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.CaseType.id
+      description: The case type ID.
+      type: Number
+    - contextPath: DFIRe.CaseType.name
+      description: The case type name.
+      type: String
+  - name: dfire-case-list
+    description: List cases from DFIRe.
+    arguments:
+    - name: limit
+      description: Maximum number of cases to return.
+      defaultValue: '50'
+    - name: page
+      description: Page number for pagination.
+    - name: status
+      description: Filter by case status.
+      predefined:
+      - OPEN
+      - CLOSED
+      - ARCHIVED
+    - name: severity
+      description: Filter by severity.
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - info
+    - name: case_mode
+      description: Filter by case mode.
+      predefined:
+      - investigation
+      - incident
+    outputs:
+    - contextPath: DFIRe.Case.id
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.Case.title
+      description: The case title.
+      type: String
+    - contextPath: DFIRe.Case.case_number
+      description: The case number.
+      type: String
+    - contextPath: DFIRe.Case.status
+      description: The case status.
+      type: String
+    - contextPath: DFIRe.Case.severity
+      description: The case severity.
+      type: String
+    - contextPath: DFIRe.Case.case_mode
+      description: Investigation or incident.
+      type: String
+    - contextPath: DFIRe.Case.case_type_name
+      description: The case type name.
+      type: String
+    - contextPath: DFIRe.Case.lead_investigator
+      description: Lead investigator user ID.
+      type: Number
+    - contextPath: DFIRe.Case.created_at
+      description: Case creation timestamp.
+      type: Date
+  - name: dfire-case-get
+    description: Get details of a specific case.
+    arguments:
+    - name: case_id
+      description: The ID of the case.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Case.id
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.Case.title
+      description: The case title.
+      type: String
+    - contextPath: DFIRe.Case.case_number
+      description: The case number.
+      type: String
+    - contextPath: DFIRe.Case.description
+      description: The case description.
+      type: String
+    - contextPath: DFIRe.Case.notes
+      description: High-level case notes.
+      type: String
+    - contextPath: DFIRe.Case.status
+      description: The case status.
+      type: String
+    - contextPath: DFIRe.Case.severity
+      description: The case severity.
+      type: String
+    - contextPath: DFIRe.Case.case_mode
+      description: Investigation or incident.
+      type: String
+    - contextPath: DFIRe.Case.case_type
+      description: The case type ID.
+      type: Number
+    - contextPath: DFIRe.Case.case_type_name
+      description: The case type name.
+      type: String
+    - contextPath: DFIRe.Case.external_id
+      description: External reference ID.
+      type: String
+    - contextPath: DFIRe.Case.lead_investigator
+      description: Lead investigator user ID.
+      type: Number
+    - contextPath: DFIRe.Case.project_id
+      description: Associated project ID.
+      type: Number
+    - contextPath: DFIRe.Case.current_phase_name
+      description: Current incident phase name.
+      type: String
+    - contextPath: DFIRe.Case.item_count
+      description: Number of evidence items.
+      type: Number
+    - contextPath: DFIRe.Case.indicator_count
+      description: Number of indicators.
+      type: Number
+    - contextPath: DFIRe.Case.created_at
+      description: Case creation timestamp.
+      type: Date
+    - contextPath: DFIRe.Case.closed_at
+      description: Case closure timestamp.
+      type: Date
+  - name: dfire-case-create
+    description: Create a new case in DFIRe.
+    arguments:
+    - name: title
+      description: The case title.
+      required: true
+    - name: case_type
+      description: The case type ID.
+      required: true
+    - name: description
+      description: The case description.
+    - name: severity
+      description: The case severity.
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - info
+    - name: case_mode
+      description: Investigation or incident mode.
+      predefined:
+      - investigation
+      - incident
+    - name: lead_investigator
+      description: User ID of the lead investigator.
+    - name: external_id
+      description: External reference ID (e.g. ticket number).
+    - name: project_id
+      description: Project ID to associate the case with.
+    outputs:
+    - contextPath: DFIRe.Case.id
+      description: The ID of the created case.
+      type: Number
+    - contextPath: DFIRe.Case.title
+      description: The title of the created case.
+      type: String
+    - contextPath: DFIRe.Case.case_number
+      description: The assigned case number.
+      type: String
+    - contextPath: DFIRe.Case.status
+      description: The case status.
+      type: String
+  - name: dfire-case-update
+    description: Update an existing case in DFIRe.
+    arguments:
+    - name: case_id
+      description: The ID of the case to update.
+      required: true
+    - name: title
+      description: New title for the case.
+    - name: description
+      description: New description.
+    - name: status
+      description: New status.
+      predefined:
+      - OPEN
+      - CLOSED
+      - ARCHIVED
+    - name: severity
+      description: New severity.
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - info
+    - name: case_mode
+      description: New case mode.
+      predefined:
+      - investigation
+      - incident
+    - name: lead_investigator
+      description: New lead investigator user ID.
+    - name: external_id
+      description: New external reference ID.
+    outputs:
+    - contextPath: DFIRe.Case.id
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.Case.title
+      description: The updated case title.
+      type: String
+    - contextPath: DFIRe.Case.status
+      description: The updated case status.
+      type: String
+  - name: dfire-case-delete
+    description: Delete a case from DFIRe.
+    arguments:
+    - name: case_id
+      description: The ID of the case to delete.
+      required: true
+    outputs: []
+  - name: dfire-case-note-list
+    description: List notes for a case.
+    arguments:
+    - name: case_id
+      description: The case ID to list notes for.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseNote.id
+      description: The note ID.
+      type: Number
+    - contextPath: DFIRe.CaseNote.case
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.CaseNote.note
+      description: The note content.
+      type: String
+    - contextPath: DFIRe.CaseNote.author_name
+      description: The note author.
+      type: String
+    - contextPath: DFIRe.CaseNote.created_at
+      description: Note creation timestamp.
+      type: Date
+  - name: dfire-case-note-create
+    description: Create a note on a case.
+    arguments:
+    - name: case_id
+      description: The case ID to add the note to.
+      required: true
+    - name: note
+      description: The note content.
+      required: true
+    - name: show_on_timeline
+      description: Whether to show this note on the case timeline.
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: DFIRe.CaseNote.id
+      description: The created note ID.
+      type: Number
+    - contextPath: DFIRe.CaseNote.case
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.CaseNote.note
+      description: The note content.
+      type: String
+  - name: dfire-indicator-list
+    description: List indicators from the global IOC registry.
+    arguments:
+    - name: limit
+      description: Maximum number of indicators to return.
+      defaultValue: '50'
+    - name: offset
+      description: Offset for pagination.
+      defaultValue: '0'
+    - name: search
+      description: Search term to filter indicators.
+    - name: stix_type
+      description: Filter by STIX type.
+      predefined:
+      - ipv4-addr
+      - ipv6-addr
+      - domain-name
+      - url
+      - email-addr
+      - email-message
+      - file
+      - process
+      - windows-registry-key
+      - network-traffic
+      - user-account
+      - mac-addr
+      - software
+      - artifact
+      - autonomous-system
+      - directory
+      - mutex
+      - x509-certificate
+    - name: classification
+      description: Filter by classification.
+      predefined:
+      - unknown
+      - benign
+      - suspicious
+      - malicious
+    - name: confidence
+      description: Filter by confidence level.
+      predefined:
+      - low
+      - medium
+      - high
+    - name: tlp
+      description: Filter by TLP designation.
+      predefined:
+      - clear
+      - green
+      - amber
+      - amber_strict
+      - red
+    - name: is_published
+      description: Filter by published status.
+      predefined:
+      - 'true'
+      - 'false'
+    - name: is_revoked
+      description: Filter by revoked status.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.value
+      description: The IOC value.
+      type: String
+    - contextPath: DFIRe.Indicator.stix_type
+      description: STIX 2.1 SCO type.
+      type: String
+    - contextPath: DFIRe.Indicator.classification
+      description: Classification (unknown/benign/suspicious/malicious).
+      type: String
+    - contextPath: DFIRe.Indicator.confidence
+      description: Confidence level.
+      type: String
+    - contextPath: DFIRe.Indicator.tlp
+      description: TLP designation.
+      type: String
+    - contextPath: DFIRe.Indicator.is_published
+      description: Whether the indicator is published.
+      type: Boolean
+    - contextPath: DFIRe.Indicator.is_revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+    - contextPath: DFIRe.Indicator.case_count
+      description: Number of associated cases.
+      type: Number
+    - contextPath: DFIRe.Indicator.first_seen
+      description: First seen timestamp.
+      type: Date
+    - contextPath: DFIRe.Indicator.created_at
+      description: Creation timestamp.
+      type: Date
+  - name: dfire-indicator-get
+    description: Get details of a specific indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.value
+      description: The IOC value.
+      type: String
+    - contextPath: DFIRe.Indicator.value_normalized
+      description: Normalized IOC value.
+      type: String
+    - contextPath: DFIRe.Indicator.stix_type
+      description: STIX 2.1 SCO type.
+      type: String
+    - contextPath: DFIRe.Indicator.classification
+      description: Classification.
+      type: String
+    - contextPath: DFIRe.Indicator.confidence
+      description: Confidence level.
+      type: String
+    - contextPath: DFIRe.Indicator.tlp
+      description: TLP designation.
+      type: String
+    - contextPath: DFIRe.Indicator.tags
+      description: Tags assigned to the indicator.
+      type: Unknown
+    - contextPath: DFIRe.Indicator.public_notes
+      description: Public notes.
+      type: String
+    - contextPath: DFIRe.Indicator.is_published
+      description: Whether published.
+      type: Boolean
+    - contextPath: DFIRe.Indicator.is_revoked
+      description: Whether revoked.
+      type: Boolean
+    - contextPath: DFIRe.Indicator.parent
+      description: Parent indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.case_count
+      description: Number of associated cases.
+      type: Number
+    - contextPath: DFIRe.Indicator.children_count
+      description: Number of child indicators.
+      type: Number
+    - contextPath: DFIRe.Indicator.first_seen
+      description: First seen timestamp.
+      type: Date
+    - contextPath: DFIRe.Indicator.last_seen
+      description: Last seen timestamp.
+      type: Date
+    - contextPath: DFIRe.Indicator.created_at
+      description: Creation timestamp.
+      type: Date
+  - name: dfire-indicator-create
+    description: Create a new indicator in the global IOC registry.
+    arguments:
+    - name: value
+      description: The IOC value (IP, domain, hash, URL, etc.).
+      required: true
+    - name: stix_type
+      description: STIX 2.1 SCO type.
+      required: true
+      predefined:
+      - ipv4-addr
+      - ipv6-addr
+      - domain-name
+      - url
+      - email-addr
+      - email-message
+      - file
+      - process
+      - windows-registry-key
+      - network-traffic
+      - user-account
+      - mac-addr
+      - software
+      - artifact
+      - autonomous-system
+      - directory
+      - mutex
+      - x509-certificate
+    - name: classification
+      description: IOC classification.
+      predefined:
+      - unknown
+      - benign
+      - suspicious
+      - malicious
+    - name: confidence
+      description: Confidence level.
+      predefined:
+      - low
+      - medium
+      - high
+    - name: tlp
+      description: TLP designation.
+      predefined:
+      - clear
+      - green
+      - amber
+      - amber_strict
+      - red
+    - name: tags
+      description: Comma-separated tags.
+      isArray: true
+    - name: public_notes
+      description: Public notes about the indicator.
+    - name: valid_until
+      description: Auto-revoke date (ISO 8601).
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The created indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.value
+      description: The IOC value.
+      type: String
+    - contextPath: DFIRe.Indicator.stix_type
+      description: STIX type.
+      type: String
+    - contextPath: DFIRe.Indicator.is_existing
+      description: Whether the indicator already existed.
+      type: Boolean
+  - name: dfire-indicator-update
+    description: Update an existing indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID to update.
+      required: true
+    - name: classification
+      description: New classification.
+      predefined:
+      - unknown
+      - benign
+      - suspicious
+      - malicious
+    - name: confidence
+      description: New confidence level.
+      predefined:
+      - low
+      - medium
+      - high
+    - name: tlp
+      description: New TLP designation.
+      predefined:
+      - clear
+      - green
+      - amber
+      - amber_strict
+      - red
+    - name: tags
+      description: New comma-separated tags (replaces existing).
+      isArray: true
+    - name: public_notes
+      description: New public notes.
+    - name: valid_until
+      description: New auto-revoke date (ISO 8601). Set empty to clear.
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.value
+      description: The IOC value.
+      type: String
+    - contextPath: DFIRe.Indicator.classification
+      description: Updated classification.
+      type: String
+  - name: dfire-indicator-delete
+    description: Delete an indicator from the global IOC registry.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID to delete.
+      required: true
+    outputs: []
+  - name: dfire-item-type-list
+    description: List available evidence item types and their IDs.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.ItemType.id
+      description: The item type ID.
+      type: Number
+    - contextPath: DFIRe.ItemType.name
+      description: The item type name.
+      type: String
+    - contextPath: DFIRe.ItemType.icon
+      description: The item type icon.
+      type: String
+  - name: dfire-item-flag-list
+    description: List available item flags and their IDs.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.ItemFlag.id
+      description: The flag ID.
+      type: Number
+    - contextPath: DFIRe.ItemFlag.name
+      description: The flag name.
+      type: String
+    - contextPath: DFIRe.ItemFlag.color
+      description: The flag color.
+      type: String
+    - contextPath: DFIRe.ItemFlag.description
+      description: The flag description.
+      type: String
+  - name: dfire-item-list
+    description: List evidence items, optionally filtered by case.
+    arguments:
+    - name: case_id
+      description: Filter items by case ID.
+    outputs:
+    - contextPath: DFIRe.Item.uuid
+      description: The item UUID.
+      type: String
+    - contextPath: DFIRe.Item.name
+      description: The item name.
+      type: String
+    - contextPath: DFIRe.Item.display_title
+      description: The item display title.
+      type: String
+    - contextPath: DFIRe.Item.item_type_name
+      description: The item type name.
+      type: String
+    - contextPath: DFIRe.Item.case
+      description: The associated case ID.
+      type: Number
+    - contextPath: DFIRe.Item.location
+      description: The item location.
+      type: String
+    - contextPath: DFIRe.Item.attachment_count
+      description: Number of attachments.
+      type: Number
+    - contextPath: DFIRe.Item.created_at
+      description: Creation timestamp.
+      type: Date
+  - name: dfire-item-get
+    description: Get details of a specific evidence item.
+    arguments:
+    - name: item_id
+      description: The item ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Item.uuid
+      description: The item UUID.
+      type: String
+    - contextPath: DFIRe.Item.name
+      description: The item name.
+      type: String
+    - contextPath: DFIRe.Item.display_title
+      description: The item display title.
+      type: String
+    - contextPath: DFIRe.Item.item_type_name
+      description: The item type name.
+      type: String
+    - contextPath: DFIRe.Item.case
+      description: The associated case ID.
+      type: Number
+    - contextPath: DFIRe.Item.location
+      description: The item location.
+      type: String
+    - contextPath: DFIRe.Item.attachment_count
+      description: Number of attachments.
+      type: Number
+    - contextPath: DFIRe.Item.created_at
+      description: Creation timestamp.
+      type: Date
+  - name: dfire-item-create
+    description: Create a new evidence item on a case.
+    arguments:
+    - name: case_id
+      description: The case ID to add the item to.
+      required: true
+    - name: item_type
+      description: The item type ID.
+      required: true
+    - name: location
+      description: The item location (e.g. storage location, lab).
+      required: true
+    - name: name
+      description: Friendly name/label for the item.
+    - name: owner_id
+      description: Legal entity ID of the item owner.
+    - name: primary_user_id
+      description: Legal entity ID of the primary user.
+    - name: collected_by
+      description: User ID of the collector.
+    - name: parent_item
+      description: UUID of the parent item.
+    outputs:
+    - contextPath: DFIRe.Item.uuid
+      description: The created item UUID.
+      type: String
+    - contextPath: DFIRe.Item.name
+      description: The item name.
+      type: String
+    - contextPath: DFIRe.Item.case
+      description: The case ID.
+      type: Number
+  - name: dfire-attachment-list
+    description: List attachments, optionally filtered by evidence item UUID.
+    arguments:
+    - name: item_uuid
+      description: Filter attachments by evidence item UUID.
+    outputs:
+    - contextPath: DFIRe.Attachment.id
+      description: The attachment ID.
+      type: Number
+    - contextPath: DFIRe.Attachment.filename
+      description: The filename.
+      type: String
+    - contextPath: DFIRe.Attachment.mime_type
+      description: The MIME type.
+      type: String
+    - contextPath: DFIRe.Attachment.size
+      description: File size in bytes.
+      type: Number
+    - contextPath: DFIRe.Attachment.category
+      description: Attachment category.
+      type: String
+    - contextPath: DFIRe.Attachment.case
+      description: The associated case ID.
+      type: Number
+    - contextPath: DFIRe.Attachment.item
+      description: The associated item UUID.
+      type: String
+    - contextPath: DFIRe.Attachment.hash_sha256
+      description: SHA-256 hash of the plaintext file.
+      type: String
+    - contextPath: DFIRe.Attachment.uploaded_by_name
+      description: Who uploaded the file.
+      type: String
+    - contextPath: DFIRe.Attachment.uploaded_at
+      description: Upload timestamp.
+      type: Date
+  - name: dfire-attachment-get
+    description: Get details of a specific attachment.
+    arguments:
+    - name: attachment_id
+      description: The attachment ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Attachment.id
+      description: The attachment ID.
+      type: Number
+    - contextPath: DFIRe.Attachment.filename
+      description: The filename.
+      type: String
+    - contextPath: DFIRe.Attachment.mime_type
+      description: The MIME type.
+      type: String
+    - contextPath: DFIRe.Attachment.size
+      description: File size in bytes.
+      type: Number
+    - contextPath: DFIRe.Attachment.category
+      description: Attachment category.
+      type: String
+    - contextPath: DFIRe.Attachment.description
+      description: User-provided description.
+      type: String
+    - contextPath: DFIRe.Attachment.hash_sha256
+      description: SHA-256 hash of the plaintext file.
+      type: String
+    - contextPath: DFIRe.Attachment.status
+      description: Upload/encryption status.
+      type: String
+    - contextPath: DFIRe.Attachment.storage_location
+      description: Storage backend (local, s3, smb).
+      type: String
+    - contextPath: DFIRe.Attachment.uploaded_at
+      description: Upload timestamp.
+      type: Date
+  - name: dfire-attachment-upload
+    description: Upload a file as an attachment to a case or evidence item.
+    arguments:
+    - name: entry_id
+      description: The War Room entry ID of the file to upload.
+      required: true
+    - name: case_id
+      description: Case ID to associate the attachment with.
+    - name: item_uuid
+      description: Evidence item UUID to associate the attachment with.
+    - name: filename
+      description: Override the filename (defaults to the uploaded file name).
+    - name: category
+      description: Attachment category.
+      defaultValue: general
+      predefined:
+      - general
+      - evidence
+    outputs:
+    - contextPath: DFIRe.Attachment.id
+      description: The created attachment ID.
+      type: Number
+    - contextPath: DFIRe.Attachment.filename
+      description: The filename.
+      type: String
+    - contextPath: DFIRe.Attachment.size
+      description: File size in bytes.
+      type: Number
+  - name: dfire-attachment-delete
+    description: Delete an attachment.
+    arguments:
+    - name: attachment_id
+      description: The attachment ID to delete.
+      required: true
+    outputs: []
+  - name: dfire-timeline-list
+    description: List timeline events for a case (newest first).
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.TimelineEvent.id
+      description: The event ID.
+      type: Number
+    - contextPath: DFIRe.TimelineEvent.event_type
+      description: The event type.
+      type: String
+    - contextPath: DFIRe.TimelineEvent.subject
+      description: The event subject.
+      type: String
+    - contextPath: DFIRe.TimelineEvent.details
+      description: The event details.
+      type: String
+    - contextPath: DFIRe.TimelineEvent.event_datetime
+      description: When the event occurred.
+      type: Date
+    - contextPath: DFIRe.TimelineEvent.created_by_name
+      description: Who created the event.
+      type: String
+  - name: dfire-timeline-create
+    description: Add a manual timeline event to a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: subject
+      description: The event subject line.
+      required: true
+    - name: details
+      description: The event description.
+    - name: event_datetime
+      description: When the event occurred (ISO 8601). Defaults to now.
+    outputs:
+    - contextPath: DFIRe.TimelineEvent.id
+      description: The created event ID.
+      type: Number
+    - contextPath: DFIRe.TimelineEvent.subject
+      description: The event subject.
+      type: String
+    - contextPath: DFIRe.TimelineEvent.event_datetime
+      description: The event timestamp.
+      type: Date
+  - name: dfire-user-list
+    description: List users in the DFIRe tenant. Useful for looking up user IDs for assignments.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.User.id
+      description: The user ID.
+      type: Number
+    - contextPath: DFIRe.User.username
+      description: The username.
+      type: String
+    - contextPath: DFIRe.User.full_name
+      description: The user's full name.
+      type: String
+    - contextPath: DFIRe.User.email
+      description: The user's email.
+      type: String
+    - contextPath: DFIRe.User.is_active
+      description: Whether the user is active.
+      type: Boolean
+    - contextPath: DFIRe.User.groups
+      description: Groups the user belongs to.
+      type: Unknown
+  - name: dfire-case-indicator-list
+    description: List indicators associated with a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseIndicator.id
+      description: The association ID.
+      type: Number
+    - contextPath: DFIRe.CaseIndicator.case
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.CaseIndicator.indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.CaseIndicator.indicator.value
+      description: The IOC value.
+      type: String
+    - contextPath: DFIRe.CaseIndicator.indicator.stix_type
+      description: STIX type.
+      type: String
+    - contextPath: DFIRe.CaseIndicator.context
+      description: Case-private notes about this IOC.
+      type: String
+    - contextPath: DFIRe.CaseIndicator.source
+      description: How the indicator was added.
+      type: String
+    - contextPath: DFIRe.CaseIndicator.created_at
+      description: Association timestamp.
+      type: Date
+    - contextPath: DFIRe.CaseIndicator.case_count
+      description: Total cases this indicator appears in.
+      type: Number
+  - name: dfire-case-indicator-add
+    description: Add an indicator to a case. Creates the indicator if it does not exist.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: value
+      description: The IOC value.
+      required: true
+    - name: stix_type
+      description: STIX 2.1 SCO type.
+      required: true
+      predefined:
+      - ipv4-addr
+      - ipv6-addr
+      - domain-name
+      - url
+      - email-addr
+      - email-message
+      - file
+      - process
+      - windows-registry-key
+      - network-traffic
+      - user-account
+      - mac-addr
+      - software
+      - artifact
+      - autonomous-system
+      - directory
+      - mutex
+      - x509-certificate
+    - name: classification
+      description: IOC classification.
+      defaultValue: unknown
+      predefined:
+      - unknown
+      - benign
+      - suspicious
+      - malicious
+    - name: confidence
+      description: Confidence level.
+      defaultValue: low
+      predefined:
+      - low
+      - medium
+      - high
+    - name: tlp
+      description: TLP designation.
+      defaultValue: amber
+      predefined:
+      - clear
+      - green
+      - amber
+      - amber_strict
+      - red
+    - name: context
+      description: Case-private notes about this IOC.
+    - name: tags
+      description: Comma-separated tags.
+      isArray: true
+    - name: decompose
+      description: Whether to auto-decompose the indicator.
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: DFIRe.CaseIndicator.id
+      description: The association ID.
+      type: Number
+    - contextPath: DFIRe.CaseIndicator.indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.CaseIndicator.indicator.value
+      description: The IOC value.
+      type: String
+  - name: dfire-case-indicator-remove
+    description: Remove an indicator association from a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: association_id
+      description: The case indicator association ID.
+      required: true
+    outputs: []
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
