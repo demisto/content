@@ -61,4 +61,3 @@ Provide at least one of the following scopes for each command.
 * ***google-drive-get-file-labels***
 	*  https://www.googleapis.com/auth/drive
 	*  https://www.googleapis.com/auth/drive.labels
-
