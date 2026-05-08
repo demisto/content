@@ -46,9 +46,9 @@ To fetch Vectra RUX Events Detections follow the next steps:
     3. Incoming And Outgoing - Mirrors changes both Incoming and Outgoing directions on incidents.
 10. Enter the relevant tag name for mirror notes.
 **Note:** This value is mapped to the dbotMirrorTags incident field in Cortex XSOAR, which defines how Cortex XSOAR handles notes when you tag them in the War Room. This is required for mirroring notes from Cortex XSOAR to Vectra RUX.
-11. UnCheck the "Open Detection on Incident Reopen" option if you don't want to open the detection in Vectra when the incident is reopened in XSOAR. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
+11. Uncheck the "Open Detection on Incident Reopen" option if you don't want to open the detection in Vectra when the incident is reopened in XSOAR. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 12. Select the "Detection Status for Incident Reopen" option if you want to set the detection status in Vectra when the incident is reopened in XSOAR. Default value is 'Escalated'. This option is only used when the "Open Detection on Incident Reopen" option is checked and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
-13. UnCheck the "Close Detection on Incident Closure" option if you don't want to close the detection in Vectra when the incident is closed in XSOAR. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
+13. Uncheck the "Close Detection on Incident Closure" option if you don't want to close the detection in Vectra when the incident is closed in XSOAR. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 14. Select the "Detection Close Reason for Incident Closure" option if you want to set the detection close reason in Vectra when the incident is closed in XSOAR. Default value is 'Benign'. This option is only used when the "Close Detection on Incident Closure" option is checked and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 15. Select SSL certificate validation and Proxy if required.
 
@@ -131,7 +131,7 @@ Returns a list of users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Filter by username. | Optional |
+| email | Filter by email. | Optional |
 | role | Filter users with the specified role. Use the role standardized name. Possible values are: Admin, Auditor, Global Analyst, Read-Only, Restricted Admin, Security Analyst, Setting Admin, Super Admin. | Optional |
 | last_login_timestamp | Return only the users which have a last login timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional |
 

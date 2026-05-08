@@ -1,7 +1,7 @@
 id: Expire Inactive Detections - Vectra RUX
 version: -1
 name: Expire Inactive Detections - Vectra RUX
-description: This playbook identifies incidents with inactive detections and updates their status to "expired".
+description: This playbook identifies incidents with inactive detections and updates their investigation status to "expired".
 starttaskid: "0"
 tasks:
   "0":

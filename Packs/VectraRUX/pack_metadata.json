@@ -41,9 +41,5 @@
         "platform"
     ],
     "devEmail": [],
-    "githubUser": [],
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "githubUser": []
 }

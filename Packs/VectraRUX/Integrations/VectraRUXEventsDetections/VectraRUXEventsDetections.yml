@@ -152,9 +152,9 @@ script:
       - remediated
   - arguments:
     - default: false
-      description: Filter by username.
+      description: Filter by email.
       isArray: false
-      name: username
+      name: email
       required: false
       secret: false
     - auto: PREDEFINED
@@ -2708,7 +2708,7 @@ script:
     description: Retrieve the results of a previously submitted investigation query using the request ID.
     execution: false
     name: vectra-investigation-result-get
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

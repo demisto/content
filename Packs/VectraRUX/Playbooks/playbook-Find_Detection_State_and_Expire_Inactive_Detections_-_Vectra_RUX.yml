@@ -41,7 +41,7 @@ tasks:
     task:
       id: 83acdebb-5c63-4474-868e-b17f8f8fce2f
       version: -1
-      name: vectra-detection-describe
+      name: Get Detection Details by ID
       description: Returns a list of detections for the specified detection ID(s).
       script: '|||vectra-detection-describe'
       type: regular
@@ -95,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1660
+          "y": 1840
         }
       }
     note: false
@@ -112,8 +112,8 @@ tasks:
     task:
       id: 5bf271db-4e24-4061-8cf6-cbfcd8e53274
       version: -1
-      name: vectra-detection-investigation-status-update
-      description: Update the investigation status of the detection by detection ID(s).
+      name: Update Investigation Status to Expired for Inactive Detections
+      description: Update the investigation status of detections by detection ID(s).
       script: '|||vectra-detection-investigation-status-update'
       type: regular
       iscommand: true
@@ -163,7 +163,7 @@ tasks:
     task:
       id: 10d39647-b3c4-45f5-85e7-5eae08cb2004
       version: -1
-      name: Is Inactive Detections Present?
+      name: Are Inactive Detections Present?
       description: Check whether inactive detections are present.
       type: condition
       iscommand: false
@@ -253,7 +253,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1490
+          "y": 1670
         }
       }
     note: false
@@ -320,7 +320,7 @@ tasks:
     task:
       id: c0ac823e-e63d-4aba-87a7-282e5dd1964c
       version: -1
-      name: Is Incidents Present?
+      name: Are Incidents Present?
       description: Check whether incidents are present.
       type: condition
       iscommand: false
@@ -385,7 +385,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1430
+          "y": 1495
         }
       }
     note: false
@@ -437,7 +437,7 @@ tasks:
     task:
       id: 15b2625d-0a17-4051-85ab-9a0cbd5c7cd0
       version: -1
-      name: Is more Incidents Present?
+      name: Are more Incidents Present?
       description: Check whether more incidents are present.
       type: condition
       iscommand: false
@@ -446,7 +446,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "7"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -478,10 +478,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9f526fde-397d-4d82-85fb-0102c88b35db
+    type: title
+    task:
+      id: 9f526fde-397d-4d82-85fb-0102c88b35db
+      version: -1
+      name: Search for the Next Set of Incidents
+      description: Search for the next set of incidents, identify inactive detections, and update investigation status as expired.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_7_yes": 0.61,
+      "12_10_#default#": 0.62,
+      "12_13_yes": 0.51,
       "6_12_#default#": 0.49,
       "6_4_yes": 0.52,
       "9_10_#default#": 0.57,
@@ -489,7 +521,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1675,
+        "height": 1855,
         "width": 810,
         "x": 50,
         "y": 50

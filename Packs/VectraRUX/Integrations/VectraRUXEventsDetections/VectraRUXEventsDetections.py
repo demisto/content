@@ -44,6 +44,7 @@ VALID_ENTITY_TYPE = ["account", "host"]
 VALID_GROUP_TYPE = ["account", "host", "ip", "domain"]
 VALID_IMPORTANCE_VALUE = ["high", "medium", "low", "never_prioritize"]
 VALID_ENTITY_STATE = ["active", "inactive"]
+VALID_BOOL_VALUES = ("y", "yes", "t", "true", "on", "1", "n", "no", "f", "false", "off", "0")
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
 
@@ -524,19 +525,19 @@ class VectraEventsDetectionsClient(BaseClient):
         )
         return detections
 
-    def list_users_request(self, username: str | None, role: str | None, last_login_timestamp: datetime | None) -> dict:
+    def list_users_request(self, email: str | None, role: str | None, last_login_timestamp: datetime | None) -> dict:
         """
         List users.
 
         Args:
-            username (str | None): The optional username to filter with (default: None).
+            email (str | None): The optional email to filter with (default: None).
             role (str | None): The optional user role to filter with (default: None).
             last_login_timestamp (datetime | None): Filter users after the specified last login timestamp (default: None).
 
         Returns:
             Dict: Response from the API containing the users.
         """
-        params = assign_params(username=username, role=role, last_login_gte=last_login_timestamp)
+        params = assign_params(email=email, role=role, last_login_gte=last_login_timestamp)
         return self.http_request(method="GET", url_suffix=ENDPOINTS["USER_ENDPOINT"], params=params, response_type="json")
 
     def list_entities_request(
@@ -2334,19 +2335,26 @@ def validate_list_detections_args(args: dict[Any, Any]) -> dict[str, Any]:
     detection_name = args.get("detection_name")
     detection_type = args.get("detection_type")
     detection_category = args.get("detection_category")
-    include_info_category_detections = argToBoolean(args.get("include_info_category_detections", "true"))
+    include_info_category_detections = args.get("include_info_category_detections", "true")
     close_reason = args.get("close_reason")
     detection_state = args.get("detection_state")
     tags = argToList(args.get("tags"))
-    is_triaged = argToBoolean(args.get("is_triaged", "false"))
+    is_triaged = args.get("is_triaged", "false")
     page = args.get("page", MAX_PAGE)
     page_size = args.get("page_size", MAX_PAGE_SIZE)
     entity_type = args.get("entity_type")
 
-    if detection_category and detection_category not in DETECTION_CATEGORY_TO_ARG:
-        raise ValueError(
-            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("detection_category", ", ".join(DETECTION_CATEGORY_TO_ARG.keys()))
-        )
+    if include_info_category_detections:
+        if include_info_category_detections.lower() not in VALID_BOOL_VALUES:
+            raise ValueError(ERRORS["INVALID_ARG_VALUE"].format("include_info_category_detections", ", ".join(VALID_BOOL_VALUES)))
+        else:
+            include_info_category_detections = argToBoolean(args.get("include_info_category_detections", "true"))
+
+    if is_triaged:
+        if is_triaged.lower() not in VALID_BOOL_VALUES:
+            raise ValueError(ERRORS["INVALID_ARG_VALUE"].format("is_triaged", ", ".join(VALID_BOOL_VALUES)))
+        else:
+            is_triaged = argToBoolean(args.get("is_triaged", "false"))
 
     if entity_type and entity_type.capitalize() not in VALID_ENTITY_TYPES:
         raise ValueError(ERRORS["INVALID_ARG_VALUE"].format("entity_type", (", ".join(VALID_ENTITY_TYPES)).lower()))
@@ -2441,13 +2449,13 @@ def vectra_user_list_command(client: VectraEventsDetectionsClient, args: dict[st
     last_login_timestamp = arg_to_datetime(args.get("last_login_timestamp"), arg_name="last_login_timestamp")
     if last_login_timestamp:
         last_login_timestamp = last_login_timestamp.strftime(DATE_FORMAT)  # type: ignore
-    username = args.get("username", "")
+    email = args.get("email", "")
     role = args.get("role", "")
 
     if role and role in USER_ROLE_MAPPING:
         role = USER_ROLE_MAPPING.get(role)
     # Call Vectra API to retrieve users
-    response = client.list_users_request(username=username, role=role, last_login_timestamp=last_login_timestamp)
+    response = client.list_users_request(email=email, role=role, last_login_timestamp=last_login_timestamp)
     count = response.get("count")
     if count == 0:
         return CommandResults(outputs={}, readable_output="##### Got the empty list of users.", raw_response=response)
@@ -4323,6 +4331,8 @@ def fetch_incidents(
 
             detection_timestamp = event.get("detail", {}).get("first_timestamp", "")
             occurred_time = detection_timestamp if detection_timestamp else event.get("event_timestamp")
+            if occurred_time and occurred_time[-1].lower() != "z":
+                occurred_time = occurred_time + "Z"
 
             # Updating mirroring fields
             mirroring_fields = get_mirroring()
@@ -4626,6 +4636,10 @@ def get_remote_data_command(client: VectraEventsDetectionsClient, args: dict) ->
         remote_incident_data["dst_host"]["url"] = trim_api_version(remote_incident_data.get("dst_host", {}).get("url"))
     if remote_incident_data.get("dst_account") and remote_incident_data.get("dst_account", {}).get("url"):
         remote_incident_data["dst_account"]["url"] = trim_api_version(remote_incident_data.get("dst_account", {}).get("url"))
+
+    detection_timestamp = demisto.get(remote_incident_data, "detail.first_timestamp", "")
+    if detection_timestamp and detection_timestamp[-1].lower() != "z":
+        remote_incident_data["detail"]["first_timestamp"] = detection_timestamp + "Z"
 
     event_timestamp = arg_to_datetime(remote_incident_data.get("event_timestamp"))
     if command_last_run_dt > event_timestamp:  # type: ignore

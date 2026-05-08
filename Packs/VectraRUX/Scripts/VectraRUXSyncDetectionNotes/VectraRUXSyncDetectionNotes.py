@@ -34,10 +34,9 @@ def main():
         handle_error(command_result)
         result = command_result[0].get("Contents", [])
 
-        already_fetch_notes_ids = [note.get("id") for note in detection_notes]
         new_notes = []
         for note in result:
-            if note.get("id") in already_fetch_notes_ids:
+            if note in detection_notes:
                 continue
             elif "[Mirrored From XSOAR]" not in note.get("note"):
                 new_notes.append(note)

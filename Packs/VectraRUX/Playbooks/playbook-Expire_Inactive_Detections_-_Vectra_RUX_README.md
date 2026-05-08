@@ -1,4 +1,4 @@
-This playbook identifies incidents with inactive detections and updates their status to "expired".
+This playbook identifies incidents with inactive detections and updates their investigation status to "expired".
 
 ## Dependencies
 

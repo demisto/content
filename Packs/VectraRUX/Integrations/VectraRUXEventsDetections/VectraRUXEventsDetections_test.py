@@ -63,6 +63,7 @@ from VectraRUXEventsDetections import (
     VALID_GROUP_TYPE,
     VALID_IMPORTANCE_VALUE,
     USER_ROLE_MAPPING,
+    VALID_BOOL_VALUES,
 )
 
 # Constants
@@ -1731,6 +1732,42 @@ def test_vectra_user_list_when_response_is_empty(requests_mock, client):
     # Assert the CommandResults
     assert result_context.get("HumanReadable") == "##### Got the empty list of users."
     assert result_context.get("EntryContext") == {}
+
+
+def test_vectra_user_list_with_email_filter(mocker, client):
+    """
+    Given:
+    - A mocked client.
+    - Arguments with an email filter.
+
+    When:
+    - Calling the 'vectra_user_list_command' function with email argument.
+
+    Then:
+    - Assert that 'list_users_request' is called with 'email' (not 'username').
+    - Assert that the command returns expected user data.
+    """
+    user_res = {
+        "count": 1,
+        "next": None,
+        "previous": None,
+        "results": [
+            {
+                "id": 10,
+                "name": "brandon.bishop",
+                "email": "test_user@mail.com",
+                "role": "Security Analyst",
+                "last_login_timestamp": "2023-08-22T09:24:44Z",
+            }
+        ],
+    }
+    mock_request = mocker.patch.object(client, "list_users_request", return_value=user_res)
+
+    result = vectra_user_list_command(client, {"email": "test_user@mail.com"})
+
+    mock_request.assert_called_once_with(email="test_user@mail.com", role="", last_login_timestamp=None)
+    assert result.outputs_prefix == "Vectra.User"
+    assert len(result.outputs) == 1
 
 
 def test_vectra_entity_list_valid_arguments(requests_mock, client):
@@ -5962,8 +5999,12 @@ def test_vectra_detection_list_command_with_time_filters(requests_mock, client):
     "args,error_msg",
     [
         (
-            {"detection_category": "invalid_category", "page": "1", "page_size": "50"},
-            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("detection_category", ", ".join(DETECTION_CATEGORY_TO_ARG.keys())),
+            {"include_info_category_detections": "invalid_bool", "page": "1", "page_size": "50"},
+            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("include_info_category_detections", ", ".join(VALID_BOOL_VALUES)),
+        ),
+        (
+            {"is_triaged": "invalid_bool", "page": "1", "page_size": "50"},
+            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("is_triaged", ", ".join(VALID_BOOL_VALUES)),
         ),
         (
             {"close_reason": "invalid_reason", "page": "1", "page_size": "50"},
