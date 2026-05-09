@@ -20,7 +20,7 @@ requests = "^2.32.3"
 urllib3 = "*"  # taken from the demisto-sdk to avoid conflicts.
 blessings = "^1.7"
 PyGithub = "^2.2.0"
-gitpython = "^3.1.43"
+gitpython = "^3.1.50"
 sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
