@@ -92,7 +92,7 @@ class Client(ContentClient):
         end: int,
         limit: int = MAX_EVENTS_PER_PAGE,
         paging_identifiers: dict | None = None,
-    ) -> dict:
+    ) -> dict | list | None:
         """Fetch a single page of logs from the Menlo Security API.
 
         Args:
@@ -103,14 +103,39 @@ class Client(ContentClient):
             paging_identifiers: Pagination state from the previous response; None for first page.
 
         Returns:
-            dict: Full API response JSON.
+            Parsed JSON response (dict per docs, but the live API has been observed to return a
+            bare list). Returns None when the API returns an empty 200 (Content-Length: 0),
+            which the docs describe as "no data for this time window".
+
+        Raises:
+            ValueError: If the response body is non-empty but not valid JSON (e.g. HTML auth-error pages).
         """
         params = {"start": start, "end": end, "limit": limit, "format": "json"}
         body: dict[str, Any] = {"token": self._token, "log_type": log_type}
         if paging_identifiers:
             body["pagingIdentifiers"] = paging_identifiers
 
-        return self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="json")
+        # Use resp_type="response" to handle empty 200s and non-JSON bodies (e.g. HTML auth errors)
+        # explicitly. Per Menlo docs: "The API may occasionally return an empty 200 response when
+        # a JSON object is expected... Content-Length: 0."
+        response = self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="response")
+
+        # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
+        demisto.debug(
+            f"[{log_type}] HTTP {response.status_code}, "
+            f"content-length={response.headers.get('content-length', '?')}, "
+            f"body-bytes={len(response.content)}"
+        )
+
+        # Empty body (Content-Length: 0) means "no data" — not an error.
+        if not response.content:
+            return None
+
+        try:
+            return response.json()
+        except json.JSONDecodeError as e:
+            snippet = response.text[:500] if response.text else "<empty>"
+            raise ValueError(f"Non-JSON response from Menlo API (status {response.status_code}): {snippet}") from e
 
 
 """ HELPER FUNCTIONS """
@@ -178,7 +203,11 @@ def get_events_for_log_type(
     Returns:
         Collected events, enriched if enrich=True.
     """
-    thread_name = threading.current_thread().name
+    # Rename the worker thread to the log type for cleaner logs (e.g. "[web]" instead of "[ThreadPoolExecutor-12_0]").
+    threading.current_thread().name = log_type_ui
+    thread_name = log_type_ui
+    # TODO(CIAC-16574): The thread name now contains the log type, so the redundant
+    # "{log_type_ui}:" prefix in debug messages below can be dropped during cleanup.
     api_log_type = LOG_TYPE_MAP[log_type_ui]
     events: list[dict] = []
     paging_identifiers: dict | None = None
@@ -354,7 +383,11 @@ def _fetch_log_type_task(
     Returns:
         FetchResult with events, next_run_state, and any error.
     """
-    thread_name = threading.current_thread().name
+    # Rename the worker thread to the log type for cleaner logs (e.g. "[web]" instead of "[ThreadPoolExecutor-12_0]").
+    threading.current_thread().name = log_type_ui
+    thread_name = log_type_ui
+    # TODO(CIAC-16574): The thread name now contains the log type, so the redundant
+    # "{log_type_ui}:" prefix in debug messages below can be dropped during cleanup.
     result = FetchResult(log_type_ui=log_type_ui)
 
     try:

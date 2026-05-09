@@ -58,6 +58,12 @@ def make_empty_response() -> dict:
     return json.loads(json.dumps(_EMPTY_RESPONSE))
 
 
+def make_response(payload: dict | list, mocker):
+    """Mock an httpx.Response for fetch_log_page tests (post() returns a Response object)."""
+    body = json.dumps(payload).encode()
+    return mocker.MagicMock(content=body, status_code=200, headers={}, **{"json.return_value": payload})
+
+
 # ─── Client Tests ─────────────────────────────────────────────────────────────
 
 
@@ -73,7 +79,7 @@ class TestClient:
             - The correct log_type and token are in the body.
         """
         web_response = load_test_data("web_logs_response.json")
-        mock_post = mocker.patch.object(mock_client, "post", return_value=web_response)
+        mock_post = mocker.patch.object(mock_client, "post", return_value=make_response(web_response, mocker))
 
         result = mock_client.fetch_log_page(log_type="web", start=1700000000, end=1700003600, limit=1000)
 
@@ -93,8 +99,7 @@ class TestClient:
         Then:
             - The pagingIdentifiers are included in the POST body.
         """
-        mocker.patch.object(mock_client, "post", return_value=make_empty_response())
-        mock_post = mocker.patch.object(mock_client, "post", return_value=make_empty_response())
+        mock_post = mocker.patch.object(mock_client, "post", return_value=make_response(make_empty_response(), mocker))
 
         paging = {"next_time": "2024-01-15T10:00:00.000Z", "hashes": {"abc123": 0}, "last_iteration": True}
         mock_client.fetch_log_page(log_type="web", start=1700000000, end=1700003600, limit=1000, paging_identifiers=paging)
@@ -111,7 +116,7 @@ class TestClient:
         Then:
             - start, end, limit, and format=json are passed as URL query parameters.
         """
-        mock_post = mocker.patch.object(mock_client, "post", return_value=make_empty_response())
+        mock_post = mocker.patch.object(mock_client, "post", return_value=make_response(make_empty_response(), mocker))
 
         mock_client.fetch_log_page(log_type="audit", start=1700000000, end=1700003600, limit=500)
 
