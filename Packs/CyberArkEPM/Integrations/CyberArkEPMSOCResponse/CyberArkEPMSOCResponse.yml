@@ -70,6 +70,9 @@ script:
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
+    - contextPath: CyberArkEPMSOCResponse.SetID
+      description: The ID of the EPM set in which the endpoints were found.
+      type: String
     - contextPath: CyberArkEPMSOCResponse.EndpointIDs
       description: The IDs of the endpoints added to the risk plan.
       type: String
@@ -79,6 +82,9 @@ script:
     - contextPath: CyberArkEPMSOCResponse.Action
       description: The action performed on the risk plan (add/remove).
       type: String
+    - contextPath: CyberArkEPMSOCResponse.GroupActionPerformed
+      description: Whether the endpoint was successfully added to the risk plan group in this set.
+      type: Boolean
   - arguments:
     - description: The name of the risk plan to deactivate.
       name: risk_plan
@@ -96,9 +102,21 @@ script:
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:
-    - contextPath: CyberArkEPMSOCResponse.EndpointIDs
-      description: The IDs of the endpoints removed from risk plan.
+    - contextPath: CyberArkEPMSOCResponse.SetID
+      description: The ID of the EPM set in which the endpoints were found.
       type: String
+    - contextPath: CyberArkEPMSOCResponse.EndpointIDs
+      description: The IDs of the endpoints removed from the risk plan.
+      type: String
+    - contextPath: CyberArkEPMSOCResponse.RiskPlan
+      description: The name of the deactivated risk plan.
+      type: String
+    - contextPath: CyberArkEPMSOCResponse.Action
+      description: The action performed on the risk plan (add/remove).
+      type: String
+    - contextPath: CyberArkEPMSOCResponse.GroupActionPerformed
+      description: Whether the endpoint was successfully removed from the risk plan group in this set.
+      type: Boolean
   isfetch: false
   runonce: false
   script: '-'
