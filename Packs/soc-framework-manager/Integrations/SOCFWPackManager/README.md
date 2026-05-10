@@ -70,3 +70,29 @@ invoke directly.
 | SOCFramework.PackInstall.url | String | Source URL the pack was downloaded from. |
 | SOCFramework.PackInstall.status | String | Install status (success on completion). |
 | SOCFramework.PackInstall.response | Unknown | Raw response from the demisto-sdk upload step. |
+
+#### Command example
+
+```!socfw-install-pack url=https://github.com/Palo-Cortex/secops-framework/releases/download/soc-optimization-unified-v3.6.3/soc-optimization-unified-v3.6.3.zip```
+
+#### Context Example
+
+```json
+{
+    "SOCFramework": {
+        "PackInstall": {
+            "filename": "soc-optimization-unified-v3.6.3.zip",
+            "url": "https://github.com/Palo-Cortex/secops-framework/releases/download/soc-optimization-unified-v3.6.3/soc-optimization-unified-v3.6.3.zip",
+            "status": "success",
+            "response": {
+                "success": true,
+                "message": "Uploaded /home/demisto/Packs/soc-optimization-unified-v3.6.3"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> Pack **soc-optimization-unified-v3.6.3.zip** installed successfully.

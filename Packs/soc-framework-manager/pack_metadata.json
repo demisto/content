@@ -15,11 +15,17 @@
     "tags": [],
     "useCases": [],
     "keywords": [
+        "Palo Alto Networks",
+        "Cortex",
+        "Cortex XSIAM",
         "SOC",
         "SOC Framework",
         "Pack Manager",
         "Content Management",
         "Bootstrap"
+    ],
+    "githubUser": [
+        "scottbrumley"
     ],
     "marketplaces": [
         "marketplacev2"

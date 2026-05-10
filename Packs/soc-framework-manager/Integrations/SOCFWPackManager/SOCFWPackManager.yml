@@ -4,6 +4,8 @@ description: Downloads a SOC Framework content pack from a ZIP URL and installs 
 category: Utilities
 fromversion: 8.0.0
 system: true
+sectionorder:
+- Connect
 configuration:
 - section: Connect
   display: Server URL

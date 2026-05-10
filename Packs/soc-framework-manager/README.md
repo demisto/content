@@ -3,6 +3,14 @@
 Install and configure SOC Framework content packs directly from the XSIAM
 Playground. No manual ZIP uploads, no separate REST API tooling.
 
+## What does this pack do?
+
+- Browses the SOC Framework pack catalog from the XSIAM Playground
+- Installs and updates SOC Framework content packs as system content
+- Applies integration instances, jobs, and lookup datasets from each pack's `xsoar_config.json`
+- Re-runs configuration without reinstalling, for recovery or config changes
+- Synchronizes the legacy `value_tags` lookup for older deployments still using it
+
 ## Quick Start
 
 ```

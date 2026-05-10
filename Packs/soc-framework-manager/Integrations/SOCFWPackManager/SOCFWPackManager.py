@@ -343,6 +343,13 @@ def install_pack_command(
 
     if not filename:
         filename = url.rstrip("/").split("/")[-1]
+    # Strip any path components from the filename to prevent the pack name
+    # (derived from filename) from escaping Packs/ via "../" segments.
+    filename = os.path.basename(filename)
+    if not filename or filename in (".", ".."):
+        raise DemistoException(
+            "filename argument resolves to an empty or unsafe value"
+        )
     if not filename.endswith(".zip"):
         filename += ".zip"
 

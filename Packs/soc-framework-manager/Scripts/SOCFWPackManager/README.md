@@ -83,11 +83,36 @@ through this script.
 | SOCFramework.PackManager.SyncTags.previous_hash | Previous content hash before this run, when applicable. | String |
 | SOCFramework.PackManager.SyncTags.updated_at | ISO 8601 timestamp the `value_tags` dataset was last updated. | String |
 
-## Examples
+## Command examples
 
-```
-!SOCFWPackManager action=list
-!SOCFWPackManager action=apply pack_id=soc-optimization-unified
-!SOCFWPackManager action=configure pack_id=SocFrameworkTrendMicroVisionOne
-!SOCFWPackManager action=sync-tags
-```
+#### action=list
+
+```!SOCFWPackManager action=list```
+
+##### Human Readable Output
+
+> Renders a paged table of available SOC Framework packs (id, display_name, version, visible, path).
+
+#### action=apply
+
+```!SOCFWPackManager action=apply pack_id=soc-optimization-unified```
+
+##### Human Readable Output
+
+> Streams progress to the war room as the marketplace dependencies install, the custom pack ZIP is uploaded as system content, and `xsoar_config.json` is applied.
+
+#### action=configure
+
+```!SOCFWPackManager action=configure pack_id=SocFrameworkTrendMicroVisionOne```
+
+##### Human Readable Output
+
+> Re-runs configuration only — integration instances, jobs, and lookup datasets — without reinstalling the pack.
+
+#### action=sync-tags
+
+```!SOCFWPackManager action=sync-tags```
+
+##### Human Readable Output
+
+> Backward-compat action. Updates the legacy `value_tags` lookup dataset for older deployments. Modern SOC Framework deployments use `SOCActionTimeMap_V3` and do not need this command.

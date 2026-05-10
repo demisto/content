@@ -144,7 +144,7 @@ def is_timeout_error(err_text: str) -> bool:
 
 def emit_progress(message: str, stage: Optional[str] = None):
     title = f"{SCRIPT_NAME} — {stage}" if stage else SCRIPT_NAME
-    demisto.results(
+    return_results(
         {
             "Type": 1,
             "ContentsFormat": "markdown",
@@ -152,10 +152,6 @@ def emit_progress(message: str, stage: Optional[str] = None):
             "HumanReadable": f"### {title}\n{message}",
         }
     )
-
-def return_results(obj: Any):
-    # Keep it simple and safe in every tenant
-    demisto.results(obj)
 
 def log(message: str, stage: Optional[str], debug: bool, always: bool = False):
     if always or debug:
@@ -462,7 +458,10 @@ def resolve_manifest(pack_id: str, include_hidden: bool, catalog_url: str) -> Di
 
     visible = bool(pack.get("visible", True))
     if (not include_hidden) and (not visible):
-        pass
+        raise Exception(
+            f"Pack '{pack_id}' is marked visible=false in the catalog. "
+            f"Re-run with include_hidden=true to install it anyway."
+        )
 
     version = (pack.get("version") or "").strip()
     if not version:
@@ -1618,7 +1617,7 @@ def do_sync_tags(args):
     })
 
 
-def main():
+def _run_main():
     args = demisto.args()
 
     action = (args.get("action") or "apply").strip().lower()
@@ -1924,6 +1923,19 @@ def main():
             doc_content_max_chars=doc_content_max_chars,
             doc_content_max_lines=doc_content_max_lines,
         )
+
+
+def main():
+    """Entry point with standard XSOAR error handling.
+
+    Wraps the orchestrator in try/except so any uncaught exception surfaces
+    via return_error() instead of crashing with a raw traceback.
+    """
+    try:
+        _run_main()
+    except Exception as exc:
+        return_error(f"{SCRIPT_NAME} failed: {exc}")
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
