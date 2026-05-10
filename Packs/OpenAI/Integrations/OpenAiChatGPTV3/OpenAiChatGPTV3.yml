@@ -88,6 +88,85 @@ configuration:
   type: 8
   required: false
   section: Connect
+- displaypassword: Admin API Key
+  name: admin_api_key
+  type: 9
+  required: false
+  section: Connect
+  hiddenusername: true
+  additionalinfo: 'Admin API key from the OpenAI Platform. Required when fetching the "OpenAI Audit logs" event type. Not used by any other event type.'
+- displaypassword: Compliance API Key
+  name: compliance_api_key
+  type: 9
+  required: false
+  section: Connect
+  hiddenusername: true
+  additionalinfo: 'Compliance API key from the ChatGPT Platform. Required when fetching any of the following Compliance event types: Conversation Messages, Apps, Apps Auth, Compliance Audit, Auth, Codex, ChatGPT, Codex Security, Workspace Agents.'
+- display: Compliance Server URL
+  name: compliance_url
+  type: 0
+  required: false
+  defaultvalue: https://api.chatgpt.com
+  section: Connect
+  advanced: true
+  additionalinfo: 'Base URL for the ChatGPT Platform Compliance APIs.'
+- display: Workspace ID
+  name: workspace_id
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: 'The Compliance workspace UUID (e.g., "4a4676f3-3d74-4723-b696-c93e6d01078a"). Required when fetching Compliance event types.'
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+- display: Events types to fetch
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - OpenAI Audit logs
+  - Conversation Messages
+  - Apps
+  - Apps Auth
+  - Compliance Audit
+  - Auth
+  - Codex
+  - ChatGPT
+  - Codex Security
+  - Workspace Agents
+  additionalinfo: 'Select which event streams to fetch. "OpenAI Audit logs" uses the Admin API; all other selections use the Compliance API and require a Workspace ID.'
+- display: Maximum number of OpenAI Audit events per fetch
+  name: audit_max_fetch
+  type: 0
+  required: false
+  defaultvalue: '1000'
+  section: Collect
+  additionalinfo: 'Maximum number of Audit events fetched per cycle (default: 1000).'
+- display: Maximum number of Compliance events per fetch
+  name: compliance_max_fetch
+  type: 0
+  required: false
+  defaultvalue: '900'
+  section: Collect
+  additionalinfo: 'Maximum number of Compliance events fetched per cycle (default: 900).'
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: '1 day'
+  section: Collect
+  advanced: true
+  additionalinfo: 'How far back to look on the first fetch (e.g., "1 day", "12 hours"). Subsequent fetches resume from the last seen event.'
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
 script:
   commands:
   - name: gpt-send-message
@@ -174,6 +253,49 @@ script:
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
+  - name: openai-get-events
+    description: Manually retrieves events from OpenAI for development/debugging. Use with caution - it can ingest events when 'should_push_events' is true, leading to event duplication.
+    arguments:
+    - name: event_type
+      description: 'Event type(s) to retrieve. If not specified, uses the value configured in the integration parameters.'
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - 'OpenAI Audit logs'
+      - 'Conversation Messages'
+      - 'Apps'
+      - 'Apps Auth'
+      - 'Compliance Audit'
+      - 'Auth'
+      - 'Codex'
+      - 'ChatGPT'
+      - 'Codex Security'
+      - 'Workspace Agents'
+    - name: limit
+      description: 'Maximum number of events to return per stream.'
+      defaultValue: '50'
+    - name: start_time
+      description: 'Lookback start time for the fetch. Supports ISO 8601 or relative time (e.g., "3 days ago", "2099-01-01T00:00:00Z").'
+    - name: should_push_events
+      description: 'If true, retrieved events are also sent to XSIAM ingestion. Defaults to false.'
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: OpenAI.Event.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: OpenAI.Event._event_type
+      description: Upstream event_type (Compliance) or empty for Audit events.
+      type: String
+    - contextPath: OpenAI.Event.source_log_type
+      description: The source log type used by downstream parsing rules.
+      type: String
+    - contextPath: OpenAI.Event._time
+      description: The event timestamp in ISO 8601 format.
+      type: Date
   - name: gpt-create-soc-email-template
     description: Create an email template out of the conversation context to be sent from the SOC.
     arguments:
@@ -201,6 +323,11 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/parse-emails:1.0.0.4363876
+  isfetchevents: true
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform

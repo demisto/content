@@ -2,3 +2,6 @@
 !gpt-check-email-header entryId=15 additionalInstructions="Check for 'Spoofing' within the attached email header."
 !gpt-check-email-body entryId=22 additionalInstructions="Check if the body contains any embedded scripts and answer with Yes/No merely."
 !gpt-create-soc-email-template additionalInstructions="Gather the discussed details from our conversation into the email."
+!openai-get-events event_type="OpenAI Audit logs" limit=10
+!openai-get-events event_type="Compliance Audit,Apps,Auth" limit=20
+!openai-get-events event_type="OpenAI Audit logs" limit=5 should_push_events=true
