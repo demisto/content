@@ -2298,7 +2298,7 @@ def search_assets_command(client: Client, args):
     # Remove "xdm__asset__" and "xdm__" prefix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
 
-    # In order to prevent BC after migrate to private api - add the related issues and cases to the response as they were in the old API response
+    # Preserve BC after migrating to private API - add related issues/cases as in old API response
     for asset in response:
         asset["related_issues.critical_issues"] = asset.get("issues_critical", [])
         asset["related_issues.issues_breakdown"] = asset.get("issues_breakdown", [])

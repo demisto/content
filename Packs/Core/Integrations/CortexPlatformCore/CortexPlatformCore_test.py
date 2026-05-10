@@ -909,7 +909,7 @@ def test_search_assets_asset_type_contains_only():
     ]
     assert len(contains_entries) == 1
     block = contains_entries[0]
-    conditions = block["OR"] if "OR" in block else [block]
+    conditions = block.get("OR", [block])
     assert [c["SEARCH_VALUE"] for c in conditions] == ["Endpoint", "Virtual Machine"]
     for c in conditions:
         assert c["SEARCH_TYPE"] == "CONTAINS"
@@ -948,7 +948,7 @@ def test_search_assets_asset_type_wildcard_only():
     ]
     assert len(wildcard_entries) == 1
     block = wildcard_entries[0]
-    conditions = block["OR"] if "OR" in block else [block]
+    conditions = block.get("OR", [block])
     assert [c["SEARCH_VALUE"] for c in conditions] == ["Server *", "Kubernetes Cluster *"]
 
 
