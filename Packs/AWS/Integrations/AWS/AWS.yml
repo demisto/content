@@ -9896,7 +9896,7 @@ script:
         description: If Prefix was sent with the request, it is included in the response.
         type: string
   - name: aws-ssm-association-version-list
-    description: "Retrieves all versions of an association for a specific association ID. Required IAM Permission: ssm:ListAssociationVersions."
+    description: "Retrieves all versions of an association for a specific association ID. Required IAM permission: ssm:ListAssociationVersions."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -9973,22 +9973,22 @@ script:
         description: The version of an SSM document used when the association version was created.
         type: String
       - contextPath: AWS.SSM.Associations.Versions.Duration
-        description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
+        description: The number of hours an association can run on specified targets. When the cutoff time is reached, running associations are canceled and no pending executions are started on the remaining targets.
         type: Number
       - contextPath: AWS.SSM.Associations.Versions.Parameters
-        description: Parameters specified when the association version was created.
+        description: The parameters specified when the association version was created.
         type: Unknown
       - contextPath: AWS.SSM.Associations.Versions.Targets.Key
-        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        description: The user-defined criteria for sending commands that target managed nodes.
         type: String
       - contextPath: AWS.SSM.Associations.Versions.Targets.Values
-        description: User-defined criteria that maps to Key.
+        description: The user-defined values that map to the key.
         type: String
       - contextPath: AWS.SSM.Associations.Versions.ScheduleExpression
         description: The cron or rate schedule specified for the association when the association version was created.
         type: String
       - contextPath: AWS.SSM.Associations.Versions.ScheduleOffset
-        description: Number of days to wait after the scheduled day to run an association.
+        description: The number of days to wait after the scheduled day to run an association.
         type: Number
       - contextPath: AWS.SSM.Associations.Versions.OutputLocation.S3Location
         description: The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix.
@@ -10075,7 +10075,7 @@ script:
         description: The name of the SSM document. Required together with instance_id if association_id is not provided.
         required: false
       - name: association_version
-        description: Specify the association version to retrieve. To view the latest version, either specify $LATEST or omit this parameter.
+        description: The association version to retrieve. To view the latest version, either specify $LATEST or omit this parameter.
         required: false
     outputs:
       - contextPath: AWS.SSM.Associations.Name
@@ -10097,10 +10097,10 @@ script:
         description: The document version.
         type: String
       - contextPath: AWS.SSM.Associations.Duration
-        description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
+        description: The number of hours an association can run on specified targets. When the cutoff time is reached, running associations are canceled and no pending executions are started on the remaining targets.
         type: Number
       - contextPath: AWS.SSM.Associations.AutomationTargetParameterName
-        description: The parameter that defines how the automation will branch out. Required for associations that use an Automation runbook with rate controls.
+        description: How the automation will branch out. Required for associations that use an Automation runbook with rate controls.
         type: String
       - contextPath: AWS.SSM.Associations.Parameters
         description: A description of the parameters for a document.
@@ -10127,19 +10127,19 @@ script:
         description: A detailed status of the association.
         type: String
       - contextPath: AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount
-        description: Returns the number of targets for the association status.
+        description: The number of targets for the association status.
         type: Number
       - contextPath: AWS.SSM.Associations.Targets.Key
-        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        description: The user-defined criteria for sending commands that target managed nodes.
         type: String
       - contextPath: AWS.SSM.Associations.Targets.Values
-        description: User-defined criteria that maps to Key.
+        description: The user-defined values that map to the key.
         type: String
       - contextPath: AWS.SSM.Associations.ScheduleExpression
         description: A cron expression that specifies a schedule when the association runs.
         type: String
       - contextPath: AWS.SSM.Associations.ScheduleOffset
-        description: Number of days to wait after the scheduled day to run an association.
+        description: The number of days to wait after the scheduled day to run an association.
         type: Number
       - contextPath: AWS.SSM.Associations.OutputLocation.S3Location
         description: The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix.
@@ -10224,13 +10224,13 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: name
-        description: Filter associations by SSM document name.
+        description: The SSM document name to filter associations by.
         required: false
       - name: association_id
-        description: Filter associations by association ID.
+        description: The association ID to filter associations by.
         required: false
       - name: association_status_name
-        description: Filter associations by status name.
+        description: The status name to filter associations by.
         required: false
         auto: PREDEFINED
         predefined:
@@ -10276,10 +10276,10 @@ script:
         description: The version of the document used in the association.
         type: String
       - contextPath: AWS.SSM.Associations.Targets.Key
-        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        description: The user-defined criteria for sending commands that target managed nodes.
         type: String
       - contextPath: AWS.SSM.Associations.Targets.Values
-        description: User-defined criteria that maps to Key.
+        description: The user-defined values that map to the key.
         type: String
       - contextPath: AWS.SSM.Associations.LastExecutionDate
         description: The date on which the association was last run.
@@ -10291,19 +10291,19 @@ script:
         description: A detailed status of the association.
         type: String
       - contextPath: AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount
-        description: Returns the number of targets for the association status.
+        description: The number of targets for the association status.
         type: String
       - contextPath: AWS.SSM.Associations.ScheduleExpression
         description: A cron expression that specifies a schedule when the association runs.
         type: String
       - contextPath: AWS.SSM.Associations.ScheduleOffset
-        description: Number of days to wait after the scheduled day to run an association.
+        description: The number of days to wait after the scheduled day to run an association.
         type: Number
       - contextPath: AWS.SSM.Associations.Duration
-        description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
+        description: The number of hours an association can run on specified targets. When the cutoff time is reached, running associations are canceled and no pending executions are started on the remaining targets.
         type: Number
       - contextPath: AWS.SSM.Associations.TargetMaps
-        description: A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can't be specified together.
+        description: A key-value mapping of document parameters to target resources. Targets and TargetMaps cannot be specified together.
         type: Unknown
       - contextPath: AWS.SSM.AssociationsNextToken
         description: The token to use when requesting the next set of items.
@@ -10390,7 +10390,7 @@ script:
         required: false
     outputs:
       - contextPath: AWS.SSM.Inventory.Id
-        description: ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID.
+        description: The inventory result entity ID. For example, for managed node inventory it is the managed node ID.
         type: String
       - contextPath: AWS.SSM.Inventory.TypeName
         description: The name of the inventory result item type.
@@ -10563,7 +10563,7 @@ script:
       - name: instance_ids
         description: A comma-separated list of IDs of the managed nodes where the command should run. Maximum of 50 IDs.
       - name: targets
-        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify."
+        description: "A semicolon-separated list of key-value mapping to target managed nodes in the format key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>)."
       - name: document_name
         description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
         required: true
@@ -10574,10 +10574,10 @@ script:
         description: The Sha256 hash created by the system when the document was created.
         required: false
       - name: command_timeout
-        description: If this time (in seconds) is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000.
+        description: The time, in seconds, to wait for the command to start running before it is canceled. Minimum value is 30. Maximum value is 2592000.
         required: false
       - name: comment
-        description: User-specified information about the command, such as a brief description of what the command should do.
+        description: The user-specified information about the command, such as a brief description of what the command should do.
         required: false
       - name: parameters
         description: "The required and optional parameters specified in the document being run. The template is 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>'."
@@ -10620,10 +10620,10 @@ script:
         description: The Systems Manager document (SSM document) version.
         type: String
       - contextPath: AWS.SSM.Command.Comment
-        description: User-specified information about the command, such as a brief description of what the command should do.
+        description: The user-specified information about the command, such as a brief description of what the command should do.
         type: String
       - contextPath: AWS.SSM.Command.ExpiresAfter
-        description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
+        description: The command expiration time, after which the status for all InProgress, Pending, or Delayed invocations changes to DeliveryTimedOut.
         type: Date
       - contextPath: AWS.SSM.Command.Parameters
         description: The parameter values to be inserted in the document when running the command.
@@ -10683,19 +10683,19 @@ script:
         description: The name of the CloudWatch Logs log group where you want to send command output.
         type: String
       - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled
-        description: Enables Systems Manager to send command output to CloudWatch Logs.
+        description: Whether to enable the Systems Manager to send command output to CloudWatch Logs.
         type: Boolean
       - contextPath: AWS.SSM.Command.TimeoutSeconds
         description: The TimeoutSeconds value specified for a command.
         type: Number
       - contextPath: AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure
-        description: When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value.
+        description: Whether the automation or command continues running if alarm status information cannot be retrieved from CloudWatch. If the alarm status is OK or INSUFFICIENT_DATA, the execution continues regardless of this value.
         type: String
       - contextPath: AWS.SSM.Command.AlarmConfiguration.Alarms.Name
         description: The name of your CloudWatch alarm.
         type: String
       - contextPath: AWS.SSM.Command.TriggeredAlarms.Name
-        description: The name of your CloudWatch alarm.
+        description: The name of the triggered CloudWatch alarm.
         type: String
       - contextPath: AWS.SSM.Command.TriggeredAlarms.State
         description: The state of your CloudWatch alarm.
@@ -11180,10 +11180,10 @@ script:
         description: The parameter name used as the target resource for the rate-controlled execution.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.Targets.Key
-        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        description: The user-defined criteria for sending commands that target managed nodes.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.Targets.Values
-        description: User-defined criteria that maps to Key.
+        description: The user-defined values that map to the key.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.ResolvedTargets
         description: A list of resolved targets in the rate control execution, containing ParameterValues and Truncated fields.
@@ -11287,7 +11287,7 @@ script:
         description: The version of the Automation runbook to use in this execution.
         required: false
       - name: parameters
-        description: "Key-value map of execution parameters in the format key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>."
+        description: "The key-value map of execution parameters in the format key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>."
         required: false
       - name: mode
         description: The execution mode of the automation. Valid values are Auto and Interactive.
@@ -11298,7 +11298,7 @@ script:
           - Interactive
         defaultValue: Auto
       - name: client_token
-        description: User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can't be reused.
+        description: The unique, case-insensitive, user-provided idempotency token used to ensure the request is processed only once. The token must follow the UUID format and cannot be reused.
         required: false
       - name: max_concurrency
         description: The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%.
@@ -11310,7 +11310,7 @@ script:
         description: The name of the parameter used as the target resource for the rate-controlled execution.
         required: false
       - name: targets
-        description: "One or more targets separated by ';' in the format name=<key>,values=<value1>,<value2>. A key-value mapping to target resources."
+        description: "A semicolon-separated list of key-value mapping to target resources in the format name=<key>,values=<value1>,<value2>."
         required: false
       - name: target_locations
         description: "A semicolon-separated list of target location entries in the format key=<field>,value=<value>. Supported fields: Accounts, Regions, ExecutionRoleName, TargetLocationMaxConcurrency, TargetLocationMaxErrors. For example: key=Accounts,value=123456789012;key=Regions,value=us-east-1."
@@ -11326,7 +11326,7 @@ script:
         required: false
         isArray: true
       - name: alarm_ignore_poll_failure
-        description: When true, the automation continues to run even if CloudWatch alarm status cannot be retrieved.
+        description: Whether the automation continues to run even if CloudWatch alarm status cannot be retrieved.
         required: false
         auto: PREDEFINED
         predefined:
@@ -11334,7 +11334,7 @@ script:
           - 'false'
         defaultValue: 'false'
       - name: tags
-        description: "Optional metadata to assign to the execution. Semicolon-separated list in the format key=<key>,value=<value>."
+        description: "A semicolon-separated list of optional metadata to assign to the execution in the format key=<key>,value=<value>."
         required: false
       - name: interval_in_seconds
         description: The interval in seconds between polling attempts.
@@ -11373,7 +11373,7 @@ script:
         description: A list of details about the current state of all steps that comprise an execution, containing StepName, Action, StepStatus, Inputs, Outputs, StepExecutionId, and other fields.
         type: Unknown
       - contextPath: AWS.SSM.AutomationExecution.StepExecutionsTruncated
-        description: A boolean value that indicates if the response contains the full list of the Automation step executions.
+        description: Whether the response contains the full list of the Automation step executions.
         type: Boolean
       - contextPath: AWS.SSM.AutomationExecution.Parameters
         description: The key-value map of execution parameters supplied when calling StartAutomationExecution.
@@ -11403,10 +11403,10 @@ script:
         description: The parameter name used as the target resource for the rate-controlled execution.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.Targets.Key
-        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        description: The user-defined criteria for sending commands that target managed nodes.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.Targets.Values
-        description: User-defined criteria that maps to Key.
+        description: The user-defined values that map to the key.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.ResolvedTargets
         description: A list of resolved targets in the rate control execution, containing ParameterValues and Truncated fields.
@@ -11421,7 +11421,7 @@ script:
         description: The target of the execution.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.TargetLocations
-        description: The combination of AWS Regions and/or AWS accounts where you want to run the Automation, containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, and ExecutionRoleName fields.
+        description: The combination of AWS regions and/or AWS accounts where you want to run the Automation, containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, and ExecutionRoleName fields.
         type: Unknown
       - contextPath: AWS.SSM.AutomationExecution.ProgressCounters
         description: An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields.
@@ -11439,7 +11439,7 @@ script:
         description: The date and time the Automation operation is scheduled to start.
         type: String
       - contextPath: AWS.SSM.AutomationExecution.Runbooks
-        description: Information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields.
+        description: The information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields.
         type: Unknown
       - contextPath: AWS.SSM.AutomationExecution.OpsItemId
         description: The ID of an OpsItem that is created to represent a Change Manager change request.
@@ -11576,7 +11576,7 @@ script:
         description: Lists commands issued against this managed node ID.
         required: false
       - name: filters
-        description: "One or more filters separated by ';' in the format name=<key>,values=<value>. Valid filter keys: InvokedAfter, InvokedBefore, Status, ExecutionStage, DocumentName."
+        description: "A semicolon-separated list of filters in the format name=<key>,values=<value>. Valid filter keys: InvokedAfter, InvokedBefore, Status, ExecutionStage, DocumentName."
         required: false
       - name: limit
         description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.
@@ -11599,7 +11599,7 @@ script:
         description: User-specified information about the command, such as a brief description of what the command should do.
         type: String
       - contextPath: AWS.SSM.Command.ExpiresAfter
-        description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed.
+        description: The command expiration time, after which the status for all InProgress, Pending, or Delayed invocations changes to DeliveryTimedOut.
         type: Date
       - contextPath: AWS.SSM.Command.Parameters
         description: The parameter values to be inserted in the document when running the command.
@@ -11608,10 +11608,10 @@ script:
         description: The managed node IDs against which this command was requested.
         type: Unknown
       - contextPath: AWS.SSM.Command.Targets.Key
-        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        description: The user-defined criteria for sending commands that target managed nodes.
         type: String
       - contextPath: AWS.SSM.Command.Targets.Values
-        description: User-defined criteria that maps to Key.
+        description: The user-defined values that map to the key.
         type: String
       - contextPath: AWS.SSM.Command.RequestedDateTime
         description: The date and time the command was requested.
@@ -11623,7 +11623,7 @@ script:
         description: A detailed status of the command execution.
         type: String
       - contextPath: AWS.SSM.Command.OutputS3Region
-        description: The Amazon Web Services Region of the S3 bucket.
+        description: The Amazon Web Services region of the S3 bucket.
         type: String
       - contextPath: AWS.SSM.Command.OutputS3BucketName
         description: The name of the S3 bucket where command execution responses should be stored.
@@ -11650,10 +11650,10 @@ script:
         description: The number of targets for which the status is Delivery Timed Out.
         type: Number
       - contextPath: AWS.SSM.Command.ServiceRole
-        description: The IAM service role that Run Command uses to act on your behalf when sending notifications about command status changes.
+        description: The IAM service role that run command uses to act on your behalf when sending notifications about command status changes.
         type: String
       - contextPath: AWS.SSM.Command.NotificationConfig
-        description: Configurations for sending notifications about command status changes, containing NotificationArn, NotificationEvents, and NotificationType fields.
+        description: The configurations for sending notifications about command status changes, containing NotificationArn, NotificationEvents, and NotificationType fields.
         type: Unknown
       - contextPath: AWS.SSM.Command.CloudWatchOutputConfig
         description: CloudWatch Logs configuration for the command, containing CloudWatchLogGroupName and CloudWatchOutputEnabled fields.
