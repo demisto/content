@@ -553,7 +553,7 @@ There is no context output for this command.
 ### cs-falcon-lift-host-containment
 
 ***
-Lifts containment on the host, which returns its network communications to normal.
+Lifts containment on the host, which returns its network communications to normal. When lift_filesystem_containment_all is set to true, lifts filesystem containment instead.
 
 #### Base Command
 
@@ -564,10 +564,19 @@ Lifts containment on the host, which returns its network communications to norma
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection. | Required |
+| lift_filesystem_containment_all | Whether to lift filesystem containment instead of network containment. When set to true, uses the lift_filesystem_containment_all action to remove filesystem containment from the specified hosts. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-lift-host-containment ids="a]1234567890abcdef12345678"```
+
+#### Human Readable Output
+
+>Containment has been lifted off host 'a]1234567890abcdef12345678'
 
 ### cs-falcon-run-command
 
@@ -1437,6 +1446,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. |
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 | CrowdStrike.NextPageToken | unknown | A pagination token used with the limit parameter to manage pagination of results. |
 
 #### Command Example
@@ -1530,6 +1540,7 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. |
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -1542,6 +1553,7 @@ Gets the full definition of one or more indicators that you are watching.
     "CrowdStrike": {
         "IOC": {
             "Action": "no_action",
+            "MobileAction": "no_action",
             "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "CreatedTime": "2022-02-16T14:25:22.968603813Z",
             "Expiration": "2022-02-17T17:55:09Z",
@@ -1588,7 +1600,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | ioc_type | The type of the indicator. Possible values are: sha256, md5, domain, ipv4, ipv6. | Required |
 | value | A comma-separated list of indicators.<br/>More than one value can be supplied to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required |
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity &gt; Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. Possible values are: no_action, allow, prevent_no_ui, prevent, detect. | Required |
-| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux. | Required |
+| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux, android, ios. | Required |
 | severity | The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high, critical. | Optional |
 | expiration | The datetime the indicator will become inactive (ISO 8601 format, i.e., YYYY-MM-DDThh:mm:ssZ). | Optional |
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional |
@@ -1597,6 +1609,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | host_groups | A comma-separated list of host group IDs that the indicator applies to. The list of host group IDs can be retrieved by running the 'cs-falcon-list-host-groups' command. Either applied_globally or host_groups must be provided. | Optional |
 | tags | A comma-separated list of tags to apply to the indicator. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
+| mobile_action | The action to take on mobile devices when a host observes the custom IOC. no_action: The indicator is saved for future use, but no action is taken (no severity required). allow: The indicator is allowed and not detected (severity does not apply and should not be provided). detect: The connection is allowed and a detection is generated. prevent: The indicator is blocked and shown as a detection. Possible values are: no_action, allow, detect, prevent. | Optional |
 
 #### Context Output
 
@@ -1617,10 +1630,11 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. |
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. |
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
-```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
+```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac" mobile_action="no_action"```
 
 #### Context Example
 
@@ -1634,6 +1648,7 @@ Uploads an indicator for CrowdStrike to monitor.
             "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Action": "prevent",
+            "MobileAction": "no_action",
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
@@ -1667,12 +1682,13 @@ Updates an indicator for CrowdStrike to monitor.
 | --- | --- | --- |
 | ioc_id | The ID of the IOC to update. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command. | Required |
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity &gt; Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. Possible values are: no_action, allow, prevent_no_ui, prevent, detect. | Optional |
-| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux. | Optional |
+| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux, android, ios. | Optional |
 | severity | The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high, critical. | Optional |
 | expiration | The datetime the indicator will become inactive (ISO 8601 format, i.e., YYYY-MM-DDThh:mm:ssZ). | Optional |
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional |
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
+| mobile_action | The action to take on mobile devices when a host observes the custom IOC. no_action: The indicator is saved for future use, but no action is taken (no severity required). allow: The indicator is allowed and not detected (severity does not apply and should not be provided). detect: The connection is allowed and a detection is generated. prevent: The indicator is blocked and shown as a detection. Possible values are: no_action, allow, detect, prevent. | Optional |
 
 #### Context Output
 
@@ -1691,6 +1707,7 @@ Updates an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -1708,6 +1725,7 @@ Updates an indicator for CrowdStrike to monitor.
             "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Action": "prevent",
+            "MobileAction": "no_action",
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
@@ -3350,6 +3368,7 @@ Uploads a batch of indicators.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. |
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
