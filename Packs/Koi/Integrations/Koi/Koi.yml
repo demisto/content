@@ -125,6 +125,854 @@ script:
     - contextPath: KOI.Event.created_at
       description: The creation time of the event (audit logs).
       type: Date
+  - name: koi-policy-list
+    description: Retrieves a list of all policies. Use 'page' and 'page_size' to fetch a specific page, or use 'limit' to auto-paginate and collect up to the specified number of policies. If 'page' is provided, 'limit' is ignored.
+    arguments:
+    - name: page
+      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500). Used only in single-page mode together with the page argument.'
+    - name: limit
+      description: 'Maximum total number of policies to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many policies.'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Policy.id
+      description: The unique identifier of the policy.
+      type: Number
+    - contextPath: Koi.Policy.name
+      description: The name of the policy.
+      type: String
+    - contextPath: Koi.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: Koi.Policy.action
+      description: The action taken by the policy (e.g., block).
+      type: String
+    - contextPath: Koi.Policy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.Policy.group_ids
+      description: List of group IDs associated with the policy.
+      type: Unknown
+    - contextPath: Koi.Policy.creator_fullname
+      description: The full name of the policy creator.
+      type: String
+    - contextPath: Koi.Policy.created_at
+      description: The creation time of the policy in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Policy.updated_at
+      description: The last update time of the policy in ISO 8601 format.
+      type: Date
+  - name: koi-allowlist-get
+    description: Retrieves all items in the allowlist.
+    arguments: []
+    outputs:
+    - contextPath: Koi.Allowlist.item_id
+      description: The unique identifier of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.item_name
+      description: The name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.item_display_name
+      description: The display name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.marketplace
+      description: The marketplace of the allowlist item (e.g., vscode).
+      type: String
+    - contextPath: Koi.Allowlist.publisher_name
+      description: The publisher name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.package_name
+      description: The package name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.notes
+      description: Notes associated with the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.created_by
+      description: The user who created the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.created_at
+      description: The creation time of the allowlist item in ISO 8601 format.
+      type: Date
+  - name: koi-allowlist-items-remove
+    description: Removes one or more items from the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
+    execution: true
+    arguments:
+    - name: item_id
+      description: The ID of the item to remove from the allowlist. Required when not using items_list_raw_json_entry_id.
+    - name: marketplace
+      description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: created_by
+      description: Email of the user who created this entry.
+    - name: notes
+      description: Additional notes about the removal.
+    - name: items_list_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+    outputs: []
+  - name: koi-allowlist-items-add
+    description: Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+    arguments:
+    - name: item_id
+      description: The ID of the item to add to the allowlist. Required when not using items_list_raw_json_entry_id.
+    - name: marketplace
+      description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: created_by
+      description: Email of the user who created this entry.
+    - name: notes
+      description: Additional notes about the entry.
+    - name: items_list_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+    outputs: []
+  - name: koi-blocklist-get
+    description: Retrieves all items in the blocklist.
+    arguments: []
+    outputs:
+    - contextPath: Koi.Blocklist.item_id
+      description: The unique identifier of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.item_name
+      description: The name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.item_display_name
+      description: The display name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.marketplace
+      description: The marketplace of the blocklist item (e.g., vscode).
+      type: String
+    - contextPath: Koi.Blocklist.publisher_name
+      description: The publisher name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.package_name
+      description: The package name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.notes
+      description: Notes associated with the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.created_by
+      description: The user who created the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.created_at
+      description: The creation time of the blocklist item in ISO 8601 format.
+      type: Date
+  - name: koi-blocklist-items-remove
+    description: Removes one or more items from the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
+    execution: true
+    arguments:
+    - name: item_id
+      description: The ID of the item to remove from the blocklist. Required when not using items_list_raw_json_entry_id.
+    - name: marketplace
+      description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: created_by
+      description: Email of the user who created this entry.
+    - name: notes
+      description: Additional notes about the removal.
+    - name: items_list_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+    outputs: []
+  - name: koi-blocklist-items-add
+    description: Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+    arguments:
+    - name: item_id
+      description: The ID of the item to add to the blocklist. Required when not using items_list_raw_json_entry_id.
+    - name: marketplace
+      description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: created_by
+      description: Email of the user who created this entry.
+    - name: notes
+      description: Additional notes or justification for blocking the item.
+    - name: items_list_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+    outputs: []
+  - name: koi-policy-status-update
+    description: Enables or disables a policy by ID.
+    arguments:
+    - name: policy_id
+      description: The ID of the policy to update.
+      required: true
+    - name: enabled
+      description: Whether to enable (true) or disable (false) the policy.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Koi.Policy.id
+      description: The unique identifier of the policy.
+      type: Number
+    - contextPath: Koi.Policy.name
+      description: The name of the policy.
+      type: String
+    - contextPath: Koi.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: Koi.Policy.action
+      description: The action taken by the policy (e.g., block).
+      type: String
+    - contextPath: Koi.Policy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.Policy.group_ids
+      description: List of group IDs associated with the policy.
+      type: Unknown
+    - contextPath: Koi.Policy.creator_fullname
+      description: The full name of the policy creator.
+      type: String
+    - contextPath: Koi.Policy.created_at
+      description: The creation time of the policy in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Policy.updated_at
+      description: The last update time of the policy in ISO 8601 format.
+      type: Date
+  - name: koi-inventory-list
+    description: Retrieves a paginated list of items installed across your organization's endpoints. Supports extensive filtering by marketplace, platform, risk level, publisher, and specific categories.
+    arguments:
+    - name: page
+      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
+    - name: limit
+      description: 'Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
+      defaultValue: '50'
+    - name: brew_category_koi
+      description: Filter by Homebrew package category (Koi classification).
+    - name: browser_category_koi
+      description: Filter by browser extension category (Koi classification).
+    - name: chocolatey_category_koi
+      description: Filter by Chocolatey package category (Koi classification).
+    - name: device_id
+      description: Filter devices by device ID.
+    - name: finding_id
+      description: Filter devices by finding ID.
+    - name: first_seen
+      description: 'Filter by first seen date (items first seen on or after this date). ISO 8601 format (e.g., "2024-01-01T00:00:00Z").'
+    - name: ide_category_koi
+      description: Filter by IDE extension category (Koi classification).
+    - name: installation_method
+      description: Filter by installation method.
+      auto: PREDEFINED
+      predefined:
+      - marketplace
+      - manual
+      - built_in
+      - side_loaded
+    - name: item_display_name
+      description: Filter by item display name. Performs case-insensitive partial match.
+    - name: item_id
+      description: Filter by item ID.
+    - name: marketplace
+      description: Filter by marketplace.
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: platform
+      description: Filter by platform.
+      auto: PREDEFINED
+      predefined:
+      - antigravity
+      - aqua
+      - arc
+      - brave
+      - brew
+      - chatgpt_atlas
+      - chocolatey
+      - chrome
+      - chromium
+      - claude
+      - clion
+      - codex
+      - comet
+      - cursor
+      - datagrip
+      - dataspell
+      - dia
+      - edge
+      - excel
+      - firefox
+      - fleet
+      - goland
+      - hugging_face
+      - intellij_community
+      - intellij
+      - kiro
+      - mac
+      - npm
+      - notepad++
+      - opera
+      - outlook
+      - phpstorm
+      - powerpoint
+      - prisma_access_browser
+      - pycharm
+      - pypi
+      - rider
+      - rubymine
+      - rustrover
+      - vscode
+      - webstorm
+      - windsurf
+      - word
+      - windows
+      - writerside
+    - name: publisher_name
+      description: Filter by publisher name. Performs case-insensitive partial match.
+    - name: risk_level
+      description: Filter by risk level.
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      - pending
+    - name: software_category_koi
+      description: Filter by software category (Koi classification).
+    - name: sort_by
+      description: Column to sort by.
+      auto: PREDEFINED
+      defaultValue: first_seen
+      predefined:
+      - first_seen
+      - last_seen
+      - item_display_name
+      - item_id
+      - version
+      - marketplace
+      - endpoint_count
+      - risk
+      - risk_level
+      - status
+      - installs_count
+      - released_at
+      - publisher_name
+    - name: sort_direction
+      description: Sort direction.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: view
+      description: Filter by predefined view (marketplace group).
+      auto: PREDEFINED
+      predefined:
+      - agentic_ai
+      - ai_models
+      - code_packages
+      - extensions
+      - os_packages
+      - software
+    outputs:
+    - contextPath: Koi.Inventory.item_id
+      description: The unique identifier of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.item_display_name
+      description: The display name of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.marketplace
+      description: The marketplace source of the item.
+      type: String
+    - contextPath: Koi.Inventory.platforms
+      description: List of platforms where the item is installed.
+      type: Unknown
+    - contextPath: Koi.Inventory.publisher_name
+      description: The publisher name of the item.
+      type: String
+    - contextPath: Koi.Inventory.risk
+      description: The numeric risk score of the item.
+      type: Number
+    - contextPath: Koi.Inventory.risk_level
+      description: The risk level classification of the item.
+      type: String
+    - contextPath: Koi.Inventory.version
+      description: The version of the item.
+      type: String
+    - contextPath: Koi.Inventory.status
+      description: The governance status of the item.
+      type: String
+    - contextPath: Koi.Inventory.endpoint_count
+      description: The number of endpoints where the item is installed.
+      type: Number
+    - contextPath: Koi.Inventory.installs_count
+      description: The total number of installs for the item.
+      type: Number
+    - contextPath: Koi.Inventory.first_seen
+      description: The date the item was first seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_seen
+      description: The date the item was last seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_used
+      description: The date the item was last used in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.installation_method
+      description: The method used to install the item.
+      type: String
+    - contextPath: Koi.Inventory.short_description
+      description: A short description of the item.
+      type: String
+    - contextPath: Koi.Inventory.is_first_party
+      description: Whether the item is a first-party item.
+      type: Boolean
+    - contextPath: Koi.Inventory.is_signed
+      description: Whether the item is signed.
+      type: Boolean
+    - contextPath: Koi.Inventory.categories
+      description: List of categories the item belongs to.
+      type: Unknown
+    - contextPath: Koi.Inventory.findings
+      description: List of findings associated with the item.
+      type: Unknown
+    - contextPath: Koi.Inventory.governed_details
+      description: Governance policy details for the item.
+      type: Unknown
+    - contextPath: Koi.Inventory.released_at
+      description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
+      type: Date
+    - contextPath: Koi.Inventory.brew_category_koi
+      description: The Homebrew package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.browser_category_koi
+      description: The browser extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.chocolatey_category_koi
+      description: The Chocolatey package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.ide_category_koi
+      description: The IDE extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.software_category_koi
+      description: The software category (Koi classification).
+      type: String
+  - name: koi-inventory-item-get
+    description: Retrieves comprehensive details for a specific software item, extension, or package using its unique identifier, marketplace, and version.
+    arguments:
+    - name: item_id
+      description: Unique identifier for the item.
+      required: true
+    - name: marketplace
+      description: The marketplace where the item is hosted.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: version
+      required: true
+      description: The specific version of the item to retrieve.
+    outputs:
+    - contextPath: Koi.Inventory.item_id
+      description: The unique identifier of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.item_display_name
+      description: The display name of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.marketplace
+      description: The marketplace source of the item.
+      type: String
+    - contextPath: Koi.Inventory.platforms
+      description: List of platforms where the item is installed.
+      type: Unknown
+    - contextPath: Koi.Inventory.publisher_name
+      description: The publisher name of the item.
+      type: String
+    - contextPath: Koi.Inventory.risk
+      description: The numeric risk score of the item.
+      type: Number
+    - contextPath: Koi.Inventory.risk_level
+      description: The risk level classification of the item.
+      type: String
+    - contextPath: Koi.Inventory.version
+      description: The version of the item.
+      type: String
+    - contextPath: Koi.Inventory.status
+      description: The governance status of the item.
+      type: String
+    - contextPath: Koi.Inventory.endpoint_count
+      description: The number of endpoints where the item is installed.
+      type: Number
+    - contextPath: Koi.Inventory.installs_count
+      description: The total number of installs for the item.
+      type: Number
+    - contextPath: Koi.Inventory.installation_method
+      description: The method used to install the item.
+      type: String
+    - contextPath: Koi.Inventory.is_first_party
+      description: Whether the item is a first-party item.
+      type: Boolean
+    - contextPath: Koi.Inventory.is_signed
+      description: Whether the item is signed.
+      type: Boolean
+    - contextPath: Koi.Inventory.first_seen
+      description: The date the item was first seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_seen
+      description: The date the item was last seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_used
+      description: The date the item was last used in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.released_at
+      description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
+      type: Date
+    - contextPath: Koi.Inventory.short_description
+      description: A short description of the item.
+      type: String
+    - contextPath: Koi.Inventory.categories
+      description: List of categories the item belongs to.
+      type: Unknown
+    - contextPath: Koi.Inventory.findings
+      description: List of findings associated with the item including severity and evidence.
+      type: Unknown
+    - contextPath: Koi.Inventory.governed_details
+      description: Governance policy details for the item.
+      type: Unknown
+    - contextPath: Koi.Inventory.brew_category_koi
+      description: The Homebrew package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.browser_category_koi
+      description: The browser extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.chocolatey_category_koi
+      description: The Chocolatey package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.ide_category_koi
+      description: The IDE extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.software_category_koi
+      description: The software category (Koi classification).
+      type: String
+  - name: koi-inventory-search
+    description: Searches inventory items using advanced query builder filters. Provide a filter via 'filter_json' (inline JSON string) or 'filter_raw_json_entry_id' (War Room file entry ID). At least one filter source must be provided.
+    arguments:
+    - name: filter_json
+      description: 'Advanced filter using query builder syntax as a JSON string. Either filter_json or filter_raw_json_entry_id must be provided.'
+    - name: filter_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing the filter object. Takes priority over filter_json when both are provided.'
+    - name: page
+      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
+    - name: limit
+      description: 'Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
+      defaultValue: '50'
+    - name: sort_by
+      description: Column to sort by.
+      auto: PREDEFINED
+      defaultValue: first_seen
+      predefined:
+      - first_seen
+      - last_seen
+      - item_display_name
+      - item_id
+      - version
+      - marketplace
+      - endpoint_count
+      - risk
+      - risk_level
+      - status
+      - installs_count
+      - released_at
+      - publisher_name
+    - name: sort_direction
+      description: Sort direction.
+      auto: PREDEFINED
+      defaultValue: desc
+      predefined:
+      - asc
+      - desc
+    outputs:
+    - contextPath: Koi.Inventory.item_id
+      description: The unique identifier of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.item_display_name
+      description: The display name of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.marketplace
+      description: The marketplace source of the item.
+      type: String
+    - contextPath: Koi.Inventory.platforms
+      description: List of platforms where the item is installed.
+      type: Unknown
+    - contextPath: Koi.Inventory.publisher_name
+      description: The publisher name of the item.
+      type: String
+    - contextPath: Koi.Inventory.risk
+      description: The numeric risk score of the item.
+      type: Number
+    - contextPath: Koi.Inventory.risk_level
+      description: The risk level classification of the item.
+      type: String
+    - contextPath: Koi.Inventory.version
+      description: The version of the item.
+      type: String
+    - contextPath: Koi.Inventory.status
+      description: The governance status of the item.
+      type: String
+    - contextPath: Koi.Inventory.endpoint_count
+      description: The number of endpoints where the item is installed.
+      type: Number
+    - contextPath: Koi.Inventory.installs_count
+      description: The total number of installs for the item.
+      type: Number
+    - contextPath: Koi.Inventory.first_seen
+      description: The date the item was first seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_seen
+      description: The date the item was last seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_used
+      description: The date the item was last used in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.installation_method
+      description: The method used to install the item.
+      type: String
+    - contextPath: Koi.Inventory.short_description
+      description: A short description of the item.
+      type: String
+    - contextPath: Koi.Inventory.is_first_party
+      description: Whether the item is a first-party item.
+      type: Boolean
+    - contextPath: Koi.Inventory.is_signed
+      description: Whether the item is signed.
+      type: Boolean
+    - contextPath: Koi.Inventory.categories
+      description: List of categories the item belongs to.
+      type: Unknown
+    - contextPath: Koi.Inventory.findings
+      description: List of findings associated with the item.
+      type: Unknown
+    - contextPath: Koi.Inventory.governed_details
+      description: Governance policy details for the item.
+      type: Unknown
+    - contextPath: Koi.Inventory.released_at
+      description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
+      type: Date
+    - contextPath: Koi.Inventory.brew_category_koi
+      description: The Homebrew package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.browser_category_koi
+      description: The browser extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.chocolatey_category_koi
+      description: The Chocolatey package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.ide_category_koi
+      description: The IDE extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.software_category_koi
+      description: The software category (Koi classification).
+      type: String
+  - name: koi-inventory-item-endpoints-list
+    description: Retrieves a paginated list of endpoints that have a specific item installed.
+    arguments:
+    - name: item_id
+      description: Unique identifier for the item.
+      required: true
+    - name: marketplace
+      description: The marketplace where the item is hosted.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: version
+      required: true
+      description: The specific version of the item.
+    - name: page
+      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
+    - name: limit
+      description: 'Maximum total number of endpoints to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many endpoints.'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Inventory.Endpoint.id
+      description: The unique identifier of the endpoint device.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.os
+      description: The operating system of the endpoint.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.platform
+      description: The platform where the item is installed on this endpoint.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.serial
+      description: The serial number of the endpoint device.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.last_logged_on_user
+      description: The last logged on user of the endpoint.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.activation_status
+      description: The activation status of the endpoint.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.path
+      description: The installation path of the item on the endpoint.
+      type: String
+    - contextPath: Koi.Inventory.Endpoint.first_seen
+      description: The date the item was first seen on this endpoint in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.Endpoint.last_seen
+      description: The date the item was last seen on this endpoint in ISO 8601 format.
+      type: Date
   runonce: false
   script: '-'
   type: python
