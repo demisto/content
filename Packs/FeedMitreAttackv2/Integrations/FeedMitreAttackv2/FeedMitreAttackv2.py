@@ -46,7 +46,6 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     "weaponization": ThreatIntel.KillChainPhases.WEAPONIZATION,
     "act-on-objectives": ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     "command-and-control": ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
-    "stealth": ThreatIntel.KillChainPhases.STEALTH,
 }
 FILTER_OBJS = {  # pragma: no cover
     "Tactic": {"name": "tactic", "filter": Filter("type", "=", "x-mitre-tactic")},
@@ -99,49 +98,6 @@ class Client:
         self.get_roots()
         self.get_collections()
 
-    def fetch_tactic_by_shortname(self, shortname: str) -> str | None:
-        """Fetch a tactic's MITRE ID from the TAXII server by matching its x_mitre_shortname locally.
-
-        The TAXII server does not support filtering by x_mitre_shortname directly, so all
-        x-mitre-tactic objects are fetched and matched in memory. Used as a fallback when an
-        attack pattern references a tactic phase that is not yet present in tactic_name_to_mitre_id
-        (e.g. a newly added tactic whose x-mitre-tactic object was not returned in the main batch).
-
-        Args:
-            shortname: The raw phase_name value from kill_chain_phases (e.g. 'stealth').
-
-        Returns:
-            The MITRE tactic ID (e.g. 'TA0111') if found, else None.
-        """
-        tactic_filter = [Filter("type", "=", "x-mitre-tactic")]
-        for collection in self.collections:
-            if collection.title.lower() != ENTERPRISE_COLLECTION_NAME:
-                continue
-            collection_url = urljoin(self.base_url, f"api/v21/collections/{collection.id}/")
-            collection_data = Collection(collection_url, verify=self.verify, proxies=self.proxies)
-            tc_source = TAXIICollectionSource(collection_data)
-            try:
-                results = tc_source.query(tactic_filter)
-            except Exception as e:
-                demisto.debug(f"MA: Failed to fetch tactics for shortname lookup '{shortname}': {e}")
-                return None
-            for tactic_obj in results:
-                tactic_json = tactic_obj if isinstance(tactic_obj, dict) else json.loads(str(tactic_obj))
-                if tactic_json.get("x_mitre_shortname") != shortname:
-                    continue
-                mitre_id = next(
-                    (ref.get("external_id") for ref in tactic_json.get("external_references", [])
-                     if ref.get("source_name") == "mitre-attack"),
-                    None,
-                )
-                tactic_name = tactic_json.get("name")
-                if mitre_id and tactic_name:
-                    demisto.debug(f"MA: Fetched missing tactic '{tactic_name}' -> '{mitre_id}' by shortname '{shortname}'")
-                    self.tactic_name_to_mitre_id[tactic_name] = mitre_id
-                    return mitre_id
-        demisto.debug(f"MA: Tactic with shortname '{shortname}' not found on TAXII server.")
-        return None
-
     def create_indicator(self, item_type, value, mitre_item_json):
         indicator_score = INDICATOR_TYPE_TO_SCORE.get(item_type)  # type: ignore
         indicator_obj = {
@@ -162,10 +118,10 @@ class Client:
 
         if item_type.lower() == "tactic":
             tactic_mitre_id = self.tactic_name_to_mitre_id.get(value)
-            if not tactic_mitre_id:
-                tactic_mitre_id = self.fetch_tactic_by_shortname(mitre_item_json.get("x_mitre_shortname", ""))
             if tactic_mitre_id:
                 indicator_obj["value"] = f"{tactic_mitre_id} - {value}"
+            else:
+                demisto.debug(f"MA: Tactic '{value}' not found in tactic_name_to_mitre_id mapping, value will not include MITRE ID.")
 
         if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
             tactics = []
@@ -177,10 +133,7 @@ class Client:
                     tactic_name = tactic["phase_name"].title().replace("-", " ").replace("And", "and")
                     tactic_mitre_id = self.tactic_name_to_mitre_id.get(tactic_name)
                     if not tactic_mitre_id:
-                        # Tactic not yet in the feed — try fetching it directly by shortname
-                        tactic_mitre_id = self.fetch_tactic_by_shortname(tactic["phase_name"])
-                    if not tactic_mitre_id:
-                        demisto.debug(f"MA: Tactic '{tactic_name}' not found on TAXII server, skipping relationship.")
+                        demisto.debug(f"MA: Tactic '{tactic_name}' not found in tactic_name_to_mitre_id mapping, skipping relationship.")
                         continue
                     tactic = f"{tactic_mitre_id} - {tactic_name}"
                     tactics.append(
