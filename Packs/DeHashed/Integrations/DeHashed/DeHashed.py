@@ -14,7 +14,7 @@ from BaseContentApiModule import *
 BASE_CONTEXT_OUTPUT_PREFIX = "DeHashed"
 BASE_URL = "https://api.dehashed.com/v2/"
 
-REQUEST_PAGE_SIZE = 1000
+REQUEST_PAGE_SIZE = 5000
 MAX_REQUEST_PAGE_SIZE = 10_000
 
 # DBotScore severity labels (instance config values).
