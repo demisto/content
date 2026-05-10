@@ -32,7 +32,7 @@ AssetType = Literal[
     "phone",
     "all_fields",
 ]
-Operation = Literal["is", "contains", "regex"]
+Operation = Literal["is", "regex"]
 
 # endregion
 
@@ -46,7 +46,7 @@ def _build_search_query(asset_type: str, value: str, operation: str) -> str:
     Args:
         asset_type (str): The asset type (e.g. "email", "all_fields").
         values (str): The value to search for.
-        operation (str): The operation - "is", "contains", or "regex".
+        operation (str): The operation - "is" or "regex".
 
     Returns:
         str: The constructed query string.
@@ -432,7 +432,7 @@ def email_command(
     command_results: list[CommandResults] = []
 
     for indicator_value in args.email:
-        query_string = _build_search_query("email", indicator_value, "contains")
+        query_string = _build_search_query("email", indicator_value, "is")
         demisto.debug(f"[email] Built query string for {indicator_value!r}: {query_string!r}")
 
         result = client.general_search(

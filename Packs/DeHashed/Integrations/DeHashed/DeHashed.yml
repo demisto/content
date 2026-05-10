@@ -71,7 +71,6 @@ script:
       name: operation
       predefined:
       - is
-      - contains
       - regex
       required: true
     - description: The number of page to return. Each page contains up to 5,000 results.
