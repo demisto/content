@@ -366,9 +366,11 @@ def dehashed_search_command(client: DehashedClient, args: DehashedSearchArgs) ->
         "PageNumber": args.page,
     }
 
+    returned_page_size = min(REQUEST_PAGE_SIZE, len(query_data))
+
     readable_output = tableToMarkdown(
         f"DeHashed Search - got total results: {result.get('total')}, page number: {args.page}"
-        f", page size is: {len(filtered_results)}. returning results from {results_from} to {results_to}.",
+        f", page size is: {returned_page_size}. returning results from {results_from} to {results_to}.",
         transformed_entries,
         headerTransform=pascalToSpace,
     )
