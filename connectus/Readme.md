@@ -84,23 +84,33 @@ python3 connectus/check_command_params.py <integration_dir> \
 
 Requirements:
 
-- **Docker on the host.** The analyzer runs the integration's child process
-  inside `demisto/py3-native:8.9.0.114862` by default.
+- **Docker on the host** (default mode). The analyzer runs the integration's
+  child process inside `demisto/py3-native:8.9.0.114862`. The integration's
+  YML `script.dockerimage` is intentionally ignored — one pinned image keeps
+  the analyzer reproducible. Pass `--docker never` to fall back to host
+  Python (works only for integrations with no third-party deps); pass
+  `--static-only` to skip the dynamic phase entirely.
 - The default ignore list at
   [`connectus/default_ignore_params.txt`](default_ignore_params.txt:1) strips
-  auth/connection/framework params so only **behavioral**, per-command-meaningful
-  params remain.
+  ~154 auth/connection/framework params (`url`, `credentials`, `proxy`,
+  `insecure`, `longRunning`, the feed framework, …) so only **behavioral**,
+  per-command-meaningful params remain.
 
 The analyzer's stdout JSON has two top-level keys: `commands` (the polished
-result that is persisted into the `Params to Commands` column) and
-`diagnostics` (internal AI metadata for the migration skill). **`diagnostics`
-is NOT to be persisted into pipeline data** — it is consumed by the calling AI
-and discarded.
+result that is persisted into the `Params to Commands` column, sorted lists
+of param names per command) and `diagnostics` (internal AI metadata for the
+migration skill — per-command status enum, failure excerpts, Scope-1
+narrowing trace, etc.). **`diagnostics` is NOT to be persisted into pipeline
+data** — it is consumed by the calling AI and discarded; the
+`set-params-to-commands` payload contains only the `integration` and
+`commands` keys.
 
 See [`connectus/check_command_params_design.md`](check_command_params_design.md:1)
-for the full design and
-[`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1) for
-how the migration AI consumes the analyzer output.
+for the full design + current implementation status (the 7 layered fixes,
+output schema, status enum, and known JS/PowerShell asymmetry), and
+[`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
+§"Analyzing per-command parameters" for how the migration AI invokes the
+analyzer and processes its output.
 
 ---
 

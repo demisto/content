@@ -542,6 +542,34 @@ The skill ONLY needs to:
 - First-time run on a host: each distinct Docker image needs a one-time pull (20–60s per image).
 - Failure modes are loud: the analyzer never silently produces garbage. If something is wrong, you'll see a clear stderr message.
 
+### 10. Non-Python integrations (JavaScript / PowerShell)
+
+The analyzer's two phases handle non-Python integrations
+asymmetrically:
+
+- **Static analysis**: graceful skip — empty static set, clear stderr
+  log, the analyzer process still exits `0`.
+- **Dynamic analysis (current)**: exits non-zero (rc=3) with empty
+  stdout. (This asymmetry is a known limitation tracked as a future
+  improvement — see
+  [`check_command_params_design.md`](check_command_params_design.md:1)
+  §"Language asymmetry".)
+
+For the AI, **treat any JavaScript or PowerShell integration the same
+way you treat `module_not_found`**: ignore the analyzer's output,
+read the integration source + YML directly, and write a polished
+per-command param list manually. The batch runner surfaces the rc=3
+as `{"error": ..., "stderr": ...}` in the cell — Step 1 of the
+decision tree (§6 above) covers this case. **Never propagate the
+error into the persisted pipeline data.**
+
+> ⚠️ **One more time, because it matters:** when you write the
+> `set-params-to-commands` payload, it must contain ONLY
+> `integration` and `commands` keys. No `diagnostics`, no `status`,
+> no `failure_excerpt`, no `error`, no `stderr`. The pipeline cell is
+> a clean machine-readable artifact; everything else is debugging
+> context that must be discarded.
+
 ### Step 2: Set Params to Commands (workflow data column)
 
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
@@ -552,10 +580,12 @@ python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<
 
 Derive the contents from the integration's existing YAML `configuration` and `script.commands` sections, plus any per-command param usage in the Python code.
 
-Example:
+Example (post-ignore-list — only behavioral params; `url`,
+`credentials`, `longRunning`, etc. are stripped by
+[`connectus/default_ignore_params.txt`](default_ignore_params.txt)):
 
 ```bash
-python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"QRadar v3","commands":{"test-module":["url","credentials"],"qradar-offenses-list":["max_fetch","longRunning"]}}'
+python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"QRadar v3","commands":{"test-module":["adv_params","fetch_query"],"qradar-offenses-list":["fetch_query","filter"]}}'
 ```
 
 **Validation:** The command rejects invalid JSON with the parse error.
