@@ -14,11 +14,10 @@ State is purely derived from row contents — there is no explicit
 
 CSV column groups:
 
-Identity / metadata columns (4) — NOT managed by this script:
+Identity / metadata columns (3) — NOT managed by this script:
   1. Integration ID
   2. Integration File Path
   3. Connector ID
-  4. special cases
 
 Workflow columns (16) — the unified ordered sequence (see ``STEPS``):
    1. assignee                              (data, admin)
@@ -78,6 +77,7 @@ Usage examples:
   python3 connectus/workflow_state.py next --connector "abcd1234"
   python3 connectus/workflow_state.py next --connector "abcd1234" --mine
   python3 connectus/workflow_state.py show-step "Cisco Spark" "Params to Commands"
+  python3 connectus/workflow_state.py files "Cisco Spark"
 """
 
 from __future__ import annotations
@@ -86,6 +86,7 @@ import csv
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -108,7 +109,6 @@ DATA_COLUMNS = [
     "Integration ID",
     "Integration File Path",
     "Connector ID",
-    "special cases",
 ]
 
 VALID_FLAG_VALUES = {"YES", "NO", "N/A"}
@@ -429,8 +429,123 @@ def find_row(rows: list[dict[str, str]], integration_id: str) -> Optional[int]:
 # Auth Details schema validation
 # ---------------------------------------------------------------------------
 
+# Regexes for the Auth Details `config` mini-grammar.
+_AUTH_CONFIG_CLAUSE_RE = re.compile(
+    r"^\s*(REQUIRED|OPTIONAL|CHOICE)\s*\(\s*([^)]*?)\s*\)\s*$"
+)
+_AUTH_CONFIG_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# Split clauses on `+` surrounded by optional whitespace. We use a manual
+# split rather than re.split so we can detect leading/trailing `+` (which
+# would produce empty segments).
+_AUTH_CONFIG_SPLIT_RE = re.compile(r"\s*\+\s*")
+
+
+def _parse_auth_config(config: str) -> tuple[list[str], list[str]]:
+    """Parse the Auth Details ``config`` expression mini-grammar.
+
+    Returns ``(referenced_names, parse_errors)`` where ``referenced_names``
+    is the (order-preserving, possibly duplicate) list of operand names
+    appearing inside any ``REQUIRED(...)``, ``OPTIONAL(...)`` or
+    ``CHOICE(...)`` clause, and ``parse_errors`` is a list of human-readable
+    issues with the expression itself (malformed clauses, bad operand
+    names, stray ``+``, etc.).
+
+    Grammar (case-sensitive on keywords):
+
+        config       := "NoneRequired" | clause ( " + " clause )*
+        clause       := ("REQUIRED" | "OPTIONAL" | "CHOICE") "(" name_list ")"
+        name_list    := name ("," name)*
+        name         := /[A-Za-z_][A-Za-z0-9_]*/
+
+    Surrounding whitespace inside clauses and around ``+`` / ``,`` is
+    tolerated. Empty clauses (``REQUIRED()``) are rejected.
+    """
+    referenced_names: list[str] = []
+    parse_errors: list[str] = []
+
+    stripped = config.strip()
+    if stripped == "":
+        parse_errors.append("config expression is empty")
+        return referenced_names, parse_errors
+    if stripped == "NoneRequired":
+        return referenced_names, parse_errors
+
+    # Detect leading/trailing `+` before splitting, so the resulting empty
+    # segments give a clear error message.
+    if stripped.startswith("+"):
+        parse_errors.append("config expression starts with '+' (no leading clause)")
+    if stripped.endswith("+"):
+        parse_errors.append("config expression ends with '+' (no trailing clause)")
+
+    segments = _AUTH_CONFIG_SPLIT_RE.split(stripped)
+    for seg_idx, segment in enumerate(segments):
+        if segment.strip() == "":
+            # Already covered by the leading/trailing checks above OR a
+            # genuine "+ +" in the middle.
+            if not (seg_idx == 0 and stripped.startswith("+")) and not (
+                seg_idx == len(segments) - 1 and stripped.endswith("+")
+            ):
+                parse_errors.append("empty clause between '+' separators")
+            continue
+        m = _AUTH_CONFIG_CLAUSE_RE.match(segment)
+        if not m:
+            parse_errors.append(
+                f"malformed clause '{segment}' (expected "
+                "REQUIRED(...), OPTIONAL(...), or CHOICE(...))"
+            )
+            continue
+        keyword, inner = m.group(1), m.group(2)
+        if inner.strip() == "":
+            parse_errors.append(f"clause '{keyword}(...)' has no operands")
+            continue
+        operands = [op.strip() for op in inner.split(",")]
+        for op in operands:
+            if op == "":
+                parse_errors.append(
+                    f"clause '{keyword}(...)' has an empty operand "
+                    "(stray comma?)"
+                )
+                continue
+            if not _AUTH_CONFIG_NAME_RE.fullmatch(op):
+                parse_errors.append(
+                    f"clause '{keyword}(...)' operand '{op}' is not a "
+                    "valid identifier (must match [A-Za-z_][A-Za-z0-9_]*)"
+                )
+                continue
+            referenced_names.append(op)
+
+    return referenced_names, parse_errors
+
+
 def validate_auth_detail(value: str) -> list[str]:
-    """Validate Auth Details JSON shape. Returns list of errors ([] = valid)."""
+    """Validate Auth Details JSON shape. Returns list of errors ([] = valid).
+
+    Shape: ``{"auth_types": [{"type": <enum>, "name": <logical_name>,
+    "xsoar_params": [<xsoar_param_id>, ...], "interpolated"?: <bool>},
+    ...], "config": <expression>}``.
+
+    Each ``auth_types[]`` entry describes one prospective ConnectUs
+    connection type that the migrated integration should expose. ``name``
+    is a free-form logical id chosen for that connection type and must be
+    unique across entries within this row. ``xsoar_params`` is the list
+    of XSOAR parameter ids whose values feed the secrets for that
+    connection type (the same XSOAR param may appear in multiple entries
+    if it supplies several connection types). ``config`` references the
+    entry ``name``s (not the XSOAR param ids).
+
+    Validation performed (in addition to the per-entry shape checks):
+
+      - ``xsoar_params`` must be a non-empty list of non-empty strings.
+      - ``auth_types`` entries must be sorted by ``(type, name)``
+        ascending. The first out-of-order pair is reported.
+      - ``config`` must conform to the mini-grammar parsed by
+        :func:`_parse_auth_config` (``NoneRequired`` or one or more
+        ``REQUIRED/OPTIONAL/CHOICE`` clauses joined by ``+``).
+      - Every operand name referenced by ``config`` must appear as some
+        ``auth_types[].name`` in the same row.
+      - If ``config == "NoneRequired"`` then ``auth_types`` must be
+        empty; otherwise ``auth_types`` must be non-empty.
+    """
     errors: list[str] = []
 
     try:
@@ -441,70 +556,116 @@ def validate_auth_detail(value: str) -> list[str]:
     if not isinstance(detail, dict):
         return [f"Expected a JSON object, got {type(detail).__name__}"]
 
-    required_keys = {"auth_types", "config", "params", "notes"}
+    required_keys = {"auth_types", "config"}
     missing = required_keys - set(detail.keys())
     if missing:
         errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
         return errors
 
-    if not isinstance(detail["auth_types"], list):
+    seen_names: set[str] = set()
+    # Track per-entry validity for the sort check (only consider entries
+    # whose `type` and `name` are both well-formed).
+    sortable: list[tuple[int, str, str]] = []
+    valid_auth_types_list = isinstance(detail["auth_types"], list)
+    if not valid_auth_types_list:
         errors.append(f"'auth_types' must be a list, got {type(detail['auth_types']).__name__}")
     else:
         for i, entry in enumerate(detail["auth_types"]):
             if not isinstance(entry, dict):
                 errors.append(f"auth_types[{i}]: expected object, got {type(entry).__name__}")
                 continue
+            entry_type_ok = False
+            entry_name_ok = False
             if "type" not in entry:
                 errors.append(f"auth_types[{i}]: missing 'type'")
             elif entry["type"] not in VALID_AUTH_TYPES:
                 errors.append(f"auth_types[{i}]: invalid type '{entry['type']}'")
+            else:
+                entry_type_ok = True
             if "name" not in entry:
                 errors.append(f"auth_types[{i}]: missing 'name'")
             elif not isinstance(entry["name"], str):
                 errors.append(f"auth_types[{i}]: 'name' must be a string")
+            elif not entry["name"]:
+                errors.append(f"auth_types[{i}]: 'name' must be a non-empty string")
+            elif entry["name"] in seen_names:
+                errors.append(
+                    f"auth_types[{i}]: duplicate 'name' '{entry['name']}' "
+                    "(each entry must have a unique logical name)"
+                )
+            else:
+                seen_names.add(entry["name"])
+                entry_name_ok = True
+            if "xsoar_params" not in entry:
+                errors.append(f"auth_types[{i}]: missing 'xsoar_params'")
+            elif not isinstance(entry["xsoar_params"], list):
+                errors.append(
+                    f"auth_types[{i}]: 'xsoar_params' must be a list, "
+                    f"got {type(entry['xsoar_params']).__name__}"
+                )
+            elif len(entry["xsoar_params"]) == 0:
+                errors.append(
+                    f"auth_types[{i}]: 'xsoar_params' must contain at least one entry"
+                )
+            else:
+                for j, p in enumerate(entry["xsoar_params"]):
+                    if not isinstance(p, str) or not p:
+                        errors.append(
+                            f"auth_types[{i}]: xsoar_params[{j}] must be a non-empty string"
+                        )
+            if "interpolated" in entry and not isinstance(entry["interpolated"], bool):
+                errors.append(
+                    f"auth_types[{i}]: 'interpolated' must be a bool, "
+                    f"got {type(entry['interpolated']).__name__}"
+                )
+
+            if entry_type_ok and entry_name_ok:
+                sortable.append((i, entry["type"], entry["name"]))
+
+        # Sort-order check: report the first out-of-order adjacent pair
+        # among the entries that have valid `type` and `name`.
+        for k in range(len(sortable) - 1):
+            i_a, type_a, name_a = sortable[k]
+            i_b, type_b, name_b = sortable[k + 1]
+            if (type_a, name_a) > (type_b, name_b):
+                errors.append(
+                    f"auth_types must be sorted by (type, name); entry "
+                    f"[{i_a}] '{type_a}'/'{name_a}' should come after "
+                    f"entry [{i_b}] '{type_b}'/'{name_b}'"
+                )
+                break
 
     if not isinstance(detail["config"], str):
         errors.append(f"'config' must be a string, got {type(detail['config']).__name__}")
-
-    if not isinstance(detail["params"], dict):
-        errors.append(f"'params' must be a dict, got {type(detail['params']).__name__}")
     else:
-        for param_name, param_data in detail["params"].items():
-            if not isinstance(param_data, dict):
-                errors.append(f"params['{param_name}']: expected object, got {type(param_data).__name__}")
-                continue
-            if "type" not in param_data:
-                errors.append(f"params['{param_name}']: missing 'type'")
+        config_str = detail["config"]
+        referenced_names, parse_errors = _parse_auth_config(config_str)
+        for pe in parse_errors:
+            errors.append(f"'config': {pe}")
+        for n in referenced_names:
+            if n not in seen_names:
+                errors.append(
+                    f"'config' references unknown connection-type name "
+                    f"'{n}' (must match an auth_types[].name)"
+                )
+        # Coherence between `config` and `auth_types`.
+        if valid_auth_types_list:
+            auth_types_empty = len(detail["auth_types"]) == 0
+            if config_str.strip() == "NoneRequired":
+                if not auth_types_empty:
+                    errors.append(
+                        "'config' is 'NoneRequired' but 'auth_types' "
+                        "contains entries; remove the entries or change "
+                        "'config'"
+                    )
             else:
-                ptype = param_data["type"]
-                if isinstance(ptype, str):
-                    if ptype not in VALID_AUTH_TYPES:
-                        errors.append(f"params['{param_name}']: invalid type '{ptype}'")
-                elif isinstance(ptype, list):
-                    for t in ptype:
-                        if t not in VALID_AUTH_TYPES:
-                            errors.append(f"params['{param_name}']: invalid type '{t}' in list")
-                else:
-                    errors.append(f"params['{param_name}']: 'type' must be string or list")
-
-            if "xsoar_type" not in param_data:
-                errors.append(f"params['{param_name}']: missing 'xsoar_type'")
-            elif not isinstance(param_data["xsoar_type"], int):
-                errors.append(
-                    f"params['{param_name}']: 'xsoar_type' must be int, "
-                    f"got {type(param_data['xsoar_type']).__name__}"
-                )
-
-            if "required" not in param_data:
-                errors.append(f"params['{param_name}']: missing 'required'")
-            elif not isinstance(param_data["required"], bool):
-                errors.append(
-                    f"params['{param_name}']: 'required' must be bool, "
-                    f"got {type(param_data['required']).__name__}"
-                )
-
-    if detail["notes"] is not None and not isinstance(detail["notes"], str):
-        errors.append(f"'notes' must be a string or null, got {type(detail['notes']).__name__}")
+                # Only flag the empty-auth_types mismatch if the config
+                # itself parsed cleanly (otherwise the parse error is
+                # the more informative signal).
+                if not parse_errors and auth_types_empty:
+                    errors.append(
+                        "'config' is not 'NoneRequired' but 'auth_types' is empty"
+                    )
 
     return errors
 
@@ -610,14 +771,13 @@ def format_status(row: dict[str, str]) -> str:
 
     file_path = row.get("Integration File Path", "").strip()
     connector_id = row.get("Connector ID", "").strip()
-    special = row.get("special cases", "").strip()
     assignee = row.get("assignee", "").strip()
 
     lines.append(f"  Assignee:        {assignee if assignee else '(unassigned)'}")
     lines.append(f"  File Path:       {file_path if file_path else '(not set)'}")
+    if file_path:
+        lines.append(f"                   (run 'workflow_state.py files {integration_id}' to list all source files)")
     lines.append(f"  Connector ID:    {connector_id if connector_id else '(not set)'}")
-    if special:
-        lines.append(f"  Special Cases:   {special}")
     lines.append("")
 
     lines.append(f"  Workflow ([{done_count}/16]):")
@@ -1454,6 +1614,81 @@ def cmd_show_step(args: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# `files` command — resolve all source files for an integration
+# ---------------------------------------------------------------------------
+
+# Filename extensions that should NOT be included in the `extras` map
+# (binary blobs, images, archives — not useful as text source files).
+_EXTRAS_BINARY_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".zip",
+}
+
+
+def cmd_files(args: list[str]) -> None:
+    """Print all known source-file paths for an integration.
+
+    Usage: workflow_state.py files <integration_id> [--format=text|json|paths]
+    """
+    fmt = "text"
+    positional: list[str] = []
+    for a in args:
+        if a.startswith("--format="):
+            fmt = a[len("--format="):]
+        else:
+            positional.append(a)
+
+    if not positional:
+        print("Usage: workflow_state.py files <integration_id> [--format=text|json|paths]")
+        sys.exit(1)
+
+    if fmt not in {"text", "json", "paths"}:
+        print(f"ERROR: Unknown --format value '{fmt}'. Valid: text, json, paths.", file=sys.stderr)
+        sys.exit(1)
+
+    integration_id = " ".join(positional)
+    info = get_integration_files(integration_id)
+
+    if "error" in info:
+        print(f"ERROR: {info['error']}", file=sys.stderr)
+        sys.exit(1)
+
+    if fmt == "json":
+        print(json.dumps(info, indent=2))
+        return
+
+    if fmt == "paths":
+        for key in ("yml", "code", "description", "readme", "test"):
+            val = info.get(key)
+            if val:
+                print(val)
+        return
+
+    # Default: text
+    name = info["integration_id"]
+    lines = [
+        f"\n{'=' * 60}",
+        f"  {name} — source files",
+        f"{'=' * 60}",
+        f"  Directory:    {info['directory']}",
+        f"  Base:         {info['base']}",
+        f"  Language:     {info['code_language'] if info['code_language'] else '(unknown)'}",
+        "",
+        f"  YML:          {info['yml'] if info['yml'] else '(missing)'}",
+        f"  Code:         {info['code'] if info['code'] else '(missing)'}",
+        f"  Description:  {info['description'] if info['description'] else '(missing)'}",
+        f"  README:       {info['readme'] if info['readme'] else '(missing)'}",
+        f"  Test:         {info['test'] if info['test'] else '(missing)'}",
+    ]
+    extras = info.get("extras") or {}
+    if extras:
+        lines.append("")
+        lines.append("  Other files in directory:")
+        for fname in sorted(extras.keys()):
+            lines.append(f"    - {fname}")
+    print("\n".join(lines))
+
+
+# ---------------------------------------------------------------------------
 # `next` command
 # ---------------------------------------------------------------------------
 
@@ -1461,8 +1696,7 @@ def _example_value_for(step: Step) -> str:
     """Return a canonical example value for the example CLI line."""
     if step.kind == "data" and step.name in JSON_VALUED_COLUMNS:
         if step.name == "Auth Details":
-            return ("'{\"auth_types\":[],\"config\":\"NONE\","
-                    "\"params\":{},\"notes\":null}'")
+            return "'{\"auth_types\":[],\"config\":\"NoneRequired\"}'"
         if step.name == "Params for test with default in code":
             return "'[]'"
         if step.name == "Params same in other handlers":
@@ -1675,6 +1909,139 @@ def get_integration_status(integration_id: str) -> dict:
         "total_steps": len(STEPS),
         "progress_pct": round(completed / len(STEPS) * 100, 1),
         "all_complete": cur is None and completed > 0,
+    }
+
+
+def get_integration_files(integration_id: str) -> dict:
+    """Return all known source-file paths for an integration.
+
+    The integration's ``Integration File Path`` column holds the YML file
+    path (relative to the repo root). All other integration source files
+    live in the same directory and follow demisto-sdk conventions::
+
+        <dir>/<base>.yml                 ← YML (manifest)
+        <dir>/<base>.py                  ← Python source (or .js / .ps1)
+        <dir>/<base>_description.md      ← short UI blurb
+        <dir>/README.md                  ← long-form docs (filename is fixed)
+        <dir>/<base>_test.py             ← unit tests (Python only)
+
+    Returns a dict with the following keys (str values are repo-relative
+    paths; ``None`` means "not present on disk")::
+
+        {
+            "integration_id": "<id>",
+            "directory":      "<repo-relative dir>",
+            "base":           "<basename without extension>",
+            "yml":            "<path>" | None,
+            "code":           "<path>" | None,
+            "code_language":  "python" | "javascript" | "powershell" | None,
+            "description":    "<path>" | None,
+            "readme":         "<path>" | None,
+            "test":           "<path>" | None,
+            "extras":         {"<filename>": "<path>", ...},
+        }
+
+    Errors return ``{"error": "..."}`` (matching the convention used by
+    ``get_integration_status`` and ``next_step_for``).
+    """
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return {"error": f"Integration '{integration_id}' not found."}
+
+    row = rows[idx]
+    yml_rel = row.get("Integration File Path", "").strip()
+    if not yml_rel:
+        return {
+            "error": (
+                f"Integration '{integration_id}' has no Integration File Path "
+                f"set in the CSV."
+            )
+        }
+
+    # Normalize separators for the relative path components, but resolve
+    # against BASE_DIR for existence checks.
+    directory_rel = os.path.dirname(yml_rel)
+    basename = os.path.basename(yml_rel)
+    # Strip a `.yml` extension specifically — leave anything else intact.
+    if basename.lower().endswith(".yml"):
+        base = basename[:-4]
+    else:
+        base = os.path.splitext(basename)[0]
+
+    abs_dir = os.path.join(BASE_DIR, directory_rel)
+    if not os.path.isdir(abs_dir):
+        return {
+            "error": (
+                f"Integration directory '{directory_rel}' (from CSV) does "
+                f"not exist on disk."
+            )
+        }
+
+    def _rel_if_exists(filename: str) -> Optional[str]:
+        abs_path = os.path.join(abs_dir, filename)
+        if os.path.isfile(abs_path):
+            return os.path.join(directory_rel, filename) if directory_rel else filename
+        return None
+
+    yml_path = _rel_if_exists(basename)
+
+    code_path: Optional[str] = None
+    code_language: Optional[str] = None
+    for ext, lang in (("py", "python"), ("js", "javascript"), ("ps1", "powershell")):
+        candidate = _rel_if_exists(f"{base}.{ext}")
+        if candidate is not None:
+            code_path = candidate
+            code_language = lang
+            break
+
+    description_path = _rel_if_exists(f"{base}_description.md")
+    readme_path = _rel_if_exists("README.md")
+
+    test_path: Optional[str] = None
+    if code_language == "python":
+        test_path = _rel_if_exists(f"{base}_test.py")
+
+    canonical_filenames = {
+        basename,
+        f"{base}.py",
+        f"{base}.js",
+        f"{base}.ps1",
+        f"{base}_description.md",
+        "README.md",
+        f"{base}_test.py",
+    }
+
+    extras: dict[str, str] = {}
+    try:
+        entries = os.listdir(abs_dir)
+    except OSError:
+        entries = []
+    for fname in entries:
+        if fname in canonical_filenames:
+            continue
+        abs_entry = os.path.join(abs_dir, fname)
+        # Only list regular files (skip subdirectories like test_data/).
+        if not os.path.isfile(abs_entry):
+            continue
+        ext = os.path.splitext(fname)[1].lower()
+        if ext in _EXTRAS_BINARY_EXTENSIONS:
+            continue
+        extras[fname] = (
+            os.path.join(directory_rel, fname) if directory_rel else fname
+        )
+
+    return {
+        "integration_id": row.get("Integration ID", ""),
+        "directory": directory_rel,
+        "base": base,
+        "yml": yml_path,
+        "code": code_path,
+        "code_language": code_language,
+        "description": description_path,
+        "readme": readme_path,
+        "test": test_path,
+        "extras": extras,
     }
 
 
@@ -1919,6 +2286,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "list-connectors": cmd_list_connectors,
     "set-assignee-by-connector": cmd_set_assignee_by_connector,
     "show-step": cmd_show_step,
+    "files": cmd_files,
     "help": cmd_help,
 }
 
