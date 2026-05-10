@@ -349,21 +349,33 @@ def add_indicators_to_tim(indicators: list):
 
 
 def create_indicator_object(indicator_list: list, feedtags: list, indicator_field: str) -> list:
-    # create a for loop  which will iterate through the indicators input in list and output a list of dict
     indicator_objs = []
+    skipped_values = 0
 
     for ind in indicator_list:
-        indicator_type = auto_detect_indicator_type(ind.get(indicator_field))
-        if not indicator_type:
-            return_error(f"Could not detect indicator type for value {ind.get(indicator_field)}")
-        indicator_obj = {
-            "value": ind.get(indicator_field),
-            "type": indicator_type,
-            "fields": {"tags": feedtags},
-            "rawJSON": ind,
-        }
+        value = ind.get(indicator_field)
 
-        indicator_objs.append(indicator_obj)
+        if not isinstance(value, str) or not value.strip():
+            skipped_values += 1
+            continue
+
+        indicator_type = auto_detect_indicator_type(value)
+        if not indicator_type:
+            skipped_values += 1
+            demisto.debug(f"Skipping unsupported indicator value from ServiceNow: {value}")
+            continue
+
+        indicator_objs.append(
+            {
+                "value": value,
+                "type": indicator_type,
+                "fields": {"tags": feedtags},
+                "rawJSON": ind,
+            }
+        )
+
+    if skipped_values:
+        demisto.debug(f"Skipped {skipped_values} unsupported ServiceNow records while building indicators.")
 
     return indicator_objs
 

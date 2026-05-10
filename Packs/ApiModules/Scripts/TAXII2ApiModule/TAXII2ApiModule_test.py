@@ -1326,6 +1326,7 @@ class TestParsingIndicators:
 
         indicator_obj["value"] = "test.org"
         indicator_obj["type"] = "Domain"
+        indicator_obj["tags"] = ["medium"]
         xsoar_expected_response = [
             {
                 "fields": {
@@ -1586,6 +1587,7 @@ class TestParsingIndicators:
                 "subject": "C=US, ST=Maryland, L=Pasadena,"
                 " O=Brent Baccala, OU=FreeSoft, "
                 "CN=www.freesoft.org/emailAddress=baccala@freesoft.org",
+                "tags": [],
             },
             "fields": {
                 "stixid": "",
@@ -3169,3 +3171,269 @@ def test_get_ioc_value_multiple_fields():
     res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
 
     assert res == "10.0.0.1"
+
+
+class TestTLPInRawJSON:
+    """Tests that TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol']."""
+
+    def test_tlp_from_marking_refs_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator with object_marking_refs containing a GREEN TLP marking.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The resolved TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, tlp_color=None, objects_to_fetch=[])
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--12345",
+            "number": 12345,
+            "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert result[0]["fields"]["trafficlightprotocol"] == "GREEN"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "GREEN"
+
+    def test_tlp_from_default_color_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator without object_marking_refs and a default tlp_color of 'AMBER'.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The default TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="AMBER", objects_to_fetch=[]
+        )
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--67890",
+            "number": 67890,
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert result[0]["fields"]["trafficlightprotocol"] == "AMBER"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "AMBER"
+
+    def test_tlp_from_marking_refs_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator with object_marking_refs containing a RED TLP marking.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - The resolved TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, tlp_color=None, objects_to_fetch=[])
+        indicator_obj = {
+            "id": "indicator--abc123",
+            "pattern": "[domain-name:value = 'evil.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+            "object_marking_refs": ["marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed"],
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert result[0]["fields"]["trafficlightprotocol"] == "RED"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "RED"
+
+    def test_tlp_from_default_color_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator without object_marking_refs and a default tlp_color of 'WHITE'.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - The default TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="WHITE", objects_to_fetch=[]
+        )
+        indicator_obj = {
+            "id": "indicator--def456",
+            "pattern": "[domain-name:value = 'bad.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert result[0]["fields"]["trafficlightprotocol"] == "WHITE"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "WHITE"
+
+
+class TestTagsInRawJSON:
+    """Tests that tags appear in both fields['tags'] and rawJSON['tags']."""
+
+    def test_tags_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator and a client configured with custom tags.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The tags appear in both fields['tags'] and rawJSON['tags'].
+        """
+        client = Taxii2FeedClient(
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color=None,
+            objects_to_fetch=[],
+            tags=["tag1", "tag2"],
+        )
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--12345",
+            "number": 12345,
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert set(result[0]["fields"]["tags"]) == {"tag1", "tag2"}
+        assert set(result[0]["rawJSON"]["tags"]) == {"tag1", "tag2"}
+
+    def test_tags_with_labels_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator with no labels and a client configured with custom tags.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The custom tags appear in both fields['tags'] and rawJSON['tags'].
+        """
+        client = Taxii2FeedClient(
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color=None,
+            objects_to_fetch=[],
+            tags=["custom-tag"],
+        )
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--67890",
+            "number": 67890,
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert "custom-tag" in result[0]["fields"]["tags"]
+        assert "custom-tag" in result[0]["rawJSON"]["tags"]
+
+    def test_tags_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator with labels and a client configured with custom tags.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - Both labels and custom tags appear in fields['tags'] and rawJSON['tags'].
+        """
+        client = Taxii2FeedClient(
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color=None,
+            objects_to_fetch=[],
+            tags=["custom-tag"],
+        )
+        indicator_obj = {
+            "id": "indicator--abc123",
+            "pattern": "[domain-name:value = 'evil.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+            "labels": ["malicious-activity"],
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert "custom-tag" in result[0]["fields"]["tags"]
+        assert "malicious-activity" in result[0]["fields"]["tags"]
+        assert "custom-tag" in result[0]["rawJSON"]["tags"]
+        assert "malicious-activity" in result[0]["rawJSON"]["tags"]
+
+    def test_tags_in_rawjson_attack_pattern(self):
+        """
+        Given:
+            - An attack pattern object with labels and a client configured with custom tags.
+
+        When:
+            - Parsing the attack pattern via parse_attack_pattern.
+
+        Then:
+            - Both labels and custom tags appear in fields['tags'] and rawJSON['tags'].
+        """
+        client = Taxii2FeedClient(
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color=None,
+            objects_to_fetch=[],
+            tags=["custom-tag"],
+        )
+        attack_pattern_obj = {
+            "type": "attack-pattern",
+            "id": "attack-pattern--aaa111",
+            "name": "Spearphishing",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "labels": ["attack-label"],
+        }
+        result = client.parse_attack_pattern(attack_pattern_obj)
+        assert "custom-tag" in result[0]["fields"]["tags"]
+        assert "attack-label" in result[0]["fields"]["tags"]
+        assert "custom-tag" in result[0]["rawJSON"]["tags"]
+        assert "attack-label" in result[0]["rawJSON"]["tags"]
+
+    def test_tags_in_rawjson_malware(self):
+        """
+        Given:
+            - A malware object with labels and a client configured with custom tags.
+
+        When:
+            - Parsing the malware via parse_malware.
+
+        Then:
+            - Both labels and custom tags appear in fields['tags'] and rawJSON['tags'].
+        """
+        client = Taxii2FeedClient(
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color=None,
+            objects_to_fetch=[],
+            tags=["my-tag"],
+        )
+        malware_obj = {
+            "type": "malware",
+            "id": "malware--bbb222",
+            "name": "TestMalware",
+            "is_family": False,
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "labels": ["trojan"],
+        }
+        result = client.parse_malware(malware_obj)
+        assert "my-tag" in result[0]["fields"]["tags"]
+        assert "trojan" in result[0]["fields"]["tags"]
+        assert "my-tag" in result[0]["rawJSON"]["tags"]
+        assert "trojan" in result[0]["rawJSON"]["tags"]
