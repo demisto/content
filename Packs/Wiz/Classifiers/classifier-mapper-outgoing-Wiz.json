@@ -1,6 +1,7 @@
 {
     "id": "Wiz - Outgoing Mapper",
     "name": "Wiz - Outgoing Mapper",
+    "description": "Maps outgoing Wiz Issue incident fields for bidirectional mirroring.",
     "type": "mapping-outgoing",
     "mapping": {
         "Wiz Issue": {
