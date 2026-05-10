@@ -2245,10 +2245,10 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. |
 | Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. |
 | Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, sourcePortRange is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead. |
 | Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. |
 | Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. |
 | Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
@@ -2306,10 +2306,10 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 | Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. |
 | Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. |
 | Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, sourcePortRange is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead. |
 | Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. |
 | Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. |
 | Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |

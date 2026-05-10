@@ -636,7 +636,7 @@ script:
           - None
 
   - name: azure-storage-blob-container-update
-    description: "Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.""
+    description: "Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -3068,16 +3068,16 @@ script:
       description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
-      description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
+      description: For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges
-      description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
+      description: For multiple ports, a list of ports. For a single port, sourcePortRange is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
-      description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
+      description: For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges
-      description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
+      description: For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
       description: The source address.
@@ -3393,16 +3393,16 @@ script:
       description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
-      description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
+      description: For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges
-      description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
+      description: For multiple ports, a list of ports. For a single port, sourcePortRange is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
-      description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
+      description: For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges
-      description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
+      description: For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
       description: The source address.

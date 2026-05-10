@@ -106,8 +106,8 @@ def test_update_security_rule_command(mocker, client, mock_params):
     # Prepare mock responses
     rule_response = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/\
-            securityRules/test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+            "securityRules/test-rule",
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -160,8 +160,8 @@ def test_update_security_rule_command_deprecated(mocker, client, mock_params):
     access = "Allow"
     rule_response = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/\
-            securityRules/test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+            "securityRules/test-rule",
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -682,15 +682,15 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     # Prepare mock responses
     current_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
-            securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+            "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": False},
     }
 
     updated_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
-            securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+            "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": True},
     }
 
@@ -719,15 +719,15 @@ def test_sql_db_threat_policy_update_command_deprecated(mocker, client, mock_par
     # Prepare mock responses
     current_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
-            securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+            "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": False},
     }
 
     updated_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
-            securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+            "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": True},
     }
 

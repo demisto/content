@@ -373,6 +373,17 @@ PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
 
+# The following commands required a scope, token and resource update as part of the functions get_command_resource and
+# get_command_and_token_scopes.
+STORAGE_BLOB_SPECIAL_COMMANDS = [
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-tag-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+        "azure-storage-blob-tag-set",
+    ]
+
 
 class TokenScope:
     STORAGE = "STORAGE"
@@ -3085,7 +3096,8 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
         original_tags = results.outputs["Tag"]
         demisto.debug(f"Appending the new tags to {original_tags=}")
         dict_original_tags = {tag["Key"]: tag["Value"] for tag in original_tags}
-        tags.update(dict_original_tags)
+        dict_original_tags.update(tags)
+        tags = dict_original_tags
         demisto.debug(f"After the append {tags=}")
 
     xml_data = create_set_tags_request_body(tags)
@@ -4914,15 +4926,7 @@ def get_azure_client(params: dict, args: dict, command: str):
 def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
     """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
     # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    extra_commands = [
-        "azure-storage-blob-property-get",
-        "azure-storage-blob-property-set",
-        "azure-storage-blob-tag-get",
-        "azure-storage-blob-create",
-        "azure-storage-blob-get",
-        "azure-storage-blob-tag-set",
-    ]
-    if "storage-container" in command or command in extra_commands:
+    if "storage-container" in command or command in STORAGE_BLOB_SPECIAL_COMMANDS:
         return STORAGE_SCOPE, [TokenScope.STORAGE]
     return DEFAULT_SCOPE, [TokenScope.DEFAULT]
 
@@ -4930,15 +4934,7 @@ def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
 def get_command_resource(command: str) -> str:
     """Get the resource for the command. Default is management_azure."""
     # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    extra_commands = [
-        "azure-storage-blob-property-get",
-        "azure-storage-blob-property-set",
-        "azure-storage-blob-tag-get",
-        "azure-storage-blob-create",
-        "azure-storage-blob-get",
-        "azure-storage-blob-tag-set",
-    ]
-    if "storage-container" in command or command in extra_commands:
+    if "storage-container" in command or command in STORAGE_BLOB_SPECIAL_COMMANDS:
         return STORAGE_RESOURCE
     return DEFAULT_RESOURCE
 
