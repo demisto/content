@@ -3791,7 +3791,7 @@ class TestGetCommandResource:
         "azure-storage-blob-tag-get",
         "azure-storage-blob-create",
         "azure-storage-blob-get",
-        "azure-storage-blob-tag-set"
+        "azure-storage-blob-tag-set",
     ],
 )
 def test_get_command_and_token_scopes_storage(command):
@@ -3820,8 +3820,8 @@ def test_get_command_and_token_scopes_storage(command):
         "azure-storage-blob-property-set",
         "azure-storage-blob-tag-get",
         "azure-storage-blob-create",
-        "azure-storage-blob-get"
-        "azure-storage-blob-tag-set"
+        "azure-storage-blob-get",
+        "azure-storage-blob-tag-set",
     ],
 )
 def test_get_command_resource_storage(command):
