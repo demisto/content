@@ -32,6 +32,7 @@ dependson:
   must:
   - SearchIndicatorInEvents
 fromversion: 6.1.0
+toversion: 8.13.0
 isInternal: true
 tests:
 - No tests (auto formatted)
