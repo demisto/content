@@ -718,8 +718,6 @@
     "fromVersion": "6.0.0",
     "description": "",
     "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ]
 }

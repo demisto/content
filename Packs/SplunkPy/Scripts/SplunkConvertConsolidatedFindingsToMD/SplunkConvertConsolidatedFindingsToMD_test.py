@@ -11,9 +11,9 @@ def test_render_with_arrays_and_scalars(mocker):
     When:
         - main() is invoked and the script renders the Markdown output.
     Then:
-        - A single flat Field/Value Markdown table is produced where each
-          top-level key is one row and array values are joined into a single
-          comma-separated cell.
+        - A Markdown table titled "Splunk Consolidated Findings" is produced
+          with header keys transformed by ``string_to_table_header`` and the
+          values rendered in the row.
     """
     payload = {
         "search_name": ["Suspicious Login", "Brute Force"],
@@ -27,18 +27,21 @@ def test_render_with_arrays_and_scalars(mocker):
     result = SplunkConvertConsolidatedFindingsToMD.main()
 
     output = result.readable_output
-    # Single table title
+    # Table title
     assert "### Splunk Consolidated Findings" in output
-    # Field/Value column headers
-    assert "Field" in output and "Value" in output
-    # Scalar rows present
-    assert "queue_id" in output and "None" in output
-    assert "threat_category" in output and "threatlist" in output
-    # Array values joined in a single cell
-    assert "Suspicious Login, Brute Force" in output
-    assert "host-a, host-b" in output
-    # Insertion order preserved (search_name appears before queue_id)
-    assert output.index("search_name") < output.index("queue_id")
+    # Headers are produced via string_to_table_header (Title Case, spaces)
+    assert "Search Name" in output
+    assert "Queue Id" in output
+    assert "Threat Category" in output
+    assert "Dest" in output
+    # Scalar values present
+    assert "None" in output
+    assert "threatlist" in output
+    # Array values rendered (comma-joined by tableToMarkdown)
+    assert "Suspicious Login" in output
+    assert "Brute Force" in output
+    assert "host-a" in output
+    assert "host-b" in output
 
 
 def test_render_when_payload_already_a_dict(mocker):
@@ -48,7 +51,7 @@ def test_render_when_payload_already_a_dict(mocker):
     When:
         - main() is invoked.
     Then:
-        - The script handles the dict gracefully and renders the flat table.
+        - The script handles the dict gracefully and renders the table.
     """
     payload = {"queue_id": "None", "record_weight": "60"}
     incident = {"CustomFields": {"splunkconsolidatedfindings": payload}}
@@ -58,8 +61,8 @@ def test_render_when_payload_already_a_dict(mocker):
 
     output = result.readable_output
     assert "### Splunk Consolidated Findings" in output
-    assert "queue_id" in output
-    assert "record_weight" in output
+    assert "Queue Id" in output
+    assert "Record Weight" in output
     assert "60" in output
 
 
@@ -70,8 +73,8 @@ def test_render_with_arrays_of_different_lengths(mocker):
     When:
         - main() is invoked.
     Then:
-        - Each array becomes a single row with comma-joined values, all in the
-          same flat Field/Value table.
+        - The table renders with each key as a header and the array values in
+          the corresponding cell.
     """
     payload = {"tags": ["malware"], "ids": ["a", "b", "c"]}
     incident = {"CustomFields": {"splunkconsolidatedfindings": json.dumps(payload)}}
@@ -81,8 +84,12 @@ def test_render_with_arrays_of_different_lengths(mocker):
 
     output = result.readable_output
     assert "### Splunk Consolidated Findings" in output
-    assert "tags" in output and "malware" in output
-    assert "ids" in output and "a, b, c" in output
+    assert "Tags" in output
+    assert "malware" in output
+    assert "Ids" in output
+    assert "a" in output
+    assert "b" in output
+    assert "c" in output
 
 
 def test_render_when_field_is_empty(mocker):
@@ -92,14 +99,15 @@ def test_render_when_field_is_empty(mocker):
     When:
         - main() is invoked.
     Then:
-        - A friendly placeholder message is rendered instead of an error.
+        - The script does not raise and returns a CommandResults object whose
+          readable output still contains the table title.
     """
     incident = {"CustomFields": {}}
     mocker.patch("demistomock.incident", return_value=incident)
 
     result = SplunkConvertConsolidatedFindingsToMD.main()
 
-    assert "_No consolidated findings data available._" in result.readable_output
+    assert "Splunk Consolidated Findings" in result.readable_output
 
 
 def test_render_when_string_is_invalid_json(mocker):
@@ -109,24 +117,26 @@ def test_render_when_string_is_invalid_json(mocker):
     When:
         - main() is invoked.
     Then:
-        - The script does not raise; the empty-payload fallback message is shown.
+        - The script does not raise; an empty table titled "Splunk Consolidated
+          Findings" is rendered.
     """
     incident = {"CustomFields": {"splunkconsolidatedfindings": "{not-json"}}
     mocker.patch("demistomock.incident", return_value=incident)
 
     result = SplunkConvertConsolidatedFindingsToMD.main()
 
-    assert "_No consolidated findings data available._" in result.readable_output
+    assert "Splunk Consolidated Findings" in result.readable_output
 
 
 def test_format_value_handles_empty_and_complex_types():
     """
     Given:
-        - Various edge-case values: None, "", [], {}, dict, list of mixed.
+        - Various edge-case values: None, "", [], list of strings, dict, int.
     When:
         - _format_value is called on each.
     Then:
-        - Empties render as "-", lists join with ", ", dicts JSON-serialize.
+        - Empties render as "-", lists join with ", ", dicts JSON-serialize,
+          and scalars convert via str().
     """
     fmt = SplunkConvertConsolidatedFindingsToMD._format_value
     assert fmt(None) == "-"
@@ -135,3 +145,24 @@ def test_format_value_handles_empty_and_complex_types():
     assert fmt(["a", "b"]) == "a, b"
     assert fmt({"k": "v"}) == '{"k": "v"}'
     assert fmt(42) == "42"
+
+
+def test_coerce_to_dict_variants():
+    """
+    Given:
+        - A variety of raw input values that may appear in the custom field.
+    When:
+        - _coerce_to_dict is called on each.
+    Then:
+        - Dicts pass through, valid JSON strings parse to dicts, and any other
+          value (empty, malformed, non-dict JSON, unsupported types) returns
+          an empty dict.
+    """
+    coerce = SplunkConvertConsolidatedFindingsToMD._coerce_to_dict
+    assert coerce({"a": 1}) == {"a": 1}
+    assert coerce('{"a": 1}') == {"a": 1}
+    assert coerce("") == {}
+    assert coerce(None) == {}
+    assert coerce("{not-json") == {}
+    assert coerce("[1, 2, 3]") == {}
+    assert coerce(123) == {}

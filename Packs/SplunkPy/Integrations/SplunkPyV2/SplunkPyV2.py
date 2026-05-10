@@ -392,7 +392,9 @@ def enforce_lookback_time(fetch_window_start_time, fetch_window_end_time, look_b
     return fetch_window_start_time
 
 
-def get_fetch_time_window(params, service, last_run_fetch_window_start_time: str, last_run_fetch_window_end_time: str):
+def get_fetch_time_window(
+    params, service, last_run_fetch_window_start_time: str | None, last_run_fetch_window_end_time: str | None
+):
     """Calculate the time window (start and end times) for fetching incidents from Splunk.
 
     This function determines the boundaries of the fetch query time window, handling first-time fetches,
@@ -710,8 +712,8 @@ def fetch_findings(
     if not last_run_data:
         extensive_log("[SplunkPy] SplunkPy first run")
 
-    earliest_time_from_last_run = last_run_data and last_run_data.get("next_run_earliest_time")
-    latest_time_from_last_run = last_run_data and last_run_data.get("next_run_latest_time")
+    earliest_time_from_last_run: str | None = last_run_data.get("next_run_earliest_time") if last_run_data else None
+    latest_time_from_last_run: str | None = last_run_data.get("next_run_latest_time") if last_run_data else None
     search_offset = last_run_data.get("offset", 0) if last_run_data else 0
     extensive_log(f"[SplunkPy] SplunkPy last run is:\n {last_run_data}")
 
@@ -817,6 +819,7 @@ def fetch_findings(
     enrichment_cache_mode = bool(enrich_findings and cache_object)
     last_run_extras: dict[str, Any] = {}
     if enrichment_cache_mode:
+        assert cache_object is not None  # narrowed by enrichment_cache_mode
         cache_object.not_yet_submitted_findings += findings
         if DUMMY not in last_run_data:
             # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
@@ -2014,8 +2017,8 @@ def get_fields_query_part(
     if not raw_dict:
         raw_dict = raw_to_dict(finding_data.get("_raw", ""))
     raw_list: list = []
-    for field in fields:
-        raw_list += argToList(finding_data.get(field, "")) + argToList(raw_dict.get(field, ""))
+    for field_name in fields:
+        raw_list += argToList(finding_data.get(field_name, "")) + argToList(raw_dict.get(field_name, ""))
     if add_backslash:
         raw_list = [item.replace("\\", "\\\\") for item in raw_list]
     raw_list = [f"""{prefix}="{item.strip('"')}\"""" for item in raw_list]
@@ -2044,12 +2047,12 @@ def get_finding_field_and_value(
     """
     if not raw:
         raw = raw_to_dict(finding_data.get("_raw", ""))
-    for field in finding_data:
-        if field in raw_field:
-            return field, finding_data[field]
-    for field in raw:
-        if field in raw_field:
-            return field, raw[field]
+    for field_name in finding_data:
+        if field_name in raw_field:
+            return field_name, finding_data[field_name]
+    for field_name in raw:
+        if field_name in raw_field:
+            return field_name, raw[field_name]
     demisto.error(f"Field {raw_field} was not found in the finding.")
     return "", ""
 
@@ -4313,12 +4316,12 @@ def build_search_human_readable(args: dict[str, Any], parsed_search_results: lis
 def update_headers_from_field_names(search_result: list[dict[str, Any]], chosen_fields: list[str]) -> list[str]:
     headers: list = []
     search_result_keys: set = set().union(*(list(d.keys()) for d in search_result))
-    for field in chosen_fields:
-        if field[-1] == "*":
-            temp_field = field.replace("*", ".*")
+    for field_name in chosen_fields:
+        if field_name[-1] == "*":
+            temp_field = field_name.replace("*", ".*")
             headers.extend(key for key in search_result_keys if re.search(temp_field, key))
-        elif field in search_result_keys:
-            headers.append(field)
+        elif field_name in search_result_keys:
+            headers.append(field_name)
 
     return headers
 

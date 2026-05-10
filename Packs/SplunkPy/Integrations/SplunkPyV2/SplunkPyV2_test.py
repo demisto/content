@@ -6071,7 +6071,8 @@ class TestFetchHandlerFactory:
         splunk.FetchHandlerFactory._registry = {}
         splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
         out = splunk.FetchHandlerFactory.build(None)
-        assert len(out) == 1 and out[0].event_type == "Finding"
+        assert len(out) == 1
+        assert out[0].event_type == "Finding"
 
 
 # --------------------------- parse_investigation / Investigation ---------------------------
@@ -6108,7 +6109,7 @@ def _sample_investigation_row() -> dict:
         "risk_object": [],
         "risk_object_type": [],
         "src": ["192.168.0.2"],
-        "dest": ["72.44.67.8"],
+        "dest": ["192.168.0.2"],
         "dvc": [],
         "orig_host": [],
         "src_user": ["unknown"],

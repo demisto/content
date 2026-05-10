@@ -6,7 +6,7 @@
         "Finding": "Splunk Finding",
         "Investigation": "Splunk Investigation"
     },
-    "name": "Splunk - Classifier (V2)",
+    "name": "SplunkPyV2",
     "transformer": {
         "complex": {
             "filters": [],
