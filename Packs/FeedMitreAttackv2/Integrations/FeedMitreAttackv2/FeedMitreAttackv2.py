@@ -132,16 +132,20 @@ class Client:
                 else:
                     tactic_name = tactic["phase_name"].title().replace("-", " ").replace("And", "and")
                     tactic_mitre_id = self.tactic_name_to_mitre_id.get(tactic_name)
-                    if not tactic_mitre_id:
-                        demisto.debug(f"MA: Tactic '{tactic_name}' not found in tactic_name_to_mitre_id mapping, skipping relationship.")
-                        continue
-                    tactic = f"{tactic_mitre_id} - {tactic_name}"
+                    if tactic_mitre_id:
+                        tactic_value = f"{tactic_mitre_id} - {tactic_name}"
+                    else:
+                        demisto.debug(
+                            f"MA: Tactic '{tactic_name}' not found in tactic_name_to_mitre_id mapping, "
+                            "creating relationship without MITRE ID prefix."
+                        )
+                        tactic_value = tactic_name
                     tactics.append(
                         EntityRelationship(
                             name=EntityRelationship.Relationships.PART_OF,
                             entity_a=indicator_obj["value"],
                             entity_a_type=indicator_obj["type"],
-                            entity_b=tactic,
+                            entity_b=tactic_value,
                             entity_b_type="Tactic",
                         ).to_indicator()
                     )
