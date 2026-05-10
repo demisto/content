@@ -39,7 +39,7 @@ isInternal: true
 subtype: python3
 tests:
 - No tests
-dockerimage: demisto/python3:3.12.13.7444307
+dockerimage: demisto/python3:3.12.13.8428455
 dependson:
   must:
   - findIndicators

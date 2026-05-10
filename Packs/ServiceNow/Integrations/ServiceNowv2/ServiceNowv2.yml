@@ -1977,7 +1977,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.7837600
+  dockerimage: demisto/auth-utils:1.0.0.8659208
   isfetch: true
   ismappable: true
   isremotesyncin: true
