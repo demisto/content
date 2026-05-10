@@ -46,6 +46,7 @@ from workflow_state import (
     cmd_set_assignee,
     cmd_set_assignee_by_connector,
     cmd_set_auth_flag,
+    cmd_files,
     cmd_show_step,
     cmd_skip,
     current_step,
@@ -62,6 +63,7 @@ from workflow_state import (
     is_done,
     list_by_assignee,
     list_by_connector,
+    get_integration_files,
     list_integrations_by_connector,
     load_csv,
     markpass_integration_step,
@@ -77,12 +79,11 @@ from workflow_state import (
 
 
 VALID_AUTH_JSON = (
-    '{"auth_types":[{"type":"APIKey","name":"api_key"}],'
-    '"config":"REQUIRED(APIKey)",'
-    '"params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},'
-    '"notes":null}'
+    '{"auth_types":[{"type":"APIKey","name":"api_key",'
+    '"xsoar_params":["api_key"]}],'
+    '"config":"REQUIRED(api_key)"}'
 )
-VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NoneRequired"}'
 
 
 # ---------------------------------------------------------------------------
@@ -195,15 +196,14 @@ class TestSchemaConstants:
         }
 
     def test_total_column_count_unchanged(self) -> None:
-        assert EXPECTED_COLUMN_COUNT == 20
-        assert len(ALL_COLUMNS) == 20
+        assert EXPECTED_COLUMN_COUNT == 19
+        assert len(ALL_COLUMNS) == 19
 
     def test_data_columns_unchanged(self) -> None:
         assert DATA_COLUMNS == [
             "Integration ID",
             "Integration File Path",
             "Connector ID",
-            "special cases",
         ]
 
     def test_step_by_name_lookup(self) -> None:
@@ -1088,15 +1088,157 @@ class TestValidateAuthDetail:
         assert "Missing required keys" in errors[0]
 
     def test_invalid_auth_type(self) -> None:
-        bad = '{"auth_types":[{"type":"INVALID","name":"x"}],"config":"NONE","params":{},"notes":null}'
+        bad = ('{"auth_types":[{"type":"INVALID","name":"x",'
+               '"xsoar_params":["p"]}],"config":"REQUIRED(x)"}')
         errors = validate_auth_detail(bad)
         assert any("invalid type 'INVALID'" in e for e in errors)
 
     def test_all_valid_auth_types(self) -> None:
         for at in VALID_AUTH_TYPES:
-            detail = (f'{{"auth_types":[{{"type":"{at}","name":"x"}}],'
-                      '"config":"NONE","params":{},"notes":null}')
+            detail = (f'{{"auth_types":[{{"type":"{at}","name":"x",'
+                      '"xsoar_params":["p"]}],'
+                      '"config":"REQUIRED(x)"}')
             assert validate_auth_detail(detail) == [], f"Type '{at}' should be valid"
+
+    # ------------------------------------------------------------------
+    # New: `config` grammar / cross-reference / sort / xsoar_params shape
+    # ------------------------------------------------------------------
+
+    def test_valid_none_required_explicit(self) -> None:
+        detail = '{"auth_types":[],"config":"NoneRequired"}'
+        assert validate_auth_detail(detail) == []
+
+    def test_valid_simple_required(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)"}')
+        assert validate_auth_detail(detail) == []
+
+    def test_valid_two_clause_required_plus_optional(self) -> None:
+        detail = (
+            '{"auth_types":['
+            '{"type":"OAuth2ClientCreds","name":"credentials_consumer",'
+            '"xsoar_params":["credentials_consumer.identifier",'
+            '"credentials_consumer.password"]},'
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]}'
+            '],'
+            '"config":"REQUIRED(credentials) + OPTIONAL(credentials_consumer)"}'
+        )
+        assert validate_auth_detail(detail) == []
+
+    def test_valid_choice(self) -> None:
+        detail = (
+            '{"auth_types":['
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]},'
+            '{"type":"Plain","name":"hunting_credentials",'
+            '"xsoar_params":["hunting_credentials.identifier",'
+            '"hunting_credentials.password"]}'
+            '],'
+            '"config":"CHOICE(credentials, hunting_credentials)"}'
+        )
+        assert validate_auth_detail(detail) == []
+
+    def test_config_unknown_name(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(missing_name)"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "unknown connection-type name 'missing_name'" in e for e in errors
+        ), errors
+
+    def test_config_malformed_empty_required(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED()"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "no operands" in e for e in errors), errors
+
+    def test_config_malformed_trailing_plus(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key) +"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "ends with '+'" in e for e in errors), errors
+
+    def test_config_malformed_unknown_keyword(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"FOO(api_key)"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "malformed clause" in e for e in errors), errors
+
+    def test_config_malformed_missing_parens(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED api_key"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "malformed clause" in e for e in errors), errors
+
+    def test_none_required_with_non_empty_auth_types(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"NoneRequired"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'config' is 'NoneRequired' but 'auth_types' contains entries" in e
+            for e in errors
+        ), errors
+
+    def test_non_none_required_with_empty_auth_types(self) -> None:
+        detail = '{"auth_types":[],"config":"REQUIRED(api_key)"}'
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'config' is not 'NoneRequired' but 'auth_types' is empty" in e
+            for e in errors
+        ), errors
+        # And the unknown-name check should also fire (api_key isn't defined).
+        assert any(
+            "unknown connection-type name 'api_key'" in e for e in errors
+        ), errors
+
+    def test_sort_order_violation(self) -> None:
+        # APIKey < Plain by type; placing Plain first is out of order.
+        detail = (
+            '{"auth_types":['
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]},'
+            '{"type":"APIKey","name":"api_key",'
+            '"xsoar_params":["api_key"]}'
+            '],'
+            '"config":"REQUIRED(api_key) + REQUIRED(credentials)"}'
+        )
+        errors = validate_auth_detail(detail)
+        assert any("must be sorted by (type, name)" in e for e in errors), errors
+        # The error should name the offending pair.
+        assert any(
+            "'Plain'/'credentials'" in e and "'APIKey'/'api_key'" in e
+            for e in errors
+        ), errors
+
+    def test_sort_order_violation_same_type_by_name(self) -> None:
+        # Same type, names out of order: 'b' before 'a'.
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"b","xsoar_params":["p"]},'
+            '{"type":"APIKey","name":"a","xsoar_params":["p"]}'
+            '],'
+            '"config":"REQUIRED(a) + REQUIRED(b)"}'
+        )
+        errors = validate_auth_detail(detail)
+        assert any("must be sorted by (type, name)" in e for e in errors), errors
+
+    def test_empty_xsoar_params_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":[]}],'
+                  '"config":"REQUIRED(api_key)"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "auth_types[0]" in e and "must contain at least one entry" in e
+            for e in errors
+        ), errors
 
 
 # ---------------------------------------------------------------------------
@@ -1693,3 +1835,110 @@ class TestProgrammaticConnectorAPI:
             assert r["assignee"] == "NewOwner"
             assert r["Auth Details"] == VALID_AUTH_JSON
             assert r["Params to Commands"] == "{}"
+
+
+# ---------------------------------------------------------------------------
+# `files` command — get_integration_files / cmd_files
+# ---------------------------------------------------------------------------
+
+CROWDSTRIKE_YML_REL = (
+    "Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.yml"
+)
+
+
+def _crowdstrike_row() -> dict[str, str]:
+    row = _blank_row("CrowdstrikeFalcon")
+    row["Integration File Path"] = CROWDSTRIKE_YML_REL
+    return row
+
+
+class TestGetIntegrationFiles:
+    def test_happy_path_real_directory(self, monkeypatch) -> None:
+        rows = [_crowdstrike_row()]
+        _patch_csv(monkeypatch, rows)
+
+        info = get_integration_files("CrowdstrikeFalcon")
+        assert "error" not in info
+        assert info["integration_id"] == "CrowdstrikeFalcon"
+        assert info["directory"] == (
+            "Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon"
+        )
+        assert info["base"] == "CrowdStrikeFalcon"
+        assert info["yml"] == CROWDSTRIKE_YML_REL
+        assert info["code_language"] == "python"
+        assert info["code"] and info["code"].endswith("CrowdStrikeFalcon.py")
+        assert info["description"] and info["description"].endswith(
+            "CrowdStrikeFalcon_description.md"
+        )
+        assert info["readme"] and info["readme"].endswith("README.md")
+        assert info["test"] and info["test"].endswith("CrowdStrikeFalcon_test.py")
+        assert isinstance(info["extras"], dict)
+        # Image files are excluded by extension blacklist.
+        for fname in info["extras"]:
+            ext = os.path.splitext(fname)[1].lower()
+            assert ext not in {".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".zip"}
+
+    def test_unknown_integration_returns_error(self, monkeypatch) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        info = get_integration_files("NoSuchIntegration")
+        assert "error" in info
+        assert "not found" in info["error"]
+
+    def test_empty_file_path_returns_error(self, monkeypatch) -> None:
+        row = _blank_row("EmptyPathIntegration")
+        # Integration File Path is left blank by _blank_row.
+        _patch_csv(monkeypatch, [row])
+
+        info = get_integration_files("EmptyPathIntegration")
+        assert "error" in info
+        assert "Integration File Path" in info["error"]
+
+    def test_directory_does_not_exist_returns_error(self, monkeypatch) -> None:
+        row = _blank_row("GhostIntegration")
+        row["Integration File Path"] = (
+            "Packs/NoSuchPack/Integrations/NoSuchInt/NoSuchInt.yml"
+        )
+        _patch_csv(monkeypatch, [row])
+
+        info = get_integration_files("GhostIntegration")
+        assert "error" in info
+        assert "does not exist on disk" in info["error"]
+
+
+class TestCmdFiles:
+    def test_cli_text_smoke(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        cmd_files(["CrowdstrikeFalcon"])
+        out = capsys.readouterr().out
+        assert "CrowdstrikeFalcon — source files" in out
+        assert "CrowdStrikeFalcon.yml" in out
+        assert "CrowdStrikeFalcon.py" in out
+        assert "Language:     python" in out
+
+    def test_cli_paths_format(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        cmd_files(["CrowdstrikeFalcon", "--format=paths"])
+        out = capsys.readouterr().out.strip().splitlines()
+        # First line is YML, then code, description, readme, test in order.
+        assert out[0].endswith("CrowdStrikeFalcon.yml")
+        assert out[1].endswith("CrowdStrikeFalcon.py")
+        assert any(line.endswith("CrowdStrikeFalcon_description.md") for line in out)
+        assert any(line.endswith("README.md") for line in out)
+        assert any(line.endswith("CrowdStrikeFalcon_test.py") for line in out)
+
+    def test_cli_json_format(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        cmd_files(["CrowdstrikeFalcon", "--format=json"])
+        out = capsys.readouterr().out
+        parsed = json.loads(out)
+        assert parsed["integration_id"] == "CrowdstrikeFalcon"
+        assert parsed["code_language"] == "python"
+
+    def test_cli_unknown_integration_exits_nonzero(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_files(["NoSuchIntegration"])
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "ERROR:" in err
+        assert "not found" in err

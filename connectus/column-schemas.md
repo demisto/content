@@ -19,46 +19,70 @@ Per-integration authentication classification. One JSON object per row.
 
 ```json
 {
-  "auth_types": [{"type": "<AuthEnum>", "name": "<param_name>"}],
-  "config": "<requirement_expression>",
-  "params": {
-    "<param_name>": {
+  "auth_types": [
+    {
       "type": "<AuthEnum>",
-      "xsoar_type": <int>,
-      "required": <bool>
+      "name": "<connection_type_name>",
+      "xsoar_params": ["<xsoar_field_path>", "<xsoar_field_path>", ...],
+      "interpolated": <bool>
     }
-  },
-  "notes": "<string or null>"
+  ],
+  "config": "REQUIRED(<connection_type_name>, ...) [+ OPTIONAL(<connection_type_name2>, ...)] | CHOICE(<connection_type_name>, <connection_type_name>) | NoneRequired"
 }
 ```
 
-- `auth_types` — Array of `{type, name}` entries, sorted by `(type, name)`.
-- `config` — Auth Config Expression (e.g. `REQUIRED(APIKey)`,
-  `CHOICE(APIKey, Plain)`). See the
-  [`Auth Config Expression Format`](Readme.md:8) section in the README.
-- `params.<name>.type` — Which auth type this param belongs to. May be a
-  string or a list of strings (when one param can play multiple roles).
-- `params.<name>.xsoar_type` — XSOAR widget type:
-  `0` = text, `4` = encrypted, `8` = bool, `9` = credentials,
-  `14` = cert key, `15` = select.
-- `params.<name>.required` — Whether the param is required in the XSOAR
-  configuration.
-- `notes` — Explanation for complex auth setups (managed identity,
-  device code, ROPC, etc.). MUST be non-null when any `Other` auth type
-  is used. `null` otherwise.
+- `auth_types` — **Each entry is one complete UCP connection type** — for
+  example, one `APIKey` auth, one `Plain` auth (which bundles a username
+  **and** a password as a single connection), one `OAuth2ClientCreds`
+  auth, etc. The entry is *not* one XSOAR param; it groups together every
+  field needed to stand up that one auth flow. A single XSOAR field that
+  legitimately feeds more than one connection type (e.g. the same
+  `credentials.password` backing both a Plain profile and an OAuth
+  profile) appears in **multiple entries**, listed inside each entry's
+  `xsoar_params` array. Entries are sorted by `(type, name)`.
+- `auth_types[].type` — Auth-type enum value identifying the kind of
+  connection this entry describes (see the enum table in
+  [`Readme.md`](Readme.md:19)). Pick exactly one.
+- `auth_types[].name` — Free-form logical id chosen for this connection
+  type. Must be unique across entries within this row. This is the
+  identifier referenced by `config` (not the XSOAR param id, not the
+  enum value).
+- `auth_types[].xsoar_params` — Array of XSOAR **field paths** (strings)
+  whose values supply the secrets for this one connection type.
+  Conventions:
+  - For a flat XSOAR param (YML types `0` text, `4` encrypted, `14` cert
+    key, etc.), use the bare param id, e.g. `"api_key"`,
+    `"server_token"`.
+  - For a credentials-typed XSOAR param (YML type `9`), treat its two
+    sub-fields as separate leaf fields and list them with dotted
+    notation: `"<paramid>.identifier"` (the username slot) and
+    `"<paramid>.password"`. A Plain auth backed by a single credentials
+    param therefore lists both, e.g.
+    `["credentials.identifier", "credentials.password"]`.
+  - A Plain auth built from two separate flat params lists both ids
+    directly, e.g. `["server_user", "server_password"]`.
+  - The same field path may appear in the `xsoar_params` of multiple
+    entries when one XSOAR field feeds several connection types.
+- `auth_types[].interpolated` — Optional boolean (defaults to `false`).
+  When `true`, the manifest generator sets the `interpolated` flag in
+  this entry's metadata in the generated manifest (signaling that the
+  value is interpolated from another source/template at runtime rather
+  than supplied verbatim by the user).
+- `config` — Auth Config Expression. Same operators as the README grammar
+  in [`Auth Config Expression Format`](Readme.md:8) — `REQUIRED(...)`,
+  `OPTIONAL(...)`, `CHOICE(...)`, joined with `+`, plus the literal
+  `NoneRequired`. **The operands inside the parens are connection-type
+  names that must each appear as some `auth_types[].name`** — not
+  auth-type enum values and not XSOAR param ids. Examples:
+  - `REQUIRED(api_key)` — single required connection type named `api_key`
+  - `REQUIRED(privateApiKey, publicApiKey)` — two required connection types
+  - `CHOICE(credentials, hunting_credentials)` — pick one of two optional connection types
+  - `REQUIRED(credentials) + OPTIONAL(credentials_consumer)` — Plain connection required, OAuth connection optional
+  - `NoneRequired` — no auth required
 
-Validation rules:
-
-1. Must be valid JSON with keys: `auth_types`, `config`, `params`, `notes`.
-2. `auth_types` entries sorted by `(type, name)`.
-3. Every param in `params` must appear in `auth_types` (by name).
-4. Every type in `config` must appear in at least one param's `type` field,
-   OR be explained in `notes`.
-5. If `config` is `NoneRequired`, then `auth_types` must be `[]` and
-   `params` must be `{}`.
-6. If `Other` is used, `notes` MUST be non-null.
-7. `xsoar_type` values must match the YML param widget types listed above.
-8. `required` values must match the YML param `required` field.
+Schema validation is enforced by
+[`workflow_state.py validate_auth_detail()`](workflow_state.py:432) and runs
+automatically on every `set-auth` invocation.
 
 Setter:
 [`workflow_state.py set-auth "<Integration ID>" '<json>'`](workflow_state.py:833).

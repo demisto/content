@@ -11,7 +11,7 @@ This is the format used inside the `config` field of the **Auth Detail** JSON
 (it is not a separate CSV column). It is a human-readable string with two parts
 separated by ` — `:
 
-**Part 1**: Auth types grouped by type with param names (pipe-separated between types)
+**Part 1**: Auth types grouped by type with names (pipe-separated between types)
 **Part 2**: Requirement expression using `REQUIRED()`, `OPTIONAL()`, `CHOICE()`, combined with `+`
 
 Special case: `NoneRequired` (no auth params)
@@ -25,7 +25,7 @@ Special case: `NoneRequired` (no auth params)
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
 | `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
-| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow). The `notes` field MUST explain the specific auth mechanism. | Azure WAF, Azure Kubernetes Services |
+| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow, Managed Identity, ROPC). | Azure WAF, Azure Kubernetes Services |
 | `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
 
 #### Requirement Expression
@@ -59,7 +59,6 @@ Special case: `NoneRequired` (no auth params)
 | 1 | `Integration ID` | ID of the integration |
 | 2 | `Integration File Path` | Path to the integration's source files |
 | 3 | `Connector ID` | The ID of the Connector |
-| 4 | `special cases` | Frontend/Backend special hardcoded cases |
 
 #### JSON Column Schemas
 
@@ -106,7 +105,7 @@ State is **purely derived from row contents** — there is no separate "current 
 6. **Flag step #12 → step #13 auto-N/A.** Setting `requires auth parity test` to `NO` or `N/A` automatically writes `"N/A"` into `auth parity test passes`. Setting it to `YES` leaves #13 empty so the user must `markpass` it.
 7. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
 8. **`fail` and `reset-to`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behavior; `reset-to` is the explicit name, `fail` reads as "this step failed, redo it".
-9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`, `special cases`) are preserved.
+9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved.
 
 ### CLI Commands
 
@@ -141,7 +140,10 @@ python3 connectus/workflow_state.py show-step "Cisco Spark" "Auth Details"
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
 # Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
-python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+# Each auth_types[] entry is one full UCP connection type. xsoar_params lists
+# the XSOAR field paths that supply its secrets (credentials params expand to
+# `<paramid>.identifier` + `<paramid>.password`). See column-schemas.md.
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)"}'
 
 # Set Params to Commands (validates JSON; cascade-resets steps #4-#16)
 python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
@@ -311,7 +313,7 @@ $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}},"notes":null}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_params":["credentials.identifier","credentials.password"]}],"config":"REQUIRED(credentials)"}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 
@@ -336,7 +338,7 @@ $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest
 #### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NoneRequired"}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Cleared 4 subsequent step(s): ['Params to Commands', 'Params for test with default in code', 'Params same in other handlers', 'generated manifest']
   Current step: #3 Params to Commands
