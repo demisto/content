@@ -1162,6 +1162,26 @@ class TestClientClass:
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
 
+    @pytest.mark.parametrize(
+        "exception",
+        [
+            pytest.param(requests.exceptions.ReadTimeout, id="ReadTimeout"),
+            pytest.param(requests.exceptions.ChunkedEncodingError, id="ChunkedEncodingError"),
+        ],
+    )
+    def test_get_vulnerabilities_timeout(self, mocker: MockerFixture, exception: type) -> None:
+        """
+        Given:
+            - A ReadTimeout or ChunkedEncodingError raised by the HTTP request.
+        When:
+            - Calling client.get_vulnerabilities.
+        Assert:
+            - The exception is re-raised after logging.
+        """
+        mocker.patch.object(self.client, "_http_request", side_effect=exception())
+        with pytest.raises(exception):
+            self.client.get_vulnerabilities(since_datetime="2024-12-12")
+
 
 class TestInputValidations:
     DEPENDANT_ARGS = {
