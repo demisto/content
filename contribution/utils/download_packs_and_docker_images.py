@@ -15,6 +15,8 @@ import re
 import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TypedDict
+
+from typing_extensions import NotRequired
 from zipfile import ZIP_DEFLATED, ZipFile
 from pathlib import Path
 
@@ -30,7 +32,7 @@ RETRY_TOTAL = 3
 RETRY_BACKOFF_FACTOR = 1  # seconds between retries
 
 
-class PackInfo(TypedDict, total=False):
+class PackInfo(TypedDict):
     """Structured metadata for a single pack extracted from index.zip.
 
     These fields mirror the keys previously used from id_set.json ``Packs`` entries,
@@ -51,18 +53,6 @@ class PackInfo(TypedDict, total=False):
     marketplaces           marketplaces             marketplaces
     deprecated             *(string check on name)* deprecated  (boolean)
     ====================  =======================  ============================
-
-    .. note::
-        **Behavioral change from id_set.json → index.zip:**
-        The old script detected deprecated packs by checking
-        ``"(Deprecated)" in pack_data["name"]``.  The index.zip metadata
-        provides an explicit ``deprecated`` boolean field, which is the
-        canonical source and more reliable.
-
-    .. note::
-        Field names use ``snake_case`` to match the id_set.json convention,
-        preserving backward compatibility with :func:`should_filter_out_pack`
-        callers that may filter on these fields.
     """
 
     # Required fields (always present)
@@ -72,11 +62,11 @@ class PackInfo(TypedDict, total=False):
     author: str
     deprecated: bool
     # Optional fields (may be absent in some metadata entries)
-    certification: str
-    tags: list[str]
-    use_cases: list[str]
-    categories: list[str]
-    marketplaces: list[str]
+    certification: NotRequired[str]
+    tags: NotRequired[list[str]]
+    use_cases: NotRequired[list[str]]
+    categories: NotRequired[list[str]]
+    marketplaces: NotRequired[list[str]]
 
 
 def load_index_packs(verify_ssl: bool) -> dict[str, PackInfo]:
@@ -97,7 +87,7 @@ def load_index_packs(verify_ssl: bool) -> dict[str, PackInfo]:
     packs: dict[str, PackInfo] = {}
     with ZipFile(io.BytesIO(r.content), "r") as z:
         for name in z.namelist():
-            # Match paths like "index/<PackName>/metadata.json" using string ops (faster than PurePosixPath)
+            # Match paths like "index/<PackName>/metadata.json" using string ops
             parts = name.rstrip("/").split("/")
             if len(parts) == 3 and parts[0] == "index" and parts[2] == "metadata.json":
                 pack_folder_name = parts[1]
@@ -113,16 +103,16 @@ def load_index_packs(verify_ssl: bool) -> dict[str, PackInfo]:
                         deprecated=metadata.get("deprecated", False),
                     )
                     # Populate optional fields when present in metadata
-                    if "certification" in metadata:
-                        pack_info["certification"] = metadata["certification"]
-                    if "tags" in metadata:
-                        pack_info["tags"] = metadata["tags"]
-                    if "useCases" in metadata:
-                        pack_info["use_cases"] = metadata["useCases"]
-                    if "categories" in metadata:
-                        pack_info["categories"] = metadata["categories"]
-                    if "marketplaces" in metadata:
-                        pack_info["marketplaces"] = metadata["marketplaces"]
+                    keys_to_map = {
+                        "certification": "certification",
+                        "tags": "tags",
+                        "useCases": "use_cases",
+                        "categories": "categories",
+                        "marketplaces": "marketplaces",
+                    }
+                    for source, target in keys_to_map.items():
+                        if source in metadata:
+                            pack_info[target] = metadata[source]
                     packs[display_name] = pack_info
                 except (json.JSONDecodeError, KeyError):
                     continue
@@ -163,7 +153,6 @@ def extract_docker_images_from_pack_zips(packs_dir: str) -> set:
                 for name in z.namelist():
                     if not name.endswith((".yml", ".yaml")):
                         continue
-                    # Use string split instead of PurePosixPath for speed
                     parts = name.split("/")
                     # Only process YAML files under Integrations/ or Scripts/ directories
                     if len(parts) < 2:
@@ -255,8 +244,7 @@ def download_and_save_packs(
 
     Uses index.zip metadata for pack ID and version resolution.
     When ``extract_docker`` is True, docker images are extracted from the
-    downloaded pack zips **before** they are bundled — avoiding a costly
-    unzip-rezip cycle.
+    downloaded pack zips.
 
     Args:
         pack_names: Mapping of display_name -> PackInfo.
@@ -340,7 +328,7 @@ def download_and_save_docker_images(docker_images: set, output_path: str) -> Non
 
     Docker pulls run in parallel using a thread pool.
     """
-    import docker  # import docker only when required
+    import docker
 
     print("Starting to download docker images for given packs")  # noqa: T201
     cli = docker.from_env(timeout=120)

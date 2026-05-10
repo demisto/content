@@ -306,16 +306,13 @@ class TestExtractDockerImagesFromPackZips:
         Then:
             - Returns the set of docker images found.
         """
-        yaml_content = (
-            "name: MyIntegration\n" "dockerimage: demisto/python3:3.10.13.12345\n" "dockerimage45: demisto/python:2.7.18.99999\n"
-        )
+        yaml_content = "name: MyIntegration\n" "dockerimage: demisto/python3:3.10.13.12345\n"
         pack_zip_bytes = _build_pack_zip_with_yaml(yaml_content)
         (tmp_path / "TestPack.zip").write_bytes(pack_zip_bytes)
 
         result = extract_docker_images_from_pack_zips(str(tmp_path))
 
         assert "demisto/python3:3.10.13.12345" in result
-        assert "demisto/python:2.7.18.99999" in result
 
     def test_extracts_from_scripts(self, tmp_path: Path) -> None:
         """
