@@ -1328,7 +1328,11 @@ class TestParsingIndicators:
 
         indicator_obj["value"] = "test.org"
         indicator_obj["type"] = "Domain"
-        # Without update_custom_fields: STIX labels must NOT appear in XSOAR tags
+        # Without update_custom_fields: STIX labels must NOT appear in fields.tags
+        # rawJSON is not modified by the code (no tags key added to ioc_obj_copy)
+        # The code sets trafficlightprotocol on ioc_obj_copy
+        indicator_obj_without_ucf = dict(indicator_obj)
+        indicator_obj_without_ucf["trafficlightprotocol"] = "GREEN"
         xsoar_expected_response = [
             {
                 "fields": {
@@ -1342,13 +1346,16 @@ class TestParsingIndicators:
                     "tags": [],
                     "trafficlightprotocol": "GREEN",
                 },
-                "rawJSON": indicator_obj,
+                "rawJSON": indicator_obj_without_ucf,
                 "type": "Domain",
                 "value": "test.org",
             }
         ]
 
-        # With update_custom_fields: STIX labels ARE added to XSOAR tags (user opted in)
+        # With update_custom_fields: STIX labels ARE added to fields.tags (user opted in)
+        # rawJSON is not modified (no tags key added)
+        indicator_obj_with_ucf = dict(indicator_obj)
+        indicator_obj_with_ucf["trafficlightprotocol"] = "GREEN"
         xsoar_expected_response_with_update_custom_fields = [
             {
                 "fields": {
@@ -1362,7 +1369,7 @@ class TestParsingIndicators:
                     "tags": ["medium"],
                     "trafficlightprotocol": "GREEN",
                 },
-                "rawJSON": indicator_obj,
+                "rawJSON": indicator_obj_with_ucf,
                 "type": "Domain",
                 "value": "test.org",
             }
@@ -3384,10 +3391,12 @@ class TestTagsInRawJSON:
             - A STIX indicator with labels and a client configured with custom tags.
 
         When:
-            - Parsing the indicator via parse_indicator.
+            - Parsing the indicator via parse_indicator (without update_custom_fields).
 
         Then:
-            - Both labels and custom tags appear in fields['tags'] and rawJSON['tags'].
+            - Custom tags appear in fields['tags'].
+            - STIX labels are NOT promoted to fields['tags'] (update_custom_fields is disabled by default).
+            - rawJSON is not modified: no 'tags' key is added to rawJSON for indicators.
         """
         client = Taxii2FeedClient(
             url="",
@@ -3409,9 +3418,8 @@ class TestTagsInRawJSON:
         }
         result = client.parse_indicator(indicator_obj)
         assert "custom-tag" in result[0]["fields"]["tags"]
-        assert "malicious-activity" in result[0]["fields"]["tags"]
-        assert "custom-tag" in result[0]["rawJSON"]["tags"]
-        assert "malicious-activity" in result[0]["rawJSON"]["tags"]
+        assert "malicious-activity" not in result[0]["fields"]["tags"]
+        assert "tags" not in result[0]["rawJSON"]
 
     def test_tags_in_rawjson_attack_pattern(self):
         """
