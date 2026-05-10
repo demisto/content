@@ -533,21 +533,50 @@ def collect_pre_dispatch_params(
     in full and their reads remain in Scope-1 (legitimate fan-out to
     every command).
 
+    Special case: bindings whose target is declared ``global`` at the top
+    of ``main()`` (``global BASE_URL; BASE_URL = params.get("url")``)
+    are NOT bound locals — they re-bind a module-level name that any
+    command handler may read. Those reads are kept in Scope-1 fan-out
+    because the global is re-evaluated on every ``main()`` invocation.
+
     The visitor also catches the chained ``demisto.params().get(...)`` form
     automatically, so callers do NOT need to add that idiom to
     ``params_vars``. Module-level globals (e.g. ``PARAMS = demisto.params()``)
     must be passed in via ``params_vars``.
     """
+    globals_in_main = _collect_global_decls(main_fn)
     visitor = _ParamAccessVisitor(params_vars, aliases)
     for stmt in main_fn.body:
         if stmt.lineno >= dispatch_line:
             break
         if _is_simple_name_assignment(stmt):
-            # Skip the entire binding statement — its reads are handled
-            # by the binding-narrowing path, not blind fan-out.
-            continue
+            pair = _assignment_target_and_value(stmt)
+            assert pair is not None
+            target_name, _ = pair
+            if target_name not in globals_in_main:
+                # Skip the entire binding statement — its reads are
+                # handled by the binding-narrowing path, not blind
+                # fan-out.
+                continue
+            # Else: ``global X; X = params.get("...")`` — re-binding a
+            # module-level global. Walk it as Scope-1 fan-out.
         visitor.visit(stmt)
     return visitor.found
+
+
+def _collect_global_decls(main_fn: ast.FunctionDef) -> set[str]:
+    """Return the set of names declared ``global`` anywhere in ``main()``.
+
+    Only direct ``ast.Global`` declarations are honored. Cases where
+    ``main()`` calls a helper that itself uses ``global`` are not
+    considered here — the helper is still walked by per-command Scope-2
+    tracing, which doesn't depend on this set.
+    """
+    out: set[str] = set()
+    for node in ast.walk(main_fn):
+        if isinstance(node, ast.Global):
+            out.update(node.names)
+    return out
 
 
 def _is_simple_name_assignment(stmt: ast.stmt) -> bool:
@@ -621,6 +650,7 @@ def build_binding_maps(
     params-var, not a binding. The visitor naturally returns zero
     direct reads for that RHS, but we skip it explicitly for clarity.
     """
+    globals_in_main = _collect_global_decls(main_fn)
     binding_map: dict[str, set[str]] = {}
     for stmt in main_fn.body:
         if stmt.lineno >= dispatch_line:
@@ -631,6 +661,13 @@ def build_binding_maps(
         target_name, rhs = pair
         # Skip ``X = demisto.params()`` — it's a params-var, not a binding.
         if _is_demisto_params_call(rhs):
+            continue
+        # Skip targets declared ``global`` in main() — those are
+        # re-bindings of module-level names that any command handler may
+        # read; their reads are kept in Scope-1 fan-out by
+        # :func:`collect_pre_dispatch_params`. Recording them here would
+        # cause double counting (Scope-1 + per-command Scope-2).
+        if target_name in globals_in_main:
             continue
         direct = _collect_param_reads_in_expr(rhs, params_vars, aliases)
         transitive: set[str] = set()
@@ -754,6 +791,61 @@ def find_command_dispatch_branches(
     return out
 
 
+def find_dict_dispatch_call_sites(main_fn: ast.FunctionDef) -> list[ast.Call]:
+    """Return any ``commands[<...>](...)`` invocation sites in ``main()``.
+
+    The classic dict-dispatch idiom (used by MongoDB, Cherwell, GitLab,
+    Slack IAM, etc.) is::
+
+        commands = {"foo": foo_handler, "bar": bar_handler}
+        commands[command](client, **args)
+
+    The single call site is shared across **every** command listed in
+    ``commands``. Its ``Name`` arguments — typically a ``client`` built
+    via ``Client(api_key=params.get("apikey"), ...)`` — therefore fan
+    out to every command in the dict. We expose those call sites so
+    :func:`analyze_static` can replay binding-map attribution for each
+    dispatched command.
+    """
+    out: list[ast.Call] = []
+    for node in ast.walk(main_fn):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if not isinstance(func, ast.Subscript):
+            continue
+        receiver = func.value
+        if isinstance(receiver, ast.Name) and receiver.id == "commands":
+            out.append(node)
+    return out
+
+
+def _attribute_call_args(
+    call: ast.Call,
+    binding_map: dict[str, set[str]],
+    params_vars: set[str],
+    aliases: dict[str, str],
+) -> set[str]:
+    """Walk one ``Call`` node's positional + keyword args.
+
+    For each arg that is a ``Name`` already in ``binding_map``, take
+    its carried params. Otherwise walk the arg expression for inline
+    ``params.get(...)`` / subscript / attribute reads and take those.
+    """
+    found: set[str] = set()
+    for arg in call.args:
+        if isinstance(arg, ast.Name) and arg.id in binding_map:
+            found |= binding_map[arg.id]
+        else:
+            found |= _collect_param_reads_in_expr(arg, params_vars, aliases)
+    for kw in call.keywords:
+        if isinstance(kw.value, ast.Name) and kw.value.id in binding_map:
+            found |= binding_map[kw.value.id]
+        else:
+            found |= _collect_param_reads_in_expr(kw.value, params_vars, aliases)
+    return found
+
+
 def attribute_dispatch_site_params(
     branch_body: list[ast.stmt],
     binding_map: dict[str, set[str]],
@@ -778,18 +870,30 @@ def attribute_dispatch_site_params(
     found: set[str] = set()
     for stmt in branch_body:
         for sub in ast.walk(stmt):
-            if not isinstance(sub, ast.Call):
-                continue
-            for arg in sub.args:
-                if isinstance(arg, ast.Name) and arg.id in binding_map:
-                    found |= binding_map[arg.id]
-                else:
-                    found |= _collect_param_reads_in_expr(arg, params_vars, aliases)
-            for kw in sub.keywords:
-                if isinstance(kw.value, ast.Name) and kw.value.id in binding_map:
-                    found |= binding_map[kw.value.id]
-                else:
-                    found |= _collect_param_reads_in_expr(kw.value, params_vars, aliases)
+            if isinstance(sub, ast.Call):
+                found |= _attribute_call_args(sub, binding_map, params_vars, aliases)
+    return found
+
+
+def attribute_dict_dispatch_shared_args(
+    main_fn: ast.FunctionDef,
+    binding_map: dict[str, set[str]],
+    params_vars: set[str],
+    aliases: dict[str, str],
+) -> set[str]:
+    """Attribute the shared ``commands[command](...)`` call site's args.
+
+    Dict-dispatch routes every command through one shared call site. Any
+    ``Name`` argument at that site that's a key in ``binding_map``
+    represents a value passed to **every** dispatched command — so the
+    params carried by that Name fan out to every command. This restores
+    the Case-4 fan-out for the common ``client = Client(...)`` +
+    ``commands[command](client, ...)`` pattern when the dispatch table
+    is a dict.
+    """
+    found: set[str] = set()
+    for call in find_dict_dispatch_call_sites(main_fn):
+        found |= _attribute_call_args(call, binding_map, params_vars, aliases)
     return found
 
 
@@ -1133,6 +1237,17 @@ def analyze_static(
     for branch_body in find_command_dispatch_branches(main_fn, command):
         scope_2 |= attribute_dispatch_site_params(
             branch_body, binding_map, params_vars, aliases
+        )
+
+    # Dict-dispatch shared call site (``commands[command](client, ...)``)
+    # — args at that site flow to every dispatched command, so the
+    # binding-map params they carry must fan out. Only applied when the
+    # command is recognized as a dispatch target (handler_calls
+    # non-empty), to avoid attributing the shared site to commands
+    # that aren't actually in the dispatch dict.
+    if handler_calls:
+        scope_2 |= attribute_dict_dispatch_shared_args(
+            main_fn, binding_map, params_vars, aliases
         )
 
     if verbose:

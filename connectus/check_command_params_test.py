@@ -1427,3 +1427,78 @@ class TestPhase2BindingNarrowing:
             f"apikey is bound but flows to every handler via Client(...); "
             f"must remain fanned out for Y. scope_1={s1_y}, scope_2={s2_y}"
         )
+
+    # ---- Case 15: global re-binding inside main() must keep fanning out ----
+    def test_case15_global_rebind_in_main_fans_out(self) -> None:
+        # The GitHub-style pattern: ``global X; X = params.get("...")``
+        # inside main() re-binds a module-level name. Every command
+        # handler then reads that global. Binding-narrowing must NOT
+        # treat ``X`` as a local — its reads must remain Scope-1 fan-out.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            BASE_URL = ""
+            TOKEN = ""
+
+            def cmd_x(): pass
+            def cmd_y(): pass
+
+            def main():
+                global BASE_URL
+                global TOKEN
+                params = demisto.params()
+                BASE_URL = params.get("url")
+                TOKEN = params.get("token")
+                command = demisto.command()
+                if command == "X":
+                    cmd_x()
+                elif command == "Y":
+                    cmd_y()
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        assert "url" in (s1_x | s2_x) and "token" in (s1_x | s2_x), (
+            f"global re-binding must keep params in Scope-1 for X. "
+            f"scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "url" in (s1_y | s2_y) and "token" in (s1_y | s2_y), (
+            f"global re-binding must keep params in Scope-1 for Y. "
+            f"scope_1={s1_y}, scope_2={s2_y}"
+        )
+
+    # ---- Case 16: dict-dispatch + Client(...) must keep fanning out ----
+    def test_case16_dict_dispatch_with_client_fans_out(self) -> None:
+        # MongoDB-style pattern: build a Client with inline params reads,
+        # then route every command through ``commands[command](client, ...)``.
+        # The shared dispatch site must still propagate the Client's
+        # carried params to every command in the dict.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client:
+                def __init__(self, **kw): pass
+
+            def cmd_x(client): pass
+            def cmd_y(client): pass
+
+            def main():
+                params = demisto.params()
+                client = Client(
+                    url=params.get("url"),
+                    api_key=params.get("apikey"),
+                )
+                command = demisto.command()
+                commands = {"X": cmd_x, "Y": cmd_y}
+                commands[command](client)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        for cmd, s1, s2 in [("X", s1_x, s2_x), ("Y", s1_y, s2_y)]:
+            assert "url" in (s1 | s2) and "apikey" in (s1 | s2), (
+                f"dict-dispatch + Client must fan out url/apikey to {cmd}. "
+                f"scope_1={s1}, scope_2={s2}"
+            )
