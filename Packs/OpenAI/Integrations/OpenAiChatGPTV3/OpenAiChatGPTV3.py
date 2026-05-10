@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, UTC
 from typing import Any
 from collections.abc import Callable
@@ -26,31 +26,31 @@ INTEGRATION_NAME = "OpenAI GPT"
 class Config:
     """Global static configuration shared across all integration features."""
 
-    # ISO 8601 with UTC, default in XSOAR.
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-    #   - Audit logs      -> openai_chatgpt_audit_raw
-    #   - Compliance logs -> openai_chatgpt_compliance_raw
+    # XSIAM dataset routing: each stream lands in `<vendor>_<product>_raw`.
     VENDOR = "openai"
     PRODUCT_AUDIT = "chatgpt_audit"
     PRODUCT_COMPLIANCE = "chatgpt_compliance"
-
-    # Default base URL used for the Audit & Compliance APIs (overridable via integration params).
-    DEFAULT_COMPLIANCE_URL = "https://api.chatgpt.com"
-
-    # Per-stream dataset names - kept for cross-reference with parsing rules.
     AUDIT_DATASET = "openai_chatgpt_audit_raw"
     COMPLIANCE_DATASET = "openai_chatgpt_compliance_raw"
 
+    DEFAULT_COMPLIANCE_URL = "https://api.chatgpt.com"
+
     DEFAULT_AUDIT_MAX_FETCH = 1000
     DEFAULT_COMPLIANCE_MAX_FETCH = 900
-
-    # Hard limit set by the OpenAI Audit Logs API.
-    AUDIT_PAGE_SIZE = 100
-    # Safety cap; protects against runaway pagination.
-    MAX_PAGES_PER_FETCH = 50
+    DEFAULT_GET_EVENTS_LIMIT = 50
+    AUDIT_PAGE_SIZE = 100  # Hard ceiling enforced by the Audit Logs API.
+    MAX_PAGES_PER_FETCH = 50  # Safety cap on pagination loops.
 
     DEFAULT_FIRST_FETCH = "1 minute ago"
+
+
+class Stream:
+    """Stream identifiers used by the parallel fetch dispatcher and dataset routing."""
+
+    AUDIT = "audit"
+    COMPLIANCE = "compliance"
 
 
 EML_FILE_PREFIX = ".eml"
@@ -173,9 +173,6 @@ class LastRunKey:
     COMPLIANCE_LAST_END_TIME = "compliance_last_end_time"  # ISO timestamp echoed by the listing response.
     COMPLIANCE_LAST_IDS = "compliance_last_ids"  # listing IDs seen at last_end_time, deduped on next run.
 
-
-# Backwards-compatible aliases for inline string constants that existed before the refactor.
-DATE_FORMAT = Config.DATE_FORMAT
 
 CHECK_EMAIL_HEADERS_PROMPT = """
 I have a set of email headers.
@@ -472,12 +469,7 @@ class OpenAiClient(BaseClient):
 
     # region Event Collector - XSIAM ingestion
     def send_events(self, events: list[dict], product: str) -> None:
-        """Send events to XSIAM under the requested product (== dataset suffix).
-
-        Each stream lands in its own XSIAM dataset, named `<vendor>_<product>_raw`:
-          - Audit logs      -> openai_chatgpt_audit_raw  (product=`chatgpt_audit`)
-          - Compliance logs -> openai_chatgpt_compliance_raw  (product=`chatgpt_compliance`)
-        Callers must pick the right `product` so the events land in the matching dataset.
+        """Send events to XSIAM under `Config.VENDOR` and the given `product` (dataset suffix).
 
         Args:
             events: List of event dicts to send.
@@ -795,22 +787,18 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
 # Parsers for non-standard response shapes (concatenated JSON / JSONL)
 # =================================
 def parse_concatenated_json(body: str) -> list[dict[str, Any]]:
-    """Parse a string containing concatenated JSON objects and/or JSONL lines into a list of dicts.
+    """Parse a stream of concatenated JSON objects (and/or JSONL lines) into a list of dicts.
 
-    The OpenAI Compliance log-content endpoint returns a body that is **not valid JSON** -
-    it is a stream of concatenated JSON objects, e.g. `{"a":1}{"b":2}{"c":3}`, possibly
-    separated by whitespace or newlines (i.e. the JSONL format is also covered).
-
-    This helper uses `json.JSONDecoder().raw_decode()` to walk the buffer object-by-object,
-    skipping any whitespace between objects. Non-dict top-level JSON values (numbers, strings,
-    arrays) are silently dropped because they cannot represent an event record.
+    The OpenAI Compliance log-content endpoint returns a body that is NOT valid JSON -
+    objects are concatenated with optional whitespace/newlines between them. Uses
+    `json.JSONDecoder().raw_decode()` to walk the buffer object-by-object. Non-dict
+    top-level values are dropped because they cannot represent an event record.
 
     Args:
         body: The raw response body text.
 
     Returns:
-        A list of dicts parsed from the body. Returns an empty list when `body` is empty
-        or when no decodable JSON value is found.
+        A list of dicts parsed from the body, or `[]` for empty/undecodable input.
     """
     if not body:
         demisto.debug("[Parse] Empty body received - returning [].")
@@ -825,14 +813,13 @@ def parse_concatenated_json(body: str) -> list[dict[str, Any]]:
         try:
             obj, end = decoder.raw_decode(buffer)
         except json.JSONDecodeError as exc:
-            # Bail rather than silently truncate - upstream callers will see a partial result with a debug log.
+            # Stop on first decode failure rather than silently truncate.
             demisto.debug(f"[Parse] Failed to decode concatenated-JSON: {exc.msg} (so far: {len(records)} records).")
             break
         if isinstance(obj, dict):
             records.append(obj)
         else:
             skipped_non_dict += 1
-        # Advance past the consumed object and any whitespace that follows.
         buffer = buffer[end:].lstrip()
 
     demisto.debug(
@@ -887,14 +874,12 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
-    # Validate event_types_to_fetch against the union of all known labels.
     valid_labels = {EventType.AUDIT, *EVENT_TYPE_LABEL_TO_API.keys()}
     event_types_to_fetch = argToList(params.get("event_types_to_fetch") or [])
     invalid = [t for t in event_types_to_fetch if t not in valid_labels]
     if invalid:
         raise DemistoException(f"Invalid event type(s) selected: {invalid}. Valid options: {sorted(valid_labels)}")
 
-    # Validate the correlation between selected event types and the credentials provided.
     validate_event_types_credentials_correlation(
         event_types_to_fetch=event_types_to_fetch,
         admin_api_key=admin_api_key,
@@ -1012,7 +997,17 @@ def parse_first_fetch_to_iso(first_fetch: str) -> str:
 
 
 def event_id(event: dict[str, Any]) -> str | None:
-    """Extract a stable event identifier (used for cross-fetch deduplication)."""
+    """Extract a stable event identifier from a record.
+
+    Tries common identifier keys in order of preference: `id`, `log_id`, `event_id`, `uuid`.
+    The first non-empty value found is coerced to a string and returned.
+
+    Args:
+        event: An event/listing dict from any of the OpenAI API surfaces.
+
+    Returns:
+        The first identifier found as a string, or None if none of the known keys are present.
+    """
     for key in ("id", "log_id", "event_id", "uuid"):
         value = event.get(key)
         if value:
@@ -1021,7 +1016,19 @@ def event_id(event: dict[str, Any]) -> str | None:
 
 
 def deduplicate_events(events: list[dict[str, Any]], previous_ids: list[str]) -> list[dict[str, Any]]:
-    """Remove events whose ID was already ingested in the previous fetch cycle."""
+    """Filter out events whose identifier was ingested in a previous fetch cycle.
+
+    Used by the Compliance stream's tie-dedup at the persisted `last_end_time` cursor.
+    Audit dedup uses the API's native cursor and does not need this helper.
+
+    Args:
+        events: Candidate events from the current fetch.
+        previous_ids: Identifiers that were already ingested last run.
+
+    Returns:
+        A new list containing only events whose `event_id` is not in `previous_ids`.
+        Returns the input unchanged when either list is empty (fast path).
+    """
     if not events or not previous_ids:
         return events
     previous_set = set(previous_ids)
@@ -1055,7 +1062,7 @@ def enrich_compliance_event(event: dict[str, Any], api_event_type: str) -> dict[
         event["source_log_type"] = COMPLIANCE_EVENT_TYPE_TO_SOURCE_LOG_TYPE[api_event_type]
     else:
         demisto.debug(
-            f"[Enrich Compliance] Unknown event_type='{api_event_type}' - " f"falling back to lowercase as source_log_type."
+            f"[Enrich Compliance] Unknown event_type='{api_event_type}' - falling back to lowercase as source_log_type."
         )
         event["source_log_type"] = api_event_type.lower()
     event["_event_type"] = api_event_type
@@ -1101,11 +1108,11 @@ def fetch_audit_logs(
 
     stored_cursor: str | None = last_run.get(LastRunKey.AUDIT_AFTER)
     initial_effective_at_gt: int | None = None
-    if not stored_cursor:
+    if stored_cursor:
+        demisto.debug("[Audit Fetch] Resuming from stored cursor.")
+    else:
         initial_effective_at_gt = parse_first_fetch_to_unix_seconds(first_fetch)
         demisto.debug(f"[Audit Fetch] No cursor in last_run - first fetch using effective_at>{initial_effective_at_gt}.")
-    else:
-        demisto.debug(f"[Audit Fetch] Resuming from stored cursor | cursor_set={True}")
 
     collected: list[dict[str, Any]] = []
     after: str | None = stored_cursor
@@ -1139,13 +1146,12 @@ def fetch_audit_logs(
             break
         after = page_last_id
 
+    # When over `max_fetch`, trim and advance the persisted cursor to the LAST kept event's id
+    # so the next run resumes precisely after this batch (no gap, no overlap).
     if len(collected) > max_fetch:
         demisto.debug(f"[Audit Fetch] Trimming {len(collected)} collected events down to max_fetch={max_fetch}.")
         collected = collected[:max_fetch]
-        # When trimming, advance the persisted cursor to the LAST kept event's id so the next run resumes there.
-        trimmed_last_id = event_id(collected[-1]) if collected else None
-        if trimmed_last_id:
-            last_cursor = trimmed_last_id
+        last_cursor = event_id(collected[-1]) or last_cursor
 
     # Enrich with `_time` / `source_log_type` (cursor pagination guarantees no duplicates already).
     for event in collected:
@@ -1155,7 +1161,7 @@ def fetch_audit_logs(
     last_run_updates: dict[str, Any] = {}
     if last_cursor:
         last_run_updates[LastRunKey.AUDIT_AFTER] = last_cursor
-        demisto.debug(f"[Audit Fetch] Persisting new cursor for next run | cursor_set={True}")
+        demisto.debug("[Audit Fetch] Persisting new cursor for next run.")
 
     demisto.debug(
         f"[Audit Fetch] Done | new_events={len(collected)} | pages_fetched={pages} | " f"updates={list(last_run_updates.keys())}"
@@ -1188,24 +1194,24 @@ def fetch_compliance_logs(
         f"max_fetch={max_fetch} | first_fetch='{first_fetch}'"
     )
 
-    after: str = last_run.get(LastRunKey.COMPLIANCE_LAST_END_TIME) or parse_first_fetch_to_iso(first_fetch)
+    cursor: str = last_run.get(LastRunKey.COMPLIANCE_LAST_END_TIME) or parse_first_fetch_to_iso(first_fetch)
     previous_ids: list[str] = list(last_run.get(LastRunKey.COMPLIANCE_LAST_IDS) or [])
-    demisto.debug(f"[Compliance Fetch] Resolved cursor | after_set={bool(after)} | prev_ids_count={len(previous_ids)}")
+    demisto.debug(f"[Compliance Fetch] Resolved cursor | cursor_set={bool(cursor)} | prev_ids_count={len(previous_ids)}")
 
     listing_response = client.list_compliance_logs(
         workspace_id=workspace_id,
         event_types=api_event_types,
-        after=after,
+        after=cursor,
         limit=max_fetch,
     )
     listings: list[dict[str, Any]] = listing_response.get("data") or []
     response_last_end_time: str | None = listing_response.get("last_end_time")
 
+    # Empty listing - the API may still have advanced its cursor; persist it if so.
     if not listings:
         demisto.debug("[Compliance Fetch] No new compliance log entries returned.")
-        # Even with no entries the API may have moved its cursor forward - persist it if so.
         updates: dict[str, Any] = {}
-        if response_last_end_time and response_last_end_time != after:
+        if response_last_end_time and response_last_end_time != cursor:
             updates[LastRunKey.COMPLIANCE_LAST_END_TIME] = response_last_end_time
             updates[LastRunKey.COMPLIANCE_LAST_IDS] = []
         return [], updates
@@ -1214,11 +1220,11 @@ def fetch_compliance_logs(
         demisto.debug(f"[Compliance Fetch] Trimming {len(listings)} listings down to max_fetch={max_fetch}.")
         listings = listings[:max_fetch]
 
-    # Dedupe listings against previously-seen IDs at the persisted last_end_time.
+    # Dedupe against IDs that were already seen at the persisted `last_end_time` (tie-dedup).
     new_listings = deduplicate_events(listings, previous_ids)
     demisto.debug(f"[Compliance Fetch] Listings ready | listings_total={len(listings)} | new_listings={len(new_listings)}")
 
-    # For each new listing, fetch the content payload (step 2).
+    # Step 2: for each new listing, fetch its content payload.
     events: list[dict[str, Any]] = []
     failed_content_fetches = 0
     for listing in new_listings:
@@ -1235,8 +1241,8 @@ def fetch_compliance_logs(
             continue
 
         # The content endpoint returns a list of records (parsed from a concatenated-JSON / JSONL body).
+        # Carry forward listing metadata so each event is self-describing downstream.
         for record in content:
-            # Carry forward listing metadata so events are self-describing.
             record.setdefault("id", log_id)
             record.setdefault("end_time", listing.get("end_time"))
             enrich_compliance_event(record, api_event_type)
@@ -1246,6 +1252,7 @@ def fetch_compliance_logs(
         demisto.debug(f"[Compliance Fetch] {failed_content_fetches} content fetch(es) failed and were skipped.")
 
     # Persist the API-reported `last_end_time` and the IDs of listings sharing that exact timestamp.
+    # Falls back to the max `end_time` across listings if the API omits `last_end_time`.
     last_run_updates: dict[str, Any] = {}
     new_end_time: str | None = response_last_end_time or max(
         (et for listing in listings if (et := listing.get("end_time"))), default=None
@@ -1253,7 +1260,7 @@ def fetch_compliance_logs(
     if new_end_time:
         ids_at_end_time = [eid for listing in listings if listing.get("end_time") == new_end_time and (eid := event_id(listing))]
         # If the cursor didn't move, merge with previously-seen IDs to keep the dedup set complete.
-        if new_end_time == after:
+        if new_end_time == cursor:
             ids_at_end_time = list(set(previous_ids) | set(ids_at_end_time))
         last_run_updates[LastRunKey.COMPLIANCE_LAST_END_TIME] = new_end_time
         last_run_updates[LastRunKey.COMPLIANCE_LAST_IDS] = ids_at_end_time
@@ -1295,8 +1302,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
         f"last_run_keys={list(last_run.keys())}"
     )
 
-    # Streams are fetched in parallel - each thread gets an immutable copy of last_run, and
-    # the main thread merges the results (single get/setLastRun = no race condition).
+    # Each thread gets a copy of last_run; the main thread merges results (no race condition).
     audit_events: list[dict[str, Any]] = []
     compliance_events: list[dict[str, Any]] = []
     updated_last_run: dict[str, Any] = dict(last_run)
@@ -1307,9 +1313,9 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
 
     streams_to_run: list[str] = []
     if audit_selected:
-        streams_to_run.append("audit")
+        streams_to_run.append(Stream.AUDIT)
     if compliance_selected:
-        streams_to_run.append("compliance")
+        streams_to_run.append(Stream.COMPLIANCE)
     if not streams_to_run:
         demisto.debug("[Command fetch-events] No event-type group selected. Nothing to fetch.")
         demisto.setLastRun(updated_last_run)
@@ -1317,7 +1323,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
 
     demisto.debug(f"[Command fetch-events] Launching {len(streams_to_run)} stream(s) in parallel: {streams_to_run}")
 
-    futures: dict[Any, str] = {}
+    futures: dict[Future, str] = {}
     with ThreadPoolExecutor(max_workers=len(streams_to_run)) as executor:
         if audit_selected:
             demisto.debug("[Command fetch-events] Submitting audit stream to executor.")
@@ -1329,7 +1335,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
                     max_fetch=audit_max_fetch,
                     first_fetch=first_fetch,
                 )
-            ] = "audit"
+            ] = Stream.AUDIT
         if compliance_selected:
             demisto.debug("[Command fetch-events] Submitting compliance stream to executor.")
             futures[
@@ -1342,7 +1348,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
                     max_fetch=compliance_max_fetch,
                     first_fetch=first_fetch,
                 )
-            ] = "compliance"
+            ] = Stream.COMPLIANCE
 
         for future in as_completed(futures):
             stream_name = futures[future]
@@ -1352,7 +1358,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
             except Exception as exc:
                 demisto.error(f"[Command fetch-events] {stream_name} stream failed: {exc}")
                 continue
-            if stream_name == "audit":
+            if stream_name == Stream.AUDIT:
                 audit_events = events
             else:
                 compliance_events = events
@@ -1367,8 +1373,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
         f"compliance_events={len(compliance_events)}"
     )
 
-    # Each stream lands in its own dataset (different `product` => different `<vendor>_<product>_raw`).
-    # Wrap each push in its own try/except so a failure of one stream does not block the other.
+    # Each stream is pushed independently so a failure in one does not block the other.
     if audit_events:
         try:
             client.send_events(audit_events, product=Config.PRODUCT_AUDIT)
@@ -1400,7 +1405,7 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
     demisto.debug("[Command openai-get-events] triggered")
 
     event_type_arg = argToList(args.get("event_type")) or argToList(params.get("event_types_to_fetch") or [])
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = arg_to_number(args.get("limit")) or Config.DEFAULT_GET_EVENTS_LIMIT
     should_push_events = argToBoolean(args.get("should_push_events", False))
     workspace_id = params.get("workspace_id") or ""
     first_fetch = args.get("start_time") or params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
@@ -1418,15 +1423,21 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
         audit_events, _ = fetch_audit_logs(client=client, last_run={}, max_fetch=limit, first_fetch=first_fetch)
 
     api_event_types = selected_compliance_event_types(event_type_arg)
-    if api_event_types and workspace_id:
-        compliance_events, _ = fetch_compliance_logs(
-            client=client,
-            workspace_id=workspace_id,
-            api_event_types=api_event_types,
-            last_run={},
-            max_fetch=limit,
-            first_fetch=first_fetch,
-        )
+    if api_event_types:
+        if not workspace_id:
+            demisto.debug(
+                "[Command openai-get-events] Compliance event types selected but no workspace_id configured - "
+                "skipping the compliance fetch."
+            )
+        else:
+            compliance_events, _ = fetch_compliance_logs(
+                client=client,
+                workspace_id=workspace_id,
+                api_event_types=api_event_types,
+                last_run={},
+                max_fetch=limit,
+                first_fetch=first_fetch,
+            )
 
     all_events: list[dict[str, Any]] = audit_events + compliance_events
     demisto.debug(
@@ -1462,9 +1473,7 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
 # Main entry point
 # =================================
 
-
-# Map command name -> handler with a uniform (client, args, params) signature.
-# Handlers return either `None` (for fetch-events) or a value suitable for `return_results()`.
+# Maps command name -> handler with a uniform (client, args, params) signature.
 COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]], Any]] = {
     "test-module": lambda client, args, params: test_module(client=client, params=params),
     "gpt-send-message": lambda client, args, params: send_message_command(client=client, args=args)[0],
