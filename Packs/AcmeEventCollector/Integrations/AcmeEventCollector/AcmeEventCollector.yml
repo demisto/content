@@ -1,0 +1,77 @@
+category: Analytics & SIEM
+provider: Acme
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Acme Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://api.acme-security.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  name: apikey
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- defaultvalue: '50'
+  display: Maximum number of events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Collects security events from the Acme Security Platform into XSIAM.
+display: Acme Event Collector
+name: Acme Event Collector
+script:
+  commands:
+  - arguments:
+    - description: The number of events to return.
+      name: limit
+      defaultValue: 10
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    description: Gets events from Acme Security Platform.
+    name: acme-get-events
+  dockerimage: demisto/python3:3.12.12.5490952
+  isfetchevents: true
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 8.2.0
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
+supportedModules:
+- xsiam

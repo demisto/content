@@ -1,0 +1,26 @@
+{
+    "name": "Acme Event Collector",
+    "description": "Collects security events from the Acme Security Platform for XSIAM ingestion.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-05-10T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "acme"
+    ],
+    "githubUser": [],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}
