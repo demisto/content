@@ -77,8 +77,6 @@ def test_build_search_query_raises_on_empty_value() -> None:
     [
         pytest.param("email", "a@b.co", "is", 'email:"a@b.co"', id="is_single_email"),
         pytest.param("all_fields", "testgamil.co", "is", '"testgamil.co"', id="is_single_all_fields"),
-        pytest.param("all_fields", "testgamil.co", "contains", "testgamil.co", id="contains_single_all_fields"),
-        pytest.param("email", "foo", "contains", "email:foo", id="contains_single_email"),
         pytest.param("all_fields", "joh?n(ath[oa]n)", "regex", "joh?n(ath[oa]n)", id="regex_single_all_fields"),
         pytest.param("vin", "abc", "regex", "vin:abc", id="regex_single_vin"),
     ],
@@ -92,13 +90,13 @@ def test_build_search_query_parametrized(
     """
     Given:
         - Various combinations of `asset_type`, `value`, and `operation` covering
-          `is`, `contains`, and `regex` operators with a single string `value`.
+          the `is` and `regex` operators (the only supported `Operation` Literal
+          values) with a single string `value`.
     When:
         - Calling _build_search_query.
     Then:
         - Returns the query string per the documented rules:
           - `is`         -> wraps the value in double quotes.
-          - `contains`   -> uses the raw value.
           - `regex`      -> uses the raw value (regex relies on the client `regex=True` flag).
           - `all_fields` -> omits the leading `"<asset_type>:"` prefix.
     """
@@ -1059,10 +1057,9 @@ def test_dehashed_search_total_results_propagated(mocker: MockerFixture, client:
     "asset_type, value, operation, expected_query, expected_regex",
     [
         pytest.param("all_fields", "testgamil.co", "is", '"testgamil.co"', None, id="is_single_all_fields"),
-        pytest.param("all_fields", "testgamil.co", "contains", "testgamil.co", None, id="contains_single_all_fields"),
         pytest.param("all_fields", "joh?n(ath[oa]n)", "regex", "joh?n(ath[oa]n)", True, id="regex_single_all_fields"),
         pytest.param("email", "a@b.co", "is", 'email:"a@b.co"', None, id="is_single_email"),
-        pytest.param("name", "test1", "contains", "name:test1", None, id="contains_single_name"),
+        pytest.param("name", "test1", "is", 'name:"test1"', None, id="is_single_name"),
         pytest.param("vin", "joh?n(ath[oa]n)", "regex", "vin:joh?n(ath[oa]n)", True, id="regex_single_vin"),
     ],
 )
@@ -1512,8 +1509,9 @@ def test_email_command_query_construction(mocker: MockerFixture, client: "Dehash
     When:
         - Calling email_command.
     Then:
-        - `client.general_search` is called with `query="email:a@b.co"`, `regex=None`,
-          and all other optional params set to None.
+        - `client.general_search` is called with `query='email:"a@b.co"'` (the email
+          value is wrapped in double quotes via `_build_search_query` with
+          `operation="is"`), `regex=None`, and all other optional params set to None.
     """
     from DeHashed import email_command, EmailArgs, MAX_REQUEST_PAGE_SIZE
 
@@ -1525,7 +1523,7 @@ def test_email_command_query_construction(mocker: MockerFixture, client: "Dehash
     email_command(client, args, email_dbot_score="SUSPICIOUS", reliability=None)
 
     general_search_mock.assert_called_once_with(
-        query="email:a@b.co",
+        query='email:"a@b.co"',
         page=None,
         size=MAX_REQUEST_PAGE_SIZE,
         wildcard=None,
@@ -1635,8 +1633,8 @@ def test_email_command_multiple_emails_returns_per_email_results(mocker: MockerF
     assert general_search_mock.call_count == 2
     first_call_kwargs = general_search_mock.call_args_list[0].kwargs
     second_call_kwargs = general_search_mock.call_args_list[1].kwargs
-    assert first_call_kwargs["query"] == "email:found@example.com"
-    assert second_call_kwargs["query"] == "email:missing@example.com"
+    assert first_call_kwargs["query"] == 'email:"found@example.com"'
+    assert second_call_kwargs["query"] == 'email:"missing@example.com"'
 
 
 # endregion

@@ -30,8 +30,8 @@ Performs a search to check if information is compromised.
 | --- | --- | --- |
 | asset_type | If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument. Possible values are: email, ip_address, username, hashed_password, name, vin, address, phone, all_fields. | Required |
 | value | The searched value. | Required |
-| operation | The search operator. Possible values are: is, contains, regex. | Required |
-| page | The number of page to return. Each page contains 1,000 results. | Optional |
+| operation | The search operator. Possible values are: is, regex. | Required |
+| page | The number of page to return. Each page contains up to 5,000 results. | Optional |
 | results_from | Starting result number to display. Default is 1. | Optional |
 | results_to | Ending result number to display. Default is 50. | Optional |
 
