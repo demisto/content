@@ -1,3 +1,4 @@
+import json
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -26,6 +27,39 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 INTEGRATION_NAME = "KOI"
 
 
+class ApiPaths:
+    """Centralized KOI API endpoint paths.
+
+    All paths are relative to the KOI base URL configured in integration parameters.
+    Use the classmethods for parameterized routes (e.g., a specific policy or item)
+    so URL construction lives in exactly one place.
+    """
+
+    BASE = "/api/external/v2"
+    ALERTS = f"{BASE}/alerts"
+    AUDIT_LOGS = f"{BASE}/audit-logs"
+    POLICIES = f"{BASE}/policies"
+    ALLOWLIST = f"{BASE}/policies/allowlist"
+    BLOCKLIST = f"{BASE}/policies/blocklist"
+    INVENTORY = f"{BASE}/inventory"
+    INVENTORY_SEARCH = f"{BASE}/inventory/search"
+
+    @classmethod
+    def policy(cls, policy_id: int) -> str:
+        """Return the path for a specific policy by ID."""
+        return f"{cls.POLICIES}/{policy_id}"
+
+    @classmethod
+    def inventory_item(cls, item_id: str) -> str:
+        """Return the path for a specific inventory item by ID."""
+        return f"{cls.INVENTORY}/{item_id}"
+
+    @classmethod
+    def inventory_item_endpoints(cls, item_id: str) -> str:
+        """Return the path for the endpoints of a specific inventory item."""
+        return f"{cls.INVENTORY}/{item_id}/endpoints"
+
+
 class Config:
     """Global static configuration."""
 
@@ -36,9 +70,12 @@ class Config:
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
     # Pagination
-    DEFAULT_PAGE_SIZE = 100
+    DEFAULT_PAGE_SIZE = 50
     MAX_PAGE_SIZE = 500
     MAX_PAGES_PER_FETCH = 10
+    DEFAULT_PAGE = 1
+    DEFAULT_LIMIT = 50
+    MAX_LIMIT = 1000
 
     # Fetch defaults
     DEFAULT_MAX_FETCH = 5000
@@ -56,8 +93,8 @@ class Config:
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    ALERTS = ("alerts", "Alerts", "/api/external/v2/alerts")
-    AUDIT = ("audit", "Audit", "/api/external/v2/audit-logs")
+    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS)
+    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS)
 
     def __init__(self, type_string: str, title: str, api_endpoint: str):
         self.type_string = type_string
@@ -79,6 +116,32 @@ VALID_AUDIT_TYPES = [
     "requests",
     "settings",
     "vetting",
+]
+
+# Valid marketplace values for allowlist operations
+VALID_MARKETPLACES = [
+    "chocolatey",
+    "chrome_web_store",
+    "claude_desktop_extensions",
+    "cursor",
+    "docker",
+    "edge_add_ons",
+    "firefox_add_ons",
+    "github_mcp_registry",
+    "homebrew",
+    "hugging_face",
+    "jetbrains",
+    "linux",
+    "mac",
+    "notepad++",
+    "npm",
+    "office_add_ins",
+    "open_vsx_registry",
+    "pypi",
+    "visual_studio",
+    "vscode",
+    "windows",
+    "windsurf",
 ]
 
 
@@ -244,6 +307,208 @@ def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[
     return new_events
 
 
+def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
+    """Read and parse a JSON file from a War Room entry ID containing list items.
+
+    The JSON file must contain a list of item objects, each with at least 'item_id' and 'marketplace'.
+
+    Args:
+        entry_id: The War Room entry ID of the uploaded JSON file.
+
+    Returns:
+        List of item dictionaries parsed from the JSON file.
+
+    Raises:
+        DemistoException: If the file cannot be read, parsed, or has invalid structure.
+    """
+    try:
+        filepath_result = demisto.getFilePath(entry_id)
+    except Exception as e:
+        raise DemistoException(f"Could not find file for entry ID '{entry_id}': {e}")
+
+    if not filepath_result or not (file_path := filepath_result.get("path")):
+        raise DemistoException(f"Entry ID '{entry_id}' is not a valid file entry.")
+    demisto.debug(f"[File Parse] Reading items from file: {file_path}")
+
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Failed to parse JSON file from entry ID '{entry_id}': {e}")
+    except OSError as e:
+        raise DemistoException(f"Failed to read file from entry ID '{entry_id}': {e}")
+
+    if not isinstance(data, list):
+        raise DemistoException(
+            f"Invalid JSON structure in entry ID '{entry_id}': expected a list of items, got {type(data).__name__}."
+        )
+
+    for i, item in enumerate(data):
+        if not isinstance(item, dict):
+            raise DemistoException(f"Invalid item at index {i}: expected a dictionary, got {type(item).__name__}.")
+        if "item_id" not in item or "marketplace" not in item:
+            raise DemistoException(f"Invalid item at index {i}: each item must contain 'item_id' and 'marketplace'.")
+        if item["marketplace"] not in VALID_MARKETPLACES:
+            raise DemistoException(
+                f"Invalid marketplace '{item['marketplace']}' at index {i}. Valid values: {VALID_MARKETPLACES}"
+            )
+
+    demisto.debug(f"[File Parse] Parsed {len(data)} items from entry ID '{entry_id}'")
+    return data
+
+
+def resolve_items_from_args(args: dict[str, Any]) -> list[dict[str, Any]]:
+    """Resolve list items from command arguments.
+
+    Supports two input modes:
+    - Bulk from file: 'items_list_raw_json_entry_id' with a War Room entry ID.
+    - Single item: 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+
+    File entry ID takes priority when both modes are provided.
+
+    Args:
+        args: Command arguments dictionary.
+
+    Returns:
+        List of item dictionaries.
+
+    Raises:
+        DemistoException: If neither mode provides valid input, or marketplace is invalid.
+    """
+    entry_id: str | None = args.get("items_list_raw_json_entry_id")
+    item_id: str | None = args.get("item_id")
+    marketplace: str | None = args.get("marketplace")
+
+    if entry_id:
+        return parse_list_items_from_entry_id(entry_id)
+
+    if item_id and marketplace:
+        if marketplace not in VALID_MARKETPLACES:
+            raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+
+        item: dict[str, Any] = {
+            "item_id": item_id,
+            "marketplace": marketplace,
+        }
+        created_by: str | None = args.get("created_by")
+        notes: str | None = args.get("notes")
+        if created_by:
+            item["created_by"] = created_by
+        if notes:
+            item["notes"] = notes
+
+        return [item]
+
+    raise DemistoException(
+        "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
+    )
+
+
+def parse_filter_from_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a filter object from command arguments.
+
+    Supports two input modes:
+    - Inline JSON: 'filter_json' with a JSON string.
+    - File upload: 'filter_raw_json_entry_id' with a War Room entry ID of a JSON file.
+
+    File entry ID takes priority when both are provided.
+
+    Args:
+        args: Command arguments dictionary.
+
+    Returns:
+        Parsed filter dictionary.
+
+    Raises:
+        DemistoException: If no filter is provided, the JSON cannot be parsed, or the file cannot be read.
+    """
+    entry_id: str | None = args.get("filter_raw_json_entry_id")
+    filter_json: str | None = args.get("filter_json")
+
+    if entry_id:
+        try:
+            filepath_result = demisto.getFilePath(entry_id)
+        except Exception as e:
+            raise DemistoException(f"Could not find file for entry ID '{entry_id}': {e}")
+
+        if not filepath_result or "path" not in filepath_result:
+            raise DemistoException(f"Entry ID '{entry_id}' is not a valid file entry.")
+
+        file_path = filepath_result["path"]
+        demisto.debug(f"[Filter Parse] Reading filter from file: {file_path}")
+
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to parse JSON filter file from entry ID '{entry_id}': {e}")
+        except OSError as e:
+            raise DemistoException(f"Failed to read filter file from entry ID '{entry_id}': {e}")
+
+        if not isinstance(data, dict):
+            raise DemistoException(
+                f"Invalid filter JSON structure in entry ID '{entry_id}': " f"expected a dictionary, got {type(data).__name__}."
+            )
+
+        demisto.debug(f"[Filter Parse] Parsed filter from file: {data}")
+        return data
+
+    if filter_json:
+        try:
+            data = json.loads(filter_json)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to parse filter_json: {e}")
+
+        if not isinstance(data, dict):
+            raise DemistoException(f"Invalid filter_json structure: expected a dictionary, got {type(data).__name__}.")
+
+        demisto.debug(f"[Filter Parse] Parsed inline filter: {data}")
+        return data
+
+    raise DemistoException("Either 'filter_json' or 'filter_raw_json_entry_id' must be provided.")
+
+
+def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Parse and validate integration configuration parameters.
+
+    Extracts connection settings from the raw demisto.params() dictionary
+    and validates audit type filters if provided.
+
+    Args:
+        params: Raw parameters from demisto.params().
+
+    Returns:
+        Validated configuration dictionary with keys: base_url, api_key, verify, proxy.
+
+    Raises:
+        DemistoException: If audit type filter contains invalid values.
+    """
+    base_url = params.get("url", "https://api.prod.koi.security/").rstrip("/")
+
+    api_key = params.get("api_key", {})
+    if isinstance(api_key, dict):
+        api_key = api_key.get("password", "")
+
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+
+    # Validate audit types filter if provided
+    audit_types_filter = argToList(params.get("audit_types_filter"))
+    if audit_types_filter:
+        invalid = [t for t in audit_types_filter if t not in VALID_AUDIT_TYPES]
+        if invalid:
+            raise DemistoException(f"Invalid audit log type(s): {invalid}. Valid types: {VALID_AUDIT_TYPES}")
+
+    demisto.debug(f"[Config] URL: {base_url}")
+
+    return {
+        "base_url": base_url,
+        "api_key": api_key,
+        "verify": verify_certificate,
+        "proxy": proxy,
+    }
+
+
 # endregion
 
 # region Client
@@ -341,6 +606,384 @@ class Client(ContentClient):
         demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
 
         return events
+
+    def get_policies(
+        self,
+        page: int,
+        page_size: int,
+    ) -> dict[str, Any]:
+        """Fetch a single page of policies from the Koi API.
+
+        Args:
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+
+        Returns:
+            The full API response dictionary containing 'policies' list and 'total_count'.
+        """
+        params: dict[str, Any] = {
+            "page": page,
+            "page_size": page_size,
+        }
+
+        demisto.debug(f"[API] Fetching policies | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.POLICIES,
+            params=params,
+        )
+
+        demisto.debug("[API] Policies response received")
+        return response
+
+    def update_policy_status(self, policy_id: int, enabled: bool) -> dict[str, Any]:
+        """Update the enabled/disabled status of a policy.
+
+        Args:
+            policy_id: The ID of the policy to update.
+            enabled: Whether to enable (True) or disable (False) the policy.
+
+        Returns:
+            The full updated policy object from the API.
+        """
+        url_suffix = ApiPaths.policy(policy_id)
+        body: dict[str, Any] = {"enabled": enabled}
+
+        demisto.debug(f"[API] Updating policy {policy_id} status to enabled={enabled}")
+
+        response = self._http_request(
+            method="PUT",
+            url_suffix=url_suffix,
+            json_data=body,
+        )
+
+        demisto.debug(f"[API] Policy {policy_id} status updated successfully")
+        return response
+
+    def get_allowlist(self) -> dict[str, Any]:
+        """Fetch all items in the allowlist from the Koi API.
+
+        Returns:
+            The full API response dictionary containing 'items' list.
+        """
+        demisto.debug("[API] Fetching allowlist")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.ALLOWLIST,
+        )
+
+        items = response.get("items", [])
+        demisto.debug(f"[API] Allowlist response received: {len(items)} items")
+        return response
+
+    def get_blocklist(self) -> dict[str, Any]:
+        """Fetch all items in the blocklist from the Koi API.
+
+        Returns:
+            The full API response dictionary containing 'items' list.
+        """
+        demisto.debug("[API] Fetching blocklist")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.BLOCKLIST,
+        )
+
+        items = response.get("items", [])
+        demisto.debug(f"[API] Blocklist response received: {len(items)} items")
+        return response
+
+    def remove_allowlist_items(
+        self,
+        items: list[dict[str, Any]],
+    ) -> None:
+        """Remove one or more items from the global allowlist.
+
+        Args:
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
+        """
+        body: dict[str, Any] = {"items": items}
+
+        demisto.debug(f"[API] Removing {len(items)} allowlist item(s): {items}")
+
+        self._http_request(
+            method="DELETE",
+            url_suffix=ApiPaths.ALLOWLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(f"[API] Successfully removed {len(items)} allowlist item(s)")
+
+    def add_allowlist_items(
+        self,
+        items: list[dict[str, Any]],
+    ) -> None:
+        """Add one or more items to the global allowlist.
+
+        Args:
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
+        """
+        body: dict[str, Any] = {"items": items}
+
+        demisto.debug(f"[API] Adding {len(items)} allowlist item(s): {items}")
+
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.ALLOWLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(f"[API] Successfully added {len(items)} allowlist item(s)")
+
+    def remove_blocklist_items(
+        self,
+        items: list[dict[str, Any]],
+    ) -> None:
+        """Remove one or more items from the global blocklist.
+
+        Args:
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
+        """
+        body: dict[str, Any] = {"items": items}
+
+        demisto.debug(f"[API] Removing {len(items)} blocklist item(s): {items}")
+
+        self._http_request(
+            method="DELETE",
+            url_suffix=ApiPaths.BLOCKLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(f"[API] Successfully removed {len(items)} blocklist item(s)")
+
+    def add_blocklist_items(
+        self,
+        items: list[dict[str, Any]],
+    ) -> None:
+        """Add one or more items to the global blocklist.
+
+        Args:
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
+        """
+        body: dict[str, Any] = {"items": items}
+
+        demisto.debug(f"[API] Adding {len(items)} blocklist item(s): {items}")
+
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.BLOCKLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(f"[API] Successfully added {len(items)} blocklist item(s)")
+
+    def get_inventory(
+        self,
+        page: int,
+        page_size: int,
+        brew_category_koi: str | None = None,
+        browser_category_koi: str | None = None,
+        chocolatey_category_koi: str | None = None,
+        device_id: str | None = None,
+        finding_id: str | None = None,
+        first_seen: str | None = None,
+        ide_category_koi: str | None = None,
+        installation_method: str | None = None,
+        item_display_name: str | None = None,
+        item_id: str | None = None,
+        marketplace: str | None = None,
+        platform: str | None = None,
+        publisher_name: str | None = None,
+        risk_level: str | None = None,
+        software_category_koi: str | None = None,
+        sort_by: str | None = None,
+        sort_direction: str | None = None,
+        view: str | None = None,
+    ) -> dict[str, Any]:
+        """Fetch a single page of inventory items from the Koi API.
+
+        Args:
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+            brew_category_koi: Filter by Homebrew package category (Koi classification).
+            browser_category_koi: Filter by browser extension category (Koi classification).
+            chocolatey_category_koi: Filter by Chocolatey package category (Koi classification).
+            device_id: Filter devices by device id.
+            finding_id: Filter devices by finding id.
+            first_seen: Filter by first seen date (ISO 8601 format).
+            ide_category_koi: Filter by IDE extension category (Koi classification).
+            installation_method: Filter by installation method.
+            item_display_name: Filter by item display name (case-insensitive partial match).
+            item_id: Filter by item ID.
+            marketplace: Filter by marketplace.
+            platform: Filter by platform.
+            publisher_name: Filter by publisher name (case-insensitive partial match).
+            risk_level: Filter by risk level.
+            software_category_koi: Filter by software category (Koi classification).
+            sort_by: Column to sort by.
+            sort_direction: Sort direction (asc or desc).
+            view: Filter by predefined view (marketplace group).
+
+        Returns:
+            The full API response dictionary containing 'items' list and 'total_count'.
+        """
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=page_size,
+            brew_category_koi=brew_category_koi,
+            browser_category_koi=browser_category_koi,
+            chocolatey_category_koi=chocolatey_category_koi,
+            device_id=device_id,
+            finding_id=finding_id,
+            first_seen=first_seen,
+            ide_category_koi=ide_category_koi,
+            installation_method=installation_method,
+            item_display_name=item_display_name,
+            item_id=item_id,
+            marketplace=marketplace,
+            platform=platform,
+            publisher_name=publisher_name,
+            risk_level=risk_level,
+            software_category_koi=software_category_koi,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+            view=view,
+        )
+
+        demisto.debug(f"[API] Fetching inventory | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.INVENTORY,
+            params=params,
+        )
+
+        demisto.debug("[API] Inventory response received")
+        return response
+
+    def get_inventory_item(
+        self,
+        item_id: str,
+        marketplace: str,
+        version: str,
+    ) -> dict[str, Any]:
+        """Fetch details for a specific inventory item from the Koi API.
+
+        Args:
+            item_id: Unique identifier for the item.
+            marketplace: The marketplace where the item is hosted.
+            version: The specific version of the item to retrieve.
+
+        Returns:
+            The full API response dictionary with item details.
+        """
+        params: dict[str, Any] = {
+            "marketplace": marketplace,
+            "version": version,
+        }
+
+        url_suffix = ApiPaths.inventory_item(item_id)
+        demisto.debug(f"[API] Fetching inventory item {item_id} | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params,
+        )
+
+        demisto.debug(f"[API] Inventory item {item_id} response received")
+        return response
+
+    def get_inventory_item_endpoints(
+        self,
+        item_id: str,
+        marketplace: str,
+        version: str,
+        page: int,
+        page_size: int,
+    ) -> dict[str, Any]:
+        """Fetch endpoints that have a specific inventory item installed.
+
+        Args:
+            item_id: Unique identifier for the item.
+            marketplace: The marketplace where the item is hosted.
+            version: The specific version of the item.
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+
+        Returns:
+            The full API response dictionary containing 'endpoints' list and 'total_count'.
+        """
+        params: dict[str, Any] = {
+            "marketplace": marketplace,
+            "version": version,
+            "page": page,
+            "page_size": page_size,
+        }
+
+        url_suffix = ApiPaths.inventory_item_endpoints(item_id)
+        demisto.debug(f"[API] Fetching endpoints for item {item_id} | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params,
+        )
+
+        demisto.debug(f"[API] Endpoints for item {item_id} response received")
+        return response
+
+    def search_inventory(
+        self,
+        page: int,
+        page_size: int,
+        filter_obj: dict[str, Any],
+        sort_by: str | None = None,
+        sort_direction: str | None = None,
+    ) -> dict[str, Any]:
+        """Search inventory items using advanced filters via POST.
+
+        Args:
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+            filter_obj: Filter object using query builder syntax.
+            sort_by: Column to sort by.
+            sort_direction: Sort direction (asc or desc).
+
+        Returns:
+            The full API response dictionary containing 'items' list and 'total_count'.
+        """
+        body: dict[str, Any] = {
+            "page": page,
+            "page_size": page_size,
+            "filter": filter_obj,
+        }
+
+        if sort_by:
+            body["sort_by"] = sort_by
+        if sort_direction:
+            body["sort_direction"] = sort_direction
+
+        demisto.debug(f"[API] Searching inventory | Body: {body}")
+
+        response = self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.INVENTORY_SEARCH,
+            json_data=body,
+        )
+
+        demisto.debug("[API] Inventory search response received")
+        return response
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -685,6 +1328,12 @@ def fetch_events_command(client: Client) -> None:
     last_run = demisto.getLastRun()
     demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
 
+    # Guard against an empty log_types selection — ThreadPoolExecutor(max_workers=0) raises ValueError.
+    if not log_types:
+        demisto.debug("[Fetch] No event types selected. Nothing to fetch. Preserving last_run as-is.")
+        demisto.setLastRun(last_run)
+        return
+
     # Fetch all log types in parallel so one slow type doesn't block the other
     results: list[FetchResult] = []
     with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
@@ -727,6 +1376,875 @@ def fetch_events_command(client: Client) -> None:
     demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
 
 
+def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List policies with pagination support.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' policies.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (page, page_size, limit).
+
+    Returns:
+        CommandResults with the policy list.
+    """
+    demisto.debug("[Command] koi-policy-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
+    if page_arg:
+        # Single-page mode: fetch the requested page
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.get_policies(page=page_arg, page_size=page_size)
+        policies = response.get("policies", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(policies)} policies (total_count={total_count})")
+    else:
+        # Auto-paginate mode: fetch pages until limit is reached
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        policies = _fetch_policies_with_pagination(client, limit=limit)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Policies",
+        policies,
+        headers=["id", "name", "description", "action", "enabled", "group_ids", "creator_fullname", "created_at", "updated_at"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Policy",
+        outputs_key_field="id",
+        outputs=policies,
+    )
+
+
+def _fetch_policies_with_pagination(
+    client: Client,
+    limit: int,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through policies until limit is reached.
+
+    Args:
+        client: The Koi client.
+        limit: Maximum total number of policies to collect.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of policy dictionaries.
+    """
+    policies: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(policies) < limit:
+        response = client.get_policies(page=page, page_size=page_size)
+        page_policies = response.get("policies", [])
+
+        if not page_policies:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        policies.extend(page_policies)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_policies)} policies. Total: {len(policies)}")
+
+        if len(page_policies) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(policies) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(policies)} policies to limit {limit}")
+        policies = policies[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(policies)} policies")
+    return policies
+
+
+def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Retrieve all items in the allowlist.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (unused, no inputs for this command).
+
+    Returns:
+        CommandResults with the allowlist items.
+    """
+    demisto.debug("[Command] koi-allowlist-get triggered")
+
+    response = client.get_allowlist()
+    items = response.get("items", [])
+
+    demisto.debug(f"[Command Result] Retrieved {len(items)} allowlist items")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Allowlist",
+        items,
+        headers=[
+            "item_id",
+            "item_name",
+            "item_display_name",
+            "marketplace",
+            "publisher_name",
+            "package_name",
+            "notes",
+            "created_by",
+            "created_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Allowlist",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def koi_allowlist_items_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Remove one or more items from the global allowlist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-allowlist-items-remove triggered")
+
+    items = resolve_items_from_args(args)
+    client.remove_allowlist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} allowlist item(s) removed successfully")
+
+    if item_count == 1:
+        readable = f"Allowlist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was removed successfully."
+    else:
+        readable = f"{item_count} allowlist items were removed successfully."
+
+    return CommandResults(readable_output=readable)
+
+
+def koi_allowlist_items_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Add one or more items to the global allowlist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-allowlist-items-add triggered")
+
+    items = resolve_items_from_args(args)
+    client.add_allowlist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} allowlist item(s) added successfully")
+
+    if item_count == 1:
+        readable = f"Allowlist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was added successfully."
+    else:
+        readable = f"{item_count} allowlist items were added successfully."
+
+    return CommandResults(readable_output=readable)
+
+
+def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Retrieve all items in the blocklist.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (unused, no inputs for this command).
+
+    Returns:
+        CommandResults with the blocklist items.
+    """
+    demisto.debug("[Command] koi-blocklist-get triggered")
+
+    response = client.get_blocklist()
+    items = response.get("items", [])
+
+    demisto.debug(f"[Command Result] Retrieved {len(items)} blocklist items")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Blocklist",
+        items,
+        headers=[
+            "item_id",
+            "item_name",
+            "item_display_name",
+            "marketplace",
+            "publisher_name",
+            "package_name",
+            "notes",
+            "created_by",
+            "created_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Blocklist",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def koi_blocklist_items_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Remove one or more items from the global blocklist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-blocklist-items-remove triggered")
+
+    items = resolve_items_from_args(args)
+    client.remove_blocklist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} blocklist item(s) removed successfully")
+
+    if item_count == 1:
+        readable = f"Blocklist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was removed successfully."
+    else:
+        readable = f"{item_count} blocklist items were removed successfully."
+
+    return CommandResults(readable_output=readable)
+
+
+def koi_blocklist_items_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Add one or more items to the global blocklist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-blocklist-items-add triggered")
+
+    items = resolve_items_from_args(args)
+    client.add_blocklist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} blocklist item(s) added successfully")
+
+    if item_count == 1:
+        readable = f"Blocklist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was added successfully."
+    else:
+        readable = f"{item_count} blocklist items were added successfully."
+
+    return CommandResults(readable_output=readable)
+
+
+def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Enable or disable a policy by ID.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (policy_id, enabled).
+
+    Returns:
+        CommandResults with the updated policy.
+    """
+    demisto.debug("[Command] koi-policy-status-update triggered")
+
+    policy_id = arg_to_number(args.get("policy_id"))
+    if policy_id is None:
+        raise DemistoException("policy_id is required and must be a valid integer.")
+    enabled = argToBoolean(args.get("enabled"))
+
+    response = client.update_policy_status(policy_id=policy_id, enabled=enabled)
+
+    status_text = "enabled" if enabled else "disabled"
+    demisto.debug(f"[Command Result] Policy {policy_id} {status_text} successfully")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Policy Updated",
+        response,
+        headers=[
+            "id",
+            "name",
+            "description",
+            "action",
+            "enabled",
+            "group_ids",
+            "creator_fullname",
+            "created_at",
+            "updated_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Policy",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List inventory items with pagination and filtering support.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' items.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments including pagination and filter parameters.
+
+    Returns:
+        CommandResults with the inventory item list.
+    """
+    demisto.debug("[Command] koi-inventory-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
+    # Extract filter arguments
+    filter_kwargs: dict[str, Any] = assign_params(
+        brew_category_koi=args.get("brew_category_koi"),
+        browser_category_koi=args.get("browser_category_koi"),
+        chocolatey_category_koi=args.get("chocolatey_category_koi"),
+        device_id=args.get("device_id"),
+        finding_id=args.get("finding_id"),
+        first_seen=args.get("first_seen"),
+        ide_category_koi=args.get("ide_category_koi"),
+        installation_method=args.get("installation_method"),
+        item_display_name=args.get("item_display_name"),
+        item_id=args.get("item_id"),
+        marketplace=args.get("marketplace"),
+        platform=args.get("platform"),
+        publisher_name=args.get("publisher_name"),
+        risk_level=args.get("risk_level"),
+        software_category_koi=args.get("software_category_koi"),
+        sort_by=args.get("sort_by"),
+        sort_direction=args.get("sort_direction"),
+        view=args.get("view"),
+    )
+
+    if page_arg:
+        # Single-page mode: fetch the requested page
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.get_inventory(page=page_arg, page_size=page_size, **filter_kwargs)
+        items = response.get("items", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(items)} inventory items (total_count={total_count})")
+    else:
+        # Auto-paginate mode: fetch pages until limit is reached
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        items = _fetch_inventory_with_pagination(client, limit=limit, filter_kwargs=filter_kwargs)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory",
+        items,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "platforms",
+            "publisher_name",
+            "risk",
+            "risk_level",
+            "version",
+            "status",
+            "endpoint_count",
+            "installs_count",
+            "installation_method",
+            "is_first_party",
+            "is_signed",
+            "first_seen",
+            "last_seen",
+            "last_used",
+            "released_at",
+            "short_description",
+            "categories",
+            "findings",
+            "brew_category_koi",
+            "browser_category_koi",
+            "chocolatey_category_koi",
+            "ide_category_koi",
+            "software_category_koi",
+            "governed_details",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def _fetch_inventory_with_pagination(
+    client: Client,
+    limit: int,
+    filter_kwargs: dict[str, Any],
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through inventory items until limit is reached.
+
+    Args:
+        client: The Koi client.
+        limit: Maximum total number of items to collect.
+        filter_kwargs: Filter parameters to pass to the API.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of inventory item dictionaries.
+    """
+    items: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(items) < limit:
+        response = client.get_inventory(page=page, page_size=page_size, **filter_kwargs)
+        page_items = response.get("items", [])
+
+        if not page_items:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        items.extend(page_items)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_items)} items. Total: {len(items)}")
+
+        if len(page_items) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(items) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(items)} items to limit {limit}")
+        items = items[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(items)} inventory items")
+    return items
+
+
+def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Retrieve comprehensive details for a specific inventory item.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (item_id, marketplace, version).
+
+    Returns:
+        CommandResults with the inventory item details.
+    """
+    demisto.debug("[Command] koi-inventory-item-get triggered")
+
+    item_id: str = args["item_id"]
+    marketplace: str = args["marketplace"]
+    version: str = args["version"]
+
+    response = client.get_inventory_item(
+        item_id=item_id,
+        marketplace=marketplace,
+        version=version,
+    )
+
+    demisto.debug(f"[Command Result] Retrieved inventory item {item_id}")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory Item",
+        response,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "platforms",
+            "publisher_name",
+            "risk",
+            "risk_level",
+            "version",
+            "status",
+            "endpoint_count",
+            "installs_count",
+            "installation_method",
+            "is_first_party",
+            "is_signed",
+            "first_seen",
+            "last_seen",
+            "last_used",
+            "released_at",
+            "short_description",
+            "categories",
+            "findings",
+            "brew_category_koi",
+            "browser_category_koi",
+            "chocolatey_category_koi",
+            "ide_category_koi",
+            "software_category_koi",
+            "governed_details",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory",
+        outputs_key_field="item_id",
+        outputs=response,
+    )
+
+
+def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Search inventory items using advanced filters.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' items.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments including filter, pagination, and sorting parameters.
+
+    Returns:
+        CommandResults with the search results.
+    """
+    demisto.debug("[Command] koi-inventory-search triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
+    filter_obj: dict[str, Any] = parse_filter_from_args(args)
+    sort_by: str | None = args.get("sort_by")
+    sort_direction: str | None = args.get("sort_direction")
+
+    if page_arg:
+        # Single-page mode
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.search_inventory(
+            page=page_arg,
+            page_size=page_size,
+            filter_obj=filter_obj,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+        items = response.get("items", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(items)} items (total_count={total_count})")
+    else:
+        # Auto-paginate mode
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        items = _search_inventory_with_pagination(
+            client,
+            limit=limit,
+            filter_obj=filter_obj,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory Search",
+        items,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "platforms",
+            "publisher_name",
+            "risk",
+            "risk_level",
+            "version",
+            "status",
+            "endpoint_count",
+            "installs_count",
+            "installation_method",
+            "is_first_party",
+            "is_signed",
+            "first_seen",
+            "last_seen",
+            "last_used",
+            "released_at",
+            "short_description",
+            "categories",
+            "findings",
+            "brew_category_koi",
+            "browser_category_koi",
+            "chocolatey_category_koi",
+            "ide_category_koi",
+            "software_category_koi",
+            "governed_details",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def _search_inventory_with_pagination(
+    client: Client,
+    limit: int,
+    filter_obj: dict[str, Any],
+    sort_by: str | None = None,
+    sort_direction: str | None = None,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through inventory search results until limit is reached.
+
+    Args:
+        client: The Koi client.
+        limit: Maximum total number of items to collect.
+        filter_obj: Filter object for the search.
+        sort_by: Column to sort by.
+        sort_direction: Sort direction.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of inventory item dictionaries.
+    """
+    items: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(items) < limit:
+        response = client.search_inventory(
+            page=page,
+            page_size=page_size,
+            filter_obj=filter_obj,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+        page_items = response.get("items", [])
+
+        if not page_items:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        items.extend(page_items)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_items)} items. Total: {len(items)}")
+
+        if len(page_items) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(items) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(items)} items to limit {limit}")
+        items = items[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(items)} inventory search results")
+    return items
+
+
+def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List endpoints that have a specific inventory item installed.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' endpoints.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (item_id, marketplace, version, page, page_size, limit).
+
+    Returns:
+        CommandResults with the endpoint list.
+    """
+    demisto.debug("[Command] koi-inventory-item-endpoints-list triggered")
+
+    item_id: str = args["item_id"]
+    marketplace: str = args["marketplace"]
+    version: str = args["version"]
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
+    if page_arg:
+        # Single-page mode
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.get_inventory_item_endpoints(
+            item_id=item_id,
+            marketplace=marketplace,
+            version=version,
+            page=page_arg,
+            page_size=page_size,
+        )
+        endpoints = response.get("endpoints", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(endpoints)} endpoints (total_count={total_count})")
+    else:
+        # Auto-paginate mode
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        endpoints = _fetch_item_endpoints_with_pagination(
+            client,
+            item_id=item_id,
+            marketplace=marketplace,
+            version=version,
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory Item Endpoints",
+        endpoints,
+        headers=[
+            "id",
+            "hostname",
+            "os",
+            "platform",
+            "serial",
+            "last_logged_on_user",
+            "activation_status",
+            "path",
+            "first_seen",
+            "last_seen",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory.Endpoint",
+        outputs_key_field="id",
+        outputs=endpoints,
+    )
+
+
+def _fetch_item_endpoints_with_pagination(
+    client: Client,
+    item_id: str,
+    marketplace: str,
+    version: str,
+    limit: int,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through item endpoints until limit is reached.
+
+    Args:
+        client: The Koi client.
+        item_id: Unique identifier for the item.
+        marketplace: The marketplace where the item is hosted.
+        version: The specific version of the item.
+        limit: Maximum total number of endpoints to collect.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of endpoint dictionaries.
+    """
+    endpoints: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(endpoints) < limit:
+        response = client.get_inventory_item_endpoints(
+            item_id=item_id,
+            marketplace=marketplace,
+            version=version,
+            page=page,
+            page_size=page_size,
+        )
+        page_endpoints = response.get("endpoints", [])
+
+        if not page_endpoints:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        endpoints.extend(page_endpoints)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_endpoints)} endpoints. Total: {len(endpoints)}")
+
+        if len(page_endpoints) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(endpoints) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(endpoints)} endpoints to limit {limit}")
+        endpoints = endpoints[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(endpoints)} endpoints")
+    return endpoints
+
+
 # endregion
 
 # region Main router
@@ -738,6 +2256,18 @@ COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
     "koi-get-events": get_events_command,
     "fetch-events": fetch_events_command,
+    "koi-policy-list": koi_policy_list_command,
+    "koi-allowlist-get": koi_allowlist_get_command,
+    "koi-allowlist-items-remove": koi_allowlist_items_remove_command,
+    "koi-allowlist-items-add": koi_allowlist_items_add_command,
+    "koi-blocklist-get": koi_blocklist_get_command,
+    "koi-blocklist-items-remove": koi_blocklist_items_remove_command,
+    "koi-blocklist-items-add": koi_blocklist_items_add_command,
+    "koi-policy-status-update": koi_policy_status_update_command,
+    "koi-inventory-list": koi_inventory_list_command,
+    "koi-inventory-item-get": koi_inventory_item_get_command,
+    "koi-inventory-search": koi_inventory_search_command,
+    "koi-inventory-item-endpoints-list": koi_inventory_item_endpoints_list_command,
 }
 
 
@@ -750,28 +2280,15 @@ def main() -> None:
         if command not in COMMAND_MAP:
             raise DemistoException(f"Command '{command}' is not implemented")
 
-        # Parse parameters
         params = demisto.params()
-        base_url = params.get("url", "https://api.prod.koi.security/").rstrip("/")
-        api_key = params.get("api_key", {})
-        if isinstance(api_key, dict):
-            api_key = api_key.get("password", "")
-
-        verify_certificate = not argToBoolean(params.get("insecure", False))
-        proxy = argToBoolean(params.get("proxy", False))
-
-        # Validate audit types filter if provided
-        audit_types_filter = argToList(params.get("audit_types_filter"))
-        if audit_types_filter:
-            invalid = [t for t in audit_types_filter if t not in VALID_AUDIT_TYPES]
-            if invalid:
-                raise DemistoException(f"Invalid audit log type(s): {invalid}. Valid types: {VALID_AUDIT_TYPES}")
+        args = demisto.args()
+        config = parse_integration_params(params)
 
         client = Client(
-            base_url=base_url,
-            api_key=api_key,
-            verify=verify_certificate,
-            proxy=proxy,
+            base_url=config["base_url"],
+            api_key=config["api_key"],
+            verify=config["verify"],
+            proxy=config["proxy"],
         )
 
         command_func = COMMAND_MAP[command]
@@ -781,8 +2298,11 @@ def main() -> None:
             return_results(result)
         elif command == "fetch-events":
             command_func(client)
+        elif command == "koi-get-events":
+            result = command_func(client, args, params)
+            return_results(result)
         else:
-            result = command_func(client, demisto.args(), params)
+            result = command_func(client, args)
             return_results(result)
 
     except Exception as error:
