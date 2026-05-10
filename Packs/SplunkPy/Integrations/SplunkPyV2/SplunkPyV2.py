@@ -73,7 +73,7 @@ EVENT_ID = "event_id"
 RULE_ID = "rule_id"
 ISO_FORMAT_TZ_AWARE = "%Y-%m-%dT%H:%M:%S.%f%z"  # e.g '2025-12-03T11:53:45.138540+00:00
 SPLUNK_ES_EVENT_TYPE_FIELD = "splunk_es_event_type"  # tag emitted in rawJSON, consumed by classifier
-INVESTIGATIONS_MAX_LIMIT = 100  # Hard cap enforced by Splunk Mission Control v2 endpoint
+INVESTIGATIONS_MAX_LIMIT = 100  # Hard cap enforced by Splunk endpoint
 NOT_YET_SUBMITTED_FINDINGS = "not_yet_submitted_findings"
 INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
@@ -255,7 +255,7 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
         """
         findings_entries = [
             {
-                # Investigations (Mission Control v2) carry `investigation_guid` and are
+                # Investigations carry `investigation_guid` and are
                 # checked first; Findings carry `rule_id`. The fallback lets the same
                 # response carry both event types.
                 "EntryContext": {"mirrorRemoteId": data.get("investigation_guid") or data.get(RULE_ID)},
@@ -1104,7 +1104,7 @@ class Enrichment:
         )
 
 
-# =========== Investigations / Mission Control v2 helpers ===========
+# =========== Investigations helpers ===========
 
 PLACEHOLDER = "CUSTOM_FILTER_PLACEHOLDER"
 _REST_CLAUSE_RE = re.compile(
@@ -1119,7 +1119,7 @@ _CANONICAL_MC_ISO_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z
 
 
 def to_mc_iso8601_utc(ts: "str | datetime") -> str:
-    """Normalize a timestamp into the exact shape accepted by the Mission Control v2
+    """Normalize a timestamp into the exact shape accepted by the
     `investigations` endpoint for `create_time_min` / `create_time_max`:
     `YYYY-MM-DDTHH:MM:SS.ffffffZ` (always UTC, literal `Z` suffix; canonical 6-digit microseconds).
 
@@ -1180,8 +1180,8 @@ def prepare_investigations_query(
     """Inject ``create_time_min`` / ``create_time_max`` / ``limit`` / ``offset`` into the
     URL inside ``| rest "..."`` (or ``'...'``).
 
-    The Mission Control v2 ``investigations`` endpoint does NOT honor the standard
-    Splunk ``earliest`` / ``latest`` parameters; it filters by ``create_time_min`` /
+    The ``investigations`` endpoint does NOT honor the standard Splunk
+    ``earliest`` / ``latest`` parameters; it filters by ``create_time_min`` /
     ``create_time_max`` instead.
 
     Behavior:
@@ -1296,7 +1296,7 @@ def collapse_all_dotted_keys_to_nested(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
-    """Flatten a Mission Control v2 investigations row.
+    """Flatten an investigations row.
 
     Pure transform — does not call any Splunk service.
 
@@ -1312,7 +1312,7 @@ def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
       - Stamps ``splunk_es_event_type = "Investigation"`` for the classifier.
 
     Args:
-        row: Raw row as returned by the Mission Control v2 endpoint.
+        row: Raw row as returned by the investigations endpoint.
 
     Returns:
         A new ``dict`` with the parsed/flattened fields.
@@ -1339,7 +1339,7 @@ def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
 
 
 class Investigation:
-    """A lightweight model for a Splunk Mission Control v2 investigation row.
+    """A lightweight model for a Splunk investigation row.
 
     Unlike :class:`Finding`, this model has no enrichment lifecycle and does not
     interact with any Splunk service. It is responsible only for turning a
@@ -1521,7 +1521,7 @@ class FindingsFetchHandler(FetchHandler):
 
 
 class InvestigationsFetchHandler(FetchHandler):
-    """Handler for the Splunk Mission Control v2 Investigations fetch path.
+    """Handler for the Splunk Investigations fetch path.
 
     Does NOT call :func:`run_enrichment_mechanism` — enrichment is
     Findings-only.
@@ -1573,7 +1573,7 @@ class InvestigationsFetchHandler(FetchHandler):
         final_spl = prepare_investigations_query(user_query, ts_min, ts_max, limit, offset)
         demisto.debug(f"investigations: prepared SPL={final_spl}")
 
-        # Mission Control v2 filters by URL params, not earliest/latest macros, so we don't reuse build_fetch_kwargs.
+        # The investigations endpoint filters by URL params, not earliest/latest macros, so we don't reuse build_fetch_kwargs.
         oneshot_kwargs: dict[str, Any] = {"output_mode": OUTPUT_MODE_JSON, "count": 0}
         oneshot_results = service.jobs.oneshot(final_spl, **oneshot_kwargs)
         reader = results.JSONResultsReader(oneshot_results)
@@ -3200,7 +3200,7 @@ def get_modified_remote_data_command(
 
     modified_data: list[dict[str, Any]] = list(modified_findings_map.values())
 
-    # Investigation mirror-in (Mission Control v2). Hits the v2 endpoint directly
+    # Investigation mirror-in. Hits the v2 endpoint directly
     # (no SPL). Gated on `fetch_event_types` so instances that only fetch Findings
     # skip the extra HTTP round trip.
     if "Investigation" in selected_types:
@@ -4068,7 +4068,7 @@ def update_investigation_or_finding(
 def _fetch_modified_investigations_page(
     service: client.Service, update_time_min: str, limit: int, offset: int
 ) -> list[dict[str, Any]]:
-    """Hit the Mission Control v2 endpoint once and return the rows of a single page.
+    """Hit the investigations endpoint once and return the rows of a single page.
 
     Splits the HTTP round trip out of :func:`list_modified_investigations` so the
     paginating loop stays small and the helper itself is easy to mock in tests.
@@ -4090,7 +4090,7 @@ def list_modified_investigations(
 ) -> list[dict[str, Any]]:
     """Return investigation rows updated since ``update_time_min``.
 
-    Hits Mission Control v2 directly (no SPL) and paginates with ``offset`` until
+    Hits the investigations endpoint directly (no SPL) and paginates with ``offset`` until
     either a short page is returned (no more rows) or ``max_total`` is reached
     — mirroring the cap Findings already enforces via :data:`MIRROR_LIMIT`.
 

@@ -1,5 +1,5 @@
 {
-    "description": "Maps Splunk Finding and Splunk Investigation (Mission Control v2) incoming fields. Routed by the SplunkPy v2 classifier via the rawJSON.splunk_es_event_type tag.",
+    "description": "Maps Splunk Finding and Splunk Investigation incoming fields.",
     "feed": false,
     "id": "Splunk Finding - Incoming Mapper",
     "mapping": {

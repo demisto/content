@@ -6079,7 +6079,7 @@ class TestFetchHandlerFactory:
 
 
 def _sample_investigation_row() -> dict:
-    """Build a representative Mission Control v2 investigations row in-line
+    """Build a representative investigations row in-line
     (no fixture file dependency), reflecting the schema in plan §3.7.1."""
     return {
         "investigation_guid": "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e",
@@ -6121,7 +6121,7 @@ def _sample_investigation_row() -> dict:
 
 
 class TestParseInvestigation:
-    """Given a Mission Control v2 row, when parse_investigation runs,
+    """Given an investigations row, when parse_investigation runs,
     then it returns a flattened dict tagged for the classifier."""
 
     def test_given_row_when_parsed_then_event_type_tag_added(self):
@@ -6158,7 +6158,7 @@ class TestParseInvestigation:
             - A row whose `consolidated_findings` data is delivered as flat,
               dotted keys (e.g. `consolidated_findings.search_name`,
               `consolidated_findings.queue_id`, `consolidated_findings.dest`),
-              which is how the Mission Control v2 endpoint actually returns it.
+              which is how the investigations endpoint actually returns it.
         When:
             - parse_investigation is called.
         Then:
@@ -6225,7 +6225,7 @@ class TestParseInvestigation:
             - A row whose `consolidated_findings` is a nested object containing
               both scalars (queue_id, src_user) and parallel array columns
               (search_name, _time, dest, risk_score), as returned by the
-              Mission Control v2 endpoint.
+              investigations endpoint.
         When:
             - parse_investigation is called.
         Then:
@@ -6961,7 +6961,7 @@ class TestFetchIncidentsDispatcher:
 
 
 class TestListModifiedInvestigations:
-    """Given a Mission Control v2 endpoint response, when list_modified_investigations
+    """Given an investigations endpoint response, when list_modified_investigations
     runs, then it returns the row dicts (or an empty list on failure)."""
 
     @staticmethod
@@ -7186,7 +7186,7 @@ class TestListModifiedInvestigations:
     def test_given_full_v2_row_when_called_then_rows_returned_in_canonical_parsed_shape(self):
         """
         Given:
-            - The v2 endpoint returns a representative Mission Control v2 row
+            - The v2 endpoint returns a representative investigations row
               (`_sample_investigation_row`) carrying:
                 * a nested `findings.incident_ids` array,
                 * a nested `consolidated_findings` dict,

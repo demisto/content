@@ -94,7 +94,7 @@ configuration:
   required: false
   defaultvalue: |
     | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&CUSTOM_FILTER_PLACEHOLDER"
-  additionalinfo: SPL used when `Investigation` is selected in "Event types to fetch". The literal token `CUSTOM_FILTER_PLACEHOLDER` is replaced at runtime with `create_time_min=<ISO8601>&create_time_max=<ISO8601>&limit=...&offset=...` (the Mission Control v2 endpoint does NOT honor `earliest`/`latest`). `create_time_min` / `create_time_max` are sent as ISO 8601 UTC strings of the form `YYYY-MM-DDTHH:MM:SS[.ffffff]Z` (always UTC, `Z` suffix mandatory; sub-second precision optional). The endpoint rejects naked offsets such as `+00:00`, naive timestamps without a timezone suffix, and Splunk-relative tokens like `-7d@d`. If the token is removed, those parameters are appended to the URL inside `| rest "..."`. `limit` is clamped to 100.
+  additionalinfo: SPL used when `Investigation` is selected in "Event types to fetch". The literal token `CUSTOM_FILTER_PLACEHOLDER` is replaced at runtime with `create_time_min=<ISO8601>&create_time_max=<ISO8601>&limit=...&offset=...` (the investigations endpoint does NOT honor `earliest`/`latest`). `create_time_min` / `create_time_max` are sent as ISO 8601 UTC strings of the form `YYYY-MM-DDTHH:MM:SS[.ffffff]Z` (always UTC, `Z` suffix mandatory; sub-second precision optional). The endpoint rejects naked offsets such as `+00:00`, naive timestamps without a timezone suffix, and Splunk-relative tokens like `-7d@d`. If the token is removed, those parameters are appended to the URL inside `| rest "..."`. `limit` is clamped to 100.
 - display: Maximum investigations per fetch
   name: investigations_max_fetch
   type: 0
@@ -102,7 +102,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '50'
-  additionalinfo: Maximum number of investigations to fetch per cycle. Hard-clamped to 100 (Splunk Mission Control v2 endpoint maximum).
+  additionalinfo: Maximum number of investigations to fetch per cycle. Hard-clamped to 100 (Splunk investigations endpoint maximum).
 - display: Extract Fields - CSV fields that will be parsed out of raw finding events
   name: extractFields
   type: 0
