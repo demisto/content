@@ -1824,47 +1824,47 @@ Updates the authentication and authorization settings of an existing Azure Web A
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| name | Name of the Web App. | Required | 
-| enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.AppService.WebAppAuthSettings.id | String | Resource ID. | 
-| Azure.AppService.WebAppAuthSettings.name | String | Resource Name. | 
-| Azure.AppService.WebAppAuthSettings.type | String | Resource type. | 
-| Azure.AppService.WebAppAuthSettings.properties.enabled | Boolean | Indicates whether Authentication/Authorization is enabled for the app. | 
-| Azure.AppService.WebAppAuthSettings.properties.runtimeVersion | String | The RuntimeVersion of the Authentication/Authorization feature. | 
-| Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction | String | The action to take when an unauthenticated client attempts to access the app. | 
-| Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled | Boolean | Indicates whether the Azure App Service Authentication platform’s token store is enabled. | 
-| Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls | Unknown | External URLs that are allowed to be redirected to as part of logging in or logging out of the app. | 
-| Azure.AppService.WebAppAuthSettings.properties.defaultProvider | String | The default authentication provider to use when multiple providers are configured. | 
-| Azure.AppService.WebAppAuthSettings.properties.clientId | String | The Client ID of the app used for AAD login. | 
-| Azure.AppService.WebAppAuthSettings.properties.clientSecret | String | The client secret associated with the AAD app. | 
-| Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName | String | The app setting that contains the client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.issuer | String | The OpenID Connect Issuer URI that represents the entity that issues access tokens. | 
-| Azure.AppService.WebAppAuthSettings.properties.allowedAudiences | Unknown | The list of audiences that can receive the authentication tokens. | 
-| Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams | Unknown | Additional parameters to send to the authentication provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned | Boolean | True if AAD is auto-provisioned; otherwise false. | 
-| Azure.AppService.WebAppAuthSettings.properties.googleClientId | String | The Client ID of the app used for Google login. | 
-| Azure.AppService.WebAppAuthSettings.properties.googleClientSecret | String | The client secret associated with the Google app. | 
-| Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName | String | The app setting that contains the client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.facebookAppId | String | The App ID of the Facebook app used for login. | 
-| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret | String | The app secret associated with the Facebook app. | 
-| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName | String | The app setting that contains the Facebook app secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey | String | The OAuth 1.0a consumer key of the Twitter application used for login. | 
-| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret | String | The consumer secret associated with the Twitter application. | 
-| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName | String | The app setting that contains the Twitter consumer secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId | String | The OAuth 2.0 client ID for the Microsoft account provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret | String | The client secret for the Microsoft account provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName | String | The app setting that contains the Microsoft account client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.appleClientId | String | The client ID for the Apple provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.appleClientSecret | String | The client secret for the Apple provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName | String | The app setting that contains the Apple provider client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.authFilePath | String | The path to the authentication configuration file. | 
+| Azure.AppService.WebAppAuthSettings.id | String | Resource ID. |
+| Azure.AppService.WebAppAuthSettings.name | String | Resource Name. |
+| Azure.AppService.WebAppAuthSettings.type | String | Resource type. |
+| Azure.AppService.WebAppAuthSettings.properties.enabled | Boolean | Indicates whether Authentication/Authorization is enabled for the app. |
+| Azure.AppService.WebAppAuthSettings.properties.runtimeVersion | String | The RuntimeVersion of the Authentication/Authorization feature. |
+| Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction | String | The action to take when an unauthenticated client attempts to access the app. |
+| Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled | Boolean | Indicates whether the Azure App Service Authentication platform’s token store is enabled. |
+| Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls | Unknown | External URLs that are allowed to be redirected to as part of logging in or logging out of the app. |
+| Azure.AppService.WebAppAuthSettings.properties.defaultProvider | String | The default authentication provider to use when multiple providers are configured. |
+| Azure.AppService.WebAppAuthSettings.properties.clientId | String | The Client ID of the app used for AAD login. |
+| Azure.AppService.WebAppAuthSettings.properties.clientSecret | String | The client secret associated with the AAD app. |
+| Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.issuer | String | The OpenID Connect Issuer URI that represents the entity that issues access tokens. |
+| Azure.AppService.WebAppAuthSettings.properties.allowedAudiences | Unknown | The list of audiences that can receive the authentication tokens. |
+| Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams | Unknown | Additional parameters to send to the authentication provider. |
+| Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned | Boolean | True if AAD is auto-provisioned; otherwise false. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientId | String | The Client ID of the app used for Google login. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientSecret | String | The client secret associated with the Google app. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppId | String | The App ID of the Facebook app used for login. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret | String | The app secret associated with the Facebook app. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName | String | The app setting that contains the Facebook app secret. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey | String | The OAuth 1.0a consumer key of the Twitter application used for login. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret | String | The consumer secret associated with the Twitter application. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName | String | The app setting that contains the Twitter consumer secret. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId | String | The OAuth 2.0 client ID for the Microsoft account provider. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret | String | The client secret for the Microsoft account provider. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName | String | The app setting that contains the Microsoft account client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientId | String | The client ID for the Apple provider. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientSecret | String | The client secret for the Apple provider. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName | String | The app setting that contains the Apple provider client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.authFilePath | String | The path to the authentication configuration file. |
 
 ### azure-appservice-webapp-config-update
 
@@ -1879,42 +1879,42 @@ Updates the configuration settings of an existing Azure Web App. Required permis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| name | Name of the Web App. | Required | 
-| http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional | 
-| remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional | 
-| min_tls_version | Configures the minimum version of TLS required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional |
+| remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional |
+| min_tls_version | Configures the minimum version of TLS required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.AppService.WebAppConfiguration.id | String | Resource ID. | 
-| Azure.AppService.WebAppConfiguration.name | String | Resource name. | 
-| Azure.AppService.WebAppConfiguration.type | String | Resource type. | 
-| Azure.AppService.WebAppConfiguration.location | String | Resource location. | 
-| Azure.AppService.WebAppConfiguration.properties.numberOfWorkers | Number | Number of workers. | 
-| Azure.AppService.WebAppConfiguration.properties.defaultDocuments | Unknown | List of default documents. | 
-| Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion | String | .NET Framework version. | 
-| Azure.AppService.WebAppConfiguration.properties.phpVersion | String | PHP version. | 
-| Azure.AppService.WebAppConfiguration.properties.pythonVersion | String | Python version. | 
-| Azure.AppService.WebAppConfiguration.properties.nodeVersion | String | Node.js version. | 
-| Azure.AppService.WebAppConfiguration.properties.powerShellVersion | String | PowerShell version. | 
-| Azure.AppService.WebAppConfiguration.properties.linuxFxVersion | String | Linux app framework and version. | 
-| Azure.AppService.WebAppConfiguration.properties.windowsFxVersion | String | Windows container image name. | 
-| Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion | String | Remote debugging version. | 
-| Azure.AppService.WebAppConfiguration.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.minTlsVersion | String | Minimum TLS version required. | 
-| Azure.AppService.WebAppConfiguration.properties.ftpsState | String | State of FTP / FTPS service. | 
-| Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.managedPipelineMode | String | Managed pipeline mode. | 
-| Azure.AppService.WebAppConfiguration.properties.loadBalancing | String | Site load balancing mode. | 
-| Azure.AppService.WebAppConfiguration.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.autoHealRules | Unknown | Auto Heal rules configuration. | 
-| Azure.AppService.WebAppConfiguration.properties.cors | Unknown | Cross-Origin Resource Sharing \(CORS\) settings. | 
-| Azure.AppService.WebAppConfiguration.properties.apiDefinition.url | String | URL of the API definition. | 
-| Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id | String | Azure API management integration ID. | 
+| Azure.AppService.WebAppConfiguration.id | String | Resource ID. |
+| Azure.AppService.WebAppConfiguration.name | String | Resource name. |
+| Azure.AppService.WebAppConfiguration.type | String | Resource type. |
+| Azure.AppService.WebAppConfiguration.location | String | Resource location. |
+| Azure.AppService.WebAppConfiguration.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.AppService.WebAppConfiguration.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.AppService.WebAppConfiguration.properties.phpVersion | String | PHP version. |
+| Azure.AppService.WebAppConfiguration.properties.pythonVersion | String | Python version. |
+| Azure.AppService.WebAppConfiguration.properties.nodeVersion | String | Node.js version. |
+| Azure.AppService.WebAppConfiguration.properties.powerShellVersion | String | PowerShell version. |
+| Azure.AppService.WebAppConfiguration.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.AppService.WebAppConfiguration.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.AppService.WebAppConfiguration.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.AppService.WebAppConfiguration.properties.ftpsState | String | State of FTP / FTPS service. |
+| Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.AppService.WebAppConfiguration.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.AppService.WebAppConfiguration.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.AppService.WebAppConfiguration.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.AppService.WebAppConfiguration.properties.cors | Unknown | Cross-Origin Resource Sharing \(CORS\) settings. |
+| Azure.AppService.WebAppConfiguration.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id | String | Azure API management integration ID. |
