@@ -405,7 +405,7 @@ class AssistantMessages:
 
     # Optional help tip for platforms that support message history retrieval
     HELP_MESSAGE_HISTORY_TIP = (
-        "• To summarize messages, mention the source explicitly "
+        "• To summarize {platform_name} messages (if supported by the agent), mention the source explicitly "
         "(e.g. `summarize the last 20 messages from this {platform_name} channel`).\n"
     )
 
