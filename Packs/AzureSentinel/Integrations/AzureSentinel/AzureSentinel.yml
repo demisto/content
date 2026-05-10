@@ -226,6 +226,14 @@ configuration:
   type: 19
   section: Collect
   advanced: true
+- defaultvalue: 0
+  display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  name: look_back
+  type: 0
+  advanced: true
+  required: false
+  section: Collect
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel

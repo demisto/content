@@ -1475,6 +1475,60 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
             incident[info_type] = client.http_request(method, f"incidents/{incident_id}/{info_type}").get(results_key)
 
 
+def fetch_incidents_lookback(
+    client: AzureSentinelClient,
+    look_back: int,
+    min_severity: str,
+    statuses_to_fetch: list,
+    last_run: dict,
+    first_fetch_time: str,
+    limit: int,
+) -> list:
+    """Fetch incidents that were modified within the lookback window.
+
+    This catches incidents whose severity escalated after initial creation,
+    which would have been missed by the regular createdTimeUtc-based fetch.
+
+    Args:
+        client: The Azure Sentinel client.
+        look_back: Lookback time in minutes.
+        min_severity: Minimum severity to filter by.
+        statuses_to_fetch: List of statuses to filter by.
+        last_run: The last run object.
+        first_fetch_time: The first fetch time string (e.g., '3 days').
+        limit: Maximum number of incidents to fetch.
+
+    Returns:
+        List of incidents from the lookback window.
+    """
+    lookback_last_run = {"time": last_run.get("last_fetch_time")}
+    lookback_start_time, _ = get_fetch_run_time_range(
+        last_run=lookback_last_run,
+        first_fetch=first_fetch_time,
+        look_back=look_back,
+        date_format=DATE_FORMAT,
+    )
+    demisto.debug(f"Lookback: querying incidents modified since {lookback_start_time}")
+
+    command_args = {
+        "filter": (
+            f"properties/lastModifiedTimeUtc ge {lookback_start_time}"
+            f" {severity_filter(min_severity)}"
+            f" {status_filter(statuses_to_fetch)}".strip()
+        ),
+        "orderby": "properties/lastModifiedTimeUtc asc",
+        "limit": limit,
+    }
+    demisto.debug(f"Lookback filter query: {command_args['filter']}")
+
+    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    if isinstance(raw_incidents, dict):
+        raw_incidents = [raw_incidents]
+
+    demisto.debug(f"Lookback: found {len(raw_incidents)} incidents")
+    return raw_incidents
+
+
 def fetch_incidents(
     client: AzureSentinelClient,
     last_run: dict,
