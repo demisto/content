@@ -9740,8 +9740,6 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
     Gets detailed results for specific workflow executions.
     """
     ids = argToList(args.get("ids"))
-    if not ids:
-        raise DemistoException("The 'ids' argument is required.")
 
     response = get_workflow_execution_results(ids=ids)
     results = response.get("resources", [])
@@ -9809,8 +9807,6 @@ def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
     ids = argToList(args.get("ids"))
     action_name = args.get("action_name", "")
 
-    if not ids:
-        raise DemistoException("The 'ids' argument is required.")
     if action_name not in ("cancel", "resume"):
         raise DemistoException(f"Invalid action_name '{action_name}'. Must be 'cancel' or 'resume'.")
 
