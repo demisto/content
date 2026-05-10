@@ -12,8 +12,6 @@ url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
 python = "^3.10,<3.12"
-anyio = "^4.13.0"
-httpx = "^0.28.1"
 
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
@@ -34,6 +32,8 @@ pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
+anyio = "^4.13.0"
+httpx = "^0.28.1"
 
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
