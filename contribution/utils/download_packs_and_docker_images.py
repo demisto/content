@@ -31,6 +31,14 @@ MAX_WORKERS_DOCKER = 5
 RETRY_TOTAL = 3
 RETRY_BACKOFF_FACTOR = 1  # seconds between retries
 
+# Fields from id_set.json that have no equivalent in index.zip metadata.
+# If a customer passes these to should_filter_out_pack(), a warning is emitted.
+_REMOVED_IDSET_FIELDS: dict[str, str] = {
+    "source": "The 'source' field (internal git source) is not available in index.zip metadata.",
+    "ContentItems": "The 'ContentItems' field is not available in index.zip metadata. "
+    "Content items can be inspected by examining the downloaded pack zip files.",
+}
+
 
 class PackInfo(TypedDict):
     """Structured metadata for a single pack extracted from index.zip.
@@ -219,6 +227,9 @@ def should_filter_out_pack(pack_info: PackInfo | dict, fields: dict, remove_depr
     """
     Check if the pack should be filtered out based on given fields.
 
+    Emits a warning if any requested field is not available in the pack metadata
+    (e.g. fields that existed in id_set.json but have no equivalent in index.zip).
+
     Parameters:
         pack_info (PackInfo | dict): Pack metadata.
         fields (dict): The dictionary containing the expected values for certain keys.
@@ -229,6 +240,14 @@ def should_filter_out_pack(pack_info: PackInfo | dict, fields: dict, remove_depr
     """
     if remove_deprecated and pack_info.get("deprecated", False):
         return True
+
+    for key in fields:
+        if key in _REMOVED_IDSET_FIELDS:
+            print(  # noqa: T201
+                f"Warning: field '{key}' is no longer available after migration from id_set.json to index.zip. "
+                f"{_REMOVED_IDSET_FIELDS[key]} "
+                f"Filtering on this field will always exclude the pack."
+            )
 
     return any(pack_info.get(key) != value for key, value in fields.items())
 
@@ -342,7 +361,7 @@ def download_and_save_docker_images(docker_images: set, output_path: str) -> Non
         with open(image_file_name, "wb") as f:
             for chunk in image_data.save(named=True):
                 f.write(chunk)
-        return image_file_name
+        return str(image_file_name)
 
     temp_dir = tempfile.TemporaryDirectory()
     try:
