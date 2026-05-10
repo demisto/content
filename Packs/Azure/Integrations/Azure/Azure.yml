@@ -636,7 +636,7 @@ script:
           - None
 
   - name: azure-storage-blob-container-update
-    description: Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist.
+    description: "Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.""
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -1209,7 +1209,7 @@ script:
     name: azure-storage-container-blob-property-set
     deprecated: true
   - name: azure-storage-blob-property-set
-    description: "Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"
+    description: "Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     arguments:
     - description: The name of the Blob Container.
       name: container_name

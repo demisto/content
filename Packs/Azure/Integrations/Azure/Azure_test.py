@@ -123,6 +123,7 @@ def test_update_security_rule_command(mocker, client, mock_params):
 
     mocker.patch.object(client, "get_rule", return_value=rule_response)
     mocker.patch.object(client, "create_or_update_rule", return_value=rule_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vn-security-rule-update")
 
     # Call the function
     args = {
@@ -156,6 +157,7 @@ def test_update_security_rule_command_deprecated(mocker, client, mock_params):
     """
 
     # Prepare mock responses
+    access = "Allow"
     rule_response = {
         "name": "test-rule",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/\
@@ -166,7 +168,7 @@ def test_update_security_rule_command_deprecated(mocker, client, mock_params):
             "destinationPortRange": "443",
             "sourceAddressPrefix": "Internet",
             "destinationAddressPrefix": "10.0.0.0/24",
-            "access": "Allow",
+            "access": access,
             "priority": 100,
             "direction": "Inbound",
             "description": "Test rule",
@@ -189,7 +191,7 @@ def test_update_security_rule_command_deprecated(mocker, client, mock_params):
         "destination_ports": "443",
         "priority": "100",
         "description": "Test rule",
-        "access": "Allow",
+        "access": access,
     }
 
     result = update_security_rule_command(client, mock_params, args)
@@ -198,7 +200,7 @@ def test_update_security_rule_command_deprecated(mocker, client, mock_params):
     assert result.outputs_prefix == "Azure.NSGRule"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-rule"
-    assert result.outputs.get("properties", {}).get("access") == rule_response.get("properties", {}).get("access")
+    assert result.outputs.get("access") == access
 
 
 def test_storage_account_update_command(mocker, client, mock_params):
@@ -3527,19 +3529,15 @@ def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
 def test_storage_container_blob_tag_set_command_append(mocker, client, mock_params):
     """
     Given: An Azure client and a request to append tags for a blob.
-    When: The storage_container_blob_tag_set_command function is called with append=True.
-    Then: The function should fetch existing tags, merge them with new tags, and call the client's
-        storage_container_blob_tags_set_request method.
+    When: The storage_container_blob_tag_set_command function is called with valid parameters and append=True.
+    Then: The function should call the client's storage_container_blob_tags_set_request method with the appended tags.
     """
-    from Azure import storage_container_blob_tag_set_command
-    from CommonServerPython import CommandResults
-
     # Mock arguments
     args = {
         "container_name": "testcontainer",
         "blob_name": "testblob.txt",
         "account_name": "testaccount",
-        "tags": '{"tag1": "value1", "tag2": "value2"}',
+        "tags": '{"tag3": "value3"}',
         "append": "true",
     }
 
@@ -3547,30 +3545,27 @@ def test_storage_container_blob_tag_set_command_append(mocker, client, mock_para
     mocker.patch.object(client, "storage_container_blob_tags_set_request")
 
     # Mock storage_container_blob_tag_get_command to return existing tags
-    mock_get_results = CommandResults(outputs={"Tag": {"existing_tag": "existing_value"}})
+    mock_get_results = CommandResults(outputs={"Tag": [{"Key": "tag1", "Value": "value1"}, {"Key": "tag2", "Value": "value2"}]})
     mocker.patch("Azure.storage_container_blob_tag_get_command", return_value=mock_get_results)
 
     # Mock create_set_tags_request_body
-    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag><Tag><Key>existing_tag</Key><Value>existing_value</Value></Tag></TagSet></Tags>'  # noqa: E501
+    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag3</Key><Value>value3</Value></Tag><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag></TagSet></Tags>'  # noqa: E501
     mocker.patch("Azure.create_set_tags_request_body", return_value=mock_xml_data)
 
     # Call the function
-    storage_container_blob_tag_set_command(client, mock_params, args)
+    result = storage_container_blob_tag_set_command(client, mock_params, args)
 
-    # Verify storage_container_blob_tag_get_command was called
-    import Azure
-
-    Azure.storage_container_blob_tag_get_command.assert_called_once_with(client, mock_params, args)
-
-    # Verify create_set_tags_request_body was called with merged tags
-    Azure.create_set_tags_request_body.assert_called_once_with(
-        {"tag1": "value1", "tag2": "value2", "existing_tag": "existing_value"}
-    )
+    # Verify create_set_tags_request_body was called with correct parameters (appended tags)
+    Azure.create_set_tags_request_body.assert_called_once_with({"tag3": "value3", "tag1": "value1", "tag2": "value2"})
 
     # Verify client.storage_container_blob_tags_set_request was called with correct parameters
     client.storage_container_blob_tags_set_request.assert_called_once_with(
         "testcontainer", "testblob.txt", mock_xml_data, "testaccount"
     )
+
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "testblob.txt Tags successfully updated."
 
 
 def test_storage_container_blob_property_get_command(mocker, client, mock_params):

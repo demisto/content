@@ -1847,28 +1847,28 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required | 
-| resource_group_name | The resource group to which the virtual machine belongs. | Required | 
-| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
-| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional | 
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the virtual machine belongs. | Required |
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. | 
-| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. | 
-| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. | 
-| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. | 
-| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. | 
-| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | Specifies the hardware settings for the virtual machine. | 
-| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. | 
-| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. | 
-| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. | 
-| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. | 
-| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. | 
-| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. | 
-| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. | 
+| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. |
+| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. |
+| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. |
+| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
+| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | Specifies the hardware settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
+| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
+| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
+| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
+| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. |
+| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
 
 ### azure-compute-vm-power-off
 
@@ -2077,32 +2077,32 @@ Updates a database's security alert policy. The required permissions are: Micros
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| server_name | Server name. | Required | 
-| db_name | Database name. | Required | 
-| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional | 
-| subscription_id | Subscription ID. | Required | 
-| resource_group_name | The name of the resource group. | Required | 
+| server_name | Server name. | Required |
+| db_name | Database name. | Required |
+| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional |
+| subscription_id | Subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.SqlDB.SecurityAlertPolicies.id | String | Threat policy ID. | 
-| Azure.SqlDB.SecurityAlertPolicies.name | String | Threat policy name. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.state | String | Specifies the state of the policy, whether it is enabled or disabled or a policy has not been applied yet on the specific database. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.creationTime | String | Specifies the UTC creation time of the policy. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays | Number | Specifies the number of days to keep in the Threat Detection audit logs. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.storageAccountAccessKey | String | Specifies the identifier key of the Threat Detection audit storage account. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint | String | Specifies the blob storage endpoint. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins | Boolean | Specifies that the alert is sent to the account administrators. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses | String | Specifies an array of e-mail addresses to which the alert is sent. | 
-| Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts | Unknown | Specifies an array of alerts that are disabled. | 
-| Azure.SqlDB.SecurityAlertPolicies.systemData.createdAt | Unknown | The timestamp of resource creation \(UTC\). | 
-| Azure.SqlDB.SecurityAlertPolicies.systemData.createdBy | Unknown | The identity that created the resource. | 
-| Azure.SqlDB.SecurityAlertPolicies.systemData.createdByType | Unknown | The type of identity that created the resource. | 
-| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedAt | Unknown | The timestamp of resource last modification \(UTC\). | 
-| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedBy | Unknown | The identity that last modified the resource. | 
-| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedByType | Unknown | The type of identity that last modified the resource. | 
+| Azure.SqlDB.SecurityAlertPolicies.id | String | Threat policy ID. |
+| Azure.SqlDB.SecurityAlertPolicies.name | String | Threat policy name. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.state | String | Specifies the state of the policy, whether it is enabled or disabled or a policy has not been applied yet on the specific database. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.creationTime | String | Specifies the UTC creation time of the policy. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays | Number | Specifies the number of days to keep in the Threat Detection audit logs. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.storageAccountAccessKey | String | Specifies the identifier key of the Threat Detection audit storage account. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint | String | Specifies the blob storage endpoint. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins | Boolean | Specifies that the alert is sent to the account administrators. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses | String | Specifies an array of e-mail addresses to which the alert is sent. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts | Unknown | Specifies an array of alerts that are disabled. |
+| Azure.SqlDB.SecurityAlertPolicies.systemData.createdAt | Unknown | The timestamp of resource creation \(UTC\). |
+| Azure.SqlDB.SecurityAlertPolicies.systemData.createdBy | Unknown | The identity that created the resource. |
+| Azure.SqlDB.SecurityAlertPolicies.systemData.createdByType | Unknown | The type of identity that created the resource. |
+| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedAt | Unknown | The timestamp of resource last modification \(UTC\). |
+| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedBy | Unknown | The identity that last modified the resource. |
+| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedByType | Unknown | The type of identity that last modified the resource. |
 
 ### azure-vn-network-interfaces-list
 
@@ -2471,7 +2471,7 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 ### azure-storage-blob-container-update
 
 ***
-Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist.
+Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
 
 #### Base Command
 
@@ -2587,7 +2587,7 @@ There is no context output for this command.
 ### azure-storage-blob-property-set
 
 ***
-Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write
+Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
@@ -2597,19 +2597,19 @@ Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| container_name | The name of the Blob Container. | Required | 
-| blob_name | The name of the blob. | Required | 
-| subscription_id | The subscription ID. | Required | 
-| resource_group_name | The resource group name. | Required | 
-| account_name | The storage account name. | Required | 
-| content_type | Blob content type. Indicates the media type of the blob. | Optional | 
-| content_md5 | Blob MD5 hash value. Can be used by the client to check for content integrity. | Optional | 
-| content_encoding | Blob content encoding. Used to specify the compression algorithm of the blob content. Possible values are: identity, gzip, deflate, br, compress, zstd, aes128gcm, dcb, dcz, exi, pack200-gzip, x-compress, x-gzip. | Optional | 
-| content_language | Blob content language. Describes the human languages of the blob content. | Optional | 
-| content_disposition | Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata. | Optional | 
-| cache_control | Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses. | Optional | 
-| request_id | Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled. | Optional | 
-| lease_id | Required if the blob has an active lease. | Optional | 
+| container_name | The name of the Blob Container. | Required |
+| blob_name | The name of the blob. | Required |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| content_type | Blob content type. Indicates the media type of the blob. | Optional |
+| content_md5 | Blob MD5 hash value. Can be used by the client to check for content integrity. | Optional |
+| content_encoding | Blob content encoding. Used to specify the compression algorithm of the blob content. Possible values are: identity, gzip, deflate, br, compress, zstd, aes128gcm, dcb, dcz, exi, pack200-gzip, x-compress, x-gzip. | Optional |
+| content_language | Blob content language. Describes the human languages of the blob content. | Optional |
+| content_disposition | Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata. | Optional |
+| cache_control | Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses. | Optional |
+| request_id | Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled. | Optional |
+| lease_id | Required if the blob has an active lease. | Optional |
 
 #### Context Output
 

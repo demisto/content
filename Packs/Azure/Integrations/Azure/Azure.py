@@ -3076,13 +3076,17 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
 
     try:
         tags = json.loads(tags)
+        demisto.debug(f"{tags=}")
     except ValueError:
         raise ValueError("Failed to parse tags argument. Please provide valid JSON format tags data.")
 
     if append_tags:
         results = storage_container_blob_tag_get_command(client, params, args)
         original_tags = results.outputs["Tag"]
-        tags.update(original_tags)
+        demisto.debug(f"Appending the new tags to {original_tags=}")
+        dict_original_tags = {tag["Key"]: tag["Value"] for tag in original_tags}
+        tags.update(dict_original_tags)
+        demisto.debug(f"After the append {tags=}")
 
     xml_data = create_set_tags_request_body(tags)
 
@@ -3948,6 +3952,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     direction = args.get("direction", "")  # required in API
     priority = args.get("priority", "")  # required in API
     action = args.get("action", "Allow")  # required in API, named as "access" in the API
+    access = args.get("access") if args.get("access") else action  # required in API, named as "access" in the API
     protocol = args.get("protocol", "Any")  # required in API
     source = args.get("source", "Any")
     source_ports = args.get("source_ports", "*")
@@ -3961,7 +3966,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
         "protocol": "*" if protocol == "Any" else protocol,
-        "access": action,
+        "access": access,
         "priority": priority,
         "direction": direction,
     }
@@ -4928,7 +4933,7 @@ def get_command_resource(command: str) -> str:
     extra_commands = [
         "azure-storage-blob-property-get",
         "azure-storage-blob-property-set",
-        "azure-storage-blob-property-get",
+        "azure-storage-blob-tag-get",
         "azure-storage-blob-create",
         "azure-storage-blob-get",
         "azure-storage-blob-tag-set",
