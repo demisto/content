@@ -78,6 +78,23 @@ emitted to stdout to aid the calling agent, but the calling agent MUST
 NOT persist it into downstream pipeline data. Under ``--static-only``
 the field is omitted entirely.
 
+**Hybrid Scope-1 narrowing (Fix 7).** When a command's dynamic phase
+actually captured ``>=1`` HTTP request **and** at least one sentinel
+hit was detected, the analyzer assumes that captured-set is an
+authoritative bound on which params reached the wire for that command.
+It then **narrows** the static Scope-1 set (pre-dispatch params shared
+across all commands — typically the ``Client(...)`` fan-out pattern in
+``main()``) to the intersection with the captured params. Scope-2
+(per-command handler-traced params) is preserved unchanged. This kills
+the dominant false-positive class where every command appears to use
+every Client-init param. The narrowed commands are flagged in
+``diagnostics`` with ``scope_1_narrowed: true`` and a
+``scope_1_dropped`` list. When dynamic did not capture (status
+``ok_no_capture``, ``module_not_found``, etc.) or hit zero sentinels,
+the analyzer falls back to the full ``scope_1 | scope_2`` static union
+and adds no extra diagnostic field. Narrowing is silent in
+``commands`` and visible in ``diagnostics`` only.
+
 ``commands`` lists, for each command, the params that are relevant to
 it (case-sensitive, sorted). Params absent from the list (or excluded
 via ``--ignore-params`` / ``--ignore-params-file``) are not relevant or
@@ -557,13 +574,27 @@ def analyze_static(
     command: str,
     language: str | None = None,
     integration_name: str = "",
-) -> set[str]:
+) -> tuple[set[str], set[str]]:
     """Run scope-1 + scope-2 static analysis for one command. Returns YML names.
 
+    Returns ``(scope_1, scope_2)``:
+
+    * ``scope_1`` — pre-dispatch params accessed in ``main()`` before the
+      command-dispatch construct. These are shared across **every** command
+      because they execute regardless of which command is invoked (e.g.,
+      ``Client(...)`` constructor in the fan-out pattern).
+    * ``scope_2`` — params traced through the per-command handler (and up
+      to two further call levels). These are specific to this command.
+
+    Callers that want the full static signal use ``scope_1 | scope_2``.
+    Callers that have HTTP evidence from dynamic analysis can narrow
+    ``scope_1`` to the params dynamic actually saw on the wire and keep
+    ``scope_2`` intact.
+
     Non-Python integrations (``language`` not in ``{"python", None}``) are
-    the **only** acceptable graceful skip: log a stderr note and return an
-    empty set. Any other failure (including a real ``SyntaxError`` in the
-    integration's ``.py``) propagates to the caller.
+    the **only** acceptable graceful skip: log a stderr note and return
+    two empty sets. Any other failure (including a real ``SyntaxError``
+    in the integration's ``.py``) propagates to the caller.
     """
     if language and language.lower() not in {"python", "python2", "python3"}:
         print(
@@ -571,31 +602,31 @@ def analyze_static(
             f"(language={language!r}); static analysis is Python-only",
             file=sys.stderr,
         )
-        return set()
+        return set(), set()
     if not py_source:
         # No .py file at all: nothing to analyze, but this is not a graceful
         # skip case — caller decides whether that's an error.
-        return set()
+        return set(), set()
     tree = ast.parse(py_source)  # may raise SyntaxError -> propagate.
     func_map = build_function_map(tree)
     main_fn = find_main(func_map)
     if main_fn is None:
-        return set()
+        return set(), set()
     aliases = find_pydantic_aliases(tree)
     params_var = find_params_var(main_fn) or "params"
     params_vars = {params_var} | PARAMS_VAR_ALIASES
     dispatch_line = find_command_dispatch_line(main_fn)
-    scope1 = collect_pre_dispatch_params(main_fn, params_vars, aliases, dispatch_line)
+    scope_1 = collect_pre_dispatch_params(main_fn, params_vars, aliases, dispatch_line)
 
-    scope2: set[str] = set()
+    scope_2: set[str] = set()
     handler_calls = find_command_handler_calls(main_fn, command)
     for call in handler_calls:
         target = _resolve_call_target(call, func_map)
         if target is None:
             continue
-        scope2 |= trace_params_in_function(target, func_map, aliases, depth=2, visited=set())
+        scope_2 |= trace_params_in_function(target, func_map, aliases, depth=2, visited=set())
 
-    return scope1 | scope2
+    return scope_1, scope_2
 
 
 # --------------------------------------------------------------------------
@@ -1611,6 +1642,13 @@ class CommandDiagnostic:
     ``status`` values: ``ok`` / ``ok_no_capture`` / ``param_caused_failure``
     / ``no_data`` / ``timeout`` / ``docker_error`` / ``module_not_found``.
     See module docstring for the full enum.
+
+    ``scope_1_narrowed`` / ``scope_1_dropped`` are set only when the
+    hybrid Scope-1 narrowing path fired for this command (status ``ok``
+    with HTTP captures and at least one sentinel hit). They tell the
+    calling agent that the per-command list was trimmed using HTTP
+    evidence — the agent can trust those cells more, but should still
+    verify against source if something expected is missing.
     """
 
     status: str
@@ -1618,6 +1656,8 @@ class CommandDiagnostic:
     failure_excerpt: str = ""
     failing_params: list[str] = field(default_factory=list)
     missing_module: str | None = None
+    scope_1_narrowed: bool = False
+    scope_1_dropped: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         """Render the diagnostic as a plain dict for JSON serialization."""
@@ -1631,6 +1671,9 @@ class CommandDiagnostic:
             out["failing_params"] = self.failing_params
         if self.missing_module is not None:
             out["missing_module"] = self.missing_module
+        if self.scope_1_narrowed:
+            out["scope_1_narrowed"] = True
+            out["scope_1_dropped"] = self.scope_1_dropped
         return out
 
 
@@ -1788,6 +1831,46 @@ def _classify_dynamic_error(exc: DynamicAnalysisError) -> str:
     return "no_data"
 
 
+def _merge_command_params(
+    command: str,
+    static_pair: tuple[set[str], set[str]],
+    captured: set[str],
+    diag: CommandDiagnostic | None,
+) -> set[str]:
+    """Merge per-command static and dynamic results with hybrid Scope-1 narrowing.
+
+    When dynamic actually exercised the command end-to-end (status ``ok``,
+    ``captured_requests > 0``, and at least one captured sentinel hit), use
+    the captured set as evidence to **narrow** Scope-1 to params that
+    actually reached the wire for this command. Scope-2 (per-command
+    handler-traced params) is preserved as-is. This eliminates the
+    ``Client(...)`` fan-out false positive where every command appears to
+    use every Client-init param.
+
+    When dynamic did not run, captured nothing, or hit zero sentinels,
+    fall back to the full ``scope_1 | scope_2`` static union (we cannot
+    safely narrow without HTTP evidence).
+
+    Side effect: when narrowing fires, ``diag.scope_1_narrowed`` is set
+    to ``True`` and ``diag.scope_1_dropped`` is populated with the
+    Scope-1 params that were dropped. The diagnostic is mutated in place.
+    """
+    scope_1, scope_2 = static_pair
+    can_narrow = (
+        diag is not None
+        and diag.status == "ok"
+        and diag.captured_requests > 0
+        and bool(captured)
+    )
+    if can_narrow:
+        assert diag is not None  # for type checkers; can_narrow guarantees it
+        narrowed_scope_1 = scope_1 & captured
+        diag.scope_1_narrowed = True
+        diag.scope_1_dropped = sorted(scope_1 - captured)
+        return narrowed_scope_1 | scope_2 | captured
+    return scope_1 | scope_2 | captured
+
+
 def analyze_integration(
     integration_path: Path,
     commands_filter: list[str] | None,
@@ -1826,7 +1909,7 @@ def analyze_integration(
         f"[static] analyzing {integration_name!r} ({len(commands)} commands)",
         file=sys.stderr,
     )
-    static_results: dict[str, set[str]] = {}
+    static_results: dict[str, tuple[set[str], set[str]]] = {}
     for cmd in commands:
         static_results[cmd] = analyze_static(
             py_source, cmd, language=language, integration_name=integration_name
@@ -1850,12 +1933,16 @@ def analyze_integration(
 
     out_commands: dict[str, list[str]] = {}
     for cmd in commands:
-        merged: dict[str, bool] = {}
-        for name in all_param_names:
-            if name in ignore:
-                continue
-            merged[name] = (name in static_results[cmd]) or (name in dynamic_results[cmd])
-        out_commands[cmd] = sorted([param for param, used in merged.items() if used])
+        merged_set = _merge_command_params(
+            cmd,
+            static_results[cmd],
+            dynamic_results[cmd],
+            diagnostics.get(cmd),
+        )
+        out_commands[cmd] = sorted(
+            name for name in all_param_names
+            if name in merged_set and name not in ignore
+        )
 
     result: dict[str, Any] = {
         "integration": integration_name,

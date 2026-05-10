@@ -508,6 +508,10 @@ Given the analyzer's JSON for an integration, the skill should:
 
 **Step 4.** If many commands have `status: "no_data"` or `status: "ok_no_capture"`: the analyzer couldn't get a strong signal. Read the integration source and trace which params each command's handler uses. Write the resulting per-command list into the pipeline. **When in doubt, include rather than exclude.**
 
+> **Hybrid Scope-1 narrowing & the err-on-inclusion rule.** The analyzer applies a narrowing pass that only fires for commands which captured ≥1 HTTP request *and* hit ≥1 sentinel — typically only ~10–20% of commands per integration. Those commands are flagged with `diagnostics[cmd].scope_1_narrowed: true` and you can trust their per-command list more (HTTP evidence backed it; the dropped Scope-1 params are listed in `scope_1_dropped` for transparency).
+>
+> The remaining ~80% of commands still receive the **full Scope-1 static union**, which can include false positives from the `Client(api_key=..., max_fetch=..., custom_credentials=...)` fan-out pattern in `main()`. When you see a column where many commands share a suspiciously-identical large param list (the fan-out signature), consult the source code and prune obvious Client-only params for commands that don't actually use them — but **continue to err on inclusion**: a real param missing silently breaks the migrated integration, while an extra param is merely cosmetic noise.
+
 **Step 5.** Always sanity-check: are there commands in the YML that the analyzer missed? Are there params clearly used in a command's source code that don't appear in the analyzer's list? If yes, add them.
 
 ### 7. The "err on inclusion" principle

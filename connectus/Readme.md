@@ -67,6 +67,41 @@ The JSON shapes for `Auth Details`, `Params to Commands`,
 `Params for test with default in code`, and `Params same in other handlers`
 live in [`connectus/column-schemas.md`](column-schemas.md).
 
+### Per-command parameter analysis
+
+The `Params to Commands` column (step #3) is populated by the analyzer at
+[`connectus/check_command_params.py`](check_command_params.py:1). It runs the
+integration end-to-end via [`connectus/capture_proxy.py`](capture_proxy.py:1)
+and combines static AST analysis with dynamic HTTP-proxy capture to determine
+which YML configuration params each command actually consumes.
+
+Standard invocation:
+
+```bash
+python3 connectus/check_command_params.py <integration_dir> \
+    --ignore-params-file connectus/default_ignore_params.txt
+```
+
+Requirements:
+
+- **Docker on the host.** The analyzer runs the integration's child process
+  inside `demisto/py3-native:8.9.0.114862` by default.
+- The default ignore list at
+  [`connectus/default_ignore_params.txt`](default_ignore_params.txt:1) strips
+  auth/connection/framework params so only **behavioral**, per-command-meaningful
+  params remain.
+
+The analyzer's stdout JSON has two top-level keys: `commands` (the polished
+result that is persisted into the `Params to Commands` column) and
+`diagnostics` (internal AI metadata for the migration skill). **`diagnostics`
+is NOT to be persisted into pipeline data** — it is consumed by the calling AI
+and discarded.
+
+See [`connectus/check_command_params_design.md`](check_command_params_design.md:1)
+for the full design and
+[`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1) for
+how the migration AI consumes the analyzer output.
+
 ---
 
 ## Workflow State Machine (`workflow_state.py`)
