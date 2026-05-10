@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 
 def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = "", target: str = "entry"):
-    print(f"Got {incident_id=}")
+    demisto.debug(f"Upload File Script got {incident_id=} {target=}")
     if "incident" in target or "case" in target:
         service_name = "incident"
     else:
