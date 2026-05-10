@@ -49,7 +49,7 @@ Query Mimecast emails. This is an archive search command.
 
 #### Prerequisite
 
-In order to successfully use this endpoint to search across a customers entire archive, the role assigned to the app must have at least the following level of application permissions granted Archive | Search | Read.
+In order to successfully use this endpoint to search across a customer's entire archive, the role assigned to the app must have at least the following level of application permissions granted: `Archive | Search | Read`.
 To use this endpoint to search for messages for the logged in user or an address that the logged in user has delegate permission to, no administrator permissions are required.
 
 #### application permissions
