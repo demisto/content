@@ -283,10 +283,10 @@
                 "Splunk Risk Object": {
                     "simple": "risk_object"
                 },
-                "Source IP": {
+                "Source IPs": {
                     "simple": "src"
                 },
-                "Destination IP": {
+                "Destination IPs": {
                     "simple": "dest"
                 },
                 "User": {

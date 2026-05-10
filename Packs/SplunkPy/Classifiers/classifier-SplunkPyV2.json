@@ -1,5 +1,5 @@
 {
-    "description": "Classifies SplunkPy v2 events by reading rawJSON.splunk_es_event_type and routing Finding -> Splunk Finding, Investigation -> Splunk Investigation.",
+    "description": "Classifies SplunkPy v2 events (Splunk Finding and Splunk Investigation).",
     "feed": false,
     "id": "SplunkPyV2",
     "keyTypeMap": {

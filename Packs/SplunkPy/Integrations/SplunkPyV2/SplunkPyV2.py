@@ -209,8 +209,7 @@ class UserMappingObject:
         the Splunk username to the mapped XSOAR username.
 
         This is the action this helper performs — it operates on any row dict
-        carrying an `owner` key (Findings, Investigations, etc.), not just
-        Findings, hence the generic name.
+        carrying an `owner` key (Findings, Investigations, etc.).
 
         Args:
             rows (list[dict]): Row dicts (Findings or Investigations) whose
@@ -222,8 +221,9 @@ class UserMappingObject:
                 if splunk_user := row.get("owner"):
                     xsoar_user = self.get_xsoar_user_by_splunk(splunk_user)
                     row["owner"] = xsoar_user
+                    row_id = row.get(EVENT_ID) or row.get("investigation_id") or row.get("investigation_guid")
                     demisto.debug(
-                        f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} " f"for row {row.get(EVENT_ID)}."
+                        f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} for row {row_id}."
                     )
 
 
@@ -812,21 +812,16 @@ def fetch_findings(
     demisto.debug(f"SplunkPy - total number of new incidents found is: {len(incidents)}")
     demisto.debug(f"SplunkPy - total number of dropped incidents is: {num_of_dropped}")
 
-    # Cache-mode (enrichment) accumulation. We intentionally still mutate the
-    # caller-provided cache_object here because it is the same lifetime as the
-    # enrichment mechanism. The dispatcher will see an empty incidents list in
-    # this branch and still call demisto.incidents([]) — same as today.
+    # Cache-mode (enrichment) accumulation.
     enrichment_cache_mode = bool(enrich_findings and cache_object)
     last_run_extras: dict[str, Any] = {}
     if enrichment_cache_mode:
-        assert cache_object is not None  # narrowed by enrichment_cache_mode
         cache_object.not_yet_submitted_findings += findings
         if DUMMY not in last_run_data:
             # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
             # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_extras[DUMMY] = DUMMY
-        # Findings move into the cache instead of being emitted directly.
         emitted_incidents: list[dict[str, Any]] = []
     else:
         emitted_incidents = incidents
@@ -912,17 +907,14 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject):
     per_handler_counts: dict[str, int] = {}
 
     for handler in handlers:
-        scope = last_run.get(handler.last_run_key, {}) if handler.last_run_key else last_run
+        scope_last_run = last_run.get(handler.last_run_key, {}) if handler.last_run_key else last_run
         demisto.debug(
             f"fetch_incidents: invoking {handler.event_type} handler "
-            f"scope_keys={list(scope.keys()) if isinstance(scope, dict) else []}"
+            f"scope_keys={list(scope_last_run.keys()) if isinstance(scope_last_run, dict) else []}"
         )
         try:
-            result = handler.fetch(service, scope, mapper, params)
+            result = handler.fetch(service, scope_last_run, mapper, params)
         except Exception as e:
-            # Surface BOTH the handler class name AND the event_type — the
-            # class name is the most precise breadcrumb for finding the call
-            # site in source, while event_type is the operator-friendly label.
             demisto.error(f"fetch_incidents: handler={type(handler).__name__} " f"event_type={handler.event_type} failed: {e}")
             raise
         per_handler_counts[handler.event_type] = len(result.incidents)
@@ -932,15 +924,11 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject):
         )
         all_incidents.extend(result.incidents)
         if handler.last_run_key:
-            base = scope if isinstance(scope, dict) else {}
+            base = scope_last_run if isinstance(scope_last_run, dict) else {}
             new_last_run[handler.last_run_key] = {**base, **result.last_run_delta}
         else:
             new_last_run.update(result.last_run_delta)
 
-    # Single end-of-cycle summary covering BOTH event types. Operators no
-    # longer need to look inside helpers (`fetch_findings`, `_do_fetch`) to
-    # confirm what was persisted — this line carries the per-event-type cursor
-    # state straight from the final `setLastRun` payload.
     demisto.info(
         f"fetch_incidents: total_incidents={len(all_incidents)} per_type={per_handler_counts}"
         f" | last_run_summary={_summarize_last_run_for_log(new_last_run, [h.event_type for h in handlers])}"
@@ -1112,10 +1100,6 @@ _REST_CLAUSE_RE = re.compile(
     flags=re.IGNORECASE | re.DOTALL,
 )
 _OVERRIDABLE_KEYS = ("create_time_min", "create_time_max", "limit", "offset")
-# Pre-compiled regex matching strings already in the canonical Mission Control
-# shape (`...Z` with mandatory 6-digit microsecond fractional component). Used
-# as a fast path in `to_mc_iso8601_utc` to pass canonical inputs through unchanged.
-_CANONICAL_MC_ISO_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$")
 
 
 def to_mc_iso8601_utc(ts: "str | datetime") -> str:
@@ -1124,7 +1108,6 @@ def to_mc_iso8601_utc(ts: "str | datetime") -> str:
     `YYYY-MM-DDTHH:MM:SS.ffffffZ` (always UTC, literal `Z` suffix; canonical 6-digit microseconds).
 
     Behavior:
-      - Already-canonical inputs (ending in `Z` with 6-digit microseconds) pass through unchanged.
       - Numeric offsets (e.g. `+00:00`, `-05:00`) are converted to UTC and emitted with `Z`.
       - Microseconds are always emitted as 6 digits (zero-padded), so the output shape
         is stable for downstream consumers (last-run cursors, dedup keys, audit logs).
@@ -1143,9 +1126,6 @@ def to_mc_iso8601_utc(ts: "str | datetime") -> str:
     """
     # String path
     if isinstance(ts, str):
-        # Fast-path: already canonical (ends in Z, optional fractional component).
-        if _CANONICAL_MC_ISO_RE.match(ts):
-            return ts
         try:
             # `datetime.fromisoformat` (Python 3.10) accepts `+00:00` style offsets
             # and (3.11+) the literal `Z` suffix as well. Normalize a trailing `Z`
@@ -1179,10 +1159,6 @@ def prepare_investigations_query(
 ) -> str:
     """Inject ``create_time_min`` / ``create_time_max`` / ``limit`` / ``offset`` into the
     URL inside ``| rest "..."`` (or ``'...'``).
-
-    The ``investigations`` endpoint does NOT honor the standard Splunk
-    ``earliest`` / ``latest`` parameters; it filters by ``create_time_min`` /
-    ``create_time_max`` instead.
 
     Behavior:
       - Placeholder substitution if ``CUSTOM_FILTER_PLACEHOLDER`` is present.
@@ -1335,6 +1311,12 @@ def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
 
     # Type tag consumed by the classifier.
     parsed[SPLUNK_ES_EVENT_TYPE_FIELD] = Investigation.event_type
+
+    if "status_label" not in parsed:
+        raw_status = str(parsed.get("status_name", "") or "")
+        parsed["status_label"] = raw_status.capitalize() if raw_status else ""
+    parsed.setdefault("status_end", "false")
+
     return parsed
 
 
@@ -3040,36 +3022,52 @@ def handle_enriching_findings(modified_findings: dict[str, dict[str, Any]]) -> N
         demisto.error(f"mirror-in: failed to check for enriching findings, {e}")
 
 
-def handle_closed_findings(
-    modified_findings_map: dict[str, dict[str, Any]],
+def handle_closed_entities(
+    modified_entities_map: dict[str, dict[str, Any]],
     close_extra_labels: list[str],
     close_end_statuses: bool,
     entries: list[dict[str, Any]],
 ) -> None:
-    demisto.debug("Starting handling closing the finding")
-    for finding_id, finding in modified_findings_map.items():
-        status_label = finding.get("status_label", "")
-        status_end = argToBoolean(finding.get("status_end", "false"))
+    """Append a `dbotIncidentClose` entry for any remote row whose Splunk-side
+    status indicates closure. The same mechanism is used for both Findings and
+    Investigations: every row passed in is expected to expose the canonical
+    closure keys ``status_label`` and ``status_end`` (Investigation rows are
+    normalised to this shape by :func:`parse_investigation`).
+
+    Args:
+        modified_entities_map: ``{entity_id: row}`` where ``entity_id`` is the
+            ``rule_id`` for Findings or ``investigation_guid`` for Investigations.
+        close_extra_labels: Additional Splunk status labels that should also
+            be treated as "closed".
+        close_end_statuses: If True, also close when the row's ``status_end``
+            is truthy.
+        entries: List that will be extended in place with closure entries.
+    """
+    demisto.debug("Starting handling closing the entity")
+    for entity_id, entity in modified_entities_map.items():
+        status_label = entity.get("status_label", "")
+        status_end = argToBoolean(entity.get("status_end", "false"))
         demisto.debug(
-            f"handle_closed_findings: Evaluating closure for {finding_id}: status_label={status_label}, status_end={status_end}, "
-            f"close_extra_labels={close_extra_labels}, close_end_statuses={close_end_statuses}"
+            f"handle_closed_entities: Evaluating closure for {entity_id}: status_label={status_label}, "
+            f"status_end={status_end}, close_extra_labels={close_extra_labels}, "
+            f"close_end_statuses={close_end_statuses}"
         )
 
         should_close = (status_label == "Closed") or (status_label in close_extra_labels) or (close_end_statuses and status_end)
 
         if should_close:
             demisto.info(
-                f"handle_closed_findings: closing incident for {finding_id} "
+                f"handle_closed_entities: closing incident for {entity_id} "
                 f"(status_label={status_label}, status_end={status_end})"
             )
             reason = (
-                f'Finding event was closed on Splunk with status "{status_label}".'
+                f'Splunk event was closed on Splunk with status "{status_label}".'
                 if status_label
-                else "Finding event was closed on Splunk based on end status."
+                else "Splunk event was closed on Splunk based on end status."
             )
             entries.append(
                 {
-                    "EntryContext": {"mirrorRemoteId": finding_id},
+                    "EntryContext": {"mirrorRemoteId": entity_id},
                     "Type": EntryType.NOTE,
                     "Contents": {
                         "dbotIncidentClose": True,
@@ -3078,6 +3076,12 @@ def handle_closed_findings(
                     "ContentsFormat": EntryFormat.JSON,
                 }
             )
+
+
+# Backwards-compatible alias. Existing callers/tests that import the old name
+# (``handle_closed_findings``) continue to work unchanged — the mechanism is
+# identical for Findings and Investigations now.
+handle_closed_findings = handle_closed_entities
 
 
 def get_modified_remote_data_command(
@@ -3187,7 +3191,7 @@ def get_modified_remote_data_command(
                 handle_enriching_findings(modified_findings_map)
 
             if close_incident:
-                handle_closed_findings(modified_findings_map, close_extra_labels, close_end_statuses, entries)
+                handle_closed_entities(modified_findings_map, close_extra_labels, close_end_statuses, entries)
 
             demisto.debug(f"mirror-in: updated finding ids: {list(modified_findings_map.keys())}")
 
@@ -3242,6 +3246,13 @@ def get_modified_remote_data_command(
                 # )
                 investigation_notes = enrich_with_splunk_notes_v2(service, guid_to_investigation, original_last_update_timestamp)
                 entries.extend(investigation_notes)
+
+                # Same close-on-mirror-in mechanism as Findings: investigation rows
+                # are normalised by `parse_investigation` to expose `status_label` /
+                # `status_end`, so the SAME `handle_closed_entities` helper handles
+                # both event types. Gated on the existing `close_incident` param.
+                if close_incident:
+                    handle_closed_entities(guid_to_investigation, close_extra_labels, close_end_statuses, entries)
 
         modified_data.extend(modified_investigations)
         if len(modified_investigations) >= MIRROR_LIMIT:

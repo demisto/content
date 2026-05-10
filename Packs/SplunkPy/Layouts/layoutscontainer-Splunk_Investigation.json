@@ -469,18 +469,18 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "srcips",
+                                "fieldId": "sourceips",
                                 "height": 53,
-                                "id": "investigation-srcips-field",
+                                "id": "investigation-sourceips-field",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "destips",
+                                "fieldId": "destinationips",
                                 "height": 53,
-                                "id": "investigation-destips-field",
+                                "id": "investigation-destinationips-field",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0

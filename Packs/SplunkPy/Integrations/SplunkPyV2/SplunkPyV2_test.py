@@ -2208,7 +2208,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Closed".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Closed".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2254,7 +2254,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2300,7 +2300,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2347,7 +2347,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -7293,3 +7293,114 @@ class TestGetModifiedRemoteDataInvestigations:
         splunk.get_modified_remote_data_command(**kwargs)
 
         assert helper_spy.call_count == 0
+
+
+# ============================================================================================
+# CLOSE-ON-MIRROR-IN TESTS FOR INVESTIGATIONS
+# ============================================================================================
+class TestHandleClosedEntitiesForInvestigations:
+    """Given investigation rows normalised by `parse_investigation` to expose the
+    canonical closure keys (`status_label`, `status_end`), when the SAME
+    `handle_closed_entities` helper that handles Findings is invoked, then
+    investigation rows whose Splunk-side status indicates closure produce a
+    `dbotIncidentClose` entry — and rows that are still open do not."""
+
+    def test_given_closed_investigation_when_helper_runs_then_close_entry_appended(self):
+        """
+        Given:
+            - An investigation row with `status_label="Closed"` (the canonical
+              key Findings also use; populated for investigations by
+              `parse_investigation` from the `status_name` field).
+        When:
+            - `handle_closed_entities` is called with `close_incident=True`
+              equivalent (i.e. the caller already gated on the param).
+        Then:
+            - Exactly one `dbotIncidentClose` entry is appended to `entries`,
+              keyed by the investigation guid via `mirrorRemoteId`, mirroring
+              the Findings closure shape verbatim.
+        """
+        entries: list[dict] = []
+        guid = "inv-guid-1"
+        investigations_map = {guid: {"status_label": "Closed", "status_end": "false"}}
+
+        splunk.handle_closed_entities(
+            modified_entities_map=investigations_map,
+            close_extra_labels=[],
+            close_end_statuses=False,
+            entries=entries,
+        )
+
+        assert len(entries) == 1
+        entry = entries[0]
+        assert entry["EntryContext"]["mirrorRemoteId"] == guid
+        assert entry["Type"] == EntryType.NOTE
+        assert entry["Contents"]["dbotIncidentClose"] is True
+        assert "Closed" in entry["Contents"]["closeReason"]
+
+    def test_given_open_investigation_when_helper_runs_then_no_close_entry_appended(self):
+        """
+        Given:
+            - An investigation row whose `status_label` is "New" (not closed,
+              not in the configured close_extra_labels).
+        When:
+            - `handle_closed_entities` is called.
+        Then:
+            - `entries` remains empty — the helper must not fabricate closure
+              for non-closed investigations.
+        """
+        entries: list[dict] = []
+        investigations_map = {"inv-guid-2": {"status_label": "New", "status_end": "false"}}
+
+        splunk.handle_closed_entities(
+            modified_entities_map=investigations_map,
+            close_extra_labels=["Custom"],
+            close_end_statuses=True,
+            entries=entries,
+        )
+
+        assert entries == []
+
+
+def test_given_close_incident_true_when_command_runs_then_handle_closed_entities_invoked_for_investigations(mocker):
+    """
+    Given:
+        - `fetch_event_types` includes "Investigation" and `close_incident=True`.
+        - `list_modified_investigations` returns one row keyed by `investigation_guid`.
+    When:
+        - `get_modified_remote_data_command` runs.
+    Then:
+        - `handle_closed_entities` is invoked for the investigations map (in
+          addition to / independently of the Findings call), proving the same
+          mechanism is wired up for both event types.
+    """
+    service = mocker.patch.object(client, "Service")
+    mocker.patch.object(demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Investigation"})
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=[])
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+    mocker.patch.object(
+        splunk,
+        "list_modified_investigations",
+        return_value=[{"investigation_guid": "g-99", "update_time": 1737547610.56, "status_label": "Closed"}],
+    )
+    mocker.patch.object(splunk, "enrich_with_splunk_notes_v2", return_value=[])
+    mocker.patch.object(demisto, "results")
+    handle_spy = mocker.patch.object(splunk, "handle_closed_entities")
+
+    splunk.get_modified_remote_data_command(
+        service=service,
+        args={"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        close_incident=True,
+        close_end_statuses=True,
+        close_extra_labels=["Custom"],
+        mapper=splunk.UserMappingObject(service, False),
+    )
+
+    # Assert handle_closed_entities was called with the investigations map (keyed
+    # by investigation_guid). The Findings branch is skipped because
+    # `fetch_event_types` is "Investigation"-only, so the only call must be the
+    # investigation one.
+    investigation_calls = [
+        call for call in handle_spy.call_args_list
+        if "g-99" in (call.args[0] if call.args else call.kwargs.get("modified_entities_map", {}))
+    ]
+    assert len(investigation_calls) == 1
