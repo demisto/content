@@ -475,7 +475,7 @@ are required for this command.
 
 #### Required Permissions
 
-Archive| Search | Read
+Archive | Search | Read
 
 #### Base Command
 
