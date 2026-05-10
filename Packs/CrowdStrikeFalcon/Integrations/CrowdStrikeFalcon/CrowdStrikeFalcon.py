@@ -189,11 +189,13 @@ IOC_KEY_MAP = {
     "action": "Action",
     "severity": "Severity",
     "tags": "Tags",
+    "mobile_action": "MobileAction",
 }
 
 IOC_HEADERS = [
     "ID",
     "Action",
+    "MobileAction",
     "Severity",
     "Type",
     "Value",
@@ -1085,6 +1087,7 @@ def create_json_iocs_list(
     host_groups: list[str] | None = None,
     tags: list[str] | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
@@ -1101,6 +1104,7 @@ def create_json_iocs_list(
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
     :param file_name: Name of the file for file indicators.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
     """
     iocs_list = []
     for ioc_value in iocs_value:
@@ -1117,6 +1121,7 @@ def create_json_iocs_list(
                 applied_globally=applied_globally,
                 host_groups=host_groups,
                 tags=tags,
+                mobile_action=mobile_action,
                 metadata=assign_params(filename=file_name) if ioc_type in {"sha256", "md5"} else None,
             )
         )
@@ -2100,6 +2105,7 @@ def update_custom_ioc(
     description: str | None = None,
     expiration: str | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -2116,6 +2122,7 @@ def update_custom_ioc(
                 source=source,
                 description=description,
                 expiration=expiration,
+                mobile_action=mobile_action,
                 metadata=assign_params(filename=file_name),
             )
         ]
@@ -2273,15 +2280,16 @@ def contain_host(ids):
     return http_request("POST", "/devices/entities/devices-actions/v2", data=data, params=params)
 
 
-def lift_host_containment(ids):
+def lift_host_containment(ids, action_name: str = "lift_containment"):
     """
-    Lifts off containment from host(s) with matchind ids
+    Lifts off containment from host(s) with matching ids
     :param ids: IDs of host to lift off containment from
+    :param action_name: The action to perform. Either 'lift_containment' or 'lift_filesystem_containment_all'.
     :return: Lift off containment response json
     """
     payload = {"ids": ids}
     data = json.dumps(payload)
-    params = {"action_name": "lift_containment"}
+    params = {"action_name": action_name}
     return http_request("POST", "/devices/entities/devices-actions/v2", data=data, params=params)
 
 
@@ -5985,6 +5993,7 @@ def upload_custom_ioc_command(
     host_groups: list[str] | None = None,
     tags: list[str] | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -5998,6 +6007,7 @@ def upload_custom_ioc_command(
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
 
     """
     if action in {"prevent", "detect"} and not severity:
@@ -6007,6 +6017,8 @@ def upload_custom_ioc_command(
     host_groups: list[str] = argToList(host_groups)
     tags = argToList(tags)
     platforms_list = argToList(platforms)
+    if mobile_action and ("android" not in platforms_list and "ios" not in platforms_list):
+        raise ValueError("mobile_action requires a mobile platform (android or ios) in the platforms argument.")
 
     iocs_json_batch = create_json_iocs_list(
         ioc_type,
@@ -6021,6 +6033,7 @@ def upload_custom_ioc_command(
         host_groups,
         tags,
         file_name,
+        mobile_action,
     )
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
@@ -6049,6 +6062,7 @@ def update_custom_ioc_command(
     description: str | None = None,
     expiration: str | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -6059,6 +6073,7 @@ def update_custom_ioc_command(
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
     :param file_name: The file name associated with the indicator.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
     """
 
     raw_res = update_custom_ioc(
@@ -6070,6 +6085,7 @@ def update_custom_ioc_command(
         description,
         expiration,
         file_name,
+        mobile_action,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get("resources", [])
@@ -6437,8 +6453,13 @@ def lift_host_containment_command():
     :return: EntryObject of lift host containment
     """
     ids = argToList(demisto.args().get("ids"))
-    raw_res = lift_host_containment(ids)
-    hr = f"Containment has been lift off host {str(ids)[1:-1]}"
+    lift_filesystem = argToBoolean(demisto.args().get("lift_filesystem_containment_all", "false"))
+    action_name = "lift_filesystem_containment_all" if lift_filesystem else "lift_containment"
+    raw_res = lift_host_containment(ids, action_name=action_name)
+    if lift_filesystem:
+        hr = f"Filesystem containment has been lifted off host {str(ids)[1:-1]}"
+    else:
+        hr = f"Containment has been lifted off host {str(ids)[1:-1]}"
     return create_entry_object(contents=raw_res, hr=hr)
 
 

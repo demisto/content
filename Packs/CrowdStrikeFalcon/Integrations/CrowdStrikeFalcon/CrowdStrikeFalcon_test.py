@@ -2490,7 +2490,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
     requests_mock.get(f"{SERVER_URL}/iocs/combined/indicator/v1", json=ioc_response, status_code=200)
     results = search_custom_iocs_command()
     assert (
-        "| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | md5 |"
+        "| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent |  | high | md5 |"
         in results[0]["HumanReadable"]
     )
     assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == "testmd5"
@@ -2557,7 +2557,7 @@ def test_search_custom_iocs_command_filter(requests_mock):
         values=ioc_value,
     )
     assert (
-        f"| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | {ioc_type} |"
+        f"| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent |  | high | {ioc_type} |"
         f" {ioc_value} |" in results[0]["HumanReadable"]
     )  # noqa: E501
     assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
@@ -2836,6 +2836,135 @@ def test_upload_custom_ioc_command_filename_nosha5(requests_mock):
         action="prevent", severity="high", platforms="mac,linux", ioc_type="ip", value="someip", file_name="test.txt"
     )
     assert "metadata" not in mock.last_request.json()["indicators"][0]
+
+
+def test_upload_custom_ioc_command_mobile_action(requests_mock):
+    """
+    Test that providing a mobile_action to custom ioc works as expected
+
+    Given:
+        - A mobile_action attached to a custom IOC
+
+    When:
+        - The user tries to upload a custom IOC with a mobile_action
+
+    Then:
+        - Make sure that the mobile_action is included in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+
+    mock = requests_mock.post(f"{SERVER_URL}/iocs/entities/indicators/v1", status_code=200, json={"result": "ok"})
+
+    upload_custom_ioc_command(
+        action="no_action", platforms="mac,android", ioc_type="domain", value="test.com", mobile_action="prevent"
+    )
+
+    body = mock.last_request.json()
+    assert body["indicators"][0]["mobile_action"] == "prevent"
+
+
+def test_upload_custom_ioc_command_no_mobile_action(requests_mock):
+    """
+    Test that not providing a mobile_action omits it from the request
+
+    Given:
+        - No mobile_action provided
+
+    When:
+        - The user tries to upload a custom IOC without a mobile_action
+
+    Then:
+        - Make sure that mobile_action is not included in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+
+    mock = requests_mock.post(f"{SERVER_URL}/iocs/entities/indicators/v1", status_code=200, json={"result": "ok"})
+
+    upload_custom_ioc_command(action="no_action", platforms="mac,linux", ioc_type="domain", value="test.com")
+
+    body = mock.last_request.json()
+    assert "mobile_action" not in body["indicators"][0]
+
+
+def test_upload_custom_ioc_command_mobile_action_without_mobile_platform():
+    """
+    Test that providing mobile_action without a mobile platform raises an error
+
+    Given:
+        - A mobile_action provided without android or ios in platforms
+
+    When:
+        - The user tries to upload a custom IOC with mobile_action but only desktop platforms
+
+    Then:
+        - Raise a ValueError indicating a mobile platform is required
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+
+    with pytest.raises(ValueError, match="mobile_action requires a mobile platform"):  # noqa: E501
+        upload_custom_ioc_command(
+            action="no_action", platforms="windows,linux", ioc_type="domain", value="test.com", mobile_action="prevent"
+        )
+
+
+def test_lift_host_containment_command_default(requests_mock, mocker):
+    """
+    Test cs-falcon-lift-host-containment with default behavior (lift_containment)
+
+    Given:
+        - Host IDs to lift containment from
+
+    When:
+        - The user runs cs-falcon-lift-host-containment without lift_filesystem_containment_all
+
+    Then:
+        - The API is called with action_name=lift_containment
+    """
+    from CrowdStrikeFalcon import lift_host_containment_command
+
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": "test_host_id"})
+    mock = requests_mock.post(
+        f"{SERVER_URL}/devices/entities/devices-actions/v2",
+        json={"resources": [{"id": "test_host_id"}], "meta": {"query_time": 0.001}},
+        status_code=200,
+    )
+
+    result = lift_host_containment_command()
+
+    assert mock.last_request.qs["action_name"] == ["lift_containment"]
+    assert "Containment has been lifted off host" in result["HumanReadable"]
+
+
+def test_lift_host_containment_command_filesystem(requests_mock, mocker):
+    """
+    Test cs-falcon-lift-host-containment with lift_filesystem_containment_all=true
+
+    Given:
+        - Host IDs to lift filesystem containment from
+
+    When:
+        - The user runs cs-falcon-lift-host-containment with lift_filesystem_containment_all=true
+
+    Then:
+        - The API is called with action_name=lift_filesystem_containment_all
+        - The human readable output mentions filesystem containment
+    """
+    from CrowdStrikeFalcon import lift_host_containment_command
+
+    mocker.patch(
+        "CrowdStrikeFalcon.demisto.args",
+        return_value={"ids": "test_host_id", "lift_filesystem_containment_all": "true"},
+    )
+    mock = requests_mock.post(
+        f"{SERVER_URL}/devices/entities/devices-actions/v2",
+        json={"resources": [{"id": "test_host_id"}], "meta": {"query_time": 0.001}},
+        status_code=200,
+    )
+
+    result = lift_host_containment_command()
+
+    assert mock.last_request.qs["action_name"] == ["lift_filesystem_containment_all"]
+    assert "Filesystem containment has been lifted off host" in result["HumanReadable"]
 
 
 def test_update_custom_ioc_command(requests_mock):
@@ -3436,13 +3565,13 @@ def test_upload_batch_custom_ioc_command(requests_mock):
     results = upload_batch_custom_ioc_command(json.dumps(IOCS_JSON_LIST))
     assert (
         "2022-02-16T11:41:01Z | 1196afeae04528228e782d4efc0c1d8257554dcd99552e1151ca3a3d2eed03f1 | "
-        "2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR "
+        "no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR "
         "| ipv4 | 8.9.6.8 |" in results[0]["HumanReadable"]
     )
 
     assert (
         "2022-02-16T11:40:47Z | 1156f19c5a384117e7e6023f467ed3b58412ddd5d0591872f3a111335fae79a5 | "
-        "2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR "
+        "no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR "
         "| ipv4 | 4.5.8.6 |" in results[1]["HumanReadable"]
     )
 
