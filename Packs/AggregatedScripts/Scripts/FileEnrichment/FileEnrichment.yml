@@ -89,10 +89,10 @@ outputs:
   description: The max verdict of all the indicators found.
   type: String
 - contextPath: FileEnrichment.Results
-  description: List of all indicators found for the URL.
+  description: List of all indicators found for the File.
   type: Array
 - contextPath: FileEnrichment.TIMScore
-  description: The TIM score of the URL.
+  description: The TIM score of the File.
   type: Number
 - contextPath: FileEnrichment.Status
   description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
@@ -103,7 +103,7 @@ outputs:
 - contextPath: FileEnrichment.ModifiedTime
   description: The time the indicator was last modified.
   type: Date
-# URLEnrichment Main Keys
+# FileEnrichment Main Keys
 - contextPath: FileEnrichment.Results.Brand
   description: The brand of the indicator.
   type: String
