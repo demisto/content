@@ -46,6 +46,7 @@ from workflow_state import (
     cmd_set_assignee,
     cmd_set_assignee_by_connector,
     cmd_set_auth_flag,
+    cmd_files,
     cmd_show_step,
     cmd_skip,
     current_step,
@@ -62,6 +63,7 @@ from workflow_state import (
     is_done,
     list_by_assignee,
     list_by_connector,
+    get_integration_files,
     list_integrations_by_connector,
     load_csv,
     markpass_integration_step,
@@ -1833,3 +1835,110 @@ class TestProgrammaticConnectorAPI:
             assert r["assignee"] == "NewOwner"
             assert r["Auth Details"] == VALID_AUTH_JSON
             assert r["Params to Commands"] == "{}"
+
+
+# ---------------------------------------------------------------------------
+# `files` command — get_integration_files / cmd_files
+# ---------------------------------------------------------------------------
+
+CROWDSTRIKE_YML_REL = (
+    "Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.yml"
+)
+
+
+def _crowdstrike_row() -> dict[str, str]:
+    row = _blank_row("CrowdstrikeFalcon")
+    row["Integration File Path"] = CROWDSTRIKE_YML_REL
+    return row
+
+
+class TestGetIntegrationFiles:
+    def test_happy_path_real_directory(self, monkeypatch) -> None:
+        rows = [_crowdstrike_row()]
+        _patch_csv(monkeypatch, rows)
+
+        info = get_integration_files("CrowdstrikeFalcon")
+        assert "error" not in info
+        assert info["integration_id"] == "CrowdstrikeFalcon"
+        assert info["directory"] == (
+            "Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon"
+        )
+        assert info["base"] == "CrowdStrikeFalcon"
+        assert info["yml"] == CROWDSTRIKE_YML_REL
+        assert info["code_language"] == "python"
+        assert info["code"] and info["code"].endswith("CrowdStrikeFalcon.py")
+        assert info["description"] and info["description"].endswith(
+            "CrowdStrikeFalcon_description.md"
+        )
+        assert info["readme"] and info["readme"].endswith("README.md")
+        assert info["test"] and info["test"].endswith("CrowdStrikeFalcon_test.py")
+        assert isinstance(info["extras"], dict)
+        # Image files are excluded by extension blacklist.
+        for fname in info["extras"]:
+            ext = os.path.splitext(fname)[1].lower()
+            assert ext not in {".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".zip"}
+
+    def test_unknown_integration_returns_error(self, monkeypatch) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        info = get_integration_files("NoSuchIntegration")
+        assert "error" in info
+        assert "not found" in info["error"]
+
+    def test_empty_file_path_returns_error(self, monkeypatch) -> None:
+        row = _blank_row("EmptyPathIntegration")
+        # Integration File Path is left blank by _blank_row.
+        _patch_csv(monkeypatch, [row])
+
+        info = get_integration_files("EmptyPathIntegration")
+        assert "error" in info
+        assert "Integration File Path" in info["error"]
+
+    def test_directory_does_not_exist_returns_error(self, monkeypatch) -> None:
+        row = _blank_row("GhostIntegration")
+        row["Integration File Path"] = (
+            "Packs/NoSuchPack/Integrations/NoSuchInt/NoSuchInt.yml"
+        )
+        _patch_csv(monkeypatch, [row])
+
+        info = get_integration_files("GhostIntegration")
+        assert "error" in info
+        assert "does not exist on disk" in info["error"]
+
+
+class TestCmdFiles:
+    def test_cli_text_smoke(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        cmd_files(["CrowdstrikeFalcon"])
+        out = capsys.readouterr().out
+        assert "CrowdstrikeFalcon — source files" in out
+        assert "CrowdStrikeFalcon.yml" in out
+        assert "CrowdStrikeFalcon.py" in out
+        assert "Language:     python" in out
+
+    def test_cli_paths_format(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        cmd_files(["CrowdstrikeFalcon", "--format=paths"])
+        out = capsys.readouterr().out.strip().splitlines()
+        # First line is YML, then code, description, readme, test in order.
+        assert out[0].endswith("CrowdStrikeFalcon.yml")
+        assert out[1].endswith("CrowdStrikeFalcon.py")
+        assert any(line.endswith("CrowdStrikeFalcon_description.md") for line in out)
+        assert any(line.endswith("README.md") for line in out)
+        assert any(line.endswith("CrowdStrikeFalcon_test.py") for line in out)
+
+    def test_cli_json_format(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        cmd_files(["CrowdstrikeFalcon", "--format=json"])
+        out = capsys.readouterr().out
+        parsed = json.loads(out)
+        assert parsed["integration_id"] == "CrowdstrikeFalcon"
+        assert parsed["code_language"] == "python"
+
+    def test_cli_unknown_integration_exits_nonzero(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [_crowdstrike_row()])
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_files(["NoSuchIntegration"])
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "ERROR:" in err
+        assert "not found" in err

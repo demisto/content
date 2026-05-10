@@ -121,7 +121,7 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 
 - [`connectus/Readme.md`](Readme.md) — Full reference for auth types, CSV columns, walkthrough.
 - [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params same in other handlers`.
-- [`connectus/workflow_state.py`](workflow_state.py) — The state machine CLI (source of truth for workflow).
+- [`connectus/workflow_state.py`](workflow_state.py) — The state machine CLI (source of truth for workflow). Provides the `files <integration_id>` subcommand and the [`get_integration_files()`](workflow_state.py) helper used to resolve every source file for an integration (see [§1.1](#11-locate-integration-files)).
 - [`connectus/integrations_report.csv`](integrations_report.csv) — The tracking spreadsheet (DO NOT EDIT DIRECTLY).
 
 ## Step 0: Identify the Integration
@@ -139,7 +139,7 @@ python3 connectus/workflow_state.py status "<Integration ID>"
 The status output shows:
 
 - **Assignee** — who is working on it
-- **File Path** — path to the integration's source files (data column)
+- **File Path** — path to the integration's source files (data column). If you need every related file (YML + code + description + README + test), don't infer sibling names — run `python3 connectus/workflow_state.py files "<Integration ID>"` (see [§1.1](#11-locate-integration-files)).
 - **Connector ID** — the ConnectUs connector this integration belongs to (data column)
 - **Auth Details** — authentication detail JSON (with embedded `config` expression)
 - **Params to Commands** — JSON mapping of commands → param ids
@@ -164,7 +164,7 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 
 #### Procedure (do every step in order)
 
-1. ☐ Locate the integration files (YML + Python + `_description.md` + `README.md`) — see [1.1](#11-locate-integration-files) and [1.2](#12-researching-auth-details--the-four-sources-of-truth)
+1. ☐ Resolve all integration source-file paths via `python3 connectus/workflow_state.py files "<Integration ID>"` (or [`get_integration_files()`](workflow_state.py) programmatically). Do **NOT** search the repo manually with `find` / `ls` / `grep`. See [1.1](#11-locate-integration-files) and [1.2](#12-researching-auth-details--the-four-sources-of-truth).
 2. ☐ Walk the four sources of truth in order — see [1.2](#12-researching-auth-details--the-four-sources-of-truth)
 3. ☐ Extract every auth-related param from the YML `configuration` section — see [1.3](#13-yml-analysis-procedure)
 4. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime — see [1.4](#14-python-code-analysis--specific-patterns)
@@ -185,22 +185,51 @@ python3 connectus/workflow_state.py show-step "<Integration ID>" "Auth Details"
 
 #### 1.1 Locate Integration Files
 
-Integration files follow this structure:
-
-- **YML**: `Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.yml`
-- **Python**: `Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.py`
-
-> **Important:** The Integration ID in the CSV may differ from the directory name (spaces, capitalization, version suffixes). Use `find` to locate:
+**The canonical way to get an integration's source files is the `files` subcommand of [`workflow_state.py`](workflow_state.py).** Do **NOT** manually `find` / `ls` / `grep` the repo for these files — the `Integration File Path` column in the CSV is populated for all 609 integrations, and `files` resolves every sibling (YML, code, description, README, test) from it.
 
 ```bash
-find Packs/ -path "*/Integrations/*/*.yml" -name "*.yml" | grep -i "<integration_id>"
+python3 connectus/workflow_state.py files "<Integration ID>"
 ```
 
-Once located, you may want to record the path:
+Sample output (default `text` format):
 
-```bash
-# (No CLI setter for File Path yet — note it for documentation; future iteration may add `set-file-path`.)
+```text
+============================================================
+  CrowdstrikeFalcon — source files
+============================================================
+  Directory:    Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon
+  Base:         CrowdStrikeFalcon
+  Language:     python
+
+  YML:          Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.yml
+  Code:         Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.py
+  Description:  Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon_description.md
+  README:       Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/README.md
+  Test:         Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon_test.py
 ```
+
+Three output formats are available — pick the one that matches how you'll consume the result:
+
+| Format | Flag | Use when |
+|---|---|---|
+| `text` (default) | _(none)_ | Human review — eyeball the paths and confirm the integration. |
+| `paths` | `--format=paths` | Piping into other tools. Emits one path per line in canonical order (`yml`, `code`, `description`, `readme`, `test`) — ideal for `xargs` / `cat` pipelines, e.g. `python3 connectus/workflow_state.py files "<Integration ID>" --format=paths \| xargs -I{} cat {}`. |
+| `json` | `--format=json` | Programmatic / scripted consumption (machine-readable, all fields keyed). |
+
+For in-process Python use, import the helper directly:
+
+```python
+from connectus.workflow_state import get_integration_files
+
+files = get_integration_files("<Integration ID>")
+# files["yml"], files["code"], files["description"], files["readme"], files["test"], plus any extras
+```
+
+The same `Integration File Path` value is also surfaced in `status` output as `File Path:`.
+
+**If `files` returns an error** (e.g. the row's `Integration File Path` is missing or the recorded path no longer exists on disk), the column is missing or stale. **Surface this to the user and ask** — there is currently no `set-file-path` CLI setter; the column is data-imported. Do **NOT** fall back to manually searching the repo with `find` / `ls` / `grep`.
+
+For background only: integration files conventionally live at `Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.{yml,py,js,ps1}` with sibling `<IntegrationName>_description.md`, `README.md`, and `<IntegrationName>_test.py`. The `files` command is the source of truth — this layout is just background context.
 
 ---
 

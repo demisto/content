@@ -77,6 +77,7 @@ Usage examples:
   python3 connectus/workflow_state.py next --connector "abcd1234"
   python3 connectus/workflow_state.py next --connector "abcd1234" --mine
   python3 connectus/workflow_state.py show-step "Cisco Spark" "Params to Commands"
+  python3 connectus/workflow_state.py files "Cisco Spark"
 """
 
 from __future__ import annotations
@@ -774,6 +775,8 @@ def format_status(row: dict[str, str]) -> str:
 
     lines.append(f"  Assignee:        {assignee if assignee else '(unassigned)'}")
     lines.append(f"  File Path:       {file_path if file_path else '(not set)'}")
+    if file_path:
+        lines.append(f"                   (run 'workflow_state.py files {integration_id}' to list all source files)")
     lines.append(f"  Connector ID:    {connector_id if connector_id else '(not set)'}")
     lines.append("")
 
@@ -1611,6 +1614,81 @@ def cmd_show_step(args: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# `files` command — resolve all source files for an integration
+# ---------------------------------------------------------------------------
+
+# Filename extensions that should NOT be included in the `extras` map
+# (binary blobs, images, archives — not useful as text source files).
+_EXTRAS_BINARY_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".zip",
+}
+
+
+def cmd_files(args: list[str]) -> None:
+    """Print all known source-file paths for an integration.
+
+    Usage: workflow_state.py files <integration_id> [--format=text|json|paths]
+    """
+    fmt = "text"
+    positional: list[str] = []
+    for a in args:
+        if a.startswith("--format="):
+            fmt = a[len("--format="):]
+        else:
+            positional.append(a)
+
+    if not positional:
+        print("Usage: workflow_state.py files <integration_id> [--format=text|json|paths]")
+        sys.exit(1)
+
+    if fmt not in {"text", "json", "paths"}:
+        print(f"ERROR: Unknown --format value '{fmt}'. Valid: text, json, paths.", file=sys.stderr)
+        sys.exit(1)
+
+    integration_id = " ".join(positional)
+    info = get_integration_files(integration_id)
+
+    if "error" in info:
+        print(f"ERROR: {info['error']}", file=sys.stderr)
+        sys.exit(1)
+
+    if fmt == "json":
+        print(json.dumps(info, indent=2))
+        return
+
+    if fmt == "paths":
+        for key in ("yml", "code", "description", "readme", "test"):
+            val = info.get(key)
+            if val:
+                print(val)
+        return
+
+    # Default: text
+    name = info["integration_id"]
+    lines = [
+        f"\n{'=' * 60}",
+        f"  {name} — source files",
+        f"{'=' * 60}",
+        f"  Directory:    {info['directory']}",
+        f"  Base:         {info['base']}",
+        f"  Language:     {info['code_language'] if info['code_language'] else '(unknown)'}",
+        "",
+        f"  YML:          {info['yml'] if info['yml'] else '(missing)'}",
+        f"  Code:         {info['code'] if info['code'] else '(missing)'}",
+        f"  Description:  {info['description'] if info['description'] else '(missing)'}",
+        f"  README:       {info['readme'] if info['readme'] else '(missing)'}",
+        f"  Test:         {info['test'] if info['test'] else '(missing)'}",
+    ]
+    extras = info.get("extras") or {}
+    if extras:
+        lines.append("")
+        lines.append("  Other files in directory:")
+        for fname in sorted(extras.keys()):
+            lines.append(f"    - {fname}")
+    print("\n".join(lines))
+
+
+# ---------------------------------------------------------------------------
 # `next` command
 # ---------------------------------------------------------------------------
 
@@ -1831,6 +1909,139 @@ def get_integration_status(integration_id: str) -> dict:
         "total_steps": len(STEPS),
         "progress_pct": round(completed / len(STEPS) * 100, 1),
         "all_complete": cur is None and completed > 0,
+    }
+
+
+def get_integration_files(integration_id: str) -> dict:
+    """Return all known source-file paths for an integration.
+
+    The integration's ``Integration File Path`` column holds the YML file
+    path (relative to the repo root). All other integration source files
+    live in the same directory and follow demisto-sdk conventions::
+
+        <dir>/<base>.yml                 ← YML (manifest)
+        <dir>/<base>.py                  ← Python source (or .js / .ps1)
+        <dir>/<base>_description.md      ← short UI blurb
+        <dir>/README.md                  ← long-form docs (filename is fixed)
+        <dir>/<base>_test.py             ← unit tests (Python only)
+
+    Returns a dict with the following keys (str values are repo-relative
+    paths; ``None`` means "not present on disk")::
+
+        {
+            "integration_id": "<id>",
+            "directory":      "<repo-relative dir>",
+            "base":           "<basename without extension>",
+            "yml":            "<path>" | None,
+            "code":           "<path>" | None,
+            "code_language":  "python" | "javascript" | "powershell" | None,
+            "description":    "<path>" | None,
+            "readme":         "<path>" | None,
+            "test":           "<path>" | None,
+            "extras":         {"<filename>": "<path>", ...},
+        }
+
+    Errors return ``{"error": "..."}`` (matching the convention used by
+    ``get_integration_status`` and ``next_step_for``).
+    """
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return {"error": f"Integration '{integration_id}' not found."}
+
+    row = rows[idx]
+    yml_rel = row.get("Integration File Path", "").strip()
+    if not yml_rel:
+        return {
+            "error": (
+                f"Integration '{integration_id}' has no Integration File Path "
+                f"set in the CSV."
+            )
+        }
+
+    # Normalize separators for the relative path components, but resolve
+    # against BASE_DIR for existence checks.
+    directory_rel = os.path.dirname(yml_rel)
+    basename = os.path.basename(yml_rel)
+    # Strip a `.yml` extension specifically — leave anything else intact.
+    if basename.lower().endswith(".yml"):
+        base = basename[:-4]
+    else:
+        base = os.path.splitext(basename)[0]
+
+    abs_dir = os.path.join(BASE_DIR, directory_rel)
+    if not os.path.isdir(abs_dir):
+        return {
+            "error": (
+                f"Integration directory '{directory_rel}' (from CSV) does "
+                f"not exist on disk."
+            )
+        }
+
+    def _rel_if_exists(filename: str) -> Optional[str]:
+        abs_path = os.path.join(abs_dir, filename)
+        if os.path.isfile(abs_path):
+            return os.path.join(directory_rel, filename) if directory_rel else filename
+        return None
+
+    yml_path = _rel_if_exists(basename)
+
+    code_path: Optional[str] = None
+    code_language: Optional[str] = None
+    for ext, lang in (("py", "python"), ("js", "javascript"), ("ps1", "powershell")):
+        candidate = _rel_if_exists(f"{base}.{ext}")
+        if candidate is not None:
+            code_path = candidate
+            code_language = lang
+            break
+
+    description_path = _rel_if_exists(f"{base}_description.md")
+    readme_path = _rel_if_exists("README.md")
+
+    test_path: Optional[str] = None
+    if code_language == "python":
+        test_path = _rel_if_exists(f"{base}_test.py")
+
+    canonical_filenames = {
+        basename,
+        f"{base}.py",
+        f"{base}.js",
+        f"{base}.ps1",
+        f"{base}_description.md",
+        "README.md",
+        f"{base}_test.py",
+    }
+
+    extras: dict[str, str] = {}
+    try:
+        entries = os.listdir(abs_dir)
+    except OSError:
+        entries = []
+    for fname in entries:
+        if fname in canonical_filenames:
+            continue
+        abs_entry = os.path.join(abs_dir, fname)
+        # Only list regular files (skip subdirectories like test_data/).
+        if not os.path.isfile(abs_entry):
+            continue
+        ext = os.path.splitext(fname)[1].lower()
+        if ext in _EXTRAS_BINARY_EXTENSIONS:
+            continue
+        extras[fname] = (
+            os.path.join(directory_rel, fname) if directory_rel else fname
+        )
+
+    return {
+        "integration_id": row.get("Integration ID", ""),
+        "directory": directory_rel,
+        "base": base,
+        "yml": yml_path,
+        "code": code_path,
+        "code_language": code_language,
+        "description": description_path,
+        "readme": readme_path,
+        "test": test_path,
+        "extras": extras,
     }
 
 
@@ -2075,6 +2286,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "list-connectors": cmd_list_connectors,
     "set-assignee-by-connector": cmd_set_assignee_by_connector,
     "show-step": cmd_show_step,
+    "files": cmd_files,
     "help": cmd_help,
 }
 
