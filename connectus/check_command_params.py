@@ -519,7 +519,19 @@ def collect_pre_dispatch_params(
     aliases: dict[str, str],
     dispatch_line: int,
 ) -> set[str]:
-    """Scope 1 (in-main): collect param accesses in main() *before* dispatch.
+    """Scope 1 (in-main): collect *unbound* param accesses in main() before dispatch.
+
+    "Unbound" means the read does NOT happen inside an assignment of the
+    form ``<Name> = RHS`` where the RHS contains the read. Reads that ARE
+    bound to a local variable are tracked separately by
+    :func:`build_binding_maps` and attributed only to the commands that
+    actually consume that local variable at the dispatch site.
+
+    Statements that are NOT bare ``Name = RHS`` assignments — e.g.
+    ``Client(api_key=params.get("apikey"))`` as an expression statement,
+    ``return params.get(...)``, ``if params.get(...): ...`` — are walked
+    in full and their reads remain in Scope-1 (legitimate fan-out to
+    every command).
 
     The visitor also catches the chained ``demisto.params().get(...)`` form
     automatically, so callers do NOT need to add that idiom to
@@ -530,8 +542,103 @@ def collect_pre_dispatch_params(
     for stmt in main_fn.body:
         if stmt.lineno >= dispatch_line:
             break
+        if _is_simple_name_assignment(stmt):
+            # Skip the entire binding statement — its reads are handled
+            # by the binding-narrowing path, not blind fan-out.
+            continue
         visitor.visit(stmt)
     return visitor.found
+
+
+def _is_simple_name_assignment(stmt: ast.stmt) -> bool:
+    """True if ``stmt`` is ``<NAME> = RHS`` or ``<NAME>: T = RHS``.
+
+    Used by :func:`collect_pre_dispatch_params` and
+    :func:`build_binding_maps` to decide whether the statement is a
+    candidate for binding-narrowing (a single local var being bound) or
+    a fan-out expression (everything else).
+    """
+    if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+        return True
+    if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name) and stmt.value is not None:
+        return True
+    return False
+
+
+def _assignment_target_and_value(stmt: ast.stmt) -> tuple[str, ast.AST] | None:
+    """Return ``(target_name, rhs_expr)`` for a simple-Name assignment, else None."""
+    if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+        return stmt.targets[0].id, stmt.value
+    if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name) and stmt.value is not None:
+        return stmt.target.id, stmt.value
+    return None
+
+
+def _collect_param_reads_in_expr(
+    expr: ast.AST, params_vars: set[str], aliases: dict[str, str]
+) -> set[str]:
+    """Run a one-shot ``_ParamAccessVisitor`` over a single expression node.
+
+    Used to attribute params consumed inside a single RHS expression
+    (binding RHS, handler-call argument, etc.) without polluting any
+    accumulating Scope-1 / Scope-2 set.
+    """
+    visitor = _ParamAccessVisitor(params_vars, aliases)
+    visitor.visit(expr)
+    return set(visitor.found)
+
+
+def build_binding_maps(
+    main_fn: ast.FunctionDef,
+    params_vars: set[str],
+    aliases: dict[str, str],
+    dispatch_line: int,
+) -> dict[str, set[str]]:
+    """Map every pre-dispatch local var to the set of YML param names it carries.
+
+    Walks each ``<Name> = RHS`` (or ``<Name>: T = RHS``) statement in
+    ``main()`` before the dispatch line and records:
+
+    * **Direct reads**: param names accessed inside RHS via the
+      ``_ParamAccessVisitor`` (catches ``params.get("X")``,
+      ``params["X"]``, ``params.X``, and ``demisto.params().get("X")``).
+    * **Transitive references**: ``Name`` nodes inside RHS whose id is
+      already a key in the binding map. Their carried params are
+      unioned in. This is what lets a subsequent
+      ``client = Client(api_key=api_key)`` re-route the ``apikey``
+      param onto ``client`` so it fans out to every command that
+      receives ``client``.
+
+    Bindings that carry zero params (``client = OktaClient()``,
+    ``args = demisto.args()``) are still recorded with an empty set so
+    that their appearance as a handler argument is recognized as
+    "intermediary with no params" (no contribution) rather than an
+    untracked Name (also no contribution, but indistinguishable from
+    "we didn't see this binding at all").
+
+    The ``demisto.params()`` binding itself — e.g.
+    ``params = demisto.params()`` — is NOT entered into the map; it's a
+    params-var, not a binding. The visitor naturally returns zero
+    direct reads for that RHS, but we skip it explicitly for clarity.
+    """
+    binding_map: dict[str, set[str]] = {}
+    for stmt in main_fn.body:
+        if stmt.lineno >= dispatch_line:
+            break
+        pair = _assignment_target_and_value(stmt)
+        if pair is None:
+            continue
+        target_name, rhs = pair
+        # Skip ``X = demisto.params()`` — it's a params-var, not a binding.
+        if _is_demisto_params_call(rhs):
+            continue
+        direct = _collect_param_reads_in_expr(rhs, params_vars, aliases)
+        transitive: set[str] = set()
+        for sub in ast.walk(rhs):
+            if isinstance(sub, ast.Name) and sub.id in binding_map:
+                transitive |= binding_map[sub.id]
+        binding_map[target_name] = direct | transitive
+    return binding_map
 
 
 def collect_module_level_params(
@@ -616,6 +723,74 @@ def find_command_handler_calls(main_fn: ast.FunctionDef, command: str) -> list[a
     calls.extend(_find_in_match(main_fn, command))
     calls.extend(_find_in_dict_dispatch(main_fn, command))
     return calls
+
+
+def find_command_dispatch_branches(
+    main_fn: ast.FunctionDef, command: str
+) -> list[list[ast.stmt]]:
+    """Return the body stmt-lists of every dispatch branch matching ``command``.
+
+    Used by :func:`attribute_dispatch_site_params` to scan, per command,
+    only the code that actually runs when that command is dispatched —
+    so binding-map names and inline ``params.get(...)`` reads get
+    attributed to the right command.
+
+    Dict-dispatch (``commands = {"X": handler_x}; commands[cmd](args)``)
+    has no per-command branch body — the call site is shared across all
+    commands. We return an empty list for that case; per-handler
+    Scope-2 tracing already covers dict dispatch.
+    """
+    out: list[list[ast.stmt]] = []
+    for node in ast.walk(main_fn):
+        if isinstance(node, ast.If) and _if_test_matches_command(node.test, command):
+            out.append(node.body)
+        elif isinstance(node, ast.Match):
+            for case in node.cases:
+                pattern = case.pattern
+                if isinstance(pattern, ast.MatchValue):
+                    v = pattern.value
+                    if isinstance(v, ast.Constant) and v.value == command:
+                        out.append(case.body)
+    return out
+
+
+def attribute_dispatch_site_params(
+    branch_body: list[ast.stmt],
+    binding_map: dict[str, set[str]],
+    params_vars: set[str],
+    aliases: dict[str, str],
+) -> set[str]:
+    """Walk one dispatch branch and attribute params to the command.
+
+    For every ``Call`` node found anywhere in ``branch_body`` (typically
+    the handler call, but also any helper calls a dispatch arm makes
+    inline before / after the handler):
+
+    * Every positional argument that is a ``Name`` whose id is a key in
+      ``binding_map`` contributes ``binding_map[id]`` (the params the
+      bound local carries).
+    * Every keyword argument whose value is such a ``Name`` does the same.
+    * Inline ``params.get("X")`` / ``params["X"]`` / ``params.X`` /
+      ``demisto.params().get("X")`` reads appearing anywhere in the
+      Call's arguments are walked with ``_ParamAccessVisitor`` and
+      attributed to this command (Cases 1 and 7 in the contract suite).
+    """
+    found: set[str] = set()
+    for stmt in branch_body:
+        for sub in ast.walk(stmt):
+            if not isinstance(sub, ast.Call):
+                continue
+            for arg in sub.args:
+                if isinstance(arg, ast.Name) and arg.id in binding_map:
+                    found |= binding_map[arg.id]
+                else:
+                    found |= _collect_param_reads_in_expr(arg, params_vars, aliases)
+            for kw in sub.keywords:
+                if isinstance(kw.value, ast.Name) and kw.value.id in binding_map:
+                    found |= binding_map[kw.value.id]
+                else:
+                    found |= _collect_param_reads_in_expr(kw.value, params_vars, aliases)
+    return found
 
 
 def _find_in_if_chain(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
@@ -833,6 +1008,50 @@ def analyze_static(
     the **only** acceptable graceful skip: log a stderr note and return
     two empty sets. Any other failure (including a real ``SyntaxError``
     in the integration's ``.py``) propagates to the caller.
+
+    Binding-narrowing
+    -----------------
+    Before computing Scope-1 / Scope-2, ``analyze_static`` builds a
+    ``binding_map: dict[var_name, set[param_name]]`` covering every
+    pre-dispatch ``<Name> = RHS`` statement in ``main()`` whose RHS reads
+    one or more YML params (directly via ``params.get("X")`` etc., or
+    transitively by referencing another already-bound local). The
+    pre-dispatch Scope-1 collector then **excludes** those binding
+    statements — bound reads are no longer attributed blindly to every
+    command.
+
+    For each command, the dispatch branch (``if command == "X": ...`` or
+    the matching ``case "X":``) is walked separately by
+    :func:`attribute_dispatch_site_params`. That walk:
+
+    * unions ``binding_map[arg.id]`` for every handler-call argument
+      (positional or keyword) that is a ``Name`` already in the map —
+      so ``handler(client, mapper_out)`` carries only the params that
+      ``client`` and ``mapper_out`` actually represent;
+    * walks any inline ``params.get(...)`` / subscript / attribute /
+      ``demisto.params().get(...)`` expressions appearing as arguments
+      and attributes those param names to this command — fixing the
+      "inline read at dispatch site" gap (Cases 1 and 7).
+
+    The result is added to Scope-2 for that command. Pre-dispatch
+    statements that are **not** bare ``Name = RHS`` assignments — for
+    example ``Client(api_key=params.get("apikey"))`` standing alone as
+    an expression statement — keep their reads in Scope-1, preserving
+    fan-out for the legitimate "read directly into a constructor whose
+    result feeds every command" pattern (Case 4).
+
+    A binding whose result is consumed by a constructor whose result
+    fans out (``api_key = params.get("apikey"); client =
+    Client(api_key=api_key); cmd_x(client); cmd_y(client)``) is handled
+    transitively: the second binding records ``binding_map["client"] =
+    {"apikey"}`` because its RHS references the already-mapped
+    ``api_key``. Both ``cmd_x`` and ``cmd_y`` then re-acquire ``apikey``
+    via dispatch-site attribution (Case 14 negative constraint).
+
+    Module-level ``PARAMS = demisto.params(); SERVER = PARAMS.get("url")``
+    globals continue to fan out unchanged (Case 3) — they're collected
+    by :func:`collect_module_level_params` and live outside the
+    binding-narrowing pipeline.
     """
     if language and language.lower() not in {"python", "python2", "python3"}:
         print(
@@ -886,6 +1105,12 @@ def analyze_static(
     )
     scope_1 = scope_1_in_main | scope_1_module
 
+    # Binding-narrowing: build the local-var → carried-params map from
+    # pre-dispatch statements, then attribute per command at the
+    # matching dispatch branch. See the docstring section
+    # "Binding-narrowing" above.
+    binding_map = build_binding_maps(main_fn, params_vars, aliases, dispatch_line)
+
     scope_2: set[str] = set()
     handler_calls = find_command_handler_calls(main_fn, command)
     resolved_targets: list[str] = []
@@ -901,6 +1126,13 @@ def analyze_static(
             depth=2,
             visited=set(),
             module_params_vars=module_params_vars,
+        )
+
+    # Per-command dispatch-branch attribution: bound locals + inline
+    # reads at the handler-call site.
+    for branch_body in find_command_dispatch_branches(main_fn, command):
+        scope_2 |= attribute_dispatch_site_params(
+            branch_body, binding_map, params_vars, aliases
         )
 
     if verbose:

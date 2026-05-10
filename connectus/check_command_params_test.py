@@ -471,12 +471,21 @@ class TestDispatchVariants:
 
 
 class TestPreDispatchScope:
-    def test_pre_dispatch_collects_only_main_body(self) -> None:
+    def test_pre_dispatch_collects_only_unbound_reads(self) -> None:
+        # Phase 3 contract: ``collect_pre_dispatch_params`` returns ONLY
+        # *unbound* reads — those that are not part of a
+        # ``<Name> = RHS`` binding statement and not after the dispatch
+        # line. Binding-statement reads are tracked separately by
+        # ``build_binding_maps`` and attributed per-command at the
+        # dispatch site.
         src = textwrap.dedent(
             """
             def main():
                 params = demisto.params()
-                client = Client(params.get("url"), params.get("api_key"))
+                # Unbound expression statement — fans out (Scope-1).
+                Client(params.get("url"), params.get("api_key"))
+                # Binding statement — tracked by binding map, NOT in Scope-1.
+                bound = params.get("bound_param")
                 command = demisto.command()
                 if command == "x":
                     handler(params.get("after_dispatch"))
@@ -488,9 +497,44 @@ class TestPreDispatchScope:
         found = ccp.collect_pre_dispatch_params(
             main_fn, {"params"}, {}, line
         )
+        # Unbound reads from the bare ``Client(...)`` expression statement
+        # remain in Scope-1 (legitimate fan-out for Case-4-style patterns).
         assert "url" in found
         assert "api_key" in found
+        # Binding-statement reads are NOT in Scope-1 anymore — they live
+        # in ``build_binding_maps`` so they only attach to commands that
+        # actually consume the bound local at dispatch time.
+        assert "bound_param" not in found
+        # Reads after the dispatch line are out of scope for this collector.
         assert "after_dispatch" not in found
+
+    def test_build_binding_maps_captures_direct_and_transitive(self) -> None:
+        src = textwrap.dedent(
+            """
+            def main():
+                params = demisto.params()
+                api_key = params.get("apikey")
+                client = Client(api_key=api_key)
+                # Demisto args, no params reads — empty entry but recorded.
+                args = demisto.args()
+                command = demisto.command()
+                if command == "x":
+                    handler(client, args)
+            """
+        )
+        tree = ast.parse(src)
+        main_fn = ccp.build_function_map(tree)["main"]
+        line = ccp.find_command_dispatch_line(main_fn)
+        bmap = ccp.build_binding_maps(main_fn, {"params"}, {}, line)
+        assert bmap.get("api_key") == {"apikey"}
+        # ``client`` carries ``apikey`` transitively via the ``api_key``
+        # name reference inside the Client(...) constructor.
+        assert bmap.get("client") == {"apikey"}
+        # ``args`` is recorded with an empty set (no params reads).
+        assert bmap.get("args") == set()
+        # ``params = demisto.params()`` is intentionally NOT recorded —
+        # it is a params-var, not a binding.
+        assert "params" not in bmap
 
 
 # =============================================================================
@@ -905,3 +949,481 @@ class TestMiscHelpers:
         assert "cmd-a" in cmds
         assert "cmd-b" in cmds
         assert "fetch-incidents" in cmds
+
+
+# =============================================================================
+# --- Phase 1: regression baseline ---
+#
+# These tests lock in the CURRENT (good) behavior of analyze_static for the
+# scope-1 / scope-2 split. They MUST continue to pass after Phase 3 introduces
+# binding-narrowing. Each test feeds a small inline integration source string
+# to ``analyze_static`` and asserts on the (scope_1, scope_2) tuple.
+#
+# Note on duplicates with earlier sections:
+# * Case 8 (match/case dispatch)   — ``TestDispatchVariants.test_match_case_dispatch``
+#   already covers it at the ``find_command_handler_calls`` level. The Phase 1
+#   variant below adds the analyze_static end-to-end check (param attribution),
+#   which is materially different.
+# * Case 9 (dict dispatch)         — same situation; existing test only checks
+#   handler resolution, the version below also checks param flow.
+# * Case 10 (isfetch via script.isfetch) — fully covered already by
+#   ``TestMiscHelpers.test_discover_commands``. Skipped here; do NOT duplicate.
+# =============================================================================
+
+
+class TestPhase1RegressionBaseline:
+    """Lock in current good behavior of analyze_static."""
+
+    # ---- Case 1: SEE Phase 2 ----
+    # The spec for case 1 ("direct dispatch read: handler(params.get('p'))
+    # inside an if-command branch") describes the EXPECTED behavior, not the
+    # current one. Empirically, the current analyzer drops ``params.get('p')``
+    # when it is embedded inline at the dispatch call site (it is past the
+    # pre-dispatch line, and the handler body never receives the value).
+    # See ``TestPhase2BindingNarrowing.test_case1_direct_dispatch_inline_get``
+    # for the contract test (xfail today, must pass after Phase 3).
+
+    # ---- Case 2: per-handler param argument ----
+    def test_case2_per_handler_params_arg(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            def handler_x(params):
+                return params.get("p")
+
+            def handler_y(params):
+                return params.get("q")
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "X":
+                    handler_x(params)
+                elif command == "Y":
+                    handler_y(params)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        assert "p" in (s1_x | s2_x)
+        assert "q" not in (s1_x | s2_x), (
+            f"q is read only inside handler_y; must not surface for X. "
+            f"scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "q" in (s1_y | s2_y)
+        assert "p" not in (s1_y | s2_y)
+
+    # ---- Case 3: module-level PARAMS global with eager read ----
+    def test_case3_module_level_global_fanout(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            PARAMS = demisto.params()
+            SERVER = PARAMS.get("url")  # eager, runs at import for ALL commands
+
+            def handler_x(): pass
+            def handler_y(): pass
+
+            def main():
+                command = demisto.command()
+                if command == "X":
+                    handler_x()
+                elif command == "Y":
+                    handler_y()
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        # Module-level reads belong to scope_1 (eager fan-out), and must
+        # surface for every command.
+        assert "url" in s1_x, f"scope_1 for X = {s1_x}"
+        assert "url" in s1_y, f"scope_1 for Y = {s1_y}"
+
+    # ---- Case 4: Client(...) constructor with inline params.get(...) ----
+    def test_case4_client_ctor_inline_get_fans_out(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client:
+                def __init__(self, api_key, url): pass
+
+            def handler_x(client): pass
+            def handler_y(client): pass
+
+            def main():
+                params = demisto.params()
+                client = Client(api_key=params.get("apikey"), url=params.get("url"))
+                command = demisto.command()
+                if command == "X":
+                    handler_x(client)
+                elif command == "Y":
+                    handler_y(client)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        # Inline (unbound) params.get reads inside Client(...) before the
+        # dispatch site fan out to ALL commands. This is legitimate Scope-1.
+        all_x = s1_x | s2_x
+        all_y = s1_y | s2_y
+        assert "apikey" in all_x and "url" in all_x, (
+            f"X missing apikey/url. scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "apikey" in all_y and "url" in all_y, (
+            f"Y missing apikey/url. scope_1={s1_y}, scope_2={s2_y}"
+        )
+
+    # ---- Case 5: Pydantic alias resolution ----
+    def test_case5_pydantic_alias_resolution(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+            from pydantic import BaseModel, Field
+
+            class P(BaseModel):
+                my_attr: str = Field(alias="my-yml-name")
+
+            def handler_x(params):
+                # accessed as attribute; alias makes the YML name "my-yml-name"
+                return params.my_attr
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "X":
+                    handler_x(params)
+            """
+        )
+        s1, s2 = ccp.analyze_static(src, "X", language="python", verbose=False)
+        all_static = s1 | s2
+        assert "my-yml-name" in all_static, (
+            f"alias should resolve to the YML name 'my-yml-name'. "
+            f"scope_1={s1}, scope_2={s2}"
+        )
+        assert "my_attr" not in all_static, (
+            f"raw python attribute name should NOT leak. "
+            f"scope_1={s1}, scope_2={s2}"
+        )
+
+    # ---- Case 6: chained demisto.params().get(...) inside handler ----
+    def test_case6_chained_demisto_params_in_handler(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            def handler_x():
+                return demisto.params().get("p")
+
+            def main():
+                command = demisto.command()
+                if command == "X":
+                    handler_x()
+            """
+        )
+        s1, s2 = ccp.analyze_static(src, "X", language="python", verbose=False)
+        assert "p" in (s1 | s2), f"chained get not traced. s1={s1}, s2={s2}"
+
+    # ---- Case 7: SEE Phase 2 ----
+    # Same reason as case 1: ``params.get('z')`` embedded inline inside the
+    # ``elif command == "Y":`` handler-call expression is dropped by the
+    # current analyzer. The "must not leak to X" half of the assertion
+    # holds today (because nothing surfaces at all), but the "must surface
+    # for Y" half does not. Moved to Phase 2.
+
+    # ---- Case 8: match/case dispatch (analyze_static end-to-end) ----
+    def test_case8_match_case_dispatch_param_flow(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            def handler_x(params):
+                return params.get("p")
+
+            def handler_y(params):
+                return params.get("q")
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                match command:
+                    case "X":
+                        handler_x(params)
+                    case "Y":
+                        handler_y(params)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        assert "p" in (s1_x | s2_x) and "q" not in (s1_x | s2_x)
+        assert "q" in (s1_y | s2_y) and "p" not in (s1_y | s2_y)
+
+    # ---- Case 9: dict dispatch (analyze_static end-to-end) ----
+    def test_case9_dict_dispatch_param_flow(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            def handler_x(params):
+                return params.get("p")
+
+            def handler_y(params):
+                return params.get("q")
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                commands = {"X": handler_x, "Y": handler_y}
+                commands[command](params)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        assert "p" in (s1_x | s2_x), (
+            f"dict-dispatch handler resolution lost 'p' for X. "
+            f"scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "q" in (s1_y | s2_y), (
+            f"dict-dispatch handler resolution lost 'q' for Y. "
+            f"scope_1={s1_y}, scope_2={s2_y}"
+        )
+
+    # ---- Case 10: SKIPPED — already covered ----
+    # ``fetch-incidents`` discovery via ``script.isfetch: true`` is fully
+    # tested by ``TestMiscHelpers.test_discover_commands``. Not duplicated.
+
+
+# =============================================================================
+# --- Phase 2: binding-narrowing (xfail until Phase 3) ---
+#
+# These tests describe the CONTRACT for the Phase 3 fix. They are marked
+# strict-xfail so that:
+#   * today they fail (the analyzer over-attributes bound-var reads to every
+#     command) without breaking CI;
+#   * once Phase 3 lands they will PASS, and strict=True forces removal of the
+#     xfail marker — preventing a silent regression of the new behavior.
+#
+# If any of these unexpectedly XPASS today, that means the analyzer already
+# partially narrows for that pattern; the xfail marker will surface the
+# surprise as a test failure and the user should be told.
+# =============================================================================
+
+
+class TestPhase2BindingNarrowing:
+    """Contract tests for the Phase 3 binding-narrowing fix.
+
+    All five cases initially landed as ``xfail(strict=True)`` to document
+    the contract; once Phase 3 implementation in
+    :func:`ccp.analyze_static` made them pass, the markers were removed
+    so future regressions surface as failing tests.
+    """
+
+    # ---- Case 1 (deferred from Phase 1) ----
+    def test_case1_direct_dispatch_inline_get(self) -> None:
+        # Inline ``params.get("p")`` embedded as an argument at the dispatch
+        # site (after the pre-dispatch line, INSIDE an if-command branch).
+        # Current analyzer drops the read entirely. Phase 3 must attribute it
+        # to X only.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            def handler_x(p): pass
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "X":
+                    handler_x(params.get("p"))
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        assert "p" in (s1_x | s2_x), (
+            f"'p' should appear for X. scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "p" not in (s1_y | s2_y), (
+            f"'p' must not appear for Y. scope_1={s1_y}, scope_2={s2_y}"
+        )
+
+    # ---- Case 7 (deferred from Phase 1) ----
+    def test_case7_if_elif_branch_isolated_reads(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            def handler_x(): pass
+            def handler_y(z): pass
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "X":
+                    handler_x()
+                elif command == "Y":
+                    handler_y(params.get("z"))
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        assert "z" not in (s1_x | s2_x), (
+            f"'z' must not appear for X. scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "z" in (s1_y | s2_y), (
+            f"'z' should appear for Y. scope_1={s1_y}, scope_2={s2_y}"
+        )
+
+    # ---- Case 11: Okta-IAM-style binding ----
+    def test_case11_okta_iam_mapper_out_binding(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class OktaClient:
+                def __init__(self, *a, **kw): pass
+
+            def fetch_incidents(client): pass
+            def update_user_command(client, args, mapper_out): pass
+
+            def main():
+                params = demisto.params()
+                mapper_out = params.get("mapper-out")
+                client = OktaClient()
+                args = demisto.args()
+                command = demisto.command()
+                if command == "fetch-incidents":
+                    fetch_incidents(client)
+                elif command == "iam-update-user":
+                    update_user_command(client, args, mapper_out)
+            """
+        )
+        s1_fi, s2_fi = ccp.analyze_static(
+            src, "fetch-incidents", language="python", verbose=False
+        )
+        s1_up, s2_up = ccp.analyze_static(
+            src, "iam-update-user", language="python", verbose=False
+        )
+        assert "mapper-out" not in (s1_fi | s2_fi), (
+            f"mapper-out is bound but never passed to fetch_incidents; "
+            f"it should NOT surface for fetch-incidents. "
+            f"scope_1={s1_fi}, scope_2={s2_fi}"
+        )
+        assert "mapper-out" in (s1_up | s2_up), (
+            f"mapper-out IS passed to update_user_command; should surface for "
+            f"iam-update-user. scope_1={s1_up}, scope_2={s2_up}"
+        )
+
+    # ---- Case 12: multiple bound vars, partially routed ----
+    def test_case12_multiple_bound_vars_partial_routing(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client: pass
+            def cmd_x(client, a): pass
+            def cmd_y(client, b): pass
+
+            def main():
+                params = demisto.params()
+                a = params.get("alpha")
+                b = params.get("beta")
+                client = Client()
+                if demisto.command() == "X":
+                    cmd_x(client, a)
+                elif demisto.command() == "Y":
+                    cmd_y(client, b)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        all_x = s1_x | s2_x
+        all_y = s1_y | s2_y
+        assert "alpha" in all_x and "beta" not in all_x, (
+            f"X gets only alpha. scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "beta" in all_y and "alpha" not in all_y, (
+            f"Y gets only beta. scope_1={s1_y}, scope_2={s2_y}"
+        )
+
+    # ---- Case 13: bound var passed via keyword argument ----
+    def test_case13_bound_var_via_kwarg(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client: pass
+            def update_user_command(client, args, mapper_out=None): pass
+            def fetch_incidents(client): pass
+
+            def main():
+                params = demisto.params()
+                mo = params.get("mapper-out")
+                client = Client()
+                args = demisto.args()
+                if demisto.command() == "iam-update-user":
+                    update_user_command(client, args, mapper_out=mo)
+                elif demisto.command() == "fetch-incidents":
+                    fetch_incidents(client)
+            """
+        )
+        s1_fi, s2_fi = ccp.analyze_static(
+            src, "fetch-incidents", language="python", verbose=False
+        )
+        s1_up, s2_up = ccp.analyze_static(
+            src, "iam-update-user", language="python", verbose=False
+        )
+        assert "mapper-out" not in (s1_fi | s2_fi), (
+            f"mapper-out is bound to 'mo' and only passed via kwarg to "
+            f"iam-update-user; must NOT surface for fetch-incidents. "
+            f"scope_1={s1_fi}, scope_2={s2_fi}"
+        )
+        assert "mapper-out" in (s1_up | s2_up), (
+            f"mapper-out IS passed via kwarg to update_user_command; "
+            f"should surface for iam-update-user. "
+            f"scope_1={s1_up}, scope_2={s2_up}"
+        )
+
+    # ---- Case 14: bound var stored on Client must keep fanning out ----
+    # NOTE: This XPASSED on first run — the analyzer ALREADY handles this case.
+    # The defensive contract holds today (apikey fans out to both X and Y even
+    # though it is bound to a local var, because the bound var is consumed by
+    # ``Client(...)`` whose result is then passed to every handler). We keep
+    # this as a regular Phase 2 regression test (no xfail) so that Phase 3 is
+    # required to PRESERVE the current good behavior — i.e., binding-narrowing
+    # must not over-narrow.
+    def test_case14_bound_var_stored_on_client_still_fans_out(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client:
+                def __init__(self, api_key=None): pass
+
+            def cmd_x(client): pass
+            def cmd_y(client): pass
+
+            def main():
+                params = demisto.params()
+                api_key = params.get("apikey")
+                client = Client(api_key=api_key)
+                if demisto.command() == "X":
+                    cmd_x(client)
+                elif demisto.command() == "Y":
+                    cmd_y(client)
+            """
+        )
+        s1_x, s2_x = ccp.analyze_static(src, "X", language="python", verbose=False)
+        s1_y, s2_y = ccp.analyze_static(src, "Y", language="python", verbose=False)
+        # Defensive case: api_key is bound to a local var, but consumed by the
+        # Client constructor whose result is then passed to BOTH handlers. The
+        # Phase 3 fix MUST NOT over-narrow this — apikey must keep fanning out.
+        assert "apikey" in (s1_x | s2_x), (
+            f"apikey is bound but flows to every handler via Client(...); "
+            f"must remain fanned out for X. scope_1={s1_x}, scope_2={s2_x}"
+        )
+        assert "apikey" in (s1_y | s2_y), (
+            f"apikey is bound but flows to every handler via Client(...); "
+            f"must remain fanned out for Y. scope_1={s1_y}, scope_2={s2_y}"
+        )
