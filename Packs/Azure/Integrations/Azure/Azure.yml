@@ -1579,7 +1579,8 @@ script:
       - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
     name: azure-disk-update
-    description: Updates a disk.
+    description: Updates a disk. The command is deprecated, please use azure-compute-disk-update.
+    deprecated: true
     outputs:
     - contextPath: Azure.Disk.id
       description: Resource ID of the disk.
@@ -1681,6 +1682,148 @@ script:
       description: The HyperVGenerationType of the virtual machine.
       type: String
     - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
+      description: The last time ownership of the disk was updated.
+      type: String
+  - name: azure-compute-disk-update
+    description: "Updates a disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
+    arguments:
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+    - name: subscription_id
+      type: string
+      required: true
+      description: Subscription ID.
+    - name: disk_name
+      type: string
+      required: true
+      description: The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+    - name: public_network_access
+      type: string
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - Disabled
+        - Enabled
+      description: Policy for controlling export on the disk.
+    - name: network_access_policy
+      type: string
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - AllowAll
+        - AllowPrivate
+        - DenyAll
+      description: Policy for accessing the disk via network.
+    - name: data_access_auth_mode
+      type: string
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - AzureActiveDirectory
+      description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
+    outputs:
+    - contextPath: Azure.Compute.Disks.id
+      description: Resource ID of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.name
+      description: Name of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.type
+      description: Type of the resource.
+      type: String
+    - contextPath: Azure.Compute.Disks.location
+      description: Location of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.tags
+      description: Resource tags.
+    - contextPath: Azure.Compute.Disks.managedBy
+      description: ARM ID of the resource that manages the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.sku
+      description: The disk SKU name.
+    - contextPath: Azure.Compute.Disks.zones
+      description: A list of availability zones.
+    - contextPath: Azure.Compute.Disks.properties.timeCreated
+      description: The time when the disk was created.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.diskSizeGB
+      description: Size of the disk in GB.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskIopsReadWrite
+      description: The number of IOPS allowed for this disk.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskMBpsReadWrite
+      description: The bandwidth allowed for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskIOPSReadOnly
+      description: The number of read-only IOPS for this disk.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskMBpsReadOnly
+      description: The read-only bandwidth for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskSizeBytes
+      description: The size of the disk in bytes.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.networkAccessPolicy
+      description: Policy for accessing the disk via network.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.publicNetworkAccess
+      description: Policy for export on the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.burstingEnabled
+      description: Whether bursting is enabled on the disk.
+      type: Boolean
+    - contextPath: Azure.Compute.Disks.properties.optimization
+      description: The disk optimization setting.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.diskState
+      description: The current state of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.supportedCapabilities
+      description: Supported capabilities of the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedPerformanceTiers
+      description: Supported performance tiers of the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedDiskTypes
+      description: Supported disk types for the disk.
+    - contextPath: Azure.Compute.Disks.properties.provisioningState
+      description: The provisioning state of the disk.
+    - contextPath: Azure.Compute.Disks.properties.timeModified
+      description: The time when the disk was last modified.
+    - contextPath: Azure.Compute.Disks.properties.diskAccessId
+      description: The ARM ID of the DiskAccess resource.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.networkProfile
+      description: The network profile of the disk.
+    - contextPath: Azure.Compute.Disks.properties.creationData
+      description: Disk creation data.
+    - contextPath: Azure.Compute.Disks.properties.encryption
+      description: Encryption settings for the disk.
+    - contextPath: Azure.Compute.Disks.properties.encryptionSettingsCollection
+      description: A collection of encryption settings.
+    - contextPath: Azure.Compute.Disks.properties.encryptionType
+      description: The type of key used to encrypt the data on the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.securityProfile
+      description: Security profile for the disk.
+    - contextPath: Azure.Compute.Disks.properties.tieringProfile
+      description: Tiering profile for the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedTierList
+      description: List of supported tiers for the disk.
+    - contextPath: Azure.Compute.Disks.properties.availabilityZone
+      description: Availability zone of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.dataAccessAuthMode
+      description: Additional authentication requirements when exporting or uploading to a disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.osType
+      description: The operating system type.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.hyperVGeneration
+      description: The HyperVGenerationType of the virtual machine.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
   - arguments:
@@ -2065,7 +2208,8 @@ script:
       - enabled
       description: Whether the policy is enabled or not.
     name: azure-acr-update
-    description: Updates a container registry.
+    description: Updates a container registry. The command is deprecated, please use azure-cr-registry-update.
+    deprecated: true
     outputs:
     - contextPath: Azure.ACR.id
       description: The resource ID.
@@ -2134,6 +2278,117 @@ script:
       description: The tags of the resource.
       type: Unknown
     - contextPath: Azure.ACR.type
+      description: The type of the resource.
+      type: String
+  - name: azure-cr-registry-update
+    description: "Updates a container registry. Required permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
+    arguments:
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+    - name: subscription_id
+      type: String
+      required: true
+      description: Subscription ID.
+    - name: registry_name
+      type: String
+      required: true
+      description: The name of the container registry.
+    - name: allow_exports
+      description: Whether artifacts can be exported.
+      auto: PREDEFINED
+      predefined:
+        - disabled
+        - enabled
+    - name: public_network_access
+      type: String
+      description: Whether public network access is allowed for the container registry.
+      auto: PREDEFINED
+      predefined:
+        - disabled
+        - enabled
+    - name: anonymous_pull_enabled
+      type: Boolean
+      description: Whether to enable registry-wide pulls from unauthenticated clients.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: authentication_as_arm_policy
+      auto: PREDEFINED
+      predefined:
+        - disabled
+        - enabled
+      description: Whether the policy is enabled or not.
+    outputs:
+    - contextPath: Azure.ContainerRegistry.Registries.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.identity
+      description: The identity of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.location
+      description: The location of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.adminUserEnabled
+      description: The value that indicates whether the admin user is enabled.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled
+      description: Enables registry-wide pull from unauthenticated clients.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.creationDate
+      description: The creation date of the container registry in ISO8601 format.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled
+      description: Enable a single data endpoint per region for serving data.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames
+      description: List of host names that will serve data when dataEndpointEnabled is true.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.encryption
+      description: The encryption settings of container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.loginServer
+      description: The URL that can be used to log into the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions
+      description: Whether to allow trusted Azure services to access a network restricted registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleSet
+      description: The network rule set for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.policies
+      description: The policies for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.privateEndpointConnections
+      description: List of private endpoint connections for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.provisioningState
+      description: The provisioning state of the container registry at the time the operation was called.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.publicNetworkAccess
+      description: Whether or not public network access is allowed for the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.status
+      description: The status of the container registry at the time the operation was called.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.zoneRedundancy
+      description: Whether or not zone redundancy is enabled for this container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.sku
+      description: The SKU of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.systemData
+      description: Metadata pertaining to creation and last modification of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.tags
+      description: The tags of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.type
       description: The type of the resource.
       type: String
   - arguments:
@@ -6263,11 +6518,12 @@ script:
       description: Policy for accessing the disk via network.
       defaultValue: 'DenyAll'
       hidden: true
-    description: Disables all public and private network access for the managed disk.
+    description: Disables all public and private network access for the managed disk. The quick action is deprecated, please use Disable Public and Private Access to VM Disk.
     name: azure-disable-public-private-access-vm-disk-quick-action
     prettyname: Disable Public & Private Access to VM Disk
     hidden: true
     quickaction: true
+    deprecated: true
     outputs:
     - contextPath: Azure.Disk.id
       description: Resource ID of the disk.
@@ -6371,6 +6627,149 @@ script:
     - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
+  - prettyname: Disable Public and Private Access to VM Disk
+    description: "Disables all public and private network access for the managed disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
+    name: azure-disable-public-n-private-access-vm-disk-quick-action
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      required: true
+      description: The subscription ID.
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: disk_name
+      prettyname: VM Disk
+      type: string
+      required: true
+      description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      defaultValue: VM Disk
+      prettypredefined:
+        VM Disk: ${asset.xdm.asset.name}
+    - name: public_network_access
+      type: string
+      description: Policy for controlling export on the disk.
+      defaultValue: 'Disabled'
+      hidden: true
+    - name: network_access_policy
+      type: string
+      description: Policy for accessing the disk via network.
+      defaultValue: 'DenyAll'
+      hidden: true
+    outputs:
+    - contextPath: Azure.Compute.Disks.id
+      description: Resource ID of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.name
+      description: Name of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.type
+      description: Type of the resource.
+      type: String
+    - contextPath: Azure.Compute.Disks.location
+      description: Location of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.tags
+      description: Resource tags.
+    - contextPath: Azure.Compute.Disks.managedBy
+      description: ARM ID of the resource that manages the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.sku
+      description: The disk SKU name.
+    - contextPath: Azure.Compute.Disks.zones
+      description: A list of availability zones.
+    - contextPath: Azure.Compute.Disks.properties.timeCreated
+      description: The time when the disk was created.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.diskSizeGB
+      description: Size of the disk in GB.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskIopsReadWrite
+      description: The number of IOPS allowed for this disk.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskMBpsReadWrite
+      description: The bandwidth allowed for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskIOPSReadOnly
+      description: The number of read-only IOPS for this disk.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskMBpsReadOnly
+      description: The read-only bandwidth for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskSizeBytes
+      description: The size of the disk in bytes.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.networkAccessPolicy
+      description: Policy for accessing the disk via network.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.publicNetworkAccess
+      description: Policy for export on the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.burstingEnabled
+      description: Whether bursting is enabled on the disk.
+      type: Boolean
+    - contextPath: Azure.Compute.Disks.properties.optimization
+      description: The disk optimization setting.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.diskState
+      description: The current state of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.supportedCapabilities
+      description: Supported capabilities of the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedPerformanceTiers
+      description: Supported performance tiers of the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedDiskTypes
+      description: Supported disk types for the disk.
+    - contextPath: Azure.Compute.Disks.properties.provisioningState
+      description: The provisioning state of the disk.
+    - contextPath: Azure.Compute.Disks.properties.timeModified
+      description: The time when the disk was last modified.
+    - contextPath: Azure.Compute.Disks.properties.diskAccessId
+      description: The ARM ID of the DiskAccess resource.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.networkProfile
+      description: The network profile of the disk.
+    - contextPath: Azure.Compute.Disks.properties.creationData
+      description: Disk creation data.
+    - contextPath: Azure.Compute.Disks.properties.encryption
+      description: Encryption settings for the disk.
+    - contextPath: Azure.Compute.Disks.properties.encryptionSettingsCollection
+      description: A collection of encryption settings.
+    - contextPath: Azure.Compute.Disks.properties.encryptionType
+      description: The type of key used to encrypt the data on the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.securityProfile
+      description: Security profile for the disk.
+    - contextPath: Azure.Compute.Disks.properties.tieringProfile
+      description: Tiering profile for the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedTierList
+      description: List of supported tiers for the disk.
+    - contextPath: Azure.Compute.Disks.properties.availabilityZone
+      description: Availability zone of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.dataAccessAuthMode
+      description: Additional authentication requirements when exporting or uploading to a disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.osType
+      description: The operating system type.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.hyperVGeneration
+      description: The HyperVGenerationType of the virtual machine.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.lastOwnershipUpdateTime
+      description: The last time ownership of the disk was updated.
+      type: String
   - arguments:
     - name: subscription_id
       type: string
@@ -6401,10 +6800,11 @@ script:
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
       defaultValue: AzureActiveDirectory
       hidden: true
-    description: Sets the data access authentication mode for the managed disk to Azure Active Directory.
+    description: Sets the data access authentication mode for the managed disk to Azure Active Directory. The quick action is deprecated, please use Set Disk Data Access to Azure AD.
     name: azure-disk-set-data-access-ad-quick-action
     prettyname: Set Disk Data Access to AD
     hidden: true
+    deprecated: true
     quickaction: true
     outputs:
     - contextPath: Azure.Disk.id
@@ -6509,6 +6909,144 @@ script:
     - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
+  - prettyname: Set Disk Data Access to Azure AD
+    description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. Required permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
+    name: azure-disk-update-data-access-ad-quick-action
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      required: true
+      description: The subscription ID.
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: disk_name
+      prettyname: VM Disk
+      type: string
+      required: true
+      description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      defaultValue: VM Disk
+      prettypredefined:
+        VM Disk: ${asset.xdm.asset.name}
+    - name: data_access_auth_mode
+      type: string
+      description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
+      defaultValue: AzureActiveDirectory
+      hidden: true
+    outputs:
+    - contextPath: Azure.Compute.Disks.id
+      description: Resource ID of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.name
+      description: Name of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.type
+      description: Type of the resource.
+      type: String
+    - contextPath: Azure.Compute.Disks.location
+      description: Location of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.tags
+      description: Resource tags.
+    - contextPath: Azure.Compute.Disks.managedBy
+      description: ARM ID of the resource that manages the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.sku
+      description: The disk SKU name.
+    - contextPath: Azure.Compute.Disks.zones
+      description: A list of availability zones.
+    - contextPath: Azure.Compute.Disks.properties.timeCreated
+      description: The time when the disk was created.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.diskSizeGB
+      description: Size of the disk in GB.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskIopsReadWrite
+      description: The number of IOPS allowed for this disk.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskMBpsReadWrite
+      description: The bandwidth allowed for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskIOPSReadOnly
+      description: The number of read-only IOPS for this disk.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskMBpsReadOnly
+      description: The read-only bandwidth for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.diskSizeBytes
+      description: The size of the disk in bytes.
+      type: Number
+    - contextPath: Azure.Compute.Disks.properties.networkAccessPolicy
+      description: Policy for accessing the disk via network.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.publicNetworkAccess
+      description: Policy for export on the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.burstingEnabled
+      description: Whether bursting is enabled on the disk.
+      type: Boolean
+    - contextPath: Azure.Compute.Disks.properties.optimization
+      description: The disk optimization setting.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.diskState
+      description: The current state of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.supportedCapabilities
+      description: Supported capabilities of the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedPerformanceTiers
+      description: Supported performance tiers of the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedDiskTypes
+      description: Supported disk types for the disk.
+    - contextPath: Azure.Compute.Disks.properties.provisioningState
+      description: The provisioning state of the disk.
+    - contextPath: Azure.Compute.Disks.properties.timeModified
+      description: The time when the disk was last modified.
+    - contextPath: Azure.Compute.Disks.properties.diskAccessId
+      description: The ARM ID of the DiskAccess resource.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.networkProfile
+      description: The network profile of the disk.
+    - contextPath: Azure.Compute.Disks.properties.creationData
+      description: Disk creation data.
+    - contextPath: Azure.Compute.Disks.properties.encryption
+      description: Encryption settings for the disk.
+    - contextPath: Azure.Compute.Disks.properties.encryptionSettingsCollection
+      description: A collection of encryption settings.
+    - contextPath: Azure.Compute.Disks.properties.encryptionType
+      description: The type of key used to encrypt the data on the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.securityProfile
+      description: Security profile for the disk.
+    - contextPath: Azure.Compute.Disks.properties.tieringProfile
+      description: Tiering profile for the disk.
+    - contextPath: Azure.Compute.Disks.properties.supportedTierList
+      description: List of supported tiers for the disk.
+    - contextPath: Azure.Compute.Disks.properties.availabilityZone
+      description: Availability zone of the disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.dataAccessAuthMode
+      description: Additional authentication requirements when exporting or uploading to a disk.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.osType
+      description: The operating system type.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.hyperVGeneration
+      description: The HyperVGenerationType of the virtual machine.
+      type: String
+    - contextPath: Azure.Compute.Disks.properties.lastOwnershipUpdateTime
+      description: The last time ownership of the disk was updated.
+      type: String
   - arguments:
     - name: subscription_id
       type: string
@@ -6543,11 +7081,12 @@ script:
       description: Whether public network access is allowed for the container registry.
       defaultValue: Disabled
       hidden: true
-    description: Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security.
+    description: Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. The quick action is deprecated, please use Disable Public Access & Exports on ACR.
     name: azure-acr-disable-public-private-access-quick-action
     prettyname: Disable Public Access and Exports on ACR
     hidden: true
     quickaction: true
+    deprecated: true
     outputs:
     - contextPath: Azure.ACR.id
       description: The resource ID.
@@ -6618,6 +7157,115 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
+  - prettyname: Disable Public Access & Exports on ACR
+    description: Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security.
+    name: azure-cr-disable-public-private-access-quick-action
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      required: true
+      description: The subscription ID.
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
+    - name: registry_name
+      type: String
+      required: true
+      description: Name of the container registry.
+      prettyname: Azure Container Registry
+      defaultValue: Azure Container Registry
+      prettypredefined:
+        Azure Container Registry: ${asset.xdm.asset.name}
+    - name: allow_exports
+      description: Whether artifacts can be exported.
+      defaultValue: disabled
+      hidden: true
+    - name: public_network_access
+      type: String
+      description: Whether public network access is allowed for the container registry.
+      defaultValue: Disabled
+      hidden: true
+    outputs:
+    - contextPath: Azure.ContainerRegistry.Registries.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.identity
+      description: The identity of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.location
+      description: The location of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.adminUserEnabled
+      description: The value that indicates whether the admin user is enabled.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled
+      description: Enables registry-wide pull from unauthenticated clients.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.creationDate
+      description: The creation date of the container registry in ISO8601 format.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled
+      description: Enable a single data endpoint per region for serving data.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames
+      description: List of host names that will serve data when dataEndpointEnabled is true.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.encryption
+      description: The encryption settings of container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.loginServer
+      description: The URL that can be used to log into the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions
+      description: Whether to allow trusted Azure services to access a network restricted registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleSet
+      description: The network rule set for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.policies
+      description: The policies for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.privateEndpointConnections
+      description: List of private endpoint connections for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.provisioningState
+      description: The provisioning state of the container registry at the time the operation was called.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.publicNetworkAccess
+      description: Whether or not public network access is allowed for the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.status
+      description: The status of the container registry at the time the operation was called.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.zoneRedundancy
+      description: Whether or not zone redundancy is enabled for this container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.sku
+      description: The SKU of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.systemData
+      description: Metadata pertaining to creation and last modification of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.tags
+      description: The tags of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.type
+      description: The type of the resource.
+      type: String
   - arguments:
     - name: subscription_id
       type: string
@@ -6647,11 +7295,12 @@ script:
       description: Whether the policy is enabled or not.
       defaultValue: disabled
       hidden: true
-    description: Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR).
+    description: Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). The quick action is deprecated, please use Disable ACR ARM Authentication.
     name: azure-acr-disable-authentication-as-arm-quick-action
     prettyname: Disable ACR Authentication as ARM
     hidden: true
     quickaction: true
+    deprecated: true
     outputs:
     - contextPath: Azure.ACR.id
       description: The resource ID.
@@ -6720,6 +7369,110 @@ script:
       description: The tags of the resource.
       type: Unknown
     - contextPath: Azure.ACR.type
+      description: The type of the resource.
+      type: String
+  - prettyname: Disable ACR Authentication as ARM
+    description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). Required permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
+    name: azure-cr-disable-authentication-as-arm-quick-action
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      required: true
+      description: The subscription ID.
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
+    - name: registry_name
+      type: String
+      required: true
+      description: The name of the container registry.
+      prettyname: Azure Container Registry
+      defaultValue: Azure Container Registry
+      prettypredefined:
+        Azure Container Registry: ${asset.xdm.asset.name}
+    - name: authentication_as_arm_policy
+      description: Whether the policy is enabled or not.
+      defaultValue: disabled
+      hidden: true
+    outputs:
+    - contextPath: Azure.ContainerRegistry.Registries.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.identity
+      description: The identity of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.location
+      description: The location of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.adminUserEnabled
+      description: The value that indicates whether the admin user is enabled.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled
+      description: Enables registry-wide pull from unauthenticated clients.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.creationDate
+      description: The creation date of the container registry in ISO8601 format.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled
+      description: Enable a single data endpoint per region for serving data.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames
+      description: List of host names that will serve data when dataEndpointEnabled is true.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.encryption
+      description: The encryption settings of container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.loginServer
+      description: The URL that can be used to log into the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions
+      description: Whether to allow trusted Azure services to access a network restricted registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleSet
+      description: The network rule set for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.policies
+      description: The policies for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.privateEndpointConnections
+      description: List of private endpoint connections for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.provisioningState
+      description: The provisioning state of the container registry at the time the operation was called.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.publicNetworkAccess
+      description: Whether or not public network access is allowed for the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.status
+      description: The status of the container registry at the time the operation was called.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.zoneRedundancy
+      description: Whether or not zone redundancy is enabled for this container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.sku
+      description: The SKU of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.systemData
+      description: Metadata pertaining to creation and last modification of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.tags
+      description: The tags of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.type
       description: The type of the resource.
       type: String
   - arguments:
@@ -6752,11 +7505,12 @@ script:
       description: Whether to enable registry-wide pulls from unauthenticated clients.
       defaultValue: 'false'
       hidden: true
-    description: Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images.
+    description: Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. The quick action is now deprecated, please use Disable Anonymous Pull for ACR.
     name: azure-acr-disable-anonymous-pull-quick-action
     prettyname: Disable ACR Anonymous Pull
     hidden: true
     quickaction: true
+    deprecated: true
     outputs:
     - contextPath: Azure.ACR.id
       description: The resource ID.
@@ -6825,6 +7579,111 @@ script:
       description: The tags of the resource.
       type: Unknown
     - contextPath: Azure.ACR.type
+      description: The type of the resource.
+      type: String
+  - prettyname: Disable Anonymous Pull for ACR
+    description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. Required permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
+    name: azure-cr-disable-anonymous-pull-quick-action
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      required: true
+      description: The subscription ID.
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
+    - name: registry_name
+      type: String
+      required: true
+      description: The name of the container registry.
+      prettyname: Azure Container Registry
+      defaultValue: Azure Container Registry
+      prettypredefined:
+        Azure Container Registry: ${asset.xdm.asset.name}
+    - name: anonymous_pull_enabled
+      type: Boolean
+      description: Whether to enable registry-wide pulls from unauthenticated clients.
+      defaultValue: 'false'
+      hidden: true
+    outputs:
+    - contextPath: Azure.ContainerRegistry.Registries.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.identity
+      description: The identity of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.location
+      description: The location of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.adminUserEnabled
+      description: The value that indicates whether the admin user is enabled.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled
+      description: Enables registry-wide pull from unauthenticated clients.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.creationDate
+      description: The creation date of the container registry in ISO8601 format.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled
+      description: Enable a single data endpoint per region for serving data.
+      type: Boolean
+    - contextPath: Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames
+      description: List of host names that will serve data when dataEndpointEnabled is true.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.encryption
+      description: The encryption settings of container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.loginServer
+      description: The URL that can be used to log into the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions
+      description: Whether to allow trusted Azure services to access a network restricted registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.networkRuleSet
+      description: The network rule set for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.policies
+      description: The policies for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.privateEndpointConnections
+      description: List of private endpoint connections for a container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.provisioningState
+      description: The provisioning state of the container registry at the time the operation was called.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.publicNetworkAccess
+      description: Whether or not public network access is allowed for the container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.properties.status
+      description: The status of the container registry at the time the operation was called.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.properties.zoneRedundancy
+      description: Whether or not zone redundancy is enabled for this container registry.
+      type: String
+    - contextPath: Azure.ContainerRegistry.Registries.sku
+      description: The SKU of the container registry.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.systemData
+      description: Metadata pertaining to creation and last modification of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.tags
+      description: The tags of the resource.
+      type: Unknown
+    - contextPath: Azure.ContainerRegistry.Registries.type
       description: The type of the resource.
       type: String
   - arguments:

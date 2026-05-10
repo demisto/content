@@ -182,11 +182,15 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-ad-quick-action",
+        "azure-compute-disk-update",
+        "azure-disable-public-n-private-access-vm-disk-quick-action"
     ],
     "Microsoft.Compute/disks/write": [
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-ad-quick-action",
+        "azure-compute-disk-update",
+        "azure-disable-public-n-private-access-vm-disk-quick-action"
     ],
     "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get"],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start"],
@@ -196,12 +200,20 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-acr-disable-public-private-access-quick-action",
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
+        "azure-cr-registry-update",
+        "azure-cr-disable-authentication-as-arm-quick-action",
+        "azure-cr-disable-public-private-access-quick-action",
+        "azure-cr-disable-anonymous-pull-quick-action",
     ],
     "Microsoft.ContainerRegistry/registries/write": [
         "azure-acr-update",
         "azure-acr-disable-public-private-access-quick-action",
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
+        "azure-cr-registry-update",
+        "azure-cr-disable-authentication-as-arm-quick-action",
+        "azure-cr-disable-public-private-access-quick-action",
+        "azure-cr-disable-anonymous-pull-quick-action",
     ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
@@ -3466,12 +3478,16 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Public Network Access", "Network Access Policy", "Data Access Auth Mode"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    old_namings = ["azure-disk-update", "azure-disk-set-data-access-ad-quick-action", "azure-disable-public-private-access-vm-disk-quick-action"]
+    outputs_prefix = "Azure.Disk" if command in old_namings else "Azure.Compute.Disks"
     return CommandResults(
-        outputs_prefix="Azure.Disk",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3584,12 +3600,15 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Public Network Access", "Anonymous Pull Enabled", "Allow Exports", "Authentication As Arm Policy"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    outputs_prefix = "Azure.ACR" if "azure-acr" in command else "Azure.ContainerRegistry.Registries"
     return CommandResults(
-        outputs_prefix="Azure.ACR",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -4890,9 +4909,11 @@ def main():  # pragma: no cover
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
+            "azure-compute-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
             "azure-appservice-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
+            "azure-cr-registry-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
@@ -4933,9 +4954,14 @@ def main():  # pragma: no cover
             "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
             "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
             "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
-            "azure-disk-set-data-access-aa-quick-action": disk_update_command,
+            "azure-disable-public-n-private-access-vm-disk-quick-action": disk_update_command,
+            "azure-disk-set-data-access-ad-quick-action": disk_update_command,
+            "azure-disk-update-data-access-ad-quick-action": disk_update_command,
             "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+            "azure-cr-disable-public-private-access-quick-action": acr_update_command,
             "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+            "azure-cr-disable-anonymous-pull-quick-action": acr_update_command,
+            "azure-cr-disable-authentication-as-arm-quick-action": acr_update_command,
             "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
             "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
             "azure-postgres-config-set-disconnection-logging-quick-action": set_postgres_config_command,
