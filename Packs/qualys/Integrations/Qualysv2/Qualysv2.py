@@ -2831,11 +2831,11 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     return response_requested_value, str(response_next_url)
 
 
-def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
+def handle_vulnerabilities_result(raw_response: str) -> list:
     """
     Handles vulnerabilities response - parses xml to json and gets the list
     Args:
-        raw_response (requests.Response): the raw result received from Qualys API command
+        raw_response (str): the raw XML result received from Qualys API command
     Returns:
         List with data generated for the result given
     """
