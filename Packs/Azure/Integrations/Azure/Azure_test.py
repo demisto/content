@@ -445,7 +445,18 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["retentionPolicy"]["days"] == 30
 
 
-def test_disk_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-disk-update", "Azure.Disk"),
+        ("azure-disk-set-data-access-ad-quick-action", "Azure.Disk"),
+        ("azure-disable-public-private-access-vm-disk-quick-action", "Azure.Disk"),
+        ("azure-compute-disk-update", "Azure.Compute.Disks"),
+        ("azure-disable-public-n-private-access-vm-disk-quick-action", "Azure.Compute.Disks"),
+        ("azure-compute-disk-update-data-access-ad-quick-action", "Azure.Compute.Disks"),
+    ],
+)
+def test_disk_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update disk properties.
     When: The disk_update_command function is called with valid parameters.
@@ -464,6 +475,7 @@ def test_disk_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "disk_update", return_value=disk_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -476,7 +488,7 @@ def test_disk_update_command(mocker, client, mock_params):
     result = disk_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.Disk"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-disk"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
@@ -526,7 +538,20 @@ def test_webapp_update_command(mocker, client, mock_params, command, expected_pr
     assert result.outputs["properties"]["clientCertEnabled"] is True
 
 
-def test_acr_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-acr-update", "Azure.ACR"),
+        ("azure-acr-disable-public-private-access-quick-action", "Azure.ACR"),
+        ("azure-acr-disable-authentication-as-arm-quick-action", "Azure.ACR"),
+        ("azure-acr-disable-anonymous-pull-quick-action", "Azure.ACR"),
+        ("azure-cr-registry-update", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-public-private-access-quick-action", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-anonymous-pull-quick-action", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-authentication-as-arm-quick-action", "Azure.ContainerRegistry.Registries"),
+    ],
+)
+def test_acr_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update Azure Container Registry properties.
     When: The acr_update_command function is called with valid parameters.
@@ -545,6 +570,7 @@ def test_acr_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "acr_update", return_value=acr_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -558,7 +584,7 @@ def test_acr_update_command(mocker, client, mock_params):
     result = acr_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.ACR"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "testregistry"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"

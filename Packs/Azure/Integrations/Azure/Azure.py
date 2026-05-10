@@ -183,14 +183,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-ad-quick-action",
         "azure-compute-disk-update",
-        "azure-disable-public-n-private-access-vm-disk-quick-action"
+        "azure-disable-public-n-private-access-vm-disk-quick-action",
+        "azure-compute-disk-update-data-access-ad-quick-action",
     ],
     "Microsoft.Compute/disks/write": [
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-ad-quick-action",
         "azure-compute-disk-update",
-        "azure-disable-public-n-private-access-vm-disk-quick-action"
+        "azure-disable-public-n-private-access-vm-disk-quick-action",
+        "azure-compute-disk-update-data-access-ad-quick-action",
     ],
     "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get"],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start"],
@@ -3302,16 +3304,10 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
     ]
-    if demisto.command() in old_namings:
-        return CommandResults(
-            outputs_prefix="Azure.WebAppConfig",
-            outputs_key_field="id",
-            outputs=response,
-            readable_output=md,
-            raw_response=outputs,
-        )
+    command = demisto.command()
+    outputs_prefix = "Azure.WebAppConfig" if command in old_namings else "Azure.AppService.WebAppConfiguration"
     return CommandResults(
-        outputs_prefix="Azure.AppService.WebAppConfiguration",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -3350,17 +3346,10 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         removeNull=True,
     )
 
-    old_namings = ["azure-webapp-auth-update", "azure-webapp-auth-update-quick-action"]
-    if demisto.command() in old_namings:
-        return CommandResults(
-            outputs_prefix="Azure.WebAppAuth",
-            outputs_key_field="id",
-            outputs=response,
-            readable_output=md,
-            raw_response=outputs,
-        )
+    command = demisto.command()
+    outputs_prefix = "Azure.WebAppAuth" if "azure-webapp" in command else "Azure.AppService.WebAppAuthSettings"
     return CommandResults(
-        outputs_prefix="Azure.AppService.WebAppAuthSettings",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -3480,7 +3469,11 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
     )
 
     command = demisto.command()
-    old_namings = ["azure-disk-update", "azure-disk-set-data-access-ad-quick-action", "azure-disable-public-private-access-vm-disk-quick-action"]
+    old_namings = [
+        "azure-disk-update",
+        "azure-disk-set-data-access-ad-quick-action",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+    ]
     outputs_prefix = "Azure.Disk" if command in old_namings else "Azure.Compute.Disks"
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -3525,21 +3518,11 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Identity", "Https Only", "Client Cert Enabled"],
         removeNull=True,
     )
-    old_namings = [
-        "azure-webapp-update",
-        "azure-webapp-assign-managed-identity-quick-action",
-        "azure-webapp-update-assign-managed-identity-quick-action",
-    ]
-    if demisto.command() in old_namings:
-        return CommandResults(
-            outputs_prefix="Azure.WebApp",
-            outputs_key_field="id",
-            outputs=response,
-            readable_output=md,
-            raw_response=outputs,
-        )
+
+    command = demisto.command()
+    outputs_prefix = "Azure.WebApp" if "azure-webapp" in command else "Azure.AppService.WebApp"
     return CommandResults(
-        outputs_prefix="Azure.AppService.WebApp",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -4956,7 +4939,7 @@ def main():  # pragma: no cover
             "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
             "azure-disable-public-n-private-access-vm-disk-quick-action": disk_update_command,
             "azure-disk-set-data-access-ad-quick-action": disk_update_command,
-            "azure-disk-update-data-access-ad-quick-action": disk_update_command,
+            "azure-compute-disk-update-data-access-ad-quick-action": disk_update_command,
             "azure-acr-disable-public-private-access-quick-action": acr_update_command,
             "azure-cr-disable-public-private-access-quick-action": acr_update_command,
             "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,

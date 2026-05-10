@@ -6911,7 +6911,7 @@ script:
       type: String
   - prettyname: Set Disk Data Access to Azure AD
     description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. Required permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
-    name: azure-disk-update-data-access-ad-quick-action
+    name: azure-compute-disk-update-data-access-ad-quick-action
     hidden: true
     quickaction: true
     arguments:
