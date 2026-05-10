@@ -3067,6 +3067,7 @@ def is_valid_issue_id(issue_id):
 
 def main():
     params = demisto.params()
+    demisto_args = demisto.args()
     set_authentication_endpoint(params.get("auth_endpoint"))
     set_api_endpoint(params.get("api_endpoint", ""))
     try:
@@ -3084,11 +3085,10 @@ def main():
                 demisto.results("Invalid token")
 
         elif command == "fetch-incidents":
-            max_fetch = int(demisto.params().get("max_fetch"))
+            max_fetch = int(params.get("max_fetch", "200"))
             fetch_issues(max_fetch=max_fetch)
 
         elif command == "wiz-get-issues":
-            demisto_args = demisto.args()
             issue_type = demisto_args.get(WizInputParam.ISSUE_TYPE)
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             severity = demisto_args.get(WizInputParam.SEVERITY)
@@ -3108,7 +3108,6 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-get-resource":
-            demisto_args = demisto.args()
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             resource_name = demisto_args.get(WizInputParam.RESOURCE_NAME)
             resource = get_resource(resource_id=resource_id, resource_name=resource_name)
@@ -3118,7 +3117,6 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-get-resources":
-            demisto_args = demisto.args()
             resources_search = demisto_args.get(WizInputParam.SEARCH)
             resources_entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
             resources_subscription_external_ids = demisto_args.get(WizInputParam.SUBSCRIPTION_EXTERNAL_IDS)
@@ -3141,7 +3139,6 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-reject-issue":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             resolution_reason = demisto_args.get(WizInputParam.REJECT_REASON)
             resolution_note = demisto_args.get(WizInputParam.REJECT_NOTE)
@@ -3150,7 +3147,6 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-reopen-issue":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
             issue_response = reopen_issue(issue_id=issue_id, reopen_note=reopen_note)
@@ -3158,7 +3154,6 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-resolve-issue":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             resolution_reason = demisto_args.get(WizInputParam.RESOLUTION_REASON)
             resolution_note = demisto_args.get(WizInputParam.RESOLUTION_NOTE)
@@ -3169,7 +3164,6 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-get-issue":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_result = get_issue(
                 issue_id=issue_id,
@@ -3178,14 +3172,12 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-issue-in-progress":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = issue_in_progress(issue_id=issue_id)
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == "wiz-set-issue-note":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             note = demisto_args.get(WizInputParam.NOTE)
             issue_response = set_issue_comment(issue_id=issue_id, comment=note)
@@ -3193,21 +3185,18 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-clear-issue-note":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = clear_issue_note(issue_id=issue_id)
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == "wiz-get-issue-evidence":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = get_issue_evidence(issue_id=issue_id)
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == "wiz-set-issue-due-date":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             due_at = demisto_args.get("due_at")
             issue_response = set_issue_due_date(issue_id=issue_id, due_at=due_at)
@@ -3215,14 +3204,12 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-clear-issue-due-date":
-            demisto_args = demisto.args()
             issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = clear_issue_due_date(issue_id=issue_id)
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == "wiz-get-project-team":
-            demisto_args = demisto.args()
             project_name = demisto_args.get(WizInputParam.PROJECT_NAME)
             projects_response = get_project_team(project_name=project_name)
             command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
@@ -3234,7 +3221,6 @@ def main():
             )
 
         elif command == "wiz-copy-to-forensics-account":
-            demisto_args = demisto.args()
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             copy_mutation_response = copy_to_forensics_account(resource_id=resource_id)
             command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
@@ -3244,13 +3230,13 @@ def main():
             return_results(get_mapping_fields_command())
 
         elif command == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(demisto.args()))
+            return_results(get_modified_remote_data_command(demisto_args))
 
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(demisto.args()))
+            return_results(get_remote_data_command(demisto_args))
 
         elif command == "update-remote-system":
-            return_results(update_remote_system_command(demisto.args()))
+            return_results(update_remote_system_command(demisto_args))
 
         else:
             raise Exception("Unrecognized command: " + command)
