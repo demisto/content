@@ -2123,7 +2123,7 @@ List all existing Mimecast blocked sender policies.
 ***
 Create a Blocked Sender Policy, which can be used to manage a combination of sender and recipient restrictions.
 
-### Prerequisite
+#### Prerequisite
 
 In order to successfully use this endpoint the role assigned to the app must have at least the following level of application permissions granted Gateway | Policies | Edit.
 
