@@ -2297,14 +2297,14 @@ def search_assets_command(client: Client, args):
     raw_response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
     # Remove "xdm__asset__" and "xdm__" prefix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
-    
+
     # In order to prevent BC after migrate to private api - add the related issues and cases to the response as they were in the old API response
     for asset in response:
         asset["related_issues.critical_issues"] = asset.get("issues_critical", [])
         asset["related_issues.issues_breakdown"] = asset.get("issues_breakdown", [])
         asset["related_cases.critical_cases"] = asset.get("cases_critical", [])
         asset["related_cases.cases_breakdown"] = asset.get("cases_breakdown", [])
-        
+
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",

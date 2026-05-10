@@ -750,13 +750,29 @@ def test_search_assets_command_success(mocker):
     # Mock client.get_webapp_data (replaces the old client.search_assets)
     mock_reply = {
         "DATA": [
-            {"xdm.asset.id": "asset-1", "xdm.asset.name": "Server-1", "xdm.asset.type.name": "server"},
-            {"xdm.asset.id": "asset-2", "xdm.asset.name": "Server-2", "xdm.asset.type.name": "server"},
+            {"xdm__asset__id": "asset-1", "xdm__asset__name": "Server-1", "xdm__asset__type__name": "server"},
+            {"xdm__asset__id": "asset-2", "xdm__asset__name": "Server-2", "xdm__asset__type__name": "server"},
         ]
     }
     expected_reply = [
-        {"id": "asset-1", "name": "Server-1", "type.name": "server"},
-        {"id": "asset-2", "name": "Server-2", "type.name": "server"},
+        {
+            "id": "asset-1",
+            "name": "Server-1",
+            "type__name": "server",
+            "related_issues.critical_issues": [],
+            "related_issues.issues_breakdown": [],
+            "related_cases.critical_cases": [],
+            "related_cases.cases_breakdown": [],
+        },
+        {
+            "id": "asset-2",
+            "name": "Server-2",
+            "type__name": "server",
+            "related_issues.critical_issues": [],
+            "related_issues.issues_breakdown": [],
+            "related_cases.critical_cases": [],
+            "related_cases.cases_breakdown": [],
+        },
     ]
     mock_get_webapp_data = mocker.patch.object(
         mock_client,
@@ -6328,25 +6344,34 @@ def test_core_list_endpoints_command_error_handling(mocker):
 
 
 def test_normalize_key_with_xdm_asset_prefix():
-    """Test normalization of keys with 'xdm.asset.' prefix."""
+    """Test normalization of keys with 'xdm__asset__' double-underscore prefix."""
     from CortexPlatformCore import normalize_key
 
-    assert normalize_key("xdm.asset.name") == "name"
-    assert normalize_key("xdm.asset.id") == "id"
-    assert normalize_key("xdm.asset.type") == "type"
+    assert normalize_key("xdm__asset__name") == "name"
+    assert normalize_key("xdm__asset__id") == "id"
+    assert normalize_key("xdm__asset__type") == "type"
 
-    assert normalize_key("xdm.asset.type.name") == "type.name"
-    assert normalize_key("xdm.asset.group.id") == "group.id"
-    assert normalize_key("xdm.asset.provider.region") == "provider.region"
+    assert normalize_key("xdm__asset__type__name") == "type__name"
+    assert normalize_key("xdm__asset__group__id") == "group__id"
+    assert normalize_key("xdm__asset__provider__region") == "provider__region"
+
+    # dot-notation keys are NOT stripped — returned unchanged
+    assert normalize_key("xdm.asset.name") == "xdm.asset.name"
+    assert normalize_key("xdm.asset.type.name") == "xdm.asset.type.name"
 
 
 def test_normalize_key_with_xdm_prefix():
-    """Test normalization of keys with 'xdm.' prefix (but not 'xdm.asset.')."""
+    """Test normalization of keys with 'xdm__' double-underscore prefix (but not 'xdm__asset__')."""
     from CortexPlatformCore import normalize_key
 
-    assert normalize_key("xdm.source.ip") == "source.ip"
-    assert normalize_key("xdm.target.host") == "target.host"
-    assert normalize_key("xdm.event.type") == "event.type"
+    assert normalize_key("xdm__source__ip") == "source__ip"
+    assert normalize_key("xdm__target__host") == "target__host"
+    assert normalize_key("xdm__event__type") == "event__type"
+
+    # dot-notation keys are NOT stripped — returned unchanged
+    assert normalize_key("xdm.source.ip") == "xdm.source.ip"
+    assert normalize_key("xdm.target.host") == "xdm.target.host"
+    assert normalize_key("xdm.event.type") == "xdm.event.type"
 
 
 def test_normalize_key_without_prefix():
