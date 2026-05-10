@@ -27,7 +27,10 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.12.6391686
+dockerimage: demisto/python3:3.12.13.8428455
+dependson:
+  must:
+  - core-isolate-endpoint
 fromversion: 6.1.0
 isInternal: true
 tests:
