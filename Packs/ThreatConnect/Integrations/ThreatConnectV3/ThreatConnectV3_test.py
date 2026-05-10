@@ -754,3 +754,128 @@ def test_get_indicator_reputation_header(mocker, args_type, type_name, indicator
 
     returned_entry = return_results_mock.call_args[0][0]
     assert expected_header_fragment in returned_entry["HumanReadable"]
+
+
+def test_tc_get_indicator_command_not_found(mocker):
+    """
+    Given:
+        - An indicator value that does not exist in ThreatConnect
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - A 'Could not find indicator' note entry is returned
+    """
+    import ThreatConnectV3
+
+    mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=[])
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=({}, []))
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "1.2.3.4"})
+
+    returned_entry = return_results_mock.call_args[0][0]
+    assert returned_entry["ContentsFormat"] == formats["text"]
+    assert "Could not find indicator: 1.2.3.4" in returned_entry["Contents"]
+
+
+def test_tc_get_indicator_command_found(mocker):
+    """
+    Given:
+        - An indicator value that exists in ThreatConnect (by summary)
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - All results are aggregated into a single list passed to return_results
+        - The main entry contains the indicator table in HumanReadable
+    """
+    import ThreatConnectV3
+
+    indicator_response = [
+        {
+            "id": 12345,
+            "ownerName": "MyOrg",
+            "dateAdded": "2023-01-01T00:00:00Z",
+            "webLink": "https://app.threatconnect.com/auth/indicators/details/address.xhtml?address=1.2.3.4",
+            "type": "Address",
+            "lastModified": "2023-06-01T00:00:00Z",
+            "rating": 4.0,
+            "confidence": 75,
+            "summary": "1.2.3.4",
+            "tags": {"data": [{"name": "malicious"}]},
+            "attributes": {"data": [{"type": "Description", "value": "Bad IP"}]},
+            "associatedGroups": {"data": [{"id": 99, "name": "Threat Group"}]},
+            "associatedIndicators": {"data": [{"id": 88, "summary": "evil.com"}]},
+            "observations": [{"count": 5, "dateObserved": "2023-05-01T00:00:00Z"}],
+        }
+    ]
+    ec = {
+        "TC.Indicator(val.ID && val.ID === obj.ID)": [
+            {
+                "ID": 12345,
+                "Name": "1.2.3.4",
+                "Type": "Address",
+                "Owner": "MyOrg",
+                "Rating": 4,
+                "Confidence": 75,
+            }
+        ]
+    }
+    human_readable = [{"ID": 12345, "Name": "1.2.3.4", "Type": "Address"}]
+
+    mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=indicator_response)
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=(ec, human_readable))
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "1.2.3.4"})
+
+    # return_results should be called once with a list of all results
+    return_results_mock.assert_called_once()
+    results = return_results_mock.call_args[0][0]
+    assert isinstance(results, list)
+
+    # First entry is the main indicator table
+    main_entry = results[0]
+    assert "ThreatConnect indicator for: 1.2.3.4" in main_entry["HumanReadable"]
+    assert main_entry["EntryContext"] == ec
+
+    # Remaining entries are CommandResults for associated data
+    readable_outputs = [r.readable_output for r in results[1:]]
+    assert any("Associated Groups" in ro for ro in readable_outputs)
+    assert any("Associated Indicators" in ro for ro in readable_outputs)
+    assert any("Tags" in ro for ro in readable_outputs)
+    assert any("Attributes" in ro for ro in readable_outputs)
+    assert any("Observations" in ro for ro in readable_outputs)
+
+
+def test_tc_get_indicator_command_by_id(mocker):
+    """
+    Given:
+        - A numeric indicator ID
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - tc_get_indicators is called with indicator_id set (not summary)
+    """
+    import ThreatConnectV3
+
+    indicator_response = [
+        {
+            "id": 99999,
+            "ownerName": "MyOrg",
+            "dateAdded": "2023-01-01T00:00:00Z",
+            "type": "Address",
+            "summary": "5.6.7.8",
+        }
+    ]
+    ec = {"TC.Indicator(val.ID && val.ID === obj.ID)": [{"ID": 99999, "Name": "5.6.7.8"}]}
+    human_readable = [{"ID": 99999, "Name": "5.6.7.8"}]
+
+    get_indicators_mock = mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=indicator_response)
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=(ec, human_readable))
+    mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "99999"})
+
+    call_kwargs = get_indicators_mock.call_args[1]
+    assert call_kwargs.get("indicator_id") == "99999"
+    assert call_kwargs.get("summary") == ""
