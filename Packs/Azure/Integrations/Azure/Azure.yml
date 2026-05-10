@@ -238,16 +238,16 @@ script:
       description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
-      description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
+      description: For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges
-      description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
+      description: For multiple ports, a list of ports. For a single port, sourcePortRange is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
-      description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
+      description: For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges
-      description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
+      description: For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead.
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
       description: The source address.
@@ -666,25 +666,25 @@ script:
         - Container
         - None
     outputs:
-    - contextPath: Azure.Storage.Container.id
+    - contextPath: Azure.Storage.BlobContainers.id
       description: Fully qualified resource ID for the resource.
       type: String
-    - contextPath: Azure.Storage.Container.name
+    - contextPath: Azure.Storage.BlobContainers.name
       description: The name of the resource.
       type: String
-    - contextPath: Azure.Storage.Container.type
+    - contextPath: Azure.Storage.BlobContainers.type
       description: The resource type.
       type: String
-    - contextPath: Azure.Storage.Container.properties.metadata
+    - contextPath: Azure.Storage.BlobContainers.properties.metadata
       description: A name-value pair to associate with the container as metadata.
       type: String
-    - contextPath: Azure.Storage.Container.properties.publicAccess
+    - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
       description: Specifies whether data in the container may be accessed publicly and the access level.
       type: String
-    - contextPath: Azure.Storage.Container.properties.hasImmutabilityPolicy
+    - contextPath: Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy
       description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
       type: Boolean
-    - contextPath: Azure.Storage.Container.properties.hasLegalHold
+    - contextPath: Azure.Storage.BlobContainers.properties.hasLegalHold
       description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
       type: Boolean
 
@@ -2387,7 +2387,7 @@ script:
       description: Whether purge protection is enabled for this key vault.
       type: Boolean
     - contextPath: Azure.KeyVault.Vault.properties.enableRbacAuthorization
-      description: Whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions.
+      description: Whether Azure Key Vault uses Role Based Access Control, RBAC, for authorization of data actions.
       type: Boolean
     - contextPath: Azure.KeyVault.Vault.properties.vaultUri
       description: The URI of the vault for performing operations on keys and secrets.
@@ -3863,13 +3863,13 @@ script:
     outputs:
     - contextPath: Azure.Compute.VirtualMachines.name
       description: Name of the VM that was started.
-      type: string
+      type: String
     - contextPath: Azure.Compute.VirtualMachines.resourceGroup
       description: Resource group the VM resides in.
-      type: string
+      type: String
     - contextPath: Azure.Compute.VirtualMachines.powerState
       description: Whether the VM instance is powered on or off.
-      type: string
+      type: String
   - name: azure-vm-instance-power-off
     description: Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off.
     execution: true

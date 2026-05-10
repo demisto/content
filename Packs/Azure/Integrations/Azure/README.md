@@ -1909,17 +1909,17 @@ Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource Group to which the virtual machine belongs. | Required |
-| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | Resource Group to which the virtual machine belongs. | Required | 
+| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.VirtualMachines.name | string | Name of the VM that was started. |
-| Azure.Compute.VirtualMachines.resourceGroup | string | Resource group the VM resides in. |
-| Azure.Compute.VirtualMachines.powerState | string | Whether the VM instance is powered on or off. |
+| Azure.Compute.VirtualMachines.name | String | Name of the VM that was started. | 
+| Azure.Compute.VirtualMachines.resourceGroup | String | Resource group the VM resides in. | 
+| Azure.Compute.VirtualMachines.powerState | String | Whether the VM instance is powered on or off. | 
 
 ### azure-cosmosdb-db-account-update
 
@@ -2001,34 +2001,34 @@ Updates a key vault in the specified subscription. The required permissions are:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | Key Vault name. | Required |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The name of the resource group. | Required |
-| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional |
-| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional |
+| vault_name | Key Vault name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional | 
+| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.KeyVault.Vault.id | String | Resource ID. |
-| Azure.KeyVault.Vault.name | String | Key Vault name. |
-| Azure.KeyVault.Vault.type | String | Resource type in Azure. |
-| Azure.KeyVault.Vault.location | String | Key Vault location. |
-| Azure.KeyVault.Vault.tags | unknown | Resource tags. |
-| Azure.KeyVault.Vault.properties.sku | String | SKU details. |
-| Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
-| Azure.KeyVault.Vault.properties.accessPolicies | Unknown | An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. |
-| Azure.KeyVault.Vault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. |
-| Azure.KeyVault.Vault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. |
-| Azure.KeyVault.Vault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. |
-| Azure.KeyVault.Vault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. |
-| Azure.KeyVault.Vault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. |
-| Azure.KeyVault.Vault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. |
-| Azure.KeyVault.Vault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. |
-| Azure.KeyVault.Vault.properties.provisioningState | String | The current provisioning state. |
-| Azure.KeyVault.Vault.properties.privateEndpointConnections | unknown | List of private endpoint connections associated with the key vault. |
-| Azure.KeyVault.Vault.properties.networkAcls | Unknown | Rules governing the accessibility of the key vault from specific network locations. |
+| Azure.KeyVault.Vault.id | String | Resource ID. | 
+| Azure.KeyVault.Vault.name | String | Key Vault name. | 
+| Azure.KeyVault.Vault.type | String | Resource type in Azure. | 
+| Azure.KeyVault.Vault.location | String | Key Vault location. | 
+| Azure.KeyVault.Vault.tags | Unknown | Resource tags. | 
+| Azure.KeyVault.Vault.properties.sku | String | SKU details. | 
+| Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. | 
+| Azure.KeyVault.Vault.properties.accessPolicies | Unknown | An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. | 
+| Azure.KeyVault.Vault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. | 
+| Azure.KeyVault.Vault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. | 
+| Azure.KeyVault.Vault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. | 
+| Azure.KeyVault.Vault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. | 
+| Azure.KeyVault.Vault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. | 
+| Azure.KeyVault.Vault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control, RBAC, for authorization of data actions. | 
+| Azure.KeyVault.Vault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. | 
+| Azure.KeyVault.Vault.properties.provisioningState | String | The current provisioning state. | 
+| Azure.KeyVault.Vault.properties.privateEndpointConnections | Unknown | List of private endpoint connections associated with the key vault. | 
+| Azure.KeyVault.Vault.properties.networkAcls | Unknown | Rules governing the accessibility of the key vault from specific network locations. | 
 
 ### azure-rm-resource-groups-list
 
@@ -2353,10 +2353,10 @@ Update a security rule. If one does not exist, it will be created. Required perm
 | Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. |
 | Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. |
 | Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
-| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, sourcePortRange is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead. |
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead. |
 | Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. |
 | Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. |
 | Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
@@ -2481,25 +2481,25 @@ Updates container properties as specified in request body. Properties not mentio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group name. | Required |
-| account_name | The storage account name. | Required |
-| container_name | The container name. | Required |
-| default_encryption_scope | Uses the specified encryption scope by default for all writes to the container. | Optional |
-| deny_encryption_scope_override | Blocks overriding the container’s default encryption scope. Possible values are: true, false. | Optional |
-| public_access | Specifies the access level. Possible values are: Blob, Container, None. | Optional |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group name. | Required | 
+| account_name | The storage account name. | Required | 
+| container_name | The container name. | Required | 
+| default_encryption_scope | Uses the specified encryption scope by default for all writes to the container. | Optional | 
+| deny_encryption_scope_override | Blocks overriding the container’s default encryption scope. Possible values are: true, false. | Optional | 
+| public_access | Specifies the access level. Possible values are: Blob, Container, None. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.Container.id | String | Fully qualified resource ID for the resource. |
-| Azure.Storage.Container.name | String | The name of the resource. |
-| Azure.Storage.Container.type | String | The resource type. |
-| Azure.Storage.Container.properties.metadata | String | A name-value pair to associate with the container as metadata. |
-| Azure.Storage.Container.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
-| Azure.Storage.Container.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
-| Azure.Storage.Container.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+| Azure.Storage.BlobContainers.id | String | Fully qualified resource ID for the resource. | 
+| Azure.Storage.BlobContainers.name | String | The name of the resource. | 
+| Azure.Storage.BlobContainers.type | String | The resource type. | 
+| Azure.Storage.BlobContainers.properties.metadata | String | A name-value pair to associate with the container as metadata. | 
+| Azure.Storage.BlobContainers.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. | 
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. | 
+| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. | 
 
 ### azure-storage-blob-create
 
