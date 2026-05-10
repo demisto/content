@@ -3472,7 +3472,8 @@ def conversation_history() -> None:
     if thread_id:
         demisto.args()["channel_id"] = conversation_id
         demisto.args()["thread_timestamp"] = thread_id
-        return conversation_replies()
+        conversation_replies()
+        return
 
     body = {"channel": conversation_id, "limit": limit}
     if from_time:
