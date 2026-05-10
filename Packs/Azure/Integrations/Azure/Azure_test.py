@@ -3524,6 +3524,55 @@ def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
     assert result.readable_output == "testblob.txt Tags successfully updated."
 
 
+def test_storage_container_blob_tag_set_command_append(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to append tags for a blob.
+    When: The storage_container_blob_tag_set_command function is called with append=True.
+    Then: The function should fetch existing tags, merge them with new tags, and call the client's
+        storage_container_blob_tags_set_request method.
+    """
+    from Azure import storage_container_blob_tag_set_command
+    from CommonServerPython import CommandResults
+
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount",
+        "tags": '{"tag1": "value1", "tag2": "value2"}',
+        "append": "true",
+    }
+
+    # Mock the client's storage_container_blob_tags_set_request method
+    mocker.patch.object(client, "storage_container_blob_tags_set_request")
+
+    # Mock storage_container_blob_tag_get_command to return existing tags
+    mock_get_results = CommandResults(outputs={"Tag": {"existing_tag": "existing_value"}})
+    mocker.patch("Azure.storage_container_blob_tag_get_command", return_value=mock_get_results)
+
+    # Mock create_set_tags_request_body
+    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag><Tag><Key>existing_tag</Key><Value>existing_value</Value></Tag></TagSet></Tags>'  # noqa: E501
+    mocker.patch("Azure.create_set_tags_request_body", return_value=mock_xml_data)
+
+    # Call the function
+    storage_container_blob_tag_set_command(client, mock_params, args)
+
+    # Verify storage_container_blob_tag_get_command was called
+    import Azure
+
+    Azure.storage_container_blob_tag_get_command.assert_called_once_with(client, mock_params, args)
+
+    # Verify create_set_tags_request_body was called with merged tags
+    Azure.create_set_tags_request_body.assert_called_once_with(
+        {"tag1": "value1", "tag2": "value2", "existing_tag": "existing_value"}
+    )
+
+    # Verify client.storage_container_blob_tags_set_request was called with correct parameters
+    client.storage_container_blob_tags_set_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", mock_xml_data, "testaccount"
+    )
+
+
 def test_storage_container_blob_property_get_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to get properties for a blob.

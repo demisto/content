@@ -706,8 +706,8 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 | server_name | Server name. | Required |
 | db_name | Database name. | Required |
 | email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values: "true" and "false". Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
-| resource_group_name | The name of the resource group. | Required |
+| subscription_id | Subscription ID. | Optional |
+| resource_group_name | The name of the resource group. | Optional |
 
 #### Context Output
 
@@ -768,8 +768,8 @@ Updates the properties of an existing Azure Cosmos DB database account. The comm
 | --- | --- | --- |
 | account_name | Cosmos DB database account name. | Required |
 | disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
-| resource_group_name | The name of the resource group. | Required |
+| subscription_id | Subscription ID. | Optional |
+| resource_group_name | The name of the resource group. | Optional |
 
 #### Context Output
 
@@ -916,7 +916,7 @@ There is no context output for this command.
 ### azure-storage-blob-containers-update
 
 ***
-Run this command to update a specific blob container.  The command is deprecated, please use azure-storage-blob-container-update.
+Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
 
 #### Base Command
 
@@ -1847,30 +1847,28 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the virtual machine belongs. | Required |
-| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
-| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group to which the virtual machine belongs. | Required | 
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. |
-| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. |
-| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. |
-| Azure.Compute.VirtualMachines.Size | number | The size of the deployed virtual machine \(in gigabytes\). |
-| Azure.Compute.VirtualMachines.OS | string | The OS running on the given virtual machine. |
-| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
-| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
-| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | Specifies the hardware settings for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
-| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
-| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
-| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
-| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. |
-| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
-| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
+| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. | 
+| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. | 
+| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. | 
+| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. | 
+| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | Specifies the hardware settings for the virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. | 
+| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. | 
+| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. | 
+| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. | 
+| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. | 
+| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. | 
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. | 
 
 ### azure-compute-vm-power-off
 
@@ -2079,32 +2077,32 @@ Updates a database's security alert policy. The required permissions are: Micros
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| server_name | Server name. | Required |
-| db_name | Database name. | Required |
-| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
-| resource_group_name | The name of the resource group. | Required |
+| server_name | Server name. | Required | 
+| db_name | Database name. | Required | 
+| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional | 
+| subscription_id | Subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.SqlDB.SecurityAlertPolicies.kind | String | Kind of threat policy. |
-| Azure.SqlDB.SecurityAlertPolicies.location | String | Threat policy location. |
-| Azure.SqlDB.SecurityAlertPolicies.id | String | Threat policy ID. |
-| Azure.SqlDB.SecurityAlertPolicies.name | String | Threat policy name. |
-| Azure.SqlDB.SecurityAlertPolicies.type | String | Threat policy type. |
-| Azure.SqlDB.SecurityAlertPolicies.state | String | Threat policy state. |
-| Azure.SqlDB.SecurityAlertPolicies.creationTime | String | Threat policy creation time. |
-| Azure.SqlDB.SecurityAlertPolicies.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. |
-| Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. |
-| Azure.SqlDB.SecurityAlertPolicies.storageEndpoint | String | Threat Detection audit storage account. |
-| Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins | Boolean | Email accounts administrators who the alert is sent to. |
-| Azure.SqlDB.SecurityAlertPolicies.emailAddresses | String | List of email addresses to which the alert is sent. |
-| Azure.SqlDB.SecurityAlertPolicies.disabledAlerts | String | List of alerts that are disabled, or an empty string if no alerts are disabled. |
-| Azure.SqlDB.SecurityAlertPolicies.useServerDefault | unknown | Whether to use the default server policy. |
-| Azure.SqlDB.SecurityAlertPolicies.databaseName | String | The name of the database that the threat policy is related to. |
-| Azure.SqlDB.SecurityAlertPolicies.serverName | String | The name of server that the threat policy is related to. |
+| Azure.SqlDB.SecurityAlertPolicies.id | String | Threat policy ID. | 
+| Azure.SqlDB.SecurityAlertPolicies.name | String | Threat policy name. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.state | String | Specifies the state of the policy, whether it is enabled or disabled or a policy has not been applied yet on the specific database. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.creationTime | String | Specifies the UTC creation time of the policy. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays | Number | Specifies the number of days to keep in the Threat Detection audit logs. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.storageAccountAccessKey | String | Specifies the identifier key of the Threat Detection audit storage account. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint | String | Specifies the blob storage endpoint. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins | Boolean | Specifies that the alert is sent to the account administrators. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses | String | Specifies an array of e-mail addresses to which the alert is sent. | 
+| Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts | Unknown | Specifies an array of alerts that are disabled. | 
+| Azure.SqlDB.SecurityAlertPolicies.systemData.createdAt | Unknown | The timestamp of resource creation \(UTC\). | 
+| Azure.SqlDB.SecurityAlertPolicies.systemData.createdBy | Unknown | The identity that created the resource. | 
+| Azure.SqlDB.SecurityAlertPolicies.systemData.createdByType | Unknown | The type of identity that created the resource. | 
+| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedAt | Unknown | The timestamp of resource last modification \(UTC\). | 
+| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedBy | Unknown | The identity that last modified the resource. | 
+| Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedByType | Unknown | The type of identity that last modified the resource. | 
 
 ### azure-vn-network-interfaces-list
 

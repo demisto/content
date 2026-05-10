@@ -3024,7 +3024,7 @@ def storage_container_blob_tag_get_command(client: AzureClient, params: dict, ar
         outputs["Blob"]["ContainerName"] = outputs.pop("name")
         outputs = outputs.get("Blob", {})
         outputs_prefix = "Azure.Storage.Blob"
-        demisto.debug(f"The new {command=} name was used, updated the outputs accordingly.")
+        demisto.debug(f"The {command=} name was used, updated the outputs accordingly.")
 
     return CommandResults(
         readable_output=readable_output,
@@ -3081,7 +3081,7 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
 
     if append_tags:
         results = storage_container_blob_tag_get_command(client, params, args)
-        original_tags = results.outputs["Blob"]["Tag"]
+        original_tags = results.outputs["Tag"]
         tags.update(original_tags)
 
     xml_data = create_set_tags_request_body(tags)
@@ -4912,7 +4912,7 @@ def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
     extra_commands = [
         "azure-storage-blob-property-get",
         "azure-storage-blob-property-set",
-        "azure-storage-blob-property-get",
+        "azure-storage-blob-tag-get",
         "azure-storage-blob-create",
         "azure-storage-blob-get",
         "azure-storage-blob-tag-set",

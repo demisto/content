@@ -900,7 +900,7 @@ script:
       type: String
     - contextPath: File.MD5
       description: The MD5 hash of the file.
-      type: Unknown
+      type: String
     - contextPath: File.Extension
       description: The file extension.
       type: String
@@ -2361,6 +2361,7 @@ script:
       type: String
     - contextPath: Azure.KeyVault.Vault.tags
       description: Resource tags.
+      type: Unknown
     - contextPath: Azure.KeyVault.Vault.properties.sku
       description: SKU details.
       type: String
@@ -2396,6 +2397,7 @@ script:
       type: String
     - contextPath: Azure.KeyVault.Vault.properties.privateEndpointConnections
       description: List of private endpoint connections associated with the key vault.
+      type: Unknown
     - contextPath: Azure.KeyVault.Vault.properties.networkAcls
       description: Rules governing the accessibility of the key vault from specific network locations.
       type: Unknown
@@ -2491,53 +2493,54 @@ script:
       name: resource_group_name
       required: true
     outputs:
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.kind
-      description: Kind of threat policy.
-      type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.location
-      description: Threat policy location.
-      type: String
     - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
       description: Threat policy ID.
       type: String
     - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
       description: Threat policy name.
       type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.type
-      description: Threat policy type.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.state
+      description: Specifies the state of the policy, whether it is enabled or disabled or a policy has not been applied yet on the specific database.
       type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.state
-      description: Threat policy state.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.creationTime
+      description: Specifies the UTC creation time of the policy.
       type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.creationTime
-      description: Threat policy creation time.
-      type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.retentionDays
-      description: Number of days to keep in the Threat Detection audit logs.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays
+      description: Specifies the number of days to keep in the Threat Detection audit logs.
       type: Number
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey
-      description: The identifier key of the Threat Detection audit storage account.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.storageAccountAccessKey
+      description: Specifies the identifier key of the Threat Detection audit storage account.
       type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageEndpoint
-      description: Threat Detection audit storage account.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint
+      description: Specifies the blob storage endpoint.
       type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins
-      description: Email accounts administrators who the alert is sent to.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins
+      description: Specifies that the alert is sent to the account administrators.
       type: Boolean
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAddresses
-      description: List of email addresses to which the alert is sent.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses
+      description: Specifies an array of e-mail addresses to which the alert is sent.
       type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.disabledAlerts
-      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
-      type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.useServerDefault
-      description: Whether to use the default server policy.
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.databaseName
-      description: The name of the database that the threat policy is related to.
-      type: String
-    - contextPath: Azure.SqlDB.SecurityAlertPolicies.serverName
-      description: The name of server that the threat policy is related to.
-      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts
+      description: Specifies an array of alerts that are disabled.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.createdAt
+      description: The timestamp of resource creation (UTC).
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.createdBy
+      description: The identity that created the resource.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.createdByType
+      description: The type of identity that created the resource.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedAt
+      description: The timestamp of resource last modification (UTC).
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedBy
+      description: The identity that last modified the resource.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedByType
+      description: The type of identity that last modified the resource.
+      type: Unknown
   - arguments:
     - description: Server name.
       name: server_name
@@ -2758,6 +2761,7 @@ script:
       type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.backupPolicy
       description: The policy for taking backups on an account.
+      type: Unknown
     - contextPath: Azure.CosmosDB.DBAccounts.properties.capabilities
       description: List of Cosmos DB capabilities for the account.
       type: Unknown
@@ -4030,12 +4034,6 @@ script:
       type: string
     - contextPath: Azure.Compute.VirtualMachines.location
       description: The region in which the virtual machine is hosted.
-      type: string
-    - contextPath: Azure.Compute.VirtualMachines.Size
-      description: The size of the deployed virtual machine (in gigabytes).
-      type: number
-    - contextPath: Azure.Compute.VirtualMachines.OS
-      description: The OS running on the given virtual machine.
       type: string
     - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
       description: The provisioning state of the deployed virtual machine.
