@@ -1,0 +1,2064 @@
+"""Determine which YML configuration parameters each command in an integration uses.
+
+This tool combines two complementary analysis methods:
+
+1. **Static analysis (Python AST)** - parses the integration's ``.py`` file
+   without executing it, traces ``params`` from ``demisto.params()`` through
+   ``main()`` and into the per-command handler (up to 3 nesting levels).
+   Resolves Pydantic ``Field(alias=...)`` mappings back to YML names.
+
+2. **Dynamic analysis (sentinel-based)** - prepares the integration with
+   ``demisto-sdk prepare-content``, runs each command once in a child Python
+   process with every YML param set to a unique ``SENTINEL_PARAM_<name>``
+   string, captures all outgoing HTTP traffic with ``capture_proxy``, and
+   greps each request for the sentinels.
+
+Error policy: this analyzer **fails loudly** on every error. The only
+graceful skip is "the analysis method does not apply to this language"
+(e.g., AST analysis on a JavaScript or PowerShell integration logs a skip
+and returns an empty static set). Any other failure — unreadable files,
+real Python ``SyntaxError`` in the integration source, ``prepare-content``
+errors, the dynamic child crashing before issuing any HTTP request,
+dynamic timeouts, or ``demisto-sdk`` not on ``PATH`` when dynamic was
+requested — propagates to the CLI and exits non-zero. ``--static-only``
+skips dynamic analysis explicitly.
+
+Usage::
+
+    python3 connectus/check_command_params.py <integration_path> \\
+        [--commands cmd1 cmd2 ...] \\
+        [--static-only] \\
+        [--ignore-params PARAM [PARAM ...]] \\
+        [--ignore-params-file PATH]
+
+Output schema (single JSON document on stdout)::
+
+    {
+      "integration": "<display name>",
+      "commands": {
+        "<cmd>": ["<param>", ...]   # case-sensitive sorted list
+      },
+      "diagnostics": {              # dynamic-only; omitted under --static-only
+        "<cmd>": {
+          "status": "ok" | "ok_no_capture" | "param_caused_failure"
+                  | "no_data" | "timeout" | "docker_error"
+                  | "module_not_found",
+          "captured_requests": <int>,
+          "failure_excerpt": "<str, optional, max 500 chars>",
+          "failing_params": ["<param>", ...],  # only if param_caused_failure
+          "missing_module": "<str>"            # only if module_not_found
+        }
+      }
+    }
+
+Status enum:
+
+* ``ok`` — command completed (rc=0 OR rc=7 with captures>0), at least one
+  HTTP request was captured by the proxy.
+* ``ok_no_capture`` — command completed cleanly (rc=0) but the proxy saw
+  zero HTTP requests. The command may be a pure local helper, or the
+  seeded params didn't reach an HTTP path.
+* ``param_caused_failure`` — command failed AND the failure message
+  contains one or more ``SENTINEL_PARAM_<name>`` substrings; the matched
+  names are listed in ``failing_params`` (and elevated to relevant for
+  that command in ``commands``).
+* ``no_data`` — command failed but no specific failing param could be
+  identified. ``failure_excerpt`` is still informative.
+* ``timeout`` — child process hit the per-command timeout.
+* ``docker_error`` — Docker invocation itself failed (rc=125/126/127),
+  not the wrapped integration child.
+* ``module_not_found`` — Child process crashed with ``ModuleNotFoundError``.
+  Integration needs a third-party package not present in the runtime image
+  (``demisto/py3-native:8.9.0.114862``). The calling agent must inspect
+  the integration source manually (analogous to JS / PowerShell handling).
+  The missing package name is in ``missing_module``.
+
+The ``diagnostics`` field is internal AI-consumed metadata: it is
+emitted to stdout to aid the calling agent, but the calling agent MUST
+NOT persist it into downstream pipeline data. Under ``--static-only``
+the field is omitted entirely.
+
+``commands`` lists, for each command, the params that are relevant to
+it (case-sensitive, sorted). Params absent from the list (or excluded
+via ``--ignore-params`` / ``--ignore-params-file``) are not relevant or
+were explicitly excluded.
+
+Example::
+
+    {
+      "integration": "QRadar v3",
+      "commands": {
+        "test-module": ["adv_params", "credentials", "url"],
+        "fetch-incidents": ["credentials", "max_fetch", "url"]
+      },
+      "diagnostics": {
+        "test-module": {
+          "status": "param_caused_failure",
+          "captured_requests": 0,
+          "failure_excerpt": "DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params",
+          "failing_params": ["adv_params"]
+        },
+        "fetch-incidents": {"status": "ok", "captured_requests": 3}
+      }
+    }
+
+All informational messages go to stderr. See
+``connectus/check_command_params_design.md`` for the full design.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import json
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import textwrap
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+# Local import - this script lives next to capture_proxy.py.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from capture_proxy import CaptureProxy  # noqa: E402
+
+
+# --------------------------------------------------------------------------
+# Constants
+# --------------------------------------------------------------------------
+
+PARAMS_VAR_ALIASES = {"params", "integration_params", "config", "PARAMS"}
+URL_PARAM_NAMES = {"url", "server", "base_url", "host", "endpoint"}
+SENTINEL_PREFIX = "SENTINEL_PARAM_"
+DEFAULT_DYNAMIC_TIMEOUT_S = 30
+COMMON_SERVER_SENTINEL = "class DemistoException"
+COMMON_SERVER_PYTHON_REL = "Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"
+DEMISTOMOCK_REL_CANDIDATES = (
+    "Packs/Base/Scripts/CommonServerPython/demistomock.py",
+    "Tests/demistomock/demistomock.py",
+    "demistomock/demistomock.py",
+)
+# Pinned to a specific build of the demisto/py3-native image. The analyzer
+# always runs the per-command child in this image (unless overridden via
+# ``--docker-image`` for testing/debugging). If an integration needs a
+# different runtime (e.g., a third-party Python package not present here),
+# the child crashes with ``ModuleNotFoundError`` and the analyzer reports
+# ``status: module_not_found`` so the calling agent can handle it manually.
+DEFAULT_DOCKER_IMAGE = "demisto/py3-native:8.9.0.114862"
+DOCKER_DAEMON_RC = 125  # `docker run` could not start the container
+DOCKER_NOT_EXECUTABLE_RC = 126
+DOCKER_CMD_NOT_FOUND_RC = 127
+
+
+# --------------------------------------------------------------------------
+# Filesystem helpers
+# --------------------------------------------------------------------------
+
+
+def find_integration_files(integration_path: Path) -> tuple[Path, Path | None]:
+    """Locate the integration YML and (optional) Python source.
+
+    Returns ``(yml_path, py_path_or_None)``. Raises ``FileNotFoundError`` if
+    no YML is found.
+    """
+    if not integration_path.is_dir():
+        raise FileNotFoundError(f"Integration path is not a directory: {integration_path}")
+    ymls = sorted(p for p in integration_path.glob("*.yml") if not p.name.endswith("_test.yml"))
+    if not ymls:
+        raise FileNotFoundError(f"No .yml file found in {integration_path}")
+    yml_path = ymls[0]
+    pys = [
+        p for p in integration_path.glob("*.py")
+        if not p.name.endswith("_test.py") and not p.name.startswith("test_")
+    ]
+    py_path = pys[0] if pys else None
+    return yml_path, py_path
+
+
+def load_yml(yml_path: Path) -> dict[str, Any]:
+    """Load and return the integration YML as a dict."""
+    with yml_path.open("r", encoding="utf-8") as fh:
+        return yaml.safe_load(fh) or {}
+
+
+# --------------------------------------------------------------------------
+# YML interrogation
+# --------------------------------------------------------------------------
+
+
+def get_yml_params(yml_data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the list of param dicts from the YML configuration block."""
+    config = yml_data.get("configuration") or []
+    return [p for p in config if isinstance(p, dict) and p.get("name")]
+
+
+def get_param_names(yml_data: dict[str, Any]) -> list[str]:
+    return [p["name"] for p in get_yml_params(yml_data)]
+
+
+def discover_commands(yml_data: dict[str, Any]) -> list[str]:
+    """Discover all commands the integration supports from its YML."""
+    script = yml_data.get("script") or {}
+    commands: list[str] = ["test-module"]
+    for entry in script.get("commands") or []:
+        if isinstance(entry, dict) and entry.get("name"):
+            commands.append(entry["name"])
+    if script.get("isfetch"):
+        commands.append("fetch-incidents")
+    if script.get("isfetchevents"):
+        commands.append("fetch-events")
+    if script.get("isRemoteSyncIn"):
+        commands.extend(["get-remote-data", "get-modified-remote-data"])
+    if script.get("isRemoteSyncOut"):
+        commands.append("update-remote-system")
+    if script.get("longRunning"):
+        commands.append("long-running-execution")
+    # de-dup, preserve order
+    seen: set[str] = set()
+    out: list[str] = []
+    for c in commands:
+        if c not in seen:
+            seen.add(c)
+            out.append(c)
+    return out
+
+
+def display_name(yml_data: dict[str, Any], fallback: str) -> str:
+    return yml_data.get("display") or yml_data.get("name") or fallback
+
+
+# --------------------------------------------------------------------------
+# Ignore-list plumbing
+# --------------------------------------------------------------------------
+
+
+def load_ignore_params(inline: list[str] | None, file_path: Path | None) -> set[str]:
+    """Union the inline ``--ignore-params`` list with a file-supplied list."""
+    out: set[str] = set(inline or [])
+    if file_path is not None:
+        if not file_path.is_file():
+            raise FileNotFoundError(f"--ignore-params-file not found: {file_path}")
+        for raw in file_path.read_text(encoding="utf-8").splitlines():
+            line = raw.split("#", 1)[0].strip()
+            if line:
+                out.add(line)
+    return out
+
+
+# --------------------------------------------------------------------------
+# Static analysis (AST)
+# --------------------------------------------------------------------------
+
+
+class _ParamAccessVisitor(ast.NodeVisitor):
+    """Collects ``params.get('X')`` / ``params['X']`` / ``params.X`` accesses."""
+
+    def __init__(self, params_var_names: set[str], pydantic_aliases: dict[str, str]):
+        self._vars = params_var_names
+        self._aliases = pydantic_aliases
+        self.found: set[str] = set()
+
+    def visit_Call(self, node: ast.Call) -> None:
+        # params.get("X")  or  params.get("X", default)
+        func = node.func
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "get"
+            and isinstance(func.value, ast.Name)
+            and func.value.id in self._vars
+            and node.args
+        ):
+            arg0 = node.args[0]
+            if isinstance(arg0, ast.Constant) and isinstance(arg0.value, str):
+                self.found.add(arg0.value)
+        self.generic_visit(node)
+
+    def visit_Subscript(self, node: ast.Subscript) -> None:
+        # params["X"]
+        if isinstance(node.value, ast.Name) and node.value.id in self._vars:
+            sl = node.slice
+            if isinstance(sl, ast.Constant) and isinstance(sl.value, str):
+                self.found.add(sl.value)
+        self.generic_visit(node)
+
+    def visit_Attribute(self, node: ast.Attribute) -> None:
+        # params.X  -> if Pydantic alias known, resolve to YML name; else raw attr.
+        if isinstance(node.value, ast.Name) and node.value.id in self._vars:
+            attr = node.attr
+            # Skip method-y attributes that are clearly not params.
+            if attr not in {"get", "items", "keys", "values", "pop", "update", "setdefault", "copy"}:
+                self.found.add(self._aliases.get(attr, attr))
+        self.generic_visit(node)
+
+
+def find_pydantic_aliases(tree: ast.AST) -> dict[str, str]:
+    """Build {python_attr_name: yml_alias} from ``Field(alias="...")`` calls."""
+    aliases: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ClassDef):
+            continue
+        for stmt in node.body:
+            target_name = _annassign_target(stmt)
+            if target_name is None:
+                continue
+            value = getattr(stmt, "value", None)
+            alias = _extract_field_alias(value)
+            if alias:
+                aliases[target_name] = alias
+    return aliases
+
+
+def _annassign_target(stmt: ast.stmt) -> str | None:
+    if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name):
+        return stmt.target.id
+    if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+        return stmt.targets[0].id
+    return None
+
+
+def _extract_field_alias(value: ast.AST | None) -> str | None:
+    if not isinstance(value, ast.Call):
+        return None
+    func = value.func
+    func_name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", None)
+    if func_name != "Field":
+        return None
+    for kw in value.keywords:
+        if kw.arg == "alias" and isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
+            return kw.value.value
+    return None
+
+
+def build_function_map(tree: ast.AST) -> dict[str, ast.FunctionDef]:
+    """Map top-level + nested function names to their FunctionDef nodes."""
+    out: dict[str, ast.FunctionDef] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            # First definition wins; ignore later overrides.
+            out.setdefault(node.name, node)  # type: ignore[arg-type]
+    return out
+
+
+def find_main(func_map: dict[str, ast.FunctionDef]) -> ast.FunctionDef | None:
+    return func_map.get("main")
+
+
+def find_params_var(main_fn: ast.FunctionDef) -> str | None:
+    """Find the variable assigned from ``demisto.params()``."""
+    for stmt in ast.walk(main_fn):
+        if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+            v = stmt.value
+            if (
+                isinstance(v, ast.Call)
+                and isinstance(v.func, ast.Attribute)
+                and v.func.attr == "params"
+                and isinstance(v.func.value, ast.Name)
+                and v.func.value.id == "demisto"
+            ):
+                return stmt.targets[0].id
+    return None
+
+
+def find_command_dispatch_line(main_fn: ast.FunctionDef) -> int:
+    """Return the line number of the first command-dispatch construct."""
+    for node in ast.walk(main_fn):
+        if _is_dispatch_node(node):
+            return getattr(node, "lineno", 10**9)
+    return 10**9  # no dispatch found -> entire function is "pre-dispatch"
+
+
+def _is_dispatch_node(node: ast.AST) -> bool:
+    if isinstance(node, ast.If):
+        # if command == "...":  or  if "..." in commands:
+        return _refs_command(node.test)
+    if isinstance(node, ast.Match):
+        return _refs_command(node.subject)
+    if isinstance(node, ast.Assign):
+        if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            if node.targets[0].id == "commands" and isinstance(node.value, ast.Dict):
+                return True
+    return False
+
+
+def _refs_command(node: ast.AST | None) -> bool:
+    if node is None:
+        return False
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Name) and sub.id == "command":
+            return True
+        if isinstance(sub, ast.Call):
+            f = sub.func
+            if isinstance(f, ast.Attribute) and f.attr == "command":
+                return True
+    return False
+
+
+def collect_pre_dispatch_params(
+    main_fn: ast.FunctionDef,
+    params_vars: set[str],
+    aliases: dict[str, str],
+    dispatch_line: int,
+) -> set[str]:
+    """Scope 1: collect param accesses in main() *before* dispatch."""
+    visitor = _ParamAccessVisitor(params_vars, aliases)
+    for stmt in main_fn.body:
+        if stmt.lineno >= dispatch_line:
+            break
+        visitor.visit(stmt)
+    return visitor.found
+
+
+def find_command_handler_calls(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
+    """Find all Call nodes that are reached when ``command`` matches.
+
+    Supports ``if/elif`` chains, ``match/case``, and dict-dispatch
+    ``commands = {"...": handler}``.
+    """
+    calls: list[ast.Call] = []
+    calls.extend(_find_in_if_chain(main_fn, command))
+    calls.extend(_find_in_match(main_fn, command))
+    calls.extend(_find_in_dict_dispatch(main_fn, command))
+    return calls
+
+
+def _find_in_if_chain(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
+    out: list[ast.Call] = []
+    for node in ast.walk(main_fn):
+        if not isinstance(node, ast.If):
+            continue
+        if _if_test_matches_command(node.test, command):
+            out.extend(_iter_calls(node.body))
+    return out
+
+
+def _if_test_matches_command(test: ast.AST, command: str) -> bool:
+    # command == "X"  or  "X" == command
+    if isinstance(test, ast.Compare) and len(test.ops) == 1 and isinstance(test.ops[0], ast.Eq):
+        left, right = test.left, test.comparators[0]
+        for a, b in ((left, right), (right, left)):
+            if isinstance(a, ast.Name) and a.id == "command" and isinstance(b, ast.Constant) and b.value == command:
+                return True
+    # command in ("X", "Y")
+    if isinstance(test, ast.Compare) and len(test.ops) == 1 and isinstance(test.ops[0], ast.In):
+        if isinstance(test.left, ast.Name) and test.left.id == "command":
+            container = test.comparators[0]
+            if isinstance(container, (ast.Tuple, ast.List, ast.Set)):
+                for elt in container.elts:
+                    if isinstance(elt, ast.Constant) and elt.value == command:
+                        return True
+    return False
+
+
+def _find_in_match(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
+    out: list[ast.Call] = []
+    for node in ast.walk(main_fn):
+        if not isinstance(node, ast.Match):
+            continue
+        for case in node.cases:
+            pattern = case.pattern
+            if isinstance(pattern, ast.MatchValue):
+                v = pattern.value
+                if isinstance(v, ast.Constant) and v.value == command:
+                    out.extend(_iter_calls(case.body))
+    return out
+
+
+def _find_in_dict_dispatch(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
+    """Handle ``commands = {"X": handler_X, ...}; commands[command](...)``."""
+    out: list[ast.Call] = []
+    for node in ast.walk(main_fn):
+        if not (isinstance(node, ast.Assign) and len(node.targets) == 1):
+            continue
+        target = node.targets[0]
+        if not (isinstance(target, ast.Name) and target.id == "commands"):
+            continue
+        if not isinstance(node.value, ast.Dict):
+            continue
+        for key, val in zip(node.value.keys, node.value.values):
+            if isinstance(key, ast.Constant) and key.value == command:
+                # Build a synthetic Call node so the recursion picks up the
+                # named handler function.
+                if isinstance(val, ast.Name):
+                    out.append(ast.Call(func=val, args=[], keywords=[]))
+                elif isinstance(val, ast.Attribute):
+                    out.append(ast.Call(func=val, args=[], keywords=[]))
+    return out
+
+
+def _iter_calls(stmts: list[ast.stmt]) -> list[ast.Call]:
+    out: list[ast.Call] = []
+    for stmt in stmts:
+        for sub in ast.walk(stmt):
+            if isinstance(sub, ast.Call):
+                out.append(sub)
+    return out
+
+
+def trace_params_in_function(
+    fn: ast.FunctionDef,
+    func_map: dict[str, ast.FunctionDef],
+    aliases: dict[str, str],
+    depth: int,
+    visited: set[str],
+) -> set[str]:
+    """Recursively collect param accesses in ``fn`` up to ``depth`` levels deep."""
+    if depth < 0 or fn.name in visited:
+        return set()
+    visited = visited | {fn.name}
+
+    # Determine the params variable name(s) inside this function.
+    sig_params = {a.arg for a in fn.args.args} | {a.arg for a in fn.args.kwonlyargs}
+    candidates = (sig_params & PARAMS_VAR_ALIASES) or {"params"}
+
+    visitor = _ParamAccessVisitor(candidates, aliases)
+    visitor.visit(fn)
+    found = set(visitor.found)
+
+    # Recurse into called functions defined in this module that look like
+    # they receive a params-shaped argument.
+    for call in _iter_calls(fn.body):
+        target_fn = _resolve_call_target(call, func_map)
+        if target_fn is None:
+            continue
+        if not _call_passes_params(call, candidates):
+            continue
+        found |= trace_params_in_function(target_fn, func_map, aliases, depth - 1, visited)
+    return found
+
+
+def _resolve_call_target(call: ast.Call, func_map: dict[str, ast.FunctionDef]) -> ast.FunctionDef | None:
+    func = call.func
+    if isinstance(func, ast.Name):
+        return func_map.get(func.id)
+    if isinstance(func, ast.Attribute):
+        return func_map.get(func.attr)
+    return None
+
+
+def _call_passes_params(call: ast.Call, candidates: set[str]) -> bool:
+    for arg in call.args:
+        if isinstance(arg, ast.Name) and arg.id in candidates:
+            return True
+    for kw in call.keywords:
+        if isinstance(kw.value, ast.Name) and kw.value.id in candidates:
+            return True
+    return False
+
+
+def analyze_static(
+    py_source: str,
+    command: str,
+    language: str | None = None,
+    integration_name: str = "",
+) -> set[str]:
+    """Run scope-1 + scope-2 static analysis for one command. Returns YML names.
+
+    Non-Python integrations (``language`` not in ``{"python", None}``) are
+    the **only** acceptable graceful skip: log a stderr note and return an
+    empty set. Any other failure (including a real ``SyntaxError`` in the
+    integration's ``.py``) propagates to the caller.
+    """
+    if language and language.lower() not in {"python", "python2", "python3"}:
+        print(
+            f"[static] skipping non-Python integration {integration_name!r} "
+            f"(language={language!r}); static analysis is Python-only",
+            file=sys.stderr,
+        )
+        return set()
+    if not py_source:
+        # No .py file at all: nothing to analyze, but this is not a graceful
+        # skip case — caller decides whether that's an error.
+        return set()
+    tree = ast.parse(py_source)  # may raise SyntaxError -> propagate.
+    func_map = build_function_map(tree)
+    main_fn = find_main(func_map)
+    if main_fn is None:
+        return set()
+    aliases = find_pydantic_aliases(tree)
+    params_var = find_params_var(main_fn) or "params"
+    params_vars = {params_var} | PARAMS_VAR_ALIASES
+    dispatch_line = find_command_dispatch_line(main_fn)
+    scope1 = collect_pre_dispatch_params(main_fn, params_vars, aliases, dispatch_line)
+
+    scope2: set[str] = set()
+    handler_calls = find_command_handler_calls(main_fn, command)
+    for call in handler_calls:
+        target = _resolve_call_target(call, func_map)
+        if target is None:
+            continue
+        scope2 |= trace_params_in_function(target, func_map, aliases, depth=2, visited=set())
+
+    return scope1 | scope2
+
+
+# --------------------------------------------------------------------------
+# Dynamic analysis (sentinel-based)
+# --------------------------------------------------------------------------
+
+
+class DynamicPrepError(RuntimeError):
+    """Raised when dynamic preparation cannot produce a runnable unified .py.
+
+    Under the current loud-fail policy this propagates to the CLI; there is
+    no silent fallback to static-only.
+    """
+
+
+class DynamicAnalysisError(RuntimeError):
+    """Raised when the dynamic child crashes in a way we cannot tolerate.
+
+    Specifically: ``rc != 0`` with zero captured HTTP requests, or a child
+    process timeout. A non-zero ``rc`` after at least one captured request
+    is tolerated (the param signal is intact) and does not raise.
+    """
+
+
+def _resolve_repo_root() -> Path:
+    """Best-effort: assume this script is at <repo>/connectus/."""
+    return Path(__file__).resolve().parent.parent
+
+
+def _find_first_existing(rel_paths: tuple[str, ...]) -> Path | None:
+    root = _resolve_repo_root()
+    for rel in rel_paths:
+        candidate = root / rel
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def prepare_unified_content(
+    integration_path: Path, out_dir: Path
+) -> tuple[Path, Path]:
+    """Run ``demisto-sdk prepare-content`` and produce a runnable bundle.
+
+    Writes two files into ``out_dir``:
+
+    * ``unified_integration.py`` — ``CommonServerPython`` + the integration
+      source, ready for the child interpreter to ``exec_module``.
+    * ``mock_dir/demistomock.py`` — our seeded mock that the child reaches
+      via ``import demistomock as demisto``. The child puts ``mock_dir``
+      at the front of ``sys.path`` so this file wins over anything else.
+
+    Returns ``(unified_py_path, mock_dir_path)``. Any failure raises
+    :class:`DynamicPrepError`.
+    """
+    import time as _t
+
+    if shutil.which("demisto-sdk") is None:
+        raise DynamicPrepError(
+            "demisto-sdk not found on PATH; install it or pass --static-only"
+        )
+    yaml_out = out_dir / "unified.yml"
+    cmd = [
+        "demisto-sdk",
+        "prepare-content",
+        "-i",
+        str(integration_path),
+        "-o",
+        str(yaml_out),
+    ]
+    print(f"[dynamic] prepare-content: starting for {integration_path}", file=sys.stderr)
+    _t0 = _t.time()
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    except subprocess.TimeoutExpired as exc:
+        raise DynamicPrepError(f"prepare-content timed out after 120s: {exc}") from exc
+    except FileNotFoundError as exc:
+        raise DynamicPrepError(f"prepare-content failed to launch: {exc}") from exc
+    elapsed = _t.time() - _t0
+    if result.returncode != 0 or not yaml_out.is_file():
+        raise DynamicPrepError(
+            f"prepare-content failed: rc={result.returncode} "
+            f"stderr={result.stderr.strip()[:500]}"
+        )
+    print(
+        f"[dynamic] prepare-content: ok in {elapsed:.1f}s -> {yaml_out.name}",
+        file=sys.stderr,
+    )
+
+    py_source = _extract_python_from_unified_yaml(yaml_out)
+    final_text = _build_runnable_unified(py_source)
+    py_out = out_dir / "unified_integration.py"
+    py_out.write_text(final_text, encoding="utf-8")
+
+    # Write the seeded demistomock.py to a sibling dir. The child puts
+    # this dir at sys.path[0] so ``import demistomock`` resolves here.
+    # We also drop a no-op DemistoClassApiModule.py to override the real
+    # one in Packs/Base/Scripts/CommonServerPython, which would otherwise
+    # do ``demisto = Demisto({})`` and clobber our seeded params.
+    mock_dir = out_dir / "mock"
+    mock_dir.mkdir(exist_ok=True)
+    (mock_dir / "demistomock.py").write_text(_DEMISTOMOCK_TEMPLATE, encoding="utf-8")
+    (mock_dir / "DemistoClassApiModule.py").write_text(
+        _DEMISTO_CLASS_API_MODULE_TEMPLATE, encoding="utf-8"
+    )
+
+    # Sanity check: the unified .py we hand to the child interpreter MUST
+    # parse. If it doesn't, the child would die on import with a SyntaxError
+    # and we'd never know what really happened.
+    try:
+        ast.parse(final_text)
+    except SyntaxError as exc:
+        raise DynamicPrepError(
+            f"unified content is not valid Python: {exc}"
+        ) from exc
+    try:
+        ast.parse(_DEMISTOMOCK_TEMPLATE)
+    except SyntaxError as exc:
+        raise DynamicPrepError(
+            f"demistomock template is not valid Python: {exc}"
+        ) from exc
+    return py_out, mock_dir
+
+
+def _extract_python_from_unified_yaml(yaml_path: Path) -> str:
+    """Pull the integration's Python source out of a unified YAML file.
+
+    ``demisto-sdk prepare-content`` typically nests the source at
+    ``script.script``; older / variant layouts may put it directly under
+    ``script`` (as a string).
+    """
+    with yaml_path.open("r", encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, dict):
+        raise DynamicPrepError(
+            f"prepare-content output is not a YAML mapping: top-level "
+            f"type={type(data).__name__}"
+        )
+    script = data.get("script")
+    if isinstance(script, dict):
+        py = script.get("script")
+        if isinstance(py, str) and py.strip():
+            return py
+        raise DynamicPrepError(
+            f"prepare-content output missing script.script (script keys: "
+            f"{sorted(script.keys())})"
+        )
+    if isinstance(script, str) and script.strip():
+        return script
+    raise DynamicPrepError(
+        f"prepare-content output missing script.script (top-level keys: "
+        f"{sorted(data.keys())})"
+    )
+
+
+def _build_runnable_unified(integration_py: str) -> str:
+    """Prepend ``CommonServerPython`` to the integration source.
+
+    We do NOT prepend demistomock anymore — the parent writes a real
+    ``demistomock.py`` to a temp dir and prepends that dir to ``sys.path``
+    in the child. That way ``import demistomock as demisto`` (which the
+    integration almost always does) deterministically resolves to OUR
+    seeded mock instead of an inline class block whose attributes we'd
+    otherwise have to monkeypatch post-import.
+
+    ``from __future__`` imports must appear at the very top of a file, so
+    we pull every ``from __future__`` line out of both sources and emit
+    them first (deduplicated), followed by the rest of each source.
+    """
+    csp_path = _find_first_existing((COMMON_SERVER_PYTHON_REL,))
+    if csp_path is None:
+        raise DynamicPrepError(
+            f"could not locate CommonServerPython at {COMMON_SERVER_PYTHON_REL}"
+        )
+    sources = [
+        csp_path.read_text(encoding="utf-8"),
+        integration_py,
+    ]
+    future_lines: list[str] = []
+    seen_futures: set[str] = set()
+    cleaned: list[str] = []
+    for src in sources:
+        kept: list[str] = []
+        for line in src.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("from __future__"):
+                if stripped not in seen_futures:
+                    seen_futures.add(stripped)
+                    future_lines.append(stripped)
+                continue
+            kept.append(line)
+        cleaned.append("\n".join(kept))
+    header = "\n".join(future_lines)
+    return (header + "\n" if header else "") + "\n".join(cleaned)
+
+
+# YML param ``type`` integers (Cortex/XSOAR convention).
+YML_TYPE_SHORT_TEXT = 0
+YML_TYPE_ENCRYPTED = 4
+YML_TYPE_BOOL = 8
+YML_TYPE_CREDENTIALS = 9
+YML_TYPE_MULTI_SELECT = 10
+YML_TYPE_SINGLE_SELECT = 12
+YML_TYPE_LONG_TEXT = 13
+YML_TYPE_INCIDENT_TYPE = 14
+YML_TYPE_NUMERIC = 15
+YML_TYPE_CSV = 16
+YML_TYPE_AUTH = 17
+YML_TYPE_MULTI_LINE = 19
+
+
+def _coerce_default_value(raw: Any, yml_type: int | None) -> Any:
+    """Coerce a YML ``defaultvalue`` string to the right Python type."""
+    if raw is None:
+        return None
+    if not isinstance(raw, str):
+        return raw  # already a non-string scalar/list/dict
+    text = raw.strip()
+    if yml_type == YML_TYPE_BOOL:
+        low = text.lower()
+        if low in {"true", "yes", "1"}:
+            return True
+        if low in {"false", "no", "0", ""}:
+            return False
+        return bool(text)
+    if yml_type == YML_TYPE_NUMERIC:
+        try:
+            if "." in text:
+                return float(text)
+            return int(text)
+        except ValueError:
+            return text
+    if yml_type in {YML_TYPE_MULTI_SELECT, YML_TYPE_CSV}:
+        # Most consumers do .split(","); leaving as a CSV string is fine.
+        return text
+    return raw
+
+
+def build_param_values(
+    yml_params: list[dict[str, Any]],
+    proxy_url: str,
+    ignore: set[str],
+) -> tuple[dict[str, Any], dict[str, list[str]], set[str]]:
+    """Build the params dict + sentinel map + non-traceable param set.
+
+    Returns a 3-tuple:
+
+    * ``values`` — the dict to pass to the integration as ``demisto.params()``.
+    * ``sentinels`` — ``{yml_name: [sentinel_string, ...]}``. Each list holds
+      one or more strings to grep captured requests for; a hit on ANY of
+      them counts as the param being relevant. Empty lists are allowed for
+      non-traceable params (booleans, numeric, etc.) and are skipped during
+      detection.
+    * ``non_traceable`` — names of params we sent without a traceable
+      sentinel value. Useful for diagnostics and to make
+      ``detect_sentinel_hits`` deterministic.
+
+    YML param ``type`` drives the value shape (see the design doc table).
+    A YML ``defaultvalue`` overrides the type-based default, but is parsed
+    into the right Python type rather than left as a raw string.
+    """
+    values: dict[str, Any] = {}
+    sentinels: dict[str, list[str]] = {}
+    non_traceable: set[str] = set()
+    for p in yml_params:
+        name = p["name"]
+        # We must STILL send a value for every YML param even if it's on
+        # the ignore list — many integrations read those params at module
+        # import time (e.g. SERVER = demisto.params().get("server")) and
+        # crash if they're missing. The ignore list only suppresses output
+        # reporting, not execution. The trick: don't add an ignored param
+        # to ``sentinels`` so it never participates in the per-command
+        # detection result.
+        ignored = name in ignore
+        yml_type = p.get("type")
+        sentinel = f"{SENTINEL_PREFIX}{name}"
+
+        def _record(value: Any, tokens: list[str], traceable: bool) -> None:
+            values[name] = value
+            if not ignored:
+                sentinels[name] = tokens
+                if not traceable:
+                    non_traceable.add(name)
+
+        is_url = name in URL_PARAM_NAMES
+        if is_url:
+            # URL-shaped param -> point at our proxy, ALWAYS, even if the
+            # YML carries a real default URL like https://api.example.com.
+            # If we honored the default, the integration would issue HTTP
+            # to the real upstream (or fail DNS) instead of hitting our
+            # capture proxy, and we'd see zero captures.
+            _record(proxy_url, [proxy_url], traceable=True)
+            continue
+
+        # Honor YML default first, but coerce to the right Python type so
+        # boolean params don't get sent as the string "true".
+        if "defaultvalue" in p and p["defaultvalue"] is not None:
+            coerced = _coerce_default_value(p["defaultvalue"], yml_type)
+            if isinstance(coerced, str) and len(coerced) >= 6:
+                _record(coerced, [coerced], traceable=True)
+            else:
+                _record(coerced, [], traceable=False)
+            continue
+
+        if yml_type == YML_TYPE_BOOL:
+            _record(True, [], traceable=False)
+            continue
+
+        if yml_type == YML_TYPE_CREDENTIALS:
+            id_sent = f"{sentinel}_identifier"
+            pw_sent = f"{sentinel}_password"
+            _record({"identifier": id_sent, "password": pw_sent},
+                    [id_sent, pw_sent], traceable=True)
+            continue
+
+        if yml_type == YML_TYPE_NUMERIC:
+            _record(1, [], traceable=False)
+            continue
+
+        if yml_type == YML_TYPE_SINGLE_SELECT:
+            options = p.get("options")
+            if isinstance(options, list) and options:
+                first = options[0]
+                if isinstance(first, str) and len(first) >= 4:
+                    _record(first, [first], traceable=True)
+                else:
+                    _record(first, [], traceable=False)
+            else:
+                _record(sentinel, [sentinel], traceable=True)
+            continue
+
+        # Default for: short text, encrypted, multi-select, CSV, long text,
+        # incident type, auth, multi-line, missing/unknown — string sentinel.
+        _record(sentinel, [sentinel], traceable=True)
+    return values, sentinels, non_traceable
+
+
+# Source for ``DemistoClassApiModule.py`` — the unified file does
+# ``from DemistoClassApiModule import *`` near the end of CommonServerPython
+# (around line ~13920). The real DemistoClassApiModule (in
+# Packs/Base/Scripts/CommonServerPython/) imports demistomock and then
+# REASSIGNS ``demisto = Demisto({})`` with an empty context, which
+# clobbers any seeded params we set on our mock. We override it with a
+# no-op module that just keeps our seeded ``demisto`` intact.
+_DEMISTO_CLASS_API_MODULE_TEMPLATE = textwrap.dedent(
+    '''
+    """No-op DemistoClassApiModule that preserves the seeded demisto."""
+    import demistomock as demisto  # noqa: F401
+    # Provide a Demisto class for any ``isinstance(x, Demisto)`` checks but
+    # do NOT reassign ``demisto`` — keep the seeded module-level instance.
+    class Demisto:  # noqa: D401
+        pass
+    '''
+).lstrip()
+
+
+# Source for the on-disk ``demistomock.py`` we drop next to the unified
+# integration. Writing a real .py file (and putting its directory on
+# ``sys.path``) is more robust than monkeypatching ``sys.modules`` because:
+#
+#   * The unified file has ``demistomock.py`` content prepended (lines 1-N
+#     define a ``Demisto`` class and ``demisto = Demisto({})`` instance);
+#     line N+ then does ``import demistomock as demisto`` which REBINDS
+#     ``demisto`` to whatever the import resolves to.
+#   * If we only patch ``sys.modules["demistomock"]``, the inline class
+#     might still win in subtle ways (caching, loader order, etc.).
+#   * With a real file at high-priority path, ``import demistomock``
+#     deterministically resolves to OUR module, and that module's
+#     ``demisto`` attribute is a real object whose ``.params()``,
+#     ``.command()``, ``.args()`` we control.
+#
+# The mock reads ``CHECK_PARAMS_JSON``, ``CHECK_COMMAND`` from the env at
+# import time so seeded values are visible to module-level code in the
+# integration (e.g. ``SERVER = demisto.params().get("server")``).
+_DEMISTOMOCK_TEMPLATE = textwrap.dedent(
+    '''
+    """On-disk demistomock used by check_command_params.py dynamic runs."""
+    import json as _json
+    import os as _os
+    import sys as _sys
+
+    _PARAMS = _json.loads(_os.environ.get("CHECK_PARAMS_JSON", "{}"))
+    _COMMAND = _os.environ.get("CHECK_COMMAND", "")
+
+
+    class _Demisto:
+        callingContext = {"context": {}, "params": _PARAMS, "command": _COMMAND}
+        def params(self): return _PARAMS
+        def command(self): return _COMMAND
+        def args(self): return {}
+        def results(self, *a, **k): return None
+        def getLastRun(self): return {}
+        def setLastRun(self, *a, **k): return None
+        def incidents(self, *a, **k): return []
+        def getIntegrationContext(self, *a, **k): return {}
+        def setIntegrationContext(self, *a, **k): return None
+        def info(self, *a, **k): return None
+        def debug(self, *a, **k): return None
+        def error(self, *a, **k): return None
+        def log(self, *a, **k): return None
+        def getLicenseID(self): return ""
+        def demistoVersion(self): return {"version": "8.0.0", "buildNumber": "0"}
+        def getFilePath(self, *a, **k): return {"path": "", "name": ""}
+        def getLastMirrorRun(self): return {}
+        def setLastMirrorRun(self, *a, **k): return None
+        def investigation(self): return {"id": "0"}
+        def internalHttpRequest(self, *a, **k): return {}
+        def executeCommand(self, *a, **k): return []
+        def dt(self, *a, **k): return None
+        def context(self): return {}
+        def uniqueFile(self): return ""
+        def getAllSupportedCommands(self): return {}
+        def searchIndicators(self, *a, **k): return {"iocs": []}
+        def createIndicators(self, *a, **k): return None
+        def handleEntitlementForUser(self, *a, **k): return None
+        def updateModuleHealth(self, *a, **k): return None
+        def mapObject(self, *a, **k): return {}
+        def get(self, *a, **k): return None
+        def getModules(self): return {}
+        def getIndexHash(self): return ""
+        def setAssetsLastRun(self, *a, **k): return None
+        def getAssetsLastRun(self): return {}
+        def __getattr__(self, name):
+            return lambda *a, **k: None
+
+
+    demisto = _Demisto()
+
+
+    # Module-level callables (some integrations do ``demistomock.params()``
+    # AFTER ``import demistomock as demisto``, treating the module itself
+    # as the demisto object).
+    def params(): return _PARAMS
+    def command(): return _COMMAND
+    def args(): return {}
+    def results(*a, **k): return None
+    def info(*a, **k): return None
+    def debug(*a, **k): return None
+    def error(*a, **k): return None
+    def log(*a, **k): return None
+    def getLastRun(): return {}
+    def setLastRun(*a, **k): return None
+    def getLicenseID(): return ""
+    def demistoVersion(): return {"version": "8.0.0", "buildNumber": "0"}
+    def getFilePath(*a, **k): return {"path": "", "name": ""}
+    def getLastMirrorRun(): return {}
+    def setLastMirrorRun(*a, **k): return None
+    def investigation(): return {"id": "0"}
+    def internalHttpRequest(*a, **k): return {}
+    def executeCommand(*a, **k): return []
+    def dt(*a, **k): return None
+    def context(): return {}
+    def uniqueFile(): return ""
+    def getAllSupportedCommands(): return {}
+    def searchIndicators(*a, **k): return {"iocs": []}
+    def createIndicators(*a, **k): return None
+    def handleEntitlementForUser(*a, **k): return None
+    def updateModuleHealth(*a, **k): return None
+    def mapObject(*a, **k): return {}
+    def getModules(): return {}
+    def getIndexHash(): return ""
+    def setAssetsLastRun(*a, **k): return None
+    def getAssetsLastRun(): return {}
+    def integrationInstance(): return ""
+    def isTimeSensitive(): return False
+    def get_incidents(): return []
+    def incident(): return {}
+    def get_alerts(): return []
+    def alert(): return {}
+    def parentEntry(): return {}
+    def incidents(*a, **k): return []
+    def fetchResults(*a, **k): return None
+    def credentials(*a, **k): return None
+    def getArg(arg, defaultParam=None): return defaultParam
+    def getParam(p): return _PARAMS.get(p)
+    def get(obj, field, defaultParam=None):
+        if not obj:
+            return defaultParam
+        for part in field.split("."):
+            if obj and part in obj:
+                obj = obj[part]
+            else:
+                return defaultParam
+        return obj
+    def gets(obj, field): return str(get(obj, field))
+    def demistoUrls(): return {}
+    def heartbeat(*a, **k): return None
+    def fetchIncidents(): return False
+    def isFetch(): return False
+    def isFetchEvents(): return False
+    def isFetchAssets(): return False
+
+
+    # Catch-all for any helper not enumerated above so a stray method
+    # access doesn't crash the integration at import time.
+    def _missing_attr(name):
+        return lambda *a, **k: None
+    import types as _types
+    class _ModuleWithFallback(_types.ModuleType):
+        def __getattr__(self, name):
+            return lambda *a, **k: None
+    _sys.modules[__name__].__class__ = _ModuleWithFallback
+
+
+    # callingContext is read both as ``demisto.callingContext`` AND
+    # ``demistomock.callingContext`` by various code paths.
+    callingContext = {"context": {}, "params": _PARAMS, "command": _COMMAND}
+    '''
+).lstrip()
+
+
+# Bootstrap script run in the child interpreter. Critical ordering:
+#
+#   1. Insert the directory containing our on-disk ``demistomock.py``
+#      (written by the parent before the run) at the FRONT of sys.path so
+#      ``import demistomock`` resolves to our file, not anything else.
+#
+#   2. Execute the unified integration. Its module-level reads of
+#      ``demisto.params()`` etc. now see our seeded values from the
+#      ``CHECK_PARAMS_JSON`` env var.
+#
+#   3. Patch ``return_error`` in BOTH ``CommonServerPython`` and the
+#      unified module's namespace, post-import, to exit with rc=7. This
+#      turns "silent return_error before any HTTP request" into a loud
+#      per-command failure that the parent recognises.
+#
+#   4. Call ``main()``.
+#
+# Inputs: ``CHECK_PARAMS_JSON`` (env), ``CHECK_COMMAND`` (env),
+# ``CHECK_UNIFIED_PATH`` (env), ``CHECK_MOCK_DIR`` (env, dir holding
+# demistomock.py). Using env vars avoids CLI/stdin escaping issues.
+_BOOTSTRAP_TEMPLATE = textwrap.dedent(
+    '''
+    import os, sys, importlib.util, traceback
+
+    sys.path.insert(0, os.environ["CHECK_MOCK_DIR"])
+
+    UNIFIED_PATH = os.environ["CHECK_UNIFIED_PATH"]
+
+    # ---- Step 1: load and execute the unified integration. ----
+    spec = importlib.util.spec_from_file_location(
+        "integration_under_test", UNIFIED_PATH
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["integration_under_test"] = module
+    try:
+        spec.loader.exec_module(module)
+    except SystemExit:
+        raise
+    except Exception:
+        traceback.print_exc()
+        sys.exit(2)
+
+    # ---- Step 2: patch return_error AFTER import. ----
+    def _patched_return_error(message="", error="", outputs=None, dbot_score=None,
+                              **kwargs):
+        msg = str(message)[:500]
+        print("RETURN_ERROR_PATCHED: " + msg, file=sys.stderr)
+        sys.exit(7)
+
+    if hasattr(module, "return_error"):
+        module.return_error = _patched_return_error
+    csp = sys.modules.get("CommonServerPython")
+    if csp is not None and hasattr(csp, "return_error"):
+        csp.return_error = _patched_return_error
+
+    # ---- Step 3: run main(). ----
+    main_fn = getattr(module, "main", None)
+    if main_fn is None:
+        print("BOOTSTRAP_NO_MAIN", file=sys.stderr)
+        sys.exit(4)
+    try:
+        main_fn()
+    except SystemExit:
+        raise
+    except Exception:
+        traceback.print_exc()
+        sys.exit(5)
+    sys.exit(0)
+    '''
+).strip()
+
+
+# Distinct exit code raised by the patched ``return_error`` in the child.
+RC_RETURN_ERROR_PATCHED = 7
+
+
+# --------------------------------------------------------------------------
+# Docker runtime configuration
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class DockerConfig:
+    """How the analyzer launches the per-command child process.
+
+    ``mode``: one of ``"auto"``, ``"always"``, ``"never"``.
+    ``default_image``: image used when the integration YML does not declare
+    a ``script.dockerimage``.
+    ``effective_use_docker``: resolved boolean — whether THIS analyzer run
+    should actually invoke Docker. Set by :func:`resolve_docker_config`
+    after probing the host. ``None`` until resolved.
+    ``pulled_images``: set of image refs we've already verified for this
+    analyzer-process run. Saves a redundant ``docker image inspect`` on
+    every command of the same integration.
+    """
+
+    mode: str = "auto"
+    default_image: str = DEFAULT_DOCKER_IMAGE
+    effective_use_docker: bool | None = None
+    pulled_images: set[str] = field(default_factory=set)
+
+
+def _docker_available() -> bool:
+    """True iff the ``docker`` CLI is on PATH and the daemon answers."""
+    if not shutil.which("docker"):
+        return False
+    try:
+        result = subprocess.run(
+            ["docker", "version", "--format", "{{.Server.Version}}"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (subprocess.TimeoutExpired, OSError):
+        return False
+    return result.returncode == 0
+
+
+def resolve_docker_config(cfg: DockerConfig) -> DockerConfig:
+    """Decide whether this run actually uses Docker, given ``cfg.mode``.
+
+    * ``never`` → host python3.
+    * ``always`` → require Docker; raise :class:`DynamicAnalysisError` if
+      it's not available.
+    * ``auto`` → use Docker if available, else log a warning and fall back
+      to host python3.
+    """
+    if cfg.mode == "never":
+        cfg.effective_use_docker = False
+        return cfg
+    available = _docker_available()
+    if cfg.mode == "always":
+        if not available:
+            raise DynamicAnalysisError(
+                "--docker always: docker CLI not on PATH or daemon not "
+                "responding"
+            )
+        cfg.effective_use_docker = True
+        return cfg
+    # auto
+    if available:
+        cfg.effective_use_docker = True
+        print(
+            f"[dynamic] Docker available; child processes will run in "
+            f"containers (default image: {cfg.default_image})",
+            file=sys.stderr,
+        )
+    else:
+        cfg.effective_use_docker = False
+        print(
+            "[dynamic] Docker not available; falling back to host python3 "
+            "(some integrations may fail with ModuleNotFoundError)",
+            file=sys.stderr,
+        )
+    return cfg
+
+
+def _ensure_image_pulled(image: str, pulled_cache: set[str]) -> None:
+    """Make sure ``image`` exists locally; pull lazily on first use."""
+    if image in pulled_cache:
+        return
+    print(
+        f"[docker] ensuring image {image} is available...", file=sys.stderr
+    )
+    inspect = subprocess.run(
+        ["docker", "image", "inspect", image],
+        capture_output=True,
+        text=True,
+    )
+    if inspect.returncode != 0:
+        print(f"[docker] pulling {image}...", file=sys.stderr)
+        try:
+            pull = subprocess.run(
+                ["docker", "pull", image],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise DynamicAnalysisError(
+                f"docker pull {image} timed out after 300s"
+            ) from exc
+        if pull.returncode != 0:
+            raise DynamicAnalysisError(
+                f"docker pull {image} failed: rc={pull.returncode} "
+                f"stderr={pull.stderr.strip()[:500]}"
+            )
+    pulled_cache.add(image)
+
+
+def _docker_proxy_host(proxy_url: str) -> tuple[str, list[str]]:
+    """Translate the host proxy URL for a child running in Docker.
+
+    Returns ``(in_container_proxy_url, extra_docker_args)``.
+
+    * Linux: ``--network host`` works. Use the original ``127.0.0.1`` URL.
+    * macOS / Windows: ``--network host`` does NOT bridge to the host on
+      Docker Desktop. Use ``--add-host=host.docker.internal:host-gateway``
+      (a no-op on Desktop, where the alias already exists, but explicit
+      and self-documenting) and rewrite the URL host accordingly.
+    """
+    sysname = platform.system()
+    if sysname == "Linux":
+        return proxy_url, ["--network", "host"]
+    rewritten = proxy_url.replace("127.0.0.1", "host.docker.internal").replace(
+        "localhost", "host.docker.internal"
+    )
+    return rewritten, ["--add-host=host.docker.internal:host-gateway"]
+
+
+def _docker_invocation_error(rc: int, stderr: str) -> str | None:
+    """If ``rc`` is a Docker-engine error (not the wrapped command), describe it.
+
+    Returns a human-readable string when ``rc`` indicates Docker itself
+    failed; ``None`` otherwise (in which case the caller should treat
+    ``rc`` as the wrapped child's exit code).
+    """
+    if rc == DOCKER_DAEMON_RC:
+        return f"docker daemon error (rc=125): {stderr.strip()[:500]}"
+    if rc == DOCKER_NOT_EXECUTABLE_RC:
+        return f"docker container command not executable (rc=126): {stderr.strip()[:500]}"
+    if rc == DOCKER_CMD_NOT_FOUND_RC:
+        return f"docker container command not found (rc=127): {stderr.strip()[:500]}"
+    return None
+
+
+def _build_child_env(
+    params: dict[str, Any],
+    command: str,
+    proxy_url: str,
+    unified_path: str,
+    mock_dir: str,
+) -> dict[str, str]:
+    """Build the env vars the bootstrap script reads to drive one command."""
+    return {
+        "HTTP_PROXY": proxy_url,
+        "HTTPS_PROXY": proxy_url,
+        "http_proxy": proxy_url,
+        "https_proxy": proxy_url,
+        "NO_PROXY": "",
+        "CHECK_PARAMS_JSON": json.dumps(params),
+        "CHECK_COMMAND": command,
+        "CHECK_UNIFIED_PATH": unified_path,
+        "CHECK_MOCK_DIR": mock_dir,
+    }
+
+
+def _decode_subprocess_streams(
+    out_raw: Any, err_raw: Any
+) -> tuple[str, str]:
+    """Best-effort decode for ``subprocess`` stdout/stderr (bytes or str)."""
+    out = (
+        out_raw.decode("utf-8", errors="replace")
+        if isinstance(out_raw, (bytes, bytearray))
+        else (out_raw or "")
+    )
+    err = (
+        err_raw.decode("utf-8", errors="replace")
+        if isinstance(err_raw, (bytes, bytearray))
+        else (err_raw or "")
+    )
+    return out, err
+
+
+def _run_child_host(
+    bootstrap_path: Path,
+    env: dict[str, str],
+    timeout: int,
+) -> tuple[int, str, str, bool]:
+    """Run the child via the host's ``sys.executable`` (legacy path)."""
+    full_env = dict(os.environ)
+    full_env.update(env)
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(bootstrap_path)],
+            capture_output=True,
+            text=True,
+            env=full_env,
+            timeout=timeout,
+        )
+        return proc.returncode, proc.stdout, proc.stderr, False
+    except subprocess.TimeoutExpired as exc:
+        out, err = _decode_subprocess_streams(exc.stdout, exc.stderr)
+        return -1, out, err, True
+
+
+def _run_child_docker(
+    tmp_dir: Path,
+    env: dict[str, str],
+    timeout: int,
+    image: str,
+    pulled_cache: set[str],
+    proxy_url: str,
+) -> tuple[int, str, str, bool]:
+    """Run the child inside a Docker container.
+
+    The caller must already have written ``bootstrap.py``,
+    ``unified_integration.py``, and ``mock/`` into ``tmp_dir``. We mount
+    ``tmp_dir`` read-only at ``/check`` and execute
+    ``python3 /check/bootstrap.py`` inside ``image``.
+    """
+    _ensure_image_pulled(image, pulled_cache)
+    container_proxy, network_args = _docker_proxy_host(proxy_url)
+    # Override container-side env to match the rewritten proxy host (macOS).
+    docker_env = dict(env)
+    docker_env["HTTP_PROXY"] = container_proxy
+    docker_env["HTTPS_PROXY"] = container_proxy
+    docker_env["http_proxy"] = container_proxy
+    docker_env["https_proxy"] = container_proxy
+    # Container-side paths for the unified integration + mock dir.
+    docker_env["CHECK_UNIFIED_PATH"] = "/check/unified_integration.py"
+    docker_env["CHECK_MOCK_DIR"] = "/check/mock"
+
+    cmd: list[str] = [
+        "docker",
+        "run",
+        "--rm",
+        # demisto/py3-native is built for linux/amd64. Pinning the platform
+        # explicitly silences the "image platform does not match host" warning
+        # that Docker Desktop emits when the host is arm64 (Apple Silicon).
+        "--platform",
+        "linux/amd64",
+        *network_args,
+        "-v",
+        f"{tmp_dir}:/check:ro",
+    ]
+    for key, value in docker_env.items():
+        cmd.extend(["-e", f"{key}={value}"])
+    cmd.extend([image, "python3", "/check/bootstrap.py"])
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        out, err = _decode_subprocess_streams(exc.stdout, exc.stderr)
+        return -1, out, err, True
+    invocation_err = _docker_invocation_error(proc.returncode, proc.stderr)
+    if invocation_err is not None:
+        raise DynamicAnalysisError(f"docker invocation failed: {invocation_err}")
+    return proc.returncode, proc.stdout, proc.stderr, False
+
+
+def run_integration(
+    unified_path: Path,
+    mock_dir: Path,
+    command: str,
+    params: dict[str, Any],
+    proxy_url: str,
+    timeout: int,
+    docker_cfg: DockerConfig | None = None,
+) -> tuple[int, str, str, bool]:
+    """Run the integration in a child process. Returns ``(rc, stdout, stderr, timed_out)``.
+
+    When ``docker_cfg.effective_use_docker`` is true, the child runs in a
+    container based on ``docker_cfg.default_image`` (the pinned analyzer
+    runtime; see :data:`DEFAULT_DOCKER_IMAGE`). Otherwise the legacy
+    host-python path is used. There is no per-integration image override:
+    if the integration needs a different runtime, the child crashes with
+    ``ModuleNotFoundError`` and the caller surfaces ``module_not_found``.
+    """
+    use_docker = bool(docker_cfg and docker_cfg.effective_use_docker)
+
+    # The bootstrap script must live next to ``unified_integration.py`` so
+    # that mounting the tmp dir at ``/check`` exposes everything together.
+    tmp_dir = unified_path.parent
+    bootstrap_path = tmp_dir / "bootstrap.py"
+    if not bootstrap_path.is_file():
+        bootstrap_path.write_text(_BOOTSTRAP_TEMPLATE, encoding="utf-8")
+
+    env = _build_child_env(
+        params=params,
+        command=command,
+        proxy_url=proxy_url,
+        unified_path=str(unified_path),
+        mock_dir=str(mock_dir),
+    )
+
+    if not use_docker:
+        return _run_child_host(bootstrap_path, env, timeout)
+
+    assert docker_cfg is not None  # narrowed by use_docker
+    return _run_child_docker(
+        tmp_dir=tmp_dir,
+        env=env,
+        timeout=timeout,
+        image=docker_cfg.default_image,
+        pulled_cache=docker_cfg.pulled_images,
+        proxy_url=proxy_url,
+    )
+
+
+def detect_sentinel_hits(
+    requests: list[dict[str, Any]],
+    sentinels: dict[str, list[str]],
+) -> set[str]:
+    """Return the set of YML param names whose sentinel(s) appear in any request.
+
+    A param is considered relevant if ANY of its sentinel strings appears
+    anywhere in the captured request blob (method, URL, headers, body).
+    Params with an empty sentinel list (non-traceable: bools, numerics,
+    short defaults) are skipped silently.
+    """
+    if not requests:
+        return set()
+    blob_parts: list[str] = []
+    for req in requests:
+        blob_parts.append(req.get("method", ""))
+        blob_parts.append(req.get("url", ""))
+        for k, v in (req.get("headers") or {}).items():
+            blob_parts.append(f"{k}: {v}")
+        blob_parts.append(req.get("body", "") or "")
+    blob = "\n".join(blob_parts)
+    hits: set[str] = set()
+    for name, tokens in sentinels.items():
+        if not tokens:
+            continue
+        if any(tok and tok in blob for tok in tokens):
+            hits.add(name)
+    return hits
+
+
+def _short_stderr(stderr: str, limit: int = 240) -> str:
+    """Pick the most useful single line from a child's stderr for a log msg.
+
+    Preference order (highest first):
+
+    1. ``RETURN_ERROR_PATCHED:`` marker line — the explicit signal from
+       our patched ``return_error``.
+    2. Any line containing ``SENTINEL_PARAM_`` — strong evidence that a
+       seeded sentinel value caused the failure (the param name is right
+       there in the message).
+    3. The last non-empty line — usually the exception summary.
+    """
+    if not stderr:
+        return ""
+    lines = stderr.splitlines()
+    # 1. Patched return_error marker.
+    for line in lines:
+        if "RETURN_ERROR_PATCHED:" in line:
+            return line.strip()[:limit]
+    # 2. Any line that names a sentinel — that is the actionable error.
+    for line in lines:
+        if "SENTINEL_PARAM_" in line:
+            return line.strip()[:limit]
+    # 3. Last non-empty line.
+    for line in reversed(lines):
+        s = line.strip()
+        if s:
+            return s[:limit]
+    return ""
+
+
+# Regex matching ``SENTINEL_PARAM_<name>`` in any text blob (stderr,
+# return_error message, exception text). Captures only the param name.
+_SENTINEL_PARAM_RE = re.compile(r"SENTINEL_PARAM_([A-Za-z_][A-Za-z0-9_]*)")
+
+
+def extract_failing_params(text: str, yml_param_names: set[str]) -> list[str]:
+    """Pick the param names that appear as ``SENTINEL_PARAM_<name>`` in *text*.
+
+    Cross-references each captured name against ``yml_param_names`` so a
+    sentinel-looking substring whose suffix is not a real YML param (e.g.,
+    a typo in the integration source) is dropped.
+
+    Returns a sorted list of unique names.
+    """
+    if not text:
+        return []
+    found = {m.group(1) for m in _SENTINEL_PARAM_RE.finditer(text)}
+    return sorted(found & yml_param_names)
+
+
+# Module name captured from a child's ``ModuleNotFoundError`` line, e.g.
+# ``ModuleNotFoundError: No module named 'pymisp'``.
+_MODULE_NOT_FOUND_RE = re.compile(
+    r"ModuleNotFoundError: No module named ['\"]([^'\"]+)['\"]"
+)
+
+
+def extract_missing_module(stderr: str) -> tuple[str, str] | None:
+    """If *stderr* contains a ``ModuleNotFoundError`` line, return ``(module, line)``.
+
+    Returns ``None`` when no such line is found. The returned ``line`` is
+    the matched ``ModuleNotFoundError: ...`` text, useful as a
+    ``failure_excerpt`` for the diagnostic.
+    """
+    if not stderr:
+        return None
+    for line in stderr.splitlines():
+        match = _MODULE_NOT_FOUND_RE.search(line)
+        if match:
+            return match.group(1), line.strip()
+    return None
+
+
+@dataclass
+class CommandDiagnostic:
+    """Per-command outcome metadata surfaced in the JSON ``diagnostics`` field.
+
+    ``status`` values: ``ok`` / ``ok_no_capture`` / ``param_caused_failure``
+    / ``no_data`` / ``timeout`` / ``docker_error`` / ``module_not_found``.
+    See module docstring for the full enum.
+    """
+
+    status: str
+    captured_requests: int = 0
+    failure_excerpt: str = ""
+    failing_params: list[str] = field(default_factory=list)
+    missing_module: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Render the diagnostic as a plain dict for JSON serialization."""
+        out: dict[str, Any] = {
+            "status": self.status,
+            "captured_requests": self.captured_requests,
+        }
+        if self.failure_excerpt and self.status not in {"ok", "ok_no_capture"}:
+            out["failure_excerpt"] = self.failure_excerpt[:500]
+        if self.failing_params:
+            out["failing_params"] = self.failing_params
+        if self.missing_module is not None:
+            out["missing_module"] = self.missing_module
+        return out
+
+
+def analyze_dynamic_for_command(
+    proxy: CaptureProxy,
+    unified_path: Path,
+    mock_dir: Path,
+    command: str,
+    yml_params: list[dict[str, Any]],
+    ignore: set[str],
+    timeout: int,
+    docker_cfg: DockerConfig | None = None,
+) -> tuple[set[str], CommandDiagnostic]:
+    """Return ``(captured_param_names, diagnostic)`` for one command.
+
+    The caller merges the captured set into ``dynamic_results[cmd]`` and
+    forwards the diagnostic into the JSON ``diagnostics`` field.
+
+    Decision table (see design doc "Handling Exceptions in Dynamic Analysis"):
+
+    * timeout → :class:`DynamicAnalysisError` (status will be ``timeout``).
+    * Failure classification when the child fails AND zero captures
+      (first match wins):
+
+      1. ``ModuleNotFoundError`` in stderr → status ``module_not_found``
+         with ``missing_module`` set; returns cleanly (no exception).
+      2. ``SENTINEL_PARAM_<name>`` in stderr → status
+         ``param_caused_failure`` with those names elevated.
+      3. Otherwise → ``no_data`` (loud-fail :class:`DynamicAnalysisError`).
+
+    * ``rc == 7`` AND captured > 0 → tolerated; status ``ok``.
+    * ``rc != 0`` AND captured > 0 → tolerated; status ``ok``.
+    * ``rc == 0`` AND captured > 0 → status ``ok``.
+    * ``rc == 0`` AND zero captured → status ``ok_no_capture``.
+    """
+    import time as _t
+
+    proxy_url = f"http://127.0.0.1:{proxy.port}"
+    values, sentinels, _non_traceable = build_param_values(
+        yml_params, proxy_url, ignore
+    )
+    yml_param_names = {p["name"] for p in yml_params}
+    session_id = proxy.new_session()
+    _t0 = _t.time()
+    rc, _stdout, stderr, timed_out = run_integration(
+        unified_path,
+        mock_dir,
+        command,
+        values,
+        proxy_url,
+        timeout,
+        docker_cfg=docker_cfg,
+    )
+    elapsed = _t.time() - _t0
+    captured = proxy.get_requests(session_id)
+    proxy.delete_session(session_id)
+
+    if timed_out:
+        raise DynamicAnalysisError(
+            f"command {command!r} timed out after {timeout}s "
+            f"(use --timeout to extend)\nchild stderr:\n{stderr}"
+        )
+
+    short_excerpt = _short_stderr(stderr, limit=500)
+
+    # Failure-before-HTTP paths (rc=7 short-circuit, or any non-zero rc with
+    # zero captures): classify the failure. Order matters — first match wins.
+    if (rc == RC_RETURN_ERROR_PATCHED and not captured) or (
+        rc != 0 and not captured
+    ):
+        # 1. ModuleNotFoundError → integration needs a third-party package
+        #    not present in the pinned analyzer runtime image. Surface
+        #    cleanly so the calling agent can read the source manually
+        #    (analogous to how JS / PowerShell integrations are handled).
+        missing = extract_missing_module(stderr)
+        if missing is not None:
+            module_name, error_line = missing
+            print(
+                f"[dyn] {command}: child crashed with ModuleNotFoundError "
+                f"(missing {module_name!r}); reporting module_not_found",
+                file=sys.stderr,
+            )
+            diag = CommandDiagnostic(
+                status="module_not_found",
+                captured_requests=0,
+                failure_excerpt=error_line[:500],
+                missing_module=module_name,
+            )
+            return set(), diag
+        # 2. Sentinel attribution.
+        failing = extract_failing_params(stderr, yml_param_names)
+        if failing:
+            print(
+                f"[dyn] {command}: failure attributed to params {failing} "
+                f"(rc={rc}); elevating them as relevant",
+                file=sys.stderr,
+            )
+            diag = CommandDiagnostic(
+                status="param_caused_failure",
+                captured_requests=0,
+                failure_excerpt=short_excerpt,
+                failing_params=failing,
+            )
+            return set(failing), diag
+        # 3. No specific attribution → fall back to the loud-fail behaviour.
+        if rc == RC_RETURN_ERROR_PATCHED:
+            raise DynamicAnalysisError(
+                f"command {command!r} called return_error before any HTTP "
+                f"request: {short_excerpt}"
+            )
+        raise DynamicAnalysisError(
+            f"command {command!r} failed before issuing any HTTP request: "
+            f"rc={rc}\nchild stderr:\n{stderr}"
+        )
+
+    print(
+        f"[dyn] {command}: captured {len(captured)} requests in {elapsed:.2f}s "
+        f"(rc={rc})",
+        file=sys.stderr,
+    )
+    if rc == RC_RETURN_ERROR_PATCHED:
+        print(
+            f"[dyn] {command}: short-circuited via return_error after "
+            f"{len(captured)} captured requests; sentinel scan still applies",
+            file=sys.stderr,
+        )
+    elif rc != 0:
+        print(
+            f"[dyn] {command}: child returned rc={rc} after "
+            f"{len(captured)} captured requests; proceeding with sentinel scan",
+            file=sys.stderr,
+        )
+    hits = detect_sentinel_hits(captured, sentinels)
+    status = "ok" if captured else "ok_no_capture"
+    diag = CommandDiagnostic(status=status, captured_requests=len(captured))
+    return hits, diag
+
+
+# --------------------------------------------------------------------------
+# Top-level orchestration
+# --------------------------------------------------------------------------
+
+
+def _classify_dynamic_error(exc: DynamicAnalysisError) -> str:
+    """Map a :class:`DynamicAnalysisError` message to a diagnostic ``status``.
+
+    Used when the per-command runner raises instead of returning a
+    diagnostic of its own (timeout / docker invocation / generic no-data).
+    """
+    msg = str(exc)
+    if "timed out after" in msg:
+        return "timeout"
+    if "docker invocation failed" in msg or "docker daemon error" in msg:
+        return "docker_error"
+    return "no_data"
+
+
+def analyze_integration(
+    integration_path: Path,
+    commands_filter: list[str] | None,
+    static_only: bool,
+    ignore: set[str],
+    timeout: int,
+    docker_cfg: DockerConfig | None = None,
+) -> dict[str, Any]:
+    """Run the full analysis pipeline for one integration.
+
+    Loud-fail policy: any error other than "static AST is being asked to
+    look at a non-Python integration" propagates to the caller.
+
+    The returned dict always contains ``integration`` and ``commands``.
+    When dynamic analysis ran (``static_only`` is False), it additionally
+    contains a ``diagnostics`` key with one entry per command. Under
+    ``--static-only`` the ``diagnostics`` key is omitted entirely (see
+    module docstring).
+    """
+    yml_path, py_path = find_integration_files(integration_path)
+    yml_data = load_yml(yml_path)
+    yml_params = get_yml_params(yml_data)
+    all_param_names = [p["name"] for p in yml_params]
+    language = (yml_data.get("script") or {}).get("type")
+    integration_name = display_name(yml_data, integration_path.name)
+
+    discovered = discover_commands(yml_data)
+    if commands_filter:
+        commands = [c for c in commands_filter if c in discovered or c in {"test-module"}]
+    else:
+        commands = discovered
+
+    py_source = py_path.read_text(encoding="utf-8") if py_path is not None else ""
+
+    print(
+        f"[static] analyzing {integration_name!r} ({len(commands)} commands)",
+        file=sys.stderr,
+    )
+    static_results: dict[str, set[str]] = {}
+    for cmd in commands:
+        static_results[cmd] = analyze_static(
+            py_source, cmd, language=language, integration_name=integration_name
+        )
+
+    dynamic_results: dict[str, set[str]] = {cmd: set() for cmd in commands}
+    diagnostics: dict[str, CommandDiagnostic] = {}
+    if not static_only:
+        print(f"[dynamic] analyzing {integration_name!r}", file=sys.stderr)
+        _run_dynamic_phase(
+            integration_path,
+            commands,
+            yml_params,
+            ignore,
+            timeout,
+            dynamic_results,
+            diagnostics,
+            integration_name=integration_name,
+            docker_cfg=docker_cfg,
+        )
+
+    out_commands: dict[str, list[str]] = {}
+    for cmd in commands:
+        merged: dict[str, bool] = {}
+        for name in all_param_names:
+            if name in ignore:
+                continue
+            merged[name] = (name in static_results[cmd]) or (name in dynamic_results[cmd])
+        out_commands[cmd] = sorted([param for param, used in merged.items() if used])
+
+    result: dict[str, Any] = {
+        "integration": integration_name,
+        "commands": out_commands,
+    }
+    if not static_only:
+        result["diagnostics"] = {cmd: diag.to_dict() for cmd, diag in diagnostics.items()}
+    return result
+
+
+def _run_dynamic_phase(
+    integration_path: Path,
+    commands: list[str],
+    yml_params: list[dict[str, Any]],
+    ignore: set[str],
+    timeout: int,
+    dynamic_results: dict[str, set[str]],
+    diagnostics: dict[str, CommandDiagnostic],
+    integration_name: str = "",
+    docker_cfg: DockerConfig | None = None,
+) -> None:
+    """Drive prepare-content + per-command dynamic runs.
+
+    Populates *dynamic_results* (captured param names per command) and
+    *diagnostics* (one :class:`CommandDiagnostic` per command).
+
+    Setup-level failures (``DynamicPrepError`` from
+    :func:`prepare_unified_content`) propagate — those mean the unified
+    .py couldn't even be built, and there's no useful per-command work
+    we could do.
+
+    Per-command failures (:class:`DynamicAnalysisError`) are caught and
+    logged, with an empty captured set stored for that command so the
+    static signal still flows to the merged output, and a diagnostic
+    entry recording the failure status. If EVERY command fails, that's
+    logged as a structural warning (likely an import-time crash hiding
+    behind a misleading rc) but the function still returns normally —
+    the static-only result remains valid.
+    """
+    with tempfile.TemporaryDirectory(prefix="ccp_") as tmp:
+        tmp_dir = Path(tmp)
+        unified, mock_dir = prepare_unified_content(integration_path, tmp_dir)
+        proxy = CaptureProxy(port=0)
+        proxy.start()
+        print(f"[dynamic] proxy listening on port {proxy.port}", file=sys.stderr)
+        failures = 0
+        try:
+            for cmd in commands:
+                try:
+                    captured_set, diag = analyze_dynamic_for_command(
+                        proxy,
+                        unified,
+                        mock_dir,
+                        cmd,
+                        yml_params,
+                        ignore,
+                        timeout,
+                        docker_cfg=docker_cfg,
+                    )
+                    dynamic_results[cmd] = captured_set
+                    diagnostics[cmd] = diag
+                    if diag.status == "param_caused_failure":
+                        failures += 1
+                except DynamicAnalysisError as exc:
+                    failures += 1
+                    dynamic_results[cmd] = set()
+                    short = str(exc).splitlines()[0][:240]
+                    print(f"[dyn] {cmd}: FAILED — {short}", file=sys.stderr)
+                    diagnostics[cmd] = CommandDiagnostic(
+                        status=_classify_dynamic_error(exc),
+                        captured_requests=0,
+                        failure_excerpt=str(exc)[:500],
+                    )
+        finally:
+            proxy.stop()
+        if commands and failures == len(commands):
+            print(
+                f"[dynamic] all {len(commands)} commands failed for "
+                f"{integration_name or integration_path.name}; static-only "
+                f"result will still be emitted",
+                file=sys.stderr,
+            )
+
+
+# --------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------
+
+
+def _parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Analyze which YML params each command of an XSOAR integration uses.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "integration_path",
+        help="Path to the integration directory (e.g., Packs/HelloWorld/Integrations/HelloWorldV2).",
+    )
+    parser.add_argument(
+        "--commands",
+        nargs="+",
+        default=None,
+        help="Subset of commands to analyze. Default: all commands discovered from YML.",
+    )
+    parser.add_argument(
+        "--static-only",
+        action="store_true",
+        help="Skip dynamic (proxy-based) analysis. Static AST analysis only.",
+    )
+    parser.add_argument(
+        "--ignore-params",
+        nargs="+",
+        default=None,
+        help="Param names to drop from analysis (omitted from output entirely).",
+    )
+    parser.add_argument(
+        "--ignore-params-file",
+        type=Path,
+        default=None,
+        help="File with one param name per line (# comments allowed) to ignore.",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=DEFAULT_DYNAMIC_TIMEOUT_S,
+        help=f"Per-command dynamic timeout in seconds (default: {DEFAULT_DYNAMIC_TIMEOUT_S}).",
+    )
+    parser.add_argument(
+        "--docker",
+        choices=("auto", "always", "never"),
+        default="auto",
+        help=(
+            "Where to run the integration child process. "
+            "'auto' (default): use Docker if available, else host python3. "
+            "'always': require Docker (fail if not available). "
+            "'never': use host python3 (legacy behavior)."
+        ),
+    )
+    parser.add_argument(
+        "--docker-image",
+        default=DEFAULT_DOCKER_IMAGE,
+        help=(
+            f"Override the pinned analyzer runtime image (default: "
+            f"{DEFAULT_DOCKER_IMAGE}). The analyzer ALWAYS uses this image "
+            f"for every integration; YML script.dockerimage is ignored. "
+            f"Provided for testing/debugging only — under normal use the "
+            f"default is correct."
+        ),
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entry point.
+
+    Exit codes:
+    * ``0`` — success.
+    * ``2`` — bad CLI args / missing path / missing ignore-file.
+    * ``3`` — any other unhandled failure during analysis (full traceback
+      goes to stderr).
+    """
+    import traceback
+
+    args = _parse_args(argv if argv is not None else sys.argv[1:])
+    integration_path = Path(args.integration_path).resolve()
+    if not integration_path.is_dir():
+        print(
+            f"ERROR: integration path is not a directory: {integration_path}",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        ignore = load_ignore_params(args.ignore_params, args.ignore_params_file)
+    except FileNotFoundError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    docker_cfg = DockerConfig(mode=args.docker, default_image=args.docker_image)
+    if not args.static_only:
+        try:
+            resolve_docker_config(docker_cfg)
+        except DynamicAnalysisError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 3
+    try:
+        result = analyze_integration(
+            integration_path=integration_path,
+            commands_filter=args.commands,
+            static_only=args.static_only,
+            ignore=ignore,
+            timeout=args.timeout,
+            docker_cfg=docker_cfg,
+        )
+    except FileNotFoundError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except Exception as exc:  # noqa: BLE001 — loud-fail policy
+        print(f"ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        return 3
+    json.dump(result, sys.stdout, indent=2, sort_keys=True)
+    sys.stdout.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -116,6 +116,7 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 4. **Use `execute_command`** to run all `workflow_state.py` commands from the workspace root.
 5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`.
+7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
 
 ## Linked Files
 
@@ -404,6 +405,138 @@ See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions.
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates |
 | `Other` | Catch-all (e.g., DeviceCode, ROPC, ManagedIdentity) — `notes` MUST explain the mechanism |
 | `NoneRequired` | No authentication needed |
+
+## Analyzing per-command parameters
+
+Use this procedure whenever you are about to populate the `Params to Commands` workflow data column (Step 2 below). The [`connectus/check_command_params.py`](check_command_params.py) analyzer does the heavy lifting: it runs each command in a production-equivalent Docker container, intercepts HTTP traffic via an internal capture proxy, and reports which YML configuration params each command actually consumes. The skill's job is to invoke it correctly, interpret its output, and merge its findings with a source-code review before writing the polished result to the pipeline.
+
+### 1. When to run the analyzer
+
+Run the analyzer for any integration that requires the `Params to Commands` column to be populated — i.e., the per-command list of YML configuration params actually consumed by each command. This is the input to Step 2 (`set-params-to-commands`).
+
+### 2. How to invoke it
+
+The analyzer is a self-contained script. It starts its own HTTP capture proxy internally — **the skill does not need to start any external proxy, server, or service**. The only external dependency is Docker (used by default to give each integration its production runtime environment).
+
+Standard invocation:
+
+```bash
+python3 connectus/check_command_params.py <integration_dir> \
+    --ignore-params-file connectus/default_ignore_params.txt
+```
+
+Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`).
+
+Optional flags the skill should know about:
+
+- `--commands cmd1 cmd2 ...` — analyze only specific commands instead of all of them.
+- `--static-only` — skip the dynamic phase (no Docker, no proxy). Faster, but lower accuracy. Use only when Docker is unavailable.
+- `--timeout SECONDS` — per-command wall-clock timeout (default 30s; the batch runner uses 300s for the whole integration).
+- `--docker {auto,always,never}` — `auto` (default) uses Docker when available; `never` runs in host Python (will fail on integrations needing third-party deps); `always` requires Docker.
+
+The script writes its result to **stdout** as a single JSON document. All progress and warnings go to **stderr**. Exit code `0` means success; `2` means bad CLI args / path; `3` means an unhandled analyzer error.
+
+### 3. Output schema (annotated example)
+
+```json
+{
+  "integration": "QRadar v3",
+  "commands": {
+    "test-module":          ["adv_params", "fetch_query"],
+    "fetch-incidents":      ["fetch_query", "max_fetch", "first_fetch"],
+    "qradar-offenses-list": ["fetch_query", "filter"]
+  },
+  "diagnostics": {
+    "test-module": {
+      "status": "param_caused_failure",
+      "captured_requests": 0,
+      "failing_params": ["adv_params"],
+      "failure_excerpt": "DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params"
+    },
+    "fetch-incidents": {
+      "status": "ok",
+      "captured_requests": 3
+    },
+    "qradar-offenses-list": {
+      "status": "ok",
+      "captured_requests": 1
+    }
+  }
+}
+```
+
+`commands` is the **finished, polished result** — these are the per-command param lists the skill writes into the pipeline data.
+
+`diagnostics` is **internal AI signal only** — see section 5 below.
+
+### 4. Status enum reference
+
+| status | meaning |
+|---|---|
+| `ok` | Command ran cleanly and at least one HTTP request was captured. The param list in `commands[cmd]` is high-confidence. |
+| `ok_no_capture` | Command ran cleanly (rc=0) but made no HTTP calls. Either the command genuinely needs no HTTP (rare) OR our seeded params didn't trigger any HTTP path. The param list is from static analysis only. |
+| `param_caused_failure` | Command failed AND we identified the specific params that caused the failure (their sentinels appeared in the error message). Those params are pre-elevated into `commands[cmd]`. Other params for that command are static-only. |
+| `no_data` | Command failed but no specific param attribution could be made. The param list comes from static analysis only. |
+| `timeout` | Command hit the per-command wall-clock timeout. |
+| `docker_error` | Docker invocation itself failed (image pull, daemon down, etc.). The whole integration's dynamic phase is unreliable; rely on static. |
+| `module_not_found` | Child crashed with `ModuleNotFoundError`. Integration needs a third-party package not in the runtime image. **AI must step in manually** (analogous to JS / PowerShell). The `missing_module` field names the missing package. |
+
+### 5. CRITICAL — Use diagnostics for AI judgment, NEVER write them to pipeline data
+
+> ⚠️ **The `diagnostics` field is stderr-equivalent metadata. It MUST NEVER appear in any persisted pipeline artifact (CSV, manifest, `set-params-to-commands` payload, etc.).**
+
+It exists ONLY for the skill's internal decision-making. The skill MUST:
+
+- Read `diagnostics` to assess confidence in each command's param list.
+- Use the `failure_excerpt` and `failing_params` to investigate the integration source code when needed.
+- Write **only the polished `commands` data** into the pipeline (CSV / manifest / wherever).
+- **Never include `diagnostics`, `failure_excerpt`, `status`, or `captured_requests` in any persisted output.**
+
+The pipeline data is meant to be a clean machine-readable artifact. Diagnostics are debugging context for the AI — they get consumed and discarded. When invoking `set-params-to-commands`, the JSON payload must contain only `integration` and `commands` keys (per [`column-schemas.md`](column-schemas.md)) — strip everything else.
+
+### 6. Decision tree for processing the analyzer's output
+
+Given the analyzer's JSON for an integration, the skill should:
+
+**Step 0** — If MOST commands have `status: "module_not_found"`, the integration depends on a third-party package not in the runtime image. Dynamic analysis produced no useful signal. **Read the integration source code and YML directly to write a polished result manually**, exactly as you would for a JavaScript or PowerShell integration. The `missing_module` field tells you which package was needed.
+
+**Step 1.** If the analyzer process exited non-zero (the batch runner wraps this as `{"error": ..., "stderr": ...}` in the cell): treat as a structural failure. Read the integration source, decide manually what each command needs, write a polished result. Do NOT propagate the error into the pipeline.
+
+**Step 2.** If `commands` is non-empty AND most commands have `status: "ok"`: the analyzer's output is high-confidence. Write `commands` as-is into the pipeline data.
+
+**Step 3.** If many commands have `status: "param_caused_failure"`: the analyzer identified the problematic params. They're already merged into `commands[cmd]`. Read the `failure_excerpt` and the integration source to understand whether the param really applies to all commands or just to startup logic. **When in doubt, leave the param attributed to that command (err on inclusion).**
+
+**Step 4.** If many commands have `status: "no_data"` or `status: "ok_no_capture"`: the analyzer couldn't get a strong signal. Read the integration source and trace which params each command's handler uses. Write the resulting per-command list into the pipeline. **When in doubt, include rather than exclude.**
+
+**Step 5.** Always sanity-check: are there commands in the YML that the analyzer missed? Are there params clearly used in a command's source code that don't appear in the analyzer's list? If yes, add them.
+
+### 7. The "err on inclusion" principle
+
+When the skill is uncertain whether a param belongs to a command, it should INCLUDE the param. The cost of a false positive (an unused param shown in the column) is much lower than a false negative (a real param missing, which would silently break the migrated integration).
+
+Specifically: if the analyzer says param X is NOT relevant for command Y, but the skill's source-code review suggests param X IS used by Y (even indirectly), the skill should add X to Y's list.
+
+### 8. Self-contained operation
+
+The skill does NOT need to:
+
+- Start the capture proxy (the analyzer starts it internally per integration on a free port).
+- Manage Docker containers (the analyzer pulls images and spawns containers automatically).
+- Manage temp directories (the analyzer uses ephemeral tmp dirs that auto-clean).
+
+The analyzer always runs the child in `demisto/py3-native:8.9.0.114862` (a single pinned image; the integration's YML `script.dockerimage` is intentionally ignored). If the integration needs a different runtime, the AI handles it manually via the `module_not_found` status — the analyzer reports the missing package name in `missing_module` and the skill follows Step 0 of the decision tree above.
+
+The skill ONLY needs to:
+
+- Have `python3` available on the host.
+- Have `docker` available on the host (for non-trivial integrations; otherwise pass `--docker never`).
+- Pass [`connectus/default_ignore_params.txt`](default_ignore_params.txt) via `--ignore-params-file` to filter out auth/connection/framework noise.
+
+### 9. Runtime expectations
+
+- Per-integration wall time: ~5–60 seconds (depends on number of commands + whether the integration's Docker image is already cached).
+- First-time run on a host: each distinct Docker image needs a one-time pull (20–60s per image).
+- Failure modes are loud: the analyzer never silently produces garbage. If something is wrong, you'll see a clear stderr message.
 
 ### Step 2: Set Params to Commands (workflow data column)
 

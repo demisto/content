@@ -91,29 +91,14 @@ JSON to stdout. Output is keyed by command:
 {
   "integration": "QRadar v3",
   "commands": {
-    "test-module": {
-      "url": true,
-      "credentials": true,
-      "longRunning": true,
-      "max_fetch": false
-    },
-    "fetch-incidents": {
-      "url": true,
-      "credentials": true,
-      "max_fetch": true,
-      "longRunning": false
-    },
-    "qradar-offenses-list": {
-      "url": true,
-      "credentials": true,
-      "max_fetch": false,
-      "longRunning": false
-    }
+    "test-module": ["credentials", "longRunning", "url"],
+    "fetch-incidents": ["credentials", "max_fetch", "url"],
+    "qradar-offenses-list": ["credentials", "url"]
   }
 }
 ```
 
-Each param is `true` (relevant to the command) or `false` (not relevant). The tool merges results from both static and dynamic analysis internally — if either method detects usage, the param is `true`. Params passed via `--ignore-params` / `--ignore-params-file` are omitted from the output entirely.
+Each command maps to a sorted list of param names that are relevant. Params not in the list (and params in `--ignore-params` / `--ignore-params-file`) are not relevant or were excluded. The tool merges results from both static and dynamic analysis internally — if either method detects usage, the param appears in the list. Lists are sorted alphabetically (case-sensitive) so output is deterministic; an empty list (`[]`) is the correct value for a command with no relevant params.
 
 ---
 
@@ -634,4 +619,4 @@ The performance section above lays out the full menu. Initial implementation sho
 - Dynamic result: `{param: bool}` per command
 - Final: `param = static_result OR dynamic_result` (union — if either says relevant, it's relevant)
 - Params in the ignore list are excluded from both phases and omitted from the output
-- Output: `{commands: {command: {param: true/false}}}` JSON to stdout
+- Output: `{commands: {command: [param, ...]}}` JSON to stdout (sorted list of relevant param names per command)
