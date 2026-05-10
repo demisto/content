@@ -33,8 +33,8 @@ Lists the company findings as detected by Panorays.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of findings to return. Default is 50. | Optional | 
-| page | The page number of results to retrieve. Default is 1. | Optional | 
+| limit | The maximum number of findings to return. Default is 50. | Optional |
+| page | The page number of results to retrieve. Default is 1. | Optional |
 
 #### Context Output
 

@@ -73,7 +73,7 @@ def test_main_test_module_branch(mocker):
 def test_main_failure(mocker):
     """Tests the global error handler in main()."""
     mocker.patch.object(PanoraysFindingsAPI.demisto, "params", side_effect=Exception("Global Error"))
-    mock_error = mocker.patch.object(PanoraysFindingsAPI, 'return_error')
+    mock_error = mocker.patch.object(PanoraysFindingsAPI, "return_error")
 
     PanoraysFindingsAPI.main()
     assert mock_error.called
