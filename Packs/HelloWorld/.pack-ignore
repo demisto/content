@@ -18,4 +18,4 @@ ignore=BA101
 ignore=GR103
 
 [file:HelloWorldV2.yml]
-ignore=BA129,BA125,IN126
+ignore=BA129,IN126
