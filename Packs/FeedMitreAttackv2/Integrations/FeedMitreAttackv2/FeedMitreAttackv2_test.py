@@ -406,7 +406,8 @@ def test_create_indicator_with_unknown_tactic_name(mocker):
         Calling client.create_indicator().
     Then:
         The indicator is created successfully without raising a KeyError.
-        The unknown tactic is skipped (not added to relationships) and a debug message is logged.
+        Both relationships are created: the known tactic uses the full "ID - Name" format,
+        and the unknown tactic falls back to using just its name.
     """
     from FeedMitreAttackv2 import Client
 
@@ -439,9 +440,13 @@ def test_create_indicator_with_unknown_tactic_name(mocker):
     indicator = client.create_indicator("Attack Pattern", "Some Technique", mitre_item_json)
 
     assert indicator["value"] == "Some Technique"
-    # Only the known tactic (Defense Evasion) should appear in relationships; 'Stealth' is skipped
-    assert len(indicator["relationships"]) == 1
-    assert indicator["relationships"][0]["entityB"] == "TA0005 - Defense Evasion"
+    # Both tactics should appear in relationships:
+    # - known tactic uses full "ID - Name" format
+    # - unknown tactic falls back to name-only (no MITRE ID prefix)
+    assert len(indicator["relationships"]) == 2
+    entity_b_values = {rel["entityB"] for rel in indicator["relationships"]}
+    assert "TA0005 - Defense Evasion" in entity_b_values
+    assert "Stealth" in entity_b_values
 
 
 def test_show_feeds_command(mocker):
