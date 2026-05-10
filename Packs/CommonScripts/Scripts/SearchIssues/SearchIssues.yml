@@ -241,9 +241,9 @@ outputs:
     description: The total number of issues in the system that match all filter criteria.
     type: Number
 isInternal: true
-dependson:
-  must:
-  - core-get-issues
+# dependson:
+#   must:
+#   - core-get-issues
 script: "-"
 subtype: python3
 tags:
