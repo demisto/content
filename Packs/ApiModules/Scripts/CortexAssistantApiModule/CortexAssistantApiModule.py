@@ -403,9 +403,18 @@ class AssistantMessages:
         "• To *start a new chat*, open a new thread or type `{bot_tag} !reset` to release the current session.\n"
     )
 
+    # Optional help tip for platforms that support message history retrieval
+    HELP_MESSAGE_HISTORY_TIP = (
+        "• To summarize messages, mention the source explicitly "
+        "(e.g. `summarize the last 20 messages from this {platform_name} channel`).\n"
+    )
+
     # Decision indicators
     DECISION_APPROVED = "✅ *Approved*"
     DECISION_DECLINED = "❌ *Declined*"
+
+    # Script availability notice (plain text - platform-specific formatting is applied by subclass)
+    SCRIPT_AVAILABLE_NOTICE = "A script is available for this action in the Cortex UI."
 
 
 # Mapping from BackendErrorType → default user-facing message
@@ -440,6 +449,10 @@ class AssistantMessagingHandler:
 
     # Platform name - subclasses should override this
     PLATFORM_NAME = "Unknown"
+
+    # Whether this platform supports retrieving message history (e.g. channel/thread messages).
+    # Subclasses should set to True if they expose message history actions.
+    SUPPORTS_MESSAGE_HISTORY = False
 
     def __init__(self):
         """Initialize the messaging handler"""
@@ -627,6 +640,16 @@ class AssistantMessagingHandler:
             Platform-specific UI blocks
         """
         raise NotImplementedError("Subclass must implement create_approval_ui()")
+
+    def create_script_notice_ui(self) -> dict | None:
+        """
+        Create a platform-specific UI block for the script availability notice.
+        Must be implemented by subclass.
+
+        Returns:
+            Platform-specific block dict, or None if not supported.
+        """
+        raise NotImplementedError("Subclass must implement create_script_notice_ui()")
 
     def create_feedback_ui(self, message_id: str) -> dict:
         """
@@ -1394,7 +1417,7 @@ class AssistantMessagingHandler:
             f"This chat was initiated from {self.PLATFORM_NAME}.\n"
             f"channel_id: {channel_id}\n"
             f"thread_id: {thread_id}\n"
-            "--- End of source chat context ---"
+            "--- End of source chat context ---\n"
         )
 
     async def get_conversation_context_formatted(
@@ -1461,6 +1484,8 @@ class AssistantMessagingHandler:
                 bot_display_name=AssistantMessages.BOT_DISPLAY_NAME,
                 bot_tag=bot_mention,
             )
+            if self.SUPPORTS_MESSAGE_HISTORY:
+                help_msg += AssistantMessages.HELP_MESSAGE_HISTORY_TIP.format(platform_name=self.PLATFORM_NAME)
             await self.send_message_async(channel_id, help_msg, thread_id=thread_id, user_id=user_id)
             return assistant
 
@@ -1798,10 +1823,17 @@ class AssistantMessagingHandler:
                     msg_id = msg.get("message_id", "")
                     msg_is_final = msg.get("is_final", False)
 
+                    # Skip user-type messages (echoed user messages should not be sent to the platform)
+                    if msg_type == AssistantMessageType.USER.value:
+                        demisto.debug(f"Skipping user-type message (not sent to user)")
+                        continue
+
                     # Skip messages with empty content unless they carry UI elements (e.g., approval buttons)
                     if not msg_content.strip() and not AssistantMessageType.is_approval_type(msg_type):
                         demisto.debug(f"Skipping message with empty content (type={msg_type})")
                         continue
+
+                    msg_metadata = msg.get("metadata") or {}
 
                     self._send_single_response(
                         channel_id=channel_id,
@@ -1812,6 +1844,7 @@ class AssistantMessagingHandler:
                         agent_name=agent_name,
                         user_id=user_id,
                         completed=msg_is_final,
+                        metadata=msg_metadata,
                     )
 
                     # Determine status from the last message in the group
@@ -1847,6 +1880,7 @@ class AssistantMessagingHandler:
         agent_name: str,
         user_id: str,
         completed: bool,
+        metadata: dict | None = None,
     ):
         """
         Sends a single agent response message to the platform.
@@ -1860,6 +1894,7 @@ class AssistantMessagingHandler:
             agent_name: Optional agent name to display
             user_id: Optional user ID to mention in model and error responses
             completed: Whether this is the final response
+            metadata: Optional metadata dict from the message
         """
         # Prepare blocks and attachments using platform-specific method
         blocks, attachments = self.prepare_message_blocks(message, message_type)
@@ -1873,6 +1908,14 @@ class AssistantMessagingHandler:
                 "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
             }
             blocks.insert(0, user_mention_block)
+
+        # Add script availability notice when script_data is present in metadata
+        demisto.debug(f"_send_single_response: has_metadata={bool(metadata)}, has_script_data={bool(metadata and metadata.get('script_data'))}")
+        if metadata and metadata.get("script_data"):
+            demisto.debug("Adding script availability notice block")
+            script_notice = self.create_script_notice_ui()
+            if script_notice:
+                blocks.append(script_notice)
 
         # Handle model-specific UI elements
         if AssistantMessageType.is_model_type(message_type):

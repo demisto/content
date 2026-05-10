@@ -110,6 +110,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
     """
 
     PLATFORM_NAME = "Slack"
+    SUPPORTS_MESSAGE_HISTORY = True
 
     def __init__(self):
         """Initialize the Slack Assistant handler"""
@@ -299,6 +300,31 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             Slack blocks for approval
         """
         return get_approval_buttons_block()
+
+    def create_script_notice_ui(self) -> dict | None:
+        """
+        Create Slack script availability notice UI using a rich_text quote block
+        for a visually framed appearance.
+
+        Returns:
+            Slack rich_text block with a quoted notice, or None.
+        """
+        return {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_quote",
+                    "elements": [
+                        {"type": "emoji", "name": "clipboard"},
+                        {
+                            "type": "text",
+                            "text": f" {AssistantMessages.SCRIPT_AVAILABLE_NOTICE}",
+                            "style": {"bold": True},
+                        },
+                    ],
+                }
+            ],
+        }
 
     def create_feedback_ui(self, message_id: str) -> dict:
         """
