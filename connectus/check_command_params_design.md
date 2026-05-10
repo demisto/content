@@ -681,14 +681,27 @@ strategy** (Strategy 8) plus seven additional fixes layered on top:
    multi-select → CSV string, single-select → first option, etc.
    Strings get the `SENTINEL_PARAM_<name>` value used for grep matching.
 5. **Docker child execution.** The per-command child runs inside
-   `demisto/py3-native:8.9.0.114862` (pinned via `DEFAULT_DOCKER_IMAGE`).
-   The integration's YML `script.dockerimage` is **deliberately
-   ignored** — one image for all integrations keeps the analyzer
-   reproducible. `--docker auto` (default) uses Docker when the daemon
+   `demisto/py3-native:8.9.0.114862` (pinned via `DEFAULT_DOCKER_IMAGE`)
+   by default. `--docker auto` (default) uses Docker when the daemon
    is reachable and falls back to host Python otherwise; `--docker
    always` requires Docker; `--docker never` runs in host Python only
    (will fail on integrations needing third-party deps). The
    `--docker-image <ref>` flag overrides the pinned image for testing.
+
+   **`--use-integration-docker` (opt-in)** changes the policy for one
+   run: instead of the pinned image, the analyzer reads
+   `script.dockerimage` from the integration YML and uses that. This
+   recovers dynamic-phase signal for integrations that need a
+   third-party Python package not present in `py3-native` (the package
+   is reported via `module_not_found` under the default policy). The
+   flag is opt-in for two reasons:
+   (a) reproducibility — the pinned image gives every integration the
+   same baseline runtime so a missing package can be triaged once and
+   reported uniformly; (b) footprint — per-integration images are
+   often 600MB+ and pulling N of them during a batch run is expensive
+   on bandwidth and disk. When the flag is set but the YML doesn't
+   declare a `dockerimage`, the analyzer silently falls back to
+   `--docker-image` and logs a one-line note on stderr.
 6. **Structured `diagnostics` field.** A second top-level JSON key
    alongside `commands`, with one entry per command. The status enum
    is one of:

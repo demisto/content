@@ -1,0 +1,907 @@
+"""Unit tests for ``connectus/check_command_params.py``.
+
+Coverage map (mirrors the bug log we fixed during the CrowdStrikeFalcon
+verification pass):
+
+* **B1** — module-level ``PARAMS = demisto.params()`` reads contribute to
+  Scope-1 (``test_b1_*``).
+* **B2** — chained ``demisto.params().get(...)`` is recognized inside a
+  handler (``test_b2_*``). The dedicated ``test_isfetch_regression``
+  case locks in the exact CrowdStrikeFalcon ``module_test`` shape that
+  motivated the fix.
+* **B3** — ``DockerConfig.resolve_image_for`` honors the YML's
+  ``script.dockerimage`` only when ``--use-integration-docker`` was
+  passed (``test_b3_*``); ``_parse_args`` wires the flag.
+* **B4** — ``analyze_static`` emits per-command breadcrumbs to stderr
+  (``test_b4_*``).
+* **Bonus 1** — chained ``demisto.command() == "X"`` dispatch is
+  recognized (``test_chained_command_dispatch``).
+* **Bonus 2** — ``collect_module_level_params`` does NOT descend into
+  helper-function bodies (``test_module_level_walk_skips_function_bodies``,
+  ``test_close_incident_regression``).
+
+The dynamic-flow tests deliberately avoid spinning up a real proxy or
+Docker — ``analyze_dynamic_for_command`` is too coupled to the runtime
+to test directly without I/O. We instead test every pure helper that
+sits on the dynamic decision path: param-value generation, sentinel
+detection, stderr classifiers, the merge function with all of its
+narrowing branches, and the diagnostic-to-dict shape.
+
+Run with:
+
+    pytest connectus/check_command_params_test.py -v
+"""
+
+from __future__ import annotations
+
+import ast
+import textwrap
+from pathlib import Path
+
+import pytest
+
+from connectus import check_command_params as ccp
+
+
+# =============================================================================
+# Fixtures
+# =============================================================================
+
+
+@pytest.fixture
+def isfetch_source() -> str:
+    """Minimal repro of CrowdStrikeFalcon's ``module_test`` + chained dispatch.
+
+    The full file is ~9700 lines; this captures the two patterns that
+    every previous bug touched:
+
+    * a module-level ``PARAMS = demisto.params()`` global;
+    * a handler that reads ``demisto.params().get("isFetch")`` inline
+      (no local ``params`` binding); and
+    * a dispatch that uses the chained ``demisto.command()`` form.
+    """
+    return textwrap.dedent(
+        '''
+        """Test integration."""
+        import demistomock as demisto
+        from CommonServerPython import *
+
+        PARAMS = demisto.params()
+        SERVER = PARAMS.get("server_url")  # module-level read
+
+        def helper_with_internal_param():
+            # This MUST NOT leak into module scope. close_incident is
+            # consumed by a helper, not at import time, so it cannot
+            # apply to every command.
+            return demisto.params().get("close_incident")
+
+        def module_test():
+            try:
+                if demisto.params().get("isFetch"):
+                    pass
+            except Exception:
+                pass
+
+        def search_device_command():
+            return None
+
+        def main():
+            command = demisto.command()
+            if command == "test-module":
+                module_test()
+            elif demisto.command() == "cs-falcon-search-device":
+                search_device_command()
+        '''
+    ).lstrip()
+
+
+@pytest.fixture
+def isfetch_tree(isfetch_source: str) -> ast.Module:
+    return ast.parse(isfetch_source)
+
+
+@pytest.fixture
+def integration_yml_with_image(tmp_path: Path) -> dict:
+    """Mock YML data with a ``script.dockerimage`` declared."""
+    return {
+        "script": {
+            "dockerimage": "demisto/python3:3.11.10.123456",
+            "type": "python",
+        }
+    }
+
+
+# =============================================================================
+# B2 — chained demisto.params() recognition
+# =============================================================================
+
+
+class TestB2ChainedParamsCall:
+    """``demisto.params().get/[]/.X`` must be recognized just like ``params.x``."""
+
+    def test_is_demisto_params_call_matches_bare_call(self) -> None:
+        node = ast.parse("demisto.params()", mode="eval").body
+        assert ccp._is_demisto_params_call(node) is True
+
+    def test_is_demisto_params_call_rejects_args(self) -> None:
+        node = ast.parse("demisto.params(foo)", mode="eval").body
+        # demisto.params() takes no args; with args it's not the canonical form.
+        assert ccp._is_demisto_params_call(node) is False
+
+    def test_is_demisto_params_call_rejects_other_namespace(self) -> None:
+        node = ast.parse("not_demisto.params()", mode="eval").body
+        assert ccp._is_demisto_params_call(node) is False
+
+    def test_is_demisto_params_call_rejects_other_method(self) -> None:
+        node = ast.parse("demisto.args()", mode="eval").body
+        assert ccp._is_demisto_params_call(node) is False
+
+    def test_visitor_picks_up_chained_get(self) -> None:
+        tree = ast.parse('x = demisto.params().get("foo")')
+        v = ccp._ParamAccessVisitor(set(), {})
+        v.visit(tree)
+        assert v.found == {"foo"}
+
+    def test_visitor_picks_up_chained_subscript(self) -> None:
+        tree = ast.parse('x = demisto.params()["bar"]')
+        v = ccp._ParamAccessVisitor(set(), {})
+        v.visit(tree)
+        assert v.found == {"bar"}
+
+    def test_visitor_skips_method_attrs(self) -> None:
+        # ``demisto.params().get`` is the *function*, not a param read.
+        tree = ast.parse("getter = demisto.params().get")
+        v = ccp._ParamAccessVisitor(set(), {})
+        v.visit(tree)
+        assert v.found == set()
+
+
+# =============================================================================
+# B1 — module-level PARAMS globals fed into Scope-1
+# =============================================================================
+
+
+class TestB1ModuleLevelParamsVars:
+    def test_finds_simple_global_assignment(self) -> None:
+        tree = ast.parse("PARAMS = demisto.params()")
+        assert ccp.find_module_level_params_vars(tree) == {"PARAMS"}
+
+    def test_finds_annotated_global(self) -> None:
+        tree = ast.parse("PARAMS: dict = demisto.params()")
+        assert ccp.find_module_level_params_vars(tree) == {"PARAMS"}
+
+    def test_finds_multiple_globals(self) -> None:
+        tree = ast.parse(
+            "FOO = demisto.params()\nBAR = demisto.params()"
+        )
+        assert ccp.find_module_level_params_vars(tree) == {"FOO", "BAR"}
+
+    def test_ignores_function_local_assignment(self) -> None:
+        tree = ast.parse(
+            "def main():\n    params = demisto.params()\n"
+        )
+        # The walker only looks at direct module children — `params`
+        # inside main() is NOT a module-level global.
+        assert ccp.find_module_level_params_vars(tree) == set()
+
+    def test_ignores_non_demisto_assignments(self) -> None:
+        tree = ast.parse("PARAMS = {'a': 1}\nOTHER = some_function()")
+        assert ccp.find_module_level_params_vars(tree) == set()
+
+    def test_collect_module_level_params_picks_up_global_reads(
+        self, isfetch_tree: ast.Module
+    ) -> None:
+        params_vars = ccp.find_module_level_params_vars(isfetch_tree)
+        func_map = ccp.build_function_map(isfetch_tree)
+        main_fn = func_map["main"]
+        found = ccp.collect_module_level_params(
+            isfetch_tree, main_fn, params_vars, {}
+        )
+        # ``SERVER = PARAMS.get("server_url")`` runs at import time.
+        assert "server_url" in found
+
+
+# =============================================================================
+# Bonus 2 — module-level walk MUST NOT descend into helper bodies
+# =============================================================================
+
+
+class TestModuleLevelWalkScope:
+    """The bug: ``ast.walk(tree)`` descended into every helper, fanning
+    helper-only param reads (e.g. ``close_incident``) out to every
+    command. The fix: ``_walk_module_scope`` skips
+    FunctionDef/AsyncFunctionDef/ClassDef bodies.
+    """
+
+    def test_module_level_walk_skips_function_bodies(self) -> None:
+        src = textwrap.dedent(
+            """
+            PARAMS = demisto.params()
+            EAGER = PARAMS.get("eager_only")  # module scope; should match
+
+            def helper():
+                # Only runs when called, NOT at import.
+                _ = PARAMS.get("helper_only")
+            """
+        )
+        tree = ast.parse(src)
+        params_vars = ccp.find_module_level_params_vars(tree)
+        found = ccp.collect_module_level_params(tree, None, params_vars, {})
+        assert "eager_only" in found
+        assert "helper_only" not in found
+
+    def test_module_level_walk_skips_class_bodies(self) -> None:
+        src = textwrap.dedent(
+            """
+            PARAMS = demisto.params()
+
+            class Holder:
+                # Method bodies are not module-level either, even though
+                # the class statement itself runs at import.
+                def go(self):
+                    _ = PARAMS.get("class_method_only")
+            """
+        )
+        tree = ast.parse(src)
+        params_vars = ccp.find_module_level_params_vars(tree)
+        found = ccp.collect_module_level_params(tree, None, params_vars, {})
+        assert "class_method_only" not in found
+
+    def test_module_level_walk_descends_into_if_main_guard(self) -> None:
+        # The classic ``if __name__ in ('__main__', 'builtins'): main()``
+        # guard at the bottom — non-function statements inside the body
+        # ARE module-level.
+        src = textwrap.dedent(
+            """
+            PARAMS = demisto.params()
+
+            if __name__ in ("__main__", "builtins"):
+                EAGER_INSIDE_GUARD = PARAMS.get("guarded_global")
+            """
+        )
+        tree = ast.parse(src)
+        params_vars = ccp.find_module_level_params_vars(tree)
+        found = ccp.collect_module_level_params(tree, None, params_vars, {})
+        assert "guarded_global" in found
+
+    def test_module_level_walk_descends_into_try_blocks(self) -> None:
+        src = textwrap.dedent(
+            """
+            PARAMS = demisto.params()
+            try:
+                EAGER = PARAMS.get("try_global")
+            except Exception:
+                FALLBACK = PARAMS.get("except_global")
+            """
+        )
+        tree = ast.parse(src)
+        params_vars = ccp.find_module_level_params_vars(tree)
+        found = ccp.collect_module_level_params(tree, None, params_vars, {})
+        assert "try_global" in found
+        assert "except_global" in found
+
+    def test_close_incident_regression(self, isfetch_source: str) -> None:
+        """Regression test for the false-positive close_incident bug.
+
+        Before the fix, ``close_incident`` (read inside ``helper_with_internal_param``)
+        was returned by ``collect_module_level_params`` and fanned out to
+        every command. After the fix it must NOT be in the module-level set.
+        """
+        scope_1, scope_2 = ccp.analyze_static(
+            isfetch_source, "cs-falcon-search-device", verbose=False
+        )
+        assert "close_incident" not in scope_1, (
+            "close_incident is read by a helper, NOT at module scope; "
+            "it must not be fanned out to commands like search-device "
+            "that never reach that helper."
+        )
+        # Sanity: the legit module-level read IS still captured.
+        assert "server_url" in scope_1
+
+
+# =============================================================================
+# B2 + Bonus 1 — the user's "isFetch" case end-to-end
+# =============================================================================
+
+
+class TestIsFetchRegression:
+    """User-requested regression test: ``isFetch`` must surface for
+    ``test-module`` even when the integration uses chained
+    ``demisto.params().get("isFetch")`` and chained ``demisto.command()``
+    dispatch.
+    """
+
+    def test_isfetch_attributed_to_test_module(
+        self, isfetch_source: str
+    ) -> None:
+        scope_1, scope_2 = ccp.analyze_static(
+            isfetch_source, "test-module", verbose=False
+        )
+        all_static = scope_1 | scope_2
+        assert "isFetch" in all_static, (
+            f"isFetch must surface for test-module via Scope-2 tracing of "
+            f"the chained demisto.params().get('isFetch'). "
+            f"scope_1={sorted(scope_1)}, scope_2={sorted(scope_2)}"
+        )
+
+    def test_isfetch_only_in_scope_2_for_handler_command(
+        self, isfetch_source: str
+    ) -> None:
+        # isFetch is read only inside module_test() (the test-module
+        # handler), so it is per-command Scope-2, NOT module-level Scope-1.
+        scope_1, scope_2 = ccp.analyze_static(
+            isfetch_source, "test-module", verbose=False
+        )
+        assert "isFetch" in scope_2
+        assert "isFetch" not in scope_1
+
+    def test_other_command_does_not_get_isfetch(
+        self, isfetch_source: str
+    ) -> None:
+        # cs-falcon-search-device's handler does NOT read isFetch, so it
+        # must not appear there.
+        scope_1, scope_2 = ccp.analyze_static(
+            isfetch_source, "cs-falcon-search-device", verbose=False
+        )
+        all_static = scope_1 | scope_2
+        assert "isFetch" not in all_static
+
+
+# =============================================================================
+# Bonus 1 — chained demisto.command() dispatch
+# =============================================================================
+
+
+class TestChainedCommandDispatch:
+    def test_is_command_ref_recognizes_bare_name(self) -> None:
+        node = ast.parse("command", mode="eval").body
+        assert ccp._is_command_ref(node) is True
+
+    def test_is_command_ref_recognizes_chained_call(self) -> None:
+        node = ast.parse("demisto.command()", mode="eval").body
+        assert ccp._is_command_ref(node) is True
+
+    def test_is_command_ref_rejects_other_attr(self) -> None:
+        node = ast.parse("demisto.args()", mode="eval").body
+        assert ccp._is_command_ref(node) is False
+
+    def test_is_command_ref_rejects_call_with_args(self) -> None:
+        node = ast.parse("demisto.command(extra)", mode="eval").body
+        assert ccp._is_command_ref(node) is False
+
+    def test_chained_dispatch_resolves_handler(self, isfetch_source: str) -> None:
+        # The crucial integration-level check: even though the
+        # search-device branch uses ``elif demisto.command() == "X":``,
+        # the static analyzer MUST find the handler call.
+        tree = ast.parse(isfetch_source)
+        func_map = ccp.build_function_map(tree)
+        main_fn = func_map["main"]
+        calls = ccp.find_command_handler_calls(main_fn, "cs-falcon-search-device")
+        assert calls, (
+            "find_command_handler_calls failed to recognize "
+            "'elif demisto.command() == \"X\":' as a dispatch site"
+        )
+
+    def test_if_test_matches_command_handles_both_forms(self) -> None:
+        # if command == "X":
+        bare = ast.parse('command == "X"', mode="eval").body
+        assert ccp._if_test_matches_command(bare, "X") is True
+        # if demisto.command() == "X":
+        chained = ast.parse('demisto.command() == "X"', mode="eval").body
+        assert ccp._if_test_matches_command(chained, "X") is True
+        # Reversed form: "X" == command
+        reversed_form = ast.parse('"X" == demisto.command()', mode="eval").body
+        assert ccp._if_test_matches_command(reversed_form, "X") is True
+
+
+# =============================================================================
+# Pre-existing static behaviour: regression coverage
+# =============================================================================
+
+
+class TestPydanticAliases:
+    def test_extracts_field_alias(self) -> None:
+        src = textwrap.dedent(
+            """
+            class P:
+                foo: str = Field(alias="real_foo")
+                bar: str = "no alias"
+            """
+        )
+        tree = ast.parse(src)
+        assert ccp.find_pydantic_aliases(tree) == {"foo": "real_foo"}
+
+    def test_visitor_resolves_alias_on_attribute_access(self) -> None:
+        # params.foo  with alias foo -> real_foo  =>  found contains "real_foo"
+        tree = ast.parse("x = params.foo")
+        v = ccp._ParamAccessVisitor({"params"}, {"foo": "real_foo"})
+        v.visit(tree)
+        assert v.found == {"real_foo"}
+
+
+class TestDispatchVariants:
+    def test_match_case_dispatch(self) -> None:
+        src = textwrap.dedent(
+            """
+            def handler_a(): pass
+            def handler_b(): pass
+            def main():
+                command = demisto.command()
+                match command:
+                    case "a":
+                        handler_a()
+                    case "b":
+                        handler_b()
+            """
+        )
+        tree = ast.parse(src)
+        main_fn = ccp.build_function_map(tree)["main"]
+        assert ccp.find_command_handler_calls(main_fn, "a")
+        assert ccp.find_command_handler_calls(main_fn, "b")
+        assert not ccp.find_command_handler_calls(main_fn, "c")
+
+    def test_dict_dispatch(self) -> None:
+        src = textwrap.dedent(
+            """
+            def h_x(): pass
+            def main():
+                command = demisto.command()
+                commands = {"x": h_x}
+                commands[command]()
+            """
+        )
+        tree = ast.parse(src)
+        main_fn = ccp.build_function_map(tree)["main"]
+        calls = ccp.find_command_handler_calls(main_fn, "x")
+        assert calls
+
+    def test_in_tuple_dispatch(self) -> None:
+        src = textwrap.dedent(
+            """
+            def h(): pass
+            def main():
+                command = demisto.command()
+                if command in ("a", "b", "c"):
+                    h()
+            """
+        )
+        tree = ast.parse(src)
+        main_fn = ccp.build_function_map(tree)["main"]
+        assert ccp.find_command_handler_calls(main_fn, "b")
+
+
+class TestPreDispatchScope:
+    def test_pre_dispatch_collects_only_main_body(self) -> None:
+        src = textwrap.dedent(
+            """
+            def main():
+                params = demisto.params()
+                client = Client(params.get("url"), params.get("api_key"))
+                command = demisto.command()
+                if command == "x":
+                    handler(params.get("after_dispatch"))
+            """
+        )
+        tree = ast.parse(src)
+        main_fn = ccp.build_function_map(tree)["main"]
+        line = ccp.find_command_dispatch_line(main_fn)
+        found = ccp.collect_pre_dispatch_params(
+            main_fn, {"params"}, {}, line
+        )
+        assert "url" in found
+        assert "api_key" in found
+        assert "after_dispatch" not in found
+
+
+# =============================================================================
+# B3 — DockerConfig.resolve_image_for & flag plumbing
+# =============================================================================
+
+
+class TestB3DockerImageResolution:
+    def test_default_returns_pinned_image_when_flag_off(self) -> None:
+        cfg = ccp.DockerConfig(
+            default_image="demisto/py3-native:1.0",
+            use_integration_docker=False,
+        )
+        yml = {"script": {"dockerimage": "demisto/python3:3.11"}}
+        assert cfg.resolve_image_for(yml) == "demisto/py3-native:1.0"
+
+    def test_returns_yml_image_when_flag_on(self) -> None:
+        cfg = ccp.DockerConfig(
+            default_image="demisto/py3-native:1.0",
+            use_integration_docker=True,
+        )
+        yml = {"script": {"dockerimage": "demisto/python3:3.11"}}
+        assert cfg.resolve_image_for(yml) == "demisto/python3:3.11"
+
+    def test_falls_back_to_default_when_yml_missing_image(self) -> None:
+        cfg = ccp.DockerConfig(
+            default_image="demisto/py3-native:1.0",
+            use_integration_docker=True,
+        )
+        # Flag on, but YML has no script.dockerimage.
+        yml = {"script": {"type": "python"}}
+        assert cfg.resolve_image_for(yml) == "demisto/py3-native:1.0"
+
+    def test_falls_back_to_default_when_yml_is_none(self) -> None:
+        cfg = ccp.DockerConfig(
+            default_image="demisto/py3-native:1.0",
+            use_integration_docker=True,
+        )
+        assert cfg.resolve_image_for(None) == "demisto/py3-native:1.0"
+
+    def test_strips_whitespace_from_yml_image(self) -> None:
+        cfg = ccp.DockerConfig(
+            default_image="demisto/py3-native:1.0",
+            use_integration_docker=True,
+        )
+        yml = {"script": {"dockerimage": "  demisto/python3:3.11  "}}
+        assert cfg.resolve_image_for(yml) == "demisto/python3:3.11"
+
+    def test_ignores_empty_yml_image(self) -> None:
+        cfg = ccp.DockerConfig(
+            default_image="demisto/py3-native:1.0",
+            use_integration_docker=True,
+        )
+        yml = {"script": {"dockerimage": "   "}}
+        assert cfg.resolve_image_for(yml) == "demisto/py3-native:1.0"
+
+    def test_cli_flag_is_parsed(self) -> None:
+        args = ccp._parse_args(
+            ["dummy/path", "--static-only", "--use-integration-docker"]
+        )
+        assert args.use_integration_docker is True
+
+    def test_cli_flag_default_is_false(self) -> None:
+        args = ccp._parse_args(["dummy/path", "--static-only"])
+        assert args.use_integration_docker is False
+
+
+# =============================================================================
+# B4 — per-command stderr breadcrumbs
+# =============================================================================
+
+
+class TestB4VerboseLogging:
+    def test_resolved_handler_breadcrumb(
+        self, isfetch_source: str, capsys: pytest.CaptureFixture
+    ) -> None:
+        ccp.analyze_static(isfetch_source, "test-module", verbose=True)
+        err = capsys.readouterr().err
+        assert "[static] test-module:" in err
+        assert "module_test" in err  # the resolved handler name
+
+    def test_no_dispatch_breadcrumb(
+        self, capsys: pytest.CaptureFixture
+    ) -> None:
+        # An integration whose main() doesn't dispatch on `command` for "X".
+        src = textwrap.dedent(
+            """
+            def main():
+                command = demisto.command()
+                if command == "y":
+                    pass
+            """
+        )
+        ccp.analyze_static(src, "x", verbose=True)
+        err = capsys.readouterr().err
+        assert "[static] x:" in err
+        assert "no dispatch site found" in err
+
+    def test_module_level_globals_listed(
+        self, isfetch_source: str, capsys: pytest.CaptureFixture
+    ) -> None:
+        ccp.analyze_static(isfetch_source, "test-module", verbose=True)
+        err = capsys.readouterr().err
+        assert "module-level params globals" in err
+        assert "PARAMS" in err
+
+    def test_verbose_false_silent(
+        self, isfetch_source: str, capsys: pytest.CaptureFixture
+    ) -> None:
+        ccp.analyze_static(isfetch_source, "test-module", verbose=False)
+        err = capsys.readouterr().err
+        assert "[static] test-module:" not in err
+
+    def test_skips_non_python_integration(
+        self, capsys: pytest.CaptureFixture
+    ) -> None:
+        scope_1, scope_2 = ccp.analyze_static(
+            "function main() {}",
+            "x",
+            language="javascript",
+            integration_name="JsThing",
+            verbose=True,
+        )
+        assert scope_1 == set() and scope_2 == set()
+        err = capsys.readouterr().err
+        assert "non-Python integration" in err
+
+
+# =============================================================================
+# Dynamic-flow pure helpers
+# =============================================================================
+
+
+class TestBuildParamValues:
+    def test_url_param_always_points_to_proxy(self) -> None:
+        params = [{"name": "url", "type": ccp.YML_TYPE_SHORT_TEXT,
+                   "defaultvalue": "https://api.example.com"}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://127.0.0.1:9999", set()
+        )
+        # URL param overrides defaultvalue with proxy URL.
+        assert values["url"] == "http://127.0.0.1:9999"
+        assert sentinels["url"] == ["http://127.0.0.1:9999"]
+
+    def test_bool_param_traceable_false(self) -> None:
+        params = [{"name": "isFetch", "type": ccp.YML_TYPE_BOOL}]
+        values, sentinels, non_traceable = ccp.build_param_values(
+            params, "http://x", set()
+        )
+        assert values["isFetch"] is True
+        assert sentinels["isFetch"] == []
+        assert "isFetch" in non_traceable
+
+    def test_credentials_emits_two_sentinels(self) -> None:
+        params = [{"name": "creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set()
+        )
+        assert isinstance(values["creds"], dict)
+        assert "identifier" in values["creds"] and "password" in values["creds"]
+        assert len(sentinels["creds"]) == 2
+
+    def test_ignored_param_value_sent_but_no_sentinel(self) -> None:
+        params = [
+            {"name": "to_ignore", "type": ccp.YML_TYPE_SHORT_TEXT},
+            {"name": "kept", "type": ccp.YML_TYPE_SHORT_TEXT},
+        ]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", {"to_ignore"}
+        )
+        # Value still seeded (so module-level reads don't crash) ...
+        assert "to_ignore" in values
+        # ... but it must not contribute to detection.
+        assert "to_ignore" not in sentinels
+        assert "kept" in sentinels
+
+    def test_default_text_uses_sentinel(self) -> None:
+        params = [{"name": "anything"}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set()
+        )
+        assert values["anything"].startswith(ccp.SENTINEL_PREFIX)
+        assert sentinels["anything"][0].startswith(ccp.SENTINEL_PREFIX)
+
+
+class TestSentinelDetection:
+    def test_hit_in_url(self) -> None:
+        reqs = [{"method": "GET", "url": "http://x/SENTINEL_PARAM_foo", "headers": {}}]
+        sentinels = {"foo": ["SENTINEL_PARAM_foo"], "bar": ["SENTINEL_PARAM_bar"]}
+        assert ccp.detect_sentinel_hits(reqs, sentinels) == {"foo"}
+
+    def test_hit_in_header(self) -> None:
+        reqs = [{"method": "GET", "url": "http://x", "headers": {"Auth": "SENTINEL_PARAM_token"}}]
+        sentinels = {"token": ["SENTINEL_PARAM_token"]}
+        assert ccp.detect_sentinel_hits(reqs, sentinels) == {"token"}
+
+    def test_hit_in_body(self) -> None:
+        reqs = [{"method": "POST", "url": "http://x", "headers": {},
+                 "body": '{"x": "SENTINEL_PARAM_pw"}'}]
+        sentinels = {"pw": ["SENTINEL_PARAM_pw"]}
+        assert ccp.detect_sentinel_hits(reqs, sentinels) == {"pw"}
+
+    def test_empty_token_list_skipped(self) -> None:
+        reqs = [{"method": "GET", "url": "http://x", "headers": {}}]
+        sentinels = {"isFetch": []}  # non-traceable
+        assert ccp.detect_sentinel_hits(reqs, sentinels) == set()
+
+    def test_empty_requests_returns_empty(self) -> None:
+        assert ccp.detect_sentinel_hits([], {"foo": ["X"]}) == set()
+
+
+class TestStderrClassifiers:
+    def test_extract_failing_params_filters_to_yml_set(self) -> None:
+        text = "RETURN_ERROR_PATCHED: invalid SENTINEL_PARAM_real and SENTINEL_PARAM_fake"
+        out = ccp.extract_failing_params(text, {"real"})
+        assert out == ["real"]  # 'fake' is dropped — not a YML param
+
+    def test_extract_failing_params_unique_sorted(self) -> None:
+        text = "SENTINEL_PARAM_b SENTINEL_PARAM_a SENTINEL_PARAM_b"
+        out = ccp.extract_failing_params(text, {"a", "b"})
+        assert out == ["a", "b"]
+
+    def test_extract_failing_params_empty_text(self) -> None:
+        assert ccp.extract_failing_params("", {"a"}) == []
+
+    def test_extract_missing_module_match(self) -> None:
+        stderr = (
+            "Traceback (most recent call last):\n"
+            "  File ...\n"
+            "ModuleNotFoundError: No module named 'pymisp'\n"
+        )
+        result = ccp.extract_missing_module(stderr)
+        assert result is not None
+        module_name, line = result
+        assert module_name == "pymisp"
+        assert "ModuleNotFoundError" in line
+
+    def test_extract_missing_module_no_match(self) -> None:
+        assert ccp.extract_missing_module("ImportError: foo") is None
+
+    def test_extract_missing_module_handles_double_quotes(self) -> None:
+        stderr = "ModuleNotFoundError: No module named \"httpx\""
+        result = ccp.extract_missing_module(stderr)
+        assert result is not None and result[0] == "httpx"
+
+    def test_short_stderr_prefers_return_error_marker(self) -> None:
+        stderr = (
+            "some warning\n"
+            "RETURN_ERROR_PATCHED: invalid url\n"
+            "more noise\n"
+        )
+        assert "RETURN_ERROR_PATCHED" in ccp._short_stderr(stderr)
+
+    def test_short_stderr_falls_back_to_last_line(self) -> None:
+        stderr = "warn 1\nwarn 2\n"
+        assert ccp._short_stderr(stderr) == "warn 2"
+
+
+class TestMergeCommandParams:
+    def test_no_dynamic_returns_static_union(self) -> None:
+        out = ccp._merge_command_params(
+            "x",
+            static_pair=({"a", "b"}, {"c"}),
+            captured=set(),
+            diag=None,
+        )
+        assert out == {"a", "b", "c"}
+
+    def test_no_capture_returns_static_union(self) -> None:
+        diag = ccp.CommandDiagnostic(status="ok_no_capture", captured_requests=0)
+        out = ccp._merge_command_params(
+            "x",
+            static_pair=({"a", "b"}, {"c"}),
+            captured=set(),
+            diag=diag,
+        )
+        assert out == {"a", "b", "c"}
+        assert diag.scope_1_narrowed is False
+
+    def test_narrows_scope_1_when_dynamic_succeeds(self) -> None:
+        diag = ccp.CommandDiagnostic(status="ok", captured_requests=3)
+        out = ccp._merge_command_params(
+            "x",
+            static_pair=({"a", "b", "shared"}, {"c"}),  # scope_1 has a, b, shared
+            captured={"shared"},  # dynamic only saw "shared" on the wire
+            diag=diag,
+        )
+        # scope_1 narrowed to scope_1 ∩ captured = {"shared"}
+        # final = {"shared"} | scope_2 | captured = {"shared", "c"}
+        assert out == {"shared", "c"}
+        assert diag.scope_1_narrowed is True
+        assert diag.scope_1_dropped == ["a", "b"]
+
+    def test_does_not_narrow_when_status_not_ok(self) -> None:
+        diag = ccp.CommandDiagnostic(
+            status="param_caused_failure", captured_requests=0
+        )
+        out = ccp._merge_command_params(
+            "x",
+            static_pair=({"a", "b"}, {"c"}),
+            captured={"a"},  # from sentinel attribution
+            diag=diag,
+        )
+        assert out == {"a", "b", "c"}
+        assert diag.scope_1_narrowed is False
+
+    def test_classify_dynamic_error_timeout(self) -> None:
+        exc = ccp.DynamicAnalysisError("command 'x' timed out after 60s")
+        assert ccp._classify_dynamic_error(exc) == "timeout"
+
+    def test_classify_dynamic_error_docker(self) -> None:
+        exc = ccp.DynamicAnalysisError("docker invocation failed: nope")
+        assert ccp._classify_dynamic_error(exc) == "docker_error"
+
+    def test_classify_dynamic_error_default(self) -> None:
+        exc = ccp.DynamicAnalysisError("something weird")
+        assert ccp._classify_dynamic_error(exc) == "no_data"
+
+
+class TestCommandDiagnostic:
+    def test_minimal_to_dict(self) -> None:
+        d = ccp.CommandDiagnostic(status="ok", captured_requests=5)
+        assert d.to_dict() == {"status": "ok", "captured_requests": 5}
+
+    def test_failure_excerpt_only_for_non_ok(self) -> None:
+        d = ccp.CommandDiagnostic(
+            status="ok",
+            captured_requests=1,
+            failure_excerpt="should be hidden",
+        )
+        # ``failure_excerpt`` is suppressed when status is ok / ok_no_capture.
+        assert "failure_excerpt" not in d.to_dict()
+
+    def test_module_not_found_emits_field(self) -> None:
+        d = ccp.CommandDiagnostic(
+            status="module_not_found",
+            captured_requests=0,
+            failure_excerpt="ModuleNotFoundError: No module named 'httpx'",
+            missing_module="httpx",
+        )
+        out = d.to_dict()
+        assert out["status"] == "module_not_found"
+        assert out["missing_module"] == "httpx"
+
+    def test_narrowing_fields_serialized(self) -> None:
+        d = ccp.CommandDiagnostic(
+            status="ok",
+            captured_requests=1,
+            scope_1_narrowed=True,
+            scope_1_dropped=["a", "b"],
+        )
+        out = d.to_dict()
+        assert out["scope_1_narrowed"] is True
+        assert out["scope_1_dropped"] == ["a", "b"]
+
+    def test_narrowing_fields_omitted_when_not_narrowed(self) -> None:
+        d = ccp.CommandDiagnostic(status="ok", captured_requests=0)
+        out = d.to_dict()
+        assert "scope_1_narrowed" not in out
+        assert "scope_1_dropped" not in out
+
+
+# =============================================================================
+# Misc. small helpers
+# =============================================================================
+
+
+class TestMiscHelpers:
+    def test_load_ignore_inline(self) -> None:
+        out = ccp.load_ignore_params(["a", "b"], None)
+        assert {"a", "b"}.issubset(out)
+
+    def test_load_ignore_file(self, tmp_path: Path) -> None:
+        f = tmp_path / "ignore.txt"
+        f.write_text(
+            "# comment\n"
+            "alpha\n"
+            "beta\n"
+            "\n"
+            "# another comment\n"
+            "gamma\n"
+        )
+        out = ccp.load_ignore_params(None, f)
+        assert {"alpha", "beta", "gamma"}.issubset(out)
+
+    def test_load_ignore_missing_file_raises(self, tmp_path: Path) -> None:
+        with pytest.raises(FileNotFoundError):
+            ccp.load_ignore_params(None, tmp_path / "nonexistent.txt")
+
+    def test_coerce_default_value_bool(self) -> None:
+        assert ccp._coerce_default_value("true", ccp.YML_TYPE_BOOL) is True
+        assert ccp._coerce_default_value("false", ccp.YML_TYPE_BOOL) is False
+        assert ccp._coerce_default_value("yes", ccp.YML_TYPE_BOOL) is True
+
+    def test_coerce_default_value_numeric(self) -> None:
+        assert ccp._coerce_default_value("42", ccp.YML_TYPE_NUMERIC) == 42
+        assert ccp._coerce_default_value("3.14", ccp.YML_TYPE_NUMERIC) == 3.14
+        # Non-numeric string falls through.
+        assert ccp._coerce_default_value("nope", ccp.YML_TYPE_NUMERIC) == "nope"
+
+    def test_discover_commands(self) -> None:
+        yml = {
+            "script": {
+                "commands": [
+                    {"name": "cmd-a"},
+                    {"name": "cmd-b"},
+                ],
+                "isfetch": True,
+            }
+        }
+        cmds = ccp.discover_commands(yml)
+        assert "cmd-a" in cmds
+        assert "cmd-b" in cmds
+        assert "fetch-incidents" in cmds

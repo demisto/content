@@ -29,7 +29,15 @@ Usage::
         [--commands cmd1 cmd2 ...] \\
         [--static-only] \\
         [--ignore-params PARAM [PARAM ...]] \\
-        [--ignore-params-file PATH]
+        [--ignore-params-file PATH] \\
+        [--use-integration-docker]
+
+``--use-integration-docker`` is opt-in. By default the per-command
+child runs in the pinned ``demisto/py3-native`` image (one image, all
+integrations, fully reproducible). With the flag set, the analyzer
+honours ``script.dockerimage`` from the integration's YML so commands
+run inside the integration's own production runtime. Use this when an
+integration reports ``module_not_found`` under the default image.
 
 Output schema (single JSON document on stdout)::
 
@@ -274,22 +282,65 @@ def load_ignore_params(inline: list[str] | None, file_path: Path | None) -> set[
 # --------------------------------------------------------------------------
 
 
+def _is_demisto_params_call(node: ast.AST) -> bool:
+    """True if *node* is the AST shape ``demisto.params()`` (no args).
+
+    Recognizes the chained inline pattern that many integrations use
+    instead of binding ``params = demisto.params()`` once: e.g.
+
+        if demisto.params().get("isFetch"):
+            ...
+
+    Without this check the visitor only matches the receiver-is-a-Name
+    form (``params.get("isFetch")``) and silently misses every chained
+    call.
+    """
+    if not isinstance(node, ast.Call):
+        return False
+    if node.args or node.keywords:
+        return False
+    func = node.func
+    return (
+        isinstance(func, ast.Attribute)
+        and func.attr == "params"
+        and isinstance(func.value, ast.Name)
+        and func.value.id == "demisto"
+    )
+
+
 class _ParamAccessVisitor(ast.NodeVisitor):
-    """Collects ``params.get('X')`` / ``params['X']`` / ``params.X`` accesses."""
+    """Collects ``params.get('X')`` / ``params['X']`` / ``params.X`` accesses.
+
+    Recognizes both forms of the receiver:
+
+    * a bare ``Name`` whose id is in ``params_var_names`` (e.g. ``params``,
+      ``PARAMS``, ``integration_params``) — the classic local-variable
+      pattern.
+    * a chained ``demisto.params()`` call expression — the inline pattern
+      used by integrations that don't bind a local variable. Without this
+      branch, code like ``demisto.params().get("isFetch")`` would be
+      silently ignored even when the visitor walks the right function.
+    """
 
     def __init__(self, params_var_names: set[str], pydantic_aliases: dict[str, str]):
         self._vars = params_var_names
         self._aliases = pydantic_aliases
         self.found: set[str] = set()
 
+    def _receiver_is_params(self, node: ast.AST) -> bool:
+        """True if *node* refers to a params object (Name in candidates OR demisto.params())."""
+        if isinstance(node, ast.Name) and node.id in self._vars:
+            return True
+        return _is_demisto_params_call(node)
+
     def visit_Call(self, node: ast.Call) -> None:
-        # params.get("X")  or  params.get("X", default)
+        # <receiver>.get("X")  or  <receiver>.get("X", default)
+        # where <receiver> is `params` (Name) or `demisto.params()` (Call).
         func = node.func
         if (
             isinstance(func, ast.Attribute)
             and func.attr == "get"
-            and isinstance(func.value, ast.Name)
-            and func.value.id in self._vars
+            and self._receiver_is_params(func.value)
             and node.args
         ):
             arg0 = node.args[0]
@@ -298,16 +349,16 @@ class _ParamAccessVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Subscript(self, node: ast.Subscript) -> None:
-        # params["X"]
-        if isinstance(node.value, ast.Name) and node.value.id in self._vars:
+        # <receiver>["X"]
+        if self._receiver_is_params(node.value):
             sl = node.slice
             if isinstance(sl, ast.Constant) and isinstance(sl.value, str):
                 self.found.add(sl.value)
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute) -> None:
-        # params.X  -> if Pydantic alias known, resolve to YML name; else raw attr.
-        if isinstance(node.value, ast.Name) and node.value.id in self._vars:
+        # <receiver>.X  -> if Pydantic alias known, resolve to YML name; else raw attr.
+        if self._receiver_is_params(node.value):
             attr = node.attr
             # Skip method-y attributes that are clearly not params.
             if attr not in {"get", "items", "keys", "values", "pop", "update", "setdefault", "copy"}:
@@ -367,20 +418,65 @@ def find_main(func_map: dict[str, ast.FunctionDef]) -> ast.FunctionDef | None:
     return func_map.get("main")
 
 
+def _is_demisto_params_assign(stmt: ast.stmt) -> str | None:
+    """If *stmt* is ``<NAME> = demisto.params()``, return ``<NAME>``; else ``None``.
+
+    Recognized forms:
+
+    * ``foo = demisto.params()``                    (simple Assign, single target)
+    * ``foo: dict = demisto.params()``              (AnnAssign with value)
+
+    Tuple/list targets and chained assignments (``a = b = demisto.params()``)
+    are intentionally ignored — the analyzer doesn't need them in practice
+    and the ambiguity isn't worth modelling.
+    """
+    target: ast.AST | None
+    value: ast.AST | None
+    if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+        target = stmt.targets[0]
+        value = stmt.value
+    elif isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name) and stmt.value is not None:
+        target = stmt.target
+        value = stmt.value
+    else:
+        return None
+    if not _is_demisto_params_call(value):
+        return None
+    assert isinstance(target, ast.Name)  # narrowed above
+    return target.id
+
+
 def find_params_var(main_fn: ast.FunctionDef) -> str | None:
-    """Find the variable assigned from ``demisto.params()``."""
+    """Find the variable in ``main()`` assigned from ``demisto.params()``."""
     for stmt in ast.walk(main_fn):
-        if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
-            v = stmt.value
-            if (
-                isinstance(v, ast.Call)
-                and isinstance(v.func, ast.Attribute)
-                and v.func.attr == "params"
-                and isinstance(v.func.value, ast.Name)
-                and v.func.value.id == "demisto"
-            ):
-                return stmt.targets[0].id
+        name = _is_demisto_params_assign(stmt)
+        if name is not None:
+            return name
     return None
+
+
+def find_module_level_params_vars(tree: ast.AST) -> set[str]:
+    """Collect names assigned to ``demisto.params()`` at MODULE scope.
+
+    Many integrations bind a global ``PARAMS = demisto.params()`` near the
+    top of the file and then use it from helper functions and command
+    handlers without ever passing ``params`` as a formal argument. Without
+    this scan, the analyzer's per-handler tracer (which seeds candidate
+    names from the function signature) never recognizes accesses to those
+    globals and silently drops them.
+
+    Walks only direct children of the ``Module`` node — module scope only.
+    Handles both ``Assign`` and ``AnnAssign`` forms via
+    :func:`_is_demisto_params_assign`.
+    """
+    if not isinstance(tree, ast.Module):
+        return set()
+    out: set[str] = set()
+    for stmt in tree.body:
+        name = _is_demisto_params_assign(stmt)
+        if name is not None:
+            out.add(name)
+    return out
 
 
 def find_command_dispatch_line(main_fn: ast.FunctionDef) -> int:
@@ -423,12 +519,89 @@ def collect_pre_dispatch_params(
     aliases: dict[str, str],
     dispatch_line: int,
 ) -> set[str]:
-    """Scope 1: collect param accesses in main() *before* dispatch."""
+    """Scope 1 (in-main): collect param accesses in main() *before* dispatch.
+
+    The visitor also catches the chained ``demisto.params().get(...)`` form
+    automatically, so callers do NOT need to add that idiom to
+    ``params_vars``. Module-level globals (e.g. ``PARAMS = demisto.params()``)
+    must be passed in via ``params_vars``.
+    """
     visitor = _ParamAccessVisitor(params_vars, aliases)
     for stmt in main_fn.body:
         if stmt.lineno >= dispatch_line:
             break
         visitor.visit(stmt)
+    return visitor.found
+
+
+def collect_module_level_params(
+    tree: ast.Module,
+    main_fn: ast.FunctionDef | None,
+    params_vars: set[str],
+    aliases: dict[str, str],
+) -> set[str]:
+    """Scope-1 fan-out: param accesses at MODULE scope (outside any function).
+
+    Many integrations evaluate config eagerly at import time::
+
+        PARAMS = demisto.params()
+        SERVER = PARAMS.get("url")
+        USE_SSL = not PARAMS.get("insecure")
+
+    These reads happen before any command dispatches and apply to every
+    command, exactly like in-``main()`` Scope-1 reads. We feed the result
+    into the same Scope-1 bucket so downstream behaviour (Hybrid
+    narrowing in :func:`_merge_command_params`) treats them identically.
+
+    Only **truly module-scope** statements are walked — function and
+    class bodies are skipped because their contents only execute when
+    the function/class is called, not at import. Walking into helper
+    function bodies would falsely attribute params consumed by helpers
+    (e.g., ``set_xsoar_entries()`` reading ``close_incident``) to
+    EVERY command via fan-out, even commands that never reach those
+    helpers. Per-command Scope-2 tracing handles handler-and-callees
+    coverage; Scope-1 fan-out is strictly for "executed at import,
+    therefore visible to every command".
+
+    The walk also handles the common ``if __name__ in (...): main()``
+    guard at the bottom of integration files: we don't descend into
+    function bodies inside that ``if``, but we do walk the test
+    expression and any non-function statements in its body for
+    correctness. ``main()`` itself is identified by reference (``is
+    main_fn``) so it's skipped even though its FunctionDef is a direct
+    child of the Module.
+    """
+    visitor = _ParamAccessVisitor(params_vars, aliases)
+
+    def _walk_module_scope(stmts: list[ast.stmt]) -> None:
+        for stmt in stmts:
+            if stmt is main_fn:
+                continue
+            if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                # Bodies only run on call; not part of module-level
+                # eager evaluation. Decorators DO run at definition
+                # time, but they don't typically read demisto.params().
+                continue
+            if isinstance(stmt, ast.If):
+                # Walk the test expression (it runs at import) and
+                # recursively walk both branches' bodies for nested
+                # module-level statements; still skip nested funcdefs.
+                visitor.visit(stmt.test)
+                _walk_module_scope(stmt.body)
+                _walk_module_scope(stmt.orelse)
+                continue
+            if isinstance(stmt, (ast.Try,)):
+                _walk_module_scope(stmt.body)
+                for handler in stmt.handlers:
+                    _walk_module_scope(handler.body)
+                _walk_module_scope(stmt.orelse)
+                _walk_module_scope(stmt.finalbody)
+                continue
+            # Plain top-level statement (Assign, AnnAssign, Expr,
+            # AugAssign, With, For, etc.). Walk it whole.
+            visitor.visit(stmt)
+
+    _walk_module_scope(list(tree.body))
     return visitor.found
 
 
@@ -455,16 +628,47 @@ def _find_in_if_chain(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
     return out
 
 
+def _is_command_ref(node: ast.AST) -> bool:
+    """True if *node* is the canonical 'current command' reference.
+
+    Recognized forms:
+
+    * ``command``                — a local variable bound from
+      ``demisto.command()`` earlier in main().
+    * ``demisto.command()``      — the chained inline form (matches the
+      same pattern we recognize for ``demisto.params()``).
+
+    Without the chained form, the analyzer would miss ``elif
+    demisto.command() == "X":`` style dispatch chains used heavily by
+    older integrations like CrowdStrikeFalcon (causing every command in
+    such an integration to be treated as having "no dispatch site",
+    which collapses Scope-2 to empty).
+    """
+    if isinstance(node, ast.Name) and node.id == "command":
+        return True
+    if (
+        isinstance(node, ast.Call)
+        and not node.args
+        and not node.keywords
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "command"
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "demisto"
+    ):
+        return True
+    return False
+
+
 def _if_test_matches_command(test: ast.AST, command: str) -> bool:
-    # command == "X"  or  "X" == command
+    # <ref> == "X"  or  "X" == <ref>
     if isinstance(test, ast.Compare) and len(test.ops) == 1 and isinstance(test.ops[0], ast.Eq):
         left, right = test.left, test.comparators[0]
         for a, b in ((left, right), (right, left)):
-            if isinstance(a, ast.Name) and a.id == "command" and isinstance(b, ast.Constant) and b.value == command:
+            if _is_command_ref(a) and isinstance(b, ast.Constant) and b.value == command:
                 return True
-    # command in ("X", "Y")
+    # <ref> in ("X", "Y")
     if isinstance(test, ast.Compare) and len(test.ops) == 1 and isinstance(test.ops[0], ast.In):
-        if isinstance(test.left, ast.Name) and test.left.id == "command":
+        if _is_command_ref(test.left):
             container = test.comparators[0]
             if isinstance(container, (ast.Tuple, ast.List, ast.Set)):
                 for elt in container.elts:
@@ -524,29 +728,50 @@ def trace_params_in_function(
     aliases: dict[str, str],
     depth: int,
     visited: set[str],
+    module_params_vars: set[str] | None = None,
 ) -> set[str]:
-    """Recursively collect param accesses in ``fn`` up to ``depth`` levels deep."""
+    """Recursively collect param accesses in ``fn`` up to ``depth`` levels deep.
+
+    ``module_params_vars`` are names bound to ``demisto.params()`` at module
+    scope (e.g. a global ``PARAMS = demisto.params()``). They're seeded
+    into the candidate set for every traced function so accesses to those
+    globals — common in older / large integrations like CrowdStrikeFalcon —
+    are not silently dropped. The chained ``demisto.params().X`` form is
+    also recognized via :func:`_is_demisto_params_call` inside the visitor
+    and does not require any candidate name to be present.
+    """
     if depth < 0 or fn.name in visited:
         return set()
     visited = visited | {fn.name}
 
     # Determine the params variable name(s) inside this function.
+    # Priority: function-signature names that match the alias set; else
+    # the canonical "params". Module-level params globals (e.g. PARAMS)
+    # are unioned in so handlers that read them as globals are covered.
     sig_params = {a.arg for a in fn.args.args} | {a.arg for a in fn.args.kwonlyargs}
     candidates = (sig_params & PARAMS_VAR_ALIASES) or {"params"}
+    if module_params_vars:
+        candidates = candidates | module_params_vars
 
     visitor = _ParamAccessVisitor(candidates, aliases)
     visitor.visit(fn)
     found = set(visitor.found)
 
     # Recurse into called functions defined in this module that look like
-    # they receive a params-shaped argument.
+    # they receive a params-shaped argument. (Unscoped accesses inside
+    # those callees — e.g. ``demisto.params().get(...)`` or reads of a
+    # module-level PARAMS — are still reachable via this visitor when
+    # the recursion fires; the gate exists to avoid falsely visiting
+    # arbitrary helpers that happen to share the module.)
     for call in _iter_calls(fn.body):
         target_fn = _resolve_call_target(call, func_map)
         if target_fn is None:
             continue
         if not _call_passes_params(call, candidates):
             continue
-        found |= trace_params_in_function(target_fn, func_map, aliases, depth - 1, visited)
+        found |= trace_params_in_function(
+            target_fn, func_map, aliases, depth - 1, visited, module_params_vars
+        )
     return found
 
 
@@ -574,22 +799,35 @@ def analyze_static(
     command: str,
     language: str | None = None,
     integration_name: str = "",
+    verbose: bool = True,
 ) -> tuple[set[str], set[str]]:
     """Run scope-1 + scope-2 static analysis for one command. Returns YML names.
 
     Returns ``(scope_1, scope_2)``:
 
     * ``scope_1`` — pre-dispatch params accessed in ``main()`` before the
-      command-dispatch construct. These are shared across **every** command
-      because they execute regardless of which command is invoked (e.g.,
-      ``Client(...)`` constructor in the fan-out pattern).
+      command-dispatch construct, **plus** module-level reads of any
+      ``PARAMS = demisto.params()`` global. These are shared across
+      **every** command because they execute regardless of which command
+      is invoked (e.g., ``Client(...)`` constructor in the fan-out
+      pattern, or eager module-load reads like ``SERVER = PARAMS.get("url")``).
     * ``scope_2`` — params traced through the per-command handler (and up
       to two further call levels). These are specific to this command.
+      The tracer recognizes both formal-parameter access (``params.get(...)``
+      where ``params`` is a function arg) and the chained inline form
+      (``demisto.params().get(...)``), and seeds module-level globals
+      into the candidate set so handlers that read globals are covered.
 
     Callers that want the full static signal use ``scope_1 | scope_2``.
     Callers that have HTTP evidence from dynamic analysis can narrow
     ``scope_1`` to the params dynamic actually saw on the wire and keep
     ``scope_2`` intact.
+
+    When ``verbose`` is True (default), per-command breadcrumbs are
+    written to stderr explaining which dispatch pattern matched, how
+    many handler calls were found, and whether any module-level
+    ``PARAMS`` globals were detected. This makes silent under-coverage
+    observable without re-running the analyzer in a debugger.
 
     Non-Python integrations (``language`` not in ``{"python", None}``) are
     the **only** acceptable graceful skip: log a stderr note and return
@@ -606,25 +844,90 @@ def analyze_static(
     if not py_source:
         # No .py file at all: nothing to analyze, but this is not a graceful
         # skip case — caller decides whether that's an error.
+        if verbose:
+            print(
+                f"[static] {command}: no Python source available; "
+                f"static analysis returns empty",
+                file=sys.stderr,
+            )
         return set(), set()
     tree = ast.parse(py_source)  # may raise SyntaxError -> propagate.
     func_map = build_function_map(tree)
     main_fn = find_main(func_map)
     if main_fn is None:
+        if verbose:
+            print(
+                f"[static] {command}: no top-level main() function found; "
+                f"static analysis returns empty",
+                file=sys.stderr,
+            )
         return set(), set()
     aliases = find_pydantic_aliases(tree)
     params_var = find_params_var(main_fn) or "params"
-    params_vars = {params_var} | PARAMS_VAR_ALIASES
+    module_params_vars = find_module_level_params_vars(tree)
+    # Candidate names for the visitor: in-main()-bound name + canonical
+    # aliases + module-level globals. This single union covers
+    # ``params``, ``PARAMS``, ``integration_params``, ``config``, plus
+    # any other ``X = demisto.params()`` binding the integration uses.
+    params_vars = {params_var} | PARAMS_VAR_ALIASES | module_params_vars
     dispatch_line = find_command_dispatch_line(main_fn)
-    scope_1 = collect_pre_dispatch_params(main_fn, params_vars, aliases, dispatch_line)
+    scope_1_in_main = collect_pre_dispatch_params(
+        main_fn, params_vars, aliases, dispatch_line
+    )
+    # Module-level scope-1 fan-out: catches ``SERVER = PARAMS.get("url")``
+    # and similar patterns that execute at import time and apply to
+    # every command equally. Also catches the chained
+    # ``demisto.params().get(...)`` form at module scope.
+    scope_1_module = collect_module_level_params(
+        tree if isinstance(tree, ast.Module) else ast.Module(body=[], type_ignores=[]),
+        main_fn,
+        params_vars,
+        aliases,
+    )
+    scope_1 = scope_1_in_main | scope_1_module
 
     scope_2: set[str] = set()
     handler_calls = find_command_handler_calls(main_fn, command)
+    resolved_targets: list[str] = []
     for call in handler_calls:
         target = _resolve_call_target(call, func_map)
         if target is None:
             continue
-        scope_2 |= trace_params_in_function(target, func_map, aliases, depth=2, visited=set())
+        resolved_targets.append(target.name)
+        scope_2 |= trace_params_in_function(
+            target,
+            func_map,
+            aliases,
+            depth=2,
+            visited=set(),
+            module_params_vars=module_params_vars,
+        )
+
+    if verbose:
+        if not handler_calls:
+            print(
+                f"[static] {command}: no dispatch site found in main(); "
+                f"scope_2 will be empty (only Scope-1 fan-out applies)",
+                file=sys.stderr,
+            )
+        elif not resolved_targets:
+            print(
+                f"[static] {command}: dispatch found ({len(handler_calls)} call site(s)) "
+                f"but handler function(s) not defined in this module; "
+                f"scope_2 will be empty",
+                file=sys.stderr,
+            )
+        else:
+            module_note = (
+                f"; module-level params globals: {sorted(module_params_vars)}"
+                if module_params_vars
+                else ""
+            )
+            print(
+                f"[static] {command}: handler(s) resolved → "
+                f"{sorted(set(resolved_targets))}{module_note}",
+                file=sys.stderr,
+            )
 
     return scope_1, scope_2
 
@@ -1223,11 +1526,35 @@ class DockerConfig:
     """How the analyzer launches the per-command child process.
 
     ``mode``: one of ``"auto"``, ``"always"``, ``"never"``.
-    ``default_image``: image used when the integration YML does not declare
-    a ``script.dockerimage``.
+
+    ``default_image``: image used by default. Always set to
+    :data:`DEFAULT_DOCKER_IMAGE` (``demisto/py3-native``) unless overridden
+    explicitly via ``--docker-image``. Production runs should never change
+    this.
+
+    ``use_integration_docker``: when ``True``, the analyzer reads
+    ``script.dockerimage`` from the integration's YML and uses that image
+    for the per-command child instead of ``default_image``. This is
+    opt-in for two reasons:
+
+      1. **Reproducibility.** The pinned ``py3-native`` image gives every
+         integration the same baseline runtime so one missing third-party
+         package can be triaged once and reported uniformly via the
+         ``module_not_found`` status.
+      2. **Footprint.** Per-integration images can be large (some are
+         600MB+) and pulling N different images during a batch run is
+         expensive on bandwidth and disk.
+
+    Opt in (e.g., when the AI hits a ``module_not_found`` and wants to
+    re-run that one integration with its real runtime) via
+    ``--use-integration-docker`` on the CLI. The flag is harmless when
+    the YML doesn't declare ``script.dockerimage`` — we fall back to
+    ``default_image`` and log a one-line note.
+
     ``effective_use_docker``: resolved boolean — whether THIS analyzer run
     should actually invoke Docker. Set by :func:`resolve_docker_config`
     after probing the host. ``None`` until resolved.
+
     ``pulled_images``: set of image refs we've already verified for this
     analyzer-process run. Saves a redundant ``docker image inspect`` on
     every command of the same integration.
@@ -1235,8 +1562,26 @@ class DockerConfig:
 
     mode: str = "auto"
     default_image: str = DEFAULT_DOCKER_IMAGE
+    use_integration_docker: bool = False
     effective_use_docker: bool | None = None
     pulled_images: set[str] = field(default_factory=set)
+
+    def resolve_image_for(self, yml_data: dict[str, Any] | None) -> str:
+        """Pick the runtime image for one integration.
+
+        When ``use_integration_docker`` is enabled and the YML declares a
+        ``script.dockerimage``, return it. Otherwise fall back to
+        ``default_image``. The returned value is the only image the
+        per-integration child run will use; lazy-pull caching is keyed
+        on it via ``pulled_images``.
+        """
+        if not self.use_integration_docker or not yml_data:
+            return self.default_image
+        script = yml_data.get("script") or {}
+        image = script.get("dockerimage") if isinstance(script, dict) else None
+        if isinstance(image, str) and image.strip():
+            return image.strip()
+        return self.default_image
 
 
 def _docker_available() -> bool:
@@ -1490,14 +1835,21 @@ def run_integration(
     proxy_url: str,
     timeout: int,
     docker_cfg: DockerConfig | None = None,
+    image: str | None = None,
 ) -> tuple[int, str, str, bool]:
     """Run the integration in a child process. Returns ``(rc, stdout, stderr, timed_out)``.
 
     When ``docker_cfg.effective_use_docker`` is true, the child runs in a
-    container based on ``docker_cfg.default_image`` (the pinned analyzer
-    runtime; see :data:`DEFAULT_DOCKER_IMAGE`). Otherwise the legacy
-    host-python path is used. There is no per-integration image override:
-    if the integration needs a different runtime, the child crashes with
+    container based on ``image`` (or, when ``image`` is ``None``,
+    ``docker_cfg.default_image``). Callers that want per-integration
+    runtime selection (``--use-integration-docker``) resolve the image
+    once via :meth:`DockerConfig.resolve_image_for` and pass it in
+    here, so every per-command run for that integration uses the same
+    container.
+
+    Otherwise the legacy host-python path is used. If the integration
+    needs a different runtime than what the child has and the AI did
+    NOT opt into the integration docker, the child crashes with
     ``ModuleNotFoundError`` and the caller surfaces ``module_not_found``.
     """
     use_docker = bool(docker_cfg and docker_cfg.effective_use_docker)
@@ -1521,11 +1873,12 @@ def run_integration(
         return _run_child_host(bootstrap_path, env, timeout)
 
     assert docker_cfg is not None  # narrowed by use_docker
+    effective_image = image or docker_cfg.default_image
     return _run_child_docker(
         tmp_dir=tmp_dir,
         env=env,
         timeout=timeout,
-        image=docker_cfg.default_image,
+        image=effective_image,
         pulled_cache=docker_cfg.pulled_images,
         proxy_url=proxy_url,
     )
@@ -1686,6 +2039,7 @@ def analyze_dynamic_for_command(
     ignore: set[str],
     timeout: int,
     docker_cfg: DockerConfig | None = None,
+    image: str | None = None,
 ) -> tuple[set[str], CommandDiagnostic]:
     """Return ``(captured_param_names, diagnostic)`` for one command.
 
@@ -1726,6 +2080,7 @@ def analyze_dynamic_for_command(
         proxy_url,
         timeout,
         docker_cfg=docker_cfg,
+        image=image,
     )
     elapsed = _t.time() - _t0
     captured = proxy.get_requests(session_id)
@@ -1918,6 +2273,30 @@ def analyze_integration(
     dynamic_results: dict[str, set[str]] = {cmd: set() for cmd in commands}
     diagnostics: dict[str, CommandDiagnostic] = {}
     if not static_only:
+        # Resolve the runtime image once per integration. When
+        # --use-integration-docker is set and the YML declares
+        # script.dockerimage, we use that; otherwise we use the pinned
+        # default. Logging the chosen image makes the AI's choice
+        # observable in the stderr stream.
+        chosen_image: str | None = None
+        if docker_cfg is not None:
+            chosen_image = docker_cfg.resolve_image_for(yml_data)
+            if (
+                docker_cfg.use_integration_docker
+                and chosen_image == docker_cfg.default_image
+            ):
+                print(
+                    f"[dynamic] {integration_name!r}: --use-integration-docker "
+                    f"set but YML declares no script.dockerimage; using "
+                    f"default image {chosen_image}",
+                    file=sys.stderr,
+                )
+            elif chosen_image != docker_cfg.default_image:
+                print(
+                    f"[dynamic] {integration_name!r}: using integration "
+                    f"docker image {chosen_image} (per YML script.dockerimage)",
+                    file=sys.stderr,
+                )
         print(f"[dynamic] analyzing {integration_name!r}", file=sys.stderr)
         _run_dynamic_phase(
             integration_path,
@@ -1929,6 +2308,7 @@ def analyze_integration(
             diagnostics,
             integration_name=integration_name,
             docker_cfg=docker_cfg,
+            image=chosen_image,
         )
 
     out_commands: dict[str, list[str]] = {}
@@ -1963,6 +2343,7 @@ def _run_dynamic_phase(
     diagnostics: dict[str, CommandDiagnostic],
     integration_name: str = "",
     docker_cfg: DockerConfig | None = None,
+    image: str | None = None,
 ) -> None:
     """Drive prepare-content + per-command dynamic runs.
 
@@ -2001,6 +2382,7 @@ def _run_dynamic_phase(
                         ignore,
                         timeout,
                         docker_cfg=docker_cfg,
+                        image=image,
                     )
                     dynamic_results[cmd] = captured_set
                     diagnostics[cmd] = diag
@@ -2086,10 +2468,26 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         default=DEFAULT_DOCKER_IMAGE,
         help=(
             f"Override the pinned analyzer runtime image (default: "
-            f"{DEFAULT_DOCKER_IMAGE}). The analyzer ALWAYS uses this image "
-            f"for every integration; YML script.dockerimage is ignored. "
-            f"Provided for testing/debugging only — under normal use the "
-            f"default is correct."
+            f"{DEFAULT_DOCKER_IMAGE}). Used as the BASE image when "
+            f"--use-integration-docker is not set, OR as the fallback "
+            f"when --use-integration-docker is set but the integration "
+            f"YML doesn't declare script.dockerimage. Provided for "
+            f"testing/debugging — under normal use the default is correct."
+        ),
+    )
+    parser.add_argument(
+        "--use-integration-docker",
+        action="store_true",
+        help=(
+            "Use the integration's own script.dockerimage from its YML "
+            "instead of the pinned default image. Opt-in because the "
+            "pinned image keeps batch runs reproducible and avoids "
+            "pulling many large per-integration images. Use this when "
+            "the default analyzer image hits 'module_not_found' for an "
+            "integration that needs a third-party Python package "
+            "(e.g., httpx, pymisp) only present in its real runtime. "
+            "When the YML doesn't declare a dockerimage we silently fall "
+            "back to --docker-image."
         ),
     )
     return parser.parse_args(argv)
@@ -2119,7 +2517,11 @@ def main(argv: list[str] | None = None) -> int:
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    docker_cfg = DockerConfig(mode=args.docker, default_image=args.docker_image)
+    docker_cfg = DockerConfig(
+        mode=args.docker,
+        default_image=args.docker_image,
+        use_integration_docker=args.use_integration_docker,
+    )
     if not args.static_only:
         try:
             resolve_docker_config(docker_cfg)
