@@ -1502,3 +1502,63 @@ class TestPhase2BindingNarrowing:
                 f"dict-dispatch + Client must fan out url/apikey to {cmd}. "
                 f"scope_1={s1}, scope_2={s2}"
             )
+
+    # ---- Case 17: bound receiver method call (Oracle-IAM pattern) ----
+    def test_case17_bound_receiver_method_call(self) -> None:
+        # OracleIAM-style pattern: build an ``iam_command`` object from
+        # multiple bound params, then route per-command via
+        # ``iam_command.update_user(client, args)``. The bound receiver
+        # carries the params (mapper-out, create-user-enabled, …) and
+        # those must surface for the dispatched command.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class IAMCommand:
+                def __init__(self, *a, **kw): pass
+                def update_user(self, client, args): pass
+                def create_user(self, client, args): pass
+
+            class Client: pass
+            def fetch_incidents(client): pass
+
+            def main():
+                params = demisto.params()
+                mapper_out = params.get("mapper-out")
+                is_update = params.get("update_user_enabled")
+                iam_command = IAMCommand(is_update, mapper_out)
+                client = Client()
+                args = demisto.args()
+                command = demisto.command()
+                if command == "iam-update-user":
+                    iam_command.update_user(client, args)
+                elif command == "iam-create-user":
+                    iam_command.create_user(client, args)
+                elif command == "fetch-incidents":
+                    fetch_incidents(client)
+            """
+        )
+        s1_up, s2_up = ccp.analyze_static(src, "iam-update-user", language="python", verbose=False)
+        s1_cu, s2_cu = ccp.analyze_static(src, "iam-create-user", language="python", verbose=False)
+        s1_fi, s2_fi = ccp.analyze_static(src, "fetch-incidents", language="python", verbose=False)
+        # Both iam-* commands receive iam_command as the method receiver,
+        # so its carried params must surface.
+        for cmd, s1, s2 in [("iam-update-user", s1_up, s2_up), ("iam-create-user", s1_cu, s2_cu)]:
+            assert "mapper-out" in (s1 | s2), (
+                f"{cmd} must include mapper-out via bound receiver. "
+                f"scope_1={s1}, scope_2={s2}"
+            )
+            assert "update_user_enabled" in (s1 | s2), (
+                f"{cmd} must include update_user_enabled via bound receiver. "
+                f"scope_1={s1}, scope_2={s2}"
+            )
+        # fetch-incidents only receives ``client`` — must NOT see the
+        # iam_command receiver's params.
+        assert "mapper-out" not in (s1_fi | s2_fi), (
+            f"fetch-incidents must NOT include mapper-out (receiver not "
+            f"used). scope_1={s1_fi}, scope_2={s2_fi}"
+        )
+        assert "update_user_enabled" not in (s1_fi | s2_fi), (
+            f"fetch-incidents must NOT include update_user_enabled. "
+            f"scope_1={s1_fi}, scope_2={s2_fi}"
+        )

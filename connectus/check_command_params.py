@@ -826,13 +826,25 @@ def _attribute_call_args(
     params_vars: set[str],
     aliases: dict[str, str],
 ) -> set[str]:
-    """Walk one ``Call`` node's positional + keyword args.
+    """Walk one ``Call`` node's positional + keyword args + method receiver.
 
     For each arg that is a ``Name`` already in ``binding_map``, take
     its carried params. Otherwise walk the arg expression for inline
     ``params.get(...)`` / subscript / attribute reads and take those.
+
+    Method receivers count too: in
+    ``iam_command.update_user(client, args)`` the receiver
+    ``iam_command`` is an object built from one or more bound params
+    (mapper-in/out, create-user-enabled, …). Calling a method on it
+    inside a dispatch branch implicitly consumes those params — they
+    must be attributed to the command.
     """
     found: set[str] = set()
+    # Method receiver: ``<receiver>.method(...)`` where <receiver> is a Name in binding_map.
+    func = call.func
+    if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
+        if func.value.id in binding_map:
+            found |= binding_map[func.value.id]
     for arg in call.args:
         if isinstance(arg, ast.Name) and arg.id in binding_map:
             found |= binding_map[arg.id]
