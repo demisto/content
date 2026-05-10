@@ -4677,9 +4677,9 @@ def test_fetch_incident_before_locked_across_multipage_fetches(mock_set_last_run
         cleared = mock_set_last_run.call_args_list[2][0][0]
         # Window-handoff contract: clear promotes locked_before -> AFTER (next window's lower bound).
         # If `before` had drifted during pagination, this hand-off would create overlap or gaps.
-        assert cleared[WizApiVariables.AFTER] == locked_before, (
-            "clear must promote the LOCKED before to the new after — proves before never drifted"
-        )
+        assert (
+            cleared[WizApiVariables.AFTER] == locked_before
+        ), "clear must promote the LOCKED before to the new after — proves before never drifted"
         assert cleared[WizApiVariables.BEFORE] == "2022-01-03T12:00:00Z", "clear sets new before to api_start_run_time"
         assert cleared[WizApiResponse.END_CURSOR] is None
 

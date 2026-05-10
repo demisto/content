@@ -1610,6 +1610,7 @@ class WizIssueType:
 
 class WizMirrorDirection:
     """Mirror direction values — maps config dropdown to XSOAR direction codes."""
+
     NONE = None
     INCOMING = "In"
     OUTGOING = "Out"
@@ -1633,6 +1634,7 @@ class WizMirrorDirection:
 
 class WizMirrorParam:
     """Parameter names for mirror configuration."""
+
     DIRECTION = "mirror_direction"
     LIMIT = "mirror_limit"
     COMMENT_TAG = "comment_tag"
@@ -1644,6 +1646,7 @@ class WizMirrorParam:
 
 class WizMirrorField:
     """Field names used in mirror metadata (added to rawJSON)."""
+
     DIRECTION = "mirror_direction"
     INSTANCE = "mirror_instance"
     ID = "mirror_id"
@@ -2266,8 +2269,16 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     return issues
 
 
-def get_resources(search, entity_type, subscription_external_ids, provider_unique_ids,
-                   project_ids=None, native_types=None, updated_at_before=None, updated_at_after=None):
+def get_resources(
+    search,
+    entity_type,
+    subscription_external_ids,
+    provider_unique_ids,
+    project_ids=None,
+    native_types=None,
+    updated_at_before=None,
+    updated_at_after=None,
+):
     """
     Retrieves Resources
     """
@@ -2283,8 +2294,16 @@ def get_resources(search, entity_type, subscription_external_ids, provider_uniqu
     )
     error_msg = ""
 
-    if (not search and not entity_type and not subscription_external_ids and not provider_unique_ids
-            and not project_ids and not native_types and not updated_at_before and not updated_at_after):
+    if (
+        not search
+        and not entity_type
+        and not subscription_external_ids
+        and not provider_unique_ids
+        and not project_ids
+        and not native_types
+        and not updated_at_before
+        and not updated_at_after
+    ):
         error_msg = (
             f"You should pass (at least) one of the following parameters:\n\t{WizInputParam.SEARCH}\n\t"
             f"{WizInputParam.ENTITY_TYPE}\n\t{WizInputParam.SUBSCRIPTION_EXTERNAL_IDS}\n\t"
@@ -2425,7 +2444,11 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
 
     variables = {
         "issueId": issue_id,
-        "patch": {"status": status, "note": truncate_note(reject_or_resolve_comment), "resolutionReason": reject_or_resolve_reason},
+        "patch": {
+            "status": status,
+            "note": truncate_note(reject_or_resolve_comment),
+            "resolutionReason": reject_or_resolve_reason,
+        },
     }
     query = UPDATE_ISSUE_QUERY
 
@@ -2885,7 +2908,7 @@ def _build_new_note_entries(issue, last_update):
     the entire pre-existing note history into a fresh war room. Subsequent
     syncs surface only notes newer than the previous sync.
     """
-    entries = []
+    entries: list[dict] = []
     if not last_update:
         return entries
 
@@ -2905,12 +2928,14 @@ def _build_new_note_entries(issue, last_update):
             elif note.get("serviceAccount"):
                 author = f"[SA] {note['serviceAccount'].get('name', '')}"
 
-            entries.append({
-                "Type": entryTypes["note"],
-                "Contents": f"**{author}** ({note_time}):\n{note.get('text', '')}",
-                "ContentsFormat": formats["markdown"],
-                "Note": True,
-            })
+            entries.append(
+                {
+                    "Type": entryTypes["note"],
+                    "Contents": f"**{author}** ({note_time}):\n{note.get('text', '')}",
+                    "ContentsFormat": formats["markdown"],
+                    "Note": True,
+                }
+            )
 
     return entries
 

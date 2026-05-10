@@ -3,6 +3,7 @@ import json
 import random
 
 import pytest
+from typing import Any
 from unittest.mock import patch, MagicMock
 import demistomock as demisto
 
@@ -1706,11 +1707,14 @@ def test_validation_response_to_dict():
 @pytest.fixture
 def mock_mirror_params():
     """Common demisto mock setup for mirror tests requiring direction + instance."""
-    with patch.object(
-        demisto,
-        "params",
-        return_value={WizMirrorParam.DIRECTION: "Incoming", WizMirrorParam.COMMENT_TAG: "comments"},
-    ), patch.object(demisto, "integrationInstance", return_value="Wiz_instance_1"):
+    with (
+        patch.object(
+            demisto,
+            "params",
+            return_value={WizMirrorParam.DIRECTION: "Incoming", WizMirrorParam.COMMENT_TAG: "comments"},
+        ),
+        patch.object(demisto, "integrationInstance", return_value="Wiz_instance_1"),
+    ):
         yield
 
 
@@ -2311,9 +2315,7 @@ def test_update_remote_system_close_reason_fallback_to_issue_fixed(mock_field_ch
 @patch("Wiz._handle_outgoing_entries")
 @patch("Wiz._handle_incident_closed")
 @patch("Wiz._handle_field_changes")
-def test_update_remote_system_close_explicit_reason_overrides_close_reason(
-    mock_field_changes, mock_closed, mock_entries
-):
+def test_update_remote_system_close_explicit_reason_overrides_close_reason(mock_field_changes, mock_closed, mock_entries):
     """Explicit resolutionReason in delta wins over closeReason in data."""
     from Wiz import update_remote_system_command
 
@@ -2513,10 +2515,16 @@ def test_resolve_issue_sends_resolved_status_and_reason(mock_check_api):
 
 
 LAST_UPDATE = "2025-01-01T00:00:00Z"
-_NOTE = lambda text, time, author: {
-    "text": text, "createdAt": time, "updatedAt": time,
-    "user": {"name": author}, "serviceAccount": None,
-}
+
+
+def format_as_note(text: str, time: str, author: str) -> dict[str, Any]:
+    return {
+        "text": text,
+        "createdAt": time,
+        "updatedAt": time,
+        "user": {"name": author},
+        "serviceAccount": None,
+    }
 
 
 @pytest.mark.parametrize(
@@ -2525,13 +2533,17 @@ _NOTE = lambda text, time, author: {
         pytest.param({"notes": None}, LAST_UPDATE, 0, None, id="notes_null"),
         pytest.param({"notes": []}, LAST_UPDATE, 0, None, id="notes_empty"),
         pytest.param({}, LAST_UPDATE, 0, None, id="notes_key_missing"),
-        pytest.param({"notes": [_NOTE("x", "2025-06-01T10:00:00Z", "A")]}, None, 0, None, id="no_last_update"),
+        pytest.param({"notes": [format_as_note("x", "2025-06-01T10:00:00Z", "A")]}, None, 0, None, id="no_last_update"),
         pytest.param(
-            {"notes": [
-                _NOTE("old", "2024-01-01T00:00:00Z", "Alice"),
-                _NOTE("new", "2025-06-01T10:00:00Z", "Bob"),
-            ]},
-            LAST_UPDATE, 1, "Bob",
+            {
+                "notes": [
+                    format_as_note("old", "2024-01-01T00:00:00Z", "Alice"),
+                    format_as_note("new", "2025-06-01T10:00:00Z", "Bob"),
+                ]
+            },
+            LAST_UPDATE,
+            1,
+            "Bob",
             id="filters_old_keeps_new",
         ),
     ],
@@ -2557,9 +2569,9 @@ def test_build_new_note_entries_microsecond_vs_second_precision():
     issue = {
         "notes": [
             # Note created 0.5s AFTER lastUpdate, but with microsecond precision (Wiz style)
-            _NOTE("new_microsecond", "2025-06-01T10:00:00.500000Z", "Alice"),
+            format_as_note("new_microsecond", "2025-06-01T10:00:00.500000Z", "Alice"),
             # Note created 1s before lastUpdate — should still be filtered out
-            _NOTE("old", "2025-06-01T09:59:59Z", "Bob"),
+            format_as_note("old", "2025-06-01T09:59:59Z", "Bob"),
         ]
     }
     result = _build_new_note_entries(issue, last_update)
@@ -2578,8 +2590,8 @@ def test_build_new_note_entries_iso_with_offset():
 
     issue = {
         "notes": [
-            _NOTE("newer", "2025-06-01T10:00:01+00:00", "Alice"),
-            _NOTE("equal", "2025-06-01T10:00:00+00:00", "Bob"),
+            format_as_note("newer", "2025-06-01T10:00:01+00:00", "Alice"),
+            format_as_note("equal", "2025-06-01T10:00:00+00:00", "Bob"),
         ]
     }
     result = _build_new_note_entries(issue, "2025-06-01T10:00:00Z")
@@ -2630,13 +2642,9 @@ def test_attach_mirror_metadata_no_direction():
 def test_get_remote_data_command_notes_none(mock_get_issue, mock_mirror_params):
     from Wiz import get_remote_data_command
 
-    mock_get_issue.return_value = [
-        {"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN", "notes": None}
-    ]
+    mock_get_issue.return_value = [{"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN", "notes": None}]
 
-    result = get_remote_data_command(
-        {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
-    )
+    result = get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
 
     assert result.mirrored_object["id"] == "11111111-1111-1111-1111-111111111111"
     assert result.entries == []
@@ -2656,9 +2664,7 @@ def test_outgoing_mapper_includes_resolution_reason():
     import json
     import os
 
-    mapper_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "Classifiers", "classifier-mapper-outgoing-Wiz.json"
-    )
+    mapper_path = os.path.join(os.path.dirname(__file__), "..", "..", "Classifiers", "classifier-mapper-outgoing-Wiz.json")
     with open(mapper_path) as f:
         mapper = json.load(f)
 
@@ -2775,18 +2781,14 @@ def test_get_modified_remote_data_cursor_wins_over_stale_last_update(mock_check_
 @patch("Wiz.demisto.setIntegrationContext")
 @patch("Wiz.demisto.getIntegrationContext")
 @patch("Wiz.checkAPIerrors")
-def test_get_modified_remote_data_saved_cursor_used_when_lastupdate_older(
-    mock_check_api, get_ctx_mock, _set_ctx
-):
+def test_get_modified_remote_data_saved_cursor_used_when_lastupdate_older(mock_check_api, get_ctx_mock, _set_ctx):
     """The classic backlog-drain case: previous cycle returned a partial page covering
     up to T1. XSOAR's lastUpdate is still T0 (older). Cursor T1 wins, so we resume
     from T1 instead of re-fetching the chunk we already drained."""
     from Wiz import get_modified_remote_data_command
 
     get_ctx_mock.return_value = {"mirror_cursor": "2025-04-01T12:00:00Z"}
-    mock_check_api.return_value = {
-        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
-    }
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
 
     with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
         get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
@@ -2806,9 +2808,7 @@ def test_get_modified_remote_data_mixed_precision_cursor_wins(mock_check_api, ge
     from Wiz import get_modified_remote_data_command
 
     get_ctx_mock.return_value = {"mirror_cursor": "2025-04-01T10:00:00.500000Z"}
-    mock_check_api.return_value = {
-        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
-    }
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
 
     with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
         get_modified_remote_data_command({"lastUpdate": "2025-04-01T10:00:00Z"})
@@ -2854,9 +2854,7 @@ def test_get_modified_remote_data_empty_page_preserves_cursor(mock_check_api, _g
     Otherwise an upstream blip that returns no data could rewind state."""
     from Wiz import get_modified_remote_data_command
 
-    mock_check_api.return_value = {
-        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
-    }
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
 
     with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
         result = get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
@@ -2925,11 +2923,10 @@ def test_get_modified_remote_data_microsecond_tie_known_loss(mock_check_api, _ge
     # Cycle 2: a 3rd issue ALSO has tied_ts. Wiz's `status_changed_at > tied_ts`
     # would EXCLUDE it. We document this by asserting the filter sent.
     set_ctx_mock.reset_mock()
-    mock_check_api.return_value = {
-        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
-    }
-    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "2"}), patch(
-        "Wiz.demisto.getIntegrationContext", return_value={MIRROR_CURSOR_KEY: tied_ts}
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+    with (
+        patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "2"}),
+        patch("Wiz.demisto.getIntegrationContext", return_value={MIRROR_CURSOR_KEY: tied_ts}),
     ):
         get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
 
@@ -3101,9 +3098,7 @@ def test_outgoing_mapper_sources_resolve_to_real_fields():
 
     assert not unresolved, (
         "Outgoing mapper references field name(s) that do not exist as XSOAR system "
-        "fields, pack-defined IncidentFields, or known-exempt phantoms:\n  "
-        + "\n  ".join(unresolved)
-        + "\n\nFix options:\n"
+        "fields, pack-defined IncidentFields, or known-exempt phantoms:\n  " + "\n  ".join(unresolved) + "\n\nFix options:\n"
         "  1. Add an `incidentfield-*.json` defining the cliName, OR\n"
         "  2. Change the mapper `simple:` to an existing field, OR\n"
         "  3. Add a documented entry to `_KNOWN_PHANTOM_SOURCES` if a runtime fallback exists."
@@ -3118,11 +3113,7 @@ def test_wiz_mirrored_fields_resolve_to_real_fields():
     pack_cli_names = _load_pack_custom_field_cli_names()
     valid_sources = pack_cli_names | _XSOAR_SYSTEM_INCIDENT_FIELDS
 
-    unresolved = [
-        field
-        for field in WIZ_MIRRORED_FIELDS
-        if field not in valid_sources and field not in _KNOWN_PHANTOM_SOURCES
-    ]
+    unresolved = [field for field in WIZ_MIRRORED_FIELDS if field not in valid_sources and field not in _KNOWN_PHANTOM_SOURCES]
 
     assert not unresolved, (
         f"WIZ_MIRRORED_FIELDS contains name(s) with no matching XSOAR or pack field "
@@ -3140,7 +3131,4 @@ def test_known_phantom_exemptions_are_actually_referenced():
         referenced.add(simple)
 
     stale = [name for name in _KNOWN_PHANTOM_SOURCES if name not in referenced]
-    assert not stale, (
-        f"Phantom exemption(s) no longer referenced anywhere — remove from "
-        f"_KNOWN_PHANTOM_SOURCES: {stale}"
-    )
+    assert not stale, f"Phantom exemption(s) no longer referenced anywhere — remove from " f"_KNOWN_PHANTOM_SOURCES: {stale}"
