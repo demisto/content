@@ -107,7 +107,7 @@ def test_update_security_rule_command(mocker, client, mock_params):
     rule_response = {
         "name": "test-rule",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-            "securityRules/test-rule",
+        "securityRules/test-rule",
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -161,7 +161,7 @@ def test_update_security_rule_command_deprecated(mocker, client, mock_params):
     rule_response = {
         "name": "test-rule",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-            "securityRules/test-rule",
+        "securityRules/test-rule",
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -683,14 +683,14 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     current_policy = {
         "name": "default",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
-            "securityAlertPolicies/default",
+        "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": False},
     }
 
     updated_policy = {
         "name": "default",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
-            "securityAlertPolicies/default",
+        "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": True},
     }
 
@@ -720,14 +720,14 @@ def test_sql_db_threat_policy_update_command_deprecated(mocker, client, mock_par
     current_policy = {
         "name": "default",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
-            "securityAlertPolicies/default",
+        "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": False},
     }
 
     updated_policy = {
         "name": "default",
         "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
-            "securityAlertPolicies/default",
+        "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": True},
     }
 
@@ -3780,6 +3780,62 @@ class TestGetCommandResource:
         command = "azure-storage-container-blob-get"
         resource = get_command_resource(command)
         assert resource == STORAGE_RESOURCE
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "azure-storage-container-list",
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-tag-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+    ],
+)
+def test_get_command_and_token_scopes_storage(command):
+    """
+    Given:
+        A storage-related Azure command name (e.g. 'azure-storage-container-list',
+        'azure-storage-blob-get', etc.).
+
+    When:
+        Calling get_command_and_token_scopes with that command.
+
+    Then:
+        The returned scope equals STORAGE_SCOPE and the token scopes list
+        contains only TokenScope.STORAGE.
+    """
+    scope, token_scopes = get_command_and_token_scopes(command)
+    assert scope == STORAGE_SCOPE
+    assert token_scopes == [TokenScope.STORAGE]
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "azure-storage-container-list",
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-tag-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+    ],
+)
+def test_get_command_resource_storage(command):
+    """
+    Given:
+        A storage-related Azure command name (e.g. 'azure-storage-container-list',
+        'azure-storage-blob-get', etc.).
+
+    When:
+        Calling get_command_resource with that command.
+
+    Then:
+        The returned resource equals STORAGE_RESOURCE.
+    """
+    resource = get_command_resource(command)
+    assert resource == STORAGE_RESOURCE
 
 
 class TestGetAzureClient:

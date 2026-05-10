@@ -376,13 +376,13 @@ NSG_API_VERSION = "2025-01-01"
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
 STORAGE_BLOB_SPECIAL_COMMANDS = [
-        "azure-storage-blob-property-get",
-        "azure-storage-blob-property-set",
-        "azure-storage-blob-tag-get",
-        "azure-storage-blob-create",
-        "azure-storage-blob-get",
-        "azure-storage-blob-tag-set",
-    ]
+    "azure-storage-blob-property-get",
+    "azure-storage-blob-property-set",
+    "azure-storage-blob-tag-get",
+    "azure-storage-blob-create",
+    "azure-storage-blob-get",
+    "azure-storage-blob-tag-set",
+]
 
 
 class TokenScope:
