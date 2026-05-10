@@ -121,7 +121,9 @@ class Client:
             if tactic_mitre_id:
                 indicator_obj["value"] = f"{tactic_mitre_id} - {value}"
             else:
-                demisto.debug(f"MA: Tactic '{value}' not found in tactic_name_to_mitre_id mapping, value will not include MITRE ID.")
+                demisto.debug(
+                    f"MA: Tactic '{value}' not found in tactic_name_to_mitre_id mapping, value will not include MITRE ID."
+                )
                 indicator_obj["value"] = value
 
         if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
