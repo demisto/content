@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Due to changes in the API responses, some context output paths were removed. For more details, check the release notes or documentation."
+    "breakingChangesNotes": "Due to changes in the API responses, some context output paths were removed and the 'contains' operator in the 'dehashed-search' command is no longer supported. For more details, check the release notes or documentation."
 }
