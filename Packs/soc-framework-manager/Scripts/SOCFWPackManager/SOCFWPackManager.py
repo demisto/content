@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401,F403
+
 import json
 import time
 from typing import Any, Dict, List, Optional
@@ -40,12 +43,6 @@ def _norm(s: Any) -> str:
 
 def _to_lower(s: Any) -> str:
     return _norm(s).lower()
-
-def _parse_csv(val: Any) -> List[str]:
-    s = _norm(val)
-    if not s:
-        return []
-    return [x.strip() for x in s.split(",") if x.strip()]
 
 def _safe_sort_key(row: Dict[str, Any], key: str) -> str:
     return _norm(row.get(key, "")).lower()
@@ -507,7 +504,7 @@ def do_list(args: Dict[str, Any]):
     offset = max(0, to_int(args.get("offset"), 0))
     sort_by = (_norm(args.get("sort_by")) or "id").strip()
     sort_dir = (_norm(args.get("sort_dir")) or "asc").strip().lower()
-    fields = _parse_csv(args.get("fields")) or ["id", "display_name", "version", "visible", "path"]
+    fields = argToList(args.get("fields")) or ["id", "display_name", "version", "visible", "path"]
     show_total = arg_to_bool(args.get("show_total"), True)
 
     catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)

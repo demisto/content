@@ -43,6 +43,12 @@ def load_script():
     common = types.ModuleType("CommonServerPython")
     common.return_results = lambda x: demisto_mock._results.append(x)
     common.return_error   = lambda x: (_ for _ in ()).throw(RuntimeError(x))
+    common.argToList      = lambda v: (
+        v if isinstance(v, list)
+        else [x.strip() for x in str(v).split(",") if x.strip()]
+        if v not in (None, "")
+        else []
+    )
     sys.modules["CommonServerPython"] = common
 
     if SCRIPT_MODULE_NAME in sys.modules:

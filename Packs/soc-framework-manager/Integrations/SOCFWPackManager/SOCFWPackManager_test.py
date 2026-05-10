@@ -21,11 +21,80 @@ import pytest
 MODULE_NAME = "SOCFWPackManager"
 
 
+# ---------------------------------------------------------------------------
+# CommonServerPython stub
+# ---------------------------------------------------------------------------
+
+
+def _make_common_server_python_stub(captured_results, captured_errors):
+    """Build a minimal CommonServerPython module rich enough that the
+    integration's ``from CommonServerPython import *`` resolves every name
+    the integration references at import time.
+
+    Attributes on this module are pulled into the integration namespace by
+    the wildcard import — that's how ``BaseClient`` becomes available inside
+    SOCFWPackManager.py during test load.
+    """
+
+    common = types.ModuleType("CommonServerPython")
+
+    class _StubBaseClient:
+        """Minimal BaseClient compatible with the integration's usage.
+
+        ``_http_request`` is monkeypatched per test. ``stream`` is honored so
+        callers can pass it without exploding.
+        """
+
+        def __init__(self, base_url, verify=True, proxy=False, headers=None, **kwargs):
+            self._base_url = base_url
+            self._verify = verify
+            self._proxy = proxy
+            self._headers = headers or {}
+
+        def _http_request(self, method, url_suffix="", full_url=None, **kwargs):
+            raise NotImplementedError(
+                "Test must replace _http_request on the client instance."
+            )
+
+    class _StubDemistoException(Exception):
+        pass
+
+    def _arg_to_boolean(value):
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return False
+        if isinstance(value, str):
+            return value.strip().lower() in ("true", "yes", "1", "y", "on")
+        return bool(value)
+
+    def _return_results(value):
+        captured_results.append(value)
+
+    def _return_error(message):
+        captured_errors.append(message)
+        raise RuntimeError(message)
+
+    def _command_results(**kw):
+        return kw
+
+    common.BaseClient = _StubBaseClient
+    common.DemistoException = _StubDemistoException
+    common.argToBoolean = _arg_to_boolean
+    common.return_results = _return_results
+    common.return_error = _return_error
+    common.CommandResults = _command_results
+
+    return common
+
+
 def load_integration(params=None, args=None):
+    """(Re)load the integration module under a fresh stub harness."""
     dm = types.SimpleNamespace()
     dm._params = params or {}
     dm._args = args or {}
     dm._results = []
+    dm._errors = []
 
     dm.params = lambda: dm._params
     dm.args = lambda: dm._args
@@ -33,80 +102,48 @@ def load_integration(params=None, args=None):
     dm.debug = lambda x: None
     dm.error = lambda x: None
 
-    def return_results(value):
-        dm._results.append(value)
-
-    def return_error(message):
-        raise RuntimeError(message)
-
     sys.modules["demistomock"] = dm
-
-    common = types.ModuleType("CommonServerPython")
-    common.return_results = return_results
-    common.return_error = return_error
-    common.CommandResults = lambda **kw: kw
-    sys.modules["CommonServerPython"] = common
+    sys.modules["CommonServerPython"] = _make_common_server_python_stub(
+        dm._results, dm._errors
+    )
 
     if MODULE_NAME in sys.modules:
         del sys.modules[MODULE_NAME]
 
     module = importlib.import_module(MODULE_NAME)
-
-    # Inject names that the module resolves from CommonServerPython at import time.
-    # importlib-loaded modules lose these bindings when sys.modules is swapped,
-    # so we inject them directly into the module namespace.
-    import requests as _requests
-
-    module.requests = _requests
-    module.return_results = return_results
-    module.return_error = return_error
-    module.CommandResults = lambda **kw: kw
-    module.tempfile = __import__("tempfile")
-
     return module, dm
 
 
-def _streaming_response(content: bytes, status_code: int = 200, headers=None):
-    """Build a minimal mock matching requests.get(stream=True) usage."""
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-    def iter_content(chunk_size=1):
+
+class _StreamingResponse:
+    """Mock matching the ``iter_content``/``headers`` surface used by
+    ``ContentClient.stream_download_zip``."""
+
+    def __init__(self, content: bytes, status_code: int = 200, headers=None):
+        self._content = content
+        self.status_code = status_code
+        self.headers = headers or {}
+
+    def iter_content(self, chunk_size=1):
         idx = 0
-        while idx < len(content):
-            yield content[idx : idx + chunk_size]
+        while idx < len(self._content):
+            yield self._content[idx : idx + chunk_size]
             idx += chunk_size
 
-    return types.SimpleNamespace(
-        status_code=status_code,
-        content=content,
-        headers=headers or {},
-        iter_content=iter_content,
+
+def _make_client(mod, *, verify=True, proxy=False):
+    """Build a ContentClient with neutral creds for tests."""
+    return mod.ContentClient(
+        base_url="https://tenant.xdr.us.paloaltonetworks.com",
+        api_id="3",
+        api_key="my-key",
+        verify=verify,
+        proxy=proxy,
     )
-
-
-# ── _set_sdk_env ──────────────────────────────────────────────────────────────
-
-
-def test_set_sdk_env_uses_api_prefix():
-    mod, _ = load_integration()
-    mod._set_sdk_env("https://tenant.xdr.us.paloaltonetworks.com", "my-key", "3")
-    assert (
-        os.environ["DEMISTO_BASE_URL"]
-        == "https://api-tenant.xdr.us.paloaltonetworks.com"
-    )
-    assert os.environ["DEMISTO_API_KEY"] == "my-key"
-    assert os.environ["XSIAM_AUTH_ID"] == "3"
-
-
-def test_set_sdk_env_preserves_existing_api_prefix():
-    mod, _ = load_integration()
-    mod._set_sdk_env("https://api-tenant.xdr.us.paloaltonetworks.com", "k", "5")
-    assert (
-        os.environ["DEMISTO_BASE_URL"]
-        == "https://api-tenant.xdr.us.paloaltonetworks.com"
-    )
-
-
-# ── unzip_and_flatten ─────────────────────────────────────────────────────────
 
 
 def _make_test_zip(tmp_dir, nested=True):
@@ -127,13 +164,58 @@ def _make_test_zip(tmp_dir, nested=True):
     return zip_path
 
 
+# ---------------------------------------------------------------------------
+# ContentClient._set_sdk_env (covers the prior _set_sdk_env tests)
+# ---------------------------------------------------------------------------
+
+
+def test_set_sdk_env_uses_api_prefix():
+    mod, _ = load_integration()
+    client = mod.ContentClient(
+        base_url="https://tenant.xdr.us.paloaltonetworks.com",
+        api_id="3",
+        api_key="my-key",
+        verify=True,
+        proxy=False,
+    )
+    client._set_sdk_env()
+    assert (
+        os.environ["DEMISTO_BASE_URL"]
+        == "https://api-tenant.xdr.us.paloaltonetworks.com"
+    )
+    assert os.environ["DEMISTO_API_KEY"] == "my-key"
+    assert os.environ["XSIAM_AUTH_ID"] == "3"
+
+
+def test_set_sdk_env_preserves_existing_api_prefix():
+    mod, _ = load_integration()
+    client = mod.ContentClient(
+        base_url="https://api-tenant.xdr.us.paloaltonetworks.com",
+        api_id="5",
+        api_key="k",
+        verify=True,
+        proxy=False,
+    )
+    client._set_sdk_env()
+    assert (
+        os.environ["DEMISTO_BASE_URL"]
+        == "https://api-tenant.xdr.us.paloaltonetworks.com"
+    )
+
+
+# ---------------------------------------------------------------------------
+# _prepare_pack_dir / _safe_extract_zip / _safe_flatten_one_level
+# (covers the prior unzip_and_flatten tests)
+# ---------------------------------------------------------------------------
+
+
 def test_unzip_and_flatten_nested_zip():
     mod, _ = load_integration()
     tmp = tempfile.mkdtemp()
     orig = os.getcwd()
     try:
         os.chdir(tmp)
-        pack_path = mod.unzip_and_flatten(_make_test_zip(tmp), "TestPack.zip")
+        pack_path = mod._prepare_pack_dir(_make_test_zip(tmp), "TestPack.zip")
         assert os.path.isdir(pack_path)
         assert os.path.exists(os.path.join(pack_path, "pack_metadata.json"))
         assert os.path.exists(os.path.join(pack_path, "CorrelationRules", "rule.yml"))
@@ -149,7 +231,7 @@ def test_unzip_and_flatten_creates_landing_page_stub():
     orig = os.getcwd()
     try:
         os.chdir(tmp)
-        mod.unzip_and_flatten(_make_test_zip(tmp), "TestPack.zip")
+        mod._prepare_pack_dir(_make_test_zip(tmp), "TestPack.zip")
         lp = os.path.join(tmp, "Tests", "Marketplace", "landingPage_sections.json")
         assert os.path.exists(lp)
         assert json.load(open(lp)) == {"sections": []}
@@ -166,7 +248,7 @@ def test_unzip_and_flatten_rejects_non_zip():
         with open(bad, "w") as f:
             f.write("not a zip")
         with pytest.raises(Exception, match="not a valid zip"):
-            mod.unzip_and_flatten(bad, "bad.zip")
+            mod._prepare_pack_dir(bad, "bad.zip")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -181,81 +263,108 @@ def test_unzip_and_flatten_rejects_missing_pack_metadata():
         with zipfile.ZipFile(zip_path, "w") as zf:
             zf.writestr("some_file.yml", "content")
         with pytest.raises(Exception, match="missing pack_metadata.json"):
-            mod.unzip_and_flatten(zip_path, "bad.zip")
+            mod._prepare_pack_dir(zip_path, "bad.zip")
     finally:
         os.chdir(orig)
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-# ── _stream_download ──────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# ContentClient.stream_download_zip (covers the prior _stream_download tests)
+# ---------------------------------------------------------------------------
 
 
 def test_stream_download_writes_full_payload(tmp_path):
     mod, _ = load_integration()
     payload = b"abc" * 100
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(payload, headers={"Content-Length": str(len(payload))})
+
+    client = _make_client(mod)
+    client._http_request = lambda **kw: _StreamingResponse(
+        payload, headers={"Content-Length": str(len(payload))}
     )
+
     dest = str(tmp_path / "out.zip")
-    mod._stream_download("https://example.com/pack.zip", dest, verify=True)
+    client.stream_download_zip("https://example.com/pack.zip", dest)
     assert open(dest, "rb").read() == payload
 
 
 def test_stream_download_rejects_oversized_content_length(tmp_path):
     mod, _ = load_integration()
     too_big = mod.MAX_DOWNLOAD_BYTES + 1
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(
-            b"x", headers={"Content-Length": str(too_big)}
-        )
+
+    client = _make_client(mod)
+    client._http_request = lambda **kw: _StreamingResponse(
+        b"x", headers={"Content-Length": str(too_big)}
     )
+
     dest = str(tmp_path / "out.zip")
     with pytest.raises(Exception, match="exceeds size limit"):
-        mod._stream_download("https://example.com/pack.zip", dest, verify=True)
+        client.stream_download_zip("https://example.com/pack.zip", dest)
 
 
 def test_stream_download_rejects_oversized_streamed_body(tmp_path):
     """Server lies (or omits) Content-Length — guard during write must trip."""
     mod, _ = load_integration()
-    # Lower the cap for this test so we don't have to allocate 500 MB.
     mod.MAX_DOWNLOAD_BYTES = 1024
     mod.DOWNLOAD_CHUNK_BYTES = 256
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(b"x" * 4096, headers={})
-    )
+
+    client = _make_client(mod)
+    client._http_request = lambda **kw: _StreamingResponse(b"x" * 4096, headers={})
+
     dest = str(tmp_path / "out.zip")
     with pytest.raises(Exception, match="exceeds size limit during download"):
-        mod._stream_download("https://example.com/pack.zip", dest, verify=True)
+        client.stream_download_zip("https://example.com/pack.zip", dest)
     assert not os.path.exists(dest)
 
 
 def test_stream_download_propagates_http_error(tmp_path):
+    """BaseClient surfaces non-OK HTTP. We simulate that by raising."""
     mod, _ = load_integration()
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(b"", status_code=404)
-    )
+
+    client = _make_client(mod)
+
+    def fake_http_request(**kw):
+        raise mod.DemistoException("Download failed HTTP 404")
+
+    client._http_request = fake_http_request
+
     dest = str(tmp_path / "out.zip")
     with pytest.raises(Exception, match="Download failed HTTP 404"):
-        mod._stream_download("https://example.com/missing.zip", dest, verify=True)
+        client.stream_download_zip("https://example.com/missing.zip", dest)
 
 
 def test_stream_download_threads_verify_flag(tmp_path):
+    """verify is a ContentClient-level concern, plumbed into BaseClient.
+
+    With verify=False the client records the flag at construction and any
+    requests it issues use that setting. Our stub records what BaseClient
+    was given so we can assert it.
+    """
     mod, _ = load_integration()
+
+    insecure_client = _make_client(mod, verify=False)
+    assert insecure_client._verify is False
+
+    secure_client = _make_client(mod, verify=True)
+    assert secure_client._verify is True
+
+    # And confirm stream=True is forwarded to the HTTP layer on download.
     seen = {}
 
-    def fake_get(url, **kw):
-        seen["verify"] = kw.get("verify")
-        seen["stream"] = kw.get("stream")
-        return _streaming_response(b"abc")
+    def capture(**kw):
+        seen.update(kw)
+        return _StreamingResponse(b"abc")
 
-    mod.requests = types.SimpleNamespace(get=fake_get)
-    dest = str(tmp_path / "out.zip")
-    mod._stream_download("https://example.com/pack.zip", dest, verify=False)
-    assert seen["verify"] is False
-    assert seen["stream"] is True
+    secure_client._http_request = capture
+    secure_client.stream_download_zip(
+        "https://example.com/pack.zip", str(tmp_path / "out.zip")
+    )
+    assert seen.get("stream") is True
 
 
-# ── command_install_pack ──────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# install_pack_command (covers the prior command_install_pack tests)
+# ---------------------------------------------------------------------------
 
 
 def test_command_install_pack_calls_download_and_sdk(tmp_path):
@@ -268,31 +377,26 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
             "Pack-v1.0.0/pack_metadata.json",
             json.dumps({"name": "Pack", "currentVersion": "1.0.0"}),
         )
-    with open(zip_path, "rb") as f:
-        zip_bytes = f.read()
+    zip_bytes = open(zip_path, "rb").read()
 
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(
-            zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
-        )
+    client = _make_client(mod, verify=True)
+    client._http_request = lambda **kw: _StreamingResponse(
+        zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
     )
 
     sdk_calls = []
 
-    def fake_sdk(base_url, api_key, api_id, pack_path, insecure=False):
-        sdk_calls.append({"pack_path": pack_path, "insecure": insecure})
+    def fake_upload(pack_path):
+        sdk_calls.append({"pack_path": pack_path, "verify": client._verify})
         return {"success": True}
 
-    mod.post_system_content_bundle = fake_sdk
+    client.upload_pack_as_system_content = fake_upload
 
     orig = os.getcwd()
     try:
         os.chdir(str(tmp_path))
-        mod.command_install_pack(
-            params={
-                "url": "https://tenant.xdr.us.paloaltonetworks.com",
-                "credentials": {"identifier": "3", "password": "my-key"},
-            },
+        result = mod.install_pack_command(
+            client,
             args={
                 "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
                 "filename": "Pack-v1.0.0.zip",
@@ -301,16 +405,16 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
     finally:
         os.chdir(orig)
 
-    assert sdk_calls, "post_system_content_bundle should be called"
+    assert sdk_calls, "upload_pack_as_system_content should be called"
     assert "Pack-v1.0.0" in sdk_calls[0]["pack_path"]
-    assert sdk_calls[0]["insecure"] is False
-    assert any("Pack-v1.0.0" in str(r) for r in dm._results)
+    assert sdk_calls[0]["verify"] is True
+    # CommandResults stub returns kwargs; outputs include the filename.
+    assert result.get("outputs", {}).get("filename") == "Pack-v1.0.0.zip"
 
 
 def test_command_install_pack_threads_insecure_param(tmp_path):
     mod, _ = load_integration()
 
-    # Real zip we can stream and unzip
     zip_path = str(tmp_path / "Pack-v1.0.0.zip")
     with zipfile.ZipFile(zip_path, "w") as zf:
         zf.writestr(
@@ -319,30 +423,26 @@ def test_command_install_pack_threads_insecure_param(tmp_path):
         )
     zip_bytes = open(zip_path, "rb").read()
 
-    seen = {}
-
-    def fake_get(url, **kw):
-        seen["verify"] = kw.get("verify")
-        return _streaming_response(
-            zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
-        )
-
-    mod.requests = types.SimpleNamespace(get=fake_get)
+    # Insecure instance — verify=False is what the integration's main()
+    # would build from params={"insecure": True}.
+    client = _make_client(mod, verify=False)
+    client._http_request = lambda **kw: _StreamingResponse(
+        zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
+    )
 
     sdk_calls = []
-    mod.post_system_content_bundle = lambda **kw: (
-        sdk_calls.append(kw) or {"success": True}
-    )
+
+    def fake_upload(pack_path):
+        sdk_calls.append({"verify": client._verify})
+        return {"success": True}
+
+    client.upload_pack_as_system_content = fake_upload
 
     orig = os.getcwd()
     try:
         os.chdir(str(tmp_path))
-        mod.command_install_pack(
-            params={
-                "url": "https://tenant.xdr.us.paloaltonetworks.com",
-                "credentials": {"identifier": "3", "password": "my-key"},
-                "insecure": True,
-            },
+        mod.install_pack_command(
+            client,
             args={
                 "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
             },
@@ -350,28 +450,31 @@ def test_command_install_pack_threads_insecure_param(tmp_path):
     finally:
         os.chdir(orig)
 
-    # insecure=True means verify=False on the download AND insecure=True passed to SDK
-    assert seen["verify"] is False
-    assert sdk_calls[0]["insecure"] is True
+    # verify=False propagates from ContentClient construction to the upload.
+    assert client._verify is False
+    assert sdk_calls[0]["verify"] is False
 
 
 def test_command_install_pack_404_raises():
     mod, _ = load_integration()
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(b"", status_code=404)
-    )
+    client = _make_client(mod)
+
+    def fake_http_request(**kw):
+        raise mod.DemistoException("Download failed HTTP 404")
+
+    client._http_request = fake_http_request
+
     with pytest.raises(Exception, match="Download failed HTTP 404"):
-        mod.command_install_pack(
-            params={
-                "url": "https://tenant.xdr.us.paloaltonetworks.com",
-                "credentials": {"identifier": "3", "password": "my-key"},
-            },
+        mod.install_pack_command(
+            client,
             args={"url": "https://github.com/example/does-not-exist.zip"},
         )
 
 
-def test_command_install_pack_derives_filename_from_url():
+def test_command_install_pack_derives_filename_from_url(monkeypatch):
     mod, _ = load_integration()
+    client = _make_client(mod)
+    client._http_request = lambda **kw: _StreamingResponse(b"fake")
 
     derived = []
 
@@ -379,17 +482,11 @@ def test_command_install_pack_derives_filename_from_url():
         derived.append(filename)
         raise RuntimeError("stop_here")
 
-    mod.unzip_and_flatten = capture
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(b"fake")
-    )
+    monkeypatch.setattr(mod, "_prepare_pack_dir", capture)
 
     with pytest.raises(RuntimeError, match="stop_here"):
-        mod.command_install_pack(
-            params={
-                "url": "https://t.xdr.us.paloaltonetworks.com",
-                "credentials": {"identifier": "1", "password": "k"},
-            },
+        mod.install_pack_command(
+            client,
             args={
                 "url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip"
             },
@@ -398,8 +495,10 @@ def test_command_install_pack_derives_filename_from_url():
     assert derived == ["Pack-v2.0.0.zip"]
 
 
-def test_command_install_pack_appends_zip_if_missing():
+def test_command_install_pack_appends_zip_if_missing(monkeypatch):
     mod, _ = load_integration()
+    client = _make_client(mod)
+    client._http_request = lambda **kw: _StreamingResponse(b"fake")
 
     derived = []
 
@@ -407,17 +506,11 @@ def test_command_install_pack_appends_zip_if_missing():
         derived.append(filename)
         raise RuntimeError("stop")
 
-    mod.unzip_and_flatten = capture
-    mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: _streaming_response(b"fake")
-    )
+    monkeypatch.setattr(mod, "_prepare_pack_dir", capture)
 
     with pytest.raises(Exception):
-        mod.command_install_pack(
-            params={
-                "url": "https://t.xdr.us.paloaltonetworks.com",
-                "credentials": {"identifier": "1", "password": "k"},
-            },
+        mod.install_pack_command(
+            client,
             args={"url": "https://example.com/Pack-v1.0.0", "filename": "Pack-v1.0.0"},
         )
 

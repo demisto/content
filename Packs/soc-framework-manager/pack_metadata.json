@@ -1,18 +1,26 @@
 {
-  "name": "SOC Framework Package Manager",
-  "id": "soc-framework-manager",
-  "description": "This will install and configure any of the SOC Framework packages.",
-  "support": "community",
-  "currentVersion": "1.0.0",
-  "author": "Palo Alto Networks",
-  "url": "https://github.com/Palo-Cortex/secops-framework/tree/main/Packs/soc-framework-manager",
-  "email": "",
-  "categories": [
-    "Utilities"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [],
+    "name": "SOC Framework Pack Manager",
+    "id": "soc-framework-manager",
+    "description": "Installs and configures SOC Framework content packs directly from the XSIAM Playground. Manages the foundation layer, NIST IR orchestration, and vendor enhancement packs through a single bootloader script.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Palo Alto Networks",
+    "url": "https://github.com/Palo-Cortex/secops-framework/tree/main/Packs/soc-framework-manager",
+    "email": "",
+    "created": "2026-03-27T00:00:00Z",
+    "serverMinVersion": "8.0.0",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "SOC",
+        "SOC Framework",
+        "Pack Manager",
+        "Content Management",
+        "Bootstrap"
+    ],
     "marketplaces": [
         "marketplacev2"
     ],
@@ -23,5 +31,19 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
-    ]
+    ],
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "display_name": "Base"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "DemistoRESTAPI": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
+        }
+    }
 }
