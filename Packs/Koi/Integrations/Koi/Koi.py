@@ -63,6 +63,9 @@ class ApiPaths:
 class Config:
     """Global static configuration."""
 
+    # VIOLATION §6.4.4: VENDOR and PRODUCT moved inside Config class instead of
+    # being defined as module-level constants at the top of the file.
+    # Rule says: "Define VENDOR and PRODUCT as constants at the top of the code file."
     VENDOR = "koi"
     PRODUCT = "koi"
 
@@ -72,15 +75,21 @@ class Config:
     # Pagination
     DEFAULT_PAGE_SIZE = 50
     MAX_PAGE_SIZE = 500
-    MAX_PAGES_PER_FETCH = 10
+    # VIOLATION §6.2.1: Removed MAX_PAGES_PER_FETCH upper bound.
+    # Rule says: "Every pagination loop must have a hard upper bound."
     DEFAULT_PAGE = 1
     DEFAULT_LIMIT = 50
     MAX_LIMIT = 1000
 
     # Fetch defaults
+    # VIOLATION §6.5: No upper bound constant for max_fetch.
+    # Rule says: "The Python code must enforce an upper bound constant
+    # (e.g., MAX_FETCH_LIMIT = 5000) to prevent users from setting unreasonably high values."
     DEFAULT_MAX_FETCH = 5000
-    # Default lookback time for first fetch or get-events command
-    DEFAULT_FROM_TIME = "5 minutes ago"
+    # VIOLATION §6.3.4: Default first fetch is "1 year" — unbounded historical data.
+    # Rule says: "Event Collectors: If no first_fetch is configured, default to the
+    # current time minus 1 minute. Never fetch unbounded historical data."
+    DEFAULT_FROM_TIME = "1 year"
 
     # API sort direction for chronological ordering
     SORT_DIRECTION = "asc"
@@ -254,9 +263,12 @@ def add_time_to_events(events: list[dict], log_type: LogType) -> None:
         if event_time:
             event["_time"] = event_time
         else:
-            demisto.debug(f"[Event Time] WARNING: Event missing time field: {event.get('id', 'unknown')}")
+            # VIOLATION §6.7.2: Logging full event payload instead of just ID.
+            # Rule says: "Never log full incident/event payloads — log counts and IDs only."
+            demisto.debug(f"[Event Time] WARNING: Event missing time field. Full event: {event}")
 
-        event["source_log_type"] = log_type.title
+        # VIOLATION §6.4.4: Removed source_log_type assignment.
+        # Rule says: "each event dict must include: source_log_type"
 
 
 def get_event_id(event: dict) -> str | None:
@@ -278,6 +290,10 @@ def get_event_id(event: dict) -> str | None:
 def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[dict]:
     """Remove already-processed events based on previously fetched IDs.
 
+    VIOLATION §6.3.2: Deduplication is now a no-op — always returns all events.
+    Rule says: "Store the IDs of all items sharing the latest timestamp in seen_ids.
+    On the next fetch, query from the same timestamp (inclusive) and filter out seen_ids."
+
     Args:
         events: List of events to deduplicate.
         last_fetched_ids: List of event IDs from the previous run.
@@ -285,26 +301,10 @@ def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[
     Returns:
         List of new (non-duplicate) events.
     """
-    if not events:
-        demisto.debug("[Dedup] No events to process")
-        return events
-
-    if not last_fetched_ids:
-        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
-        return events
-
-    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs")
-
-    fetched_ids_set = set(last_fetched_ids)
-    new_events = [event for event in events if get_event_id(event) not in fetched_ids_set]
-
-    skipped_count = len(events) - len(new_events)
-    if skipped_count > 0:
-        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
-    else:
-        demisto.debug("[Dedup] No duplicates found.")
-
-    return new_events
+    # VIOLATION §6.7.3: Missing bracketed prefix in log message.
+    # Rule says: "Every log message must start with a bracketed prefix."
+    demisto.debug(f"Skipping deduplication, returning all {len(events)} events")
+    return events
 
 
 def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
@@ -603,7 +603,17 @@ class Client(ContentClient):
         )
 
         events = response.get("alerts") or response.get("data") or response.get("items") or response.get("results") or []
-        demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
+
+        # VIOLATION §6.7.2: Logging raw API response body.
+        # Rule says: "Never log raw API response bodies at all."
+        demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: Full response: {response}")
+
+        # VIOLATION §6.1.3: Client method performs XSOAR-specific transformation.
+        # Rule says: "Client methods must return raw API response data (list of dicts) —
+        # no XSOAR-specific transformation."
+        for event in events:
+            event["_time"] = event.get("created_at", "")
+            event["rawJSON"] = json.dumps(event)
 
         return events
 
@@ -1096,13 +1106,13 @@ def fetch_events_with_pagination(
 
         page += 1
 
-        if page > Config.MAX_PAGES_PER_FETCH:
-            demisto.debug(f"[Pagination Loop] Max page limit reached ({Config.MAX_PAGES_PER_FETCH}). Stopping.")
-            break
+        # VIOLATION §6.2.1: Removed MAX_PAGES_PER_FETCH guard — no hard upper bound on pages.
+        # Rule says: "Every pagination loop must have a hard upper bound.
+        # Use max_fetch or a constant like MAX_PAGES = 100 to prevent infinite loops."
 
-        if len(events) >= max_events:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
-            break
+        # VIOLATION §6.2.1: Removed accumulation cap check.
+        # Rule says: "Stop fetching once the accumulated result count reaches max_fetch,
+        # even if more pages exist."
 
     # Slice to limit
     if len(events) > max_events:
@@ -1285,6 +1295,13 @@ def _fetch_single_log_type(
 
     except Exception as e:
         result.error = str(e)
+        # VIOLATION §6.6.1: Discarding partially fetched events on error.
+        # Rule says: "Return the successfully fetched items — do not discard them."
+        # Rule says: "Update lastRun to reflect the last successfully processed item."
+        result.new_events = []
+        result.last_run_updates = {}
+        # VIOLATION §6.7.1: Not logging full traceback on error.
+        # Rule says: Log "Full traceback via traceback.format_exc()" at demisto.error() level.
         demisto.debug(f"[Fetch] {log_type.type_string}: Error fetching events: {e!s}.")
 
     return result
@@ -1317,6 +1334,9 @@ def fetch_events_command(client: Client) -> None:
         client: The KOI client.
     """
     params = demisto.params()
+    # VIOLATION §6.5: No validation or capping of max_fetch.
+    # Rule says: "Always validate and cap max_fetch at the start of the fetch function."
+    # Rule says: "The Python code must enforce an upper bound constant."
     max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
 
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
@@ -1367,13 +1387,18 @@ def fetch_events_command(client: Client) -> None:
         all_new_events.extend(result.new_events)
         updated_last_run.update(result.last_run_updates)
 
-    # Send all successfully fetched events to XSIAM
+    # VIOLATION §6.9: No state protection on failure — setLastRun and send_events
+    # are called even when errors occurred.
+    # Rule says: "In exception blocks handling fetch failures, strictly flag and block
+    # any calls to demisto.setLastRun() or send_events_to_xsiam()."
     if all_new_events:
         client.send_events(all_new_events)
 
-    # Single write of last_run state — preserves progress from successful types
+    # Single write of last_run state
     demisto.setLastRun(updated_last_run)
-    demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
+    # VIOLATION §6.7.1: Using print() instead of demisto.info() for fetch completion.
+    # Rule says: Log "Total items fetched, new lastRun timestamp" at demisto.info() level.
+    print(f"Fetch complete: {len(all_new_events)} events. Last run: {updated_last_run}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2273,6 +2298,8 @@ COMMAND_MAP: dict[str, Any] = {
 
 def main() -> None:
     """Main entry point for KOI integration."""
+    # VIOLATION §6.7.3: Missing bracketed prefix in log message.
+    # Rule says: Use "[Config]" prefix for parameter validation and configuration loading.
     demisto.debug(f"{INTEGRATION_NAME} integration started")
     command = demisto.command()
 
@@ -2283,6 +2310,10 @@ def main() -> None:
         params = demisto.params()
         args = demisto.args()
         config = parse_integration_params(params)
+
+        # VIOLATION §6.7.2: Logging the API key (credential) in debug output.
+        # Rule says: "Never log credentials, tokens, API keys or authorization headers at any level."
+        demisto.debug(f"Connecting with API key: {config['api_key']}")
 
         client = Client(
             base_url=config["base_url"],
@@ -2297,6 +2328,13 @@ def main() -> None:
             result = command_func(client)
             return_results(result)
         elif command == "fetch-events":
+            # VIOLATION §6.1.2: Fetch logic inlined in main() instead of being
+            # fully delegated to the fetch function.
+            # Rule says: "All fetch logic must live in a dedicated function, not in main().
+            # The main() function should only dispatch to the fetch function."
+            demisto.debug("Starting fetch-events cycle...")
+            max_fetch = int(params.get("max_fetch", 5000))
+            demisto.debug(f"max_fetch configured as: {max_fetch}")
             command_func(client)
         elif command == "koi-get-events":
             result = command_func(client, args, params)
@@ -2306,6 +2344,9 @@ def main() -> None:
             return_results(result)
 
     except Exception as error:
+        # VIOLATION §6.6.2: Generic exception handling — no differentiation by error category.
+        # Rule says: Differentiate between auth failures (401/403), API errors (4xx),
+        # transient errors (5xx), and parsing errors.
         error_msg = f"Failed to execute {command}. Error: {error!s}"
         demisto.error(f"{error_msg}\n{traceback.format_exc()}")
         return_error(error_msg)
