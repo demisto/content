@@ -12,6 +12,7 @@ def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = ""
     return demisto.executeCommand(
         "core-api-multipart", {"uri": f"{service_name}/upload/{incident_id}", "entryID": entry_id, "body": body, "using": using}
     )
+    
 
 
 def validate_target(target: str) -> str:
