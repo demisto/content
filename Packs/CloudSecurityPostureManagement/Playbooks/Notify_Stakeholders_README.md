@@ -18,14 +18,12 @@ This playbook does not use any sub-playbooks.
 
 * Print
 * Set
-* SetIfEmpty
-* MapValuesTransformer
+* SetAndHandleEmpty
 
 ### Commands
 
 * send-mail
-* send-notification (SlackV3)
-* teams-send-notification-quick-action
+* send-notification
 
 ## Playbook Inputs
 
@@ -33,10 +31,16 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Teams Channel | Provide the Microsoft Teams channel to send messages to. |  | Optional |
-| Slack Channel | Provide the Slack channel to send messages to. |  | Optional |
-| Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses |  | Optional |
+| Teams Channel | Provide the Microsoft Teams channel to send messages to. | General | Optional |
+| Slack Channel | Provide the Slack channel to send messages to. | general | Optional |
+| Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses | amore@paloaltonetworks.com | Optional |
 | Subject | For email | You have a new message for - ${issue.name} | Optional |
+| AssetName | Name of the asset related to the issue. | Core.CoreAsset.xdm__asset__name | Optional |
+| AssetType | Type of the asset related to the issue, for example, EC2, Azure VM, Google Cloud Storage, etc. | Core.CoreAsset.xdm__asset__type__name | Optional |
+| CloudRegion | Region of the asset related to the issue, for example, us-east-1, westus, etc. | Core.CoreAsset.xdm__asset__cloud__region | Optional |
+| CloudAccountID | Account ID of the asset related to the issue. For AWS, it is the 12-digit account number. For Azure, it is the Subscription ID. | Core.CoreAsset.xdm__asset__realm | Optional |
+| remediation_action | Description of the remediation action that was taken to resolve this issue, if any. | ${remediation_action} | Optional |
+| AssetID | Internal ID of the asset related to the issue. | Core.CoreAsset.xdm__asset__id | Optional |
 
 ## Playbook Outputs
 

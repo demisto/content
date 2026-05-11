@@ -1,0 +1,557 @@
+id: AWS Network Exposure - Auto-remediate
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: CloudSecurityPostureManagement
+    packName: Cloud Security Posture Management Playbooks
+    itemVersion: 2.0.0
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+    supportedModules: []
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ""
+  type: ""
+  name: ""
+name: AWS Network Exposure - Auto-remediate
+description: |-
+  This playbook remediates the following AWS Network Exposure detections:
+  1. Amazon EC2 instance with management ports exposed to the public internet
+  It does so by updating the AWS asset with a new security group which is a copy of the original but without the offending security rule that causes public exposure.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4df3f304-fdc8-401b-8664-101e2cdfae51
+    type: start
+    task:
+      id: 4df3f304-fdc8-401b-8664-101e2cdfae51
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ee216f4e-489c-4ed4-b818-c99f2b3e3534
+    type: regular
+    task:
+      id: ee216f4e-489c-4ed4-b818-c99f2b3e3534
+      version: -1
+      name: Get Issue Extended Fields
+      description: Get comprehensive recommendations for an issue, including remediation
+        steps, playbook suggestions, and recommended actions.
+      script: '|||core-get-issue-recommendations'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      issue_ids:
+        simple: ${issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1b1d1815-54ee-471f-86d1-c5584eadbaf9
+    type: condition
+    task:
+      id: 1b1d1815-54ee-471f-86d1-c5584eadbaf9
+      version: -1
+      name: Check type of asset exposed
+      description: Checks if the playbook is applicable to resolve the selected issue.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "27"
+      EC2:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: EC2
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: issue.name
+            iscontext: true
+          right:
+            value:
+              simple: Amazon EC2 instance
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 14554aa0-66e4-4fc5-8ed8-1a79308e39f9
+    type: condition
+    task:
+      id: 14554aa0-66e4-4fc5-8ed8-1a79308e39f9
+      version: -1
+      name: Check remediation flag and notification preference
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "27"
+      Notify and Resolve:
+      - "29"
+      Resolve:
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: Notify and Resolve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: remediatedFlag
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.enableNotifications
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    - label: Resolve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: remediatedFlag
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.enableNotifications
+            iscontext: true
+          right:
+            value:
+              simple: "no"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: aeded4b3-acec-4756-84e7-8719b3ad2f0b
+    type: regular
+    task:
+      id: aeded4b3-acec-4756-84e7-8719b3ad2f0b
+      version: -1
+      name: Resolve Issue
+      description: commands.local.cmd.set.alert.status
+      script: Builtin|||setIssueStatus
+      type: regular
+      iscommand: true
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      status:
+        simple: Resolved - Fixed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: eb2bcbcd-e02a-4898-940a-a60a96fd729e
+    type: regular
+    task:
+      id: eb2bcbcd-e02a-4898-940a-a60a96fd729e
+      version: -1
+      name: Issue Not Resolved
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      value:
+        simple: Issue was not resolved. Please review.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: b8053843-bc81-4fbc-8b93-5d25276f1240
+    type: title
+    task:
+      id: b8053843-bc81-4fbc-8b93-5d25276f1240
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 23fffe70-e0b8-4e34-8ecb-0ced30d05206
+    type: playbook
+    task:
+      id: 23fffe70-e0b8-4e34-8ecb-0ced30d05206
+      version: -1
+      name: Notify Stakeholders
+      description: This playbook automates notifying stakeholders via Slack v3, Microsoft
+        Teams, or email. You have the flexibility to notify other teams via Slack,
+        Microsoft Teams or Email by configuring the necessary integration. This playbook
+        requires existing integrations with Slack, Microsoft Teams, Mail Sender or
+        Gmail to perform these actions. If none of these integrations are found in
+        your account, the playbook will exit with no action.
+      playbookName: Notify Stakeholders
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      Subject:
+        simple: Issue ${issue.name} has been resolved
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ee3a1256-abd7-462d-9731-4b71a5171d7b
+    type: playbook
+    task:
+      id: ee3a1256-abd7-462d-9731-4b71a5171d7b
+      version: -1
+      name: AWS - EC2 Instance Security Group Remediation
+      description: |
+        This playbook identifies the Security Group(s) used on the EC2 interface with the given public IP. It then determines which rules allow access to the interface on the given port and protocol and creates a new copy of the Security Group that has only the identified rules removed. The EC2 interface is then updated to use the modified security group(s). The original Security Groups are left unmodified so that the remediated copy is only applied to the exposed EC2 instance.
+      playbookName: AWS - EC2 Instance Security Group Remediation
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      AssetID:
+        simple: ${issue.asset_ids}
+      PublicIP:
+        simple: ${Core.IssueRecommendations.network_reachability.externalProbeResults.[0].ip}
+      RemediationAllowRanges:
+        simple: 10.0.0.0/16,172.16.0.0/12,192.168.0.0/16
+      RemotePort:
+        simple: ${Core.IssueRecommendations.network_reachability.externalProbeResults.[0].port}
+      RemoteProtocol:
+        simple: tcp
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2c8ec829-6fa9-4fbf-8ace-e56f789d24c1
+    type: condition
+    task:
+      id: 2c8ec829-6fa9-4fbf-8ace-e56f789d24c1
+      version: -1
+      name: Is playbook applicable?
+      description: Checks if the playbook is applicable to resolve the selected issue.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: e9ce22c1-9ec5-47d6-a11e-f2cfd64b5cbd
+        - operator: inList
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: e9ce22c1-9ec5-47d6-a11e-f2cfd64b5cbd
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 458011cd-051c-4927-86c1-258f359c93e6
+    type: regular
+    task:
+      id: 458011cd-051c-4927-86c1-258f359c93e6
+      version: -1
+      name: Print - playbook not applicable
+      description: Prints message to war room that this playbook does not handle remediation
+        for the selected issue.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      value:
+        simple: The chosen playbook is not applicable to the selected issue. The issue
+          was not remediated and remains unresolved.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_31_EC2": 0.42,
+      "25_29_Notify and Resolve": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 1352.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: enableNotifications
+  value:
+    simple: "yes"
+  required: false
+  description: |-
+    Options: yes/no
+    Choose if you wish to notify stakeholders about the remediation actions taken. The recipients need to be configured in the Playbook Triggered header of the "Notify Stakeholders" sub-playbook. If no recipients are provided, the playbook will pause to ask for an input.
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - enableNotifications
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - remediatedFlag
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: remediatedFlag
+  description: Output key to determine if remediation was successfully done.
+  type: boolean
+sourceplaybookid: AWS - EC2 Instance Security Group Remediation
+dirtyInputs: true
+adopted: true
+possibleresponses: []
