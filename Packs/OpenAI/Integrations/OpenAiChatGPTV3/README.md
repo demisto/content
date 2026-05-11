@@ -166,14 +166,6 @@ Manually fetch a bounded batch of Audit and/or Compliance events for development
 | OpenAI.Event.source_log_type | String   | Source log type used by downstream parsing/modeling rules.       |
 | OpenAI.Event._time           | Date     | The event timestamp in ISO 8601 format.                          |
 
-#### Command examples
-
-```text
-!openai-get-events event_type="OpenAI Audit logs" limit=10
-!openai-get-events event_type="Compliance Audit,Apps,Auth" limit=20
-!openai-get-events event_type="OpenAI Audit logs" limit=5 should_push_events=true
-```
-
 #### Human Readable Output
 
 >### OpenAI GPT Events

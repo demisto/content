@@ -4,4 +4,5 @@
 !gpt-create-soc-email-template additionalInstructions="Gather the discussed details from our conversation into the email."
 !openai-get-events event_type="OpenAI Audit logs" limit=10
 !openai-get-events event_type="Compliance Audit,Apps,Auth" limit=20
+!openai-get-events event_type="OpenAI Audit logs" limit=5 should_push_events=false
 !openai-get-events event_type="OpenAI Audit logs" limit=5 should_push_events=true
