@@ -15013,7 +15013,9 @@ def test_log_streams_describe_command_success(mocker):
     assert isinstance(result, CommandResults)
     call_kwargs = mock_client.describe_log_streams.call_args[1]
     assert call_kwargs["logGroupName"] == "my-group"
-    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName).LogStreams"]
+    data_log = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName)"]
+    assert data_log["logGroupName"] == "my-group"
+    data = data_log["LogStreams"]
     assert len(data) == 1
     assert data[0]["logStreamName"] == "my-stream"
     assert data[0]["firstEventTimestamp"] == 1609459200000
@@ -15035,7 +15037,13 @@ def test_log_streams_describe_command_with_pagination(mocker):
         "nextToken": "stream-next-token",
     }
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-group", "limit": "1", "next_token": "token"}
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-group",
+        "limit": "1",
+        "next_token": "token",
+    }
 
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
@@ -15311,7 +15319,13 @@ def test_metric_filters_describe_command_with_pagination(mocker):
         "nextToken": "metric-next-token",
     }
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group", "limit": "1", "next_token": "token"}
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "limit": "1",
+        "next_token": "token",
+    }
     result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
 
     assert result.outputs["AWS.CloudWatchLogs(true)"]["MetricFiltersNextToken"] == "metric-next-token"
