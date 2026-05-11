@@ -241,15 +241,17 @@ def should_filter_out_pack(pack_info: PackInfo | dict, fields: dict, remove_depr
     if remove_deprecated and pack_info.get("deprecated", False):
         return True
 
-    for key in fields:
+    for key, value in fields.items():
         if key in _REMOVED_IDSET_FIELDS:
             print(  # noqa: T201
                 f"Warning: field '{key}' is no longer available after migration from id_set.json to index.zip. "
-                f"{_REMOVED_IDSET_FIELDS[key]} "
-                f"Filtering on this field will always exclude the pack."
+                f"{_REMOVED_IDSET_FIELDS[key]} Skipping this filter field."
             )
+            continue
+        if pack_info.get(key) != value:
+            return True
 
-    return any(pack_info.get(key) != value for key, value in fields.items())
+    return False
 
 
 def download_and_save_packs(
