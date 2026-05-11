@@ -99,7 +99,10 @@ class Client(BaseClient):
                 "x-goog-api-key": self.api_key,
             }
         else:
-            self.service_account_info: dict[str, Any] = json.loads(service_account_json) if service_account_json else {}
+            try:
+                self.service_account_info: dict[str, Any] = json.loads(service_account_json) if service_account_json else {}
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid Service Account JSON provided: {e}")
             self.project_id = project_id
             self.location = location or "global"
             self._credentials = service_account.Credentials.from_service_account_info(
@@ -148,7 +151,7 @@ class Client(BaseClient):
         """
         if self.auth_type == AUTH_TYPE_AI_STUDIO:
             return f"/v1beta/models/{model}:generateContent"
-        return f"/v1/projects/{self.project_id}/locations/{self.location}" f"/publishers/google/models/{model}:generateContent"
+        return f"/v1/projects/{self.project_id}/locations/{self.location}/publishers/google/models/{model}:generateContent"
 
     def send_chat_message(
         self,
@@ -315,7 +318,7 @@ def main():
     auth_type = params.get("auth_type", AUTH_TYPE_AI_STUDIO)
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    model = params.get("model", ["gemini-2.5-flash-preview-05-20"])  # use multi select to enable adding custom val
+    model = params.get("model", ["gemini-2.5-flash"])  # use multi select to enable adding custom val
     max_tokens = arg_to_number(params.get("max_tokens", 1024)) or 1024
 
     # Handle optional parameters - use defaults if empty or not provided
