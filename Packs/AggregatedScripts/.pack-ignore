@@ -16,18 +16,3 @@ ignore=BA127
 [file:IndicatorEnrichment.yml]
 ignore=BA127,SC101
 
-[file:EnrichFileV2.yml]
-ignore=RN107,BA127,BA129,BA124
-
-[file:EnrichIPV2.yml]
-ignore=BA127,BA124,RN107,BA129
-
-[file:EnrichDomainV2.yml]
-ignore=BA127,BA124,RN107
-
-[file:EnrichCVEV2.yml]
-ignore=BA124,RN107
-
-[file:EnrichURLV2.yml]
-ignore=BA124,RN107
-
