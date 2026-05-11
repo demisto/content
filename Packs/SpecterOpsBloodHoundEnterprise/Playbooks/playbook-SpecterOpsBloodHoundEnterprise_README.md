@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SpecterOps BloodHound Enterprise](SpecterOpsBloodHoundEnterprise/Playbooks/doc_files/playbook-ss.png)
+![SpecterOps BloodHound Enterprise](doc_files/playbook-ss.png)

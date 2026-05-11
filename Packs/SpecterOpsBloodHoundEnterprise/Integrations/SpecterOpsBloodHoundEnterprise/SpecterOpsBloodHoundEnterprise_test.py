@@ -4,7 +4,7 @@ SpecterOps BloodHound Enterprise integration for Cortex XSOAR - Unit Tests file
 
 from unittest.mock import Mock, patch
 from urllib.parse import urljoin
-
+import time
 import demistomock as demisto
 import pytest
 import requests
@@ -37,6 +37,8 @@ from SpecterOpsBloodHoundEnterprise import (
     _paginate_and_filter_attack_paths,
     _process_az_tenant,
     _update_primary_response,
+    _fetch_primary_response,
+    _handle_azure_types,
     acquire_lock,
     collect_available_types,
     create_incidents,
@@ -57,6 +59,7 @@ from SpecterOpsBloodHoundEnterprise import (
     get_attack_path_details_page,
     release_lock,
 )
+
 
 
 @pytest.fixture
@@ -898,7 +901,6 @@ class TestLockMechanism:
 
     def test_acquire_lock_already_locked(self):
         """Test acquire_lock when lock already exists"""
-        import time
 
         demisto.setIntegrationContext({"lock_time": str(time.time())})
         SpecterOpsBloodHoundEnterprise.LOCK_TIMEOUT = 600
@@ -1206,7 +1208,6 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_fetch_primary_response_directory_type(self, mock_api_request, mock_client):
         """Test _fetch_primary_response with directory type"""
-        from SpecterOpsBloodHoundEnterprise import _fetch_primary_response
 
         mock_api_request.return_value = {"data": {"name": "test", "type": "User"}}
         result = _fetch_primary_response(mock_client, "123", "User")
@@ -1216,7 +1217,6 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_fetch_primary_response_azure_type(self, mock_api_request, mock_client):
         """Test _fetch_primary_response with Azure type"""
-        from SpecterOpsBloodHoundEnterprise import _fetch_primary_response
 
         mock_api_request.return_value = {"data": {"name": "test", "type": "AZUser"}}
         result = _fetch_primary_response(mock_client, "123", "AZUser")
@@ -1225,7 +1225,6 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_fetch_primary_response_base_type(self, mock_api_request, mock_client):
         """Test _fetch_primary_response with base type"""
-        from SpecterOpsBloodHoundEnterprise import _fetch_primary_response
 
         mock_api_request.return_value = {"data": {"name": "test"}}
         result = _fetch_primary_response(mock_client, "123", "UnknownType")
@@ -1234,13 +1233,12 @@ class TestEdgeCases:
     @patch.object(Client, "_api_request")
     def test_handle_azure_types(self, mock_api_request, mock_client):
         """Test _handle_azure_types function"""
-        from SpecterOpsBloodHoundEnterprise import _handle_azure_types
 
         primary_response = {"data": {}}
         mock_api_request.return_value = {"count": 5}
         _handle_azure_types(mock_client, "123", "AZUser", primary_response)
         # Should update primary_response with related counts
-        assert mock_api_request.called
+        mock_api_request.assert_called()
 
     @patch.object(Client, "_api_request")
     def test_process_az_tenant_timeout(self, mock_api_request, mock_client):

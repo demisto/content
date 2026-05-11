@@ -48,7 +48,7 @@ Fetches the object ID using the object name.
 
 #### Command Example
 
-!bloodhound-object-id-get object_names="OBJECTNAME@example.com"
+`!bloodhound-object-id-get object_names="OBJECTNAME@example.com"`
 
 #### Human Readable Output
 
@@ -82,13 +82,13 @@ Fetches asset information using the object ID.
 
 #### Command Example
 
-!bloodhound-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"
+`!bloodhound-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"`
 
 #### Human Readable Output
 
 | **Object ID** | **Status** | **Message** | **Raw Data** |
 | --- | --- | --- | --- |
-| 12345678-1234-1234-1234-123456789abc | success | Asset information retrieved successfully. | \{<br>&emsp;"name": "OBJECTNAME@example.com",<br>&emsp;"type": "User",<br>&emsp;"objectid": "12345678-1234-1234-1234-123456789abc",<br>&emsp;"domain": "example.com",<br>&emsp;"enabled": true<br>\} |
+| 12345678-1234-1234-1234-123456789abc | success | Asset information retrieved successfully. | \{<br/>&emsp;"name": "OBJECTNAME@example.com",<br/>&emsp;"type": "User",<br/>&emsp;"objectid": "12345678-1234-1234-1234-123456789abc",<br/>&emsp;"domain": "example.com",<br/>&emsp;"enabled": true<br/>\} |
 
 ### bloodhound-path-exist
 
@@ -118,7 +118,7 @@ Checks if a path exists between the two nodes.
 
 #### Command Example
 
-!bloodhound-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"
+`!bloodhound-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"`
 
 #### Human Readable Output
 
