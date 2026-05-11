@@ -103,7 +103,6 @@ Configured by the instance configuration max_fetch (behind the scenes an query c
 
 ## Configure SplunkPy v2 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Splunk server URL. Port 8089 \(Splunk's default REST API port\) is used automatically. Only include the port in the URL if using a non-default port. Examples: 'https://splunk.example.com' \(uses default port 8089\) or 'https://splunk.example.com:8090' \(uses custom port 8090\). | True |

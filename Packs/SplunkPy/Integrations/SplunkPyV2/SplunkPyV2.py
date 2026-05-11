@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import urlencode
 
 import dateparser
 
@@ -222,9 +222,7 @@ class UserMappingObject:
                     xsoar_user = self.get_xsoar_user_by_splunk(splunk_user)
                     row["owner"] = xsoar_user
                     row_id = row.get(EVENT_ID) or row.get("investigation_id") or row.get("investigation_guid")
-                    demisto.debug(
-                        f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} for row {row_id}."
-                    )
+                    demisto.debug(f"UserMapping: 'owner' was mapped from {splunk_user} to {xsoar_user} for row {row_id}.")
 
 
 class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
@@ -4793,9 +4791,7 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
         return_results("Splunk ES events updated successfully:\n" + "\n".join(results))
     elif results and errors:
         return_results(
-            "Splunk ES events partially updated:\n"
-            "Successes:\n" + "\n".join(results) + "\n"
-            "Errors:\n" + "\n".join(errors)
+            "Splunk ES events partially updated:\n" "Successes:\n" + "\n".join(results) + "\n" "Errors:\n" + "\n".join(errors)
         )
     else:
         return_error("Failed to update all Splunk ES events:\n" + "\n".join(errors))
@@ -4934,10 +4930,7 @@ def test_module(service: client.Service, params: dict[str, Any]) -> None:
 
         selected_event_types = argToList(params.get("fetch_event_types")) or ["Finding"]
         if "Investigation" in selected_event_types:
-            investigations_query = (
-                params.get("investigations_fetch_query")
-                or InvestigationsFetchHandler._DEFAULT_SPL
-            )
+            investigations_query = params.get("investigations_fetch_query") or InvestigationsFetchHandler._DEFAULT_SPL
             # Bounded probe window: 1 day back, single record. Real fetch parameters
             # (window, pagination) are not needed here — we only want to validate
             # the SPL/placeholder/connectivity round-trip.
@@ -4950,9 +4943,7 @@ def test_module(service: client.Service, params: dict[str, Any]) -> None:
                 raise DemistoException(f"'Investigations fetch query' parameter is invalid: {e}") from e
 
             try:
-                for _ in results.JSONResultsReader(
-                    service.jobs.oneshot(probe_spl, output_mode=OUTPUT_MODE_JSON, count=1)
-                ):
+                for _ in results.JSONResultsReader(service.jobs.oneshot(probe_spl, output_mode=OUTPUT_MODE_JSON, count=1)):
                     # We only need to confirm Splunk accepts and executes the query;
                     # the contents of the (at most one) row are irrelevant here.
                     break

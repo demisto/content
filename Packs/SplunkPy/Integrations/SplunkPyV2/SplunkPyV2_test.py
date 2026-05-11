@@ -7437,7 +7437,8 @@ def test_given_close_incident_true_when_command_runs_then_handle_closed_entities
     # `fetch_event_types` is "Investigation"-only, so the only call must be the
     # investigation one.
     investigation_calls = [
-        call for call in handle_spy.call_args_list
+        call
+        for call in handle_spy.call_args_list
         if "g-99" in (call.args[0] if call.args else call.kwargs.get("modified_entities_map", {}))
     ]
     assert len(investigation_calls) == 1
