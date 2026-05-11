@@ -1,0 +1,30 @@
+comment: Extracts the current incident context or issue context and merges with global contexts and then downloads it as a flattened JSON file. So it will be replica json data of what we see in an  Incident or Issue context in UI view.
+commonfields:
+  id: ContextReplica
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.13.8160132
+enabled: true
+engineinfo: {}
+name: ContextReplica
+outputs:
+- contextPath: File.Name
+  description: The name of the downloaded context file.
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the downloaded context file.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+- Context
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
