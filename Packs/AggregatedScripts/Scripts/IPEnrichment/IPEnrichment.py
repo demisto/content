@@ -36,7 +36,7 @@ def ip_enrichment_script(
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
     demisto.debug("Extracting indicators")
-    ip_instances, extract_verbose = create_and_extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=False)
+    ip_instances, extract_verbose = create_and_extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
     valid_inputs = [ip_instance.extracted_value for ip_instance in ip_instances if ip_instance.extracted_value]
     indicator_mapping = {
         "Address": "Address",
