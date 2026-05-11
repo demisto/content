@@ -797,22 +797,17 @@ def _bulk_fetch_entities_by_id(
         return by_id
 
     total_batches = (len(ids) + BULK_ENRICHMENT_BATCH_SIZE - 1) // BULK_ENRICHMENT_BATCH_SIZE
-    demisto.debug(
-        f"bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)"
-    )
+    demisto.debug(f"bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)")
     section_start = datetime.now()
 
     for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
         chunk = ids[offset : offset + BULK_ENRICHMENT_BATCH_SIZE]
         aql = (
-            f"in:{entity_type} timeFrame:{BULK_ENRICHMENT_TIMEFRAME} "
-            f"{aql_field}:{','.join(chunk)}"  # noqa: E231
+            f"in:{entity_type} timeFrame:{BULK_ENRICHMENT_TIMEFRAME} " f"{aql_field}:{','.join(chunk)}"  # noqa: E231
         )
         batch_start = datetime.now()
         try:
-            results = client.fetch_by_ids_in_aql_query(
-                aql_query=aql, order_by=order_by, length=BULK_ENRICHMENT_BATCH_SIZE
-            )
+            results = client.fetch_by_ids_in_aql_query(aql_query=aql, order_by=order_by, length=BULK_ENRICHMENT_BATCH_SIZE)
             if len(results) == BULK_ENRICHMENT_BATCH_SIZE:
                 demisto.error(
                     f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} returned "
@@ -827,9 +822,7 @@ def _bulk_fetch_entities_by_id(
                 f"{len(results)} returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
             )
         except Exception as ex:
-            demisto.error(
-                f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {ex!r}"
-            )
+            demisto.error(f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {ex!r}")
 
     demisto.debug(
         f"bulk_enrich: {entity_type} fetch done in "
@@ -883,9 +876,7 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
     demisto.debug(f"bulk_enrich: START enriching {len(alerts)} alerts")
 
     uuids, device_ids = _collect_unique_enrichment_ids(alerts)
-    demisto.debug(
-        f"bulk_enrich: collected {len(uuids)} unique activityUUIDs, {len(device_ids)} unique deviceIds"
-    )
+    demisto.debug(f"bulk_enrich: collected {len(uuids)} unique activityUUIDs, {len(device_ids)} unique deviceIds")
 
     activities_by_uuid = _bulk_fetch_entities_by_id(
         client=client,
