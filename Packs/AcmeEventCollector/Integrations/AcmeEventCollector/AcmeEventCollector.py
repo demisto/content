@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import json
+import requests
 import urllib3
 from datetime import datetime, timezone
 from CommonServerPython import *  # noqa: F401
@@ -28,10 +29,11 @@ class Client(BaseClient):
     # Also returns XSOAR-specific transformed data instead of raw API response.
     def get_events(self) -> list[dict]:
         """Fetch events from the Acme API."""
-        response = self._http_request(
-            method="GET",
-            url_suffix="/api/v1/events",
-        )
+        response = requests.get(
+            url=f"{self._base_url}/api/v1/events",
+            headers=self._headers,
+            verify=self._verify,
+        ).json()
         # VIOLATION §6.1.3: Client method performs XSOAR-specific transformation.
         # Rule says: "Client methods must return raw API response data (list of dicts) —
         # no XSOAR-specific transformation."
@@ -39,8 +41,7 @@ class Client(BaseClient):
         for item in response.get("data", []):
             events.append({
                 "name": item.get("title", "Acme Event"),
-                "_time": item.get("timestamp"),
-                "rawJSON": json.dumps(item),
+                "source_log_type": "Acme"
             })
         return events
 
@@ -49,6 +50,66 @@ class Client(BaseClient):
 # Rule says: "The fetch flow must be decomposed into distinct layers. A single monolithic
 # function that mixes HTTP calls, parsing, deduplication, and state updates is a review failure."
 # Missing: separate Parser/Mapper layer, separate Deduplicator layer.
+
+def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
+    """Filter out events whose IDs were already seen in the previous fetch cycle.
+
+    Dedup strategy: store the IDs of all items sharing the latest timestamp in seen_ids.
+    On the next fetch, query from the same timestamp (inclusive) and filter out seen_ids
+    to avoid duplicates.
+
+    Args:
+        events: List of event dicts.
+        seen_ids: Set of event IDs from the previous fetch that share the last timestamp.
+
+    Returns:
+        List of events with duplicates removed.
+    """
+    if not seen_ids:
+        return events
+
+    deduped: list[dict] = []
+    for event in events:
+        event_id = str(event.get("id", ""))
+        if event_id and event_id in seen_ids:
+            demisto.info(f"Skipping duplicate event id={event_id}")
+            continue
+        deduped.append(event)
+
+    skipped = len(events) - len(deduped)
+    if skipped:
+        demisto.info(f"Filtered out {skipped} duplicate events")
+
+    return deduped
+
+
+def compute_seen_ids(events: list[dict]) -> tuple[str, list[str]]:
+    """Compute the latest timestamp and the IDs of events sharing it for dedup.
+
+    Args:
+        events: List of event dicts (must have '_time' and 'id' keys).
+
+    Returns:
+        Tuple of (latest_time, list of event IDs sharing that timestamp).
+    """
+    if not events:
+        return "", []
+
+    latest_time = ""
+    for event in events:
+        event_time = event.get("_time", "")
+        if event_time > latest_time:
+            latest_time = event_time
+
+    new_seen_ids: list[str] = []
+    for event in events:
+        if event.get("_time") == latest_time:
+            event_id = str(event.get("id", ""))
+            if event_id:
+                new_seen_ids.append(event_id)
+
+    return latest_time, new_seen_ids
+
 
 def fetch_events(client: Client, max_fetch: int) -> None:
     """Fetch events from Acme — monolithic function with multiple violations."""
@@ -64,6 +125,7 @@ def fetch_events(client: Client, max_fetch: int) -> None:
     # Rule says: "For event collectors, if no first_fetch is configured, default to the
     # current time minus a couple of minutes (1–10 minutes) — never fetch unbounded historical data."
     first_fetch = params.get("first_fetch", "1 year")
+    first_fetch = datetime.strptime(first_fetch, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H:%M:%SZ")
     start_time = last_run.get("last_fetch_time") or first_fetch
 
     # VIOLATION §6.5: No max_fetch validation or upper bound enforcement.
@@ -79,12 +141,9 @@ def fetch_events(client: Client, max_fetch: int) -> None:
     # VIOLATION §6.1.3: Client method called without start_time/limit params.
     raw_events = client.get_events()
 
-    events = []
-    for event in raw_events:
-        # VIOLATION §6.3.2: No deduplication strategy.
-        # Rule says: "Store the IDs of all items sharing the latest timestamp in seen_ids.
-        # On the next fetch, query from the same timestamp (inclusive) and filter out seen_ids."
-        events.append(event)
+    # --- Dedup: filter out events already seen in the previous cycle ---
+    seen_ids = set(last_run.get("seen_ids", []))
+    events = deduplicate_events(raw_events, seen_ids)
 
     # VIOLATION §6.4.4: Events missing _time field normalization and source_log_type.
     # Rule says: "each event dict must include: _time (ISO 8601 UTC), source_log_type"
@@ -99,8 +158,12 @@ def fetch_events(client: Client, max_fetch: int) -> None:
     # Rule says: "The fetch orchestrator must return (events, next_run) — never call
     # demisto.setLastRun() or demisto.incidents() directly."
     if events:
-        last_event_time = events[-1].get("_time", "")
-        demisto.setLastRun({"last_fetch_time": last_event_time})
+        latest_time, _ = compute_seen_ids(events)
+        demisto.setLastRun({
+            "last_fetch_time": events[-1]
+        })
+    else:
+        demisto.setLastRun({"last_fetch_time": int(datetime.now(tz=timezone.utc).timestamp())})
 
     # VIOLATION §6.1.2: Calls send_events_to_xsiam() directly inside fetch function.
     # Rule says: "The caller in main() handles side effects."
@@ -129,7 +192,7 @@ def fetch_events_paginated(client: Client) -> list[dict]:
 
         # VIOLATION §6.7.3: Log message missing bracketed prefix.
         # Rule says: Use "[Pagination Loop]" prefix for page iteration progress.
-        demisto.debug(f"Got {len(page_events)} events from page")
+        demisto.error(f"Got {len(page_events)} events from page")
 
         all_events.extend(page_events)
         next_token = response.get("next_cursor")
