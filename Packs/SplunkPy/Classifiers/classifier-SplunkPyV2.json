@@ -1,12 +1,12 @@
 {
     "description": "Classifies SplunkPy v2 events (Splunk Finding and Splunk Investigation).",
     "feed": false,
-    "id": "SplunkPyV2",
+    "id": "SplunkPyV2 - Classifier",
     "keyTypeMap": {
         "Finding": "Splunk Finding",
         "Investigation": "Splunk Investigation"
     },
-    "name": "SplunkPyV2",
+    "name": "SplunkPyV2 - Classifier",
     "transformer": {
         "complex": {
             "filters": [],

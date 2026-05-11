@@ -3252,6 +3252,74 @@ def test_module_message_object(mocker):
     assert service.info.call_count == 1
 
 
+def test_module_investigations_query_missing_placeholder_raises(mocker):
+    """
+    Given:
+        - isFetch is enabled
+        - "Investigation" is selected in `fetch_event_types`
+        - `investigations_fetch_query` does NOT contain FETCH_FILTER_PLACEHOLDER
+
+    When:
+        - Run test-module command
+
+    Then:
+        - DemistoException is raised whose message names the missing token and
+          the parameter to fix
+    """
+    # prepare
+    message = results.Message("DEBUG", "stub")
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[message])
+    service = mocker.patch("splunklib.client.connect", return_value=None)
+
+    params = {
+        "isFetch": True,
+        "fetchQuery": "search `notable`",
+        "fetch_event_types": ["Finding", "Investigation"],
+        "investigations_fetch_query": '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true"',
+    }
+
+    # run + validate
+    with pytest.raises(splunk.DemistoException) as exc_info:
+        splunk.test_module(service, params)
+    msg = str(exc_info.value)
+    assert "FETCH_FILTER_PLACEHOLDER" in msg
+    assert "Investigations fetch query" in msg
+
+
+def test_module_investigations_not_selected_skips_validation(mocker):
+    """
+    Given:
+        - isFetch is enabled
+        - "Investigation" is NOT in `fetch_event_types`
+        - `investigations_fetch_query` is set to an invalid value (no placeholder)
+
+    When:
+        - Run test-module command
+
+    Then:
+        - test_module completes without raising the placeholder validation error
+          (the invalid investigations query is irrelevant when Investigation isn't selected)
+    """
+    # prepare
+    message = results.Message("DEBUG", "stub")
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[message])
+    service = mocker.patch("splunklib.client.connect", return_value=None)
+
+    params = {
+        "isFetch": True,
+        "fetchQuery": "search `notable`",
+        "fetch_event_types": ["Finding"],  # Investigation NOT selected
+        # Intentionally invalid query — must not be probed when Investigation isn't selected.
+        "investigations_fetch_query": '| rest "/path/v2/investigations?no_placeholder_here"',
+    }
+
+    # run — must not raise the placeholder DemistoException
+    splunk.test_module(service, params)
+
+    # validate connection still probed
+    assert service.info.call_count == 1
+
+
 def test_labels_with_non_str_values(mocker):
     """
     Given:
@@ -5818,15 +5886,15 @@ def test_update_investigation_or_finding_partial_fields():
 
 class TestPrepareInvestigationsQuery:
     """Given the user's `investigations_fetch_query` SPL, when prepare_investigations_query
-    runs, then either the placeholder is substituted or the four managed params are
-    merged into the URL inside `| rest "..."`.
+    runs, then the mandatory `FETCH_FILTER_PLACEHOLDER` token is substituted with the
+    four managed params; if the token is missing, a DemistoException is raised.
     """
 
-    DEFAULT_URL = "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true" "&CUSTOM_FILTER_PLACEHOLDER"
+    DEFAULT_URL = "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true" "&FETCH_FILTER_PLACEHOLDER"
     DEFAULT_QUERY = f'| rest "{DEFAULT_URL}"'
 
     def test_given_placeholder_when_called_then_substituted_with_all_four_params(self):
-        """Given the default SPL containing CUSTOM_FILTER_PLACEHOLDER,
+        """Given the default SPL containing FETCH_FILTER_PLACEHOLDER,
         when prepare_investigations_query runs,
         then the placeholder is replaced and all four managed params appear once."""
         out = splunk.prepare_investigations_query(
@@ -5836,7 +5904,7 @@ class TestPrepareInvestigationsQuery:
             limit=50,
             offset=0,
         )
-        assert "CUSTOM_FILTER_PLACEHOLDER" not in out
+        assert "FETCH_FILTER_PLACEHOLDER" not in out
         for fragment in (
             "create_time_min=2025-01-01T00:00:00Z",
             "create_time_max=2025-01-02T00:00:00Z",
@@ -5845,82 +5913,17 @@ class TestPrepareInvestigationsQuery:
         ):
             assert out.count(fragment) == 1, f"expected exactly one '{fragment}' in {out!r}"
 
-    def test_given_double_quoted_url_no_query_string_when_called_then_params_appended(self):
-        """Given a `| rest "<url>"` clause with no existing query string,
-        when called, then the four managed params are appended cleanly."""
-        query = '| rest "/path/v2/investigations"'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 5)
-        assert "create_time_min=2025-01-01T00%3A00%3A00Z" in out  # urlencoded
-        assert "limit=10" in out
-        assert "offset=5" in out
-
-    def test_given_unrelated_existing_params_when_called_then_unrelated_preserved(self):
-        """Given a URL with unrelated existing params, when called, then they are preserved
-        and the managed params are added."""
-        query = '| rest "/path?foo=bar&baz=qux"'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        assert "foo=bar" in out
-        assert "baz=qux" in out
-        assert "limit=10" in out
-
-    def test_given_single_quoted_url_when_called_then_quote_style_preserved(self):
-        """Given a `| rest '<url>'` clause with single quotes,
-        when called, then the single-quote style is preserved and params are merged."""
-        query = "| rest '/path/v2/investigations'"
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        # Quotes preserved (single, not double).
-        assert out.startswith("| rest '/")
-        assert out.endswith("'")
-        assert "limit=10" in out
-
-    def test_given_multiline_spl_when_called_then_matches_and_rewrites(self):
-        """Given a multi-line SPL with newline between `| rest` and the quote,
-        when called, then it still matches and rewrites correctly."""
-        query = '| rest\n    "/path/v2/investigations"'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        assert "limit=10" in out
-        assert "/path/v2/investigations?" in out
-
-    def test_given_existing_managed_keys_when_called_then_overridden_with_debug(self, mocker):
-        """Given a URL that already has create_time_min and limit,
-        when called, then both are overridden and a debug log names the overridden keys."""
-        debug_mock = mocker.patch.object(splunk.demisto, "debug")
-        query = '| rest "/path?create_time_min=OLD&limit=999&keep=me"'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        assert "create_time_min=OLD" not in out
-        assert "limit=999" not in out
-        assert "limit=10" in out
-        assert "keep=me" in out
-        # Confirm the debug log naming the overridden keys was emitted.
-        debug_calls = [str(c) for c in debug_mock.call_args_list]
-        assert any("overriding pre-existing URL params" in c for c in debug_calls)
-        assert any("create_time_min" in c and "limit" in c for c in debug_calls)
-
-    def test_given_url_with_fragment_when_called_then_fragment_preserved(self):
-        """Given a URL with a #fragment, when called, then the fragment is preserved."""
-        query = '| rest "/path?foo=bar#section1"'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        assert "#section1" in out
-
-    def test_given_trailing_splunk_args_when_called_then_args_preserved(self):
-        """Given `| rest "URL" splunk_server=local count=0` (extra trailing args),
-        when called, then trailing args are preserved untouched."""
-        query = '| rest "/path/v2/investigations" splunk_server=local count=0'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        assert out.endswith(" splunk_server=local count=0")
-        assert "limit=10" in out
-
-    def test_given_no_rest_clause_when_called_then_raises(self):
-        """Given a query missing the `| rest "..."` clause entirely,
-        when called, then DemistoException is raised."""
-        with pytest.raises(splunk.DemistoException, match="rest"):
-            splunk.prepare_investigations_query("search index=main", "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-
-    def test_given_uppercase_rest_when_called_then_matches_case_insensitively(self):
-        """Given `| REST "..."` (uppercase), when called, then the regex matches."""
-        query = '| REST "/path/v2/investigations"'
-        out = splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
-        assert "limit=10" in out
+    def test_given_query_without_placeholder_when_called_then_raises_demisto_exception(self):
+        """Given a user_query that does NOT contain FETCH_FILTER_PLACEHOLDER,
+        when prepare_investigations_query runs,
+        then a DemistoException is raised whose message names the missing token
+        and the parameter to fix."""
+        query = '| rest "/path/v2/investigations?search_format=true"'
+        with pytest.raises(splunk.DemistoException) as exc_info:
+            splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
+        msg = str(exc_info.value)
+        assert "FETCH_FILTER_PLACEHOLDER" in msg
+        assert "Investigations fetch query" in msg
 
     def test_given_limit_above_cap_when_called_then_clamped_to_100(self):
         """Given `limit > 100`, when called, then it is clamped to INVESTIGATIONS_MAX_LIMIT (100)."""
@@ -6549,7 +6552,7 @@ class TestInvestigationsFetchHandler:
         params = {
             "investigations_fetch_query": (
                 '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations'
-                '?search_format=true&CUSTOM_FILTER_PLACEHOLDER"'
+                '?search_format=true&FETCH_FILTER_PLACEHOLDER"'
             ),
             "investigations_max_fetch": "2",
             "first_fetch": "7 days",
@@ -6723,7 +6726,7 @@ class TestInvestigationsFetchHandler:
         params = {
             "investigations_fetch_query": (
                 '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations'
-                '?search_format=true&CUSTOM_FILTER_PLACEHOLDER"'
+                '?search_format=true&FETCH_FILTER_PLACEHOLDER"'
             ),
             "investigations_max_fetch": "2",
             "investigations_first_fetch": "30 days",

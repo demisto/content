@@ -4,7 +4,7 @@ Use the SplunkPy v2 integration to:
 
 - Fetch events (logs) from Splunk into Cortex
 - Push events from Cortex to Splunk
-- Fetch Splunk Enterprise Security events (Findings) into Cortex.
+- Fetch Splunk Enterprise Security Findings and Investigations into Cortex.
 ***
 
 ## Authentication Configuration
@@ -27,7 +27,7 @@ For detailed instructions, refer to the official Splunk documentation:
 
 There are two main use cases for the SplunkPy v2 integration.
 - [Splunk Enterprise Security Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#splunk-enterprise-security-users)
-  - [Fetching finding events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#fetching-finding-events)
+  - [Fetching events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#fetching-events)
   - [Enriching Finding Events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#enriching-finding-events)
   - [Incident Mirroring](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#incident-mirroring)
 - [Splunk non-Enterprise Security Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#splunk-non-enterprise-security-users)
@@ -37,8 +37,8 @@ There are two main use cases for the SplunkPy v2 integration.
 ***
 # Splunk Enterprise Security Users
 
-## Fetching finding events
-The integration allows for fetching Splunk finding events using a default query. The query can be changed and modified to support different Splunk use cases.
+## Fetching events
+The integration allows for fetching Splunk **Finding** and **Investigation** events using default queries. The queries can be changed and modified to support different Splunk use cases.
 Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
 This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR/XSIAM.
 
@@ -46,24 +46,27 @@ This article will help you configure your Splunk v2 integration, set up a basic 
 1. Navigate to one of the following:
     * Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances > SplunkPy v2
     * Cortex XSOAR 6: Settings > Integrations > Servers & Services > SplunkPy v2.
-    * Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations> SplunkPy v2```
+    * Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations > SplunkPy v2
 2. Click **Add Instance**.
 3. Type the **Server URL** and **Splunk Token**.
 4. Select **Fetches incidents**.
-5. Under Classifier, select N/A.
-6. Under Incident Type, select **Splunk Finding**.
-Note: You do not need to specify the classifier, as all Splunk incidents are ingested as Splunk Findings by default. As you become more familiar with Cortex XSOAR/XSIAM, you can create custom incident types as needed instead of using the Splunk Finding incident type.
-7. Under Mapper (incoming), select **Splunk Finding - Incoming Mapper**.
-8. Under Mapper (outgoing), select **Splunk Finding - Outgoing Mapper**.
-9. Keep the **Fetch events query** as is, as we use the \`notable\` macro when ingesting events. You can create a more granular search by specifying specific conditions such as specific security domain, event ID, etc.
-10. Keep the default values for fetch limit and first fetch timestamp.
-11. To enable mirroring in both environments, in the Incident Mirroring Direction field, select **Incoming and Outgoing**.
+5. Under Classifier, select **SplunkPyV2 - Classifier**. The classifier routes Finding events to the **Splunk Finding** incident type and Investigation events to the **Splunk Investigation** incident type.
+6. Under Mapper (incoming), select **Splunk ES - Incoming Mapper**.
+7. Under Mapper (outgoing), select **Splunk ES - Outgoing Mapper**.
+8. In the **Event types to fetch** parameter, select which Splunk event types to ingest. **Finding** is selected by default. Add **Investigation** to additionally fetch Splunk investigations (you can keep both selected to fetch them together).
+9. Keep the **Fetch events query** as is, as we use the \`notable\` macro when ingesting Finding events. You can create a more granular search by specifying specific conditions such as specific security domain, event ID, etc.
+10. Keep the default values for the Finding **fetch limit** and **First fetch timestamp**.
+11. (Investigation only) If **Investigation** is selected in step 8, configure the following Investigation-specific parameters:
+    * **First fetch timestamp (Investigations)** — the backfill window for the first investigations fetch (e.g., `7 days`).
+    * **Maximum investigations per fetch** — the per-cycle limit (capped at 100 by Splunk).
+    * **Investigations fetch query** — keep as-is unless you need to filter further. The query must contain the literal token `FETCH_FILTER_PLACEHOLDER` — **do not modify or remove this token**. The integration replaces it at runtime with the time-range and pagination filters required to manage the fetch cycle. To add custom filters, append extra URL parameters such as `&status=New` alongside the placeholder.
+12. To enable mirroring in both environments, in the Incident Mirroring Direction field, select **Incoming and Outgoing**.
 Outgoing mirroring is recommended for Cortex XSOAR version 6.2 and above.
-12. Select *Close Mirrored XSOAR Incident* and *Close Mirrored Splunk Finding Event* so that closing an incident in one environment automatically closes it in the other.
-13. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
-This enrichment provides additional information about assets, drilldown, and identities that are related to the finding events you ingest. 
+13. Select *Close Mirrored XSOAR Incident* and *Close Mirrored Splunk Finding Event* so that closing an incident in one environment automatically closes it in the other.
+14. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
+This enrichment provides additional information about assets, drilldown, and identities that are related to the finding events you ingest.
 For more information, see [Enriching Finding Events](#enriching-finding-events).
-14. Fetch backwards window - this backward window is for cases where there is a gap between the event occurrence time and the event index time on the Splunk server.
+15. Fetch backwards window - this backward window is for cases where there is a gap between the event occurrence time and the event index time on the Splunk server.
 In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
 This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g., if some endpoints or machines that generate Splunk events are frequently offline.
 Another point to note is that Splunk's searches are based on the occurrence time behind the scenes. Meaning, Splunk itself uses occurrence time as its determining factor for bucket division and search.
@@ -73,7 +76,7 @@ This parameter determines the size of the occurrence time "sliding window" we wi
 However, there is a trade-off: the larger the window, the longer fetch queries will take to complete.
 The best value to set depends on the delays that you see in your system (consult with your Splunk expert / master), the number of events in your system, and other network properties.
 Use this parameter with careful consideration.
-15. Click **Test** and then **Save & exit**.
+16. Click **Test** and then **Save & exit**.
 
 **Note: If you are using a custom incident type, you also need to create custom corresponding incoming and outgoing mappers.**
 

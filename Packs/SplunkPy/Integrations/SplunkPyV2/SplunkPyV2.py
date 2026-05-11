@@ -1094,7 +1094,7 @@ class Enrichment:
 
 # =========== Investigations helpers ===========
 
-PLACEHOLDER = "CUSTOM_FILTER_PLACEHOLDER"
+PLACEHOLDER = "FETCH_FILTER_PLACEHOLDER"
 _REST_CLAUSE_RE = re.compile(
     r'(\|\s*rest\s+)(["\'])(.+?)(\2)',
     flags=re.IGNORECASE | re.DOTALL,
@@ -1157,20 +1157,17 @@ def prepare_investigations_query(
     limit: int,
     offset: int,
 ) -> str:
-    """Inject ``create_time_min`` / ``create_time_max`` / ``limit`` / ``offset`` into the
-    URL inside ``| rest "..."`` (or ``'...'``).
+    """Inject ``create_time_min`` / ``create_time_max`` / ``limit`` / ``offset`` into
+    ``user_query`` by substituting the mandatory ``FETCH_FILTER_PLACEHOLDER`` token.
 
     Behavior:
-      - Placeholder substitution if ``CUSTOM_FILTER_PLACEHOLDER`` is present.
-      - Otherwise, properly merge into the URL's query string using
-        ``urllib.parse``, overriding any pre-existing values for the four
-        managed keys (with a debug log naming each override). Preserves quote
-        style, whitespace, multi-line SPL, fragments, and any extra
-        ``splunk_server=…`` args after the quoted URL.
+      - The query MUST contain ``FETCH_FILTER_PLACEHOLDER``; the four managed
+        params replace it at runtime.
       - ``limit`` is clamped to ``INVESTIGATIONS_MAX_LIMIT`` (100).
 
     Raises:
-        DemistoException: if no ``| rest "<url>"`` / ``'<url>'`` clause is found.
+        DemistoException: if ``FETCH_FILTER_PLACEHOLDER`` is missing from
+            ``user_query``.
     """
     limit = min(int(limit), INVESTIGATIONS_MAX_LIMIT)
     managed = {
@@ -1180,29 +1177,18 @@ def prepare_investigations_query(
         "offset": str(offset),
     }
 
-    # Placeholder path.
-    if PLACEHOLDER in user_query:
-        params_str = "&".join(f"{k}={v}" for k, v in managed.items())
-        demisto.debug(f"prepare_investigations_query: placeholder substitution; " f"params={list(managed)}")
-        return user_query.replace(PLACEHOLDER, params_str)
+    if PLACEHOLDER not in user_query:
+        raise DemistoException(
+            f'The "Investigations fetch query" must contain the literal token `{PLACEHOLDER}`. '
+            "Do not modify or remove this token — the integration replaces it at runtime with the "
+            "time-range and pagination filters needed to manage the fetch cycle. To customize the "
+            "query, append extra URL parameters (e.g., &status=New) without changing the placeholder. "
+            'See the "Fetching investigation events" section in the integration documentation for details.'
+        )
 
-    # Append / merge path.
-    match = _REST_CLAUSE_RE.search(user_query)
-    if not match:
-        raise DemistoException("investigations_fetch_query must contain a `| rest \"<url>\"` (or '<url>') clause.")
-    url = match.group(3)
-
-    parts = urlsplit(url)
-    existing = parse_qsl(parts.query, keep_blank_values=True)
-    existing_keys = {k for k, _ in existing}
-    overridden = [k for k in _OVERRIDABLE_KEYS if k in existing_keys]
-    if overridden:
-        demisto.debug(f"prepare_investigations_query: overriding pre-existing URL params={overridden}")
-    merged = [(k, v) for k, v in existing if k not in managed] + list(managed.items())
-    new_query_string = urlencode(merged, doseq=True)
-    new_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query_string, parts.fragment))
-
-    return user_query[: match.start(3)] + new_url + user_query[match.end(3) :]
+    params_str = "&".join(f"{k}={v}" for k, v in managed.items())
+    demisto.debug(f"prepare_investigations_query: placeholder substitution; params={list(managed)}")
+    return user_query.replace(PLACEHOLDER, params_str)
 
 
 # =========== Investigations model ===========
@@ -1514,7 +1500,7 @@ class InvestigationsFetchHandler(FetchHandler):
 
     # Default SPL fallback for instances upgraded without re-saving config.
     _DEFAULT_SPL: str = (
-        '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations' '?search_format=true&CUSTOM_FILTER_PLACEHOLDER"'
+        '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&FETCH_FILTER_PLACEHOLDER"'
     )
 
     def fetch(self, service, last_run, mapper, params) -> "FetchResult":
@@ -2968,7 +2954,7 @@ def enrich_with_splunk_notes_v2(
             if (
                 not is_fetch
                 and last_update_splunk_timestamp
-                and note.get("create_time", 0) > int(last_update_splunk_timestamp)
+                and float(note.get("create_time", 0)) > float(last_update_splunk_timestamp)
                 and COMMENT_MIRRORED_FROM_XSOAR not in markdown_content
             ):
                 war_room_notes.append(get_war_room_note_entry(markdown_content, entity_id, EntryFormat.MARKDOWN))
@@ -4716,7 +4702,7 @@ def splunk_submit_event_hec_command(params: dict[str, Any], service: client.Serv
 
 
 def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
-    """Edit finding events in Splunk ES using the v2 investigations API.
+    """Edit finding or investigations events in Splunk ES using the v2 investigations API.
 
     Args:
         service: Splunk service connection
@@ -4768,29 +4754,29 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
                         investigation_or_finding_id=event_id,
                         content=note,
                     )
-                    results.append(f"Successfully updated finding {event_id} (including note)")
+                    results.append(f"Successfully updated Splunk ES event {event_id} (including note)")
                 except Exception as e:
-                    demisto.error(f"Failed to add note to finding {event_id}: {e!s}")
-                    results.append(f"Successfully updated finding {event_id} (note failed: {e!s})")
+                    demisto.error(f"Failed to add note to Splunk ES event {event_id}: {e!s}")
+                    results.append(f"Successfully updated Splunk ES event {event_id} (note failed: {e!s})")
             else:
-                results.append(f"Successfully updated finding {event_id}")
+                results.append(f"Successfully updated Splunk ES event {event_id}")
 
         except Exception as e:
-            error_msg = f"Failed to update finding {event_id}: {e!s}"
+            error_msg = f"Failed to update Splunk ES event {event_id}: {e!s}"
             demisto.error(error_msg)
             errors.append(error_msg)
 
     # Prepare the output message
     if results and not errors:
-        return_results("Splunk Finding events updated successfully:\n" + "\n".join(results))
+        return_results("Splunk ES events updated successfully:\n" + "\n".join(results))
     elif results and errors:
         return_results(
-            "Splunk Finding events partially updated:\n"
+            "Splunk ES events partially updated:\n"
             "Successes:\n" + "\n".join(results) + "\n"
             "Errors:\n" + "\n".join(errors)
         )
     else:
-        return_error("Failed to update all finding events:\n" + "\n".join(errors))
+        return_error("Failed to update all Splunk ES events:\n" + "\n".join(errors))
 
 
 def splunk_job_status(service: client.Service, args: dict[str, Any]) -> list[CommandResults]:
@@ -4923,6 +4909,35 @@ def test_module(service: client.Service, params: dict[str, Any]) -> None:
 
         except HTTPError as error:
             return_error(str(error))
+
+        selected_event_types = argToList(params.get("fetch_event_types")) or ["Finding"]
+        if "Investigation" in selected_event_types:
+            investigations_query = (
+                params.get("investigations_fetch_query")
+                or InvestigationsFetchHandler._DEFAULT_SPL
+            )
+            # Bounded probe window: 1 day back, single record. Real fetch parameters
+            # (window, pagination) are not needed here — we only want to validate
+            # the SPL/placeholder/connectivity round-trip.
+            probe_min = to_mc_iso8601_utc((datetime.now(pytz.UTC) - timedelta(days=1)).strftime(ISO_FORMAT_TZ_AWARE))
+            probe_max = to_mc_iso8601_utc(datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE))
+            try:
+                probe_spl = prepare_investigations_query(investigations_query, probe_min, probe_max, limit=1, offset=0)
+            except DemistoException as e:
+                # Re-raise with the parameter name prefix so customers know which field to fix.
+                raise DemistoException(f"'Investigations fetch query' parameter is invalid: {e}") from e
+
+            try:
+                for _ in results.JSONResultsReader(
+                    service.jobs.oneshot(probe_spl, output_mode=OUTPUT_MODE_JSON, count=1)
+                ):
+                    # We only need to confirm Splunk accepts and executes the query;
+                    # the contents of the (at most one) row are irrelevant here.
+                    break
+            except HTTPError as error:
+                raise DemistoException(
+                    f"'Investigations fetch query' parameter is invalid: Splunk rejected the query. {error}"
+                ) from error
 
         # Validate custom ID generation for queries without `notable` macro
         if not has_event_id and "`notable`" not in query:
@@ -5306,7 +5321,7 @@ def main() -> None:  # pragma: no cover
         extensive_log("[SplunkPy] Fetch Incidents was successfully executed.")
     elif command == "splunk-submit-event":
         splunk_submit_event_command(service, args)
-    elif command == "splunk-finding-event-edit" and service is not None:
+    elif command in ["splunk-finding-event-create", "splunk-investigation-edit"] and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         splunk_edit_finding_command(service, args)
     elif command == "splunk-submit-event-hec":

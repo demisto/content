@@ -8,7 +8,7 @@ Renders the Splunk Investigation `consolidated_findings` JSON payload as a Markd
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
 

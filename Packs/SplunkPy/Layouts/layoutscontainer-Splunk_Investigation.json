@@ -659,7 +659,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -678,7 +678,7 @@
                         "type": "dynamic",
                         "w": 3,
                         "x": 0,
-                        "y": 4
+                        "y": 0
                     }
                 ],
                 "type": "custom"

@@ -77,14 +77,14 @@ configuration:
   options:
   - Finding
   - Investigation
-  additionalinfo: Select which Splunk event types to ingest as incidents. Each fetched event is tagged with `splunk_es_event_type` so the classifier can map it to the correct incident type. Default `Finding` preserves existing behavior.
+  additionalinfo: Select which Splunk event types to ingest as incidents. Default `Finding`.
 - display: First fetch timestamp (Investigations)
   name: investigations_first_fetch
   type: 0
   section: Collect
   advanced: true
   required: false
-  defaultvalue: 7 days
+  defaultvalue: 10 minutes
   additionalinfo: The amount of time to go back when performing the first investigations fetch (e.g., 12 hours, 7 days, 3 months).
 - display: Investigations fetch query
   name: investigations_fetch_query
@@ -93,8 +93,8 @@ configuration:
   advanced: true
   required: false
   defaultvalue: |
-    | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&CUSTOM_FILTER_PLACEHOLDER"
-  additionalinfo: SPL used when `Investigation` is selected in "Event types to fetch". The literal token `CUSTOM_FILTER_PLACEHOLDER` is replaced at runtime with `create_time_min=<ISO8601>&create_time_max=<ISO8601>&limit=...&offset=...` (the investigations endpoint does NOT honor `earliest`/`latest`). `create_time_min` / `create_time_max` are sent as ISO 8601 UTC strings of the form `YYYY-MM-DDTHH:MM:SS[.ffffff]Z` (always UTC, `Z` suffix mandatory; sub-second precision optional). The endpoint rejects naked offsets such as `+00:00`, naive timestamps without a timezone suffix, and Splunk-relative tokens like `-7d@d`. If the token is removed, those parameters are appended to the URL inside `| rest "..."`. `limit` is clamped to 100.
+    | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&FETCH_FILTER_PLACEHOLDER"
+  additionalinfo: SPL used when "Investigation" is selected in "Event types to fetch". The query must contain the literal token `FETCH_FILTER_PLACEHOLDER` — do not modify or remove it. For customization options (e.g., adding extra filters such as `&status=New`), see the "Fetching investigation events" section in the integration documentation.
 - display: Maximum investigations per fetch
   name: investigations_max_fetch
   type: 0
@@ -142,7 +142,7 @@ configuration:
   advanced: true
   additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
   required: false
-- additionalinfo: When selected, Splunk Finding Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
+- additionalinfo: When selected, Splunk ES events (Findings and Investigations) with a status that is marked as "End Status" will close the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
   name: close_end_status_statuses
@@ -153,7 +153,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: Close Mirrored Splunk Finding Events (Outgoing Mirroring)
+- display: Close Mirrored Splunk ES Events (Outgoing Mirroring)
   name: close_finding
   type: 8
   section: Collect
@@ -161,7 +161,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Finding Event in Splunk.
+  additionalinfo: When selected, closing the Cortex XSOAR incident will close the corresponding Splunk ES event (Finding or Investigation) in Splunk.
   defaultvalue: 'false'
   required: false
 - display: Trust any certificate (not secure)
@@ -332,7 +332,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Run queries on Splunk and fetch Finding Events (Splunk ES 8.2+).
+description: Run queries on Splunk and fetch Splunk ES Findings and Investigations (Splunk ES 8.2+).
 display: SplunkPy v2
 name: SplunkPy v2
 script:
@@ -465,6 +465,38 @@ script:
     description: Updates existing finding events in Splunk ES.
     execution: true
     name: splunk-finding-event-edit
+  - arguments:
+    - description: A comma-separated list of investigation IDs.
+      name: event_ids
+      required: true
+      isArray: true
+    - description: A Splunk user to assign to the investigations.
+      name: owner
+    - description: Note to add to the investigation.
+      name: note
+    - description: Description of the investigation.
+      name: description
+    - auto: PREDEFINED
+      description: Investigation status.
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Pending
+      - Resolved
+      - Closed
+    - auto: PREDEFINED
+      description: 'Investigation urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
+      name: urgency
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - informational
+    description: Updates existing investigations in Splunk ES.
+    execution: true
+    name: splunk-investigation-edit
   - arguments:
     - description: The Splunk search language string to execute. For example :"index=* | head 3".
       name: query
