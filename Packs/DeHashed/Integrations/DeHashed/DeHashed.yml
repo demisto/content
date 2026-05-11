@@ -140,7 +140,7 @@ script:
       description: The total number of entries returned from the last query.
       type: Number
     - contextPath: Dehashed.LastQuery.DisplayedResults
-      description: The number of entries that were displayed in Cortex XSOAR from the last query.
+      description: The number of entries that were displayed from the last query.
       type: Number
 
   - arguments:
