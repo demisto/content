@@ -128,6 +128,42 @@ script:
       description: The number of medium confidence occurrences.
     - contextPath: DLP.Report.DataPatternMatches.LowConfidenceFrequency
       description: The number of low confidence occurrences.
+    - contextPath: DLP.Report.DataPatternMatches.MatchedConfidenceLevel
+      description: The matched confidence level of the data pattern (e.g., "high", "medium", "low"). Only present for patterns that matched.
+      type: String
+    - contextPath: DLP.Report.DataProfiles.Name
+      description: The name of the data profile.
+      type: String
+    - contextPath: DLP.Report.DataProfiles.Id
+      description: The ID of the data profile.
+      type: Number
+    - contextPath: DLP.Report.DataProfiles.Version
+      description: The version of the data profile.
+      type: Number
+    - contextPath: DLP.Report.DataProfiles.IsTriggered
+      description: Whether the data profile was triggered.
+      type: Boolean
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.Id
+      description: The data pattern ID within the profile.
+      type: String
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.IsMatched
+      description: Whether the data pattern matched.
+      type: Boolean
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.ConfidenceLevel
+      description: The confidence level configured for the pattern.
+      type: String
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.OccurrenceCount
+      description: The number of occurrences detected.
+      type: Number
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.OccurrenceOperatorType
+      description: The occurrence operator type (e.g., "more_than_equal_to", "between").
+      type: String
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.OccurrenceLow
+      description: The low bound for "between" operator type.
+      type: Number
+    - contextPath: DLP.Report.DataProfiles.DataPatterns.OccurrenceHigh
+      description: The high bound for "between" operator type.
+      type: Number
     description: Fetches DLP reports associated with a report ID.
   - name: pan-dlp-update-incident
     arguments:
@@ -201,7 +237,7 @@ script:
   - name: pan-dlp-reset-last-run
     deprecated: true
     description: Deprecated. Reset the "last run" timestamp via the integration instance configuration window.
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   isFetchSamples: true
   isfetch: true
   script: '-'
