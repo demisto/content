@@ -1,0 +1,20 @@
+[
+    {
+        "id": "MUSIC",
+        "configuredName": "Music",
+        "superCategory": "ENTERTAINMENT_AND_RECREATION",
+        "customCategory": false,
+        "keywords": ["spotify", "pandora"],
+        "urls": ["pandora.com", "spotify.com"],
+        "dbCategorizedUrls": []
+    },
+    {
+        "id": "CUSTOM_01",
+        "configuredName": "My Custom Category",
+        "superCategory": "OTHER_MISCELLANEOUS",
+        "customCategory": true,
+        "keywords": [],
+        "urls": ["example.com"],
+        "dbCategorizedUrls": []
+    }
+]

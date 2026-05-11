@@ -1,5 +1,5 @@
 {
-  "Risk Score (Out of 1000)": 640.0,
+  "Risk Score (Out of 100)": 640.0,
   "Score Details": {
     "Attacker IP": 160.0,
     "Botnet & Malware": 480.0

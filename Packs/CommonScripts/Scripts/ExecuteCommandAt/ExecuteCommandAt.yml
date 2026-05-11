@@ -1,0 +1,28 @@
+args:
+- description: The incident ids to run the command on. Can be passed in as CSV format for multiple.
+  isArray: true
+  name: incident_ids
+  required: true
+- description: The command name to run.
+  name: command
+  required: true
+- description: 'The arguments to pass into the command. The format should be like: {"argument_name": "argument_value"}.'
+  name: arguments
+comment: A wrapper script for the executeCommandAt command to be used in playbooks or the war-room.
+commonfields:
+  id: ExecuteCommandAt
+  version: -1
+dockerimage: demisto/python3:3.12.13.8319994
+enabled: true
+engineinfo: {}
+name: ExecuteCommandAt
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests

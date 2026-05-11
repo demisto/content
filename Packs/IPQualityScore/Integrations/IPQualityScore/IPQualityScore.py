@@ -198,7 +198,7 @@ def main():
     try:
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
-            client = Client(base_url=base_url_ip, verify=verify_certificate, proxy=proxy)
+            client = Client(base_url=base_url_ip.rstrip("/") + "/", verify=verify_certificate, proxy=proxy)
             result = test_module(client)
             demisto.results(result)
 
@@ -206,7 +206,7 @@ def main():
             ip_suspicious_score_threshold = int(demisto.params().get("ip_suspicious_score_threshold"))
             ip_malicious_score_threshold = int(demisto.params().get("ip_malicious_score_threshold"))
             reliability = demisto.params().get("feedReliability")
-            client = Client(base_url=base_url_ip, verify=verify_certificate, proxy=proxy)
+            client = Client(base_url=base_url_ip.rstrip("/") + "/", verify=verify_certificate, proxy=proxy)
             return_results(
                 ip_command(client, demisto.args(), ip_suspicious_score_threshold, ip_malicious_score_threshold, reliability)
             )
@@ -215,7 +215,7 @@ def main():
             email_suspicious_score_threshold = int(demisto.params().get("email_suspicious_score_threshold"))
             email_malicious_score_threshold = int(demisto.params().get("email_malicious_score_threshold"))
             reliability = demisto.params().get("feedReliability")
-            client = Client(base_url=base_url_email, verify=verify_certificate, proxy=proxy)
+            client = Client(base_url=base_url_email.rstrip("/") + "/", verify=verify_certificate, proxy=proxy)
             return_results(
                 email_command(
                     client, demisto.args(), email_suspicious_score_threshold, email_malicious_score_threshold, reliability
@@ -226,7 +226,7 @@ def main():
             url_suspicious_score_threshold = int(demisto.params().get("url_suspicious_score_threshold"))
             url_malicious_score_threshold = int(demisto.params().get("url_malicious_score_threshold"))
             reliability = demisto.params().get("feedReliability")
-            client = Client(base_url=base_url_url, verify=verify_certificate, proxy=proxy)
+            client = Client(base_url=base_url_url.rstrip("/") + "/", verify=verify_certificate, proxy=proxy)
             return_results(
                 url_command(client, demisto.args(), url_suspicious_score_threshold, url_malicious_score_threshold, reliability)
             )

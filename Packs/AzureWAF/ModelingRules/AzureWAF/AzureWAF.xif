@@ -145,7 +145,7 @@ alter
 	get_properties_requestQuery = properties -> requestQuery,
 	get_properties_requestUri = coalesce(properties -> requestUri, requesturi),
 	get_properties_originalRequestUriWithArgs = coalesce(properties -> originalRequestUriWithArgs,originalrequesturiwithargs),
-	get_properties_clientip = if(to_string(properties) ~= "clientIp", properties -> clientIp, to_string(properties) ~= "clientIP", properties -> clientIP,len(clientip) > 0 , clientip),
+	get_properties_clientip = if(properties -> clientIp != null, properties -> clientIp, properties -> clientIP != null, properties -> clientIP, len(clientip) > 0, clientip),
 	get_resultSignature_resCode = if(resultSignature ~= "^\d{3}$", to_integer(resultSignature)),
 	get_callerIpAddress_ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(callerIpAddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
 	get_callerIpAddress_ipv6 = if(callerIpAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", arrayindex(regextract(callerIpAddress, "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}"), 0)),
@@ -234,19 +234,16 @@ alter
 
 
 [MODEL: dataset=msft_azure_waf_raw]
-config case_sensitive = true
-| filter Category = "FrontDoorAccessLog"
+filter Category = "FrontDoorAccessLog"
 | call msft_azure_resourcelogs_common_fields
 | call front_door_common_fields
 | call front_door_access_log;
 
-config case_sensitive = true
-| filter Category = "FrontDoorWebApplicationFirewallLog"
+filter Category = "FrontDoorWebApplicationFirewallLog"
 | call msft_azure_resourcelogs_common_fields
 | call front_door_common_fields
 | call front_door_waf_log ;
 
-config case_sensitive = true
-| filter Category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog") OR type in ("AGWAccessLogs", "AGWFirewallLogs")
+filter Category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog") OR type in ("AGWAccessLogs", "AGWFirewallLogs")
 | call msft_azure_resourcelogs_common_fields
 | call application_gateway_access_and_waf_logs;

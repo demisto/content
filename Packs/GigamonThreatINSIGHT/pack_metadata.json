@@ -2,7 +2,7 @@
     "name": "Gigamon ThreatINSIGHT",
     "description": "Gigamon ThreatINSIGHT allows a fast detection and effective response to active threats.",
     "support": "community",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Gigamon",
     "url": "https://www.gigamon.com/products/detect-respond/gigamon-threatinsight.html",
     "email": "apps@gigamon.com",
@@ -22,10 +22,6 @@
     ],
     "githubUser": [],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

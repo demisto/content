@@ -216,11 +216,12 @@ def test_client_generate_seq_update_calls_poller(session_fixture, mocker):
 
     class PollerStub:
         def get_seq_update_dict(self, date, collection):
-            return {"date": date, "collection": collection}
+            # With `collection` provided, DRPPoller.get_seq_update_dict is expected to return int seqUpdate.
+            return 123
 
     client.poller = PollerStub()
     seq = client.generate_seq_update("2024-01-15")
-    assert seq == {"date": "2024-01-15", "collection": GroupIBDigitalRiskProtection.Endpoints.VIOLATIONS.value}
+    assert seq == 123
 
     # invalid date -> DemistoException
     with pytest.raises(GroupIBDigitalRiskProtection.DemistoException):

@@ -251,8 +251,6 @@ tasks:
       document_password:
         complex:
           root: inputs.DocumentPassword
-      enable_tor:
-        simple: "false"
       environment_id:
         simple: ${inputs.EnvironmentID}
       file:

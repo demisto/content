@@ -1,0 +1,3 @@
+!GetListContent value="list_name"
+!GetListContent value="list_name" type=json
+!GetListContent value="list_name" type=string

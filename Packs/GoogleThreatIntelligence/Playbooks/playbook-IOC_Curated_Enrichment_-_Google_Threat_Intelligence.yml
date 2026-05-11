@@ -460,7 +460,6 @@ inputs:
   description: The type of the resource (IP, domain, URL, or file hash).
   playbookInputQuery:
 outputs: []
-quiet: true
 tests:
 - GoogleThreatIntelligence-test
 fromversion: 6.10.0

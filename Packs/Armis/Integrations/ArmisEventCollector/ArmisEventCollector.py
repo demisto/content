@@ -576,7 +576,9 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         demisto.debug("Dedup case 1 - Empty event list (no new events received from API response).")
         return [], events_last_fetch_ids
 
-    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
+    # Convert to set for O(1) lookups
+    last_fetch_ids_set = set(events_last_fetch_ids)
+    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in last_fetch_ids_set]
 
     earliest_event_datetime = arg_to_datetime(events[0].get(event_order_by))
     latest_event_datetime = arg_to_datetime(events[-1].get(event_order_by))
