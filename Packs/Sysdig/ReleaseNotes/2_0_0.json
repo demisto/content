@@ -1,0 +1,4 @@
+{
+  "breakingChanges": true,
+  "breakingChangesNotes": "**Sysdig Agent ID** and **Sysdig Customer ID** are no longer mapped from the webhook payload. The Sysdig Secure V2 webhook format does not include these fields. They are now resolved automatically via the `sysdig-get-agent-info` API command during playbook execution. If you have custom automations reading these fields directly from the incident, update them to run after the enrichment playbook populates them."
+}
