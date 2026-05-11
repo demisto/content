@@ -4,7 +4,7 @@ commonfields:
   id: DeHashed
   version: -1
 configuration:
-- additionalinfo: For generating an API Key, see https://www.dehashed.com.
+- additionalinfo: To generate an API key, see https://www.dehashed.com.
   displaypassword: API Key
   hiddenusername: true
   name: credentials
@@ -73,11 +73,11 @@ script:
       - is
       - regex
       required: true
-    - description: The number of page to return. Each page contains up to 5,000 results.
+    - description: The page number to return. Each page contains up to 5,000 results.
       name: page
-    - description: Starting result number to display. Default is 1.
+    - description: The index of the first result to display. Default is 1.
       name: results_from
-    - description: Ending result number to display. Default is 50.
+    - description: The index of the last result to display. Default is 50.
       name: results_to
     description: Performs a search to check if information is compromised.
     name: dehashed-search
@@ -110,25 +110,25 @@ script:
       description: Phone number of the object.
       type: Number
     - contextPath: DeHashed.Search.Dob
-      description: Date of birth.
+      description: The date of birth.
       type: String
     - contextPath: DeHashed.Search.LicensePlate
-      description: License plate.
+      description: The license plate.
       type: String
     - contextPath: DeHashed.Search.Company
-      description: Company name.
+      description: The company name.
       type: String
     - contextPath: DeHashed.Search.Url
-      description: Associated URL.
+      description: The URL associated with the search result.
       type: String
     - contextPath: DeHashed.Search.Social
-      description: Social media handle.
+      description: The social media handle.
       type: String
     - contextPath: DeHashed.Search.CryptocurrencyAddress
-      description: Cryptocurrency address.
+      description: The cryptocurrency address.
       type: String
     - contextPath: DeHashed.Search.DatabaseName
-      description: Source database/breach name (drives DBot score).
+      description: The name of the source database or breach. This value is used to calculate the DBot score.
       type: String
     - contextPath: Dehashed.LastQuery.ResultsFrom
       description: The value of the "results_from" argument that was passed in the last query.
@@ -180,25 +180,25 @@ script:
       description: Phone number of the object.
       type: Number
     - contextPath: DeHashed.Search.Dob
-      description: Date of birth.
+      description: The date of birth.
       type: String
     - contextPath: DeHashed.Search.LicensePlate
-      description: License plate.
+      description: The license plate.
       type: String
     - contextPath: DeHashed.Search.Company
-      description: Company name.
+      description: The company name.
       type: String
     - contextPath: DeHashed.Search.Url
-      description: Associated URL.
+      description: The URL associated with the search result.
       type: String
     - contextPath: DeHashed.Search.Social
-      description: Social media handle.
+      description: The social media handle.
       type: String
     - contextPath: DeHashed.Search.CryptocurrencyAddress
-      description: Cryptocurrency address.
+      description: The cryptocurrency address.
       type: String
     - contextPath: DeHashed.Search.DatabaseName
-      description: Source database/breach name (drives DBot score).
+      description: The name of the source database or breach. This value is used to calculate the DBot score.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
