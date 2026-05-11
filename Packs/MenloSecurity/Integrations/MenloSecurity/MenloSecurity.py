@@ -120,12 +120,7 @@ class Client(ContentClient):
         # a JSON object is expected... Content-Length: 0."
         response = self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="response")
 
-        # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
-        demisto.debug(
-            f"[{log_type}] HTTP {response.status_code}, "
-            f"content-length={response.headers.get('content-length', '?')}, "
-            f"body-bytes={len(response.content)}"
-        )
+        demisto.debug(f"[{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}")
 
         # Empty body (Content-Length: 0) means "no data" — not an error.
         if not response.content:
@@ -239,56 +234,32 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] Empty response for {log_type_ui} — no data.")
             break
 
-        # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
-        demisto.debug(
-            f"[{thread_name}] {log_type_ui} response: type={type(response).__name__}, "
-            f"keys={list(response.keys()) if isinstance(response, dict) else 'N/A'}, "
-            f"sample={str(response)[:500]}"
-        )
+        # The live `web` endpoint returns a LIST of response wrappers, each carrying its own
+        # events + pagingIdentifiers. Other log types may follow the documented single-object
+        # shape. Normalize into a list of wrappers and flatten their inner events.
+        wrappers = response if isinstance(response, list) else [response]
 
-        # TODO(CIAC-16574): Once the live response shape is confirmed, simplify to handle
-        # only the actual shape and remove the other branches.
-        # Per docs the API returns:
-        #   {"timestamp": "...", "result": {"events": [...], "pagingIdentifiers": {...}}}
-        # However the live API has been observed to return a bare list of events with no
-        # paging wrapper. Handle all plausible shapes defensively.
-        if isinstance(response, list):
-            # Shape A: bare list of events (observed behavior, undocumented).
-            page_events = response
-            next_paging = None  # no pagingIdentifiers in bare-list shape — treat as last page
-        elif isinstance(response, dict):
-            # Shape B (documented): {"timestamp": "...", "result": {"events": [...], "pagingIdentifiers": {...}}}
-            # Shape C (defensive): {"events": [...], "pagingIdentifiers": {...}} — events at top level
-            result = response.get("result", response)  # fall back to the response itself if no "result" key
-            page_events = result.get("events", [])
-            next_paging = result.get("pagingIdentifiers") or {}
-        else:
-            demisto.error(f"[{thread_name}] Unexpected response type {type(response).__name__} for {log_type_ui}.")
-            break
+        page_events: list[dict] = []
+        next_paging: dict | None = None
+        for wrapper in wrappers:
+            # Per docs the events live under result.events; some shapes have events at top level.
+            result = wrapper.get("result", wrapper)
+            page_events.extend(result.get("events", []))
+            # Use the LAST non-empty pagingIdentifiers as the cursor for the next request.
+            wrapper_paging = result.get("pagingIdentifiers") or None
+            if wrapper_paging:
+                next_paging = wrapper_paging
 
         if not page_events:
             demisto.debug(f"[{thread_name}] No more events for {log_type_ui}.")
             break
 
-        # TODO(CIAC-16574): Remove diagnostic logging once integration is stable in production.
-        first_event_sample = str(page_events[0])[:300] if page_events else "N/A"
-        demisto.debug(
-            f"[{thread_name}] Got {len(page_events)} {log_type_ui} events. " f"First event sample: {first_event_sample}"
-        )
+        demisto.debug(f"[{thread_name}] Got {len(page_events)} {log_type_ui} events.")
 
         # Per the API docs, each element in the events list is {"event": {...}}.
         source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
         for event in page_events:
-            # TODO(CIAC-16574): Remove defensive type checks once event element shape is confirmed.
-            # Skip any non-dict element (would happen if API returns CEF/KVP text lines).
-            if not isinstance(event, dict):
-                demisto.debug(f"[{thread_name}] Skipping non-dict event element ({type(event).__name__}): {str(event)[:200]}")
-                continue
             inner = event.get("event", event)  # unwrap the {"event": {...}} envelope
-            # TODO(CIAC-16574): Remove once "event" key shape is confirmed.
-            if not isinstance(inner, dict):
-                # Defensive: "event" key exists but isn't a dict — fall back to the outer element.
-                inner = event
             if enrich:
                 event_time_str = inner.get("event_time")
                 if event_time_str:
