@@ -1,0 +1,37 @@
+!pihole-get-summary
+!pihole-get-top-domains count=10
+!pihole-get-top-domains count=5 blocked=true
+!pihole-get-top-clients count=10
+!pihole-get-upstreams
+!pihole-get-query-types
+!pihole-get-recent-blocked count=5
+!pihole-get-history
+!pihole-get-history-clients N=10
+!pihole-get-queries length=50
+!pihole-get-queries length=10 domain=example.com
+!pihole-get-blocking-status
+!pihole-set-blocking blocking=true
+!pihole-set-blocking blocking=false timer=300
+!pihole-get-domains
+!pihole-get-domains type=deny kind=exact
+!pihole-add-domain type=deny kind=exact domain=ads.example.com comment="Block ads"
+!pihole-delete-domain type=deny kind=exact domain=ads.example.com
+!pihole-get-version
+!pihole-get-system-info
+!pihole-get-ftl-info
+!pihole-get-host-info
+!pihole-get-sensors
+!pihole-run-gravity
+!pihole-restart-dns
+!pihole-flush-logs
+!pihole-flush-network
+!pihole-get-network-devices
+!pihole-get-network-gateway
+!pihole-search-domain domain=example.com
+!pihole-get-dhcp-leases
+!pihole-get-groups
+!pihole-add-group name=test-group comment="Test group"
+!pihole-delete-group name=test-group
+!pihole-get-lists
+!pihole-add-list address=https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts comment="StevenBlack"
+!pihole-delete-list address=https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
