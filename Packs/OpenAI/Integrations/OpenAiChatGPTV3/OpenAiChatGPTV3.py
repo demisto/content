@@ -1697,6 +1697,9 @@ def main() -> None:  # pragma: no cover
     command against the `COMMAND_MAP`, builds the `OpenAiClient`, and dispatches.
     Errors are logged with a full traceback and surfaced via `return_error`.
     """
+    # Make `demisto.*` runtime-bridge calls thread-safe for `fetch_events_command`'s
+    # ThreadPoolExecutor workers. Official CommonServerPython helper, idempotent.
+    support_multithreading()
     demisto.debug(f"{INTEGRATION_NAME} integration started")
 
     try:
