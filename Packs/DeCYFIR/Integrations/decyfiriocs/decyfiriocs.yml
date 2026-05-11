@@ -1,5 +1,11 @@
+name: DeCYFIR Feed
+description: DeCYFIR API's provides External Threat Landscape Management insights.
+display: DeCYFIR Indicators & Threat Intelligence Feed
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
+sectionorder:
+  - Connect
+  - Collect
 commonfields:
   id: DeCYFIR Feed
   version: -1
@@ -89,16 +95,205 @@ configuration:
   - WHITE
   required: false
   type: 15
-description: DeCYFIR API's provides External Threat Landscape Management insights.
-display: DeCYFIR Indicators & Threat Intelligence Feed
-name: DeCYFIR Feed
 script:
   commands:
-  - deprecated: false
-    description: Gets indicators from the feed.
-    execution: false
+  - deprecated: true
+    execution: true
     name: decyfir-get-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+    description: Deprecated. Use the decyfir-ip-get, decyfir-domain-get, decyfir-url-get, or decyfir-file-get commands instead.
+  - deprecated: false
+    description: Get IP indicators from CYFIRMA.
+    execution: false
+    name: decyfir-ip-get
+    outputs:
+    - contextPath: DeCYFIR.IP.Value
+      description: Indicator value.
+      type: String
+
+    - contextPath: DeCYFIR.IP.Type
+      description: Indicator type.
+      type: String
+
+    - contextPath: DeCYFIR.IP.Description
+      description: Indicator description.
+      type: String
+
+    - contextPath: DeCYFIR.IP.Country
+      description: Country associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.IP.ThreatActor
+      description: Threat actors associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.IP.Action
+      description: Recommended remediation actions.
+      type: String
+
+    - contextPath: DeCYFIR.IP.Role
+      description: Indicator role or classification.
+      type: String
+
+    - contextPath: DeCYFIR.IP.Confidence
+      description: Confidence score.
+      type: Number
+
+    - contextPath: DeCYFIR.IP.RiskScore
+      description: Exposure risk score.
+      type: Number
+
+    - contextPath: DeCYFIR.IP.Vendors
+      description: List of Vendors associated with the indicator.
+      type: Unknown
+
+    - contextPath: DeCYFIR.IP.RawJSON
+      description: Raw indicator JSON data.
+      type: Unknown
+  - deprecated: false
+    description: Get Domain indicators from CYFIRMA.
+    execution: false
+    name: decyfir-domain-get
+    outputs:
+    - contextPath: DeCYFIR.Domain.Value
+      description: Indicator value.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.Type
+      description: Indicator type.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.Description
+      description: Indicator description.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.Country
+      description: Country associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.ThreatActor
+      description: Threat actors associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.Action
+      description: Recommended remediation actions.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.Role
+      description: Indicator role or classification.
+      type: String
+
+    - contextPath: DeCYFIR.Domain.Confidence
+      description: Confidence score.
+      type: Number
+
+    - contextPath: DeCYFIR.Domain.RiskScore
+      description: Exposure risk score.
+      type: Number
+
+    - contextPath: DeCYFIR.Domain.Vendors
+      description: List of Vendors associated with the indicator.
+      type: Unknown
+
+    - contextPath: DeCYFIR.Domain.RawJSON
+      description: Raw indicator JSON data.
+      type: Unknown
+  - deprecated: false
+    description: Get URL indicators from CYFIRMA.
+    execution: false
+    name: decyfir-url-get
+    outputs:
+    - contextPath: DeCYFIR.URL.Value
+      description: Indicator value.
+      type: String
+
+    - contextPath: DeCYFIR.URL.Type
+      description: Indicator type.
+      type: String
+
+    - contextPath: DeCYFIR.URL.Description
+      description: Indicator description.
+      type: String
+
+    - contextPath: DeCYFIR.URL.Country
+      description: Country associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.URL.ThreatActor
+      description: Threat actors associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.URL.Action
+      description: Recommended remediation actions.
+      type: String
+
+    - contextPath: DeCYFIR.URL.Role
+      description: Indicator role or classification.
+      type: String
+
+    - contextPath: DeCYFIR.URL.Confidence
+      description: Confidence score.
+      type: Number
+
+    - contextPath: DeCYFIR.URL.RiskScore
+      description: Exposure risk score.
+      type: Number
+
+    - contextPath: DeCYFIR.URL.Vendors
+      description: List of Vendors associated with the indicator.
+      type: Unknown
+
+    - contextPath: DeCYFIR.URL.RawJSON
+      description: Raw indicator JSON data.
+      type: Unknown
+  - deprecated: false
+    description: Get File Hash indicators from CYFIRMA.
+    execution: false
+    name: decyfir-file-get
+    outputs:
+    - contextPath: DeCYFIR.File.Value
+      description: Indicator value.
+      type: String
+
+    - contextPath: DeCYFIR.File.Type
+      description: Indicator type.
+      type: String
+
+    - contextPath: DeCYFIR.File.Description
+      description: Indicator description.
+      type: String
+
+    - contextPath: DeCYFIR.File.Country
+      description: Country associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.File.ThreatActor
+      description: Threat actors associated with the indicator.
+      type: String
+
+    - contextPath: DeCYFIR.File.Action
+      description: Recommended remediation actions.
+      type: String
+
+    - contextPath: DeCYFIR.File.Role
+      description: Indicator role or classification.
+      type: String
+
+    - contextPath: DeCYFIR.File.Confidence
+      description: Confidence score.
+      type: Number
+
+    - contextPath: DeCYFIR.File.RiskScore
+      description: Exposure risk score.
+      type: Number
+
+    - contextPath: DeCYFIR.File.Vendors
+      description: List of Vendors associated with the indicator.
+      type: Unknown
+
+    - contextPath: DeCYFIR.File.RawJSON
+      description: Raw indicator JSON data.
+      type: Unknown
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isfetch: false
   longRunning: false
@@ -107,6 +302,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
