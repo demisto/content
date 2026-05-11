@@ -2073,3 +2073,132 @@ class TestGap5CaptureProxyBypassedLimitation:
             f"narrowing must NOT fire when captured_requests=0; got {out}"
         )
         assert not diag.scope_1_narrowed
+
+
+# =============================================================================
+# Auth-aware ignore composition (--integration-id flag → compose_ignore_set)
+# =============================================================================
+
+
+class TestComposeIgnoreSetAuthAware:
+    """Smoke tests for the new ``compose_ignore_set`` helper.
+
+    The composition surface is the unit-test seam. We mock
+    ``workflow_state.auth_param_ids`` so we don't depend on the live CSV
+    or spin up Docker. Three cases are covered:
+
+    1. File-only path (no integration id) — backward compat.
+    2. ``--integration-id`` supplied AND auth-aware pull succeeds —
+       result is the union; stderr logs the pulled list.
+    3. ``--integration-id`` supplied AND auth-aware pull fails (e.g.
+       Auth Details unset / integration not in CSV) — analyzer keeps
+       running with file-based ignore only; stderr logs a WARNING.
+    """
+
+    def test_no_integration_id_is_file_only(
+        self, tmp_path: Path, capsys
+    ) -> None:
+        ignore_file = tmp_path / "ignore.txt"
+        ignore_file.write_text("url\nproxy\n# a comment\ninsecure\n")
+        result = ccp.compose_ignore_set(
+            inline=None,
+            file_path=ignore_file,
+            integration_id=None,
+        )
+        assert result == {"url", "proxy", "insecure"}
+        # No auth-aware log line emitted when no integration id.
+        err = capsys.readouterr().err
+        assert "Auth-aware ignore" not in err
+
+    def test_integration_id_unions_file_and_auth_pulled(
+        self, tmp_path: Path, monkeypatch, capsys
+    ) -> None:
+        ignore_file = tmp_path / "ignore.txt"
+        ignore_file.write_text("url\nproxy\n")
+
+        # Patch ``workflow_state.auth_param_ids`` *as imported by*
+        # ``compose_ignore_set`` (the lazy ``from workflow_state
+        # import auth_param_ids`` happens inside the function body).
+        import workflow_state as ws
+
+        monkeypatch.setattr(
+            ws,
+            "auth_param_ids",
+            lambda integration_id: ["api_key", "credentials"],
+        )
+
+        result = ccp.compose_ignore_set(
+            inline=["explicit_param"],
+            file_path=ignore_file,
+            integration_id="MyIntegration",
+        )
+        # Union of inline + file + auth-pulled.
+        assert result == {
+            "explicit_param", "url", "proxy", "api_key", "credentials",
+        }
+        err = capsys.readouterr().err
+        # Single-line, comma-separated stderr log.
+        assert "Auth-aware ignore" in err
+        assert "MyIntegration" in err
+        assert "api_key" in err
+        assert "credentials" in err
+
+    def test_integration_id_with_workflow_error_falls_back_gracefully(
+        self, tmp_path: Path, monkeypatch, capsys
+    ) -> None:
+        ignore_file = tmp_path / "ignore.txt"
+        ignore_file.write_text("url\nproxy\n")
+
+        import workflow_state as ws
+
+        def _raise(integration_id):
+            raise ws.WorkflowError(
+                f"'Auth Details' is not set for integration '{integration_id}'."
+            )
+
+        monkeypatch.setattr(ws, "auth_param_ids", _raise)
+
+        # Must NOT crash — analyzer must remain runnable on
+        # integrations that haven't been classified yet.
+        result = ccp.compose_ignore_set(
+            inline=None,
+            file_path=ignore_file,
+            integration_id="UnclassifiedIntegration",
+        )
+        assert result == {"url", "proxy"}
+        err = capsys.readouterr().err
+        assert "WARNING" in err
+        assert "UnclassifiedIntegration" in err
+        assert "Auth Details" in err
+
+    def test_integration_id_with_empty_auth_pull_logs_zero(
+        self, tmp_path: Path, monkeypatch, capsys
+    ) -> None:
+        ignore_file = tmp_path / "ignore.txt"
+        ignore_file.write_text("url\n")
+
+        import workflow_state as ws
+
+        monkeypatch.setattr(ws, "auth_param_ids", lambda integration_id: [])
+        result = ccp.compose_ignore_set(
+            inline=None,
+            file_path=ignore_file,
+            integration_id="SomeIntegration",
+        )
+        assert result == {"url"}
+        err = capsys.readouterr().err
+        assert "Auth-aware ignore" in err
+        assert "0 params" in err
+
+    def test_argparse_wires_integration_id_flag(self) -> None:
+        ns = ccp._parse_args([
+            "/tmp/some_path",
+            "--integration-id", "MyIntegration",
+        ])
+        assert ns.integration_id == "MyIntegration"
+
+    def test_argparse_default_integration_id_is_none(self) -> None:
+        # Backward compat: omitting the flag keeps the existing
+        # standalone-script behaviour intact.
+        ns = ccp._parse_args(["/tmp/some_path"])
+        assert ns.integration_id is None

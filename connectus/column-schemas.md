@@ -173,6 +173,16 @@ Notes:
 - Parameter IDs match those in the integration's YML `configuration` section.
 - Free-form: no enforced ordering or required keys beyond `integration` and
   `commands`.
+- **Disjointness with `Auth Details`:** `set-params-to-commands` HARD
+  REJECTS any payload whose per-command lists include a YML param id
+  that is already declared in the integration's `Auth Details` cell —
+  either as a projected `auth_types[].xsoar_params` entry (dotted forms
+  collapse to the segment before the first `.`) or as an
+  `other_connection` entry. Inspect the live exclusion set with
+  [`workflow_state.py auth-params <Integration ID>`](workflow_state.py:1)
+  and see [`connectus/Readme.md`](Readme.md:1) for the full CLI
+  reference. The analyzer can also pull this set automatically when
+  invoked with `--integration-id <id>` (see below).
 
 ### Production source
 
@@ -184,8 +194,15 @@ invocation is:
 
 ```bash
 python3 connectus/check_command_params.py <integration_dir> \
-    --ignore-params-file connectus/default_ignore_params.txt
+    --ignore-params-file connectus/default_ignore_params.txt \
+    --integration-id "<Integration ID>"
 ```
+
+Pass `--integration-id <id>` to make the analyzer additionally pull the
+integration's auth-derived ignore set from
+[`workflow_state.py auth-params <id>`](workflow_state.py:1) and union it
+into its own ignore set. This guarantees the per-command output is
+disjoint from the integration's `Auth Details` cell from the start.
 
 The ignore list at
 [`connectus/default_ignore_params.txt`](default_ignore_params.txt:1)

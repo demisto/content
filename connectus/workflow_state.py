@@ -780,11 +780,18 @@ def _auth_param_sources(auth_detail: dict) -> dict[str, list[str]]:
             # Group source description by entry — every projected id
             # cites the same entry-level (name, xsoar_params) pair so
             # the overlap message can quote the dotted forms verbatim.
+            # Dedupe per-yml_id so dotted forms collapsing to the same
+            # bare id (credentials.identifier + credentials.password →
+            # credentials) don't repeat the same descriptor twice.
             descriptor = (
                 f"auth_types[].name={entry_name!r} "
                 f"(xsoar_params={list(xsoar_params)!r})"
             )
+            seen_for_entry: set[str] = set()
             for yml_id in projected_for_entry:
+                if yml_id in seen_for_entry:
+                    continue
+                seen_for_entry.add(yml_id)
                 sources.setdefault(yml_id, []).append(descriptor)
 
     other_connection = auth_detail.get("other_connection")
