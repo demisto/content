@@ -1,5 +1,6 @@
 import asyncio
 import hashlib
+import traceback
 import httpx
 from datetime import UTC as _UTC  # type: ignore[attr-defined]
 from datetime import tzinfo
@@ -76,7 +77,7 @@ def _raise_for_acl_error(error: httpx.HTTPStatusError, *, resource: str) -> Neve
     try:
         body = error.response.text
     except Exception:
-        pass
+        demisto.debug(f"Failed to extract response body from ACL error: {traceback.format_exc()}")
 
     if status == 400:
         raise DemistoException(f"Invalid Request to {resource} (HTTP 400). {body}".strip())
@@ -680,7 +681,7 @@ class Client:
         body is identical in shape to ``delete_acl`` (the ``{"jobs":[...], "status":{...}}``
         envelope).
         """
-        url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}" f"/entry/{_encode_path_segment(entry_id)}"
+        url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}/entry/{_encode_path_segment(entry_id)}"
 
         async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
             try:
@@ -813,7 +814,6 @@ async def acls_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     title = f"IBM Storage Scale ACLs for '{user_group}'" if user_group else "IBM Storage Scale ACLs"
     return CommandResults(
         outputs_prefix="IBMStorageScale.ACL",
-        outputs_key_field="userGroup",
         outputs=raw,
         raw_response=raw,
         readable_output=tableToMarkdown(
