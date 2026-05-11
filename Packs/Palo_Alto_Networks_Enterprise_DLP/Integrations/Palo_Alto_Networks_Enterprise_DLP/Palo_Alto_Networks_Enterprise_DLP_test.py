@@ -19,7 +19,9 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     arg_to_datetime,
     compute_next_run,
     get_start_end_time_intervals,
+    _migrate_last_run,
     START_TIMESTAMP_KEY,
+    LAST_IDS_KEY,
     LAST_IDS_TIMESTAMPS_KEY,
     END_TIME_BUFFER,
 )
@@ -629,3 +631,48 @@ def test_fetch_notifications_lookback(requests_mock, mocker):
     # The very first request must use start_timestamp=expected_effective_start
     first_request_url = requests_mock.request_history[0].url
     assert f"start_timestamp={expected_effective_start}" in first_request_url
+
+
+@pytest.mark.parametrize(
+    "last_run, start_timestamp, expected",
+    [
+        pytest.param(
+            {LAST_IDS_TIMESTAMPS_KEY: {"id1": 1000, "id2": 2000}},
+            500,
+            {"id1": 1000, "id2": 2000},
+            id="new_schema_returned_as_is",
+        ),
+        pytest.param(
+            {LAST_IDS_KEY: ["id1", "id2"]},
+            500,
+            {"id1": 500, "id2": 500},
+            id="legacy_ids_seeded_with_start_timestamp",
+        ),
+        pytest.param(
+            {},
+            500,
+            {},
+            id="empty_last_run_returns_empty_dict",
+        ),
+        pytest.param(
+            {LAST_IDS_KEY: []},
+            500,
+            {},
+            id="legacy_empty_list_returns_empty_dict",
+        ),
+    ],
+)
+def test_migrate_last_run(last_run: dict, start_timestamp: int, expected: dict):
+    """
+    Given:
+        - A last run dict in either the new (last_ids_timestamps) or legacy (last_ids) schema,
+          or an empty dict.
+    When:
+        - Calling _migrate_last_run with a start_timestamp.
+    Then:
+        - New schema is returned unchanged as a plain dict copy.
+        - Legacy IDs are migrated and each ID is seeded with start_timestamp.
+        - Empty / missing keys produce an empty dict.
+    """
+    result = _migrate_last_run(last_run, start_timestamp)
+    assert result == expected

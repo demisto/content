@@ -505,7 +505,7 @@ def compute_next_run(
     Compute the next run state based on fetched incidents using their committed timestamps.
 
     Retains incident IDs within the lookback retention window
-    ``[max_ts - (look_back_minutes * 60 + END_TIME_BUFFER), max_ts]`` so that the next
+    `[max_ts - (look_back_minutes * 60 + END_TIME_BUFFER), max_ts]` so that the next
     fetch can deduplicate incidents re-queried due to lookback.
 
     Args:
@@ -517,7 +517,7 @@ def compute_next_run(
             how wide the ID retention window is. Defaults to 0.
 
     Returns:
-        dict[str, Any]: Next run state with ``start_timestamp`` and ``last_ids_timestamps``.
+        dict[str, Any]: Next run state with `start_timestamp` and `last_ids_timestamps`.
     """
     if not incident_ids_committed_timestamps:
         return last_run
@@ -529,13 +529,9 @@ def compute_next_run(
     retention_cutoff = new_last_committed_timestamp - (look_back_minutes * 60 + END_TIME_BUFFER)
     demisto.debug(f"Computing next run: {new_last_committed_timestamp=}, {look_back_minutes=}, {retention_cutoff=}.")
 
-    # Sort ascending by timestamp, keep the newest MAX_LAST_FETCHED_IDS within the retention window
-    new_last_ids_timestamps: dict[str, int] = dict(
-        sorted(
-            ((_id, ts) for _id, ts in incident_ids_committed_timestamps.items() if ts >= retention_cutoff),
-            key=lambda x: x[1],
-        )
-    )
+    new_last_ids_timestamps: dict[str, int] = {
+        _id: ts for _id, ts in incident_ids_committed_timestamps.items() if ts >= retention_cutoff
+    }
 
     demisto.debug(f"Retaining {len(new_last_ids_timestamps)} incident IDs in last run for deduplication.")
     return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_TIMESTAMPS_KEY: new_last_ids_timestamps}
@@ -570,12 +566,12 @@ def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> li
 
 def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[str, int]:
     """
-    Migrate the legacy ``last_ids`` list schema to the new ``last_ids_timestamps`` dict schema.
+    Migrate the legacy `last_ids` list schema to the new `last_ids_timestamps` dict schema.
 
-    Legacy IDs are seeded with ``start_timestamp`` as a conservative deduplication baseline.
+    Legacy IDs are seeded with `start_timestamp` as a conservative deduplication baseline.
 
     Args:
-        last_run (dict[str, Any]): Raw last run object from ``demisto.getLastRun()``.
+        last_run (dict[str, Any]): Raw last run object from `demisto.getLastRun()`.
         start_timestamp (int): Epoch timestamp (seconds) to assign to each migrated ID.
 
     Returns:
