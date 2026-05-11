@@ -22,6 +22,8 @@ MAX_PAGINATION_DURATION_SECONDS = 120
 MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
+BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
+BULK_ENRICHMENT_TIMEFRAME = '"7 Days"'  # timeFrame for bulk enrichment AQL queries
 
 
 class EVENT_TYPE:
@@ -752,12 +754,120 @@ def fetch_by_event_type(
     demisto.debug(f"[checkpoint 5] fetch_by_event_type complete for {event_type.type}")
 
 
+def _collect_unique_enrichment_ids(alerts: list[dict]) -> tuple[set[str], set[str]]:
+    """Collect deduplicated activityUUIDs and deviceIds across alerts (str-coerced).
+
+    Also initializes each alert's `activitiesData` and `devicesData` to empty lists so
+    callers always see consistent keys.
+    """
+    uuids: set[str] = set()
+    device_ids: set[str] = set()
+    for alert in alerts:
+        uuids.update(str(u) for u in (alert.get("activityUUIDs") or []) if u is not None)
+        device_ids.update(str(d) for d in (alert.get("deviceIds") or []) if d is not None)
+        alert["activitiesData"] = []
+        alert["devicesData"] = []
+    return uuids, device_ids
+
+
+def _bulk_fetch_entities_by_id(
+    client: Client,
+    entity_type: str,
+    aql_field: str,
+    ids: list[str],
+    response_key: str,
+    order_by: str,
+) -> dict[str, dict]:
+    """Bulk-fetch entities (activities or devices) by ID in batches.
+
+    Args:
+        client (Client): The Armis API client.
+        entity_type (str): AQL entity ('activity' / 'devices').
+        aql_field (str): AQL field name to filter on ('UUID' / 'deviceId').
+        ids (list[str]): IDs to query (already str-coerced).
+        response_key (str): Field name on the returned entity used as the dict key.
+        order_by (str): order_by AQL parameter.
+
+    Returns:
+        dict[str, dict]: Map of `str(response_key)` -> entity dict.
+    """
+    by_id: dict[str, dict] = {}
+    if not ids:
+        demisto.debug(f"bulk_enrich: no {entity_type} IDs to fetch")
+        return by_id
+
+    total_batches = (len(ids) + BULK_ENRICHMENT_BATCH_SIZE - 1) // BULK_ENRICHMENT_BATCH_SIZE
+    demisto.debug(
+        f"bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)"
+    )
+    section_start = datetime.now()
+
+    for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
+        chunk = ids[offset : offset + BULK_ENRICHMENT_BATCH_SIZE]
+        aql = (
+            f"in:{entity_type} timeFrame:{BULK_ENRICHMENT_TIMEFRAME} "
+            f"{aql_field}:{','.join(chunk)}"  # noqa: E231
+        )
+        batch_start = datetime.now()
+        try:
+            results = client.fetch_by_ids_in_aql_query(
+                aql_query=aql, order_by=order_by, length=BULK_ENRICHMENT_BATCH_SIZE
+            )
+            if len(results) == BULK_ENRICHMENT_BATCH_SIZE:
+                demisto.error(
+                    f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} returned "
+                    f"exactly {BULK_ENRICHMENT_BATCH_SIZE} results — response may be truncated"
+                )
+            for entity in results:
+                key = entity.get(response_key)
+                if key is not None:
+                    by_id[str(key)] = entity
+            demisto.debug(
+                f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} OK — "
+                f"{len(results)} returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
+            )
+        except Exception as ex:
+            demisto.error(
+                f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {ex!r}"
+            )
+
+    demisto.debug(
+        f"bulk_enrich: {entity_type} fetch done in "
+        f"{(datetime.now() - section_start).total_seconds():.2f}s — "
+        f"{len(by_id)}/{len(ids)} matched"
+    )
+    return by_id
+
+
+def _attach_enrichment(
+    alerts: list[dict],
+    activities_by_uuid: dict[str, dict],
+    devices_by_id: dict[str, dict],
+) -> None:
+    """Map fetched entities back onto each alert, with deepcopy to keep alerts independent.
+
+    The deepcopy mirrors the previous per-alert behaviour where each alert owned a
+    separate copy of its activities/devices (no shared references between alerts).
+    """
+    for alert in alerts:
+        alert["activitiesData"] = [
+            copy.deepcopy(activities_by_uuid[str(u)])
+            for u in (alert.get("activityUUIDs") or [])
+            if u is not None and str(u) in activities_by_uuid
+        ]
+        alert["devicesData"] = [
+            copy.deepcopy(devices_by_id[str(d)])
+            for d in (alert.get("deviceIds") or [])
+            if d is not None and str(d) in devices_by_id
+        ]
+
+
 def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
-    """Bulk-enrich alerts with their related Activities and Devices using batched AQL queries.
+    """Bulk-enrich alerts with their related Activities and Devices.
 
     Replaces the previous N+1 per-alert loop. Pattern recommended by Armis (Sefi Maman):
-    use the `activityUUIDs` and `deviceIds` arrays already on each alert, dedupe across
-    all alerts in the page, then bulk-query in chunks of 1000.
+    use the activityUUIDs/deviceIds arrays already on each alert, dedupe across the page,
+    and bulk-fetch in chunks of BULK_ENRICHMENT_BATCH_SIZE.
 
     Each alert is updated in-place with `activitiesData` and `devicesData` lists.
 
@@ -765,156 +875,41 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
         client (Client): The Armis API client.
         alerts (list[dict]): The list of alerts in the current fetch page.
     """
-    BATCH_SIZE = 1000
-    TIMEFRAME = '"7 Days"'
-
     if not alerts:
-        demisto.debug("bulk_enrich_alerts: no alerts to enrich, returning")
+        demisto.debug("bulk_enrich: no alerts to enrich, returning")
         return
 
-    enrich_start = datetime.now()
-    demisto.debug(f"bulk_enrich_alerts: START — enriching {len(alerts)} alerts")
+    start = datetime.now()
+    demisto.debug(f"bulk_enrich: START enriching {len(alerts)} alerts")
 
-    # --- Step 1: collect unique UUIDs and deviceIds (coerced to str for type-safe matching) ---
-    unique_uuids: set[str] = set()
-    unique_device_ids: set[str] = set()
-    alerts_with_no_activities = 0
-    alerts_with_no_devices = 0
-    for alert in alerts:
-        uuids = alert.get("activityUUIDs") or []
-        device_ids = alert.get("deviceIds") or []
-        if not uuids:
-            alerts_with_no_activities += 1
-        if not device_ids:
-            alerts_with_no_devices += 1
-        unique_uuids.update(str(u) for u in uuids if u is not None)
-        unique_device_ids.update(str(d) for d in device_ids if d is not None)
-        alert["activitiesData"] = []
-        alert["devicesData"] = []
-
-    activities_batches = (len(unique_uuids) + BATCH_SIZE - 1) // BATCH_SIZE
-    devices_batches = (len(unique_device_ids) + BATCH_SIZE - 1) // BATCH_SIZE
+    uuids, device_ids = _collect_unique_enrichment_ids(alerts)
     demisto.debug(
-        f"bulk_enrich_alerts: collected {len(unique_uuids)} unique UUIDs "
-        f"({activities_batches} batches of up to {BATCH_SIZE}) and "
-        f"{len(unique_device_ids)} unique deviceIds ({devices_batches} batches of up to {BATCH_SIZE})"
-    )
-    demisto.debug(
-        f"bulk_enrich_alerts: {alerts_with_no_activities}/{len(alerts)} alerts have no activityUUIDs, "
-        f"{alerts_with_no_devices}/{len(alerts)} alerts have no deviceIds (will not be enriched)"
+        f"bulk_enrich: collected {len(uuids)} unique activityUUIDs, {len(device_ids)} unique deviceIds"
     )
 
-    # --- Step 2: bulk-fetch activities by UUID ---
-    activities_by_uuid: dict[str, dict] = {}
-    uuid_list = list(unique_uuids)
-    activities_start = datetime.now()
-    for batch_idx, i in enumerate(range(0, len(uuid_list), BATCH_SIZE), start=1):
-        chunk = uuid_list[i : i + BATCH_SIZE]
-        aql = f"in:{EVENT_TYPE_ACTIVITIES} timeFrame:{TIMEFRAME} UUID:{','.join(chunk)}"  # noqa: E231
-        batch_start = datetime.now()
-        demisto.debug(
-            f"bulk_enrich_alerts: activities batch {batch_idx}/{activities_batches} START "
-            f"({len(chunk)} UUIDs)"
-        )
-        try:
-            results = client.fetch_by_ids_in_aql_query(
-                aql_query=aql, order_by=EVENT_TYPES["Activities"].order_by, length=BATCH_SIZE
-            )
-            if len(results) == BATCH_SIZE:
-                demisto.error(
-                    f"bulk_enrich_alerts: activities batch {batch_idx}/{activities_batches} "
-                    f"returned exactly {BATCH_SIZE} results — response may be truncated, "
-                    f"consider lowering BATCH_SIZE or adding pagination"
-                )
-            for activity in results:
-                uuid = activity.get(EVENT_TYPES["Activities"].unique_id_key)
-                if uuid is not None:
-                    activities_by_uuid[str(uuid)] = activity
-            demisto.debug(
-                f"bulk_enrich_alerts: activities batch {batch_idx}/{activities_batches} OK — "
-                f"{len(results)} activities returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
-            )
-        except Exception as ex:
-            demisto.error(
-                f"bulk_enrich_alerts: activities batch {batch_idx}/{activities_batches} FAILED: {ex!r}"
-            )
-    demisto.debug(
-        f"bulk_enrich_alerts: all activity batches done in "
-        f"{(datetime.now() - activities_start).total_seconds():.2f}s — "
-        f"{len(activities_by_uuid)}/{len(unique_uuids)} UUIDs matched"
+    activities_by_uuid = _bulk_fetch_entities_by_id(
+        client=client,
+        entity_type=EVENT_TYPE_ACTIVITIES,
+        aql_field="UUID",
+        ids=list(uuids),
+        response_key=EVENT_TYPES["Activities"].unique_id_key,
+        order_by=EVENT_TYPES["Activities"].order_by,
+    )
+    devices_by_id = _bulk_fetch_entities_by_id(
+        client=client,
+        entity_type=EVENT_TYPE_DEVICES,
+        aql_field="deviceId",
+        ids=list(device_ids),
+        response_key=EVENT_TYPES["Devices"].unique_id_key,
+        order_by=EVENT_TYPES["Devices"].order_by,
     )
 
-    # --- Step 3: bulk-fetch devices by deviceId ---
-    devices_by_id: dict = {}
-    device_id_list = list(unique_device_ids)
-    devices_start = datetime.now()
-    for batch_idx, i in enumerate(range(0, len(device_id_list), BATCH_SIZE), start=1):
-        chunk = device_id_list[i : i + BATCH_SIZE]
-        chunk_str = ",".join(str(d) for d in chunk)
-        aql = f"in:{EVENT_TYPE_DEVICES} timeFrame:{TIMEFRAME} deviceId:{chunk_str}"  # noqa: E231
-        batch_start = datetime.now()
-        demisto.debug(
-            f"bulk_enrich_alerts: devices batch {batch_idx}/{devices_batches} START "
-            f"({len(chunk)} deviceIds)"
-        )
-        try:
-            results = client.fetch_by_ids_in_aql_query(
-                aql_query=aql, order_by=EVENT_TYPES["Devices"].order_by, length=BATCH_SIZE
-            )
-            if len(results) == BATCH_SIZE:
-                demisto.error(
-                    f"bulk_enrich_alerts: devices batch {batch_idx}/{devices_batches} "
-                    f"returned exactly {BATCH_SIZE} results — response may be truncated, "
-                    f"consider lowering BATCH_SIZE or adding pagination"
-                )
-            for device in results:
-                device_id = device.get(EVENT_TYPES["Devices"].unique_id_key)
-                if device_id is not None:
-                    devices_by_id[str(device_id)] = device
-            demisto.debug(
-                f"bulk_enrich_alerts: devices batch {batch_idx}/{devices_batches} OK — "
-                f"{len(results)} devices returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
-            )
-        except Exception as ex:
-            demisto.error(
-                f"bulk_enrich_alerts: devices batch {batch_idx}/{devices_batches} FAILED: {ex!r}"
-            )
-    demisto.debug(
-        f"bulk_enrich_alerts: all device batches done in "
-        f"{(datetime.now() - devices_start).total_seconds():.2f}s — "
-        f"{len(devices_by_id)}/{len(unique_device_ids)} deviceIds matched"
-    )
+    _attach_enrichment(alerts, activities_by_uuid, devices_by_id)
 
-    # --- Step 4: map results back to each alert (str-coerced lookups for type safety) ---
-    enriched_with_activities = 0
-    enriched_with_devices = 0
-    fully_enriched = 0
-    for alert in alerts:
-        matched_activities = [
-            activities_by_uuid[str(u)]
-            for u in (alert.get("activityUUIDs") or [])
-            if u is not None and str(u) in activities_by_uuid
-        ]
-        matched_devices = [
-            devices_by_id[str(d)]
-            for d in (alert.get("deviceIds") or [])
-            if d is not None and str(d) in devices_by_id
-        ]
-        alert["activitiesData"] = matched_activities
-        alert["devicesData"] = matched_devices
-        if matched_activities:
-            enriched_with_activities += 1
-        if matched_devices:
-            enriched_with_devices += 1
-        if matched_activities and matched_devices:
-            fully_enriched += 1
-
-    elapsed = (datetime.now() - enrich_start).total_seconds()
     demisto.debug(
-        f"bulk_enrich_alerts: DONE in {elapsed:.2f}s — "
-        f"{enriched_with_activities}/{len(alerts)} alerts got activities, "
-        f"{enriched_with_devices}/{len(alerts)} alerts got devices, "
-        f"{fully_enriched}/{len(alerts)} alerts fully enriched"
+        f"bulk_enrich: DONE in {(datetime.now() - start).total_seconds():.2f}s — "
+        f"matched {len(activities_by_uuid)}/{len(uuids)} activities, "
+        f"{len(devices_by_id)}/{len(device_ids)} devices"
     )
 
 
