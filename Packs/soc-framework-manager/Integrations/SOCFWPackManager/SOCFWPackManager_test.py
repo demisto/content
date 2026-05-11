@@ -508,7 +508,7 @@ def test_command_install_pack_appends_zip_if_missing(monkeypatch):
 
     monkeypatch.setattr(mod, "_prepare_pack_dir", capture)
 
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError, match="stop"):
         mod.install_pack_command(
             client,
             args={"url": "https://example.com/Pack-v1.0.0", "filename": "Pack-v1.0.0"},

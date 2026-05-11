@@ -282,7 +282,11 @@ def print_config_docs(
         log(f"No {key} found in xsoar_config.json.", stage=f"docs.{when}", debug=debug)
         return
 
-    banner_title = " 🚧 PRE-INSTALL / PRE-CONFIG REQUIRED STEPS" if when == "pre" else "✅ POST-INSTALL / POST-CONFIG MANUAL STEPS"
+    banner_title = (
+        " 🚧 PRE-INSTALL / PRE-CONFIG REQUIRED STEPS"
+        if when == "pre"
+        else "✅ POST-INSTALL / POST-CONFIG MANUAL STEPS"
+    )
     banner_sub = (
         "_These docs usually contain prerequisites / manual steps you must complete BEFORE install._"
         if when == "pre"
@@ -801,8 +805,13 @@ def configure_integrations_from_xsoar_config(
             debug=debug,
         )
 
-        def _do_put():
-            return core_api_put("/xsoar/public/v1/settings/integration", payload, using=using, execution_timeout=600)
+        def _do_put(_payload=payload):
+            return core_api_put(
+                "/xsoar/public/v1/settings/integration",
+                _payload,
+                using=using,
+                execution_timeout=600,
+            )
 
         last_err = None
         for attempt in range(1, max(1, retry_count) + 1):
@@ -831,7 +840,10 @@ def configure_integrations_from_xsoar_config(
                 if attempt >= retry_count:
                     summary["failed"] += 1
                     summary["failed_items"].append({"name": instance_name, "error": last_err})
-                    emit_progress(f"Failed configuring integration instance **{instance_name}**.\nError: {last_err}", stage="configure.integrations.error")
+                    emit_progress(
+                        f"Failed configuring integration instance **{instance_name}**.\nError: {last_err}",
+                        stage="configure.integrations.error",
+                    )
                     break
 
                 time.sleep(max(1, retry_sleep_seconds))
@@ -1040,9 +1052,15 @@ def configure_lookups_from_xsoar_config(
 
         if not exists:
             summary["failed"] += 1
-            summary["failed_items"].append({"name": name, "error": f"Dataset '{name}' not found via get_datasets after direct create."})
+            summary["failed_items"].append(
+                {
+                    "name": name,
+                    "error": f"Dataset '{name}' not found via get_datasets after direct create.",
+                }
+            )
             emit_progress(
-                f"Failed configuring lookup dataset **{name}**.\nError: Dataset '{name}' not found via get_datasets after direct create.",
+                f"Failed configuring lookup dataset **{name}**.\n"
+                f"Error: Dataset '{name}' not found via get_datasets after direct create.",
                 stage="configure.lookups.error",
             )
             continue
@@ -1059,7 +1077,8 @@ def configure_lookups_from_xsoar_config(
         if before_count is not None and before_count > 0 and (not overwrite_lookup):
             summary["ok"] += 1
             emit_progress(
-                f"Lookup **{name}** already has data (total_count={before_count}). Not modifying it unless `overwrite_lookup=true`.",
+                f"Lookup **{name}** already has data (total_count={before_count}). "
+                f"Not modifying it unless `overwrite_lookup=true`.",
                 stage="configure.lookups.result",
             )
             continue
@@ -1238,7 +1257,13 @@ def jobs_api_upsert(job: Dict[str, Any], using: str, search_path: str, debug: bo
         for base in create_paths:
             try:
                 resp = core_api_post(base, body=job, using=using, execution_timeout=600)
-                return {"action": "created_via_post_fallback", "endpoint": base, "response": resp, "job_id": existing_id, "warning": last_err}
+                return {
+                    "action": "created_via_post_fallback",
+                    "endpoint": base,
+                    "response": resp,
+                    "job_id": existing_id,
+                    "warning": last_err,
+                }
             except Exception as e:
                 last_err = str(e)
                 continue
@@ -1520,7 +1545,7 @@ def do_sync_tags(args):
     rows         = _remove_omitted_fields(rows)
 
     if not rows:
-        raise Exception(f"Downloaded value_tags.json but found 0 usable rows.")
+        raise Exception("Downloaded value_tags.json but found 0 usable rows.")
 
     incoming_hash = _compute_hash(rows)
     emit_progress(
@@ -1682,7 +1707,8 @@ def _run_main():
                 f"- include_hidden={include_hidden}",
                 f"- dry_run={dry_run}",
                 f"- install_marketplace={install_marketplace_flag}",
-                f"- apply_configure={apply_configure} (jobs={configure_jobs}, integrations={configure_integrations}, lookups={configure_lookups})",
+                f"- apply_configure={apply_configure} (jobs={configure_jobs}, "
+                f"integrations={configure_integrations}, lookups={configure_lookups})",
                 f"- overwrite_lookup={overwrite_lookup}",
                 f"- retries={retry_count}, retry_sleep_seconds={retry_sleep_seconds}",
                 f"- using={(using or '(default)')}",
@@ -1694,7 +1720,8 @@ def _run_main():
                 f"- post_install_poll_interval_seconds={post_install_poll_interval_seconds}",
                 f"- continue_on_install_timeout={continue_on_install_timeout}",
                 f"- fail_on_marketplace_errors={fail_on_marketplace_errors}",
-                f"- include_doc_content={include_doc_content} (max_chars={doc_content_max_chars}, max_lines={doc_content_max_lines})",
+                f"- include_doc_content={include_doc_content} "
+                f"(max_chars={doc_content_max_chars}, max_lines={doc_content_max_lines})",
                 f"- pre_config_gate={pre_config_gate}",
                 f"- pre_config_done={pre_config_done}",
                 f"- debug={debug}",
