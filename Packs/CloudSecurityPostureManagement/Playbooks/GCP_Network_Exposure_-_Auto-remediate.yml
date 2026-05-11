@@ -10,7 +10,6 @@ contentitemexportablefields:
     definitionid: ""
     prevname: ""
     isoverridable: false
-    supportedModules: []
 vcShouldKeepItemLegacyProdMachine: false
 aclrelations: []
 aclowner:
