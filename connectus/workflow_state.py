@@ -78,6 +78,8 @@ Usage examples:
   python3 connectus/workflow_state.py next --connector "abcd1234" --mine
   python3 connectus/workflow_state.py show-step "Cisco Spark" "Params to Commands"
   python3 connectus/workflow_state.py files "Cisco Spark"
+  python3 connectus/workflow_state.py auth-params "Cisco Spark"
+  python3 connectus/workflow_state.py auth-params "Cisco Spark" --format=json
 """
 
 from __future__ import annotations
@@ -522,7 +524,8 @@ def validate_auth_detail(value: str) -> list[str]:
 
     Shape: ``{"auth_types": [{"type": <enum>, "name": <logical_name>,
     "xsoar_params": [<xsoar_param_id>, ...], "interpolated"?: <bool>},
-    ...], "config": <expression>}``.
+    ...], "config": <expression>,
+    "other_connection": [<yml_param_id>, ...]}``.
 
     Each ``auth_types[]`` entry describes one prospective ConnectUs
     connection type that the migrated integration should expose. ``name``
@@ -532,6 +535,16 @@ def validate_auth_detail(value: str) -> list[str]:
     connection type (the same XSOAR param may appear in multiple entries
     if it supplies several connection types). ``config`` references the
     entry ``name``s (not the XSOAR param ids).
+
+    ``other_connection`` is a flat sorted list of YML param ids that are
+    connection-adjacent but not auth secrets — e.g. ``url``, ``proxy``,
+    ``insecure``, ``port``, ``host``, ``region``. The list captures the
+    ids exactly as they appear in the integration YML's
+    ``configuration[].name``. An empty list ``[]`` is valid (= the
+    integration has no connection-adjacent params besides its auth
+    secrets). The validator does NOT check overlap with
+    ``auth_types[].xsoar_params`` — keeping the two lists disjoint is the
+    classifier's responsibility.
 
     Validation performed (in addition to the per-entry shape checks):
 
@@ -545,6 +558,14 @@ def validate_auth_detail(value: str) -> list[str]:
         ``auth_types[].name`` in the same row.
       - If ``config == "NoneRequired"`` then ``auth_types`` must be
         empty; otherwise ``auth_types`` must be non-empty.
+      - ``other_connection`` is REQUIRED on write. It must be a list of
+        non-empty unique strings, sorted ascending. ``[]`` is allowed.
+
+    NOTE on backward compatibility: legacy CSV rows written before this
+    field existed lack ``other_connection`` entirely. The read/display
+    path tolerates that (see ``format_status`` / ``format_step_value``)
+    and renders a ``(not set — re-run set-auth)`` hint, but ``set-auth``
+    writes go through this validator and MUST include the key.
     """
     errors: list[str] = []
 
@@ -556,7 +577,7 @@ def validate_auth_detail(value: str) -> list[str]:
     if not isinstance(detail, dict):
         return [f"Expected a JSON object, got {type(detail).__name__}"]
 
-    required_keys = {"auth_types", "config"}
+    required_keys = {"auth_types", "config", "other_connection"}
     missing = required_keys - set(detail.keys())
     if missing:
         errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
@@ -667,7 +688,187 @@ def validate_auth_detail(value: str) -> list[str]:
                         "'config' is not 'NoneRequired' but 'auth_types' is empty"
                     )
 
+    other_connection = detail["other_connection"]
+    if not isinstance(other_connection, list):
+        errors.append(
+            f"'other_connection' must be a list, got "
+            f"{type(other_connection).__name__}"
+        )
+    else:
+        all_strings = True
+        for j, item in enumerate(other_connection):
+            if not isinstance(item, str):
+                errors.append(
+                    f"'other_connection'[{j}]: must be a string, got "
+                    f"{type(item).__name__}"
+                )
+                all_strings = False
+            elif not item:
+                errors.append(
+                    f"'other_connection'[{j}]: must be a non-empty string"
+                )
+                all_strings = False
+        if all_strings:
+            if len(set(other_connection)) != len(other_connection):
+                seen: set[str] = set()
+                dups: list[str] = []
+                for item in other_connection:
+                    if item in seen and item not in dups:
+                        dups.append(item)
+                    seen.add(item)
+                errors.append(
+                    "'other_connection' contains duplicate entries: "
+                    f"{dups}"
+                )
+            sorted_oc = sorted(other_connection)
+            if other_connection != sorted_oc:
+                errors.append(
+                    "'other_connection' must be sorted ascending; got "
+                    f"{other_connection}, expected {sorted_oc}"
+                )
+
     return errors
+
+
+# ---------------------------------------------------------------------------
+# Auth-derived ignore set (cross-step exclusion plumbing)
+# ---------------------------------------------------------------------------
+
+def _project_xsoar_param_to_yml_id(xsoar_param: str) -> str:
+    """Project a single ``auth_types[].xsoar_params`` entry to its YML param id.
+
+    Bare ids (``api_key``) pass through unchanged. Dotted forms like
+    ``credentials.identifier`` / ``credentials.password`` collapse to the
+    segment before the first ``.`` (``credentials``) — that's the actual
+    YML ``configuration[].name`` so it can be cross-checked against the
+    ``Params to Commands`` payload (whose values are bare YML ids).
+    """
+    if not isinstance(xsoar_param, str):
+        return ""
+    return xsoar_param.split(".", 1)[0]
+
+
+def _auth_param_sources(auth_detail: dict) -> dict[str, list[str]]:
+    """Return ``{yml_param_id: [<source description>, ...]}`` for an Auth
+    Details object.
+
+    Used by :func:`auth_param_ids` and the ``set-params-to-commands``
+    overlap-rejection error message — the latter needs to name *where*
+    each offending param was declared (``auth_types[].name='credentials'
+    (xsoar_params=[...])`` vs ``other_connection``).
+
+    Tolerates legacy-shape Auth Details that lack ``other_connection``
+    by simply omitting that source — see :func:`auth_param_ids` for
+    the user-visible error/warning behaviour.
+    """
+    sources: dict[str, list[str]] = {}
+
+    auth_types = auth_detail.get("auth_types")
+    if isinstance(auth_types, list):
+        for entry in auth_types:
+            if not isinstance(entry, dict):
+                continue
+            entry_name = entry.get("name", "<unnamed>")
+            xsoar_params = entry.get("xsoar_params")
+            if not isinstance(xsoar_params, list):
+                continue
+            projected_for_entry: list[str] = []
+            for xp in xsoar_params:
+                yml_id = _project_xsoar_param_to_yml_id(xp)
+                if yml_id:
+                    projected_for_entry.append(yml_id)
+            # Group source description by entry — every projected id
+            # cites the same entry-level (name, xsoar_params) pair so
+            # the overlap message can quote the dotted forms verbatim.
+            descriptor = (
+                f"auth_types[].name={entry_name!r} "
+                f"(xsoar_params={list(xsoar_params)!r})"
+            )
+            for yml_id in projected_for_entry:
+                sources.setdefault(yml_id, []).append(descriptor)
+
+    other_connection = auth_detail.get("other_connection")
+    if isinstance(other_connection, list):
+        for item in other_connection:
+            if isinstance(item, str) and item:
+                sources.setdefault(item, []).append("other_connection")
+
+    return sources
+
+
+def auth_param_ids(integration_id: str) -> list[str]:
+    """Return the union of YML param ids declared in an integration's
+    ``Auth Details``.
+
+    Returns the deduplicated, ascending-sorted list of bare YML
+    ``configuration[].name`` values composed from:
+
+    * Every ``auth_types[].xsoar_params`` entry, projected via
+      :func:`_project_xsoar_param_to_yml_id` (bare ids pass through;
+      dotted forms like ``credentials.identifier`` collapse to
+      ``credentials``).
+    * Every entry in ``other_connection`` (already bare YML ids — no
+      projection needed).
+
+    Behaviour for edge cases:
+
+    * Integration not in the CSV → :class:`WorkflowError`.
+    * ``Auth Details`` cell empty (the workflow prerequisite for
+      populating ``Params to Commands``) → :class:`WorkflowError` with
+      a clear "set auth first" message.
+    * ``Auth Details`` JSON unparseable → :class:`WorkflowError`.
+    * Legacy ``Auth Details`` row that lacks the ``other_connection``
+      key entirely → degrade gracefully: log a one-line stderr hint
+      and return only the auth_types-derived ids. The downstream
+      analyzer / set-params-to-commands callers must keep working on
+      these legacy rows; surfacing this as a hard error would block
+      the existing CSV from loading.
+    """
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        raise WorkflowError(
+            f"Integration '{integration_id}' not found in the CSV."
+        )
+
+    raw = rows[idx].get("Auth Details", "").strip()
+    if not raw:
+        raise WorkflowError(
+            f"'Auth Details' is not set for integration "
+            f"'{rows[idx].get('Integration ID', integration_id)}'. "
+            f"Run 'set-auth' first — populating 'Params to Commands' "
+            f"requires the auth classification to be in place so the "
+            f"two columns stay disjoint."
+        )
+
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise WorkflowError(
+            f"'Auth Details' for integration '{integration_id}' is not "
+            f"valid JSON: {e}. Re-run 'set-auth' with a corrected payload."
+        )
+    if not isinstance(parsed, dict):
+        raise WorkflowError(
+            f"'Auth Details' for integration '{integration_id}' is not a "
+            f"JSON object (got {type(parsed).__name__}). Re-run 'set-auth'."
+        )
+
+    if "other_connection" not in parsed:
+        # Legacy-shape row from before the field existed. Don't crash
+        # — the helper is consumed by tools that must keep working on
+        # historical rows. Surface a stderr hint so the next set-auth
+        # run gets it right.
+        print(
+            f"WARNING: Auth Details for '{integration_id}' is missing "
+            f"'other_connection' (legacy shape). Re-run 'set-auth' to "
+            f"populate it; auth_param_ids() returning only the "
+            f"auth_types-derived ids in the meantime.",
+            file=sys.stderr,
+        )
+
+    sources = _auth_param_sources(parsed)
+    return sorted(sources.keys())
 
 
 # ---------------------------------------------------------------------------
@@ -757,6 +958,29 @@ def _summary_value(step: Step, raw: str) -> str:
     return val
 
 
+def _auth_other_connection_summary(raw: str) -> str:
+    """Return a one-line ``other_connection`` summary for an Auth Details
+    JSON blob. Tolerates legacy rows that predate the field by returning
+    a clear ``(not set — re-run set-auth)`` hint instead of crashing."""
+    val = raw.strip()
+    if not val:
+        return "(not set)"
+    try:
+        parsed = json.loads(val)
+    except json.JSONDecodeError:
+        return "(invalid JSON — cannot extract other_connection)"
+    if not isinstance(parsed, dict):
+        return "(invalid Auth Details object)"
+    if "other_connection" not in parsed:
+        return "(not set — re-run set-auth)"
+    oc = parsed["other_connection"]
+    if not isinstance(oc, list):
+        return f"(malformed: expected list, got {type(oc).__name__})"
+    if not oc:
+        return "[] (none)"
+    return json.dumps(oc)
+
+
 def format_status(row: dict[str, str]) -> str:
     """Format the workflow status of a single integration."""
     integration_id = row.get("Integration ID", "")
@@ -789,6 +1013,10 @@ def format_status(row: dict[str, str]) -> str:
         raw = row.get(step.name, "")
         display = _summary_value(step, raw)
         lines.append(f"  {marker}{step.index:2d}. {step.name:38s} : {display}")
+        # Surface other_connection inline for Auth Details (legacy-tolerant).
+        if step.name == "Auth Details" and raw.strip():
+            oc_summary = _auth_other_connection_summary(raw)
+            lines.append(f"     {'other_connection':38s} : {oc_summary}")
 
     lines.append("")
     if cur is None:
@@ -837,6 +1065,17 @@ def format_step_value(row: dict[str, str], step_name: str) -> str:
         try:
             parsed = json.loads(value)
             pretty = json.dumps(parsed, indent=2, sort_keys=False)
+            # Legacy-row tolerance: pre-other_connection Auth Details rows
+            # don't include the new key. Don't crash; surface the gap so
+            # the user knows to re-run set-auth.
+            if (
+                step_name == "Auth Details"
+                and isinstance(parsed, dict)
+                and "other_connection" not in parsed
+            ):
+                pretty += (
+                    "\n\n  other_connection: (not set — re-run set-auth)"
+                )
             return f"{header}\n{pretty}"
         except json.JSONDecodeError:
             return f"{header}\n  {value}"
@@ -1123,7 +1362,146 @@ def cmd_set_auth(args: list[str]) -> None:
     _set_json_data_step(args, "Auth Details", "set-auth")
 
 
+def _check_params_to_commands_overlap(
+    integration_id: str, payload: dict
+) -> None:
+    """Reject ``set-params-to-commands`` payloads that overlap with auth.
+
+    The workflow tool is the single source of truth for the per-integration
+    "auth ignore set" — :func:`auth_param_ids` is consulted (which reads
+    the same ``Auth Details`` cell that ``set-auth`` populated). If ANY
+    ``(command, param_id)`` in the payload references a param that is
+    already declared in ``Auth Details`` (either as a projected
+    ``auth_types[].xsoar_params`` entry or in ``other_connection``),
+    raise :class:`WorkflowError` with:
+
+    * every offending pair, AND
+    * for each offending param, the precise auth-detail source it came
+      from (so the agent can decide whether to strip the param from the
+      per-command payload OR revert to ``set-auth`` and remove it from
+      ``Auth Details``).
+
+    The caller is :func:`cmd_set_params_to_commands`; ``Auth Details``
+    being unset is an upstream prerequisite enforced by
+    :func:`auth_param_ids` (raises a clearer "set auth first" error).
+    """
+    # Re-load the Auth Details JSON once so we can attribute the source
+    # of each offending param (auth_types vs other_connection).
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        # Defensive — caller already resolved the row, but the helper
+        # can be invoked outside that context too.
+        raise WorkflowError(
+            f"Integration '{integration_id}' not found in the CSV."
+        )
+    raw_auth = rows[idx].get("Auth Details", "").strip()
+    auth_detail: dict = {}
+    if raw_auth:
+        try:
+            parsed = json.loads(raw_auth)
+            if isinstance(parsed, dict):
+                auth_detail = parsed
+        except json.JSONDecodeError:
+            pass
+    sources = _auth_param_sources(auth_detail) if auth_detail else {}
+
+    # The helper raises when Auth Details is unset; let that propagate.
+    auth_ids = set(auth_param_ids(integration_id))
+
+    commands_block = payload.get("commands") if isinstance(payload, dict) else None
+    if not isinstance(commands_block, dict):
+        # Shape mismatch is not THIS check's concern; let the
+        # downstream consumer (or future schema validator) surface it.
+        return
+
+    offenders: list[tuple[str, str]] = []
+    for cmd, param_list in commands_block.items():
+        if not isinstance(param_list, list):
+            continue
+        for p in param_list:
+            if isinstance(p, str) and p in auth_ids:
+                offenders.append((str(cmd), p))
+
+    if not offenders:
+        return
+
+    # Build a deterministic, human-readable error.
+    lines = [
+        f"'Params to Commands' for '{integration_id}' contains "
+        f"{len(offenders)} param(s) that are already declared in "
+        f"'Auth Details'. The two columns MUST be disjoint.",
+        "",
+        "Offending (command, param) pairs:",
+    ]
+    for cmd, p in sorted(offenders):
+        lines.append(f"  - ({cmd!r}, {p!r})")
+
+    # One source line per distinct offending param.
+    lines.append("")
+    lines.append("Source of each offending param in 'Auth Details':")
+    seen_params: set[str] = set()
+    for _cmd, p in sorted(offenders):
+        if p in seen_params:
+            continue
+        seen_params.add(p)
+        srcs = sources.get(p)
+        if srcs:
+            for src in srcs:
+                lines.append(f"  - param {p!r} overlaps with {src}")
+        else:
+            # Defensive — overlap was reported but source attribution
+            # missed it (e.g. legacy row without other_connection).
+            lines.append(
+                f"  - param {p!r} overlaps with Auth Details "
+                f"(source not attributable; legacy row?)"
+            )
+
+    lines.extend([
+        "",
+        "Fix:",
+        f"  Re-derive the per-command lists with the auth-aware ignore "
+        f"set — run:",
+        f"    python3 connectus/workflow_state.py auth-params "
+        f"\"{integration_id}\"",
+        f"  to see exactly what to exclude. The analyzer can pull this "
+        f"list automatically: pass --integration-id "
+        f"\"{integration_id}\" to "
+        f"connectus/check_command_params.py.",
+        "",
+        f"  If a listed param is *truly* used per-command and was "
+        f"misclassified into 'Auth Details', revert to Step 1 with "
+        f"'set-auth' and remove it from 'auth_types[].xsoar_params' "
+        f"or 'other_connection' first. Do NOT bypass this rejection "
+        f"by hand-stripping just to make the call go through.",
+    ])
+
+    raise WorkflowError("\n".join(lines))
+
+
 def cmd_set_params_to_commands(args: list[str]) -> None:
+    # Pre-flight overlap check: reject any payload whose per-command
+    # param lists overlap with the integration's auth-derived ignore
+    # set. We do this BEFORE the cascade-write so a bad payload can
+    # never partially mutate the row. Auth Details being unset is
+    # already an upstream prerequisite (apply_step_action would reject
+    # the call ahead-of-current); auth_param_ids() re-asserts it with
+    # a more specific error if we reach the overlap check first.
+    if len(args) >= 2:
+        name = args[0]
+        raw = " ".join(args[1:])
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            # JSON parsing is re-validated inside _set_json_data_step;
+            # let it produce the canonical error there.
+            payload = None
+        if isinstance(payload, dict):
+            try:
+                _check_params_to_commands_overlap(name, payload)
+            except WorkflowError as e:
+                print(f"ERROR: {e.message}")
+                sys.exit(1)
     _set_json_data_step(args, "Params to Commands", "set-params-to-commands")
 
 
@@ -1689,6 +2067,63 @@ def cmd_files(args: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# `auth-params` command — print the auth-derived YML param ignore set
+# ---------------------------------------------------------------------------
+
+def cmd_auth_params(args: list[str]) -> None:
+    """Print the union of YML param ids declared in the integration's
+    ``Auth Details``.
+
+    Usage: workflow_state.py auth-params <integration_id> [--format=text|json]
+
+    Default format is ``text`` (one param id per line — easy to pipe
+    into ``grep -vFf`` / ``xargs``). ``--format=json`` prints
+    ``{"integration_id": "...", "params": [...]}`` for programmatic
+    consumption (mirrors the ``files`` subcommand's format flag).
+    """
+    fmt = "text"
+    positional: list[str] = []
+    for a in args:
+        if a.startswith("--format="):
+            fmt = a[len("--format="):]
+        else:
+            positional.append(a)
+
+    if not positional:
+        print(
+            "Usage: workflow_state.py auth-params <integration_id> "
+            "[--format=text|json]"
+        )
+        sys.exit(1)
+
+    if fmt not in {"text", "json"}:
+        print(
+            f"ERROR: Unknown --format value '{fmt}'. Valid: text, json.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    integration_id = " ".join(positional)
+    try:
+        params = auth_param_ids(integration_id)
+    except WorkflowError as e:
+        print(f"ERROR: {e.message}", file=sys.stderr)
+        sys.exit(1)
+
+    if fmt == "json":
+        print(json.dumps(
+            {"integration_id": integration_id, "params": params},
+            indent=2,
+        ))
+        return
+
+    # Default: one param id per line. Empty list → nothing printed
+    # (consistent with `grep -vFf`-friendly output).
+    for p in params:
+        print(p)
+
+
+# ---------------------------------------------------------------------------
 # `next` command
 # ---------------------------------------------------------------------------
 
@@ -1696,7 +2131,8 @@ def _example_value_for(step: Step) -> str:
     """Return a canonical example value for the example CLI line."""
     if step.kind == "data" and step.name in JSON_VALUED_COLUMNS:
         if step.name == "Auth Details":
-            return "'{\"auth_types\":[],\"config\":\"NoneRequired\"}'"
+            return ("'{\"auth_types\":[],\"config\":\"NoneRequired\","
+                    "\"other_connection\":[]}'")
         if step.name == "Params for test with default in code":
             return "'[]'"
         if step.name == "Params same in other handlers":
@@ -2287,6 +2723,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "set-assignee-by-connector": cmd_set_assignee_by_connector,
     "show-step": cmd_show_step,
     "files": cmd_files,
+    "auth-params": cmd_auth_params,
     "help": cmd_help,
 }
 

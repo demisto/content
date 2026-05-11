@@ -124,7 +124,7 @@ State is **purely derived from row contents** — there is no separate "current 
 | # | Step (== CSV column) | Kind | Set via |
 |---|---|---|---|
 | 1 | `assignee` | data | `set-assignee` |
-| 2 | `Auth Details` | data (JSON) | `set-auth` |
+| 2 | `Auth Details` | data (JSON; includes `auth_types`, `config`, **and `other_connection`** — see [`column-schemas.md`](column-schemas.md)) | `set-auth` |
 | 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
 | 4 | `Params for test with default in code` | data (JSON) | `set-params-for-test` |
 | 5 | `Params same in other handlers` | data (JSON) | `set-shared-params` (or `skip`) |
@@ -187,8 +187,12 @@ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 # Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
 # Each auth_types[] entry is one full UCP connection type. xsoar_params lists
 # the XSOAR field paths that supply its secrets (credentials params expand to
-# `<paramid>.identifier` + `<paramid>.password`). See column-schemas.md.
-python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)"}'
+# `<paramid>.identifier` + `<paramid>.password`). The `other_connection` field
+# is a flat sorted list of YML param ids that are connection-adjacent but not
+# auth secrets (url, proxy, insecure, port, host, region, ...). It lives
+# INSIDE the Auth Details JSON, not as a separate CSV column. See
+# column-schemas.md.
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)","other_connection":["insecure","proxy","url"]}'
 
 # Set Params to Commands (validates JSON; cascade-resets steps #4-#16)
 python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
@@ -358,7 +362,7 @@ $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_params":["credentials.identifier","credentials.password"]}],"config":"REQUIRED(credentials)"}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_params":["credentials.identifier","credentials.password"]}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 
@@ -383,7 +387,7 @@ $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest
 #### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NoneRequired"}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NoneRequired","other_connection":[]}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Cleared 4 subsequent step(s): ['Params to Commands', 'Params for test with default in code', 'Params same in other handlers', 'generated manifest']
   Current step: #3 Params to Commands

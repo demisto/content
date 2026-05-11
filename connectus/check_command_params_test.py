@@ -896,6 +896,21 @@ class TestCommandDiagnostic:
         assert "scope_1_narrowed" not in out
         assert "scope_1_dropped" not in out
 
+    def test_narrowing_fields_omitted_when_dropped_is_empty(self) -> None:
+        # Fix 3 (Option A): emitting ``scope_1_narrowed: true`` with an
+        # empty ``scope_1_dropped`` is misleading. The two fields must
+        # both be omitted when narrowing was applied but happened to
+        # drop nothing (captured set was a superset of Scope-1).
+        d = ccp.CommandDiagnostic(
+            status="ok",
+            captured_requests=1,
+            scope_1_narrowed=True,
+            scope_1_dropped=[],
+        )
+        out = d.to_dict()
+        assert "scope_1_narrowed" not in out
+        assert "scope_1_dropped" not in out
+
 
 # =============================================================================
 # Misc. small helpers
@@ -1562,3 +1577,499 @@ class TestPhase2BindingNarrowing:
             f"fetch-incidents must NOT include update_user_enabled. "
             f"scope_1={s1_fi}, scope_2={s2_fi}"
         )
+
+
+# =============================================================================
+# AWS + Microsoft spot-check fixes (gaps #1–#5 from the validation report)
+# =============================================================================
+#
+# Each ``test_gap_*`` below pins one of the analyzer gaps documented in
+# ``check_command_params_validation_report.md`` (AWS + Microsoft
+# spot-check section) to a minimal synthetic source so future
+# regressions are caught at the unit-test layer rather than during a
+# full-integration validation run.
+
+
+class TestGap1HelperFunctionSharedClient:
+    """Gap #1 — helper-function shared-client construction.
+
+    Pattern (AWS-EC2): ``client = build_client(args)`` where
+    ``build_client`` reads module-level ``PARAMS.get(...)`` for every
+    credential. The original analyzer dropped all credential reads
+    because ``_call_passes_params`` rejected the call (no params-shaped
+    arg). The fix:
+
+    * :func:`build_binding_maps` now recursively attributes the helper's
+      param reads to the local being bound; and
+    * :func:`trace_params_in_function` now recurses into helpers that
+      read a known module-level params global directly.
+    """
+
+    def test_main_local_binding_recovers_helper_credentials(self) -> None:
+        # Mirrors AWS-EC2: ``client = build_client(args)`` in main(),
+        # then dispatch carries client to per-command handlers.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            PARAMS = demisto.params()
+
+            def build_client(args):
+                ak = PARAMS.get("access_key")
+                sk = PARAMS.get("secret_key")
+                region = PARAMS.get("defaultRegion")
+                return (ak, sk, region)
+
+            def describe_instances(client, args): pass
+            def create_instance(client, args): pass
+
+            def main():
+                client = build_client(demisto.args())
+                command = demisto.command()
+                if command == "aws-ec2-describe-instances":
+                    describe_instances(client, demisto.args())
+                elif command == "aws-ec2-create-instance":
+                    create_instance(client, demisto.args())
+            """
+        )
+        for cmd in ("aws-ec2-describe-instances", "aws-ec2-create-instance"):
+            s1, s2 = ccp.analyze_static(src, cmd, language="python", verbose=False)
+            merged = s1 | s2
+            for required in ("access_key", "secret_key", "defaultRegion"):
+                assert required in merged, (
+                    f"{cmd}: helper-function recursion must surface "
+                    f"{required!r}; got scope_1={s1}, scope_2={s2}"
+                )
+
+    def test_per_handler_recursion_into_helper(self) -> None:
+        # Per-command handler calls ``build_client(args)`` directly. The
+        # ``trace_params_in_function`` recursion gate must allow this even
+        # though no params-shaped arg is passed.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            PARAMS = demisto.params()
+
+            def build_client(args):
+                return PARAMS.get("apikey")
+
+            def describe_instances(args):
+                client = build_client(args)
+                return client
+
+            def main():
+                command = demisto.command()
+                if command == "aws-ec2-describe-instances":
+                    describe_instances(demisto.args())
+            """
+        )
+        s1, s2 = ccp.analyze_static(
+            src, "aws-ec2-describe-instances", language="python", verbose=False
+        )
+        assert "apikey" in (s1 | s2), (
+            f"per-handler recursion into build_client must surface 'apikey'; "
+            f"scope_1={s1}, scope_2={s2}"
+        )
+
+
+class TestGap2BoolOpOrAliasChain:
+    """Gap #2 — ``command == "X" or command == "Y"`` alias chains.
+
+    Pattern (AWS-IAM): ``elif command == "aws-iam-update-access-key" or
+    command == "aws-iam-access-key-update-quick-action": handler(...)``.
+    The original analyzer matched only the first arm; the alias command
+    silently received an empty param set.
+    """
+
+    def test_or_chain_attributes_both_arms(self) -> None:
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client: pass
+            def update_access_key(args, client): pass
+
+            def main():
+                params = demisto.params()
+                client = Client()
+                client.api_key = params.get("apikey")
+                command = demisto.command()
+                if command == "aws-iam-update-access-key" or command == "aws-iam-access-key-update-quick-action":
+                    update_access_key(demisto.args(), client)
+            """
+        )
+        for cmd in (
+            "aws-iam-update-access-key",
+            "aws-iam-access-key-update-quick-action",
+        ):
+            s1, s2 = ccp.analyze_static(src, cmd, language="python", verbose=False)
+            assert "apikey" in (s1 | s2), (
+                f"{cmd}: BoolOp(Or) arm must dispatch to the same handler; "
+                f"scope_1={s1}, scope_2={s2}"
+            )
+
+    def test_or_chain_three_arms(self) -> None:
+        # Three-way alias still attributes correctly (recursion).
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client: pass
+            def shared_handler(args, client): pass
+
+            def main():
+                params = demisto.params()
+                client = Client()
+                client.api_key = params.get("apikey")
+                command = demisto.command()
+                if command == "alpha" or command == "beta" or command == "gamma":
+                    shared_handler(demisto.args(), client)
+            """
+        )
+        for cmd in ("alpha", "beta", "gamma"):
+            s1, s2 = ccp.analyze_static(src, cmd, language="python", verbose=False)
+            assert "apikey" in (s1 | s2), (
+                f"{cmd}: 3-arm BoolOp(Or) must attribute the shared handler; "
+                f"scope_1={s1}, scope_2={s2}"
+            )
+
+    def test_and_chain_does_not_match(self) -> None:
+        # An ``And`` of equality tests against different command literals
+        # is unsatisfiable; ``_if_test_matches_command`` MUST NOT treat
+        # it as a match. We verify this at the unit level rather than
+        # via ``analyze_static`` because ``apikey`` would also leak via
+        # Scope-1 fan-out from any pre-dispatch read — which is correct
+        # behaviour, just not what this gap is about.
+        tree = ast.parse(
+            textwrap.dedent(
+                """
+                if command == "alpha" and command == "beta":
+                    shared_handler()
+                """
+            )
+        )
+        if_node = tree.body[0]
+        assert isinstance(if_node, ast.If)
+        # Neither arm is matched — And of two different command literals
+        # can never both hold.
+        assert not ccp._if_test_matches_command(if_node.test, "alpha")
+        assert not ccp._if_test_matches_command(if_node.test, "beta")
+
+
+class TestNamedDictDispatch:
+    """Regression: ``commands_with_args = {...}; if command in
+    commands_with_args: return_results(commands_with_args[command](...))``
+    is the AzureKeyVault dispatch shape. Without specific support, the
+    flatten-pre-dispatch fix introduced for MDATP would silently
+    regress AzureKeyVault to ``[]`` for every command (because
+    pre-dispatch fan-out used to walk the entire ``Client(...)`` body
+    inside the surrounding ``try:`` and emit Scope-1 noise that
+    happened to cover the credentials).
+
+    The fix: :func:`_collect_local_dict_assignments` discovers every
+    local Dict assignment in main(), :func:`_find_in_dict_dispatch`
+    treats any of them as a dispatch table, and
+    :func:`find_command_dispatch_branches` /
+    :func:`find_dict_dispatch_call_sites` accept membership tests and
+    subscripts on those receivers.
+    """
+
+    def test_named_dict_membership_dispatch(self) -> None:
+        # AzureKeyVault-shaped main(): client built inside try{}, named
+        # dict tables, ``if command in <table>`` membership dispatch.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client:
+                def __init__(self, *a, **kw): pass
+
+            def get_key_command(client, args): pass
+            def list_keys_command(client, args): pass
+
+            def main():
+                params = demisto.params()
+                args = demisto.args()
+                command = demisto.command()
+                try:
+                    client = Client(
+                        tenant_id=params.get("tenant_id"),
+                        client_id=params.get("client_id"),
+                    )
+                    commands_with_args = {
+                        "azure-key-vault-key-get": get_key_command,
+                        "azure-key-vault-key-list": list_keys_command,
+                    }
+                    if command in commands_with_args:
+                        commands_with_args[command](client, args)
+                except Exception:
+                    pass
+            """
+        )
+        for cmd in ("azure-key-vault-key-get", "azure-key-vault-key-list"):
+            s1, s2 = ccp.analyze_static(
+                src, cmd, language="python", verbose=False
+            )
+            merged = s1 | s2
+            for required in ("tenant_id", "client_id"):
+                assert required in merged, (
+                    f"{cmd}: named-dict dispatch must surface {required!r} "
+                    f"via the bound client; scope_1={s1}, scope_2={s2}"
+                )
+
+    def test_canonical_commands_dict_still_works(self) -> None:
+        # Legacy MongoDB shape — the canonical ``commands = {...};
+        # commands[command](...)`` dispatch must keep working after the
+        # generalisation.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client:
+                def __init__(self, *a, **kw): pass
+
+            def list_collections_command(client, args): pass
+
+            def main():
+                params = demisto.params()
+                args = demisto.args()
+                command = demisto.command()
+                client = Client(url=params.get("url"))
+                commands = {
+                    "mongodb-list-collections": list_collections_command,
+                }
+                commands[command](client, **args)
+            """
+        )
+        s1, s2 = ccp.analyze_static(
+            src, "mongodb-list-collections", language="python", verbose=False
+        )
+        assert "url" in (s1 | s2), (
+            f"canonical commands-dict must still propagate url; "
+            f"scope_1={s1}, scope_2={s2}"
+        )
+
+
+class TestGap3FindIntegrationFilesPicker:
+    """Gap #3 — :func:`find_integration_files` picks stub files.
+
+    The unsorted ``Path.glob("*.py")`` could pick ``demistomock.py`` or
+    other accidentally-committed shared-tooling modules first. The fix
+    adds a deny-list and prefers the .py whose stem matches the
+    directory name (the demisto-sdk convention).
+    """
+
+    def test_deny_list_skips_demistomock(self, tmp_path: Path) -> None:
+        d = tmp_path / "MyIntegration"
+        d.mkdir()
+        (d / "MyIntegration.yml").write_text("name: MyIntegration\n", encoding="utf-8")
+        (d / "demistomock.py").write_text("# stub\n", encoding="utf-8")
+        (d / "MyIntegration.py").write_text("def main(): pass\n", encoding="utf-8")
+        yml, py = ccp.find_integration_files(d)
+        assert py is not None
+        assert py.name == "MyIntegration.py"
+
+    def test_prefers_dirname_match(self, tmp_path: Path) -> None:
+        # Multiple .py files; one matches the directory name. Picker
+        # must prefer that one over alphabetically-earlier candidates.
+        d = tmp_path / "MyIntegration"
+        d.mkdir()
+        (d / "MyIntegration.yml").write_text("name: MyIntegration\n", encoding="utf-8")
+        (d / "AAhelpers.py").write_text("# helper\n", encoding="utf-8")
+        (d / "MyIntegration.py").write_text("def main(): pass\n", encoding="utf-8")
+        yml, py = ccp.find_integration_files(d)
+        assert py is not None
+        assert py.name == "MyIntegration.py"
+
+    def test_skips_apimodule_files(self, tmp_path: Path) -> None:
+        # ``MicrosoftApiModule.py`` is shared tooling; must not be
+        # picked even though its name doesn't appear in the deny-list.
+        d = tmp_path / "AzureFoo"
+        d.mkdir()
+        (d / "AzureFoo.yml").write_text("name: AzureFoo\n", encoding="utf-8")
+        (d / "MicrosoftApiModule.py").write_text("# shared\n", encoding="utf-8")
+        (d / "AzureFoo.py").write_text("def main(): pass\n", encoding="utf-8")
+        yml, py = ccp.find_integration_files(d)
+        assert py is not None
+        assert py.name == "AzureFoo.py"
+
+    def test_alphabetical_fallback_is_deterministic(self, tmp_path: Path) -> None:
+        # Two unrelated .py files, neither matches dir/yml stems. Picker
+        # must return the alphabetically-first one (deterministic
+        # tie-break — no longer dependent on filesystem iteration order).
+        d = tmp_path / "Foo"
+        d.mkdir()
+        (d / "Foo.yml").write_text("name: Foo\n", encoding="utf-8")
+        (d / "zeta.py").write_text("# z\n", encoding="utf-8")
+        (d / "alpha.py").write_text("# a\n", encoding="utf-8")
+        yml, py = ccp.find_integration_files(d)
+        assert py is not None
+        assert py.name == "alpha.py"
+
+
+class TestGap4MdatpAssignTryWrapped:
+    """Gap #4 — pre-dispatch ``client = MsClient(...)`` assignment is
+    wrapped in a ``try:`` block (MDATP shape). The original
+    :func:`build_binding_maps` only iterated ``main_fn.body`` flat, so
+    bindings nested inside the ``try`` were never recorded.
+
+    The fix flattens compound constructs (``Try``, ``With``, ``If``)
+    via :func:`_iter_pre_dispatch_stmts` so these bindings are
+    recovered.
+    """
+
+    def test_or_chain_assign_inside_try(self) -> None:
+        # MDATP textbook shape: locals bound to ``params.get("X") or
+        # params.get("Y") or params.get("Z", {}).get("password")``,
+        # then ``client = MsClient(tenant_id=tenant_id, ...)``, then
+        # dispatch — ALL inside a ``try:`` block.
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class MsClient:
+                def __init__(self, *a, **kw): pass
+
+            def get_machine_by_ip_command(client, args): pass
+            def fetch_incidents(client): pass
+
+            def main():
+                params = demisto.params()
+                tenant_id = params.get("tenant_id") or params.get("_tenant_id")
+                auth_id = params.get("_auth_id") or params.get("auth_id")
+                enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
+                command = demisto.command()
+                args = demisto.args()
+                try:
+                    client = MsClient(
+                        tenant_id=tenant_id,
+                        auth_id=auth_id,
+                        enc_key=enc_key,
+                    )
+                    if command == "microsoft-atp-get-machine-by-ip":
+                        get_machine_by_ip_command(client, args)
+                    elif command == "fetch-incidents":
+                        fetch_incidents(client)
+                except Exception:
+                    pass
+            """
+        )
+        for cmd in ("microsoft-atp-get-machine-by-ip", "fetch-incidents"):
+            s1, s2 = ccp.analyze_static(src, cmd, language="python", verbose=False)
+            merged = s1 | s2
+            for required in ("tenant_id", "auth_id", "enc_key", "credentials"):
+                assert required in merged, (
+                    f"{cmd}: pre-dispatch binding inside try{{}} must "
+                    f"propagate {required!r} via client; "
+                    f"scope_1={s1}, scope_2={s2}"
+                )
+
+    def test_with_block_pre_dispatch(self) -> None:
+        # Sanity check: ``with`` blocks should also be flattened (some
+        # integrations wrap the dispatch in a ``with logging_context():``).
+        src = textwrap.dedent(
+            """
+            import demistomock as demisto
+
+            class Client:
+                def __init__(self, *a, **kw): pass
+
+            def handler(client): pass
+
+            def main():
+                params = demisto.params()
+                api_key = params.get("apikey")
+                command = demisto.command()
+                with open("/dev/null") as _f:
+                    client = Client(api_key=api_key)
+                    if command == "do-thing":
+                        handler(client)
+            """
+        )
+        s1, s2 = ccp.analyze_static(src, "do-thing", language="python", verbose=False)
+        assert "apikey" in (s1 | s2), (
+            f"with-wrapped pre-dispatch binding must propagate apikey; "
+            f"scope_1={s1}, scope_2={s2}"
+        )
+
+
+class TestGap5CaptureProxyBypassedLimitation:
+    """Gap #5 — boto3 / botocore HTTP traffic bypasses the capture proxy.
+
+    The analyzer detects this via static import inspection and tags every
+    per-command diagnostic with
+    ``limitation: "capture_proxy_bypassed"`` so the calling agent knows
+    Hybrid Scope-1 narrowing won't fire and the static union must be
+    cross-checked manually.
+    """
+
+    def test_detects_bare_boto3_import(self) -> None:
+        src = "import boto3\n"
+        assert ccp.integration_uses_proxy_bypass(src)
+
+    def test_detects_botocore_import(self) -> None:
+        src = "from botocore.config import Config\n"
+        assert ccp.integration_uses_proxy_bypass(src)
+
+    def test_detects_boto3_submodule(self) -> None:
+        src = "import boto3.session\n"
+        assert ccp.integration_uses_proxy_bypass(src)
+
+    def test_detects_awsapimodule(self) -> None:
+        # AWS-EC2 / AWS-IAM / etc. only do ``from AWSApiModule import *``
+        # — boto3 itself is imported transitively after prepare-content
+        # unifies the source. The detector must still fire so every AWS
+        # command's diagnostic carries the limitation tag.
+        src = "from AWSApiModule import *\n"
+        assert ccp.integration_uses_proxy_bypass(src)
+
+    def test_no_bypass_for_normal_integration(self) -> None:
+        src = textwrap.dedent(
+            """
+            import requests
+            from CommonServerPython import *
+            def main(): pass
+            """
+        )
+        assert not ccp.integration_uses_proxy_bypass(src)
+
+    def test_safely_handles_empty_or_unparseable(self) -> None:
+        # Empty source -> False, no exception.
+        assert not ccp.integration_uses_proxy_bypass("")
+        # Real syntax error -> False, no exception.
+        assert not ccp.integration_uses_proxy_bypass("def main(:\n")
+
+    def test_diagnostic_serializes_limitation(self) -> None:
+        diag = ccp.CommandDiagnostic(
+            status="ok_no_capture",
+            captured_requests=0,
+            limitation=ccp.LIMITATION_CAPTURE_PROXY_BYPASSED,
+        )
+        out = diag.to_dict()
+        assert out["limitation"] == ccp.LIMITATION_CAPTURE_PROXY_BYPASSED
+
+    def test_diagnostic_omits_limitation_when_none(self) -> None:
+        diag = ccp.CommandDiagnostic(status="ok_no_capture", captured_requests=0)
+        out = diag.to_dict()
+        assert "limitation" not in out
+
+    def test_merge_does_not_narrow_when_no_capture(self) -> None:
+        # Regression guard for the boto3 case: when captured_requests=0
+        # (the universal AWS-family outcome), narrowing MUST NOT fire —
+        # otherwise we'd zero out the per-command static surface.
+        diag = ccp.CommandDiagnostic(
+            status="ok_no_capture",
+            captured_requests=0,
+            limitation=ccp.LIMITATION_CAPTURE_PROXY_BYPASSED,
+        )
+        out = ccp._merge_command_params(
+            "x",
+            ({"access_key", "secret_key"}, set()),
+            set(),
+            diag,
+        )
+        assert out == {"access_key", "secret_key"}, (
+            f"narrowing must NOT fire when captured_requests=0; got {out}"
+        )
+        assert not diag.scope_1_narrowed

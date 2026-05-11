@@ -7,7 +7,7 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/integrations_report.csv`](integrations_report.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
+This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
 
 The CSV has two kinds of columns (see [`connectus/Readme.md`](Readme.md) for full details):
 
@@ -110,7 +110,7 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 
 ## Critical Rules
 
-1. **NEVER edit [`connectus/integrations_report.csv`](integrations_report.csv) directly.** All CSV modifications MUST go through [`connectus/workflow_state.py`](workflow_state.py) CLI commands.
+1. **NEVER edit [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) directly.** All CSV modifications MUST go through [`connectus/workflow_state.py`](workflow_state.py) CLI commands.
 2. **Follow the workflow checkpoints sequentially.** You cannot skip ahead — the state machine enforces ordering.
 3. **Always check status first** before doing any work on an integration.
 4. **Use `execute_command`** to run all `workflow_state.py` commands from the workspace root.
@@ -123,7 +123,7 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 - [`connectus/Readme.md`](Readme.md) — Full reference for auth types, CSV columns, walkthrough.
 - [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params same in other handlers`.
 - [`connectus/workflow_state.py`](workflow_state.py) — The state machine CLI (source of truth for workflow). Provides the `files <integration_id>` subcommand and the [`get_integration_files()`](workflow_state.py) helper used to resolve every source file for an integration (see [§1.1](#11-locate-integration-files)).
-- [`connectus/integrations_report.csv`](integrations_report.csv) — The tracking spreadsheet (DO NOT EDIT DIRECTLY).
+- [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) — The tracking spreadsheet (DO NOT EDIT DIRECTLY).
 
 ## Step 0: Identify the Integration
 
@@ -171,10 +171,11 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 4. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime — see [1.4](#14-python-code-analysis--specific-patterns)
 5. ☐ Cross-reference each YML param with where/how it is consumed in code — see [1.5](#15-cross-reference-yml-params-with-code-usage)
 6. ☐ Classify each connection via the [decision table](#121-classification-decision-table); build each entry per [1.2.2](#122-building-each-auth_types-entry); compose `config` per [1.2.3](#123-building-the-config-expression)
-7. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
-8. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
-9. ☐ Apply via `set-auth` (this validates the JSON schema and resets the workflow) — see [1.10](#110-applying-corrections)
-10. ☐ Re-run `status` to confirm the value was stored as intended
+7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
+8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
+9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
+10. ☐ Apply via `set-auth` (this validates the JSON schema and resets the workflow) — see [1.10](#110-applying-corrections)
+11. ☐ Re-run `status` to confirm the value was stored as intended
 
 The current CSV value, if any, is informational only — show it to the user for context but derive the new value entirely from the source code:
 
@@ -331,6 +332,94 @@ Don't strictly stick to if the corresponding xsoar parameters are required or no
 
 ---
 
+#### 1.2.5 Building the `other_connection` list
+
+`other_connection` is a **flat sorted list of YML param ids** captured
+inside the same `Auth Details` JSON. Its purpose is to record every
+connection-adjacent YML param that is **not** an auth secret and **not**
+a per-command behavioral param — i.e. everything you reasonably need to
+define the integration's connection besides the secrets themselves.
+
+The validator (see [`validate_auth_detail()`](workflow_state.py:521))
+requires the key on every `set-auth` write; the field is required even
+when empty (use `[]`).
+
+##### What qualifies as connection-adjacent
+
+A YML param qualifies if it is BOTH:
+
+1. **Not an auth secret** (auth secrets go in `auth_types[].xsoar_params`), AND
+2. **Not a per-command behavioral param** (those go in `Params to Commands`).
+
+Concretely: things needed to direct the connection at the right server
+with the right network settings.
+
+##### Examples to INCLUDE
+
+- `url`, `server_url`, `endpoint`, `host`, `server` — server addressing.
+- `port` — network port.
+- `insecure`, `unsecure`, `trust_any_certificate`, `verify_certificate`,
+  `verify_ssl` — TLS verification toggles.
+- `proxy`, `use_system_proxy`, `use_proxy` — proxy toggles.
+- `region`, `data_center`, `cloud` — routing selectors **when used purely
+  to pick the endpoint**, not to authenticate against a tenant.
+- `tenant_id`, `subscription_id`, `account_id` — when used as a routing /
+  identifier and **NOT** as an auth secret. (If the param is hashed into
+  a signed request → it is an auth secret, classify it under
+  `auth_types[].xsoar_params` instead.)
+- `api_version` — when it changes the URL path.
+
+##### Examples to EXCLUDE
+
+- **Auth secrets** — already captured in `auth_types[].xsoar_params`. Do
+  not list them again here.
+- **Per-command behavioral params** — `fetch_interval`, `first_fetch`,
+  `max_fetch`, `incident_type`, `mirror_options`, `mirror_direction`,
+  `query`, `enrichment`, etc. These belong in `Params to Commands`.
+- **XSOAR framework params** — `longRunning`, `feedReputation`,
+  `feedExpirationInterval`, `feedReliability`, `feedTags`. Ignored
+  entirely; not in `Auth Details`, not in `Params to Commands`.
+- **Hidden / deprecated params** — skip per the existing rule for auth.
+
+##### Sorting requirement
+
+The list must be sorted **ascending (alphabetical, case-sensitive)**.
+The validator REJECTS unsorted input with a clear suggestion of the
+sorted form, e.g.:
+
+```
+'other_connection' must be sorted ascending; got ['url', 'proxy'], expected ['proxy', 'url']
+```
+
+Strings must also be unique within the list and non-empty. An empty
+list `[]` is valid (= "this integration has no connection-adjacent
+params besides its auth secrets").
+
+##### Worked mini-example
+
+YML excerpt:
+
+```yaml
+- name: url
+  display: Server URL
+  type: 0
+  required: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+```
+
+Resulting field inside `Auth Details`:
+
+```json
+"other_connection": ["insecure", "proxy", "url"]
+```
+
+---
+
 #### 1.2.4 Two end-to-end worked examples
 
 **Example A — Bearer token API key (single flat param).**
@@ -350,7 +439,9 @@ Code excerpt:
 headers = {"Authorization": f"Bearer {params.get('api_key')}"}
 ```
 
-Resulting JSON to pass to `set-auth`:
+Suppose the YML also defines `url`, `insecure`, and `proxy` alongside
+`api_key` (the typical XSOAR connection-metadata trio). Then the
+resulting JSON to pass to `set-auth`:
 
 ```json
 {
@@ -361,7 +452,8 @@ Resulting JSON to pass to `set-auth`:
       "xsoar_params": ["api_key"]
     }
   ],
-  "config": "REQUIRED(api_key)"
+  "config": "REQUIRED(api_key)",
+  "other_connection": ["insecure", "proxy", "url"]
 }
 ```
 
@@ -370,6 +462,10 @@ Resulting JSON to pass to `set-auth`:
 YML excerpt:
 
 ```yaml
+- name: url
+  display: Server URL
+  type: 0
+  required: true
 - name: credentials
   display: Username
   type: 9
@@ -378,6 +474,12 @@ YML excerpt:
   display: Consumer Key / Secret
   type: 9
   required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+- name: proxy
+  display: Use system proxy settings
+  type: 8
 ```
 
 Code excerpt:
@@ -388,7 +490,7 @@ oauth = OAuth1(params['credentials_consumer']['identifier'],
                params['credentials_consumer']['password'], ...)
 ```
 
-Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < `Plain` alphabetically):
+Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < `Plain` alphabetically; `other_connection` sorted ascending):
 
 ```json
 {
@@ -404,7 +506,8 @@ Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < 
       "xsoar_params": ["credentials.identifier", "credentials.password"]
     }
   ],
-  "config": "REQUIRED(credentials) + OPTIONAL(credentials_consumer)"
+  "config": "REQUIRED(credentials) + OPTIONAL(credentials_consumer)",
+  "other_connection": ["insecure", "proxy", "url"]
 }
 ```
 
@@ -523,12 +626,13 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
 
 After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md:16). The same rules are enforced at runtime by [`validate_auth_detail()`](workflow_state.py:521):
 
-1. Must be valid JSON with top-level keys `auth_types` (array) and `config` (string).
+1. Must be valid JSON with top-level keys `auth_types` (array), `config` (string), AND `other_connection` (array of strings). All three are REQUIRED on every `set-auth` write — the validator rejects payloads missing any of them.
 2. Each `auth_types[]` entry has a `type` (one of [`VALID_AUTH_TYPES`](workflow_state.py:118)), a unique `name`, and a non-empty `xsoar_params` array (unless the entry is `NoneRequired`-shaped).
 3. `auth_types[]` entries are sorted by `(type, name)` ascending.
 4. `config` is either the literal `NoneRequired`, or one or more clauses joined with ` + `, each clause being `REQUIRED(...)`, `OPTIONAL(...)`, or `CHOICE(...)`.
 5. Every operand name appearing inside `config`'s parens MUST exist as some `auth_types[].name` (the most common cause of `set-auth` rejection).
 6. If `config` is `NoneRequired`, then `auth_types` MUST be `[]`.
+7. `other_connection` must be a list of **non-empty unique strings, sorted ascending**. Empty list `[]` is valid. The validator rejects unsorted input with a message that suggests the sorted form. See [1.2.5](#125-building-the-other_connection-list) for what belongs here.
 
 ---
 
@@ -574,7 +678,7 @@ This command:
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)"}'
+python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)","other_connection":["insecure","proxy","url"]}'
 ```
 
 After setting, verify it looks correct:
@@ -597,7 +701,11 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] Every name referenced in `config` exists as some `auth_types[].name`.
 - [ ] `auth_types[]` entries are sorted by `(type, name)` ascending.
 - [ ] If there is genuinely no auth, `config` is exactly `NoneRequired` AND `auth_types` is `[]`.
-- [ ] Connection metadata (URL, instance host, region) is intentionally NOT in `auth_types` — those are configured separately at the integration level, not as auth secrets.
+- [ ] Connection metadata (URL, instance host, region) is intentionally NOT in `auth_types` — it goes in `other_connection` instead (see [1.2.5](#125-building-the-other_connection-list)).
+- [ ] `other_connection` lists every connection-adjacent YML param (`url`, `proxy`, `insecure`, `port`, `host`, `region`, etc.).
+- [ ] `other_connection` does NOT contain any auth-secret param (those are in `auth_types[].xsoar_params`).
+- [ ] `other_connection` does NOT contain any per-command behavioral param (those go in `Params to Commands`).
+- [ ] `other_connection` list is sorted ascending.
 
 ---
 
@@ -650,26 +758,29 @@ The script writes its result to **stdout** as a single JSON document. All progre
 
 ```json
 {
-  "integration": "QRadar v3",
+  "integration": "IBM QRadar v3",
   "commands": {
-    "test-module":          ["adv_params", "fetch_query"],
-    "fetch-incidents":      ["fetch_query", "max_fetch", "first_fetch"],
-    "qradar-offenses-list": ["fetch_query", "filter"]
+    "test-module":            ["adv_params", "fetch_interval"],
+    "qradar-offenses-list":   ["adv_params", "fetch_interval"],
+    "long-running-execution": [
+      "adv_params", "enrichment", "events_columns", "events_limit",
+      "fetch_interval", "fetch_mode", "first_fetch", "incident_type",
+      "limit_assets", "mirror_options", "offenses_per_fetch",
+      "query", "retry_events_fetch"
+    ]
   },
   "diagnostics": {
     "test-module": {
       "status": "param_caused_failure",
       "captured_requests": 0,
-      "failing_params": ["adv_params"],
-      "failure_excerpt": "DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params"
+      "failure_excerpt": "integration_under_test.DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params - please make sure you entered it correctly",
+      "failing_params": ["adv_params"]
     },
-    "fetch-incidents": {
-      "status": "ok",
-      "captured_requests": 3
-    },
-    "qradar-offenses-list": {
-      "status": "ok",
-      "captured_requests": 1
+    "long-running-execution": {
+      "status": "param_caused_failure",
+      "captured_requests": 0,
+      "failure_excerpt": "integration_under_test.DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params - please make sure you entered it correctly",
+      "failing_params": ["adv_params"]
     }
   }
 }
@@ -679,17 +790,33 @@ The script writes its result to **stdout** as a single JSON document. All progre
 
 `diagnostics` is **internal AI signal only** — see section 5 below.
 
+#### 3a. Per-field reference
+
+For each command, the `diagnostics[cmd]` object always has:
+
+- **`status`** — one of `ok` / `ok_no_capture` / `param_caused_failure` / `no_data` / `timeout` / `docker_error` / `module_not_found` (see §4).
+- **`captured_requests`** — int. Always present in dynamic mode. Number of HTTP requests the capture proxy observed for this command.
+
+Optional fields, present only under specific conditions:
+
+- **`failure_excerpt`** — string, trimmed to ≤500 chars. Present when `status` is one of the failure-bearing values (`param_caused_failure`, `no_data`, `timeout`, `docker_error`, `module_not_found`); omitted on `ok` / `ok_no_capture`.
+- **`failing_params`** — list of param names. Present **only** when `status == "param_caused_failure"`. Populated by scanning the **full child stderr** for `SENTINEL_PARAM_<name>` substrings (not just the trimmed `failure_excerpt`), so a sentinel buried deep in a long traceback still gets attributed.
+- **`missing_module`** — string. Present **only** when `status == "module_not_found"`; names the package the child crashed on (e.g. `"pymisp"`).
+- **`scope_1_narrowed`** — `true`. Present **only when Hybrid Scope-1 narrowing actually dropped at least one param** for this command. Omitted entirely when narrowing was applied but the captured set was a superset of the static Scope-1 set (i.e. narrowing fired silently and changed nothing). **An absent field therefore does not mean narrowing was skipped** — it could also mean narrowing trivially kept everything. See §6's narrowing callout.
+- **`scope_1_dropped`** — list of param names that narrowing dropped. Present iff `scope_1_narrowed` is present.
+- **`limitation`** — optional string flag for known structural reasons the dynamic signal cannot fire for this integration. Currently the only documented value is `"capture_proxy_bypassed"`, attached to **every command** of any integration whose source imports `boto3`, `botocore`, or `AWSApiModule` (matched by prefix on `Import` / `ImportFrom` AST nodes). It means the capture proxy could not observe HTTP traffic, so Hybrid Scope-1 narrowing structurally cannot fire for that integration regardless of `status`. Treat the per-command list as the full static union and verify against source.
+
 ### 4. Status enum reference
 
 | status | meaning |
 |---|---|
-| `ok` | Command ran cleanly and at least one HTTP request was captured. The param list in `commands[cmd]` is high-confidence. |
-| `ok_no_capture` | Command ran cleanly (rc=0) but made no HTTP calls. Either the command genuinely needs no HTTP (rare) OR our seeded params didn't trigger any HTTP path. The param list is from static analysis only. |
-| `param_caused_failure` | Command failed AND we identified the specific params that caused the failure (their sentinels appeared in the error message). Those params are pre-elevated into `commands[cmd]`. Other params for that command are static-only. |
-| `no_data` | Command failed but no specific param attribution could be made. The param list comes from static analysis only. |
-| `timeout` | Command hit the per-command wall-clock timeout. |
-| `docker_error` | Docker invocation itself failed (image pull, daemon down, etc.). The whole integration's dynamic phase is unreliable; rely on static. |
-| `module_not_found` | Child crashed with `ModuleNotFoundError`. Integration needs a third-party package not in the runtime image. **AI must step in manually** (analogous to JS / PowerShell). The `missing_module` field names the missing package. |
+| `ok` | Command completed (rc=0, or rc=7 with captures>0) and at least one HTTP request was captured. The param list in `commands[cmd]` is high-confidence. |
+| `ok_no_capture` | Command ran cleanly (rc=0) but made no HTTP calls. Either the command genuinely needs no HTTP (rare) OR our seeded params didn't trigger any HTTP path OR the integration is in the proxy-bypass family (see `limitation: capture_proxy_bypassed`). The param list is the full static union. |
+| `param_caused_failure` | Command failed AND we identified the specific params that caused the failure (their sentinels appeared anywhere in the child's stderr). Those params are pre-elevated into `commands[cmd]`. The remaining params for that command come from the static union (the integration may have bailed before reaching them). |
+| `no_data` | Command failed but no specific param attribution could be made — typically the integration short-circuited with a hardcoded error (e.g. a `Client.__init__` guard) before any sentinel reached the error text. The param list is the full static union. |
+| `timeout` | Command hit the per-command wall-clock timeout. The param list is the full static union. |
+| `docker_error` | Docker invocation itself failed (image pull, daemon down, rc 125/126/127). The whole integration's dynamic phase is unreliable; rely on static and consider `--docker never`. |
+| `module_not_found` | Child crashed with `ModuleNotFoundError`. Integration needs a third-party package not present in the runtime image. The `missing_module` field names the package. First retry with `--use-integration-docker`; if that still fails, fall back to manual source review (analogous to JS / PowerShell). |
 
 ### 5. CRITICAL — Use diagnostics for AI judgment, NEVER write them to pipeline data
 
@@ -704,25 +831,76 @@ It exists ONLY for the skill's internal decision-making. The skill MUST:
 
 The pipeline data is meant to be a clean machine-readable artifact. Diagnostics are debugging context for the AI — they get consumed and discarded. When invoking `set-params-to-commands`, the JSON payload must contain only `integration` and `commands` keys (per [`column-schemas.md`](column-schemas.md)) — strip everything else.
 
-### 6. Decision tree for processing the analyzer's output
+### 6. Decision tree — what the AI does for each diagnostic
+
+The full decision is a function of `(status, limitation)`. Walk this table per command (or per integration when the same outcome dominates):
+
+| Diagnostic | What it means | What the AI should do |
+|---|---|---|
+| `status: ok` (no `limitation`) | Command ran cleanly and the proxy captured HTTP. Hybrid Scope-1 narrowing may have applied (visible only when it actually dropped something). | Trust the param list as-is. |
+| `status: ok` + `limitation: capture_proxy_bypassed` | The integration ran without errors but the proxy saw nothing because the HTTP layer (boto3 / botocore / `AWSApiModule`) bypassed it. The param list is the **full static union**; Hybrid narrowing structurally cannot fire. | Treat as static-only output. Verify against source manually, especially the Scope-1 fan-out (credentials, region, etc.) that narrowing would normally trim. |
+| `status: ok_no_capture` (no `limitation`) | Command completed cleanly (rc=0) but the proxy saw zero HTTP requests. Either the command is a pure local helper, or the seeded params didn't reach an HTTP path. | Verify against source: a true local helper needs no HTTP and the static union is correct; otherwise consider it under-tested and treat the list as the full static union (err on inclusion). |
+| `status: ok_no_capture` + `limitation: capture_proxy_bypassed` | Integration is in the proxy-bypass family and ran cleanly. Same situation as above for the AWS family — zero captures here is structural, not signal. | Use the static union; **do not infer "no params" from zero captures**. |
+| `status: param_caused_failure` | A `SENTINEL_PARAM_<name>` substring was found anywhere in the child's stderr (full-stderr scan, not just the trimmed excerpt). `failing_params` lists the suspects and they are pre-elevated into `commands[cmd]`. | Treat `failing_params` as definitely-relevant. Merge the remaining params with the static union (the integration may have bailed before reaching them). When in doubt, leave the failing params attributed to the command (err on inclusion). |
+| `status: no_data` | Command failed but no sentinel could be matched — typically the integration short-circuited (e.g. a `Client.__init__` guard with a hardcoded error message) before the sentinel value reached an error path. | Cannot trust the dynamic signal. Use the full static union. Consider re-running with `--use-integration-docker` if the integration has a non-default runtime that might reach further. |
+| `status: timeout` | The child process hit the per-command wall-clock timeout. | Use the full static union. Consider raising `--timeout` or re-running on a smaller `--commands` subset. |
+| `status: docker_error` | Docker invocation itself failed (rc 125/126/127). | Re-run on the host (`--docker never`) or fix the docker daemon. The whole integration's dynamic phase is unreliable until then. |
+| `status: module_not_found` | Child crashed with `ModuleNotFoundError`; `missing_module` names the package. | First retry with `--use-integration-docker` (uses the integration's own production image, which usually has the missing package). If that still fails, fall back to manual source review — the analyzer literally cannot run. |
+
+#### 6a. Hybrid Scope-1 narrowing — what to read into the diagnostic
+
+The analyzer applies a narrowing pass that fires only when a command's dynamic phase **captured ≥1 HTTP request AND hit ≥1 sentinel**. It intersects the static Scope-1 set (pre-dispatch + module-level fan-out shared across all commands) with the captured params. Scope-2 (per-command handler-traced params, including binding-narrowed dispatch-site reads) is preserved unchanged.
+
+**New semantics for `scope_1_narrowed` / `scope_1_dropped` (keep this in mind):**
+
+- **Present** with a non-empty `scope_1_dropped` → narrowing fired AND removed at least one param. Trust the per-command list more; the dropped names are listed for transparency.
+- **Absent** → ambiguous on its own. It can mean either (a) narrowing was never attempted (no captures, sentinel-less, or the integration is in the proxy-bypass family), **or** (b) narrowing fired but the captured set was a superset of Scope-1 so nothing was dropped (narrowing happened trivially). Use `status` and `limitation` together to disambiguate: if `status == "ok"` and there is no `limitation`, an absent narrowing field means "narrowing fired, nothing to drop"; otherwise it means "narrowing was not applied at all and the list is the full static union".
+
+The remaining commands (typically ~80% per integration) receive the **full Scope-1 static union**, which can include false positives from the `Client(api_key=..., max_fetch=..., custom_credentials=...)` fan-out pattern in `main()`. When you see a column where many commands share a suspiciously-identical large param list (the fan-out signature), consult the source code and prune obvious Client-only params for commands that don't actually use them — but **continue to err on inclusion**: a real param missing silently breaks the migrated integration, while an extra param is merely cosmetic noise.
+
+#### 6b. Why Hybrid Scope-1 narrowing is retained
+
+Even after the static analyzer was extended (helper-function recursion, alias-chain matching, nested pre-dispatch flattening, etc.), Hybrid narrowing was **kept on purpose**. It is the only mechanism that trims **module-level globals** of the CrowdStrike `PARAMS = demisto.params()` style — `collect_module_level_params` is explicitly outside the static binding-narrowing pipeline because those reads fan out to every command unconditionally. Static binding-narrowing handles the intra-`main()` `Client(api_key=params.get("apikey"))` pattern but cannot touch module-scope `CLIENT_ID = PARAMS.get("client_id")`.
+
+Concrete justification (from [`connectus/check_command_params_validation_report.md`](check_command_params_validation_report.md:1)): on CrowdStrike Falcon, narrowing dropped 7 of 9 module-level Scope-1 params from 65 of 96 commands — every drop manually verified as a genuine false positive. Without narrowing, those 7 params would appear on every command of every CrowdStrike-style integration.
+
+#### 6c. The `capture_proxy_bypassed` family (boto3 / AWS)
+
+`boto3` / `botocore` (and the shared `AWSApiModule` that wraps them) do not honour `HTTPS_PROXY` / `HTTP_PROXY` the way the capture proxy expects — they manage their own HTTP layer that has to be configured per-client via `Config(proxies=...)`. The analyzer detects this **statically** by walking the integration's `Import` / `ImportFrom` AST nodes for any name matching the prefixes in `_PROXY_BYPASS_MODULE_PREFIXES` (currently `boto3`, `botocore`, `AWSApiModule`). When detected, every per-command diagnostic receives `limitation: "capture_proxy_bypassed"`.
+
+For these integrations:
+
+- Expect `status: ok_no_capture` (or `no_data` if the sentinel trips an early validator) on every command, regardless of whether the integration actually ran successfully.
+- Hybrid Scope-1 narrowing will **never** fire — `_merge_command_params()` correctly skips itself when `captured_requests == 0`, so there is no risk of accidentally narrowing with an empty captured set and zeroing out the per-command list.
+- The per-command output is the **full static `scope_1 | scope_2` union** as-is. Treat AWS integrations as **static-only effectively** and verify against source.
+
+#### 6d. Patterns the static analyzer now handles correctly
+
+The following patterns previously needed AI workaround. They are now handled inside the static phase, so **the AI should not add defensive logic for them** — trust the analyzer's static set and only intervene if a sanity-check against source disagrees.
+
+- **Helper-function shared-client construction** (`client = build_client(args)` where `build_client` reads `demisto.params()` internally): traced via `_params_consumed_by_function` and helper recursion in `trace_params_in_function`. (AWS-EC2 pattern.)
+- **`command == "X" or command == "Y"` alias chains:** matched recursively in `_if_test_matches_command` via a `BoolOp(Or)` walk. (AWS-IAM pattern.)
+- **Stub `.py` files in the integration directory:** `find_integration_files` applies a deny-list (`demistomock.py`, `CommonServerUserPython.py`, etc.) and prefers the file whose stem matches the directory name or YML stem.
+- **Pre-dispatch bindings nested inside `try:` / `with:` / `if:` blocks:** `_iter_pre_dispatch_stmts` flattens these so binding-narrowing fires regardless of nesting. (MDATP pattern.)
+- **Named dict-dispatch tables:** any local dict can be the dispatch table, not just one literally named `commands`. (AzureKeyVault, MongoDB.)
+
+#### 6e. Decision-tree summary (operational order)
 
 Given the analyzer's JSON for an integration, the skill should:
 
-**Step 0** — If MOST commands have `status: "module_not_found"`, the integration depends on a third-party package not in the runtime image. Dynamic analysis produced no useful signal. **Read the integration source code and YML directly to write a polished result manually**, exactly as you would for a JavaScript or PowerShell integration. The `missing_module` field tells you which package was needed.
+**Step 0** — If MOST commands have `status: "module_not_found"`, the integration depends on a third-party package not in the runtime image. First retry with `--use-integration-docker`. If still failing, **read the integration source and YML directly to write a polished result manually**, exactly as you would for a JavaScript or PowerShell integration. The `missing_module` field tells you which package was needed.
 
 **Step 1.** If the analyzer process exited non-zero (the batch runner wraps this as `{"error": ..., "stderr": ...}` in the cell): treat as a structural failure. Read the integration source, decide manually what each command needs, write a polished result. Do NOT propagate the error into the pipeline.
 
-**Step 2.** If `commands` is non-empty AND most commands have `status: "ok"`: the analyzer's output is high-confidence. Write `commands` as-is into the pipeline data.
+**Step 2.** If `commands` is non-empty AND most commands have `status: "ok"` (no `limitation`): the analyzer's output is high-confidence. Write `commands` as-is into the pipeline data.
 
-**Step 3.** If many commands have `status: "param_caused_failure"`: the analyzer identified the problematic params. They're already merged into `commands[cmd]`. Read the `failure_excerpt` and the integration source to understand whether the param really applies to all commands or just to startup logic. **When in doubt, leave the param attributed to that command (err on inclusion).**
+**Step 3.** If the integration has `limitation: "capture_proxy_bypassed"` on every command: treat the analyzer output as **static-only**. Hybrid narrowing structurally cannot fire here. Cross-check the per-command lists against source, especially for the Client fan-out pattern.
 
-**Step 4.** If many commands have `status: "no_data"` or `status: "ok_no_capture"`: the analyzer couldn't get a strong signal. Read the integration source and trace which params each command's handler uses. Write the resulting per-command list into the pipeline. **When in doubt, include rather than exclude.**
+**Step 4.** If many commands have `status: "param_caused_failure"`: the failing params are already pre-elevated into `commands[cmd]`. Read the `failure_excerpt` and the integration source to confirm whether the param really applies to all commands or just to startup logic. **When in doubt, leave the param attributed to that command (err on inclusion).**
 
-> **Hybrid Scope-1 narrowing & the err-on-inclusion rule.** The analyzer applies a narrowing pass that only fires for commands which captured ≥1 HTTP request *and* hit ≥1 sentinel — typically only ~10–20% of commands per integration. Those commands are flagged with `diagnostics[cmd].scope_1_narrowed: true` and you can trust their per-command list more (HTTP evidence backed it; the dropped Scope-1 params are listed in `scope_1_dropped` for transparency).
->
-> The remaining ~80% of commands still receive the **full Scope-1 static union**, which can include false positives from the `Client(api_key=..., max_fetch=..., custom_credentials=...)` fan-out pattern in `main()`. When you see a column where many commands share a suspiciously-identical large param list (the fan-out signature), consult the source code and prune obvious Client-only params for commands that don't actually use them — but **continue to err on inclusion**: a real param missing silently breaks the migrated integration, while an extra param is merely cosmetic noise.
+**Step 5.** If many commands have `status: "no_data"` or `status: "ok_no_capture"` (without the proxy-bypass limitation): the analyzer couldn't get a strong signal. Read the integration source and trace which params each command's handler uses. Write the resulting per-command list into the pipeline. **When in doubt, include rather than exclude.**
 
-**Step 5.** Always sanity-check: are there commands in the YML that the analyzer missed? Are there params clearly used in a command's source code that don't appear in the analyzer's list? If yes, add them.
+**Step 6.** Always sanity-check: are there commands in the YML that the analyzer missed? Are there params clearly used in a command's source code that don't appear in the analyzer's list? If yes, add them.
 
 ### 7. The "err on inclusion" principle
 
@@ -801,7 +979,7 @@ Example (post-ignore-list — only behavioral params; `url`,
 [`connectus/default_ignore_params.txt`](default_ignore_params.txt)):
 
 ```bash
-python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"QRadar v3","commands":{"test-module":["adv_params","fetch_query"],"qradar-offenses-list":["fetch_query","filter"]}}'
+python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"IBM QRadar v3","commands":{"test-module":["adv_params","fetch_interval"],"qradar-offenses-list":["adv_params","fetch_interval"]}}'
 ```
 
 **Validation:** The command rejects invalid JSON with the parse error.

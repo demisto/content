@@ -30,7 +30,16 @@ Usage::
         [--static-only] \\
         [--ignore-params PARAM [PARAM ...]] \\
         [--ignore-params-file PATH] \\
+        [--integration-id ID] \\
         [--use-integration-docker]
+
+The optional ``--integration-id`` flag pulls the integration's
+auth-derived ignore set from
+``connectus/workflow_state.py auth-params <id>`` and unions it into the
+analyzer's ignore set, guaranteeing that any param already declared in
+``Auth Details`` (auth secrets + ``other_connection``) cannot leak into
+the per-command output. Standalone runs outside the migration workflow
+can omit it; ``--ignore-params-file`` continues to work on its own.
 
 ``--use-integration-docker`` is opt-in. By default the per-command
 child runs in the pinned ``demisto/py3-native`` image (one image, all
@@ -54,7 +63,10 @@ Output schema (single JSON document on stdout)::
           "captured_requests": <int>,
           "failure_excerpt": "<str, optional, max 500 chars>",
           "failing_params": ["<param>", ...],  # only if param_caused_failure
-          "missing_module": "<str>"            # only if module_not_found
+          "missing_module": "<str>",           # only if module_not_found
+          "limitation": "<str, optional>"      # known analyzer limitation,
+                                               # e.g. 'capture_proxy_bypassed'
+                                               # for boto3-based integrations
         }
       }
     }
@@ -86,44 +98,107 @@ emitted to stdout to aid the calling agent, but the calling agent MUST
 NOT persist it into downstream pipeline data. Under ``--static-only``
 the field is omitted entirely.
 
-**Hybrid Scope-1 narrowing (Fix 7).** When a command's dynamic phase
-actually captured ``>=1`` HTTP request **and** at least one sentinel
-hit was detected, the analyzer assumes that captured-set is an
-authoritative bound on which params reached the wire for that command.
-It then **narrows** the static Scope-1 set (pre-dispatch params shared
-across all commands — typically the ``Client(...)`` fan-out pattern in
-``main()``) to the intersection with the captured params. Scope-2
-(per-command handler-traced params) is preserved unchanged. This kills
-the dominant false-positive class where every command appears to use
-every Client-init param. The narrowed commands are flagged in
-``diagnostics`` with ``scope_1_narrowed: true`` and a
-``scope_1_dropped`` list. When dynamic did not capture (status
-``ok_no_capture``, ``module_not_found``, etc.) or hit zero sentinels,
-the analyzer falls back to the full ``scope_1 | scope_2`` static union
-and adds no extra diagnostic field. Narrowing is silent in
-``commands`` and visible in ``diagnostics`` only.
+**Hybrid Scope-1 narrowing.** When a command's dynamic phase actually
+captured ``>=1`` HTTP request **and** at least one sentinel hit was
+detected, the analyzer assumes that captured-set is an authoritative
+bound on which params reached the wire for that command. It then
+**narrows** the static Scope-1 set (pre-dispatch + module-level fan-out
+params shared across all commands) to the intersection with the
+captured params. Scope-2 (per-command handler-traced params, including
+binding-narrowed dispatch-site reads) is preserved unchanged.
+
+This is the only mechanism that trims the **module-level globals**
+fan-out pattern, because :func:`collect_module_level_params` is
+explicitly outside the static binding-narrowing pipeline (see the
+"Binding-narrowing" section in :func:`analyze_static`). Static
+binding-narrowing handles the ``Client(api_key=params.get("apikey"))``
+intra-``main()`` pattern, but cannot touch
+``CLIENT_ID = PARAMS.get("client_id")`` written at module scope —
+that read fans out to every command unconditionally. Empirically (see
+``connectus/check_command_params_validation_report.md``, post-fix
+verification), CrowdStrike Falcon's 65 successfully-captured commands
+each have 7 module-level Scope-1 false positives that ONLY dynamic
+narrowing removes; without it those 7 params would be reported
+everywhere.
+
+When narrowing fires, the calling agent sees ``scope_1_narrowed: true``
+and a non-empty ``scope_1_dropped`` list in ``diagnostics``. When
+narrowing fires but the intersection equals the original Scope-1
+(captured set was a superset — narrowing was applied but happened to
+drop nothing), both fields are **omitted** to avoid the misleading
+"narrowed but dropped nothing" reading. When dynamic did not capture
+(status ``ok_no_capture``, ``module_not_found``, etc.) or hit zero
+sentinels, the analyzer falls back to the full ``scope_1 | scope_2``
+static union and adds no extra diagnostic field. Narrowing is silent
+in ``commands`` and visible in ``diagnostics`` only.
+
+**Known limitation: boto3 / AWS-family integrations bypass the capture
+proxy.** The AWS Python SDK (``boto3`` / ``botocore``) does not honour
+the ``HTTPS_PROXY`` / ``HTTP_PROXY`` environment variables in the same
+way the capture proxy expects (it uses its own HTTP layer that has to
+be configured per-client via ``Config(proxies=...)``). As a result,
+every command of every ``boto3``-based integration will produce
+``status: ok_no_capture`` (or ``no_data`` if the sentinel value
+trips an early validator) regardless of whether the integration ran
+successfully — the proxy simply never sees the request. **Hybrid
+Scope-1 narrowing therefore does not fire for the AWS family** and
+the per-command output is the full static ``scope_1 | scope_2``
+union as-is. The narrowing safety-net at :func:`_merge_command_params`
+correctly skips itself when ``captured_requests == 0`` (verified —
+narrowing is only attempted when ``status == "ok"`` AND
+``captured_requests > 0`` AND ``captured`` is non-empty), so there is
+no risk of accidentally narrowing with an empty captured set and
+zero-ing out the per-command output. Callers should expect AWS
+integrations to receive the broader static surface and rely on the
+analyzer's static fixes (helper-function recursion, alias-chain
+matching, etc.) for correctness.
+
+To make this discoverable at runtime, every per-command diagnostic for
+a known proxy-bypassing integration is annotated with
+``limitation: "capture_proxy_bypassed"`` so the calling agent can
+flag the per-command lists as needing manual verification (the
+analyzer cannot prove the static surface is exact when no request
+ever reached the proxy). Detection is by static module-import
+inspection: if the integration's source imports ``boto3``,
+``botocore``, or any module ending in ``boto3`` / ``botocore``, the
+limitation is attached to every command's diagnostic.
 
 ``commands`` lists, for each command, the params that are relevant to
 it (case-sensitive, sorted). Params absent from the list (or excluded
 via ``--ignore-params`` / ``--ignore-params-file``) are not relevant or
 were explicitly excluded.
 
-Example::
+Example (real ``--use-integration-docker`` output for QRadar v3 — the
+``adv_params`` sentinel trips a parser early in ``main()`` so every
+command reports ``param_caused_failure`` with that param elevated; the
+``long-running-execution`` row shows the broader Scope-2 fan-out of the
+fetch loop)::
 
     {
-      "integration": "QRadar v3",
+      "integration": "IBM QRadar v3",
       "commands": {
-        "test-module": ["adv_params", "credentials", "url"],
-        "fetch-incidents": ["credentials", "max_fetch", "url"]
+        "test-module": ["adv_params", "fetch_interval"],
+        "qradar-offenses-list": ["adv_params", "fetch_interval"],
+        "long-running-execution": [
+          "adv_params", "enrichment", "events_columns", "events_limit",
+          "fetch_interval", "fetch_mode", "first_fetch", "incident_type",
+          "limit_assets", "mirror_options", "offenses_per_fetch",
+          "query", "retry_events_fetch"
+        ]
       },
       "diagnostics": {
         "test-module": {
           "status": "param_caused_failure",
           "captured_requests": 0,
-          "failure_excerpt": "DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params",
+          "failure_excerpt": "integration_under_test.DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params - please make sure you entered it correctly",
           "failing_params": ["adv_params"]
         },
-        "fetch-incidents": {"status": "ok", "captured_requests": 3}
+        "long-running-execution": {
+          "status": "param_caused_failure",
+          "captured_requests": 0,
+          "failure_excerpt": "integration_under_test.DemistoException: Failed to parse advanced parameter: SENTINEL_PARAM_adv_params - please make sure you entered it correctly",
+          "failing_params": ["adv_params"]
+        }
       }
     }
 
@@ -187,11 +262,49 @@ DOCKER_CMD_NOT_FOUND_RC = 127
 # --------------------------------------------------------------------------
 
 
+# Stub / shared-tooling files that may be checked into an integration
+# directory by mistake (or left behind from a test fixture / global
+# tooling pass) but which never define the integration's ``main()``.
+# When the integration directory contains ANY of these, we MUST NOT pick
+# them as the "the integration .py" — doing so causes static analysis to
+# return empty for every command (the real bug exposed by AzureSentinel
+# in the AWS+MSFT spot-check). The deny-list is matched on file name
+# only (case-sensitive); the YML-stem-matching fallback below covers any
+# other shared module names.
+_INTEGRATION_PY_STUB_DENYLIST = frozenset(
+    {
+        "demistomock.py",
+        "CommonServerPython.py",
+        "CommonServerUserPython.py",
+        "DemistoClassApiModule.py",
+        "conftest.py",
+    }
+)
+
+
 def find_integration_files(integration_path: Path) -> tuple[Path, Path | None]:
     """Locate the integration YML and (optional) Python source.
 
     Returns ``(yml_path, py_path_or_None)``. Raises ``FileNotFoundError`` if
     no YML is found.
+
+    Picker contract for the ``.py`` file (in priority order):
+
+    1. The file whose stem matches the integration directory name (the
+       ``demisto-sdk`` convention — e.g. ``AzureSentinel.py`` inside
+       ``Packs/AzureSentinel/Integrations/AzureSentinel/``).
+    2. The file whose stem matches the chosen YML's stem (covers a few
+       integrations whose .py and dir disagree).
+    3. Any other ``.py`` after filtering out ``_test.py`` /
+       ``test_*.py`` / well-known stub files (``demistomock.py``,
+       ``CommonServerPython.py``, ``*ApiModule.py``, etc.). The list is
+       sorted alphabetically as a final tie-breaker so the picker is
+       fully deterministic across filesystems.
+
+    Without this discipline, an unsorted ``Path.glob("*.py")`` pick can
+    return ``demistomock.py`` first when stub files have been
+    accidentally committed (see ``check_command_params_validation_report.md``,
+    AzureSentinel gap #3).
     """
     if not integration_path.is_dir():
         raise FileNotFoundError(f"Integration path is not a directory: {integration_path}")
@@ -199,12 +312,38 @@ def find_integration_files(integration_path: Path) -> tuple[Path, Path | None]:
     if not ymls:
         raise FileNotFoundError(f"No .yml file found in {integration_path}")
     yml_path = ymls[0]
-    pys = [
-        p for p in integration_path.glob("*.py")
-        if not p.name.endswith("_test.py") and not p.name.startswith("test_")
-    ]
-    py_path = pys[0] if pys else None
-    return yml_path, py_path
+
+    def _is_candidate(p: Path) -> bool:
+        if p.name.endswith("_test.py") or p.name.startswith("test_"):
+            return False
+        if p.name in _INTEGRATION_PY_STUB_DENYLIST:
+            return False
+        # Common Microsoft / shared-helper modules that ``demisto-sdk
+        # prepare-content`` would normally inject at unify time and which
+        # are sometimes also present as standalone files in the
+        # integration directory. Their stem ends in ``ApiModule`` by
+        # convention.
+        if p.stem.endswith("ApiModule"):
+            return False
+        return True
+
+    pys = sorted(
+        (p for p in integration_path.glob("*.py") if _is_candidate(p)),
+        key=lambda p: p.name,
+    )
+    if not pys:
+        return yml_path, None
+
+    # Priority 1: stem matches the integration directory name.
+    dir_match = next((p for p in pys if p.stem == integration_path.name), None)
+    if dir_match is not None:
+        return yml_path, dir_match
+    # Priority 2: stem matches the chosen YML's stem.
+    yml_match = next((p for p in pys if p.stem == yml_path.stem), None)
+    if yml_match is not None:
+        return yml_path, yml_match
+    # Priority 3: deterministic fallback (already sorted).
+    return yml_path, pys[0]
 
 
 def load_yml(yml_path: Path) -> dict[str, Any]:
@@ -274,6 +413,93 @@ def load_ignore_params(inline: list[str] | None, file_path: Path | None) -> set[
             line = raw.split("#", 1)[0].strip()
             if line:
                 out.add(line)
+    return out
+
+
+def compose_ignore_set(
+    inline: list[str] | None,
+    file_path: Path | None,
+    integration_id: str | None,
+) -> set[str]:
+    """Build the analyzer's effective ignore set from all sources.
+
+    The composed set is the union of:
+
+    * ``inline`` — bare param names from the ``--ignore-params`` CLI flag.
+    * ``file_path`` — one-name-per-line file from ``--ignore-params-file``
+      (default: ``connectus/default_ignore_params.txt``).
+    * ``auth_param_ids(integration_id)`` — when ``integration_id`` is
+      provided, every YML param id declared in the integration's
+      ``Auth Details`` cell (auth_types-projected + ``other_connection``).
+
+    Behaviour notes:
+
+    * ``integration_id=None`` → only the file/inline sources are used
+      (preserves backward compatibility with standalone analyzer runs).
+    * If ``integration_id`` is supplied but the workflow CSV doesn't
+      contain it, OR ``Auth Details`` for that row is unset / malformed,
+      a single-line stderr WARNING is logged and we proceed with just
+      the file-based ignore set. The analyzer must remain runnable on
+      integrations that haven't been classified yet.
+    * On success with a non-empty auth-derived set, a single-line
+      stderr INFO message is logged listing the pulled params.
+    """
+    out = load_ignore_params(inline, file_path)
+
+    if integration_id is None:
+        return out
+
+    # Lazy import to keep ``check_command_params.py`` runnable as a
+    # standalone script when workflow_state.py / its CSV is missing.
+    # Both files live in connectus/, so the in-package import path
+    # mirrors the existing capture_proxy import style at the top of
+    # this module.
+    try:
+        from workflow_state import auth_param_ids, WorkflowError
+    except Exception as exc:  # noqa: BLE001 — analyzer must keep running
+        print(
+            f"[ignore] WARNING: could not import workflow_state for "
+            f"--integration-id {integration_id!r}: {type(exc).__name__}: "
+            f"{exc}; proceeding with file-based ignore set only.",
+            file=sys.stderr,
+        )
+        return out
+
+    try:
+        pulled = auth_param_ids(integration_id)
+    except WorkflowError as exc:
+        print(
+            f"[ignore] WARNING: --integration-id {integration_id!r}: "
+            f"{exc}; proceeding with file-based ignore set only.",
+            file=sys.stderr,
+        )
+        return out
+    except Exception as exc:  # noqa: BLE001 — analyzer must keep running
+        print(
+            f"[ignore] WARNING: --integration-id {integration_id!r}: "
+            f"{type(exc).__name__}: {exc}; proceeding with file-based "
+            f"ignore set only.",
+            file=sys.stderr,
+        )
+        return out
+
+    if pulled:
+        # Format mirrors the spec: comma-separated, single line.
+        joined = ", ".join(pulled)
+        print(
+            f"[ignore] Auth-aware ignore: pulled {len(pulled)} params "
+            f"from Auth Details for {integration_id}: [{joined}]",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            f"[ignore] Auth-aware ignore: pulled 0 params from Auth "
+            f"Details for {integration_id} (empty after projection); "
+            f"no additional ignore entries.",
+            file=sys.stderr,
+        )
+
+    out.update(pulled)
     return out
 
 
@@ -513,6 +739,86 @@ def _refs_command(node: ast.AST | None) -> bool:
     return False
 
 
+def _iter_pre_dispatch_stmts(
+    body: list[ast.stmt], dispatch_line: int
+) -> list[ast.stmt]:
+    """Flatten a function body into the linear sequence of statements that
+    execute before the dispatch line.
+
+    Recursively descends into compound constructs whose bodies always
+    execute on the way to the dispatch site (``Try``, ``With``,
+    ``AsyncWith``, ``If`` whose test is constant-True / ``__name__``
+    style guard, etc.). For ``Try`` we walk ``body``, ``orelse``, and
+    ``finalbody`` as if they were sequential — orelse runs when the
+    ``try`` succeeds, ``finalbody`` always; conservatively unioning
+    their reads is safe for binding-narrowing (we only ever ADD to the
+    binding map / Scope-1).
+
+    Critically, the iteration stops as soon as we encounter a statement
+    whose ``lineno >= dispatch_line`` — this preserves the existing
+    "bindings declared after dispatch are not pre-dispatch" guarantee
+    even when the dispatch is itself nested inside a ``Try`` whose
+    earlier sibling statements include the binding (e.g. MDATP's
+    ``try: client = MsClient(...); if command == "X": ...``).
+
+    For ``If``, both branches are walked (we don't try to evaluate the
+    test); for ``For``/``While`` the body is walked once. Statements
+    that are themselves dispatch sites (``If`` whose test references
+    ``command``) are NOT descended — they would otherwise leak the
+    dispatch-arm bodies into the pre-dispatch sequence.
+
+    The returned list preserves source order. Callers MUST still apply
+    their own per-statement filters (e.g. binding vs fan-out
+    classification) — this helper only handles the "where do
+    pre-dispatch statements live in the AST" problem.
+    """
+    out: list[ast.stmt] = []
+
+    def _walk(stmts: list[ast.stmt]) -> None:
+        for stmt in stmts:
+            lineno = getattr(stmt, "lineno", 0)
+            if lineno and lineno >= dispatch_line:
+                # Anything from this statement onward is at-or-after the
+                # dispatch line — stop walking this list (later stmts
+                # inside a sibling Try body still get walked when we
+                # recurse into THAT Try, because their dispatch_line
+                # check happens locally).
+                return
+            if _is_dispatch_node(stmt):
+                # The dispatch construct itself is not part of
+                # "pre-dispatch" — its arms are handled separately by
+                # find_command_dispatch_branches.
+                continue
+            if isinstance(stmt, ast.Try):
+                # body / orelse / finalbody all may run on the way to
+                # dispatch; ExceptHandlers are skipped because they only
+                # run on failure (and any binding they create is a
+                # superset of the success path's, which we already
+                # have). The parent Try node itself is NOT emitted —
+                # we emit only its leaves so visitors don't double-walk.
+                _walk(stmt.body)
+                _walk(stmt.orelse)
+                _walk(stmt.finalbody)
+                continue
+            if isinstance(stmt, (ast.With, ast.AsyncWith)):
+                _walk(stmt.body)
+                continue
+            if isinstance(stmt, ast.If):
+                # Not a dispatch If (filtered above). Both branches may
+                # run; descend into each so any binding statements they
+                # contain are seen. The parent If node is NOT emitted
+                # for the same double-walk reason as Try; its test
+                # expression is walked separately when callers want to
+                # attribute Scope-1 reads inside the test.
+                _walk(stmt.body)
+                _walk(stmt.orelse)
+                continue
+            out.append(stmt)
+
+    _walk(body)
+    return out
+
+
 def collect_pre_dispatch_params(
     main_fn: ast.FunctionDef,
     params_vars: set[str],
@@ -543,12 +849,16 @@ def collect_pre_dispatch_params(
     automatically, so callers do NOT need to add that idiom to
     ``params_vars``. Module-level globals (e.g. ``PARAMS = demisto.params()``)
     must be passed in via ``params_vars``.
+
+    Compound constructs (``Try``, ``With``, ``If``) wrapping the
+    pre-dispatch code are flattened by :func:`_iter_pre_dispatch_stmts`,
+    so binding-narrowing fires correctly for the common ``try: client =
+    Client(...); if command == "X": ...`` shape used by MDATP and
+    similar Microsoft integrations.
     """
     globals_in_main = _collect_global_decls(main_fn)
     visitor = _ParamAccessVisitor(params_vars, aliases)
-    for stmt in main_fn.body:
-        if stmt.lineno >= dispatch_line:
-            break
+    for stmt in _iter_pre_dispatch_stmts(main_fn.body, dispatch_line):
         if _is_simple_name_assignment(stmt):
             pair = _assignment_target_and_value(stmt)
             assert pair is not None
@@ -617,11 +927,78 @@ def _collect_param_reads_in_expr(
     return set(visitor.found)
 
 
+def _params_consumed_by_function(
+    fn: ast.FunctionDef,
+    func_map: dict[str, ast.FunctionDef],
+    params_vars: set[str],
+    aliases: dict[str, str],
+    depth: int = 2,
+    visited: frozenset[str] | None = None,
+) -> set[str]:
+    """Return the set of YML param names ``fn`` reads, recursing up to ``depth``.
+
+    Used by :func:`build_binding_maps` to attribute the credential set of
+    a helper function (e.g. AWS-EC2's ``build_client(args)`` reading
+    eleven module-level ``PARAMS.get(...)`` values) back to the local
+    binding being assigned in main: ``client = build_client(args)`` →
+    ``binding_map["client"] |= {access_key, secret_key, ...}``.
+
+    The visitor seed-set is the union of:
+
+    * the function's own signature names that match ``PARAMS_VAR_ALIASES``
+      (so a helper declared ``def build_client(params, args): ...``
+      still finds ``params.get(...)`` reads); and
+    * ``params_vars`` from the caller — which already includes the
+      caller's local ``params`` variable name and any module-level
+      ``PARAMS = demisto.params()`` global. This is what lets the
+      AWS-EC2 ``build_client(args)`` body — which reads
+      ``PARAMS.get("access_key")`` directly without ever taking
+      ``params`` as a formal arg — be attributed.
+
+    The chained ``demisto.params().get(...)`` form is recognized
+    automatically by the visitor regardless of any seed set.
+
+    Recursion is bounded by ``depth`` and a ``visited`` set keyed on
+    function name to prevent infinite loops on mutual recursion. The
+    default depth of 2 mirrors :func:`trace_params_in_function` so the
+    two recursion budgets stay aligned.
+    """
+    if visited is None:
+        visited = frozenset()
+    if depth < 0 or fn.name in visited:
+        return set()
+    visited = visited | {fn.name}
+
+    sig_params = {a.arg for a in fn.args.args} | {
+        a.arg for a in fn.args.kwonlyargs
+    }
+    seed = (sig_params & PARAMS_VAR_ALIASES) | params_vars
+    visitor = _ParamAccessVisitor(seed, aliases)
+    visitor.visit(fn)
+    found = set(visitor.found)
+
+    # Recurse into module-resolvable callees regardless of arg shape.
+    # Unlike :func:`trace_params_in_function` we do NOT gate on
+    # ``_call_passes_params``: the AWS-EC2 idiom calls
+    # ``build_client(args)`` (no params-shaped arg) but the callee reads
+    # module-level ``PARAMS.get(...)`` directly. Gating would silently
+    # drop those reads. The depth budget keeps the recursion bounded.
+    for call in _iter_calls(fn.body):
+        target = _resolve_call_target(call, func_map)
+        if target is None:
+            continue
+        found |= _params_consumed_by_function(
+            target, func_map, params_vars, aliases, depth - 1, visited
+        )
+    return found
+
+
 def build_binding_maps(
     main_fn: ast.FunctionDef,
     params_vars: set[str],
     aliases: dict[str, str],
     dispatch_line: int,
+    func_map: dict[str, ast.FunctionDef] | None = None,
 ) -> dict[str, set[str]]:
     """Map every pre-dispatch local var to the set of YML param names it carries.
 
@@ -637,6 +1014,14 @@ def build_binding_maps(
       ``client = Client(api_key=api_key)`` re-route the ``apikey``
       param onto ``client`` so it fans out to every command that
       receives ``client``.
+    * **Helper-function recursion** (when ``func_map`` is supplied): if
+      the RHS contains a ``Call`` whose target resolves to a function
+      defined in this module, the params consumed by that function
+      (including its own callees, up to depth 2) are unioned into the
+      binding. This closes the AWS-EC2 ``client = build_client(args)``
+      false negative — ``build_client`` reads eleven module-level
+      ``PARAMS.get(...)`` values that would otherwise be silently
+      dropped because the call doesn't pass a params-shaped argument.
 
     Bindings that carry zero params (``client = OktaClient()``,
     ``args = demisto.args()``) are still recorded with an empty set so
@@ -649,12 +1034,15 @@ def build_binding_maps(
     ``params = demisto.params()`` — is NOT entered into the map; it's a
     params-var, not a binding. The visitor naturally returns zero
     direct reads for that RHS, but we skip it explicitly for clarity.
+
+    Compound constructs (``Try``, ``With``, ``If``) wrapping the
+    pre-dispatch code are flattened by :func:`_iter_pre_dispatch_stmts`
+    so bindings nested inside ``try: client = MsClient(...); if command
+    == "X": ...`` (the MDATP shape) are recorded.
     """
     globals_in_main = _collect_global_decls(main_fn)
     binding_map: dict[str, set[str]] = {}
-    for stmt in main_fn.body:
-        if stmt.lineno >= dispatch_line:
-            break
+    for stmt in _iter_pre_dispatch_stmts(main_fn.body, dispatch_line):
         pair = _assignment_target_and_value(stmt)
         if pair is None:
             continue
@@ -674,7 +1062,18 @@ def build_binding_maps(
         for sub in ast.walk(rhs):
             if isinstance(sub, ast.Name) and sub.id in binding_map:
                 transitive |= binding_map[sub.id]
-        binding_map[target_name] = direct | transitive
+        from_helpers: set[str] = set()
+        if func_map is not None:
+            for sub in ast.walk(rhs):
+                if not isinstance(sub, ast.Call):
+                    continue
+                target_fn = _resolve_call_target(sub, func_map)
+                if target_fn is None:
+                    continue
+                from_helpers |= _params_consumed_by_function(
+                    target_fn, func_map, params_vars, aliases
+                )
+        binding_map[target_name] = direct | transitive | from_helpers
     return binding_map
 
 
@@ -762,6 +1161,77 @@ def find_command_handler_calls(main_fn: ast.FunctionDef, command: str) -> list[a
     return calls
 
 
+def _collect_local_dict_assignments(
+    main_fn: ast.FunctionDef,
+) -> dict[str, ast.Dict]:
+    """Map every ``<NAME> = {...}`` local in ``main_fn`` to the Dict node.
+
+    Walks the entire body (including nested ``Try``, ``With``, ``If``)
+    so we capture dispatch-table dicts no matter where they're written.
+    Used by :func:`_if_test_matches_command_in_local_dict` and the
+    dict-dispatch helpers to recognize ``if command in <named_dict>:``
+    and ``<named_dict>[command](...)`` dispatches even when the
+    dispatch table isn't named the canonical ``commands``.
+
+    We use ``ast.walk`` directly here (rather than
+    :func:`_iter_pre_dispatch_stmts`) because the canonical
+    ``commands = {"X": ...}`` dict assignment is itself recognised as a
+    dispatch construct by :func:`_is_dispatch_node` and would be
+    filtered out of the pre-dispatch sequence — but we still need to
+    see it to resolve handlers / membership tests.
+    """
+    out: dict[str, ast.Dict] = {}
+    for node in ast.walk(main_fn):
+        if not (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+            and isinstance(node.value, ast.Dict)
+        ):
+            continue
+        out[node.targets[0].id] = node.value
+    return out
+
+
+def _dict_contains_command(d: ast.Dict, command: str) -> bool:
+    """True if literal Dict ``d`` has a string-constant key equal to ``command``."""
+    for key in d.keys:
+        if isinstance(key, ast.Constant) and key.value == command:
+            return True
+    return False
+
+
+def _if_test_matches_command_in_local_dict(
+    test: ast.AST, command: str, local_dicts: dict[str, ast.Dict]
+) -> bool:
+    """True if ``test`` is ``command in <NAME>`` where ``<NAME>`` resolves
+    to a local Dict literal containing ``command`` as a key.
+
+    Mirrors AzureKeyVault's dispatch shape::
+
+        commands_with_args = {"azure-key-vault-key-get": get_key_command, ...}
+        if command in commands_with_args:
+            return_results(commands_with_args[command](client, args))
+
+    Without this recognizer, ``find_command_dispatch_branches`` would
+    return an empty list and the per-command client params would never
+    surface.
+    """
+    if not (
+        isinstance(test, ast.Compare)
+        and len(test.ops) == 1
+        and isinstance(test.ops[0], ast.In)
+        and _is_command_ref(test.left)
+    ):
+        return False
+    container = test.comparators[0]
+    if isinstance(container, ast.Name):
+        d = local_dicts.get(container.id)
+        if d is not None and _dict_contains_command(d, command):
+            return True
+    return False
+
+
 def find_command_dispatch_branches(
     main_fn: ast.FunctionDef, command: str
 ) -> list[list[ast.stmt]]:
@@ -776,10 +1246,21 @@ def find_command_dispatch_branches(
     has no per-command branch body — the call site is shared across all
     commands. We return an empty list for that case; per-handler
     Scope-2 tracing already covers dict dispatch.
+
+    Also handles the "named-dict membership test" idiom (AzureKeyVault):
+    ``commands_with_args = {...}; if command in commands_with_args:
+    return_results(commands_with_args[command](...))``. The ``If``
+    branch body is the per-command branch in that case.
     """
     out: list[list[ast.stmt]] = []
+    local_dicts = _collect_local_dict_assignments(main_fn)
     for node in ast.walk(main_fn):
-        if isinstance(node, ast.If) and _if_test_matches_command(node.test, command):
+        if isinstance(node, ast.If) and (
+            _if_test_matches_command(node.test, command)
+            or _if_test_matches_command_in_local_dict(
+                node.test, command, local_dicts
+            )
+        ):
             out.append(node.body)
         elif isinstance(node, ast.Match):
             for case in node.cases:
@@ -792,7 +1273,7 @@ def find_command_dispatch_branches(
 
 
 def find_dict_dispatch_call_sites(main_fn: ast.FunctionDef) -> list[ast.Call]:
-    """Return any ``commands[<...>](...)`` invocation sites in ``main()``.
+    """Return any ``<dispatch_dict>[<...>](...)`` invocation sites in ``main()``.
 
     The classic dict-dispatch idiom (used by MongoDB, Cherwell, GitLab,
     Slack IAM, etc.) is::
@@ -800,14 +1281,29 @@ def find_dict_dispatch_call_sites(main_fn: ast.FunctionDef) -> list[ast.Call]:
         commands = {"foo": foo_handler, "bar": bar_handler}
         commands[command](client, **args)
 
+    AzureKeyVault and similar use a named variant::
+
+        commands_with_args = {"foo": foo_handler, ...}
+        if command in commands_with_args:
+            return_results(commands_with_args[command](client, args))
+
     The single call site is shared across **every** command listed in
-    ``commands``. Its ``Name`` arguments — typically a ``client`` built
-    via ``Client(api_key=params.get("apikey"), ...)`` — therefore fan
-    out to every command in the dict. We expose those call sites so
+    that dict. Its ``Name`` arguments — typically a ``client`` built via
+    ``Client(api_key=params.get("apikey"), ...)`` — therefore fan out
+    to every command in the dict. We expose those call sites so
     :func:`analyze_static` can replay binding-map attribution for each
     dispatched command.
+
+    Recognized receivers: any ``Name`` whose id is the target of a
+    ``<NAME> = {...}`` Dict assignment in ``main_fn`` (resolved by
+    :func:`_collect_local_dict_assignments`). The legacy hard-coded
+    ``commands`` is kept as a fallback for integrations that bind the
+    dispatch table at module scope or via a non-trivial expression we
+    don't model.
     """
     out: list[ast.Call] = []
+    local_dicts = _collect_local_dict_assignments(main_fn)
+    receiver_names = set(local_dicts.keys()) | {"commands"}
     for node in ast.walk(main_fn):
         if not isinstance(node, ast.Call):
             continue
@@ -815,7 +1311,7 @@ def find_dict_dispatch_call_sites(main_fn: ast.FunctionDef) -> list[ast.Call]:
         if not isinstance(func, ast.Subscript):
             continue
         receiver = func.value
-        if isinstance(receiver, ast.Name) and receiver.id == "commands":
+        if isinstance(receiver, ast.Name) and receiver.id in receiver_names:
             out.append(node)
     return out
 
@@ -951,6 +1447,17 @@ def _is_command_ref(node: ast.AST) -> bool:
 
 
 def _if_test_matches_command(test: ast.AST, command: str) -> bool:
+    # ``<ref> == "X" or <ref> == "Y"`` — the alias-command idiom seen in
+    # AWS-IAM and other older integrations. We recursively check every
+    # arm of the BoolOp; if ANY arm matches the command literal, the
+    # branch body fires for that command.
+    #
+    # We deliberately do NOT match ``ast.And``: an And of equality tests
+    # against different command literals can never simultaneously be
+    # true, so treating it as a match would wrongly attribute params to
+    # every command listed.
+    if isinstance(test, ast.BoolOp) and isinstance(test.op, ast.Or):
+        return any(_if_test_matches_command(v, command) for v in test.values)
     # <ref> == "X"  or  "X" == <ref>
     if isinstance(test, ast.Compare) and len(test.ops) == 1 and isinstance(test.ops[0], ast.Eq):
         left, right = test.left, test.comparators[0]
@@ -983,23 +1490,23 @@ def _find_in_match(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
 
 
 def _find_in_dict_dispatch(main_fn: ast.FunctionDef, command: str) -> list[ast.Call]:
-    """Handle ``commands = {"X": handler_X, ...}; commands[command](...)``."""
+    """Handle dict-table dispatch: any ``<NAME> = {"X": handler_X, ...}``
+    local in ``main()`` whose value is a Dict literal containing
+    ``command`` as a key — the matching value (a Name or Attribute) is
+    treated as the handler for that command. Covers both the canonical
+    ``commands = {...}; commands[command](...)`` idiom (MongoDB, etc.)
+    and the named-table membership-test idiom
+    (``commands_with_args = {...}; if command in commands_with_args:
+    return_results(commands_with_args[command](...))``) used by
+    AzureKeyVault and similar.
+    """
     out: list[ast.Call] = []
-    for node in ast.walk(main_fn):
-        if not (isinstance(node, ast.Assign) and len(node.targets) == 1):
-            continue
-        target = node.targets[0]
-        if not (isinstance(target, ast.Name) and target.id == "commands"):
-            continue
-        if not isinstance(node.value, ast.Dict):
-            continue
-        for key, val in zip(node.value.keys, node.value.values):
+    for d in _collect_local_dict_assignments(main_fn).values():
+        for key, val in zip(d.keys, d.values):
             if isinstance(key, ast.Constant) and key.value == command:
                 # Build a synthetic Call node so the recursion picks up the
                 # named handler function.
-                if isinstance(val, ast.Name):
-                    out.append(ast.Call(func=val, args=[], keywords=[]))
-                elif isinstance(val, ast.Attribute):
+                if isinstance(val, (ast.Name, ast.Attribute)):
                     out.append(ast.Call(func=val, args=[], keywords=[]))
     return out
 
@@ -1054,16 +1561,56 @@ def trace_params_in_function(
     # module-level PARAMS — are still reachable via this visitor when
     # the recursion fires; the gate exists to avoid falsely visiting
     # arbitrary helpers that happen to share the module.)
+    #
+    # Also recurse into helpers that read a known params source
+    # directly without taking it as an argument. The classic AWS-EC2
+    # case: ``client = build_client(args)`` calls a helper that reads
+    # ``PARAMS.get(...)`` (a module-level global) for every credential.
+    # Without this second branch the credential surface is silently
+    # dropped from per-command Scope-2.
     for call in _iter_calls(fn.body):
         target_fn = _resolve_call_target(call, func_map)
         if target_fn is None:
             continue
-        if not _call_passes_params(call, candidates):
+        if not (
+            _call_passes_params(call, candidates)
+            or _function_reads_params_directly(target_fn, module_params_vars)
+        ):
             continue
         found |= trace_params_in_function(
             target_fn, func_map, aliases, depth - 1, visited, module_params_vars
         )
     return found
+
+
+def _function_reads_params_directly(
+    fn: ast.FunctionDef, module_params_vars: set[str] | None
+) -> bool:
+    """True if ``fn`` reads ``demisto.params()`` (chained) or a known
+    module-level ``PARAMS = demisto.params()`` global.
+
+    Used by :func:`trace_params_in_function` to decide whether to recurse
+    into a helper whose call site does NOT pass a params-shaped argument
+    (the AWS-EC2 ``build_client(args)`` shape). Without this opt-in, the
+    helper's credential reads are silently dropped from per-command
+    Scope-2.
+
+    Conservative: only matches direct attribute / call accesses on a
+    module-level params global or the chained ``demisto.params()`` form;
+    does NOT recurse transitively into the helper's own callees here
+    (``trace_params_in_function`` will do that on its own when this
+    helper is visited). This keeps the gate cheap and avoids a quadratic
+    walk on large integrations.
+    """
+    globals_set = module_params_vars or set()
+    for sub in ast.walk(fn):
+        if _is_demisto_params_call(sub):
+            return True
+        if isinstance(sub, ast.Name) and sub.id in globals_set:
+            # Bare reference to ``PARAMS`` — by itself sufficient
+            # evidence that the helper consumes module-level params.
+            return True
+    return False
 
 
 def _resolve_call_target(call: ast.Call, func_map: dict[str, ast.FunctionDef]) -> ast.FunctionDef | None:
@@ -1225,7 +1772,15 @@ def analyze_static(
     # pre-dispatch statements, then attribute per command at the
     # matching dispatch branch. See the docstring section
     # "Binding-narrowing" above.
-    binding_map = build_binding_maps(main_fn, params_vars, aliases, dispatch_line)
+    # ``func_map`` is passed so binding RHS expressions that call a
+    # module-defined helper (e.g. AWS-EC2's ``client = build_client(args)``)
+    # can recursively attribute the helper's param reads to the local
+    # variable being bound. Without this, helpers that take a non-params
+    # argument and read ``PARAMS.get(...)`` directly would have all of
+    # their credential reads silently dropped.
+    binding_map = build_binding_maps(
+        main_fn, params_vars, aliases, dispatch_line, func_map=func_map
+    )
 
     scope_2: set[str] = set()
     handler_calls = find_command_handler_calls(main_fn, command)
@@ -2347,6 +2902,13 @@ def extract_missing_module(stderr: str) -> tuple[str, str] | None:
     return None
 
 
+# Known proxy-bypassing tags that the analyzer attaches to per-command
+# diagnostics so the calling agent knows the dynamic phase could not
+# observe HTTP traffic for a structural reason and the per-command
+# param list MUST be cross-checked against source manually.
+LIMITATION_CAPTURE_PROXY_BYPASSED = "capture_proxy_bypassed"
+
+
 @dataclass
 class CommandDiagnostic:
     """Per-command outcome metadata surfaced in the JSON ``diagnostics`` field.
@@ -2361,6 +2923,14 @@ class CommandDiagnostic:
     calling agent that the per-command list was trimmed using HTTP
     evidence — the agent can trust those cells more, but should still
     verify against source if something expected is missing.
+
+    ``limitation`` is set when the analyzer detects a known structural
+    reason the dynamic signal will never fire for this integration —
+    currently only ``"capture_proxy_bypassed"`` for ``boto3``-based
+    integrations (botocore manages its own HTTP layer that does not
+    honour the proxy env vars). Callers should treat the per-command
+    param list as the static union and verify manually if narrowing
+    was expected.
     """
 
     status: str
@@ -2370,6 +2940,7 @@ class CommandDiagnostic:
     missing_module: str | None = None
     scope_1_narrowed: bool = False
     scope_1_dropped: list[str] = field(default_factory=list)
+    limitation: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Render the diagnostic as a plain dict for JSON serialization."""
@@ -2383,10 +2954,84 @@ class CommandDiagnostic:
             out["failing_params"] = self.failing_params
         if self.missing_module is not None:
             out["missing_module"] = self.missing_module
-        if self.scope_1_narrowed:
+        # Fix 3 (Option A): only surface the narrowing diagnostic fields
+        # when narrowing actually dropped something. The flag with an
+        # empty drop list is meaningless to the calling agent and was
+        # previously misleading — readers of ``scope_1_narrowed: true,
+        # scope_1_dropped: []`` couldn't tell whether narrowing fired
+        # silently (captured set was a superset of Scope-1) or was
+        # never attempted. By omitting both fields in that case, the
+        # presence of ``scope_1_narrowed`` always means "narrowing
+        # changed the per-command set". Emission still requires the
+        # flag, so callers that key off its presence are unchanged.
+        if self.scope_1_narrowed and self.scope_1_dropped:
             out["scope_1_narrowed"] = True
             out["scope_1_dropped"] = self.scope_1_dropped
+        if self.limitation is not None:
+            out["limitation"] = self.limitation
         return out
+
+
+# Module names whose use signals "this integration's HTTP traffic
+# bypasses the capture proxy" (per :ref:`Known limitation: boto3`
+# in the module docstring). Detection is a substring check on
+# ``import X`` / ``from X import ...`` statements in the integration
+# source. Adding new entries here automatically annotates every
+# command of any integration that imports them.
+#
+# ``AWSApiModule`` is the shared XSOAR module that wraps boto3 for the
+# entire AWS family — every Cortex AWS integration uses it, and the
+# integration source itself rarely imports boto3 directly (the actual
+# import happens inside ``AWSApiModule`` after ``demisto-sdk
+# prepare-content`` unifies the source). Including it lets us tag the
+# AWS family as proxy-bypassed even when the integration .py only
+# does ``from AWSApiModule import *``.
+_PROXY_BYPASS_MODULE_PREFIXES: tuple[str, ...] = (
+    "boto3",
+    "botocore",
+    "AWSApiModule",
+)
+
+
+def integration_uses_proxy_bypass(py_source: str) -> bool:
+    """True if ``py_source`` imports a known proxy-bypassing module.
+
+    Used by :func:`analyze_integration` to attach the
+    ``capture_proxy_bypassed`` limitation tag to every command's
+    diagnostic for the AWS family. Detection is purely static — we
+    walk the AST and check ``Import`` / ``ImportFrom`` statements
+    for any name that starts with a prefix in
+    :data:`_PROXY_BYPASS_MODULE_PREFIXES`. Submodules
+    (e.g. ``botocore.config``) are matched by prefix so we don't have
+    to enumerate every import path.
+
+    Returns ``False`` on empty / unparseable source — the analyzer
+    must keep producing a result even when the source is broken; the
+    limitation tag is purely informational.
+    """
+    if not py_source:
+        return False
+    try:
+        tree = ast.parse(py_source)
+    except SyntaxError:
+        return False
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                name = alias.name or ""
+                if any(
+                    name == p or name.startswith(p + ".")
+                    for p in _PROXY_BYPASS_MODULE_PREFIXES
+                ):
+                    return True
+        elif isinstance(node, ast.ImportFrom):
+            mod = node.module or ""
+            if any(
+                mod == p or mod.startswith(p + ".")
+                for p in _PROXY_BYPASS_MODULE_PREFIXES
+            ):
+                return True
+    return False
 
 
 def analyze_dynamic_for_command(
@@ -2629,6 +3274,22 @@ def analyze_integration(
             py_source, cmd, language=language, integration_name=integration_name
         )
 
+    # Detect known structural limitations once per integration. Currently
+    # only ``capture_proxy_bypassed`` for boto3-based integrations: the
+    # AWS Python SDK does not honour the proxy env vars, so the dynamic
+    # phase will never observe HTTP traffic for those commands. We tag
+    # every per-command diagnostic so the calling agent knows the
+    # static fallback is the only signal and per-command lists need
+    # manual cross-check.
+    proxy_bypass = integration_uses_proxy_bypass(py_source)
+    if proxy_bypass:
+        print(
+            f"[static] {integration_name!r}: imports a proxy-bypassing "
+            f"module (e.g. boto3); per-command diagnostics will carry "
+            f"limitation={LIMITATION_CAPTURE_PROXY_BYPASSED!r}",
+            file=sys.stderr,
+        )
+
     dynamic_results: dict[str, set[str]] = {cmd: set() for cmd in commands}
     diagnostics: dict[str, CommandDiagnostic] = {}
     if not static_only:
@@ -2682,6 +3343,19 @@ def analyze_integration(
             name for name in all_param_names
             if name in merged_set and name not in ignore
         )
+
+    # Apply structural-limitation tags to every command's diagnostic.
+    # We do this here (post-merge) because:
+    #   * The detection is integration-wide, not per-command;
+    #   * The tag is informational only — it MUST NOT change which
+    #     params land in ``commands`` (the calling agent decides what
+    #     to do with the limitation);
+    #   * Doing it here keeps the dynamic phase pure (it only reports
+    #     on what it actually observed).
+    if not static_only and proxy_bypass:
+        for cmd, diag in diagnostics.items():
+            if diag.limitation is None:
+                diag.limitation = LIMITATION_CAPTURE_PROXY_BYPASSED
 
     result: dict[str, Any] = {
         "integration": integration_name,
@@ -2752,11 +3426,46 @@ def _run_dynamic_phase(
                     dynamic_results[cmd] = set()
                     short = str(exc).splitlines()[0][:240]
                     print(f"[dyn] {cmd}: FAILED — {short}", file=sys.stderr)
-                    diagnostics[cmd] = CommandDiagnostic(
-                        status=_classify_dynamic_error(exc),
-                        captured_requests=0,
-                        failure_excerpt=str(exc)[:500],
-                    )
+                    # Fix 2: the per-command runner only attributed
+                    # ``failing_params`` from the child stderr it had
+                    # in scope. When it raises, we still have the full
+                    # exception text (which embeds the child stderr —
+                    # see ``run_integration``'s ``DynamicAnalysisError``
+                    # message templates). Re-scan that full message
+                    # for ``SENTINEL_PARAM_<name>`` substrings against
+                    # the YML param set. If anything matches, promote
+                    # the diagnostic from ``no_data`` to
+                    # ``param_caused_failure`` so the calling agent
+                    # gets concrete attribution instead of a generic
+                    # "command failed" cell. Bounded by the YML param
+                    # name set, so a stray sentinel fragment in an
+                    # unrelated traceback line cannot fabricate a
+                    # bogus param. ``failure_excerpt`` stays trimmed
+                    # to 500 chars in :meth:`CommandDiagnostic.to_dict`.
+                    full_text = str(exc)
+                    yml_param_names = {p["name"] for p in yml_params}
+                    failing = extract_failing_params(full_text, yml_param_names)
+                    status = _classify_dynamic_error(exc)
+                    if failing and status == "no_data":
+                        print(
+                            f"[dyn] {cmd}: full-stderr sentinel scan "
+                            f"attributed failure to {failing}; "
+                            f"promoting no_data → param_caused_failure",
+                            file=sys.stderr,
+                        )
+                        dynamic_results[cmd] = set(failing)
+                        diagnostics[cmd] = CommandDiagnostic(
+                            status="param_caused_failure",
+                            captured_requests=0,
+                            failure_excerpt=full_text[:500],
+                            failing_params=failing,
+                        )
+                    else:
+                        diagnostics[cmd] = CommandDiagnostic(
+                            status=status,
+                            captured_requests=0,
+                            failure_excerpt=full_text[:500],
+                        )
         finally:
             proxy.stop()
         if commands and failures == len(commands):
@@ -2804,6 +3513,20 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         type=Path,
         default=None,
         help="File with one param name per line (# comments allowed) to ignore.",
+    )
+    parser.add_argument(
+        "--integration-id",
+        default=None,
+        help=(
+            "OPTIONAL. When supplied, the analyzer also pulls every YML "
+            "param id declared in the integration's 'Auth Details' row "
+            "(via connectus/workflow_state.py auth-params <id>) and "
+            "unions them into the ignore set. This guarantees that "
+            "params already declared as auth-secret / connection-adjacent "
+            "cannot leak into 'Params to Commands'. Standalone runs "
+            "outside the migration workflow can omit this flag — the "
+            "--ignore-params-file behaviour is unchanged."
+        ),
     )
     parser.add_argument(
         "--timeout",
@@ -2872,7 +3595,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
     try:
-        ignore = load_ignore_params(args.ignore_params, args.ignore_params_file)
+        ignore = compose_ignore_set(
+            args.ignore_params,
+            args.ignore_params_file,
+            args.integration_id,
+        )
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
