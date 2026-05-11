@@ -38,9 +38,11 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| CyberArkEPMSOCResponse.SetID | String | The ID of the EPM set in which the endpoints were found. |
 | CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints added to the risk plan. |
 | CyberArkEPMSOCResponse.RiskPlan | String | The name of activated risk plan. |
 | CyberArkEPMSOCResponse.Action | String | The action performed on the risk plan \(add/remove\). |
+| CyberArkEPMSOCResponse.GroupActionPerformed | Boolean | Whether the endpoint was successfully added to the risk plan group in this set. |
 
 ### cyberarkepm-deactivate-risk-plan
 
@@ -64,4 +66,8 @@ Deactivates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints removed from risk plan. |
+| CyberArkEPMSOCResponse.SetID | String | The ID of the EPM set in which the endpoints were found. |
+| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints removed from the risk plan. |
+| CyberArkEPMSOCResponse.RiskPlan | String | The name of the deactivated risk plan. |
+| CyberArkEPMSOCResponse.Action | String | The action performed on the risk plan \(add/remove\). |
+| CyberArkEPMSOCResponse.GroupActionPerformed | Boolean | Whether the endpoint was successfully removed from the risk plan group in this set. |
