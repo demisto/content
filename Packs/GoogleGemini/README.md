@@ -46,19 +46,22 @@ This pack contains the **GoogleGemini** integration that connects to Google's Ge
 4. Configure the following parameters:
 
 **Common Parameters:**
-   - **Model**: The Gemini model to use for the integration, or a custom model name.
-   - **Max Tokens**: The maximum response length (default: 1024).
-   - **Temperature**: (Optional) The degree of randomness in the responses (0.0-2.0).
-   - **Top P**: (Optional) The nucleus sampling parameter.
-   - **Top K**: (Optional) The top-k sampling parameter.
+
+- **Model**: The Gemini model to use for the integration, or a custom model name.
+- **Max Tokens**: The maximum response length (default: 1024).
+- **Temperature**: (Optional) The degree of randomness in the responses (0.0-2.0).
+- **Top P**: (Optional) The nucleus sampling parameter.
+- **Top K**: (Optional) The top-k sampling parameter.
 
 **AI Studio Parameters:**
-   - **API Key**: Your Google AI API key.
+
+- **API Key**: Your Google AI API key.
 
 **Vertex AI Parameters:**
-   - **Service Account Key (JSON)**: The full JSON key contents for your service account.
-   - **Project ID**: Your Google Cloud Project ID.
-   - **Location**: The Google Cloud location (for example, `us-central1`. Default is `global`).
+
+- **Service Account Key (JSON)**: The full JSON key contents for your service account.
+- **Project ID**: Your Google Cloud Project ID.
+- **Location**: The Google Cloud location (for example, `us-central1`. Default is `global`).
 
 ## Integration Usage
 
@@ -101,7 +104,7 @@ When `save_conversation` is enabled, the integration automatically:
 - Ensure your API key has access to the Generative Language API.
 - *Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
 - For AI Studio, use the server URL `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` by default.
-- Check network connectivity to Google's API endpoints. 
+- Check network connectivity to Google's API endpoints.
 - Verify that the selected model is available in your region.
 - Review rate limits and usage quotas for your API key or project.
 
