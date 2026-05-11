@@ -151,6 +151,19 @@ configuration:
   type: 13
   section: Collect
   required: false
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  additionalinfo: Whether to fetch Zendesk audit log events. Allowed for Admins on accounts that have audit log access.
+  required: false
+- display: The maximum number of audit logs per fetch
+  name: max_events_fetch
+  type: 0
+  section: Collect
+  defaultvalue: '1000'
+  additionalinfo: Maximum number of audit log events to fetch per cycle (default 1000, max 1000 = 100 per page * 10 pages).
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1598,8 +1611,66 @@ script:
     name: get-modified-remote-data
   - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
+  - name: zendesk-get-audit-logs
+    description: |-
+      Gets audit log events from Zendesk. This command is used for developing/debugging and is to be used with caution, as it can create events leading to event duplication and API request limitation exceeding.
+      Allowed for Admins on accounts that have audit log access.
+    arguments:
+    - name: created_after
+      description: >-
+        The start time to fetch audit logs from.
+        Supports ISO 8601 format (e.g., "2024-12-01T10:00:00Z").
+    - name: created_before
+      description: >-
+        The end time to fetch audit logs until.
+        Supports ISO 8601 format (e.g., "2024-12-01T10:00:00Z").
+    - name: limit
+      description: Maximum number of audit log events to retrieve. Default is 1000.
+      defaultValue: '1000'
+    - name: should_push_events
+      description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Zendesk.AuditLog.id
+      description: The ID of the audit log entry.
+      type: Number
+    - contextPath: Zendesk.AuditLog.action
+      description: The action that was performed.
+      type: String
+    - contextPath: Zendesk.AuditLog.actor_id
+      description: The ID of the user or system that performed the action.
+      type: Number
+    - contextPath: Zendesk.AuditLog.actor_name
+      description: The name of the user or system that performed the action.
+      type: String
+    - contextPath: Zendesk.AuditLog.source_type
+      description: The type of the source (e.g., user, rule, system).
+      type: String
+    - contextPath: Zendesk.AuditLog.source_id
+      description: The ID of the source.
+      type: Number
+    - contextPath: Zendesk.AuditLog.source_label
+      description: The label of the source.
+      type: String
+    - contextPath: Zendesk.AuditLog.change_description
+      description: The description of the change.
+      type: String
+    - contextPath: Zendesk.AuditLog.ip_address
+      description: The IP address of the actor.
+      type: String
+    - contextPath: Zendesk.AuditLog.url
+      description: The URL of the audit log entry.
+      type: String
+    - contextPath: Zendesk.AuditLog.created_at
+      description: The time the audit log entry was created.
+      type: Date
   dockerimage: demisto/python3:3.12.11.3982393
   isfetch: true
+  isfetchevents: true
   subtype: python3
   ismappable: true
   isremotesyncin: true
