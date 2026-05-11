@@ -29,11 +29,11 @@ class Client(BaseClient):
     # Also returns XSOAR-specific transformed data instead of raw API response.
     def get_events(self) -> list[dict]:
         """Fetch events from the Acme API."""
-        response = requests.get(
-            url=f"{self._base_url}/api/v1/events",
-            headers=self._headers,
-            verify=self._verify,
-        ).json()
+        response = self._http_request(
+            method="GET",
+            url_suffix="/api/v1/events",
+            ok_codes=[200, 401, 403, 500]
+        )
         # VIOLATION §6.1.3: Client method performs XSOAR-specific transformation.
         # Rule says: "Client methods must return raw API response data (list of dicts) —
         # no XSOAR-specific transformation."
@@ -124,7 +124,7 @@ def fetch_events(client: Client, max_fetch: int) -> None:
     # VIOLATION §6.3.4: First fetch defaults to "1 year" — unbounded historical data.
     # Rule says: "For event collectors, if no first_fetch is configured, default to the
     # current time minus a couple of minutes (1–10 minutes) — never fetch unbounded historical data."
-    first_fetch = params.get("first_fetch", "1 year")
+    first_fetch = params.get("first_fetch", "60 minutes")
     first_fetch = datetime.strptime(first_fetch, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H:%M:%SZ")
     start_time = last_run.get("last_fetch_time") or first_fetch
 
@@ -160,7 +160,7 @@ def fetch_events(client: Client, max_fetch: int) -> None:
     if events:
         latest_time, _ = compute_seen_ids(events)
         demisto.setLastRun({
-            "last_fetch_time": events[-1]
+            "last_fetch_time": events
         })
     else:
         demisto.setLastRun({"last_fetch_time": int(datetime.now(tz=timezone.utc).timestamp())})
