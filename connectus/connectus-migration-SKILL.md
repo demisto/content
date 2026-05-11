@@ -309,6 +309,22 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
 
 ---
 
+#### 1.2.2a When to use one entry vs multiple entries for multi-secret auth flows
+
+Some auth schemes require multiple secrets to authenticate a single request (AWS SigV4 = access_key + secret_key; Akamai EdgeGrid = client_token + access_token + client_secret). The classification rule is:
+
+- **One entry, multiple `xsoar_params`** — when the secrets are **issued together as a single credential** (the user goes to one place, downloads/copies one credential package). Example: AWS access_key + secret_key are issued together for one IAM user; both go in one `auth_types[]` entry: `xsoar_params: ["access_key", "secret_key"]`.
+
+- **Multiple entries, joined by `REQUIRED(...)`** — when the secrets are **separately issued** (the user goes through separate setup steps to obtain each one, often from different parts of the vendor's UI). Example: Akamai EdgeGrid's three tokens are obtained in three distinct setup steps; each gets its own entry, and `config` reads `REQUIRED(access_token, client_secret, client_token)`.
+
+**Rule of thumb:** if you can describe the credential as "one set of values you copy from one screen", use one entry. If the user has to perform multiple distinct credential-issuance flows (each producing its own value), use multiple entries.
+
+Both shapes still use the appropriate enum (`APIKey`, `Plain`, etc.) — the question is only how to subdivide `auth_types[]`. The wire-protocol mechanism (HMAC, Bearer, signed query string, etc.) does not change the entry-count decision; it only determines the enum value.
+
+**HMAC note:** custom HMAC-signed requests (Akamai EdgeGrid, AWS-style SigV4) are classified as `APIKey` per the table in §1.2.1 — the operationally-distinguishing trait is "static secret(s) producing a per-request header / signature", which fits the `APIKey` family rather than `Other`. The §"Auth Type Reference" table at the bottom of this document agrees ("API Key, HMAC, and similar static secret mechanisms").
+
+---
+
 #### 1.2.3 Building the `config` expression
 
 The grammar is small. See the worked examples in [`column-schemas.md`](column-schemas.md:73) for the canonical list.
@@ -379,7 +395,7 @@ with the right network settings.
 - **XSOAR framework params** — `longRunning`, `feedReputation`,
   `feedExpirationInterval`, `feedReliability`, `feedTags`. Ignored
   entirely; not in `Auth Details`, not in `Params to Commands`.
-- **Hidden / deprecated params** — skip per the existing rule for auth.
+- **Hidden / deprecated params** — strictly excluded. A param with `hidden: true` or `hidden: [<list>]` does NOT go in `other_connection`, even if it's a connection-adjacent name like a legacy `host` or `url` alias. Use the visible variant only.
 
 ##### Sorting requirement
 
@@ -525,14 +541,16 @@ Open the YML file and examine the `configuration` section. Extract ALL auth-rela
 | Params with `type: 15` (select dropdown) | May be an `auth_type` selector for multi-auth integrations |
 | `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password |
 | `display` and `displaypassword` labels | Reveal what the credential actually is (e.g., "Client ID" / "Client Secret" vs "Username" / "Password") |
-| `hidden: true` params | Excluded from classification but may still be used in code — check if they represent an old input path for the same credential |
+| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — not in `auth_types[].xsoar_params`, not in `other_connection`, not in `Params to Commands`, not in `Params for test with default in code`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
 | `deprecated: true` or `_deprecated` in param names | Ignore these entirely — they are no longer functional |
 | `additionalinfo` text | Often describes the auth mechanism in plain English |
 | Params named `auth_type` with `type: 15` | Indicates multi-auth integrations with user-selectable auth flow |
 
-**Key rule for hidden/deprecated params:**
+**Key rule for hidden/deprecated params (strict):**
 
-- If a hidden param and a visible param carry the same credential (old/new migration), the classification should reflect only the visible param's mechanism, **not** `CHOICE` between two types.
+> Hidden YML params (either `hidden: true` or `hidden: [<list>]`) are **invisible to all migration tooling**. They are excluded from every workflow-data column. The visible siblings define the entire authentication / connection / per-command surface. This rule supersedes the older "check if they represent an old input path" guidance — even if a hidden param backs the same secret as a visible one, you do NOT list the hidden id in `xsoar_params`. List ONLY the visible id(s).
+>
+> Rationale: the migration produces a clean, forward-looking ConnectUs manifest. Hidden params are by definition not exposed to the user; carrying them through the migration would re-surface them in places they shouldn't appear and would confuse downstream tooling that has no notion of XSOAR's per-platform `hidden` list.
 
 ---
 
@@ -605,6 +623,7 @@ Based on manual review of 148 integrations (71 corrections found), these are the
 | 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Other` (ROPC) | Code does `grant_type=password` |
 | 7 | Hidden old param creates false CHOICE | ~10 | `CHOICE(APIKey, Plain)` | Single mechanism | Old `type=4` param is `hidden: true`, new `type=9` param is visible — same credential |
 | 8 | `type=4` OAuth client secret classified as APIKey | ~5 | `APIKey(client_secret)` | `OAuth2ClientCreds(client_secret)` | Param named `client_secret` or `enc_key` used in OAuth flow |
+| 9 | Microsoft cert-thumbprint integrations seed-fail at module load | many | 100% `no_data` across every command | Not a misclassification; analyzer limitation. Use the full static union; do NOT retry with `--use-integration-docker` (failure is in `MicrosoftApiModule.MicrosoftClient.__init__` cert validator, not a missing package). `--ignore-params <name>` does NOT help — the slot is still seeded, it only filters output. | Stderr contains `Error: Odd-length string` or `non-hexadecimal number found in fromhex()`; integration's YML has `certificate_thumbprint` (type=4) or `creds_certificate` (type=9) consumed by `MicrosoftClient`. Until the analyzer ships per-param seed overrides, manual source review is the only path. |
 
 ---
 
@@ -613,6 +632,15 @@ Based on manual review of 148 integrations (71 corrections found), these are the
 Microsoft/Azure integrations are the most complex (23 corrections in the manual review). Apply this dedicated procedure:
 
 - **If the integration imports `MicrosoftClient` from `MicrosoftApiModule`:**
+
+  > **Important: 4 flows is the upper bound, not the default.** Many Microsoft integrations support only a subset. Common variants observed in the codebase:
+  >
+  > - **All 4 flows** — `auth_type` selector (type=15) with `Client Credentials` / `Authorization Code` / `Device Code` options + `managed_identities_client_id` param.
+  > - **Client-creds-only with cert OR secret + Managed Identity** (Azure Sentinel pattern) — 3 entries: `OAuth2ClientCreds(cert)` + `OAuth2ClientCreds(secret)` + `Other(managed_identity)`. No `auth_type` selector param.
+  > - **Pure Client Credentials** (no cert, no MI) — 1 entry.
+  >
+  > The decisive evidence is **always** the source code, not the import. Read `main()` to determine which auth paths are reachable — never assume "imports `MicrosoftClient` ⇒ all 4 flows".
+
   - It likely supports **4 auth flows**: OAuth2ClientCreds, OAuth2AuthCode, DeviceCode, ManagedIdentity
   - Check for `auth_type` selector param (`type: 15`) with options like `Client Credentials`, `Authorization Code`, `Device Code`
   - Check for `managed_identities_client_id` param → indicates ManagedIdentity support
@@ -695,6 +723,7 @@ Note: there is **no `markpass "auth params set"`** anymore — the verification 
 
 Before invoking `set-auth`, walk this checklist mentally. The validator will catch most of these but it's faster (and clearer) to catch them locally.
 
+- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears anywhere in `auth_types[].xsoar_params`, `other_connection`, `Params to Commands`, or `Params for test with default in code`. Hidden params are excluded entirely. (See §1.3.)
 - [ ] Every YML param the source code reads as an auth secret is covered by some `auth_types[].xsoar_params`.
 - [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is in any `xsoar_params`.
 - [ ] Every credentials-typed (YML type `9`) auth param appears as **both** `<id>.identifier` AND `<id>.password` (not just one).
@@ -755,6 +784,9 @@ Optional flags the skill should know about:
 - `--docker {auto,always,never}` — `auto` (default) uses Docker when available; `never` runs in host Python (will fail on integrations needing third-party deps); `always` requires Docker.
 - `--use-integration-docker` — opt-in: instead of the pinned `demisto/py3-native` image, use the integration's own `script.dockerimage` from its YML. Use this for a targeted re-run when an integration reports `module_not_found` (see Step 1 of the decision tree in section 6 below). Falls back to `--docker-image` if the YML doesn't declare one.
 - `--integration-id <id>` — OPTIONAL. When supplied, the analyzer pulls the auth-derived ignore set from [`workflow_state.py auth-params <id>`](workflow_state.py:1) and unions it with the file-based ignore set, guaranteeing that any param already declared in the integration's `Auth Details` cell cannot leak into the per-command output. The analyzer logs a single-line stderr INFO with the pulled list. Inside the migration workflow, ALWAYS pass this flag — `set-params-to-commands` will reject overlap regardless, so pulling the exclusion list up front saves a round-trip. If the integration is not in the workflow CSV, or its `Auth Details` is unset, the analyzer logs a single-line stderr WARNING and proceeds with just the file-based ignore set (it is intentionally not a fatal error).
+- `--no-sentinel-coercion` — disable automatic sentinel-value coercion. By default the analyzer coerces sentinels for params whose **NAME** (case-insensitive substring match) contains `thumbprint`, `certificate`, or `private_key`, replacing the generic `SENTINEL_PARAM_<name>` string with a syntactically-valid stub (40-char hex thumbprint, stub PEM cert, stub PEM private key). This prevents the cert-thumbprint-hex-validator pattern (see §1.6 row #9) from killing the entire dynamic phase. Pass `--no-sentinel-coercion` for strict-sentinel debug mode.
+- `--seed-param NAME=VALUE` — repeatable. Operator/AI escape hatch: provide an explicit value to seed for a specific YML param, overriding all other sources (YML default, cert coercion, generic sentinel). Use this when an integration has a param the auto-coercion didn't anticipate (e.g., a different format-validating credential, an enum-value selector that needs a specific value to traverse a code path). Values >= 4 chars long act as ad-hoc sentinels — they're grep-able in captured HTTP and the post-hoc attribution code looks for them too.
+- `--no-auto-retry-integration-docker` — disable the automatic retry. By default, when the FIRST command's diagnostic comes back as `module_not_found` AND the analyzer is using the default `demisto/py3-native` image, it will automatically restart the dynamic phase with `--use-integration-docker` (which uses the integration's own production image, usually with the missing package preinstalled). Pass `--no-auto-retry-integration-docker` to disable, in which case the analyzer fast-fails the remaining commands as `module_not_found` (~30s × N saved) and returns immediately.
 
 The script writes its result to **stdout** as a single JSON document. All progress and warnings go to **stderr**. Exit code `0` means success; `2` means bad CLI args / path; `3` means an unhandled analyzer error.
 
@@ -850,6 +882,7 @@ The full decision is a function of `(status, limitation)`. Walk this table per c
 | `status: timeout` | The child process hit the per-command wall-clock timeout. | Use the full static union. Consider raising `--timeout` or re-running on a smaller `--commands` subset. |
 | `status: docker_error` | Docker invocation itself failed (rc 125/126/127). | Re-run on the host (`--docker never`) or fix the docker daemon. The whole integration's dynamic phase is unreliable until then. |
 | `status: module_not_found` | Child crashed with `ModuleNotFoundError`; `missing_module` names the package. | First retry with `--use-integration-docker` (uses the integration's own production image, which usually has the missing package). If that still fails, fall back to manual source review — the analyzer literally cannot run. |
+| `status: no_data` across **every** command + stderr containing `Error: Odd-length string` or `non-hexadecimal` | Cert-thumbprint hex validator in `MicrosoftClient.__init__` rejected the analyzer's sentinel value before any command dispatched. Structural; affects most Microsoft cert-auth integrations. | Use the **full static union**. Do NOT retry with `--use-integration-docker` (failure is in `MicrosoftApiModule`, not in a missing package). `--ignore-params <name>` does NOT help. Until the analyzer ships a `--seed-override` flag, manual source review is the only path. |
 
 #### 6a. Hybrid Scope-1 narrowing — what to read into the diagnostic
 
@@ -905,6 +938,64 @@ Given the analyzer's JSON for an integration, the skill should:
 **Step 5.** If many commands have `status: "no_data"` or `status: "ok_no_capture"` (without the proxy-bypass limitation): the analyzer couldn't get a strong signal. Read the integration source and trace which params each command's handler uses. Write the resulting per-command list into the pipeline. **When in doubt, include rather than exclude.**
 
 **Step 6.** Always sanity-check: are there commands in the YML that the analyzer missed? Are there params clearly used in a command's source code that don't appear in the analyzer's list? If yes, add them.
+
+#### 6f. Analyzer blind spot — client-side post-response params
+
+The dynamic phase observes outbound HTTP traffic only. Params that are consumed **after** the API response — typically when building XSOAR result objects (`Common.DBotScore`, `CommandResults` with computed `outputs`, etc.) — leave no network footprint and will be missed by dynamic capture, even when the integration ran cleanly.
+
+**Common shapes:**
+- **Reputation `integrationReliability`** — passed into `Common.DBotScore(... reliability=reliability ...)` only when constructing the indicator; never sent to the API.
+- **Per-indicator threshold params** (e.g. `bad`, `suspicious`, `malicious`) — used to map an API numeric score onto an XSOAR severity AFTER the API responds.
+- **Output formatting toggles** — e.g. `human_readable_format`, `output_simplified`.
+
+**Detection:** the analyzer reports `status: ok` and a list of params for the command, but a manual source-review reveals additional params consumed in the result-building code path. The fix is to **add them manually** (skill §7 "err on inclusion"). The analyzer cannot detect this class structurally because it has no signal that the command consumed the param.
+
+Concrete example: APIVoid's reputation commands (`apivoid-ip`, `apivoid-domain`, `apivoid-url`, plus the bare `ip`/`domain`/`url`) all read `integrationReliability` to build the DBotScore object — but the analyzer reports it on zero of them. Add it manually to all six.
+
+#### 6g. Analyzer blind spot — pre-dispatch fan-out helpers
+
+Some integrations have a pre-dispatch helper that merges params into the per-command args dict before any handler is dispatched. The OpenAI ChatGPT v3 shape is the canonical case:
+
+```python
+def setup_args(args, params):
+    for p in ("max_tokens", "temperature", "top_p"):
+        args.setdefault(p, params.get(p))
+    return args
+
+def main():
+    args = setup_args(demisto.args(), demisto.params())
+    # ... dispatch ...
+```
+
+The analyzer's per-handler tracer sees `args.get("max_tokens")` inside the handler — looks like a pure command arg, not a param read. Static binding-narrowing doesn't fire because the params reach the handler only via the merged args dict. Dynamic only attributes when the param's value is actually consumed (e.g., `int(args["max_tokens"])`); commands that bail before that cast have no sentinel attribution.
+
+**Detection:** look for any pre-dispatch helper in `main()` that iterates over a list of param names and writes them into the args dict. When found, **every** command receiving those merged args reads those params indirectly. Add them manually to every affected command's per-command list. The analyzer cannot detect this class structurally without modeling the args-dict mutation.
+
+Watch also for in-place mutation patterns like `args.update({k: params.get(k) for k in BEHAVIOURAL_PARAMS})` and `args = {**args, **{k: params.get(k) for k in ...}}`.
+
+#### 6h. Recovery loop using `--seed-param`
+
+When the analyzer reports `status: no_data` AND the failure_excerpt suggests a format-validator failure on a credential-shaped param that the auto-coercion didn't catch (skill §1.6 row #9 covers the common Microsoft cert-thumbprint case), the recovery loop is:
+
+1. Inspect the failing param's YML type and the source code's first-touch validator. Determine what shape the integration expects.
+2. Re-run the analyzer with `--seed-param <name>=<plausible-value>`:
+   ```bash
+   python3 connectus/check_command_params.py <dir> \
+       --ignore-params-file connectus/default_ignore_params.txt \
+       --integration-id "<id>" \
+       --seed-param my_jwt_secret='base64-encoded-stub' \
+       --seed-param my_oidc_issuer='https://example.com/issuer'
+   ```
+3. If a different validator fires next, repeat with another `--seed-param`. The escape hatch is repeatable; each invocation can pass multiple `--seed-param` flags.
+4. The seed values you supply (>= 4 chars) double as ad-hoc sentinels: they appear verbatim in any captured HTTP request, so the analyzer's post-hoc attribution can still attribute them to commands.
+
+**Common shapes you'll need to seed:**
+- JWT signing secrets: a base64-decodable random byte string ≥ 16 chars.
+- OIDC issuer URLs: a full `https://...` URL that passes URL validators.
+- Splunk session tokens: a 32-char hex string.
+- API tokens with prefix prefixes (e.g., GitHub `ghp_...`): supply a plausible stub matching the prefix convention.
+
+Coerced auto-defaults (cert/thumbprint/private_key) do NOT need `--seed-param` — they're already handled. Use `--seed-param` only when the auto-coercion misses a case.
 
 ### 7. The "err on inclusion" principle
 
@@ -973,6 +1064,7 @@ error into the persisted pipeline data.**
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
 
 - **Pull the auth-aware ignore list first.** Run `python3 connectus/workflow_state.py auth-params "<Integration ID>"` to get every YML param id that's already declared in `Auth Details` (both the auth-secret params projected from `auth_types[].xsoar_params` and every entry in `other_connection`). These params MUST NOT appear in `Params to Commands` — `set-params-to-commands` will hard-reject the call if any of them does. The analyzer can pull this list automatically — pass `--integration-id "<Integration ID>"` (see "Analyzing per-command parameters" → "How to invoke it" above) and the auth-derived ids are unioned into the analyzer's ignore set up front.
+- Hidden YML params (`hidden: true` or `hidden: [<list>]`) MUST NOT appear in any per-command list. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
 
 ```bash
 python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
@@ -1000,9 +1092,13 @@ If `set-params-to-commands` rejects your payload because a param is already in `
 
 Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` at any time to inspect the current exclusion list. The same list is what the analyzer pulls when invoked with `--integration-id "<Integration ID>"`, so re-running the analyzer with the flag after fixing scenario (2) will produce a payload that is disjoint from `Auth Details` by construction.
 
+Whenever you set params to command not strictly what the script returned, present the evidence clearly and concisely to the user why you decided to do it, and allow them to tweak the input.
+
 ### Step 3: Set Params for test with default in code (workflow data column)
 
 List the parameter IDs whose default value is hardcoded in the integration source (and therefore must be substituted during testing).
+
+- Hidden YML params are excluded here too. Even if the source has a hardcoded default for a hidden legacy param, do NOT include the hidden id; only consider visible params.
 
 ```bash
 python3 connectus/workflow_state.py set-params-for-test "<Integration ID>" '<JSON>'
@@ -1010,10 +1106,10 @@ python3 connectus/workflow_state.py set-params-for-test "<Integration ID>" '<JSO
 
 Either a JSON array of strings or an object keyed by param ID is accepted (see [`column-schemas.md`](column-schemas.md)).
 
-Example:
+Example — APIVoid declares hardcoded defaults for `bad`, `integrationReliability`, `suspicious`, and `url` in [`Packs/APIVoid/Integrations/APIVoid/APIVoid.py`](Packs/APIVoid/Integrations/APIVoid/APIVoid.py) `main()`.
 
 ```bash
-python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '["bot_token"]'
+python3 connectus/workflow_state.py set-params-for-test "APIVoid" '["bad", "integrationReliability", "suspicious", "url"]'
 ```
 
 ### Step 3.5 (Optional): Set Params same in other handlers

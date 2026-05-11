@@ -31,7 +31,56 @@ Usage::
         [--ignore-params PARAM [PARAM ...]] \\
         [--ignore-params-file PATH] \\
         [--integration-id ID] \\
-        [--use-integration-docker]
+        [--use-integration-docker] \\
+        [--no-sentinel-coercion] \\
+        [--no-auto-retry-integration-docker] \\
+        [--seed-param NAME=VALUE [--seed-param NAME=VALUE ...]]
+
+Three behaviour gates added in the latest analyzer revision:
+
+* **Hidden YML param exclusion (Change #1).** Any param whose YML
+  ``hidden:`` key is ``true`` OR a non-empty list (the per-platform
+  form, e.g. ``[xsoar]``, ``[marketplacev2, platform]``) is filtered
+  out of every analyzer artifact: the seed dict (no sentinel slot
+  wasted on it), the static walker (no Scope-1 fan-out via reads of
+  it), and every per-command output list. Hidden names are also
+  silently absorbed into the effective ignore set as a fourth source
+  (after inline / file / auth-derived) and logged on stderr as
+  ``[ignore] Hidden YML params excluded: [...]``. See
+  :func:`is_hidden_param`.
+
+* **Cert/key/thumbprint sentinel coercion (Change #2 / Fix F).** When
+  seeding a YML param whose name contains ``thumbprint`` /
+  ``private_key`` / ``certificate`` (case-insensitive substring), the
+  generic ``SENTINEL_PARAM_<name>`` string is replaced with a
+  syntactically-valid stub (40 hex chars for thumbprint; PEM blocks
+  for the others) so format validators like ``binascii.a2b_hex`` and
+  PEM regexes don't crash at module import. The coerced values do NOT
+  contain ``SENTINEL_PARAM_<name>`` so sentinel-attribution by name
+  match cannot find them on the wire — that's the explicit trade-off
+  versus 100% ``no_data`` everywhere. Use ``--no-sentinel-coercion``
+  to disable. See :func:`coerce_sentinel_for_param`. **Operator
+  escape hatch:** ``--seed-param NAME=VALUE`` (repeatable) overrides
+  the seeded value for any named YML param, winning over the YML
+  defaultvalue, the auto-coercion above, and the generic sentinel.
+  Use this when an integration tripping a format validator that the
+  auto-coercion didn't anticipate (e.g. a custom regex on a free-form
+  text param). The skill (``connectus-migration-SKILL.md``)
+  documents the recovery loop.
+
+* **Fail-fast / auto-retry on module_not_found (Change #3 / Fix G).**
+  After the FIRST command's dynamic phase completes, the analyzer
+  checks the diagnostic. If ``status == "module_not_found"`` AND
+  ``--use-integration-docker`` was NOT already in effect AND auto-retry
+  is enabled (default), the entire dynamic phase restarts with
+  ``--use-integration-docker`` flipped on. If integration docker is
+  already in use (or auto-retry is disabled via
+  ``--no-auto-retry-integration-docker``), every remaining command is
+  fast-failed as ``module_not_found`` without invoking its child —
+  saving ~30s × (N-1) seconds. Known false-positive: when only some
+  commands need the missing package, the others are incorrectly
+  attributed (the trade-off is intentional; empirically the package
+  is needed at module import for the common case).
 
 The optional ``--integration-id`` flag pulls the integration's
 auth-derived ignore set from
@@ -54,7 +103,24 @@ Output schema (single JSON document on stdout)::
       "integration": "<display name>",
       "commands": {
         "<cmd>": ["<param>", ...]   # case-sensitive sorted list
-      },
+      }
+      # NOTE: "diagnostics" is OPT-IN. By default the analyzer emits
+      # ONLY {"integration", "commands"} so the stdout JSON can be
+      # piped verbatim into
+      #   workflow_state.py set-params-to-commands "<id>" '<json>'
+      # whose strict schema validator
+      # (validate_params_to_commands) rejects any extra top-level
+      # key. To get the diagnostic-rich payload (interactive / debug
+      # use only — must NOT be persisted to the pipeline CSV), pass
+      # --with-diagnostics. See "Diagnostics payload" below.
+    }
+
+When ``--with-diagnostics`` is set, the analyzer additionally emits a
+top-level ``diagnostics`` key::
+
+    {
+      "integration": "<display name>",
+      "commands": { ... },
       "diagnostics": {              # dynamic-only; omitted under --static-only
         "<cmd>": {
           "status": "ok" | "ok_no_capture" | "param_caused_failure"
@@ -70,6 +136,13 @@ Output schema (single JSON document on stdout)::
         }
       }
     }
+
+**BREAKING CHANGE (default-flip):** prior revisions emitted the
+``diagnostics`` payload by default in dynamic mode. That allowed the
+key to leak into ``Params to Commands`` when the agent piped stdout
+verbatim. The new default is the clean two-key payload; callers that
+relied on the old shape MUST pass ``--with-diagnostics``. Static mode
+(``--static-only``) is unaffected — it never emitted diagnostics.
 
 Status enum:
 
@@ -93,10 +166,13 @@ Status enum:
   the integration source manually (analogous to JS / PowerShell handling).
   The missing package name is in ``missing_module``.
 
-The ``diagnostics`` field is internal AI-consumed metadata: it is
-emitted to stdout to aid the calling agent, but the calling agent MUST
-NOT persist it into downstream pipeline data. Under ``--static-only``
-the field is omitted entirely.
+The ``diagnostics`` field is internal AI-consumed metadata. It is now
+opt-in via ``--with-diagnostics`` (was: emitted-by-default in dynamic
+mode); the agent flow that pipes analyzer stdout into
+``workflow_state.py set-params-to-commands`` MUST NOT pass the flag
+because the workflow_state strict-schema validator rejects any extra
+top-level key. Under ``--static-only`` the field is omitted entirely
+(unchanged).
 
 **Hybrid Scope-1 narrowing.** When a command's dynamic phase actually
 captured ``>=1`` HTTP request **and** at least one sentinel hit was
@@ -357,10 +433,65 @@ def load_yml(yml_path: Path) -> dict[str, Any]:
 # --------------------------------------------------------------------------
 
 
+def is_hidden_param(param: dict[str, Any]) -> bool:
+    """Return ``True`` iff the YML configuration param is hidden.
+
+    A param is hidden when its ``hidden:`` key is EITHER:
+
+    * the boolean ``True`` (the legacy form), OR
+    * a *non-empty* list of platform names (the per-platform form, e.g.
+      ``[xsoar]``, ``[marketplacev2, platform]``).
+
+    All of the following are NOT hidden:
+
+    * ``hidden: false`` (explicit opt-out)
+    * ``hidden: []`` (empty list)
+    * ``hidden:`` with no value (parsed as ``None``)
+    * ``hidden`` key missing entirely
+
+    The rule is intentionally coarse: ANY non-empty list means "hidden
+    somewhere", and the analyzer treats that as "hidden everywhere".
+    Per-platform interpretation is not attempted — the analyzer's job is
+    only to keep hidden params out of every artifact (seed dict, ignore
+    set logging, per-command output).
+    """
+    if not isinstance(param, dict):
+        return False
+    raw = param.get("hidden")
+    if raw is True:
+        return True
+    if isinstance(raw, list) and len(raw) > 0:
+        return True
+    return False
+
+
 def get_yml_params(yml_data: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return the list of param dicts from the YML configuration block."""
+    """Return the list of *visible* param dicts from the YML configuration block.
+
+    Hidden params (see :func:`is_hidden_param`) are filtered out at the
+    source so they never reach downstream consumers — they don't waste a
+    sentinel slot in the seed dict, never trigger Scope-1 fan-out via
+    reads of them, and never appear in any per-command output. Callers
+    that need the raw, unfiltered list (e.g. the analyzer's hidden-param
+    logging path) should use :func:`get_yml_params_raw`.
+    """
+    return [p for p in get_yml_params_raw(yml_data) if not is_hidden_param(p)]
+
+
+def get_yml_params_raw(yml_data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the unfiltered list of param dicts from the YML config block.
+
+    Includes hidden params. Used by the analyzer to log which params were
+    excluded as hidden and to seed the effective ignore set; production
+    code paths should call :func:`get_yml_params` instead.
+    """
     config = yml_data.get("configuration") or []
     return [p for p in config if isinstance(p, dict) and p.get("name")]
+
+
+def get_hidden_param_names(yml_data: dict[str, Any]) -> list[str]:
+    """Return the sorted list of hidden YML param names."""
+    return sorted(p["name"] for p in get_yml_params_raw(yml_data) if is_hidden_param(p))
 
 
 def get_param_names(yml_data: dict[str, Any]) -> list[str]:
@@ -2081,10 +2212,86 @@ def _coerce_default_value(raw: Any, yml_type: int | None) -> Any:
     return raw
 
 
+# --------------------------------------------------------------------------
+# Change #2 (Fix F): cert/key/thumbprint sentinel coercion.
+#
+# Microsoft cert-auth integrations (Azure Sentinel, M365 Defender, etc.)
+# fail at module import when the generic ``SENTINEL_PARAM_<name>`` string
+# is fed into ``binascii.a2b_hex`` (raises ``Error: Odd-length string``)
+# or into a PEM regex (raises ``ValueError`` on missing markers). Result:
+# 100% ``no_data`` across every command of those integrations because the
+# child crashes long before dispatch.
+#
+# Fix: when seeding a YML param whose NAME (case-insensitive substring
+# match) contains ``thumbprint`` / ``private_key`` / ``certificate``,
+# substitute a syntactically-valid format-checker satisfier in place of
+# the generic sentinel. The values below are NOT cryptographically valid
+# (they don't match a real CA, modulus is bogus, etc.) — they are just
+# enough to make ``a2b_hex`` and PEM-parser regexes succeed so the
+# dynamic phase can reach the actual command dispatch.
+#
+# Trade-off: because the coerced values DO NOT contain
+# ``SENTINEL_PARAM_<name>``, sentinel-attribution by name match cannot
+# find them in captured HTTP traffic. That's acceptable — the
+# alternative is ``no_data`` everywhere, which gives the calling agent
+# strictly less information. Operators who want strict-sentinel mode
+# (e.g. for debugging the analyzer itself) can pass
+# ``--no-sentinel-coercion`` on the CLI to disable this behaviour.
+# --------------------------------------------------------------------------
+
+# 40 hex chars = valid SHA-1 thumbprint that satisfies ``a2b_hex``.
+_COERCED_THUMBPRINT_VALUE = "AABBCCDDEEFF00112233445566778899AABBCCDD"
+
+# Stub PEM private key — won't pass cryptographic validation but the
+# header / footer markers satisfy the common ``BEGIN PRIVATE KEY`` regex
+# checks that integrations do at module load.
+_COERCED_PRIVATE_KEY_VALUE = (
+    "-----BEGIN PRIVATE KEY-----\n"
+    "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAL\n"
+    "-----END PRIVATE KEY-----"
+)
+
+# Stub PEM certificate — same idea: passes header/footer regex, doesn't
+# pass crypto validation.
+_COERCED_CERTIFICATE_VALUE = (
+    "-----BEGIN CERTIFICATE-----\n"
+    "MIIDazCCAlOgAwIBAgIUf\n"
+    "-----END CERTIFICATE-----"
+)
+
+
+def coerce_sentinel_for_param(name: str) -> tuple[str, str] | None:
+    """Return ``(coerced_value, matched_pattern)`` for cert/key/thumbprint params.
+
+    Returns ``None`` when the param name does NOT match any coercion
+    pattern. Match is a case-insensitive substring check on the YML
+    param name.
+
+    Order matters because of the substring overlap between
+    ``certificate_thumbprint`` and ``certificate``: ``thumbprint`` is
+    checked FIRST so a name like ``certificate_thumbprint`` is coerced
+    to a 40-char hex string (the SHA-1 form), not a PEM cert. The
+    ``private_key`` check runs before ``certificate`` so a name like
+    ``private_key_certificate`` is treated as a private key.
+    """
+    if not isinstance(name, str) or not name:
+        return None
+    lname = name.lower()
+    if "thumbprint" in lname:
+        return _COERCED_THUMBPRINT_VALUE, "thumbprint"
+    if "private_key" in lname:
+        return _COERCED_PRIVATE_KEY_VALUE, "private_key"
+    if "certificate" in lname:
+        return _COERCED_CERTIFICATE_VALUE, "certificate"
+    return None
+
+
 def build_param_values(
     yml_params: list[dict[str, Any]],
     proxy_url: str,
     ignore: set[str],
+    coerce_certs: bool = True,
+    seed_overrides: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], dict[str, list[str]], set[str]]:
     """Build the params dict + sentinel map + non-traceable param set.
 
@@ -2107,6 +2314,7 @@ def build_param_values(
     values: dict[str, Any] = {}
     sentinels: dict[str, list[str]] = {}
     non_traceable: set[str] = set()
+    overrides = seed_overrides or {}
     for p in yml_params:
         name = p["name"]
         # We must STILL send a value for every YML param even if it's on
@@ -2127,6 +2335,35 @@ def build_param_values(
                 if not traceable:
                     non_traceable.add(name)
 
+        # Highest-priority override: an operator-supplied value via
+        # ``--seed-param NAME=VALUE`` on the CLI. This wins over the
+        # YML defaultvalue, the cert/key coercion (Change #2), the URL
+        # proxy redirect, and the generic sentinel. Use case: the
+        # cert-coercion stub failed because the integration validates
+        # against a real CA, OR an integration trips on a value we
+        # couldn't anticipate (custom regex on a free-form text param,
+        # etc.). The skill (connectus-migration-SKILL.md) documents
+        # the recovery loop: see ``param_caused_failure`` / format-
+        # validator crash → inspect YML → re-run with
+        # ``--seed-param NAME=val``. The supplied value is treated as
+        # traceable when it's long enough (>=4 chars) to make
+        # incidental matches unlikely; sentinel-attribution by exact
+        # match still works because the override value IS the sentinel.
+        if name in overrides:
+            override_val = overrides[name]
+            print(
+                f"[seed] Operator override for {name!r}: using "
+                f"--seed-param value (length={len(override_val)})",
+                file=sys.stderr,
+            )
+            traceable = len(override_val) >= 4
+            _record(
+                override_val,
+                [override_val] if traceable else [],
+                traceable=traceable,
+            )
+            continue
+
         is_url = name in URL_PARAM_NAMES
         if is_url:
             # URL-shaped param -> point at our proxy, ALWAYS, even if the
@@ -2146,6 +2383,33 @@ def build_param_values(
             else:
                 _record(coerced, [], traceable=False)
             continue
+
+        # Change #2 (Fix F): cert/key/thumbprint coercion. When the param
+        # name matches a known cert/key/thumbprint substring, swap the
+        # generic sentinel for a syntactically-valid format-checker
+        # satisfier so the integration's module-load validators
+        # (``binascii.a2b_hex``, PEM regexes) pass. The coerced value
+        # does NOT contain ``SENTINEL_PARAM_<name>`` so sentinel-attribution
+        # by name match cannot find it on the wire — that's the explicit
+        # trade-off documented at :data:`_COERCED_THUMBPRINT_VALUE`. The
+        # YML ``defaultvalue`` branch above takes priority so an operator
+        # who hard-codes a real test cert in YML still gets it.
+        if coerce_certs:
+            coerced_pair = coerce_sentinel_for_param(name)
+            if coerced_pair is not None:
+                coerced_val, matched_pattern = coerced_pair
+                print(
+                    f"[seed] Coerced sentinel for {name!r} (matched "
+                    f"{matched_pattern}) to satisfy format validation",
+                    file=sys.stderr,
+                )
+                # Mark non-traceable: the coerced value is unique-ish but
+                # has no ``SENTINEL_PARAM_<name>`` substring so it cannot
+                # participate in name-keyed sentinel attribution. Tokens
+                # list is left empty to keep ``detect_sentinel_hits``
+                # deterministic (same convention as bools / numerics).
+                _record(coerced_val, [], traceable=False)
+                continue
 
         if yml_type == YML_TYPE_BOOL:
             _record(True, [], traceable=False)
@@ -3044,6 +3308,8 @@ def analyze_dynamic_for_command(
     timeout: int,
     docker_cfg: DockerConfig | None = None,
     image: str | None = None,
+    coerce_certs: bool = True,
+    seed_overrides: dict[str, str] | None = None,
 ) -> tuple[set[str], CommandDiagnostic]:
     """Return ``(captured_param_names, diagnostic)`` for one command.
 
@@ -3071,7 +3337,11 @@ def analyze_dynamic_for_command(
 
     proxy_url = f"http://127.0.0.1:{proxy.port}"
     values, sentinels, _non_traceable = build_param_values(
-        yml_params, proxy_url, ignore
+        yml_params,
+        proxy_url,
+        ignore,
+        coerce_certs=coerce_certs,
+        seed_overrides=seed_overrides,
     )
     yml_param_names = {p["name"] for p in yml_params}
     session_id = proxy.new_session()
@@ -3237,6 +3507,10 @@ def analyze_integration(
     ignore: set[str],
     timeout: int,
     docker_cfg: DockerConfig | None = None,
+    coerce_certs: bool = True,
+    auto_retry_integration_docker: bool = True,
+    seed_overrides: dict[str, str] | None = None,
+    with_diagnostics: bool = False,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline for one integration.
 
@@ -3244,13 +3518,33 @@ def analyze_integration(
     look at a non-Python integration" propagates to the caller.
 
     The returned dict always contains ``integration`` and ``commands``.
-    When dynamic analysis ran (``static_only`` is False), it additionally
-    contains a ``diagnostics`` key with one entry per command. Under
-    ``--static-only`` the ``diagnostics`` key is omitted entirely (see
-    module docstring).
+    When dynamic analysis ran (``static_only`` is False) AND
+    ``with_diagnostics`` is True, it additionally contains a
+    ``diagnostics`` key with one entry per command. By default
+    ``with_diagnostics`` is False so the returned payload is safe to
+    pipe verbatim into the workflow_state ``set-params-to-commands``
+    consumer (whose strict-schema validator rejects extra top-level
+    keys). Under ``--static-only`` the ``diagnostics`` key is omitted
+    entirely regardless of ``with_diagnostics`` (see module docstring).
     """
     yml_path, py_path = find_integration_files(integration_path)
     yml_data = load_yml(yml_path)
+    # Change #1 (hidden-param exclusion): ``get_yml_params`` already
+    # filters hidden params at the source so they never reach the seed
+    # dict / static walker. We additionally absorb their names into the
+    # effective ignore set as a fourth source (after inline / file /
+    # auth-derived) so the per-command output assembly below — which
+    # filters by ``ignore`` — silently drops them as a final safety
+    # net. A single stderr line lists the excluded names so the calling
+    # agent can verify what was removed.
+    hidden_names = get_hidden_param_names(yml_data)
+    if hidden_names:
+        joined = ", ".join(hidden_names)
+        print(
+            f"[ignore] Hidden YML params excluded: [{joined}]",
+            file=sys.stderr,
+        )
+        ignore = set(ignore) | set(hidden_names)
     yml_params = get_yml_params(yml_data)
     all_param_names = [p["name"] for p in yml_params]
     language = (yml_data.get("script") or {}).get("type")
@@ -3317,6 +3611,21 @@ def analyze_integration(
                     f"docker image {chosen_image} (per YML script.dockerimage)",
                     file=sys.stderr,
                 )
+        # Validate seed_overrides against the visible YML param set —
+        # an override for a name not in the YML (or a hidden one) is
+        # almost certainly a typo on the operator's part. Log a single
+        # WARNING; the override is still passed through (build_param_values
+        # will simply ignore it).
+        if seed_overrides:
+            visible_names = {p["name"] for p in yml_params}
+            stray = sorted(set(seed_overrides) - visible_names)
+            if stray:
+                print(
+                    f"[seed] WARNING: --seed-param targets unknown param "
+                    f"name(s) {stray} (not in this integration's visible "
+                    f"YML config); the override(s) will have no effect.",
+                    file=sys.stderr,
+                )
         print(f"[dynamic] analyzing {integration_name!r}", file=sys.stderr)
         _run_dynamic_phase(
             integration_path,
@@ -3329,6 +3638,10 @@ def analyze_integration(
             integration_name=integration_name,
             docker_cfg=docker_cfg,
             image=chosen_image,
+            coerce_certs=coerce_certs,
+            auto_retry_integration_docker=auto_retry_integration_docker,
+            yml_data=yml_data,
+            seed_overrides=seed_overrides,
         )
 
     out_commands: dict[str, list[str]] = {}
@@ -3361,7 +3674,13 @@ def analyze_integration(
         "integration": integration_name,
         "commands": out_commands,
     }
-    if not static_only:
+    # Diagnostics is OPT-IN (Fix B): suppressed by default so the
+    # stdout JSON can be piped verbatim into
+    # workflow_state.py set-params-to-commands without triggering its
+    # strict-schema validator. Static mode never emitted diagnostics
+    # (it has nothing dynamic to report); dynamic mode now requires
+    # --with-diagnostics for the diagnostic-rich payload.
+    if not static_only and with_diagnostics:
         result["diagnostics"] = {cmd: diag.to_dict() for cmd, diag in diagnostics.items()}
     return result
 
@@ -3377,6 +3696,10 @@ def _run_dynamic_phase(
     integration_name: str = "",
     docker_cfg: DockerConfig | None = None,
     image: str | None = None,
+    coerce_certs: bool = True,
+    auto_retry_integration_docker: bool = True,
+    yml_data: dict[str, Any] | None = None,
+    seed_overrides: dict[str, str] | None = None,
 ) -> None:
     """Drive prepare-content + per-command dynamic runs.
 
@@ -3395,6 +3718,90 @@ def _run_dynamic_phase(
     logged as a structural warning (likely an import-time crash hiding
     behind a misleading rc) but the function still returns normally —
     the static-only result remains valid.
+
+    Change #3 (Fix G): module_not_found fail-fast / auto-retry. After
+    the FIRST command runs, we inspect its diagnostic. If it returned
+    ``status == "module_not_found"`` AND ``--use-integration-docker``
+    was NOT already in effect AND ``auto_retry_integration_docker`` is
+    True (default), we abandon the in-progress phase, flip
+    ``docker_cfg.use_integration_docker = True``, re-resolve the image,
+    and restart the loop. If the integration's own image ALSO has the
+    missing module (or auto-retry is disabled), every remaining command
+    is fast-failed as ``module_not_found`` without invoking the child —
+    this saves ~30s × (N-1) seconds per integration when the runtime
+    image fundamentally lacks the package. KNOWN FALSE-POSITIVE: if
+    only some commands need the missing package (e.g. only one search
+    command needs ``splunklib``), every other command will be
+    incorrectly marked ``module_not_found``. The trade-off is intentional
+    — empirically the package is almost always needed at module-import
+    time.
+    """
+    # Number of times we've already restarted the phase. Caps at 1 to
+    # prevent infinite loops if the integration image is itself missing
+    # something pinned to the analyzer image (very rare, but possible).
+    retries_done = 0
+    while True:
+        # Reset accumulated state when retrying.
+        for k in list(dynamic_results.keys()):
+            dynamic_results[k] = set()
+        diagnostics.clear()
+        retry_triggered = _run_dynamic_phase_once(
+            integration_path,
+            commands,
+            yml_params,
+            ignore,
+            timeout,
+            dynamic_results,
+            diagnostics,
+            integration_name=integration_name,
+            docker_cfg=docker_cfg,
+            image=image,
+            coerce_certs=coerce_certs,
+            auto_retry_integration_docker=auto_retry_integration_docker,
+            yml_data=yml_data,
+            seed_overrides=seed_overrides,
+        )
+        if not retry_triggered or retries_done >= 1:
+            return
+        # Re-resolve the image with use_integration_docker=True. The
+        # caller-side ``DockerConfig`` is already mutated by
+        # ``_run_dynamic_phase_once``; just re-derive the image here.
+        retries_done += 1
+        if docker_cfg is not None and yml_data is not None:
+            image = docker_cfg.resolve_image_for(yml_data)
+            print(
+                f"[dynamic] {integration_name or integration_path.name}: "
+                f"retrying dynamic phase under integration image {image!r}",
+                file=sys.stderr,
+            )
+
+
+def _run_dynamic_phase_once(
+    integration_path: Path,
+    commands: list[str],
+    yml_params: list[dict[str, Any]],
+    ignore: set[str],
+    timeout: int,
+    dynamic_results: dict[str, set[str]],
+    diagnostics: dict[str, CommandDiagnostic],
+    integration_name: str = "",
+    docker_cfg: DockerConfig | None = None,
+    image: str | None = None,
+    coerce_certs: bool = True,
+    auto_retry_integration_docker: bool = True,
+    yml_data: dict[str, Any] | None = None,
+    seed_overrides: dict[str, str] | None = None,
+) -> bool:
+    """Run one pass of the dynamic phase.
+
+    Returns ``True`` iff the caller should restart the phase under
+    ``--use-integration-docker`` because the FIRST command failed with
+    ``module_not_found`` and auto-retry is enabled. Otherwise returns
+    ``False`` (success or terminal failure — caller is done).
+
+    All exit paths populate *dynamic_results* and *diagnostics* so the
+    caller can render a partial result even when retry is signalled
+    (the caller wipes them before retrying — see :func:`_run_dynamic_phase`).
     """
     with tempfile.TemporaryDirectory(prefix="ccp_") as tmp:
         tmp_dir = Path(tmp)
@@ -3403,8 +3810,37 @@ def _run_dynamic_phase(
         proxy.start()
         print(f"[dynamic] proxy listening on port {proxy.port}", file=sys.stderr)
         failures = 0
+        # Module-not-found fast-fail bookkeeping. When we decide to
+        # short-circuit the rest of the loop, we capture the missing
+        # module name and excerpt from the FIRST command's diagnostic
+        # so every fast-failed command's diagnostic carries the same
+        # attribution. This is the documented false-positive: only the
+        # first command's import was actually exercised.
+        fast_fail_active = False
+        fast_fail_module: str | None = None
+        fast_fail_excerpt: str = ""
         try:
-            for cmd in commands:
+            for idx, cmd in enumerate(commands):
+                if fast_fail_active:
+                    # Fast-fail path: synthesize the diagnostic without
+                    # invoking the child. ``failure_excerpt`` keeps the
+                    # original ModuleNotFoundError line so the calling
+                    # agent can see what was missing.
+                    print(
+                        f"[dyn] {cmd}: fast-failed as module_not_found "
+                        f"(missing {fast_fail_module!r}); skipping child "
+                        f"invocation to save time",
+                        file=sys.stderr,
+                    )
+                    dynamic_results[cmd] = set()
+                    diagnostics[cmd] = CommandDiagnostic(
+                        status="module_not_found",
+                        captured_requests=0,
+                        failure_excerpt=fast_fail_excerpt[:500],
+                        missing_module=fast_fail_module,
+                    )
+                    failures += 1
+                    continue
                 try:
                     captured_set, diag = analyze_dynamic_for_command(
                         proxy,
@@ -3416,11 +3852,69 @@ def _run_dynamic_phase(
                         timeout,
                         docker_cfg=docker_cfg,
                         image=image,
+                        coerce_certs=coerce_certs,
+                        seed_overrides=seed_overrides,
                     )
                     dynamic_results[cmd] = captured_set
                     diagnostics[cmd] = diag
                     if diag.status == "param_caused_failure":
                         failures += 1
+                    # Change #3: after the FIRST command, decide whether
+                    # to auto-retry under integration docker (if not
+                    # already there) or fast-fail the remaining commands.
+                    if (
+                        idx == 0
+                        and diag.status == "module_not_found"
+                    ):
+                        already_using_integration_docker = (
+                            docker_cfg is not None
+                            and docker_cfg.use_integration_docker
+                        )
+                        if (
+                            auto_retry_integration_docker
+                            and not already_using_integration_docker
+                            and docker_cfg is not None
+                        ):
+                            # Signal restart — caller will wipe
+                            # results/diagnostics and call us again.
+                            print(
+                                f"[dynamic] First command {cmd!r} failed "
+                                f"with module_not_found (missing: "
+                                f"{diag.missing_module!r}); auto-retrying "
+                                f"entire dynamic phase with "
+                                f"--use-integration-docker.",
+                                file=sys.stderr,
+                            )
+                            docker_cfg.use_integration_docker = True
+                            return True
+                        # Otherwise: integration docker already in use
+                        # (or auto-retry disabled). Fast-fail every
+                        # remaining command with the same attribution
+                        # to save ~30s × (N-1) seconds.
+                        if already_using_integration_docker:
+                            scope_msg = (
+                                "under integration's own runtime image; "
+                                "the analyzer cannot run this integration"
+                            )
+                        else:
+                            scope_msg = (
+                                "and --auto-retry-integration-docker is "
+                                "disabled; cannot escalate"
+                            )
+                        print(
+                            f"[dynamic] First command {cmd!r} failed with "
+                            f"module_not_found (missing: "
+                            f"{diag.missing_module!r}) {scope_msg}. Exiting "
+                            f"dynamic phase early; remaining commands will "
+                            f"use the static union with status="
+                            f"'module_not_found' (known false-positive: "
+                            f"if only some commands need the missing "
+                            f"package, others are incorrectly attributed).",
+                            file=sys.stderr,
+                        )
+                        fast_fail_active = True
+                        fast_fail_module = diag.missing_module
+                        fast_fail_excerpt = diag.failure_excerpt
                 except DynamicAnalysisError as exc:
                     failures += 1
                     dynamic_results[cmd] = set()
@@ -3475,6 +3969,7 @@ def _run_dynamic_phase(
                 f"result will still be emitted",
                 file=sys.stderr,
             )
+    return False
 
 
 # --------------------------------------------------------------------------
@@ -3572,7 +4067,140 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "back to --docker-image."
         ),
     )
+    # Change #2: opt-out of the cert/key/thumbprint sentinel coercion. By
+    # default we substitute syntactically-valid stub values for params
+    # whose name contains 'thumbprint' / 'private_key' / 'certificate'
+    # so Microsoft cert-auth integrations don't crash at module import
+    # under the generic SENTINEL_PARAM_<name> string. Pass
+    # --no-sentinel-coercion to send the generic sentinel everywhere
+    # (useful for analyzer self-debugging).
+    parser.add_argument(
+        "--no-sentinel-coercion",
+        action="store_true",
+        help=(
+            "Disable the cert/key/thumbprint sentinel coercion (Fix F). "
+            "By default, params whose name contains 'thumbprint', "
+            "'private_key', or 'certificate' are seeded with a "
+            "syntactically-valid stub instead of the generic "
+            "'SENTINEL_PARAM_<name>' so format validators "
+            "(binascii.a2b_hex, PEM regexes) don't crash at module load. "
+            "Use this flag when you want strict-sentinel mode for "
+            "debugging the analyzer itself."
+        ),
+    )
+    # Change #3: control the auto-retry-on-module_not_found behaviour.
+    # Default is ON: when the FIRST command fails with module_not_found
+    # under the pinned image and --use-integration-docker was not
+    # passed, the analyzer auto-retries the entire dynamic phase under
+    # the integration's own image. Pass --no-auto-retry-integration-docker
+    # to disable. The companion --auto-retry-integration-docker is
+    # accepted for symmetry but is the default; it has no effect
+    # standalone.
+    parser.add_argument(
+        "--auto-retry-integration-docker",
+        action="store_true",
+        default=True,
+        help=(
+            "DEFAULT ON. When set (the default), the FIRST command "
+            "failing with 'module_not_found' under the pinned analyzer "
+            "image triggers an automatic retry of the entire dynamic "
+            "phase with --use-integration-docker. Use "
+            "--no-auto-retry-integration-docker to disable; in that "
+            "case all remaining commands are fast-failed as "
+            "module_not_found without invoking the child (saves "
+            "~30s × (N-1) seconds per integration)."
+        ),
+    )
+    parser.add_argument(
+        "--no-auto-retry-integration-docker",
+        dest="auto_retry_integration_docker",
+        action="store_false",
+        help=(
+            "Disable the auto-retry-on-module_not_found behaviour "
+            "(Change #3 / Fix G). When disabled, a module_not_found on "
+            "the first command immediately fast-fails the rest of the "
+            "phase with the same status, without restarting under "
+            "--use-integration-docker."
+        ),
+    )
+    # Fix B (default-flip): emit the diagnostics top-level key only on
+    # explicit opt-in. Default-OFF keeps stdout pipe-safe for
+    # workflow_state.py set-params-to-commands (whose strict-schema
+    # validator rejects extras). Use this flag for interactive /
+    # debugging analysis only.
+    parser.add_argument(
+        "--with-diagnostics",
+        action="store_true",
+        default=False,
+        help=(
+            "INTERACTIVE / DEBUG USE ONLY. Emit the per-command "
+            "'diagnostics' top-level key in the stdout JSON. The default "
+            "is OFF so the JSON can be piped verbatim into "
+            "'workflow_state.py set-params-to-commands' (whose strict "
+            "schema validator rejects extra top-level keys, including "
+            "'diagnostics'). MUST NOT be set by anything that pipes "
+            "into set-params-to-commands or persists the payload to "
+            "the migration CSV. Has no effect under --static-only "
+            "(static mode never emits diagnostics)."
+        ),
+    )
+    # Change #2 escape hatch: explicit per-param seed override. Repeatable.
+    # The AI uses this to recover from format-validator crashes that the
+    # automatic cert/key/thumbprint coercion did not anticipate (e.g. a
+    # custom validation regex on a free-form text param). The override
+    # wins over the YML default, the auto-coercion, and the generic
+    # sentinel. Documented in connectus/connectus-migration-SKILL.md.
+    parser.add_argument(
+        "--seed-param",
+        action="append",
+        default=None,
+        metavar="NAME=VALUE",
+        help=(
+            "Explicitly seed YML param NAME with VALUE for the dynamic "
+            "phase, overriding the YML defaultvalue, the cert/key/"
+            "thumbprint auto-coercion (Change #2), and the generic "
+            "SENTINEL_PARAM_<name> string. Repeatable: pass once per "
+            "param. Use this when the analyzer's automatic seeding "
+            "still trips a format validator at module load. The "
+            "skill (connectus/connectus-migration-SKILL.md) documents "
+            "the recovery loop."
+        ),
+    )
     return parser.parse_args(argv)
+
+
+def parse_seed_overrides(raw: list[str] | None) -> dict[str, str]:
+    """Parse ``--seed-param NAME=VALUE`` entries into a ``{name: value}`` dict.
+
+    Each ``raw`` entry must contain at least one ``=`` separator. The
+    NAME must be non-empty; VALUE may be the empty string (operator
+    explicitly seeding an empty value). Duplicates raise ``ValueError``
+    so a typo doesn't silently shadow the first definition.
+
+    Returns an empty dict when ``raw`` is falsy.
+    """
+    if not raw:
+        return {}
+    out: dict[str, str] = {}
+    for entry in raw:
+        if "=" not in entry:
+            raise ValueError(
+                f"--seed-param entry missing '=' separator: {entry!r}; "
+                f"expected NAME=VALUE"
+            )
+        name, _, value = entry.partition("=")
+        name = name.strip()
+        if not name:
+            raise ValueError(
+                f"--seed-param entry has empty NAME: {entry!r}; "
+                f"expected NAME=VALUE"
+            )
+        if name in out:
+            raise ValueError(
+                f"--seed-param NAME={name!r} supplied more than once"
+            )
+        out[name] = value
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -3583,6 +4211,14 @@ def main(argv: list[str] | None = None) -> int:
     * ``2`` — bad CLI args / missing path / missing ignore-file.
     * ``3`` — any other unhandled failure during analysis (full traceback
       goes to stderr).
+
+    JSON contract on stdout:
+    * Default (Fix B): ``{"integration": ..., "commands": ...}`` —
+      exactly two top-level keys; safe to pipe into
+      ``workflow_state.py set-params-to-commands``.
+    * With ``--with-diagnostics``: additionally a top-level
+      ``"diagnostics"`` key. INTERACTIVE / DEBUG ONLY; must not be
+      piped into the workflow_state setter.
     """
     import traceback
 
@@ -3601,6 +4237,11 @@ def main(argv: list[str] | None = None) -> int:
             args.integration_id,
         )
     except FileNotFoundError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    try:
+        seed_overrides = parse_seed_overrides(args.seed_param)
+    except ValueError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     docker_cfg = DockerConfig(
@@ -3622,6 +4263,10 @@ def main(argv: list[str] | None = None) -> int:
             ignore=ignore,
             timeout=args.timeout,
             docker_cfg=docker_cfg,
+            coerce_certs=not args.no_sentinel_coercion,
+            auto_retry_integration_docker=args.auto_retry_integration_docker,
+            seed_overrides=seed_overrides,
+            with_diagnostics=args.with_diagnostics,
         )
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

@@ -78,6 +78,7 @@ from workflow_state import (
     set_integration_auth,
     skip_integration_step,
     validate_auth_detail,
+    validate_params_to_commands,
 )
 
 
@@ -2359,3 +2360,259 @@ class TestSetParamsToCommandsOverlapRejection:
         out = capsys.readouterr().out
         assert "'api_key'" in out
         assert "auth_types[].name='api_key'" in out
+
+
+# ---------------------------------------------------------------------------
+# validate_params_to_commands (Fix A: strict schema validator)
+# ---------------------------------------------------------------------------
+
+
+class TestValidateParamsToCommands:
+    """Strict-schema validator for the 'Params to Commands' JSON cell.
+
+    Mirrors the structure of :class:`TestValidateAuthDetail`. The
+    canonical good payload is the minimal two-key shape; every other
+    test mutates it to exercise one specific rule.
+    """
+
+    GOOD_PAYLOAD = '{"integration": "X", "commands": {"foo": ["a", "b"]}}'
+
+    def test_valid_simple(self) -> None:
+        assert validate_params_to_commands(self.GOOD_PAYLOAD) == []
+
+    def test_valid_empty_commands_dict(self) -> None:
+        # An integration with zero commands is structurally valid; the
+        # schema rule is "commands must be a dict", not "non-empty".
+        assert validate_params_to_commands(
+            '{"integration": "X", "commands": {}}'
+        ) == []
+
+    def test_valid_command_with_empty_param_list(self) -> None:
+        # A command may legitimately have zero params (the analyzer's
+        # static union came up empty after the ignore set was applied).
+        assert validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": []}}'
+        ) == []
+
+    def test_invalid_json(self) -> None:
+        errors = validate_params_to_commands("not json")
+        assert "Invalid JSON" in errors[0]
+
+    def test_non_dict_top_level(self) -> None:
+        errors = validate_params_to_commands('["integration", "commands"]')
+        assert any("Expected a JSON object" in e for e in errors)
+
+    def test_non_dict_string_top_level(self) -> None:
+        errors = validate_params_to_commands('"hello"')
+        assert any("Expected a JSON object" in e for e in errors)
+
+    def test_diagnostics_extra_key_rejected_with_strip_recipe(self) -> None:
+        # The historical leak: analyzer used to emit "diagnostics" by
+        # default and the agent piped it verbatim. Validator must (a)
+        # name the key explicitly and (b) embed the actionable
+        # one-liner strip recipe.
+        bad = (
+            '{"integration": "X", "commands": {}, '
+            '"diagnostics": {"foo": {"status": "ok"}}}'
+        )
+        errors = validate_params_to_commands(bad)
+        # Diagnostics must be called out by name.
+        assert any("'diagnostics'" in e for e in errors), errors
+        # And the strip recipe must appear in some error string.
+        assert any(
+            "o.pop('diagnostics', None)" in e
+            and "json.load" in e
+            and "json.dumps" in e
+            for e in errors
+        ), errors
+
+    def test_arbitrary_other_extra_keys_rejected(self) -> None:
+        # Other forbidden top-level keys mentioned in column-schemas.md.
+        for extra in ("status", "failure_excerpt", "random_key"):
+            bad = (
+                '{"integration": "X", "commands": {}, "'
+                + extra + '": "anything"}'
+            )
+            errors = validate_params_to_commands(bad)
+            assert any(extra in e for e in errors), (
+                f"key {extra!r} should be rejected and named in error: {errors}"
+            )
+            # Strip recipe still embedded so the operator gets one path
+            # to the fix regardless of which extra key tripped them.
+            assert any(
+                "o.pop('diagnostics', None)" in e for e in errors
+            ), errors
+
+    def test_multiple_extras_all_named_in_one_pass(self) -> None:
+        bad = (
+            '{"integration": "X", "commands": {}, '
+            '"diagnostics": {}, "status": "ok", "stderr": ""}'
+        )
+        errors = validate_params_to_commands(bad)
+        joined = "\n".join(errors)
+        # Every extra key surfaces somewhere in the error output.
+        for extra in ("diagnostics", "status", "stderr"):
+            assert extra in joined, (
+                f"{extra!r} missing from collected errors: {errors}"
+            )
+
+    def test_missing_integration_rejected(self) -> None:
+        errors = validate_params_to_commands('{"commands": {}}')
+        assert any(
+            "Missing required" in e and "integration" in e
+            for e in errors
+        ), errors
+
+    def test_missing_commands_rejected(self) -> None:
+        errors = validate_params_to_commands('{"integration": "X"}')
+        assert any(
+            "Missing required" in e and "commands" in e
+            for e in errors
+        ), errors
+
+    def test_missing_both_required_keys_rejected(self) -> None:
+        errors = validate_params_to_commands('{}')
+        # Single missing-keys error names BOTH.
+        assert any(
+            "Missing required" in e
+            and "integration" in e
+            and "commands" in e
+            for e in errors
+        ), errors
+
+    def test_non_string_integration_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": 42, "commands": {}}'
+        )
+        assert any(
+            "'integration' must be a string" in e for e in errors
+        ), errors
+
+    def test_empty_string_integration_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "", "commands": {}}'
+        )
+        assert any(
+            "'integration' must be a non-empty string" in e for e in errors
+        ), errors
+
+    def test_non_dict_commands_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": ["foo", "bar"]}'
+        )
+        assert any(
+            "'commands' must be a JSON object" in e for e in errors
+        ), errors
+
+    def test_non_list_command_value_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": "a"}}'
+        )
+        assert any(
+            "expected a list of param ids" in e for e in errors
+        ), errors
+
+    def test_non_string_param_id_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": ["a", 7]}}'
+        )
+        assert any(
+            "param id must be a string" in e for e in errors
+        ), errors
+
+    def test_empty_string_param_id_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": ["a", ""]}}'
+        )
+        assert any(
+            "param id must be a non-empty string" in e for e in errors
+        ), errors
+
+
+class TestSetParamsToCommandsStrictSchemaCli:
+    """End-to-end CLI checks: strict-schema rejection at the entrypoint.
+
+    The validator must short-circuit BEFORE the existing overlap check
+    so that shape errors surface on their own (more common operator
+    mistake) and the row is never partially mutated.
+    """
+
+    def test_diagnostics_polluted_payload_exits_nonzero_with_strip_recipe(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Auth Details is set so we don't trip the upstream "set auth
+        # first" prerequisite — the schema validator should fire first.
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        polluted = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {"test-module": ["behavioral_param"]},
+            "diagnostics": {"test-module": {"status": "ok"}},
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["MixedAuth", polluted])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        # Header from the strict-schema branch (NOT the overlap branch).
+        assert "Params to Commands does not match the required schema" in out
+        # The leak key is named explicitly and the strip recipe is shown.
+        assert "'diagnostics'" in out
+        assert "o.pop('diagnostics', None)" in out
+        # Row remains untouched by the rejection.
+        assert rows[0]["Params to Commands"] == ""
+
+    def test_random_extra_key_exits_nonzero(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        bad = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {"test-module": ["behavioral_param"]},
+            "random_key": True,
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["MixedAuth", bad])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "random_key" in out
+        assert rows[0]["Params to Commands"] == ""
+
+    def test_clean_payload_is_accepted(self, monkeypatch) -> None:
+        # Sanity check that the strict-schema gate doesn't reject the
+        # canonical good shape (would regress the existing overlap-only
+        # acceptance test).
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        good = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {"test-module": ["behavioral_param"]},
+        })
+        cmd_set_params_to_commands(["MixedAuth", good])
+        assert rows[0]["Params to Commands"] == good
+
+    def test_set_json_data_step_defense_in_depth(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Direct call into the shared lower-level handler must also
+        # reject a polluted payload — guards future callers that
+        # bypass cmd_set_params_to_commands.
+        from workflow_state import _set_json_data_step
+
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        polluted = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {},
+            "diagnostics": {},
+        })
+        with pytest.raises(SystemExit) as exc:
+            _set_json_data_step(
+                ["MixedAuth", polluted],
+                "Params to Commands",
+                "set-params-to-commands",
+            )
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "Params to Commands does not match the required schema" in out
+        assert "'diagnostics'" in out

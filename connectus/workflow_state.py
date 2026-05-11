@@ -730,6 +730,140 @@ def validate_auth_detail(value: str) -> list[str]:
     return errors
 
 
+# Hint embedded in every "extra top-level key" error reported by
+# :func:`validate_params_to_commands`. The one-liner is documented as
+# the canonical strip recipe so the calling agent can recover from a
+# polluted analyzer payload (e.g. ``check_command_params.py`` invoked
+# without ``--with-diagnostics`` was the historical leak source) by
+# re-piping the JSON through ``json.load`` / ``pop`` / ``json.dumps``
+# without re-running the analyzer. Kept in sync with
+# ``connectus/column-schemas.md`` §Params to Commands.
+_PARAMS_TO_COMMANDS_STRIP_HINT = (
+    "strip it before persisting (see column-schemas.md "
+    "§Params to Commands). One-liner: python3 -c "
+    "\"import sys, json; o = json.load(sys.stdin); "
+    "o.pop('diagnostics', None); print(json.dumps(o))\""
+)
+
+
+def validate_params_to_commands(value: str) -> list[str]:
+    """Validate Params to Commands JSON shape. Returns errors ([] = valid).
+
+    Strict shape (per ``connectus/column-schemas.md`` §Params to Commands)::
+
+        {
+          "integration": "<non-empty string>",
+          "commands": {
+            "<command_id>": ["<param_id>", ...],
+            ...
+          }
+        }
+
+    Validation rules:
+
+      - The top level must be a JSON object.
+      - The set of top-level keys MUST equal exactly
+        ``{"integration", "commands"}``. Missing keys are reported.
+        Extra top-level keys (the historical leak: ``diagnostics``,
+        ``status``, ``failure_excerpt``, ``captured_requests``,
+        ``error``, ``stderr``, etc.) are ALL named in a single error
+        and the error embeds the canonical strip recipe (see
+        :data:`_PARAMS_TO_COMMANDS_STRIP_HINT`).
+      - ``integration`` must be a non-empty string.
+      - ``commands`` must be a dict. Each value must be a list, and
+        every element of every list must be a non-empty string.
+
+    Mirrors :func:`validate_auth_detail`'s contract: returns a list of
+    human-readable error strings. An empty list means the payload is
+    valid. Multiple errors are accumulated rather than bailing on the
+    first — callers print all of them so the operator can fix the
+    payload in a single pass.
+    """
+    errors: list[str] = []
+
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError as e:
+        return [f"Invalid JSON: {e}"]
+
+    if not isinstance(payload, dict):
+        return [f"Expected a JSON object, got {type(payload).__name__}"]
+
+    expected_keys = {"integration", "commands"}
+    actual_keys = set(payload.keys())
+    missing = expected_keys - actual_keys
+    extras = actual_keys - expected_keys
+
+    if missing:
+        errors.append(
+            f"Missing required top-level key(s): {sorted(missing)}; "
+            f"payload must contain exactly {sorted(expected_keys)}."
+        )
+
+    if extras:
+        sorted_extras = sorted(extras)
+        # Call out diagnostics by name when present — it is the known
+        # common offender (analyzer leaked it under the old default).
+        if "diagnostics" in extras:
+            errors.append(
+                f"Extra top-level key 'diagnostics' is forbidden in "
+                f"'Params to Commands' (it is internal analyzer "
+                f"metadata, not pipeline data); "
+                f"{_PARAMS_TO_COMMANDS_STRIP_HINT}"
+            )
+            other_extras = [k for k in sorted_extras if k != "diagnostics"]
+            if other_extras:
+                errors.append(
+                    f"Extra top-level key(s) {other_extras} are "
+                    f"forbidden; {_PARAMS_TO_COMMANDS_STRIP_HINT}"
+                )
+        else:
+            errors.append(
+                f"Extra top-level key(s) {sorted_extras} are forbidden; "
+                f"{_PARAMS_TO_COMMANDS_STRIP_HINT}"
+            )
+
+    if "integration" in payload:
+        integration = payload["integration"]
+        if not isinstance(integration, str):
+            errors.append(
+                f"'integration' must be a string, got "
+                f"{type(integration).__name__}"
+            )
+        elif integration == "":
+            errors.append("'integration' must be a non-empty string")
+
+    if "commands" in payload:
+        commands = payload["commands"]
+        if not isinstance(commands, dict):
+            errors.append(
+                f"'commands' must be a JSON object, got "
+                f"{type(commands).__name__}"
+            )
+        else:
+            for cmd, param_list in commands.items():
+                if not isinstance(param_list, list):
+                    errors.append(
+                        f"commands[{cmd!r}]: expected a list of param "
+                        f"ids, got {type(param_list).__name__}"
+                    )
+                    continue
+                for i, p in enumerate(param_list):
+                    if not isinstance(p, str):
+                        errors.append(
+                            f"commands[{cmd!r}][{i}]: param id must be "
+                            f"a string, got {type(p).__name__}"
+                        )
+                        continue
+                    if p == "":
+                        errors.append(
+                            f"commands[{cmd!r}][{i}]: param id must be "
+                            f"a non-empty string"
+                        )
+
+    return errors
+
+
 # ---------------------------------------------------------------------------
 # Auth-derived ignore set (cross-step exclusion plumbing)
 # ---------------------------------------------------------------------------
@@ -1345,6 +1479,16 @@ def _set_json_data_step(args: list[str], step_name: str, setter_cmd: str) -> Non
             for err in schema_errors:
                 print(f"  - {err}")
             sys.exit(1)
+    # Defense-in-depth: catch a polluted "Params to Commands" payload
+    # even if the caller bypassed cmd_set_params_to_commands and
+    # invoked _set_json_data_step directly.
+    elif step_name == "Params to Commands":
+        schema_errors = validate_params_to_commands(raw)
+        if schema_errors:
+            print("ERROR: Params to Commands does not match the required schema.")
+            for err in schema_errors:
+                print(f"  - {err}")
+            sys.exit(1)
 
     rows = load_csv()
     idx = _resolve_row_or_exit(rows, name)
@@ -1487,22 +1631,38 @@ def _check_params_to_commands_overlap(
 
 
 def cmd_set_params_to_commands(args: list[str]) -> None:
-    # Pre-flight overlap check: reject any payload whose per-command
-    # param lists overlap with the integration's auth-derived ignore
-    # set. We do this BEFORE the cascade-write so a bad payload can
-    # never partially mutate the row. Auth Details being unset is
-    # already an upstream prerequisite (apply_step_action would reject
-    # the call ahead-of-current); auth_param_ids() re-asserts it with
-    # a more specific error if we reach the overlap check first.
+    # Two pre-flight checks ahead of the cascade-write so a bad payload
+    # can never partially mutate the row:
+    #
+    #   (1) STRICT SCHEMA: top-level keys MUST equal exactly
+    #       {"integration", "commands"}; the historical leak was the
+    #       analyzer emitting a top-level "diagnostics" key that the
+    #       agent piped verbatim. Reported FIRST because shape errors
+    #       are the more common mistake and the overlap check is a
+    #       deeper semantic check that only makes sense once the
+    #       payload shape is valid.
+    #
+    #   (2) OVERLAP: reject payloads whose per-command param lists
+    #       overlap with the integration's auth-derived ignore set.
+    #       Auth Details being unset is already an upstream
+    #       prerequisite (apply_step_action would reject the call
+    #       ahead-of-current); auth_param_ids() re-asserts it with a
+    #       more specific error if we reach the overlap check first.
     if len(args) >= 2:
         name = args[0]
         raw = " ".join(args[1:])
-        try:
-            payload = json.loads(raw)
-        except json.JSONDecodeError:
-            # JSON parsing is re-validated inside _set_json_data_step;
-            # let it produce the canonical error there.
-            payload = None
+        # (1) Strict schema check — done up-front and on the raw text
+        # so we report extra/missing top-level keys (esp. the leaked
+        # "diagnostics" key) before any other check looks at the body.
+        schema_errors = validate_params_to_commands(raw)
+        if schema_errors:
+            print("ERROR: Params to Commands does not match the required schema.")
+            for err in schema_errors:
+                print(f"  - {err}")
+            sys.exit(1)
+        # (2) Overlap check — only meaningful once the payload shape is
+        # valid (validator above guaranteed parseability + dict shape).
+        payload = json.loads(raw)
         if isinstance(payload, dict):
             try:
                 _check_params_to_commands_overlap(name, payload)

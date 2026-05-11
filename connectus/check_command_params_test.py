@@ -37,6 +37,7 @@ from __future__ import annotations
 import ast
 import textwrap
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -2202,3 +2203,783 @@ class TestComposeIgnoreSetAuthAware:
         # standalone-script behaviour intact.
         ns = ccp._parse_args(["/tmp/some_path"])
         assert ns.integration_id is None
+
+
+# ============================================================================
+# Change #1: hidden-param exclusion (is_hidden_param + get_yml_params filter)
+# ============================================================================
+
+
+class TestIsHiddenParam:
+    """Edge-case coverage for the YML 'hidden:' rule.
+
+    A param is hidden iff ``hidden: True`` OR ``hidden: <non-empty list>``.
+    All other shapes (false, [], None, missing, scalar string, etc.) are
+    NOT hidden. Per-platform list interpretation is intentionally not
+    attempted — the rule is "hidden anywhere → excluded entirely".
+    """
+
+    def test_hidden_true_boolean(self) -> None:
+        assert ccp.is_hidden_param({"name": "x", "hidden": True}) is True
+
+    def test_hidden_false_boolean(self) -> None:
+        assert ccp.is_hidden_param({"name": "x", "hidden": False}) is False
+
+    def test_hidden_missing_key(self) -> None:
+        assert ccp.is_hidden_param({"name": "x"}) is False
+
+    def test_hidden_none_value(self) -> None:
+        # YAML ``hidden:`` with no value parses as None.
+        assert ccp.is_hidden_param({"name": "x", "hidden": None}) is False
+
+    def test_hidden_empty_list(self) -> None:
+        # Empty list = "hidden on no platforms" = NOT hidden.
+        assert ccp.is_hidden_param({"name": "x", "hidden": []}) is False
+
+    def test_hidden_single_platform_list(self) -> None:
+        assert ccp.is_hidden_param({"name": "x", "hidden": ["xsoar"]}) is True
+
+    def test_hidden_multi_platform_list(self) -> None:
+        assert ccp.is_hidden_param(
+            {"name": "x", "hidden": ["marketplacev2", "platform"]}
+        ) is True
+
+    def test_hidden_string_value_not_hidden(self) -> None:
+        # A bare string like ``hidden: "true"`` is NEITHER True NOR a
+        # non-empty list — we treat it as NOT hidden (the YML is
+        # malformed; conservatively keep the param visible so analysis
+        # still runs).
+        assert ccp.is_hidden_param({"name": "x", "hidden": "true"}) is False
+
+    def test_non_dict_input_returns_false(self) -> None:
+        assert ccp.is_hidden_param("not a dict") is False  # type: ignore[arg-type]
+        assert ccp.is_hidden_param(None) is False  # type: ignore[arg-type]
+
+
+class TestGetYmlParamsFiltersHidden:
+    def test_visible_only(self) -> None:
+        yml = {"configuration": [
+            {"name": "url"},
+            {"name": "secret_token", "hidden": True},
+            {"name": "advanced_xsoar_only", "hidden": ["xsoar"]},
+            {"name": "kept_explicit_false", "hidden": False},
+        ]}
+        names = [p["name"] for p in ccp.get_yml_params(yml)]
+        assert names == ["url", "kept_explicit_false"]
+
+    def test_get_yml_params_raw_keeps_hidden(self) -> None:
+        yml = {"configuration": [
+            {"name": "url"},
+            {"name": "secret_token", "hidden": True},
+        ]}
+        names = [p["name"] for p in ccp.get_yml_params_raw(yml)]
+        assert names == ["url", "secret_token"]
+
+    def test_get_hidden_param_names_sorted(self) -> None:
+        yml = {"configuration": [
+            {"name": "z_secret", "hidden": True},
+            {"name": "url"},
+            {"name": "a_secret", "hidden": ["xsoar"]},
+        ]}
+        assert ccp.get_hidden_param_names(yml) == ["a_secret", "z_secret"]
+
+    def test_no_hidden_returns_empty_list(self) -> None:
+        yml = {"configuration": [{"name": "url"}, {"name": "port"}]}
+        assert ccp.get_hidden_param_names(yml) == []
+
+
+# ============================================================================
+# Change #2: cert/key/thumbprint sentinel coercion + --seed-param override
+# ============================================================================
+
+
+class TestCoerceSentinelForParam:
+    """Each of the 3 patterns + a name that matches none + ordering edges."""
+
+    def test_thumbprint_match(self) -> None:
+        out = ccp.coerce_sentinel_for_param("certificate_thumbprint")
+        assert out is not None
+        value, pattern = out
+        assert pattern == "thumbprint"
+        # 40 hex chars satisfies binascii.a2b_hex.
+        assert len(value) == 40
+        assert all(c in "0123456789ABCDEFabcdef" for c in value)
+
+    def test_thumbprint_match_case_insensitive(self) -> None:
+        out = ccp.coerce_sentinel_for_param("CertificateThumbprint")
+        assert out is not None and out[1] == "thumbprint"
+
+    def test_private_key_match(self) -> None:
+        out = ccp.coerce_sentinel_for_param("private_key")
+        assert out is not None
+        value, pattern = out
+        assert pattern == "private_key"
+        assert "BEGIN PRIVATE KEY" in value
+        assert "END PRIVATE KEY" in value
+
+    def test_certificate_match_falls_through_thumbprint(self) -> None:
+        # 'certificate' alone (no 'thumbprint') maps to PEM cert.
+        out = ccp.coerce_sentinel_for_param("auth_certificate")
+        assert out is not None
+        value, pattern = out
+        assert pattern == "certificate"
+        assert "BEGIN CERTIFICATE" in value
+
+    def test_overlap_thumbprint_wins_over_certificate(self) -> None:
+        # 'certificate_thumbprint' contains both 'thumbprint' AND
+        # 'certificate' — thumbprint wins (checked first).
+        out = ccp.coerce_sentinel_for_param("certificate_thumbprint")
+        assert out is not None and out[1] == "thumbprint"
+
+    def test_overlap_private_key_wins_over_certificate(self) -> None:
+        out = ccp.coerce_sentinel_for_param("private_key_certificate")
+        assert out is not None and out[1] == "private_key"
+
+    def test_no_match_returns_none(self) -> None:
+        assert ccp.coerce_sentinel_for_param("server_url") is None
+        assert ccp.coerce_sentinel_for_param("api_token") is None
+        assert ccp.coerce_sentinel_for_param("port") is None
+
+    def test_empty_or_invalid_input_returns_none(self) -> None:
+        assert ccp.coerce_sentinel_for_param("") is None
+        assert ccp.coerce_sentinel_for_param(None) is None  # type: ignore[arg-type]
+
+
+class TestBuildParamValuesCoercion:
+    def test_thumbprint_coerced_by_default(self) -> None:
+        params = [{"name": "certificate_thumbprint",
+                   "type": ccp.YML_TYPE_ENCRYPTED}]
+        values, sentinels, non_traceable = ccp.build_param_values(
+            params, "http://x", set()
+        )
+        # Coerced value, NOT the generic SENTINEL_PARAM_<name> string.
+        assert values["certificate_thumbprint"] != (
+            ccp.SENTINEL_PREFIX + "certificate_thumbprint"
+        )
+        assert len(values["certificate_thumbprint"]) == 40
+        # Coerced values are non-traceable (they don't carry the sentinel
+        # substring so detect_sentinel_hits cannot find them by name).
+        assert "certificate_thumbprint" in non_traceable
+        assert sentinels["certificate_thumbprint"] == []
+
+    def test_private_key_coerced_by_default(self) -> None:
+        params = [{"name": "private_key", "type": ccp.YML_TYPE_ENCRYPTED}]
+        values, _, _ = ccp.build_param_values(params, "http://x", set())
+        assert "BEGIN PRIVATE KEY" in values["private_key"]
+
+    def test_certificate_coerced_by_default(self) -> None:
+        params = [{"name": "certificate", "type": ccp.YML_TYPE_ENCRYPTED}]
+        values, _, _ = ccp.build_param_values(params, "http://x", set())
+        assert "BEGIN CERTIFICATE" in values["certificate"]
+
+    def test_coerce_certs_false_uses_generic_sentinel(self) -> None:
+        params = [{"name": "private_key", "type": ccp.YML_TYPE_ENCRYPTED}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set(), coerce_certs=False
+        )
+        # With coercion off, the generic sentinel comes through.
+        assert values["private_key"] == ccp.SENTINEL_PREFIX + "private_key"
+        assert sentinels["private_key"] == [ccp.SENTINEL_PREFIX + "private_key"]
+
+    def test_yml_default_value_wins_over_coercion(self) -> None:
+        # An operator who hard-codes a real test cert in the YML
+        # defaultvalue must still get it — coercion only runs when
+        # there's no YML default to honour.
+        params = [{
+            "name": "certificate_thumbprint",
+            "type": ccp.YML_TYPE_ENCRYPTED,
+            "defaultvalue": "ABCDEF1234567890ABCDEF1234567890ABCDEF12",
+        }]
+        values, _, _ = ccp.build_param_values(params, "http://x", set())
+        assert values["certificate_thumbprint"] == (
+            "ABCDEF1234567890ABCDEF1234567890ABCDEF12"
+        )
+
+    def test_unrelated_param_not_coerced(self) -> None:
+        params = [{"name": "some_text"}]
+        values, _, _ = ccp.build_param_values(params, "http://x", set())
+        assert values["some_text"] == ccp.SENTINEL_PREFIX + "some_text"
+
+
+class TestSeedOverrides:
+    def test_override_replaces_generic_sentinel(self) -> None:
+        params = [{"name": "api_token"}]
+        values, sentinels, _ = ccp.build_param_values(
+            params,
+            "http://x",
+            set(),
+            seed_overrides={"api_token": "my-real-test-token-12345"},
+        )
+        assert values["api_token"] == "my-real-test-token-12345"
+        # Long enough to be traceable as an ad-hoc sentinel.
+        assert sentinels["api_token"] == ["my-real-test-token-12345"]
+
+    def test_override_wins_over_yml_default(self) -> None:
+        params = [{"name": "api_token", "defaultvalue": "yml-default-value"}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"api_token": "operator-override"},
+        )
+        assert values["api_token"] == "operator-override"
+
+    def test_override_wins_over_cert_coercion(self) -> None:
+        params = [{"name": "private_key", "type": ccp.YML_TYPE_ENCRYPTED}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"private_key": "REAL-KEY-PEM-CONTENT"},
+        )
+        assert values["private_key"] == "REAL-KEY-PEM-CONTENT"
+
+    def test_override_wins_over_url_proxy(self) -> None:
+        params = [{"name": "url"}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://proxy:9999", set(),
+            seed_overrides={"url": "https://override.example"},
+        )
+        # Operator can opt out of the proxy redirect for one param.
+        assert values["url"] == "https://override.example"
+
+    def test_override_short_value_marked_non_traceable(self) -> None:
+        params = [{"name": "x"}]
+        values, sentinels, non_traceable = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"x": "ab"},  # < 4 chars
+        )
+        assert values["x"] == "ab"
+        assert sentinels["x"] == []
+        assert "x" in non_traceable
+
+    def test_override_for_unmentioned_param_is_ignored(self) -> None:
+        # Override targets a name not in yml_params — not an error here
+        # (the visibility warning lives in analyze_integration); the
+        # builder simply doesn't seed anything for it.
+        params = [{"name": "real_param"}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"unknown_param": "value"},
+        )
+        assert "unknown_param" not in values
+
+    def test_no_overrides_falls_back_to_default_behaviour(self) -> None:
+        params = [{"name": "api_token"}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(), seed_overrides=None
+        )
+        assert values["api_token"] == ccp.SENTINEL_PREFIX + "api_token"
+
+
+class TestParseSeedOverrides:
+    def test_simple_pair(self) -> None:
+        out = ccp.parse_seed_overrides(["foo=bar"])
+        assert out == {"foo": "bar"}
+
+    def test_multiple_pairs(self) -> None:
+        out = ccp.parse_seed_overrides(["a=1", "b=two"])
+        assert out == {"a": "1", "b": "two"}
+
+    def test_value_can_contain_equals(self) -> None:
+        # Only the first '=' splits; the value keeps the rest verbatim
+        # (so PEM blocks / base64 with padding work).
+        out = ccp.parse_seed_overrides(["pem=---BEGIN==DATA==END---"])
+        assert out == {"pem": "---BEGIN==DATA==END---"}
+
+    def test_empty_value_allowed(self) -> None:
+        # Operator explicitly seeding an empty value (e.g. to satisfy
+        # an integration that requires the key but tolerates "").
+        out = ccp.parse_seed_overrides(["key="])
+        assert out == {"key": ""}
+
+    def test_none_or_empty_returns_empty_dict(self) -> None:
+        assert ccp.parse_seed_overrides(None) == {}
+        assert ccp.parse_seed_overrides([]) == {}
+
+    def test_missing_separator_raises(self) -> None:
+        with pytest.raises(ValueError, match="missing '=' separator"):
+            ccp.parse_seed_overrides(["just_a_name"])
+
+    def test_empty_name_raises(self) -> None:
+        with pytest.raises(ValueError, match="empty NAME"):
+            ccp.parse_seed_overrides(["=value"])
+
+    def test_duplicate_name_raises(self) -> None:
+        with pytest.raises(ValueError, match="more than once"):
+            ccp.parse_seed_overrides(["foo=1", "foo=2"])
+
+
+class TestNewCliFlags:
+    def test_no_sentinel_coercion_default_false(self) -> None:
+        ns = ccp._parse_args(["/tmp/x"])
+        assert ns.no_sentinel_coercion is False
+
+    def test_no_sentinel_coercion_when_set(self) -> None:
+        ns = ccp._parse_args(["/tmp/x", "--no-sentinel-coercion"])
+        assert ns.no_sentinel_coercion is True
+
+    def test_auto_retry_integration_docker_default_true(self) -> None:
+        ns = ccp._parse_args(["/tmp/x"])
+        assert ns.auto_retry_integration_docker is True
+
+    def test_no_auto_retry_integration_docker_disables(self) -> None:
+        ns = ccp._parse_args(["/tmp/x", "--no-auto-retry-integration-docker"])
+        assert ns.auto_retry_integration_docker is False
+
+    def test_seed_param_default_none(self) -> None:
+        ns = ccp._parse_args(["/tmp/x"])
+        assert ns.seed_param is None
+
+    def test_seed_param_repeatable(self) -> None:
+        ns = ccp._parse_args([
+            "/tmp/x",
+            "--seed-param", "foo=1",
+            "--seed-param", "bar=two",
+        ])
+        assert ns.seed_param == ["foo=1", "bar=two"]
+
+    def test_with_diagnostics_default_false(self) -> None:
+        # Fix B: diagnostics is OPT-IN. Default-off keeps stdout
+        # pipe-safe for workflow_state.py set-params-to-commands.
+        ns = ccp._parse_args(["/tmp/x"])
+        assert ns.with_diagnostics is False
+
+    def test_with_diagnostics_when_set(self) -> None:
+        ns = ccp._parse_args(["/tmp/x", "--with-diagnostics"])
+        assert ns.with_diagnostics is True
+
+
+# =============================================================================
+# Fix C — coverage for _run_dynamic_phase_once
+# =============================================================================
+#
+# ``_run_dynamic_phase_once`` is the most complex orchestration in the
+# analyzer (~190 LOC): per-command child invocation, auto-retry signal
+# on module_not_found in the FIRST command, fast-fail bookkeeping that
+# short-circuits the rest of the loop without invoking the child, and
+# per-command sentinel re-attribution when the child raises.
+#
+# We mock its three I/O dependencies so no real Docker / proxy / disk
+# work is required:
+#
+#   * ``ccp.prepare_unified_content`` — return synthetic paths.
+#   * ``ccp.CaptureProxy`` — replaced by a MagicMock-driven double so
+#     ``proxy.start()`` / ``proxy.stop()`` are no-ops with port=0.
+#   * ``ccp.analyze_dynamic_for_command`` — the per-command runner.
+#     Each test rigs its return values / exceptions to drive the
+#     branch under test.
+
+
+def _stub_prep_proxy(monkeypatch, tmp_path: Path) -> MagicMock:
+    """Stub ``prepare_unified_content`` and ``CaptureProxy``.
+
+    Returns the proxy class mock so individual tests can assert on
+    ``start`` / ``stop`` calls if they care.
+    """
+    unified = tmp_path / "unified.py"
+    unified.write_text("# stub\n")
+    mock_dir = tmp_path / "mock"
+    mock_dir.mkdir(exist_ok=True)
+    monkeypatch.setattr(
+        ccp, "prepare_unified_content",
+        lambda integration_path, out_dir: (unified, mock_dir),
+    )
+    proxy_instance = MagicMock()
+    proxy_instance.port = 12345
+    proxy_class = MagicMock(return_value=proxy_instance)
+    monkeypatch.setattr(ccp, "CaptureProxy", proxy_class)
+    return proxy_class
+
+
+class TestRunDynamicPhaseOnce:
+    """Direct coverage for :func:`_run_dynamic_phase_once`.
+
+    The function's contract under test:
+
+      * Happy path → all commands succeed, no retry signalled.
+      * First command ``module_not_found`` AND auto-retry enabled AND
+        not already on integration docker → returns ``True`` (retry
+        signal); ``docker_cfg.use_integration_docker`` is flipped on.
+      * First command ``module_not_found`` AND auto-retry disabled →
+        returns ``False``; remaining commands are fast-failed without
+        invoking the child.
+      * Per-command failure with sentinels in the exception text →
+        diagnostic re-attributed from ``no_data`` to
+        ``param_caused_failure`` with ``failing_params`` populated
+        from the YML param set.
+    """
+
+    def _run(
+        self,
+        monkeypatch,
+        tmp_path: Path,
+        commands: list[str],
+        per_command_results: list,
+        yml_params: list[dict] | None = None,
+        docker_cfg: ccp.DockerConfig | None = None,
+        auto_retry: bool = True,
+    ) -> tuple[bool, dict, dict, MagicMock]:
+        """Drive one call to ``_run_dynamic_phase_once`` with mocks.
+
+        ``per_command_results`` is a list whose i-th entry tells the
+        mocked ``analyze_dynamic_for_command`` what to do on the i-th
+        invocation: either a ``(captured_set, CommandDiagnostic)``
+        tuple or an ``Exception`` instance to raise.
+        """
+        _stub_prep_proxy(monkeypatch, tmp_path)
+        runner_mock = MagicMock()
+
+        def _runner(*args, **kwargs):
+            if not per_command_results:
+                raise AssertionError(
+                    "analyze_dynamic_for_command invoked more times "
+                    "than the test scripted"
+                )
+            outcome = per_command_results.pop(0)
+            if isinstance(outcome, Exception):
+                raise outcome
+            return outcome
+
+        runner_mock.side_effect = _runner
+        monkeypatch.setattr(
+            ccp, "analyze_dynamic_for_command", runner_mock
+        )
+
+        dynamic_results: dict[str, set[str]] = {c: set() for c in commands}
+        diagnostics: dict[str, ccp.CommandDiagnostic] = {}
+        if yml_params is None:
+            yml_params = []
+
+        retry = ccp._run_dynamic_phase_once(
+            integration_path=tmp_path,
+            commands=commands,
+            yml_params=yml_params,
+            ignore=set(),
+            timeout=30,
+            dynamic_results=dynamic_results,
+            diagnostics=diagnostics,
+            integration_name="TestInt",
+            docker_cfg=docker_cfg,
+            image="test-image",
+            coerce_certs=True,
+            auto_retry_integration_docker=auto_retry,
+            yml_data=None,
+            seed_overrides=None,
+        )
+        return retry, dynamic_results, diagnostics, runner_mock
+
+    # ---- Happy path -------------------------------------------------------
+
+    def test_happy_path_all_commands_succeed_no_retry(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        commands = ["cmd-a", "cmd-b", "cmd-c"]
+        results = [
+            ({"param_x"}, ccp.CommandDiagnostic(status="ok", captured_requests=2)),
+            ({"param_y"}, ccp.CommandDiagnostic(status="ok", captured_requests=1)),
+            (set(), ccp.CommandDiagnostic(status="ok_no_capture")),
+        ]
+        retry, dyn, diag, runner = self._run(
+            monkeypatch, tmp_path, commands, results,
+        )
+        assert retry is False
+        assert runner.call_count == 3
+        assert dyn["cmd-a"] == {"param_x"}
+        assert dyn["cmd-b"] == {"param_y"}
+        assert dyn["cmd-c"] == set()
+        assert diag["cmd-a"].status == "ok"
+        assert diag["cmd-b"].status == "ok"
+        assert diag["cmd-c"].status == "ok_no_capture"
+
+    # ---- module_not_found auto-retry signal ------------------------------
+
+    def test_module_not_found_first_command_signals_retry(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # Auto-retry ENABLED and not already using integration docker
+        # → caller must restart the phase under integration docker.
+        commands = ["cmd-a", "cmd-b"]
+        first = ({}, ccp.CommandDiagnostic(
+            status="module_not_found",
+            captured_requests=0,
+            missing_module="splunklib",
+            failure_excerpt="ModuleNotFoundError: No module named 'splunklib'",
+        ))
+        # Second result must NOT be consumed (function returns after
+        # signalling retry on the first command's outcome).
+        results = [first, ({}, ccp.CommandDiagnostic(status="ok"))]
+        docker_cfg = ccp.DockerConfig(use_integration_docker=False)
+        retry, _dyn, _diag, runner = self._run(
+            monkeypatch, tmp_path, commands, results,
+            docker_cfg=docker_cfg, auto_retry=True,
+        )
+        assert retry is True
+        # Side-effect: the function flips the flag so the outer caller
+        # re-resolves the image under the integration's own docker.
+        assert docker_cfg.use_integration_docker is True
+        # Only the first command was actually invoked; the rest of the
+        # loop is abandoned because we returned True before iterating.
+        assert runner.call_count == 1
+
+    def test_module_not_found_with_auto_retry_disabled_fast_fails_rest(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # Auto-retry OFF → no restart signal; remaining commands are
+        # fast-failed without invoking the child.
+        commands = ["cmd-a", "cmd-b", "cmd-c"]
+        first = ({}, ccp.CommandDiagnostic(
+            status="module_not_found",
+            captured_requests=0,
+            missing_module="splunklib",
+            failure_excerpt="ModuleNotFoundError: No module named 'splunklib'",
+        ))
+        # Only the first call is real; the others are short-circuited.
+        results = [first]
+        docker_cfg = ccp.DockerConfig(use_integration_docker=False)
+        retry, dyn, diag, runner = self._run(
+            monkeypatch, tmp_path, commands, results,
+            docker_cfg=docker_cfg, auto_retry=False,
+        )
+        assert retry is False
+        # CRITICAL: child invocation count is bounded — only the first
+        # command was actually run; the rest were short-circuited.
+        assert runner.call_count == 1
+        # Every command carries the module_not_found status with the
+        # original missing-module attribution.
+        for cmd in commands:
+            assert diag[cmd].status == "module_not_found"
+            assert diag[cmd].missing_module == "splunklib"
+        # And the auto-retry flag was NOT flipped.
+        assert docker_cfg.use_integration_docker is False
+
+    def test_module_not_found_already_on_integration_docker_fast_fails_rest(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # Already on integration docker → can't escalate further.
+        # Remaining commands fast-fail; no retry signal.
+        commands = ["cmd-a", "cmd-b"]
+        first = ({}, ccp.CommandDiagnostic(
+            status="module_not_found",
+            captured_requests=0,
+            missing_module="pymisp",
+            failure_excerpt="ModuleNotFoundError: No module named 'pymisp'",
+        ))
+        results = [first]
+        docker_cfg = ccp.DockerConfig(use_integration_docker=True)
+        retry, _dyn, diag, runner = self._run(
+            monkeypatch, tmp_path, commands, results,
+            docker_cfg=docker_cfg, auto_retry=True,  # auto-retry ON but moot
+        )
+        assert retry is False
+        assert runner.call_count == 1
+        assert diag["cmd-b"].status == "module_not_found"
+        assert diag["cmd-b"].missing_module == "pymisp"
+
+    # ---- Fast-fail bookkeeping --------------------------------------------
+
+    def test_fast_fail_bounds_child_invocation_count(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # 5 commands, first fails with module_not_found, auto-retry off
+        # → exactly 1 child invocation despite 5 commands in the list.
+        commands = [f"cmd-{i}" for i in range(5)]
+        first = ({}, ccp.CommandDiagnostic(
+            status="module_not_found",
+            missing_module="missing_pkg",
+            failure_excerpt="ModuleNotFoundError: No module named 'missing_pkg'",
+        ))
+        docker_cfg = ccp.DockerConfig(use_integration_docker=False)
+        retry, _dyn, diag, runner = self._run(
+            monkeypatch, tmp_path, commands, [first],
+            docker_cfg=docker_cfg, auto_retry=False,
+        )
+        assert retry is False
+        # Bookkeeping invariant: the saved-time guarantee is N-1
+        # commands skipped after the first.
+        assert runner.call_count == 1
+        # And every short-circuited command carries the same
+        # attribution as the original failure.
+        for c in commands[1:]:
+            assert diag[c].status == "module_not_found"
+            assert diag[c].missing_module == "missing_pkg"
+
+    # ---- Per-command sentinel re-attribution ------------------------------
+
+    def test_dynamic_analysis_error_with_sentinel_promotes_to_param_caused_failure(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # When ``analyze_dynamic_for_command`` raises and the exception
+        # text embeds ``SENTINEL_PARAM_<name>`` for a name in the YML
+        # param set, the catch block re-attributes the diagnostic from
+        # ``no_data`` (the default classifier) to ``param_caused_failure``
+        # with ``failing_params`` populated from the matched YML names.
+        commands = ["cmd-with-bad-param"]
+        yml_params = [
+            {"name": "secret_token"},
+            {"name": "behavioral_param"},
+            {"name": "limit"},
+        ]
+        # Exception body contains the canonical sentinel pattern for
+        # ``secret_token``; ``behavioral_param`` is unrelated and must
+        # NOT be attributed.
+        exc = ccp.DynamicAnalysisError(
+            "command failed: ValueError: invalid value "
+            "SENTINEL_PARAM_secret_token at line 42\n"
+            "child stderr:\nTraceback ... SENTINEL_PARAM_secret_token"
+        )
+        retry, dyn, diag, runner = self._run(
+            monkeypatch, tmp_path, commands, [exc],
+            yml_params=yml_params,
+        )
+        assert retry is False
+        assert runner.call_count == 1
+        d = diag["cmd-with-bad-param"]
+        # Re-attribution: status is promoted from no_data to
+        # param_caused_failure and failing_params is populated.
+        assert d.status == "param_caused_failure"
+        assert d.failing_params == ["secret_token"]
+        # Captured set carries the failing param name so it surfaces
+        # in the merged per-command output.
+        assert dyn["cmd-with-bad-param"] == {"secret_token"}
+        # Stray YML names that did NOT appear in the stderr stay out.
+        assert "behavioral_param" not in d.failing_params
+        assert "limit" not in d.failing_params
+
+    def test_dynamic_analysis_error_without_sentinel_stays_no_data(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # No sentinel in the exception text → status stays ``no_data``
+        # (or the appropriate classifier output) and ``failing_params``
+        # remains empty. This is the boundary case to the previous test.
+        commands = ["cmd-broken"]
+        yml_params = [{"name": "secret_token"}]
+        exc = ccp.DynamicAnalysisError(
+            "command failed: generic error with no sentinel reference"
+        )
+        retry, dyn, diag, _runner = self._run(
+            monkeypatch, tmp_path, commands, [exc],
+            yml_params=yml_params,
+        )
+        assert retry is False
+        d = diag["cmd-broken"]
+        assert d.status == "no_data"
+        assert d.failing_params == []
+        assert dyn["cmd-broken"] == set()
+
+    def test_timeout_classified_as_timeout(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # Smoke-test the classifier mapping for the timeout signal.
+        commands = ["slow-cmd"]
+        exc = ccp.DynamicAnalysisError(
+            "command 'slow-cmd' timed out after 30s (use --timeout to extend)"
+        )
+        _retry, _dyn, diag, _runner = self._run(
+            monkeypatch, tmp_path, commands, [exc],
+        )
+        assert diag["slow-cmd"].status == "timeout"
+
+    # ---- Mixed-outcome smoke ---------------------------------------------
+
+    def test_mixed_success_and_failure_isolated_per_command(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # First command succeeds; second command raises with a
+        # non-sentinel error; third command succeeds. The per-command
+        # bookkeeping must NOT be polluted across commands.
+        commands = ["a", "b", "c"]
+        results = [
+            ({"p1"}, ccp.CommandDiagnostic(status="ok", captured_requests=1)),
+            ccp.DynamicAnalysisError("command 'b' failed: generic"),
+            ({"p3"}, ccp.CommandDiagnostic(status="ok", captured_requests=1)),
+        ]
+        _retry, dyn, diag, runner = self._run(
+            monkeypatch, tmp_path, commands, results,
+            yml_params=[{"name": "p1"}, {"name": "p3"}],
+        )
+        assert runner.call_count == 3
+        assert diag["a"].status == "ok"
+        assert diag["b"].status == "no_data"
+        assert diag["c"].status == "ok"
+        assert dyn["a"] == {"p1"}
+        assert dyn["b"] == set()
+        assert dyn["c"] == {"p3"}
+
+
+class TestAnalyzeIntegrationDiagnosticsOptIn:
+    """Fix B contract test for :func:`analyze_integration`.
+
+    The result dict's top-level keys are exactly ``{"integration",
+    "commands"}`` unless the caller explicitly opts in via
+    ``with_diagnostics=True``. Static-only mode is unaffected
+    (it never emits diagnostics).
+    """
+
+    def test_static_only_never_emits_diagnostics(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # Build a minimal integration on disk so the static path runs
+        # without mocking the file loader.
+        integ_dir = tmp_path / "MyInt"
+        integ_dir.mkdir()
+        (integ_dir / "MyInt.py").write_text(
+            "import demistomock as demisto\n"
+            "from CommonServerPython import *\n"
+            "def main():\n"
+            "    pass\n"
+        )
+        (integ_dir / "MyInt.yml").write_text(
+            "name: MyInt\n"
+            "display: MyInt\n"
+            "configuration:\n"
+            "  - name: api_key\n"
+            "    type: 4\n"
+            "script:\n"
+            "  type: python\n"
+            "  subtype: python3\n"
+            "  script: ''\n"
+            "  commands: []\n"
+        )
+        result = ccp.analyze_integration(
+            integration_path=integ_dir,
+            commands_filter=None,
+            static_only=True,
+            ignore=set(),
+            timeout=30,
+            docker_cfg=None,
+            with_diagnostics=False,
+        )
+        assert sorted(result.keys()) == ["commands", "integration"]
+
+    def test_static_only_with_diagnostics_flag_still_no_diagnostics(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        # Even when the flag is True, static-only mode has nothing to
+        # report and must NOT add the key.
+        integ_dir = tmp_path / "MyInt"
+        integ_dir.mkdir()
+        (integ_dir / "MyInt.py").write_text(
+            "import demistomock as demisto\n"
+            "from CommonServerPython import *\n"
+            "def main():\n"
+            "    pass\n"
+        )
+        (integ_dir / "MyInt.yml").write_text(
+            "name: MyInt\n"
+            "display: MyInt\n"
+            "configuration:\n"
+            "  - name: api_key\n"
+            "    type: 4\n"
+            "script:\n"
+            "  type: python\n"
+            "  subtype: python3\n"
+            "  script: ''\n"
+            "  commands: []\n"
+        )
+        result = ccp.analyze_integration(
+            integration_path=integ_dir,
+            commands_filter=None,
+            static_only=True,
+            ignore=set(),
+            timeout=30,
+            docker_cfg=None,
+            with_diagnostics=True,
+        )
+        assert "diagnostics" not in result
