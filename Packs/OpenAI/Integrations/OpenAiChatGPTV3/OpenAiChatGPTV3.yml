@@ -19,9 +19,10 @@ configuration:
 - displaypassword: API Key
   name: apikey
   type: 9
-  required: true
+  required: false
   section: Connect
   hiddenusername: true
+  additionalinfo: 'The OpenAI Platform API key used by the chat-completion commands. Required only when running those commands or when running test-module without the event-collector keys.'
 - display: Model
   additionalinfo: The model that will process the inputs and generate the completion.
   name: model-select
@@ -88,20 +89,18 @@ configuration:
   type: 8
   required: false
   section: Connect
-- displaypassword: Admin API Key
+- display: Admin API Key
   name: admin_api_key
-  type: 9
+  type: 14
   required: false
   section: Connect
-  hiddenusername: true
-  additionalinfo: 'Admin API key from the OpenAI Platform. Required when fetching the "OpenAI Audit logs" event type. Not used by any other event type.'
-- displaypassword: Compliance API Key
+  additionalinfo: 'The Admin API key for the OpenAI Platform. Required only when fetching the "OpenAI Audit logs" event type.'
+- display: Compliance API Key
   name: compliance_api_key
-  type: 9
+  type: 14
   required: false
   section: Connect
-  hiddenusername: true
-  additionalinfo: 'Compliance API key from the ChatGPT Platform. Required when fetching any of the following Compliance event types: Conversation Messages, Apps, Apps Auth, Compliance Audit, Auth, Codex, ChatGPT, Codex Security, Workspace Agents.'
+  additionalinfo: 'The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types.'
 - display: Compliance Server URL
   name: compliance_url
   type: 0
@@ -109,13 +108,13 @@ configuration:
   defaultvalue: https://api.chatgpt.com
   section: Connect
   advanced: true
-  additionalinfo: 'Base URL for the ChatGPT Platform Compliance APIs.'
+  additionalinfo: 'The base URL for the ChatGPT Platform Compliance APIs.'
 - display: Workspace ID
   name: workspace_id
   type: 0
   required: false
   section: Collect
-  additionalinfo: 'The Compliance workspace UUID (e.g., "4a4676f3-3d74-4723-b696-c93e6d01078a"). Required when fetching Compliance event types.'
+  additionalinfo: 'The Compliance workspace UUID (for example, 4a4676f3-3d74-4723-b696-c93e6d01078a). Required when fetching Compliance event types.'
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -137,21 +136,22 @@ configuration:
   - ChatGPT
   - Codex Security
   - Workspace Agents
-  additionalinfo: 'Select which event streams to fetch. "OpenAI Audit logs" uses the Admin API; all other selections use the Compliance API and require a Workspace ID.'
+  defaultvalue: OpenAI Audit logs,Conversation Messages,Apps,Apps Auth,Compliance Audit,Auth,Codex,ChatGPT,Codex Security,Workspace Agents
+  additionalinfo: 'The event types to fetch. OpenAI Audit logs uses the Admin API; all other selections use the Compliance API and require a Workspace ID.'
 - display: Maximum number of OpenAI Audit events per fetch
   name: audit_max_fetch
   type: 0
   required: false
   defaultvalue: '1000'
   section: Collect
-  additionalinfo: 'Maximum number of Audit events fetched per cycle (default: 1000).'
+  additionalinfo: 'The maximum number of Audit events to return per fetch.'
 - display: Maximum number of Compliance events per fetch
   name: compliance_max_fetch
   type: 0
   required: false
   defaultvalue: '900'
   section: Collect
-  additionalinfo: 'Maximum number of Compliance events fetched per cycle (default: 900).'
+  additionalinfo: 'The maximum number of Compliance events to return per fetch.'
 - display: First fetch time
   name: first_fetch
   type: 0
@@ -159,7 +159,7 @@ configuration:
   defaultvalue: '1 day'
   section: Collect
   advanced: true
-  additionalinfo: 'How far back to look on the first fetch (e.g., "1 day", "12 hours"). Subsequent fetches resume from the last seen event.'
+  additionalinfo: 'How far back to look for the first fetch (for example, "1 day", "12 hours"). Subsequent fetches resume from the last seen event.'
 - defaultvalue: '1'
   display: Events Fetch Interval
   name: eventFetchInterval
@@ -257,7 +257,7 @@ script:
     description: Manually retrieves events from OpenAI for development/debugging. Use with caution - it can ingest events when 'should_push_events' is true, leading to event duplication.
     arguments:
     - name: event_type
-      description: 'Event type(s) to retrieve. If not specified, uses the value configured in the integration parameters.'
+      description: 'A comma-separated list of event types to retrieve. If not specified, uses the value configured in the integration parameters.'
       auto: PREDEFINED
       isArray: true
       predefined:
@@ -272,12 +272,12 @@ script:
       - 'Codex Security'
       - 'Workspace Agents'
     - name: limit
-      description: 'Maximum number of events to return per stream.'
+      description: 'The maximum number of events to return per stream.'
       defaultValue: '50'
     - name: start_time
-      description: 'Lookback start time for the fetch. Supports ISO 8601 or relative time (e.g., "3 days ago", "2099-01-01T00:00:00Z").'
+      description: 'The lookback start time for the fetch. Supports ISO 8601 or relative time (for example, "3 days ago", "2099-01-01T00:00:00Z").'
     - name: should_push_events
-      description: 'If true, retrieved events are also sent to XSIAM ingestion. Defaults to false.'
+      description: 'Whether retrieved events are also ingested by Cortex.'
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
@@ -288,7 +288,7 @@ script:
       description: The unique identifier of the event.
       type: String
     - contextPath: OpenAI.Event._event_type
-      description: Upstream event_type (Compliance) or empty for Audit events.
+      description: The upstream event_type for Compliance events. Left empty for Audit events.
       type: String
     - contextPath: OpenAI.Event.source_log_type
       description: The source log type used by downstream parsing rules.

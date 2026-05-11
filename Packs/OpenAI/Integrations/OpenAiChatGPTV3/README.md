@@ -5,12 +5,12 @@
 
 - #### Generate an API Key
 
-    1. Sign-up or login to [OpenAI developer platform](https://platform.openai.com).
-    2. Generate a new API Key at [OpenAI developer platform - api-keys](https://platform.openai.com/api-keys).
+    1. Sign up or log in to [OpenAI developer platform](https://platform.openai.com).
+    2. Generate a new API key at [OpenAI developer platform - api-keys](https://platform.openai.com/api-keys).
 
 - #### Choose a GPT model to interact with
 
-    1. The integration utilizes the **'Chat Completions'** endpoint merely. Therefore, it will only be possible to configure models that support this endpoint (_https://api.openai.com/v1/chat/completions_).
+    1. This integration supports only the **'Chat Completions'** endpoint. Therefore, you can only configure models that support this endpoint (_https://api.openai.com/v1/chat/completions_).
 
     2. For tasks requiring deep understanding and extensive inputs, opt for more advanced models (e.g. gpt-4). These models offer a larger context window, allowing them to process bigger documents, and provide more refined and comprehensive responses.
     The more elementary models (e.g. gpt-3.5) often provide shallower answers and input analysis.
@@ -49,7 +49,7 @@
 
 - #### Event Collector — Datasets
 
-    Each Event Collector stream lands in its own XSIAM dataset:
+    Each Event Collector stream lands in its own Cortex dataset:
 
     | Stream                | Vendor   | Product               | Dataset                           |
     |-----------------------|----------|-----------------------|-----------------------------------|
@@ -142,7 +142,7 @@ Create an email template out of the conversation context to be sent from the SOC
 ### openai-get-events
 
 ***
-Manually fetch a bounded batch of Audit and/or Compliance events for development/debugging. Does NOT advance the persisted `last_run` cursor, so it is safe to run against production tenants. Use `should_push_events=true` to additionally ingest the fetched events into the matching XSIAM dataset.
+Manually fetch a bounded batch of Audit and/or Compliance events for development/debugging. Does NOT advance the persisted `last_run` cursor, so it is safe to run against production tenants. Use `should_push_events=true` to additionally ingest the fetched events into the matching Cortex dataset.
 
 #### Base Command
 
@@ -155,7 +155,7 @@ Manually fetch a bounded batch of Audit and/or Compliance events for development
 | event_type            | The event type(s) to fetch. Comma-separated list. Possible values: `OpenAI Audit logs`, `Conversation Messages`, `Apps`, `Apps Auth`, `Compliance Audit`, `Auth`, `Codex`, `ChatGPT`, `Codex Security`, `Workspace Agents`. Defaults to the values configured in the integration parameters.             | No           |
 | limit                 | Maximum number of events to return per stream. Default: `50`.                                                                                                                                                                                                                                            | No           |
 | start_time            | Lookback start time for the fetch. Supports ISO 8601 or relative time (e.g., `3 days ago`, `2099-01-01T00:00:00Z`).                                                                                                                                                                                       | No           |
-| should_push_events    | If `true`, the command also pushes the retrieved events to XSIAM (Audit -> `openai_chatgpt_audit_raw`, Compliance -> `openai_chatgpt_compliance_raw`). Possible values: `true`, `false`. Default: `false`.                                                                                                | No           |
+| should_push_events    | If `true`, the command also pushes the retrieved events to Cortex (Audit -> `openai_chatgpt_audit_raw`, Compliance -> `openai_chatgpt_compliance_raw`). Possible values: `true`, `false`. Default: `false`.                                                                                               | No           |
 
 #### Context Output
 

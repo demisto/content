@@ -8,6 +8,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta, UTC
 from typing import Any
 from collections.abc import Callable
@@ -40,10 +41,15 @@ class Config:
     DEFAULT_AUDIT_MAX_FETCH = 1000
     DEFAULT_COMPLIANCE_MAX_FETCH = 900
     DEFAULT_GET_EVENTS_LIMIT = 50
-    AUDIT_PAGE_SIZE = 100  # Hard ceiling enforced by the Audit Logs API.
+    AUDIT_PAGE_SIZE = 100
+    COMPLIANCE_PAGE_SIZE = 100
     MAX_PAGES_PER_FETCH = 50  # Safety cap on pagination loops.
 
     DEFAULT_FIRST_FETCH = "1 minute ago"
+
+    # Test-module probe: per-stream max-events ceiling when test_module exercises the collector
+    # via the same fetch_stream pipeline (mirrors Koi's TEST_MODULE_MAX_EVENTS=1).
+    TEST_MODULE_MAX_EVENTS = 1
 
 
 class Stream:
@@ -276,6 +282,12 @@ class OpenAiClient(BaseClient):
         self, chat_context: List[dict[str, str]], completion_params: dict[str, str | None]
     ) -> dict[str, Any]:
         """Gets the response to a chat_completions request using the OpenAI API."""
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the chat-completion commands "
+                "(gpt-send-message, gpt-check-email-header, gpt-check-email-body, gpt-create-soc-email-template). "
+                "Configure the 'API Key' integration parameter and try again."
+            )
 
         options: Dict[str, Any] = {ArgAndParamNames.MODEL: self.model}
         max_tokens = completion_params.get(ArgAndParamNames.MAX_TOKENS, None)
@@ -291,7 +303,13 @@ class OpenAiClient(BaseClient):
             options[ArgAndParamNames.TOP_P] = float(top_p)
 
         options["messages"] = chat_context
-        demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
+        demisto.debug(
+            f"openai-gpt Calling chat completions | model={options.get(ArgAndParamNames.MODEL)} | "
+            f"messages_count={len(chat_context)} | "
+            f"max_tokens={options.get(ArgAndParamNames.MAX_TOKENS)} | "
+            f"temperature={options.get(ArgAndParamNames.TEMPERATURE)} | "
+            f"top_p={options.get(ArgAndParamNames.TOP_P)}"
+        )
         return self._http_request(
             method="POST", url_suffix=OpenAiClient.CHAT_COMPLETIONS_ENDPOINT, json_data=options, headers=self.headers
         )
@@ -381,7 +399,10 @@ class OpenAiClient(BaseClient):
         for et in event_types:
             params.append(("event_type", et))
         if limit is not None:
-            params.append(("limit", limit))
+            # The Compliance API rejects limit > 100 with HTTP 422; clamp defensively so the per-fetch
+            # `compliance_max_fetch` (which can be larger) never leaks straight into the wire `limit`.
+            effective_limit = min(limit, Config.COMPLIANCE_PAGE_SIZE)
+            params.append(("limit", effective_limit))
 
         full_url = self.compliance_base_url + ApiPaths.compliance_logs(workspace_id)
         headers = {"Authorization": self.compliance_api_key, "Accept": "application/json"}
@@ -467,7 +488,7 @@ class OpenAiClient(BaseClient):
 
     # endregion
 
-    # region Event Collector - XSIAM ingestion
+    # region Event Collector - Cortex ingestion
     def send_events(self, events: list[dict], product: str) -> None:
         """Send events to XSIAM under `Config.VENDOR` and the given `product` (dataset suffix).
 
@@ -520,8 +541,8 @@ def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dic
     """
 
     chat_context = []
+    demisto.debug(f"openai-gpt conversation_to_chat_context expanding {len(conversation)} turn(s)")
     for element in conversation:
-        demisto.debug(f"openai-gpt conversation_to_chat_context reading {element=} from conversation")
         chat_context.append({"role": Roles.USER, "content": element.get(Roles.USER, "")})
         chat_context.append({"role": Roles.ASSISTANT, "content": element.get(Roles.ASSISTANT, "")})
 
@@ -549,14 +570,14 @@ def get_chat_context(reset_conversation_history: bool, message: str) -> List[dic
         demisto.debug("openai-gpt get_chat_context conversation history reset or initialized as empty.")
     else:
         demisto.debug(
-            f"openai-gpt get_chat_context using conversation history from context:"
-            f" [type(conversation)={type(conversation)}]{conversation=}"
+            f"openai-gpt get_chat_context loaded conversation history from context | "
+            f"type={type(conversation).__name__} | turns={len(conversation) if hasattr(conversation, '__len__') else 'n/a'}"
         )
 
     # Create the chat context which is suitable with the required format for a 'chat-completions' request.
     chat_context = conversation_to_chat_context(conversation)
     chat_context.append({"role": Roles.USER, "content": message})
-    demisto.debug(f"openai-gpt get_chat_context updated chat_context with new message: {chat_context=}")
+    demisto.debug(f"openai-gpt get_chat_context appended new user message | total_messages={len(chat_context)}")
     return chat_context
 
 
@@ -630,7 +651,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     )
 
     if email_part == EmailParts.HEADERS:
-        demisto.debug(f"openai-gpt checking email headers: {email_headers=}")
+        demisto.debug(f"openai-gpt checking email headers | headers_present={bool(email_headers)}")
         if email_headers:
             email_headers_formatted = {
                 header["name"]: header["value"] for header in email_headers if "name" in header and "value" in header
@@ -641,7 +662,10 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
         else:
             raise DemistoException("'parse_emails' did not extract any email headers from the provided file..")
     elif email_part == EmailParts.BODY:
-        demisto.debug(f"openai-gpt checking email body: {email_text_body=} {email_html_body=}")
+        demisto.debug(
+            f"openai-gpt checking email body | "
+            f"text_body_present={bool(email_text_body)} | html_body_present={bool(email_html_body)}"
+        )
 
         if not email_text_body and not email_html_body:
             raise DemistoException("'email_parser' did not extract any email body from the provided file.")
@@ -656,7 +680,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     else:
         raise DemistoException("Invalid email part to check provided.")
 
-    demisto.debug(f"openai-gpt check_email_part {check_email_part_message=}")
+    demisto.debug(f"openai-gpt check_email_part built prompt | length={len(check_email_part_message or '')}")
 
     # Starting a new conversation as of a new topic discussed.
     args.update({ArgAndParamNames.RESET_CONVERSATION_HISTORY: "yes", ArgAndParamNames.MESSAGE: check_email_part_message})
@@ -679,34 +703,73 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
 
 
 def test_module(client: OpenAiClient, params: dict) -> str:
-    """Tests API connectivity and authentication along with model compatability with 'Chat Completions' endpoint.
+    """Probe chat-completions (when its API Key is set) and each selected/credentialed event-collector stream.
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``OpenAiClient``
-    :param client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Each capability is independent: an instance using only chat commands needs the API Key; an
+    instance using only the event collector needs the matching Admin/Compliance keys (and
+    workspace_id for compliance). At least ONE configured capability is required for the test
+    to be meaningful.
     """
-    message = ""
-    try:
-        chat_message = {"role": "user", "content": ""}
-        completion_params = {
-            ArgAndParamNames.MAX_TOKENS: params.get(ArgAndParamNames.MAX_TOKENS, None),
-            ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
-            ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
-        }
-        client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = "Authorization Error: make sure API Key is correctly set"
-        else:
-            raise e
-    return message
+    demisto.debug("[Test Module] Starting test-module probes.")
+
+    if client.api_key:
+        demisto.debug("[Test Module] Probing chat-completions endpoint...")
+        try:
+            chat_message = {"role": "user", "content": ""}
+            completion_params = {
+                ArgAndParamNames.MAX_TOKENS: params.get(ArgAndParamNames.MAX_TOKENS, None),
+                ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
+                ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
+            }
+            client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
+        except DemistoException as e:
+            if "Forbidden" in str(e) or "Authorization" in str(e):
+                demisto.error(f"[Test Module] Chat-completions probe failed with auth error: {e}")
+                return "Authorization Error: make sure API Key is correctly set"
+            demisto.error(f"[Test Module] Chat-completions probe raised non-auth error: {e}")
+            raise
+        demisto.debug("[Test Module] Chat-completions probe passed.")
+    else:
+        demisto.debug("[Test Module] Chat-completions probe skipped (no API Key configured).")
+
+    collector_params = parse_collector_params(params)
+    streams_to_probe = [
+        stream
+        for stream in collector_params.streams_to_run()
+        if (stream == Stream.AUDIT and client.admin_api_key)
+        or (stream == Stream.COMPLIANCE and client.compliance_api_key and collector_params.workspace_id)
+    ]
+    if not streams_to_probe:
+        if not client.api_key:
+            raise DemistoException(
+                "No capability is configured: provide either the 'API Key' (for chat-completion commands) "
+                "or an 'Admin API Key' / 'Compliance API Key' + 'Workspace ID' (for the event collector). "
+                "At least one is required."
+            )
+        demisto.debug(
+            "[Test Module] No collector streams to probe (none selected, or missing credentials/workspace_id)."
+            " Returning 'ok' after chat-completions probe only."
+        )
+        return "ok"
+
+    probe_params = replace(
+        collector_params,
+        audit_max_fetch=Config.TEST_MODULE_MAX_EVENTS,
+        compliance_max_fetch=Config.TEST_MODULE_MAX_EVENTS,
+    )
+    demisto.debug(f"[Test Module] Probing collector streams (max_events={Config.TEST_MODULE_MAX_EVENTS}): {streams_to_probe}")
+
+    for stream in streams_to_probe:
+        demisto.debug(f"[Test Module] Probing {stream} stream...")
+        try:
+            fetch_stream(client=client, stream=stream, last_run={}, collector_params=probe_params)
+        except Exception as exc:
+            demisto.error(f"[Test Module] {stream} probe FAILED: {exc}")
+            raise DemistoException(f"Test failed for the '{stream}' event-collector stream: {exc}") from exc
+        demisto.debug(f"[Test Module] {stream} probe succeeded.")
+
+    demisto.debug("[Test Module] All probes passed - returning 'ok'.")
+    return "ok"
 
 
 def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> tuple[CommandResults, dict[str, Any]]:
@@ -725,10 +788,17 @@ def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> tuple[Co
 
     reset_conversation_history = args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, "") == "yes"
     chat_context = get_chat_context(reset_conversation_history, message)
-    demisto.debug(f"openai-gpt send_message_command {chat_context=}, {completion_params=}")
+    demisto.debug(
+        f"openai-gpt send_message_command prepared chat | messages_count={len(chat_context)} | "
+        f"completion_params_keys={sorted(completion_params.keys())}"
+    )
 
     response = client.get_chat_completions(chat_context=chat_context, completion_params=completion_params)
-    demisto.debug(f"openai-gpt send_message_command {response=}")
+    demisto.debug(
+        f"openai-gpt send_message_command got response | "
+        f"choices_count={len(response.get('choices') or [])} | "
+        f"usage_keys={sorted((response.get('usage') or {}).keys())}"
+    )
 
     assistant_message = extract_assistant_message(response)
     conversation_step = [{Roles.USER: message, Roles.ASSISTANT: assistant_message}]
@@ -814,7 +884,7 @@ def parse_concatenated_json(body: str) -> list[dict[str, Any]]:
             obj, end = decoder.raw_decode(buffer)
         except json.JSONDecodeError as exc:
             # Stop on first decode failure rather than silently truncate.
-            demisto.debug(f"[Parse] Failed to decode concatenated-JSON: {exc.msg} (so far: {len(records)} records).")
+            demisto.error(f"[Parse] Failed to decode concatenated-JSON: {exc.msg} (so far: {len(records)} records).")
             break
         if isinstance(obj, dict):
             records.append(obj)
@@ -836,50 +906,47 @@ def parse_concatenated_json(body: str) -> list[dict[str, Any]]:
 # =================================
 # Integration parameter parsing & validation
 # =================================
-def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
-    """Parse and validate integration configuration parameters.
+def _extract_credential(raw: Any) -> str:
+    """Extract a password string from a Cortex credentials dict or pass through a plain string."""
+    if isinstance(raw, dict):
+        return raw.get("password", "") or ""
+    if raw is None:
+        return ""
+    return str(raw)
 
-    Extracts connection settings, credentials and Event Collector options from the raw
-    `demisto.params()` dictionary into a single, validated config dict that `main()`
-    can hand straight to the `OpenAiClient` constructor.
 
-    Args:
-        params: Raw parameters from `demisto.params()`.
+def parse_event_types_to_fetch(raw_event_types: Any) -> list[str]:
+    """Validate and normalize the selected event-type labels.
 
-    Returns:
-        Validated configuration dictionary with keys:
-        `base_url`, `api_key`, `model`, `verify`, `proxy`,
-        `admin_api_key`, `compliance_api_key`, `compliance_base_url`.
-
-    Raises:
-        DemistoException: If `event_types_to_fetch` contains values that are not
-            recognized as either an Audit or Compliance event type.
+    Shared by `parse_integration_params` (save-time validation) and `parse_collector_params`
+    (runtime stream selection) so the parsing lives in one place.
     """
-    demisto.debug("[Config] Parsing integration parameters...")
-
-    base_url = (params.get("url") or "https://api.openai.com/").rstrip("/") + "/"
-
-    api_key_raw = params.get("apikey") or {}
-    api_key = api_key_raw.get("password", "") if isinstance(api_key_raw, dict) else str(api_key_raw)
-
-    admin_raw = params.get("admin_api_key") or {}
-    admin_api_key = admin_raw.get("password", "") if isinstance(admin_raw, dict) else str(admin_raw)
-
-    compliance_raw = params.get("compliance_api_key") or {}
-    compliance_api_key = compliance_raw.get("password", "") if isinstance(compliance_raw, dict) else str(compliance_raw)
-
-    compliance_base_url = params.get("compliance_url") or Config.DEFAULT_COMPLIANCE_URL
-    model = params.get("model-freetext") or params.get("model-select") or ""
-
-    verify = not argToBoolean(params.get("insecure", False))
-    proxy = argToBoolean(params.get("proxy", False))
-
     valid_labels = {EventType.AUDIT, *EVENT_TYPE_LABEL_TO_API.keys()}
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch") or [])
+    event_types_to_fetch = argToList(raw_event_types or [])
     invalid = [t for t in event_types_to_fetch if t not in valid_labels]
     if invalid:
         raise DemistoException(f"Invalid event type(s) selected: {invalid}. Valid options: {sorted(valid_labels)}")
+    return event_types_to_fetch
 
+
+def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Parse the connection/credential settings into a config dict for the `OpenAiClient`.
+
+    Collector run-time params (event types, max-fetch, first-fetch) are parsed by
+    `parse_collector_params`. The cred-vs-events correlation check runs here so
+    misconfigured instances fail at save-time.
+    """
+    base_url = (params.get("url") or "https://api.openai.com/").rstrip("/") + "/"
+    api_key = _extract_credential(params.get("apikey"))
+    admin_api_key = _extract_credential(params.get("admin_api_key"))
+    compliance_api_key = _extract_credential(params.get("compliance_api_key"))
+    compliance_base_url = params.get("compliance_url") or Config.DEFAULT_COMPLIANCE_URL
+    workspace_id = params.get("workspace_id") or ""
+    model = params.get("model-freetext") or params.get("model-select") or ""
+    verify = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+
+    event_types_to_fetch = parse_event_types_to_fetch(params.get("event_types_to_fetch"))
     validate_event_types_credentials_correlation(
         event_types_to_fetch=event_types_to_fetch,
         admin_api_key=admin_api_key,
@@ -903,6 +970,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "admin_api_key": admin_api_key,
         "compliance_api_key": compliance_api_key,
         "compliance_base_url": compliance_base_url,
+        "workspace_id": workspace_id,
     }
 
 
@@ -948,8 +1016,6 @@ def validate_event_types_credentials_correlation(
             "ChatGPT Compliance logs. "
             "Either provide the Compliance API Key or remove the Compliance event types from the selection."
         )
-
-    demisto.debug("[Validation] Credentials cover all selected event-type groups.")
 
 
 # endregion
@@ -1077,6 +1143,134 @@ def selected_audit_enabled(event_types_to_fetch: list[str]) -> bool:
 def selected_compliance_event_types(event_types_to_fetch: list[str]) -> list[str]:
     """Return the upstream `event_type` values for compliance streams the user selected."""
     return [EVENT_TYPE_LABEL_TO_API[label] for label in event_types_to_fetch if label in EVENT_TYPE_LABEL_TO_API]
+
+
+@dataclass
+class CollectorParams:
+    """Parsed collector run-time parameters - the single shape both commands consume."""
+
+    event_types_to_fetch: list[str]
+    audit_selected: bool
+    api_event_types: list[str]
+    audit_max_fetch: int
+    compliance_max_fetch: int
+    workspace_id: str
+    first_fetch: str
+
+    @property
+    def compliance_selected(self) -> bool:
+        return bool(self.api_event_types)
+
+    def streams_to_run(self) -> list[str]:
+        """Return the ordered list of `Stream.*` identifiers this run should fetch."""
+        out: list[str] = []
+        if self.audit_selected:
+            out.append(Stream.AUDIT)
+        if self.compliance_selected:
+            out.append(Stream.COMPLIANCE)
+        return out
+
+
+def parse_collector_params(
+    params: dict[str, Any],
+    args: dict[str, Any] | None = None,
+) -> CollectorParams:
+    """Parse the collector run-time params (event types, max-fetch, first-fetch, workspace_id).
+
+    When `args` is passed (manual `openai-get-events`), `event_type` / `limit` / `start_time`
+    override the corresponding integration params; `limit` controls both streams since the
+    manual command exposes a single knob.
+    """
+    args = args or {}
+
+    raw_event_types = args.get("event_type") if args.get("event_type") else params.get("event_types_to_fetch")
+    event_types_to_fetch = parse_event_types_to_fetch(raw_event_types)
+
+    if args:
+        unified_limit = arg_to_number(args.get("limit")) or Config.DEFAULT_GET_EVENTS_LIMIT
+        audit_max_fetch = unified_limit
+        compliance_max_fetch = unified_limit
+    else:
+        audit_max_fetch = arg_to_number(params.get("audit_max_fetch")) or Config.DEFAULT_AUDIT_MAX_FETCH
+        compliance_max_fetch = arg_to_number(params.get("compliance_max_fetch")) or Config.DEFAULT_COMPLIANCE_MAX_FETCH
+
+    first_fetch = args.get("start_time") or params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
+    workspace_id = params.get("workspace_id") or ""
+
+    return CollectorParams(
+        event_types_to_fetch=event_types_to_fetch,
+        audit_selected=selected_audit_enabled(event_types_to_fetch),
+        api_event_types=selected_compliance_event_types(event_types_to_fetch),
+        audit_max_fetch=audit_max_fetch,
+        compliance_max_fetch=compliance_max_fetch,
+        workspace_id=workspace_id,
+        first_fetch=first_fetch,
+    )
+
+
+@dataclass
+class FetchResult:
+    """Per-stream fetch output: events, last_run updates, and target XSIAM product."""
+
+    stream: str
+    events: list[dict[str, Any]] = field(default_factory=list)
+    last_run_updates: dict[str, Any] = field(default_factory=dict)
+    product: str = ""
+
+
+def fetch_stream(
+    client: OpenAiClient,
+    stream: str,
+    last_run: dict[str, Any],
+    collector_params: CollectorParams,
+) -> FetchResult:
+    """Unified per-stream fetch entry point shared by both commands.
+
+    Dispatches to `fetch_audit_logs` or `fetch_compliance_logs` based on `stream`.
+    """
+    demisto.debug(
+        f"[Fetch Stream] Dispatching stream='{stream}' | "
+        f"audit_max_fetch={collector_params.audit_max_fetch} | "
+        f"compliance_max_fetch={collector_params.compliance_max_fetch} | "
+        f"first_fetch='{collector_params.first_fetch}' | "
+        f"last_run_keys={list(last_run.keys())}"
+    )
+    if stream == Stream.AUDIT:
+        events, updates = fetch_audit_logs(
+            client=client,
+            last_run=last_run,
+            max_fetch=collector_params.audit_max_fetch,
+            first_fetch=collector_params.first_fetch,
+        )
+        return FetchResult(
+            stream=Stream.AUDIT,
+            events=events,
+            last_run_updates=updates,
+            product=Config.PRODUCT_AUDIT,
+        )
+
+    if stream == Stream.COMPLIANCE:
+        if not collector_params.workspace_id:
+            demisto.debug(
+                "[Fetch Stream] Compliance stream skipped - no workspace_id configured " "(required by /v1/compliance/.../logs)."
+            )
+            return FetchResult(stream=Stream.COMPLIANCE, product=Config.PRODUCT_COMPLIANCE)
+        events, updates = fetch_compliance_logs(
+            client=client,
+            workspace_id=collector_params.workspace_id,
+            api_event_types=collector_params.api_event_types,
+            last_run=last_run,
+            max_fetch=collector_params.compliance_max_fetch,
+            first_fetch=collector_params.first_fetch,
+        )
+        return FetchResult(
+            stream=Stream.COMPLIANCE,
+            events=events,
+            last_run_updates=updates,
+            product=Config.PRODUCT_COMPLIANCE,
+        )
+
+    raise DemistoException(f"Unknown stream identifier '{stream}'.")
 
 
 # endregion
@@ -1249,7 +1443,7 @@ def fetch_compliance_logs(
             events.append(record)
 
     if failed_content_fetches:
-        demisto.debug(f"[Compliance Fetch] {failed_content_fetches} content fetch(es) failed and were skipped.")
+        demisto.error(f"[Compliance Fetch] {failed_content_fetches} content fetch(es) failed and were skipped.")
 
     # Persist the API-reported `last_end_time` and the IDs of listings sharing that exact timestamp.
     # Falls back to the max `end_time` across listings if the API omits `last_end_time`.
@@ -1280,176 +1474,124 @@ def fetch_compliance_logs(
 # =================================
 # fetch-events / openai-get-events commands
 # =================================
-def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
-    """Scheduled XSIAM fetch: pulls Audit + Compliance events and sends them to ingestion.
+def _push_result(client: OpenAiClient, result: FetchResult, log_prefix: str) -> None:
+    """Push a single stream's events to its dataset, isolating errors per stream."""
+    if not result.events:
+        demisto.debug(f"{log_prefix} No {result.stream} events to push.")
+        return
+    demisto.debug(f"{log_prefix} Pushing {len(result.events)} {result.stream} event(s) to product='{result.product}'.")
+    try:
+        client.send_events(result.events, product=result.product)
+    except Exception as exc:
+        demisto.error(f"{log_prefix} Failed to push {result.stream} events: {exc}")
+        return
+    demisto.debug(f"{log_prefix} Push of {len(result.events)} {result.stream} event(s) completed.")
 
-    Reads `last_run` once at the start, fetches each enabled stream sequentially, merges
-    the per-stream `last_run` updates, sends all events in one batch, and writes
-    `last_run` once at the end.
-    """
+
+def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
+    """Scheduled fetch: pulls Audit + Compliance events in parallel and sends them to Cortex ingestion."""
     demisto.debug("[Command fetch-events] triggered")
 
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch") or [])
-    audit_max_fetch = arg_to_number(params.get("audit_max_fetch")) or Config.DEFAULT_AUDIT_MAX_FETCH
-    compliance_max_fetch = arg_to_number(params.get("compliance_max_fetch")) or Config.DEFAULT_COMPLIANCE_MAX_FETCH
-    workspace_id = params.get("workspace_id") or ""
-    first_fetch = params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
-
+    collector_params = parse_collector_params(params)
     last_run = demisto.getLastRun() or {}
+
     demisto.debug(
-        f"[Command fetch-events] event_types_count={len(event_types_to_fetch)} | "
-        f"audit_max_fetch={audit_max_fetch} | compliance_max_fetch={compliance_max_fetch} | "
+        f"[Command fetch-events] event_types_count={len(collector_params.event_types_to_fetch)} | "
+        f"audit_max_fetch={collector_params.audit_max_fetch} | "
+        f"compliance_max_fetch={collector_params.compliance_max_fetch} | "
         f"last_run_keys={list(last_run.keys())}"
     )
 
-    # Each thread gets a copy of last_run; the main thread merges results (no race condition).
-    audit_events: list[dict[str, Any]] = []
-    compliance_events: list[dict[str, Any]] = []
-    updated_last_run: dict[str, Any] = dict(last_run)
-
-    audit_selected = selected_audit_enabled(event_types_to_fetch)
-    api_event_types = selected_compliance_event_types(event_types_to_fetch)
-    compliance_selected = bool(api_event_types)
-
-    streams_to_run: list[str] = []
-    if audit_selected:
-        streams_to_run.append(Stream.AUDIT)
-    if compliance_selected:
-        streams_to_run.append(Stream.COMPLIANCE)
+    streams_to_run = collector_params.streams_to_run()
     if not streams_to_run:
         demisto.debug("[Command fetch-events] No event-type group selected. Nothing to fetch.")
-        demisto.setLastRun(updated_last_run)
+        demisto.setLastRun(last_run)
         return
 
     demisto.debug(f"[Command fetch-events] Launching {len(streams_to_run)} stream(s) in parallel: {streams_to_run}")
 
+    # Each thread gets its own copy of last_run; main thread merges after `as_completed`.
+    updated_last_run: dict[str, Any] = dict(last_run)
+    results: list[FetchResult] = []
+
     futures: dict[Future, str] = {}
     with ThreadPoolExecutor(max_workers=len(streams_to_run)) as executor:
-        if audit_selected:
-            demisto.debug("[Command fetch-events] Submitting audit stream to executor.")
+        for stream in streams_to_run:
+            demisto.debug(f"[Command fetch-events] Submitting {stream} stream to executor.")
             futures[
                 executor.submit(
-                    fetch_audit_logs,
+                    fetch_stream,
                     client=client,
+                    stream=stream,
                     last_run=dict(last_run),
-                    max_fetch=audit_max_fetch,
-                    first_fetch=first_fetch,
+                    collector_params=collector_params,
                 )
-            ] = Stream.AUDIT
-        if compliance_selected:
-            demisto.debug("[Command fetch-events] Submitting compliance stream to executor.")
-            futures[
-                executor.submit(
-                    fetch_compliance_logs,
-                    client=client,
-                    workspace_id=workspace_id,
-                    api_event_types=api_event_types,
-                    last_run=dict(last_run),
-                    max_fetch=compliance_max_fetch,
-                    first_fetch=first_fetch,
-                )
-            ] = Stream.COMPLIANCE
+            ] = stream
 
         for future in as_completed(futures):
             stream_name = futures[future]
             demisto.debug(f"[Command fetch-events] Future completed for stream='{stream_name}' - collecting result.")
             try:
-                events, stream_updates = future.result()
+                result = future.result()
             except Exception as exc:
                 demisto.error(f"[Command fetch-events] {stream_name} stream failed: {exc}")
                 continue
-            if stream_name == Stream.AUDIT:
-                audit_events = events
-            else:
-                compliance_events = events
-            updated_last_run.update(stream_updates)
+            results.append(result)
+            updated_last_run.update(result.last_run_updates)
             demisto.debug(
-                f"[Command fetch-events] {stream_name} stream produced {len(events)} events | "
-                f"last_run_updates={list(stream_updates.keys())}"
+                f"[Command fetch-events] {stream_name} stream produced {len(result.events)} events | "
+                f"last_run_updates={list(result.last_run_updates.keys())}"
             )
 
-    demisto.debug(
-        f"[Command fetch-events] All streams done | audit_events={len(audit_events)} | "
-        f"compliance_events={len(compliance_events)}"
-    )
+    demisto.debug(f"[Command fetch-events] All streams done. Pushing results for {len(results)} stream(s)...")
+    for result in results:
+        _push_result(client, result, log_prefix="[Command fetch-events]")
 
-    # Each stream is pushed independently so a failure in one does not block the other.
-    if audit_events:
-        try:
-            client.send_events(audit_events, product=Config.PRODUCT_AUDIT)
-        except Exception as exc:
-            demisto.error(f"[Command fetch-events] Failed to push audit events: {exc}")
-    else:
-        demisto.debug("[Command fetch-events] No audit events to push.")
-    if compliance_events:
-        try:
-            client.send_events(compliance_events, product=Config.PRODUCT_COMPLIANCE)
-        except Exception as exc:
-            demisto.error(f"[Command fetch-events] Failed to push compliance events: {exc}")
-    else:
-        demisto.debug("[Command fetch-events] No compliance events to push.")
-
+    demisto.debug(f"[Command fetch-events] Persisting merged last_run | keys={list(updated_last_run.keys())}")
     demisto.setLastRun(updated_last_run)
     demisto.debug(
-        f"[Command fetch-events] done | audit_sent={len(audit_events)} | "
-        f"compliance_sent={len(compliance_events)} | last_run_keys={list(updated_last_run.keys())}"
+        f"[Command fetch-events] done | "
+        f"streams={[r.stream for r in results]} | "
+        f"events_per_stream={[len(r.events) for r in results]} | "
+        f"last_run_keys={list(updated_last_run.keys())}"
     )
 
 
 def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
-    """Manual `openai-get-events` command for development/debugging.
-
-    Pulls a bounded number of events from the selected streams without persisting last_run,
-    so it can be invoked safely against production tenants.
-    """
+    """Manual `openai-get-events` command. Runs the same fetch pipeline without persisting `last_run`."""
     demisto.debug("[Command openai-get-events] triggered")
 
-    event_type_arg = argToList(args.get("event_type")) or argToList(params.get("event_types_to_fetch") or [])
-    limit = arg_to_number(args.get("limit")) or Config.DEFAULT_GET_EVENTS_LIMIT
+    collector_params = parse_collector_params(params, args=args)
     should_push_events = argToBoolean(args.get("should_push_events", False))
-    workspace_id = params.get("workspace_id") or ""
-    first_fetch = args.get("start_time") or params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
 
     demisto.debug(
-        f"[Command openai-get-events] event_type_count={len(event_type_arg)} | limit={limit} | "
-        f"should_push_events={should_push_events} | first_fetch='{first_fetch}'"
+        f"[Command openai-get-events] event_type_count={len(collector_params.event_types_to_fetch)} | "
+        f"limit={collector_params.audit_max_fetch} | should_push_events={should_push_events} | "
+        f"first_fetch='{collector_params.first_fetch}'"
     )
 
-    audit_events: list[dict[str, Any]] = []
-    compliance_events: list[dict[str, Any]] = []
+    streams_to_run = collector_params.streams_to_run()
+    if not streams_to_run:
+        demisto.debug("[Command openai-get-events] No event-type group selected. Returning empty result.")
+    else:
+        demisto.debug(f"[Command openai-get-events] Fetching {len(streams_to_run)} stream(s) sequentially: {streams_to_run}")
 
-    if selected_audit_enabled(event_type_arg):
-        # Run Audit fetch with a fresh, in-memory last_run so we don't mutate persistent state.
-        audit_events, _ = fetch_audit_logs(client=client, last_run={}, max_fetch=limit, first_fetch=first_fetch)
+    results: list[FetchResult] = []
+    for stream in streams_to_run:
+        demisto.debug(f"[Command openai-get-events] Fetching {stream} stream...")
+        results.append(fetch_stream(client=client, stream=stream, last_run={}, collector_params=collector_params))
+        demisto.debug(f"[Command openai-get-events] {stream} stream returned {len(results[-1].events)} event(s).")
 
-    api_event_types = selected_compliance_event_types(event_type_arg)
-    if api_event_types:
-        if not workspace_id:
-            demisto.debug(
-                "[Command openai-get-events] Compliance event types selected but no workspace_id configured - "
-                "skipping the compliance fetch."
-            )
-        else:
-            compliance_events, _ = fetch_compliance_logs(
-                client=client,
-                workspace_id=workspace_id,
-                api_event_types=api_event_types,
-                last_run={},
-                max_fetch=limit,
-                first_fetch=first_fetch,
-            )
-
-    all_events: list[dict[str, Any]] = audit_events + compliance_events
+    all_events: list[dict[str, Any]] = [event for result in results for event in result.events]
     demisto.debug(
         f"[Command openai-get-events] Returning {len(all_events)} event(s) "
-        f"(audit={len(audit_events)}, compliance={len(compliance_events)}, push={should_push_events})."
+        f"({', '.join(f'{r.stream}={len(r.events)}' for r in results) or 'no streams'}, "
+        f"push={should_push_events})."
     )
+
     if should_push_events:
-        # Each stream goes to its own dataset.
-        if audit_events:
-            client.send_events(audit_events, product=Config.PRODUCT_AUDIT)
-        if compliance_events:
-            client.send_events(compliance_events, product=Config.PRODUCT_COMPLIANCE)
+        for result in results:
+            _push_result(client, result, log_prefix="[Command openai-get-events]")
 
     readable_output = tableToMarkdown(
         "OpenAI GPT Events",

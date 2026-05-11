@@ -467,11 +467,13 @@ def test_validate_event_types_credentials_correlation(event_types, admin_key, co
         pytest.param('{"a":1}garbage', [{"a": 1}], id="bad-trailing-garbage-stops-parser-keeps-decoded"),
     ],
 )
-def test_parse_concatenated_json(body, expected):
+def test_parse_concatenated_json(body, expected, capfd):
     """`parse_concatenated_json` splits a stream of concatenated JSON / JSONL into a list of dicts."""
     from OpenAiChatGPTV3 import parse_concatenated_json
 
-    assert parse_concatenated_json(body) == expected
+    # The "trailing garbage" case calls `demisto.error(...)` which writes to stdout in the test runtime.
+    with capfd.disabled():
+        assert parse_concatenated_json(body) == expected
 
 
 def test_parse_concatenated_json_loads_fixture_file():
@@ -845,7 +847,7 @@ def test_fetch_compliance_logs_no_listings_advances_cursor_only(mocker):
     assert updates[LastRunKey.COMPLIANCE_LAST_IDS] == []
 
 
-def test_fetch_compliance_logs_content_failure_isolated(mocker):
+def test_fetch_compliance_logs_content_failure_isolated(mocker, capfd):
     """Bad path: a single content-fetch failure must NOT abort processing of other listings."""
     from OpenAiChatGPTV3 import OpenAiClient, fetch_compliance_logs, ComplianceEvent
 
@@ -864,14 +866,16 @@ def test_fetch_compliance_logs_content_failure_isolated(mocker):
     mocker.patch.object(OpenAiClient, "list_compliance_logs", return_value=listing_response)
     mocker.patch.object(OpenAiClient, "get_compliance_log_content", side_effect=content_side_effect)
 
-    events, _ = fetch_compliance_logs(
-        client=client,
-        workspace_id="FAKE_WORKSPACE_ID",
-        api_event_types=[ComplianceEvent.AUDIT_LOG],
-        last_run={},
-        max_fetch=100,
-        first_fetch="1 day",
-    )
+    # `fetch_compliance_logs` calls `demisto.error(...)` when one or more content fetches fail (writes to stdout).
+    with capfd.disabled():
+        events, _ = fetch_compliance_logs(
+            client=client,
+            workspace_id="FAKE_WORKSPACE_ID",
+            api_event_types=[ComplianceEvent.AUDIT_LOG],
+            last_run={},
+            max_fetch=100,
+            first_fetch="1 day",
+        )
     # FAKE_LISTING_001 failed and was skipped; FAKE_LISTING_002 succeeded and produced one event.
     assert [e["id"] for e in events] == ["FAKE_LISTING_002"]
 
@@ -1007,6 +1011,471 @@ def test_get_events_command(mocker, should_push, expected_send_calls):
     outputs = cast(list, result.outputs)
     assert {e["id"] for e in outputs} == {"FAKE_AUDIT_EVENT_001", "FAKE_COMPLIANCE_EVENT_001"}
     assert sender.call_count == expected_send_calls
+
+
+# endregion
+
+
+# region Event Collector tests - new helpers (refactor coverage)
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        pytest.param({"password": "FAKE_KEY"}, "FAKE_KEY", id="happy-dict-shape-type-9"),
+        pytest.param({"identifier": "user", "password": "FAKE_KEY"}, "FAKE_KEY", id="happy-dict-shape-with-identifier"),
+        pytest.param("FAKE_KEY", "FAKE_KEY", id="happy-plain-string-type-14"),
+        pytest.param(None, "", id="happy-none-yields-empty"),
+        pytest.param({}, "", id="happy-empty-dict-yields-empty"),
+        pytest.param({"password": ""}, "", id="happy-dict-with-empty-password"),
+        pytest.param({"password": None}, "", id="happy-dict-with-none-password"),
+    ],
+)
+def test_extract_credential(raw, expected):
+    """`_extract_credential` accepts both dict-shape (legacy type:9) and string-shape (modern type:14)."""
+    from OpenAiChatGPTV3 import _extract_credential
+
+    assert _extract_credential(raw) == expected
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        pytest.param(None, [], id="happy-none-yields-empty-list"),
+        pytest.param([], [], id="happy-empty-list-yields-empty-list"),
+        pytest.param(["OpenAI Audit logs"], ["OpenAI Audit logs"], id="happy-single-audit-label"),
+        pytest.param(
+            ["OpenAI Audit logs", "Compliance Audit"],
+            ["OpenAI Audit logs", "Compliance Audit"],
+            id="happy-mixed-audit-and-compliance",
+        ),
+        pytest.param(
+            "OpenAI Audit logs,Compliance Audit",
+            ["OpenAI Audit logs", "Compliance Audit"],
+            id="happy-csv-string",
+        ),
+    ],
+)
+def test_parse_event_types_to_fetch_happy_paths(raw, expected):
+    """`parse_event_types_to_fetch` normalizes various inputs into the canonical list."""
+    from OpenAiChatGPTV3 import parse_event_types_to_fetch
+
+    assert parse_event_types_to_fetch(raw) == expected
+
+
+def test_parse_event_types_to_fetch_rejects_unknown_labels():
+    """Bad path: unknown labels surface as an informative `DemistoException`."""
+    from OpenAiChatGPTV3 import parse_event_types_to_fetch
+
+    with pytest.raises(DemistoException) as exc_info:
+        parse_event_types_to_fetch(["NotAnEventType"])
+    assert "Invalid event type" in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "audit_selected, api_event_types, expected_streams",
+    [
+        pytest.param(False, [], [], id="none-selected-no-streams"),
+        pytest.param(True, [], ["audit"], id="audit-only"),
+        pytest.param(False, ["AUDIT_LOG"], ["compliance"], id="compliance-only"),
+        pytest.param(True, ["AUDIT_LOG"], ["audit", "compliance"], id="both-streams-ordered-audit-first"),
+    ],
+)
+def test_collector_params_streams_to_run(audit_selected, api_event_types, expected_streams):
+    """`CollectorParams.streams_to_run` selects audit + compliance based on flags."""
+    from OpenAiChatGPTV3 import CollectorParams
+
+    params = CollectorParams(
+        event_types_to_fetch=[],
+        audit_selected=audit_selected,
+        api_event_types=api_event_types,
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    assert params.streams_to_run() == expected_streams
+    assert params.compliance_selected is bool(api_event_types)
+
+
+def test_parse_collector_params_no_args_uses_integration_defaults():
+    """Happy path: when called from fetch-events (no args), values come from integration params."""
+    from OpenAiChatGPTV3 import Config, parse_collector_params
+
+    params = {
+        "event_types_to_fetch": ["OpenAI Audit logs", "Compliance Audit"],
+        "audit_max_fetch": "200",
+        "compliance_max_fetch": "150",
+        "workspace_id": "FAKE_WORKSPACE_ID",
+        "first_fetch": "3 days",
+    }
+    collector = parse_collector_params(params)
+
+    assert collector.event_types_to_fetch == ["OpenAI Audit logs", "Compliance Audit"]
+    assert collector.audit_selected is True
+    assert collector.api_event_types == ["AUDIT_LOG"]
+    assert collector.audit_max_fetch == 200
+    assert collector.compliance_max_fetch == 150
+    assert collector.workspace_id == "FAKE_WORKSPACE_ID"
+    assert collector.first_fetch == "3 days"
+    minimal = parse_collector_params({"event_types_to_fetch": []})
+    assert minimal.audit_max_fetch == Config.DEFAULT_AUDIT_MAX_FETCH
+    assert minimal.compliance_max_fetch == Config.DEFAULT_COMPLIANCE_MAX_FETCH
+    assert minimal.first_fetch == Config.DEFAULT_FIRST_FETCH
+
+
+def test_parse_collector_params_with_args_applies_overrides():
+    """Happy path: args (manual command) override `event_type` / `limit` / `start_time`."""
+    from OpenAiChatGPTV3 import parse_collector_params
+
+    params = {
+        "event_types_to_fetch": ["OpenAI Audit logs"],
+        "audit_max_fetch": "999",
+        "compliance_max_fetch": "999",
+        "workspace_id": "FAKE_WORKSPACE_ID",
+        "first_fetch": "1 day",
+    }
+    args = {
+        "event_type": "Compliance Audit",
+        "limit": "5",
+        "start_time": "2 hours ago",
+    }
+    collector = parse_collector_params(params, args=args)
+
+    assert collector.event_types_to_fetch == ["Compliance Audit"]
+    assert collector.audit_selected is False
+    assert collector.api_event_types == ["AUDIT_LOG"]
+    assert collector.audit_max_fetch == 5
+    assert collector.compliance_max_fetch == 5
+    assert collector.first_fetch == "2 hours ago"
+
+
+def test_parse_collector_params_with_empty_args_falls_back_to_params():
+    """Happy path: an empty `args` dict (falsy) skips arg-overrides and uses integration-param values."""
+    from OpenAiChatGPTV3 import Config, parse_collector_params
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"], "first_fetch": "5 days"}
+    collector = parse_collector_params(params, args={})
+
+    assert collector.event_types_to_fetch == ["OpenAI Audit logs"]
+    # Empty args is falsy -> falls into the fetch-events branch -> uses integration defaults.
+    assert collector.audit_max_fetch == Config.DEFAULT_AUDIT_MAX_FETCH
+    assert collector.compliance_max_fetch == Config.DEFAULT_COMPLIANCE_MAX_FETCH
+    assert collector.first_fetch == "5 days"
+
+
+def test_fetch_stream_dispatches_to_audit(mocker):
+    """`fetch_stream(stream='audit')` calls `fetch_audit_logs` and routes to PRODUCT_AUDIT."""
+    import OpenAiChatGPTV3 as module
+
+    audit_events = [{"id": "FAKE_AUDIT_EVENT_001"}]
+    audit_updates = {module.LastRunKey.AUDIT_AFTER: "FAKE_CURSOR"}
+    mocker.patch.object(module, "fetch_audit_logs", return_value=(audit_events, audit_updates))
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=["OpenAI Audit logs"],
+        audit_selected=True,
+        api_event_types=[],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    result = module.fetch_stream(client=client, stream=module.Stream.AUDIT, last_run={}, collector_params=collector)
+
+    assert result.stream == module.Stream.AUDIT
+    assert result.events == audit_events
+    assert result.last_run_updates == audit_updates
+    assert result.product == module.Config.PRODUCT_AUDIT
+
+
+def test_fetch_stream_dispatches_to_compliance(mocker):
+    """`fetch_stream(stream='compliance')` calls `fetch_compliance_logs` and routes to PRODUCT_COMPLIANCE."""
+    import OpenAiChatGPTV3 as module
+
+    compliance_events = [{"id": "FAKE_COMPLIANCE_EVENT_001"}]
+    compliance_updates = {module.LastRunKey.COMPLIANCE_LAST_END_TIME: "2099-01-01T00:00:00Z"}
+    mocker.patch.object(module, "fetch_compliance_logs", return_value=(compliance_events, compliance_updates))
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=["Compliance Audit"],
+        audit_selected=False,
+        api_event_types=["AUDIT_LOG"],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="FAKE_WORKSPACE_ID",
+        first_fetch="1 day",
+    )
+    result = module.fetch_stream(client=client, stream=module.Stream.COMPLIANCE, last_run={}, collector_params=collector)
+
+    assert result.stream == module.Stream.COMPLIANCE
+    assert result.events == compliance_events
+    assert result.last_run_updates == compliance_updates
+    assert result.product == module.Config.PRODUCT_COMPLIANCE
+
+
+def test_fetch_stream_compliance_skipped_without_workspace_id(mocker):
+    """Bad path: compliance stream returns an empty FetchResult when workspace_id is missing."""
+    import OpenAiChatGPTV3 as module
+
+    compliance_mock = mocker.patch.object(module, "fetch_compliance_logs")
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=["Compliance Audit"],
+        audit_selected=False,
+        api_event_types=["AUDIT_LOG"],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    result = module.fetch_stream(client=client, stream=module.Stream.COMPLIANCE, last_run={}, collector_params=collector)
+
+    assert result.stream == module.Stream.COMPLIANCE
+    assert result.events == []
+    assert result.last_run_updates == {}
+    compliance_mock.assert_not_called()
+
+
+def test_fetch_stream_unknown_stream_raises():
+    """Bad path: an unknown stream identifier raises `DemistoException`."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=[],
+        audit_selected=False,
+        api_event_types=[],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    with pytest.raises(DemistoException) as exc_info:
+        module.fetch_stream(client=client, stream="not_a_stream", last_run={}, collector_params=collector)
+    assert "Unknown stream identifier" in str(exc_info.value)
+
+
+def test_push_result_sends_events_when_present(mocker):
+    """Happy path: `_push_result` calls `client.send_events(...)` with the events and product."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client()
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    result = module.FetchResult(
+        stream=module.Stream.AUDIT,
+        events=[{"id": "FAKE_AUDIT_EVENT_001"}],
+        product=module.Config.PRODUCT_AUDIT,
+    )
+
+    module._push_result(client, result, log_prefix="[Test]")
+
+    sender.assert_called_once_with([{"id": "FAKE_AUDIT_EVENT_001"}], product=module.Config.PRODUCT_AUDIT)
+
+
+def test_push_result_skips_when_no_events(mocker):
+    """Happy path: empty events list short-circuits without calling the sender."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client()
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    result = module.FetchResult(stream=module.Stream.AUDIT, events=[], product=module.Config.PRODUCT_AUDIT)
+
+    module._push_result(client, result, log_prefix="[Test]")
+
+    sender.assert_not_called()
+
+
+def test_push_result_isolates_send_failure(mocker, capfd):
+    """Bad path: a `send_events` exception is caught and logged; does NOT propagate."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client()
+    mocker.patch.object(module.OpenAiClient, "send_events", side_effect=RuntimeError("simulated push failure"))
+    result = module.FetchResult(
+        stream=module.Stream.AUDIT,
+        events=[{"id": "FAKE_AUDIT_EVENT_001"}],
+        product=module.Config.PRODUCT_AUDIT,
+    )
+
+    # `_push_result` swallows the failure and calls `demisto.error(...)` which writes to stdout in the test runtime.
+    with capfd.disabled():
+        module._push_result(client, result, log_prefix="[Test]")
+
+
+# endregion
+
+
+# region Event Collector tests - test_module
+def test_test_module_chat_only_returns_ok(mocker):
+    """Happy path: chat-completions probe passes and no collector streams selected returns ok."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client(admin_api_key="", compliance_api_key="")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    result = module.test_module(client=client, params={})
+
+    assert result == "ok"
+    fetch_mock.assert_not_called()
+
+
+def test_test_module_chat_completions_auth_error_returns_friendly_message(mocker, capfd):
+    """Bad path: a chat-completions auth error returns the friendly auth-error string instead of raising."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client()
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", side_effect=DemistoException("403 Forbidden access"))
+
+    # `test_module` calls `demisto.error(...)` on the auth-error path which writes to stdout in the test runtime.
+    with capfd.disabled():
+        result = module.test_module(client=client, params={})
+
+    assert "Authorization Error" in result
+
+
+def test_test_module_chat_completions_non_auth_error_propagates(mocker, capfd):
+    """Bad path: a non-auth error from chat-completions propagates so the test still fails clearly."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client()
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", side_effect=DemistoException("simulated 500 error"))
+
+    # `test_module` calls `demisto.error(...)` on the failure path which writes to stdout in the test runtime;
+    # disable the stdout-capture fixture for this test so we can assert on the raise.
+    with capfd.disabled(), pytest.raises(DemistoException) as exc_info:
+        module.test_module(client=client, params={})
+    assert "simulated 500 error" in str(exc_info.value)
+
+
+def test_test_module_probes_collector_streams_with_max_one(mocker):
+    """Happy path: with audit selected + admin key, fetch_stream is called once with max_fetch=1."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
+    result = module.test_module(client=client, params=params)
+
+    assert result == "ok"
+    fetch_mock.assert_called_once()
+    call_kwargs = fetch_mock.call_args.kwargs
+    assert call_kwargs["stream"] == module.Stream.AUDIT
+    assert call_kwargs["last_run"] == {}
+    assert call_kwargs["collector_params"].audit_max_fetch == module.Config.TEST_MODULE_MAX_EVENTS
+    assert call_kwargs["collector_params"].compliance_max_fetch == module.Config.TEST_MODULE_MAX_EVENTS
+
+
+def test_test_module_skips_compliance_when_workspace_id_missing(mocker):
+    """Bad path: compliance selected + key set, but no workspace_id - compliance probe is skipped."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client(admin_api_key="", compliance_api_key="COMPLIANCE_KEY")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    params = {"event_types_to_fetch": ["Compliance Audit"], "workspace_id": ""}
+    result = module.test_module(client=client, params=params)
+
+    assert result == "ok"
+    fetch_mock.assert_not_called()
+
+
+def test_test_module_propagates_collector_probe_failure(mocker, capfd):
+    """Bad path: a fetch_stream failure during the probe raises a stream-tagged DemistoException."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module, "fetch_stream", side_effect=DemistoException("simulated audit probe failure"))
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
+    # `test_module` calls `demisto.error(...)` on the failure path which writes to stdout in the test runtime;
+    # disable the stdout-capture fixture for this test so we can assert on the raise.
+    with capfd.disabled(), pytest.raises(DemistoException) as exc_info:
+        module.test_module(client=client, params=params)
+    msg = str(exc_info.value)
+    assert "audit" in msg
+    assert "simulated audit probe failure" in msg
+
+
+# endregion
+
+
+# region Optional-chat-key coverage
+def test_get_chat_completions_requires_api_key():
+    """Bad path: chat-completions runtime guard raises a clear error when the API Key is missing."""
+
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException) as exc_info:
+        client.get_chat_completions(chat_context=[{"role": "user", "content": "x"}], completion_params={})
+    msg = str(exc_info.value)
+    assert "API Key is required" in msg
+    assert "gpt-send-message" in msg
+
+
+def test_test_module_skips_chat_probe_when_api_key_missing(mocker):
+    """Happy path: with no chat key but a configured collector, the chat probe is skipped and only the collector runs."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client(api_key="", admin_api_key="ADMIN_KEY", compliance_api_key="")
+    chat_mock = mocker.patch.object(module.OpenAiClient, "get_chat_completions")
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
+    result = module.test_module(client=client, params=params)
+
+    assert result == "ok"
+    chat_mock.assert_not_called()
+    fetch_mock.assert_called_once()
+
+
+def test_test_module_no_capability_configured_raises():
+    """Bad path: no chat key AND no usable collector stream - the test is meaningless and must raise."""
+    import OpenAiChatGPTV3 as module
+
+    client = _make_client(api_key="", admin_api_key="", compliance_api_key="")
+    with pytest.raises(DemistoException) as exc_info:
+        module.test_module(client=client, params={})
+    msg = str(exc_info.value)
+    assert "No capability is configured" in msg
+    assert "API Key" in msg
+
+
+# endregion
+
+
+# region Compliance API limit-cap regression
+def test_list_compliance_logs_clamps_limit_to_compliance_page_size(mocker):
+    """Bad path regression: the ChatGPT Platform Compliance API rejects limit > 100 with HTTP 422.
+
+    `list_compliance_logs` must clamp any caller-supplied `limit` (e.g. the integration default of
+    `compliance_max_fetch=900`) to `Config.COMPLIANCE_PAGE_SIZE` (100) before sending the request.
+    """
+    from OpenAiChatGPTV3 import Config, OpenAiClient
+
+    client = _make_client()
+    captured: dict = {}
+
+    def fake_http(*args, **kwargs):
+        captured.update(kwargs)
+        return {"data": [], "last_end_time": None}
+
+    mocker.patch.object(OpenAiClient, "_http_request", side_effect=fake_http)
+
+    client.list_compliance_logs(
+        workspace_id="FAKE_WORKSPACE_ID",
+        event_types=["AUDIT_LOG"],
+        after="2099-01-01T00:00:00Z",
+        limit=900,  # caller asks for 900; API only allows 100
+    )
+
+    sent_limits = [v for (k, v) in captured.get("params", []) if k == "limit"]
+    assert sent_limits == [Config.COMPLIANCE_PAGE_SIZE]
 
 
 # endregion
