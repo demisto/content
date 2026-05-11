@@ -2192,7 +2192,6 @@ def normalize_key(key: str) -> str:
     """
     Strips the prefixes 'xdm__asset__' or 'xdm__' from the
     beginning of the key, if present, and returns the remaining key unchanged otherwise.
-    Handles both dot-notation and double-underscore notation returned by different API endpoints.
 
     Args:
         key (str): The original output key.

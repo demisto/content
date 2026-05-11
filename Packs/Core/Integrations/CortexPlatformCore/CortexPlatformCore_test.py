@@ -802,8 +802,6 @@ def test_search_assets_command_success(mocker):
 
     assert request_data_arg["table_name"] == ASSETS_TABLE
     filter_arg = request_data_arg["filter_data"]["filter"]
-    # "server" is not in ASSET_TYPE_WILDCARD → goes into the CONTAINS field.
-    # Field names are converted from dot-notation to double-underscore by _convert_filter_to_webapp_format.
     expected_filter = {
         "AND": [
             {
@@ -897,7 +895,6 @@ def test_search_assets_asset_type_contains_only():
 
     filter_arg = _get_filter_from_webapp_call(mock_get_webapp_data)
     and_list = filter_arg["AND"]
-    # Field names are converted to double-underscore by _convert_filter_to_webapp_format.
     contains_entries = [
         b
         for b in and_list
