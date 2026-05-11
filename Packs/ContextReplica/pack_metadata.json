@@ -1,13 +1,15 @@
 {
     "name": "ContextReplica",
-    "description": "The script can download the exact replica of the Json context, as how it is in XSOAR issue/Incident context in UI.  This helps to download specific issue/incident context and use it offline to work with certain use cases (like Adaptive_card.json rendering, for teams notifications etc) . \n\nThis works for XSIAM, Agentix and XSOAR platforms",
+    "description": "Downloads an exact replica of the JSON context as it appears in the Cortex XSOAR incident or issue context UI, supporting XSOAR, XSIAM, and Agentix platforms.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Winston",
     "url": "",
     "email": "",
     "created": "2026-04-15T13:28:14Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
