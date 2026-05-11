@@ -790,13 +790,14 @@ def _bulk_fetch_entities_by_id(
     Returns:
         dict[str, dict]: Map of `str(response_key)` -> entity dict.
     """
+    tname = threading.current_thread().name
     by_id: dict[str, dict] = {}
     if not ids:
-        demisto.debug(f"bulk_enrich: no {entity_type} IDs to fetch")
+        demisto.debug(f"[{tname}] bulk_enrich: no {entity_type} IDs to fetch")
         return by_id
 
     total_batches = (len(ids) + BULK_ENRICHMENT_BATCH_SIZE - 1) // BULK_ENRICHMENT_BATCH_SIZE
-    demisto.debug(f"bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)")
+    demisto.debug(f"[{tname}] bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)")
     section_start = datetime.now()
 
     for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
@@ -806,25 +807,28 @@ def _bulk_fetch_entities_by_id(
         aql = f"in:{entity_type} {aql_field}:{','.join(chunk)}"  # noqa: E231
         batch_start = datetime.now()
         try:
-            results = client.fetch_by_ids_in_aql_query(aql_query=aql, order_by=order_by, length=BULK_ENRICHMENT_BATCH_SIZE)
-            if len(results) == BULK_ENRICHMENT_BATCH_SIZE:
+            # Use MAX_PAGE_SIZE (10K) for the response page size: we only send 1000 IDs per batch,
+            # so we should never get back more than that. The 10K headroom protects us from
+            # silent truncation if a single ID happens to map to multiple entities.
+            results = client.fetch_by_ids_in_aql_query(aql_query=aql, order_by=order_by, length=MAX_PAGE_SIZE)
+            if len(results) > BULK_ENRICHMENT_BATCH_SIZE:
                 demisto.error(
-                    f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} returned "
-                    f"exactly {BULK_ENRICHMENT_BATCH_SIZE} results — response may be truncated"
+                    f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} returned "
+                    f"{len(results)} results for {len(chunk)} IDs (more than expected) — investigate"
                 )
             for entity in results:
                 key = entity.get(response_key)
                 if key is not None:
                     by_id[str(key)] = entity
             demisto.debug(
-                f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} OK — "
+                f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} OK — "
                 f"{len(results)} returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
             )
         except Exception as ex:
-            demisto.error(f"bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {ex!r}")
+            demisto.error(f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {ex!r}")
 
     demisto.debug(
-        f"bulk_enrich: {entity_type} fetch done in "
+        f"[{tname}] bulk_enrich: {entity_type} fetch done in "
         f"{(datetime.now() - section_start).total_seconds():.2f}s — "
         f"{len(by_id)}/{len(ids)} matched"
     )
@@ -867,15 +871,16 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
         client (Client): The Armis API client.
         alerts (list[dict]): The list of alerts in the current fetch page.
     """
+    tname = threading.current_thread().name
     if not alerts:
-        demisto.debug("bulk_enrich: no alerts to enrich, returning")
+        demisto.debug(f"[{tname}] bulk_enrich: no alerts to enrich, returning")
         return
 
     start = datetime.now()
-    demisto.debug(f"bulk_enrich: START enriching {len(alerts)} alerts")
+    demisto.debug(f"[{tname}] bulk_enrich: START enriching {len(alerts)} alerts")
 
     uuids, device_ids = _collect_unique_enrichment_ids(alerts)
-    demisto.debug(f"bulk_enrich: collected {len(uuids)} unique activityUUIDs, {len(device_ids)} unique deviceIds")
+    demisto.debug(f"[{tname}] bulk_enrich: collected {len(uuids)} unique activityUUIDs, {len(device_ids)} unique deviceIds")
 
     activities_by_uuid = _bulk_fetch_entities_by_id(
         client=client,
@@ -897,10 +902,33 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
     _attach_enrichment(alerts, activities_by_uuid, devices_by_id)
 
     demisto.debug(
-        f"bulk_enrich: DONE in {(datetime.now() - start).total_seconds():.2f}s — "
+        f"[{tname}] bulk_enrich: DONE in {(datetime.now() - start).total_seconds():.2f}s — "
         f"matched {len(activities_by_uuid)}/{len(uuids)} activities, "
         f"{len(devices_by_id)}/{len(device_ids)} devices"
     )
+
+
+def _wait_for_enrichment(future, executor) -> None:
+    """Block until the background enrichment task completes and tear down its executor.
+
+    Safe to call with `(None, None)` if no enrichment was scheduled (e.g., no Alerts in cycle).
+    Logs but does not re-raise enrichment errors — alerts ship without enrichment in the worst
+    case, which is preferable to losing the whole cycle.
+    """
+    tname = threading.current_thread().name
+    if future is None:
+        return
+    wait_start = datetime.now()
+    try:
+        future.result()
+        demisto.debug(
+            f"[{tname}] bulk_enrich: background enrichment joined after " f"{(datetime.now() - wait_start).total_seconds():.2f}s"
+        )
+    except Exception as ex:
+        demisto.error(f"[{tname}] bulk_enrich: background enrichment FAILED: {ex!r}")
+    finally:
+        if executor is not None:
+            executor.shutdown(wait=False)
 
 
 def fetch_event_type_worker(
@@ -998,24 +1026,36 @@ def fetch_events(
 
     safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 
-    # Handle Alerts specially (needs sequential processing for activities/devices)
+    # Handle Alerts: fetch them first (sequential), then run bulk enrichment IN PARALLEL with
+    # the standalone Activities/Devices fetches below. This is the biggest single optimisation
+    # available — bulk enrichment dominates cycle time (~3-4 min) and previously blocked the
+    # cycle. Running it concurrently with the other workers keeps total cycle time ≈ max(workers)
+    # instead of sum, which is what lets us fit inside the 5-minute Docker timeout.
+    enrichment_future = None
+    enrichment_executor = None
     if "Alerts" in event_types_to_fetch:
-        safe_debug("Processing Alerts sequentially (requires fetching related activities/devices)")
+        main_tname = threading.current_thread().name
+        safe_debug(f"[{main_tname}] Fetching Alerts (then enrichment will run in parallel with other workers)")
         alerts_start = datetime.now()
         fetch_by_event_type(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
         alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
-        safe_debug(f"Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
+        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in " f"{(datetime.now() - alerts_start).total_seconds():.2f}s")
 
         if events and events.get(EVENT_TYPE_ALERTS):
-            safe_debug(f"Bulk-enriching {alerts_count} alerts with activities and devices")
-            bulk_enrich_alerts(client, events[EVENT_TYPE_ALERTS])
+            safe_debug(
+                f"[{main_tname}] Submitting bulk-enrichment of {alerts_count} alerts to background "
+                f"thread (ArmisEnrich-*) — will run in parallel with Activities/Devices workers"
+            )
+            enrichment_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ArmisEnrich")
+            enrichment_future = enrichment_executor.submit(bulk_enrich_alerts, client, events[EVENT_TYPE_ALERTS])
         event_types_to_fetch.remove("Alerts")
 
     # Process remaining event types
     if not event_types_to_fetch:
         safe_debug("No remaining event types to fetch")
+        _wait_for_enrichment(enrichment_future, enrichment_executor)
         fetch_duration = (datetime.now() - fetch_start).total_seconds()
         total_events = sum(len(event_list) for event_list in events.values())
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
@@ -1105,6 +1145,10 @@ def fetch_events(
 
             parallel_duration = (datetime.now() - parallel_start).total_seconds()
             safe_debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
+
+    # Block until the background enrichment task finishes; this is the join point that lets
+    # us run enrichment in parallel with Activities/Devices fetches above.
+    _wait_for_enrichment(enrichment_future, enrichment_executor)
 
     # Final summary
     fetch_duration = (datetime.now() - fetch_start).total_seconds()
