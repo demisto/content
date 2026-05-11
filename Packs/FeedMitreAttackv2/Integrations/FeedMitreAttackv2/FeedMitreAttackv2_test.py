@@ -397,6 +397,58 @@ def test_remove_citations(description, expected_result):
     assert actual_result == expected_result
 
 
+def test_create_indicator_with_unknown_tactic_name(mocker):
+    """
+    Given:
+        An Attack Pattern whose kill_chain_phases contains a tactic phase name ('stealth')
+        that is NOT present in the client's tactic_name_to_mitre_id mapping.
+    When:
+        Calling client.create_indicator().
+    Then:
+        The indicator is created successfully without raising a KeyError.
+        Both relationships are created: the known tactic uses the full "ID - Name" format,
+        and the unknown tactic falls back to using just its name.
+    """
+    from FeedMitreAttackv2 import Client
+
+    client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    # Only known tactics are pre-populated; 'Stealth' is intentionally absent
+    client.tactic_name_to_mitre_id = {
+        "Defense Evasion": "TA0005",
+    }
+
+    mitre_item_json = {
+        "id": "attack-pattern--test-stealth-1234",
+        "name": "Some Technique",
+        "type": "attack-pattern",
+        "created": "2024-01-01T00:00:00.000Z",
+        "modified": "2024-01-01T00:00:00.000Z",
+        "description": "A technique that uses stealth.",
+        "external_references": [
+            {"source_name": "mitre-attack", "external_id": "T9999", "url": "https://attack.mitre.org/techniques/T9999"},
+        ],
+        "kill_chain_phases": [
+            {"kill_chain_name": "mitre-attack", "phase_name": "defense-evasion"},
+            {"kill_chain_name": "mitre-attack", "phase_name": "stealth"},  # new unknown tactic
+        ],
+        "x_mitre_platforms": ["Windows"],
+    }
+
+    mocker.patch("FeedMitreAttackv2.demisto.debug")
+
+    # Should not raise KeyError
+    indicator = client.create_indicator("Attack Pattern", "Some Technique", mitre_item_json)
+
+    assert indicator["value"] == "Some Technique"
+    # Both tactics should appear in relationships:
+    # - known tactic uses full "ID - Name" format
+    # - unknown tactic falls back to name-only (no MITRE ID prefix)
+    assert len(indicator["relationships"]) == 2
+    entity_b_values = {rel["entityB"] for rel in indicator["relationships"]}
+    assert "TA0005 - Defense Evasion" in entity_b_values
+    assert "Stealth" in entity_b_values
+
+
 def test_get_mitre_value_from_id_with_valid_ids(mocker):
     """
     Given:
