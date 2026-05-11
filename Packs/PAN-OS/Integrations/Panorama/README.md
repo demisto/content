@@ -10261,3 +10261,46 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | PANOS.RuleHitCount.rule_modification_timestamp | Date | Timestamp when the rule was most recently modified. |
 | PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(such as security, nat, and so on\). |
 | PANOS.RuleHitCount.vsys | String | The name of the firewall VSYS. |
+
+
+### pan-os-new-command
+
+***
+A new command for demo only, remove after demo.
+
+#### Base Command
+
+`pan-os-new-command
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | The target number of the firewall. Used only on a Panorama instance. | Optional |
+| rulebase | The firewall rulebase to check. Possible values are: application-override, authentication, decryption, dos, nat, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect. Default is security. | Optional |
+| vsys | The firewall VSYS name to check.  Returns results for all VSYS if left blank. Default is all. | Optional |
+| rules | Comma-separated list of rule names to check.  Returns results for all rules if left blank. Default is all. | Optional |
+| unused_only | If set to true, only returns rules with a hit count of 0. Possible values are: true, false. Default is false. | Optional |
+| no_new_hits_since | Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.RuleHitCount.first_hit_timestamp | Date | Timestamp when the rule was first hit. |
+| PANOS.RuleHitCount.from_dg_name | String | Name of the device group the rule is inherited from. |
+| PANOS.RuleHitCount.hit_count | Number | Number of hits for the rule. |
+| PANOS.RuleHitCount.hostid | String | Serial number of the firewall the entry was fetched from. |
+| PANOS.RuleHitCount.instanceName | String | Name of the PAN-OS Integration Instance used to fetch the entry. |
+| PANOS.RuleHitCount.instanceType | String | The type of the PAN-OS Integration Instance running the command \(panorama or firewall\). |
+| PANOS.RuleHitCount.is_from_panorama | Boolean | Indicates if the rule was pushed from Panorama \(true\) or is local to the firewall \(false\). |
+| PANOS.RuleHitCount.last_hit_timestamp | Date | Timestamp when the rule was most recently hit. |
+| PANOS.RuleHitCount.last_reset_timestamp | Date | Timestamp when hit count data was last reset. |
+| PANOS.RuleHitCount.latest | String | Value of the "latest" property returned by the API. |
+| PANOS.RuleHitCount.name | String | Name of the rule. |
+| PANOS.RuleHitCount.position | String | Indicates the position of the rule pushed from Panorama \(pre_rulebase or post_rulebase\). |
+| PANOS.RuleHitCount.rule_creation_timestamp | Date | Timestamp when the rule was created. |
+| PANOS.RuleHitCount.rule_modification_timestamp | Date | Timestamp when the rule was most recently modified. |
+| PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(such as security, nat, and so on\). |
+| PANOS.RuleHitCount.vsys | String | The name of the firewall VSYS. |
