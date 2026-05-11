@@ -76,6 +76,13 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- name: verify_base_dn
+  display: Verify base DN on every command
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
 - additionalinfo: Used in the IAM commands.
   defaultvalue: User Profile - Active Directory (Incoming)
   display: Incoming Mapper
