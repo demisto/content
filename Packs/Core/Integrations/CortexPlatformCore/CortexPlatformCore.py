@@ -42,7 +42,7 @@ ASSET_FIELDS = {
     "asset_categories": "xdm__asset__type__category",
     "asset_classes": "xdm__asset__type__class",
     "software_package_versions": "xdm__software_package__version",
-    "kubernetes_cluster_versions": "xdm__kubernetes_cluster__version",
+    "kubernetes_cluster_versions": "xdm__kubernetes__cluster__version",
 }
 
 APPSEC_SOURCES = [
@@ -2190,7 +2190,7 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
 
 def normalize_key(key: str) -> str:
     """
-    Strips the prefixes 'xdm.asset.' / 'xdm__asset__' or 'xdm.' / 'xdm__' from the
+    Strips the prefixes 'xdm__asset__' or 'xdm__' from the
     beginning of the key, if present, and returns the remaining key unchanged otherwise.
     Handles both dot-notation and double-underscore notation returned by different API endpoints.
 
@@ -2213,8 +2213,8 @@ def normalize_key(key: str) -> str:
 # "Server *" avoids matching "Serverless"; "Kubernetes Cluster *" avoids matching
 # "Kubernetes ClusterRole" and "Kubernetes ClusterRoleBinding".
 ASSET_TYPE_WILDCARD = {
-    "Server",
-    "Kubernetes Cluster",
+    "server",
+    "kubernetes cluster",
 }
 
 
@@ -2270,8 +2270,8 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
 
     asset_types = argToList(args.get("asset_types", ""))
-    wildcard_values = [f"{v} *" for v in asset_types if v in ASSET_TYPE_WILDCARD]
-    contains_values = [v for v in asset_types if v not in ASSET_TYPE_WILDCARD]
+    wildcard_values = [f"{v} *" for v in asset_types if v.lower() in ASSET_TYPE_WILDCARD]
+    contains_values = [v for v in asset_types if v.lower() not in ASSET_TYPE_WILDCARD]
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.WILDCARD, wildcard_values)
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, contains_values)
 
