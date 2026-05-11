@@ -815,7 +815,7 @@ resolved_reference = "3677b59ce92bef0dc6dd657c19436ff9c3a54a30"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.23"
+version = "1.38.25"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.11,<3.15"
@@ -857,7 +857,7 @@ more-itertools = "^10.0.0"
 mypy = "^0.982"
 neo4j = "^5.14.0"
 networkx = "^2.7.1"
-nltk = "^3.9.1"
+nltk = {version = "==3.9.4", markers = "python_version >= \"3.10\" and python_full_version <= \"3.15.0\""}
 ordered-set = "^4.1.0"
 orjson = "^3.8.3"
 packaging = "^24.0"
@@ -898,7 +898,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "sk_demisto_sdk_new_python"
-resolved_reference = "9f2baef9e319634184a04cfec9e8b612005e165f"
+resolved_reference = "1e456f918e75b4e0f181c7ee279f14a6f6056ad6"
 
 [[package]]
 name = "dictdiffer"
