@@ -59,9 +59,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command example
+
 ```!decyfir-ip-get```
 
 #### Human Readable Output
+>
 > IP indicators retrieved successfully.
 
 ### decyfir-domain-get
@@ -82,9 +84,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command example
+
 ```!decyfir-domain-get```
 
 #### Human Readable Output
+>
 > Domain indicators retrieved successfully.
 
 ### decyfir-url-get
@@ -105,9 +109,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command example
+
 ```!decyfir-url-get```
 
 #### Human Readable Output
+>
 > URL indicators retrieved successfully.
 
 ### decyfir-file-get
@@ -128,7 +134,9 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command example
+
 ```!decyfir-file-get```
 
 #### Human Readable Output
+>
 > File indicators retrieved successfully.
