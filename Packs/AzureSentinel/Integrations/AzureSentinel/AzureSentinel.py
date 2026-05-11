@@ -1529,6 +1529,7 @@ def dedup_lookback_incidents(
     1. Compare new lookback incident IDs against the previous lookback IDs
        (from previous cycles) to find only the truly new ones.
     2. From those, remove any that were already fetched by the regular fetch mechanism.
+
     Args:
         lookback_incidents: Incidents from the lookback query.
         previous_lookback_ids: {id: lastModifiedTimeUtc} from previous cycles.
@@ -1538,7 +1539,7 @@ def dedup_lookback_incidents(
     Returns:
         (deduped_incidents, updated {id: lastModifiedTimeUtc} for next_run).
     """
-    # Calculate expiry threshold: 2x the lookback window (same as CSP's remove_old_incidents_ids)
+    # Calculate expiry threshold: 2x the lookback window
     expiry_threshold = (datetime.now(tz=timezone.utc) - timedelta(minutes=look_back * 2)).strftime(DATE_FORMAT)
     demisto.debug(f"Lookback dedup: expiry threshold is {expiry_threshold} (2x {look_back} minutes)")
 
@@ -1585,7 +1586,7 @@ def fetch_incidents(
     first_fetch_time: str,
     min_severity: str,
     statuses_to_fetch: list = [],
-    look_back: int = 0,
+    look_back: int = 1,
 ) -> tuple:
     """Fetching incidents.
     Args:
@@ -1702,7 +1703,7 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
     statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
-    look_back = arg_to_number(params.get("look_back")) or 0
+    look_back = arg_to_number(params.get("look_back")) or 1
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
