@@ -1095,11 +1095,6 @@ class Enrichment:
 # =========== Investigations helpers ===========
 
 PLACEHOLDER = "FETCH_FILTER_PLACEHOLDER"
-_REST_CLAUSE_RE = re.compile(
-    r'(\|\s*rest\s+)(["\'])(.+?)(\2)',
-    flags=re.IGNORECASE | re.DOTALL,
-)
-_OVERRIDABLE_KEYS = ("create_time_min", "create_time_max", "limit", "offset")
 
 
 def to_mc_iso8601_utc(ts: "str | datetime") -> str:

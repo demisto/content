@@ -545,6 +545,30 @@ There is no context output for this command.
 
 ![image](../../doc_files/edit_finding_command.png)
 
+### splunk-investigation-edit
+
+***
+Updates existing investigations in Splunk ES.
+
+#### Base Command
+
+`splunk-investigation-edit`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_ids | A comma-separated list of investigation IDs. | Required |
+| owner | A Splunk user to assign to the investigations. | Optional |
+| note | Note to add to the investigation. | Optional |
+| disposition | Disposition of the investigation. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list. Possible values are: Unassigned, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. | Optional |
+| status | Investigation status. Possible values are: Open, In Progress, Pending, Resolved, Closed. | Optional |
+| urgency | Investigation urgency. Possible values: "critical", "high", "medium", "low", and "informational". Possible values are: critical, high, medium, low, informational. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### splunk-job-create
 
 ***

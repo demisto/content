@@ -90,7 +90,7 @@ configuration:
   name: investigations_fetch_query
   type: 0
   section: Collect
-  advanced: true
+  advanced: false
   required: false
   defaultvalue: |
     | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&FETCH_FILTER_PLACEHOLDER"
@@ -476,8 +476,17 @@ script:
       name: owner
     - description: Note to add to the investigation.
       name: note
-    - description: Description of the investigation.
-      name: description
+    - name: disposition
+      auto: PREDEFINED
+      predefined:
+      - Unassigned
+      - True Positive - Suspicious Activity
+      - Benign Positive - Suspicious But Expected
+      - False Positive - Incorrect Analytic Logic
+      - False Positive - Inaccurate Data
+      - Other
+      - Undetermined
+      description: Disposition of the investigation. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
     - auto: PREDEFINED
       description: Investigation status.
       name: status
@@ -760,6 +769,21 @@ script:
   subtype: python3
   type: python
   runonce: false
+triggers:
+  - conditions:
+      - name: fetch_event_types
+        operator: equal
+        value: Investigations
+    effects:
+      - name: investigations_first_fetch
+        action:
+          required: true
+      - name: investigations_max_fetch
+        action:
+          hidden: true
+      - name: investigations_fetch_query
+        action:
+          hidden: true
 tests:
 - SplunkPy KV commands
 - SplunkPy parse-raw - Test
