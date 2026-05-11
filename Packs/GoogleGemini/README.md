@@ -46,19 +46,22 @@ The pack contains the **GoogleGemini** integration that connects to Google's Gen
 4. Configure the following parameters:
 
 **Common Parameters:**
-   - **Model**: Select a Gemini model or enter a custom model name
-   - **Max Tokens**: Maximum response length (default: 1024)
-   - **Temperature**: Controls randomness (0.0-2.0, optional)
-   - **Top P**: Nucleus sampling parameter (optional)
-   - **Top K**: Top-k sampling parameter (optional)
+
+- **Model**: Select a Gemini model or enter a custom model name
+- **Max Tokens**: Maximum response length (default: 1024)
+- **Temperature**: Controls randomness (0.0-2.0, optional)
+- **Top P**: Nucleus sampling parameter (optional)
+- **Top K**: Top-k sampling parameter (optional)
 
 **AI Studio Parameters:**
-   - **API Key**: Your Google AI API key
+
+- **API Key**: Your Google AI API key
 
 **Vertex AI Parameters:**
-   - **Service Account Key (JSON)**: The full JSON key contents for your service account
-   - **Project ID**: Your Google Cloud Project ID
-   - **Location**: Google Cloud location (e.g., `global`, `us-central1`; defaults to `global`)
+
+- **Service Account Key (JSON)**: The full JSON key contents for your service account
+- **Project ID**: Your Google Cloud Project ID
+- **Location**: Google Cloud location (e.g., `global`, `us-central1`; defaults to `global`)
 
 ## Using the Integration
 

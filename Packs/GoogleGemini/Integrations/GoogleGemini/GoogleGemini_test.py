@@ -644,7 +644,7 @@ def test_supported_models_list():
     assert "gemini-2.5-pro" in GoogleGemini.SUPPORTED_MODELS
     assert "text-embedding-004" in GoogleGemini.SUPPORTED_MODELS
     assert "models/embedding-001" in GoogleGemini.SUPPORTED_MODELS
-    assert len(GoogleGemini.SUPPORTED_MODELS) == 11
+    assert len(GoogleGemini.SUPPORTED_MODELS) == 14
 
 
 def test_send_chat_message_with_instance_parameters():
