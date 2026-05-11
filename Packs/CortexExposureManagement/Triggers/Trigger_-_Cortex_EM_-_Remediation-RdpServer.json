@@ -1,5 +1,5 @@
 {
-    "trigger_id": "714a581ffd144106a948bc9ad0cbd5ef",
+    "trigger_id": "714a581ffd144106a948bc9ad0cbd5ed",
     "playbook_id": "Cortex EM - GCP VM Exposure Remediation",
     "suggestion_reason": "Recommended for remediation of Cortex Exposure Management issues on VM instances in GCP.",
     "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management issues for Virtual Machines in GCP",
