@@ -266,7 +266,7 @@ class TestZipFolder:
         with ZipFile(zip_path, "r") as z:
             names = z.namelist()
             assert "root.txt" in names
-            assert "nested.txt" in names
+            assert "subdir/nested.txt" in names
 
     def test_zip_folder_empty_directory(self, tmp_path: Path) -> None:
         """

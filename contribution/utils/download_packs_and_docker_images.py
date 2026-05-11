@@ -122,7 +122,7 @@ def load_index_packs(verify_ssl: bool) -> dict[str, PackInfo]:
                         if source in metadata:
                             pack_info[target] = metadata[source]
                     packs[display_name] = pack_info
-                except (json.JSONDecodeError, KeyError):
+                except (json.JSONDecodeError, KeyError, AttributeError):
                     continue
     print(f"Loaded metadata for {len(packs)} packs from index.zip")  # noqa: T201
     return packs
@@ -133,7 +133,7 @@ def zip_folder(source_path: str, output_path: str) -> None:
     with ZipFile(output_path + ".zip", "w", ZIP_DEFLATED) as source_zip:
         for full_file_path in Path(source_path).rglob("*"):
             if full_file_path.is_file():
-                source_zip.write(filename=full_file_path, arcname=full_file_path.name)
+                source_zip.write(filename=full_file_path, arcname=full_file_path.relative_to(source_path))
 
 
 def extract_docker_images_from_pack_zips(packs_dir: str) -> set:
@@ -150,7 +150,7 @@ def extract_docker_images_from_pack_zips(packs_dir: str) -> set:
     """
     print("Extracting docker images from downloaded packs")  # noqa: T201
     docker_images: set = set()
-    docker_image_pattern = re.compile(r"^\s*dockerimage\d*:\s*['\"]?(.+?)['\"]?\s*$", re.MULTILINE)
+    docker_image_pattern = re.compile(r"^\s*dockerimage\d*:\s*['\"]?(.+?)['\"]?\s*$", re.MULTILINE | re.IGNORECASE)
 
     for zip_file in Path(packs_dir).glob("*.zip"):
         pack_name = zip_file.stem
