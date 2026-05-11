@@ -123,10 +123,11 @@ class ComplianceEvent:
 
 
 class SourceLogType:
-    """`source_log_type` values written to events for downstream parsing/modeling rules."""
+    """`source_log_type` values written to Compliance events so a single shared dataset can be
+    disambiguated downstream by parsing/modeling rules. Audit events are NOT given a
+    `source_log_type` because they land in a dedicated dataset.
+    """
 
-    AUDIT = "openai_audit_logs"
-    USERS = "users"
     CONVERSATION_MESSAGE = "conversation_message"
     COMPLIANCE_AUDIT_LOG = "compliance_audit_log"
     AUTH_LOG = "auth_log"
@@ -352,12 +353,22 @@ class OpenAiClient(BaseClient):
             f"after_cursor_set={bool(after)} | effective_at_gt_set={effective_at_gt is not None}"
         )
 
-        response = self._http_request(
+        # Fetch as text first so we can defensively handle both single-JSON and concatenated-JSON
+        # response shapes. The OpenAI Audit API has been observed in production returning newline-
+        # separated multi-document responses ("Extra data: line 1 column N" from `response.json()`),
+        # so we parse the body ourselves and tolerate both shapes.
+        raw_body = self._http_request(
             method="GET",
             url_suffix=ApiPaths.AUDIT_LOGS,
             params=params,
             headers=headers,
+            resp_type="text",
         )
+        response = _parse_json_or_concatenated(raw_body, log_prefix="[API Audit]")
+        if not isinstance(response, dict):
+            # Concatenated-JSON path returned a list of records - wrap in the standard envelope so
+            # callers consistently see {data, has_more, last_id}.
+            response = {"data": response, "has_more": False, "last_id": None}
         page_size_returned = len(response.get("data") or [])
         demisto.debug(
             f"[API Audit] Page received | events_count={page_size_returned} | "
@@ -411,7 +422,18 @@ class OpenAiClient(BaseClient):
             f"after_set={bool(after)} | limit={limit}"
         )
 
-        response = self._http_request(method="GET", full_url=full_url, params=params, headers=headers)
+        # Fetch as text first so we can defensively handle single-JSON, concatenated-JSON, and empty
+        # response shapes. The Compliance Listing API has been observed in production returning
+        # newline-separated multi-document responses ("Expecting value: line 2 column 1" from
+        # `response.json()`), so we parse the body ourselves and tolerate all three shapes.
+        raw_body = self._http_request(
+            method="GET",
+            full_url=full_url,
+            params=params,
+            headers=headers,
+            resp_type="text",
+        )
+        response = _parse_json_or_concatenated(raw_body, log_prefix="[API Compliance List]")
         # Normalize the response shape - the API may return either a bare list or a dict with `data`/`last_end_time`.
         if isinstance(response, list):
             normalized: dict[str, Any] = {"data": response, "last_end_time": None}
@@ -899,6 +921,48 @@ def parse_concatenated_json(body: str) -> list[dict[str, Any]]:
     return records
 
 
+def _parse_json_or_concatenated(body: Any, log_prefix: str) -> Any:
+    """Best-effort JSON parser for OpenAI listing responses.
+
+    Tries strict JSON first; on `json.JSONDecodeError` (the production "Extra data..." /
+    "Expecting value..." failures), falls back to concatenated-JSON / JSONL parsing so a
+    multi-document response degrades gracefully to a list of records instead of crashing
+    the whole stream. Empty/whitespace-only bodies return `[]` so callers see "no events".
+
+    Pass-through: if `body` is already a `dict` or `list` (e.g. when a test mocks
+    `_http_request` to return a parsed object directly), it is returned as-is.
+
+    Args:
+        body: The raw response body (str expected, but tolerates dict/list/None).
+        log_prefix: Per-call-site tag for the debug/error logs (e.g. "[API Audit]").
+
+    Returns:
+        - The decoded value when the body is a single valid JSON document (typically dict or list).
+        - A list of records when the body is concatenated JSON / JSONL (the fallback path).
+        - `[]` when the body is empty / whitespace / un-decodable.
+    """
+    # Pass-through for already-parsed responses (e.g. from a mocked `_http_request`).
+    if isinstance(body, dict | list):
+        return body
+    if body is None:
+        demisto.debug(f"{log_prefix} None response body - returning [].")
+        return []
+    if not isinstance(body, str):
+        body = str(body)
+    stripped = body.strip()
+    if not stripped:
+        demisto.debug(f"{log_prefix} Empty response body - returning [].")
+        return []
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError as exc:
+        demisto.debug(
+            f"{log_prefix} Strict JSON parse failed ({exc.msg} at pos {exc.pos}); "
+            f"falling back to concatenated-JSON parser (body_size={len(body)})."
+        )
+        return parse_concatenated_json(body)
+
+
 # endregion
 
 
@@ -1106,13 +1170,12 @@ def deduplicate_events(events: list[dict[str, Any]], previous_ids: list[str]) ->
 
 
 def enrich_audit_event(event: dict[str, Any]) -> dict[str, Any]:
-    """Add `_time` (from `effective_at`) and `source_log_type` to an Audit Logs event."""
+    """Add `_time` (derived from `effective_at`) to an Audit Logs event."""
     effective_at = event.get("effective_at")
     if isinstance(effective_at, int | float):
         event["_time"] = datetime.fromtimestamp(effective_at, tz=UTC).strftime(Config.DATE_FORMAT)
     else:
         demisto.debug("[Enrich Audit] Event missing 'effective_at' - _time not set.")
-    event["source_log_type"] = SourceLogType.AUDIT
     return event
 
 

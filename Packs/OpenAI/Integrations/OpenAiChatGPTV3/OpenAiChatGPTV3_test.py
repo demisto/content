@@ -184,11 +184,16 @@ def test_deduplicate_events(events, previous_ids, expected_ids):
     ],
 )
 def test_enrich_audit_event(event, expect_time):
-    """Audit enrichment: strict `_time` from `effective_at` only, plus fixed `source_log_type`."""
-    from OpenAiChatGPTV3 import enrich_audit_event, SourceLogType
+    """Audit enrichment: strict `_time` from `effective_at` only.
+
+    Audit events are routed to a dedicated dataset, so no `source_log_type` field is added
+    (only Compliance events need it because they all share one dataset).
+    """
+    from OpenAiChatGPTV3 import enrich_audit_event
 
     enrich_audit_event(event)
-    assert event["source_log_type"] == SourceLogType.AUDIT
+    # `source_log_type` is intentionally NOT set on audit events.
+    assert "source_log_type" not in event
     if expect_time is None:
         assert "_time" not in event
     else:
@@ -696,7 +701,7 @@ def test_send_events_skips_when_empty(mocker):
 # region Event Collector tests - fetch_audit_logs
 def test_fetch_audit_logs_returns_events_and_advances_cursor(mocker):
     """Happy path: a single page is fetched, events enriched, and the API `last_id` cursor persisted."""
-    from OpenAiChatGPTV3 import OpenAiClient, fetch_audit_logs, LastRunKey, SourceLogType
+    from OpenAiChatGPTV3 import OpenAiClient, fetch_audit_logs, LastRunKey
 
     client = _make_client()
     response = util_load_json("test_data/audit_logs_page_response.json")
@@ -705,7 +710,8 @@ def test_fetch_audit_logs_returns_events_and_advances_cursor(mocker):
     events, updates = fetch_audit_logs(client=client, last_run={}, max_fetch=10, first_fetch="1 day")
 
     assert [e["id"] for e in events] == ["FAKE_AUDIT_EVENT_001", "FAKE_AUDIT_EVENT_002"]
-    assert all(e["source_log_type"] == SourceLogType.AUDIT for e in events)
+    # Audit events are routed to a dedicated dataset; `source_log_type` is intentionally NOT set.
+    assert all("source_log_type" not in e for e in events)
     # The cursor returned by the API is what gets persisted - verbatim.
     assert updates[LastRunKey.AUDIT_AFTER] == "FAKE_AUDIT_CURSOR_AAAA"
     # Audit no longer keeps an explicit ID-list / time HWM in last_run.
@@ -1476,6 +1482,114 @@ def test_list_compliance_logs_clamps_limit_to_compliance_page_size(mocker):
 
     sent_limits = [v for (k, v) in captured.get("params", []) if k == "limit"]
     assert sent_limits == [Config.COMPLIANCE_PAGE_SIZE]
+
+
+# endregion
+
+
+# region JSON-decode-resilience regression (Extra data / Expecting value)
+@pytest.mark.parametrize(
+    "raw_body, expected_kind",
+    [
+        pytest.param('{"a":1}', dict, id="happy-single-json-object"),
+        pytest.param('[{"a":1},{"b":2}]', list, id="happy-single-json-array"),
+        pytest.param('{"a":1}\n{"b":2}\n{"c":3}', list, id="bad-jsonl-falls-back-to-records-list"),
+        pytest.param('{"a":1}{"b":2}', list, id="bad-concatenated-objects-fall-back-to-records-list"),
+        pytest.param("", list, id="bad-empty-body-yields-empty-list"),
+        pytest.param("   \n   ", list, id="bad-whitespace-only-body-yields-empty-list"),
+        pytest.param(None, list, id="bad-none-body-yields-empty-list"),
+        pytest.param({"data": []}, dict, id="passthrough-already-parsed-dict"),
+        pytest.param([{"x": 1}], list, id="passthrough-already-parsed-list"),
+    ],
+)
+def test_parse_json_or_concatenated_resilience(raw_body, expected_kind):
+    """`_parse_json_or_concatenated` must tolerate JSON, JSONL, concatenated JSON, empty bodies, and pre-parsed objects."""
+    from OpenAiChatGPTV3 import _parse_json_or_concatenated
+
+    result = _parse_json_or_concatenated(raw_body, log_prefix="[Test]")
+    assert isinstance(result, expected_kind)
+
+
+def test_get_audit_logs_recovers_from_jsonl_response(mocker):
+    """Regression: production observed `Extra data: line 1 column N` when the audit endpoint returned JSONL.
+
+    With the defensive parser, JSONL responses now degrade to a list of records and the audit fetch
+    wraps them in the `{data, has_more, last_id}` envelope so the rest of the pipeline keeps working.
+    """
+    from OpenAiChatGPTV3 import OpenAiClient
+
+    client = _make_client()
+    # Concatenated/JSONL body - the source of the production "Extra data" failure.
+    jsonl_body = '{"id": "FAKE_LOG_001", "effective_at": 100}\n{"id": "FAKE_LOG_002", "effective_at": 200}\n'
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=jsonl_body)
+
+    response = client.get_audit_logs()
+    assert isinstance(response, dict)
+    assert [event["id"] for event in response.get("data", [])] == ["FAKE_LOG_001", "FAKE_LOG_002"]
+    assert response.get("has_more") is False
+    assert response.get("last_id") is None
+
+
+def test_list_compliance_logs_recovers_from_jsonl_response(mocker):
+    """Regression: production observed `Expecting value: line 2 column 1` from the compliance listing endpoint.
+
+    With the defensive parser, the body is parsed as concatenated JSON / JSONL and normalized to
+    `{data, last_end_time, has_more}`.
+    """
+    from OpenAiChatGPTV3 import OpenAiClient
+
+    client = _make_client()
+    # JSONL body - first line has a valid object, then a newline + another object.
+    jsonl_body = (
+        '{"id": "FAKE_LISTING_001", "event_type": "AUDIT_LOG", "end_time": "2099-01-01T00:00:00Z"}\n'
+        '{"id": "FAKE_LISTING_002", "event_type": "AUDIT_LOG", "end_time": "2099-01-01T00:00:01Z"}'
+    )
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=jsonl_body)
+
+    result = client.list_compliance_logs(
+        workspace_id="FAKE_WORKSPACE_ID", event_types=["AUDIT_LOG"], after="2099-01-01T00:00:00Z"
+    )
+    assert [entry["id"] for entry in result["data"]] == ["FAKE_LISTING_001", "FAKE_LISTING_002"]
+
+
+# endregion
+
+
+# region JSONL-shaped response regression (synthetic, models the production payload structure)
+def test_parse_concatenated_json_handles_audit_log_jsonl_payload_with_trailing_newlines():
+    """Regression: the AUDIT_LOG JSONL payload shape returned by /compliance/workspaces/.../logs/{log_id}.
+
+    Two records on their own lines, separated by \\n, followed by trailing whitespace. All identifiers,
+    timestamps, IPs, and key suffixes below are FAKE placeholders chosen to mimic the production wire
+    shape without reproducing any real customer data or PII.
+    """
+    from OpenAiChatGPTV3 import parse_concatenated_json
+
+    body = (
+        '{"event_id":"FAKE_EVENT_ID_001","type":"AUDIT_LOG",'
+        '"principal":{"id":"FAKE_WORKSPACE_ID","type":"CHATGPT_WORKSPACE"},'
+        '"actor":{"type":"API_KEY","redacted_id":"FAKE_REDACTED_KEY"},'
+        '"timestamp":"2099-01-01T00:00:00.000000Z","action_result":"ERROR","action_privilege":"ADMIN",'
+        '"action_data":{"limit":"10","event_type":"CONVERSATION_MESSAGE"},'
+        '"action":"LIST_WORKSPACE_LOG_FILES"}\n'
+        '{"event_id":"FAKE_EVENT_ID_002","type":"AUDIT_LOG",'
+        '"principal":{"id":"FAKE_WORKSPACE_ID","type":"CHATGPT_WORKSPACE"},'
+        '"actor":{"type":"API_KEY","redacted_id":"FAKE_REDACTED_KEY"},'
+        '"timestamp":"2099-01-01T00:00:01.000000Z","action_result":"SUCCESS","action_privilege":"ADMIN",'
+        '"action_data":{"after":"2099-01-01T00:00:00","event_type":"CONVERSATION_MESSAGE"},'
+        '"action":"LIST_WORKSPACE_LOG_FILES"}\n\n'
+    )
+
+    records = parse_concatenated_json(body)
+
+    assert len(records) == 2
+    assert records[0]["event_id"] == "FAKE_EVENT_ID_001"
+    assert records[0]["action_result"] == "ERROR"
+    assert records[1]["event_id"] == "FAKE_EVENT_ID_002"
+    assert records[1]["action_result"] == "SUCCESS"
+    # Nested objects preserved through the parse.
+    assert records[0]["principal"]["id"] == "FAKE_WORKSPACE_ID"
+    assert records[1]["actor"]["type"] == "API_KEY"
 
 
 # endregion
