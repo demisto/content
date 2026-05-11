@@ -4983,7 +4983,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 ### aws-logs-log-group-create
 
 ***
-Creates a log group with the specified name.
+Creates a log group with the specified name. Required IAM Permission: `logs:CreateLogGroup`.
 
 #### Base Command
 
@@ -4993,13 +4993,13 @@ Creates a log group with the specified name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. Log group names can be between 1 and 512 characters long. Allowed characters are a-z, A-Z, 0-9, '_' (underscore), '-' (hyphen), '/' (forward slash), '.' (period), and '#' (number sign). | Required |
 | kms_key_id | The Amazon Resource Name (ARN) of the KMS key to use when encrypting log data. | Optional |
 | log_group_class | The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost. Possible values are: STANDARD, INFREQUENT_ACCESS. | Optional |
-| tags | The key-value pairs to use for the tags. Must be separated by a semicolon \(;\) and specified using the format "key=abc,value=123;key=fed,value=456". | Optional |
+| tags | The key-value pairs to use for the tags. Must be separated by a semicolon \(;\) and specified using the format: key=abc,value=123;key=fed,value=456. | Optional |
 | deletion_protection_enabled | Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false. Possible values are: true, false. | Optional |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5008,7 +5008,7 @@ There is no context output for this command.
 ### aws-logs-log-stream-create
 
 ***
-Creates a log stream for the specified log group.
+Creates a log stream for the specified log group. Required IAM Permission: `logs:CreateLogStream`.
 
 #### Base Command
 
@@ -5018,10 +5018,10 @@ Creates a log stream for the specified log group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Required |
 | log_stream_name | The name of the log stream. | Required |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5030,7 +5030,7 @@ There is no context output for this command.
 ### aws-logs-log-group-delete
 
 ***
-Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
+Deletes the specified log group and permanently deletes all the archived log events associated with the log group. Required IAM Permission: `logs:DeleteLogGroup`.
 
 #### Base Command
 
@@ -5040,9 +5040,9 @@ Deletes the specified log group and permanently deletes all the archived log eve
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_group_name | The name of the log group. | Required |
-| region | The AWS Region. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | account_id | The AWS account ID. | Required |
+| log_group_name | The name of the log group. | Required |
 
 #### Context Output
 
@@ -5051,7 +5051,7 @@ There is no context output for this command.
 ### aws-logs-log-stream-delete
 
 ***
-Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
+Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream. Required IAM Permission: `logs:DeleteLogStream`.
 
 #### Base Command
 
@@ -5061,10 +5061,10 @@ Deletes the specified log stream and permanently deletes all the archived log ev
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Required |
 | log_stream_name | The name of the log stream. | Required |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5073,7 +5073,7 @@ There is no context output for this command.
 ### aws-logs-log-events-filter
 
 ***
-Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
+Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream. Required IAM Permission: `logs:FilterLogEvents`.
 
 #### Base Command
 
@@ -5083,18 +5083,18 @@ Lists log events from the specified log group. You can list all the log events o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_group_name | The name of the log group to search. You must include either logGroupName or logGroupIdentifier, but not both. | Required |
-| log_group_identifier | Specify either the name or ARN of the log group to search. If the log group is in a source account and you are using a monitoring account, you must use the log group ARN. You must include either logGroupName or logGroupIdentifier, but not both. | Optional |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
+| log_group_name | The name of the log group to search. You must include either log_group_name or log_group_identifier, but not both. | Required |
+| log_group_identifier | Specify either the name or ARN of the log group to search. If the log group is in a source account and you are using a monitoring account, you must use the log group ARN. You must include either log_group_name or log_group_identifier, but not both. | Optional |
 | log_stream_names | Comma-separated list of log stream names to search within. Cannot be used together with log_stream_name_prefix. | Optional |
 | log_stream_name_prefix | Filters the results to include only events from log streams that have names starting with this prefix. Cannot be used together with log_stream_names. | Optional |
-| start_time | The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp before this time are not returned. | Optional |
-| end_time | The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp later than this time are not returned. | Optional |
+| start_time | The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp before this time are not returned. | Optional |
+| end_time | The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp later than this time are not returned. | Optional |
 | filter_pattern | The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation. | Optional |
-| limit | The maximum number of events to return. The default is 10,000 events. | Optional |
+| limit | The maximum number of events to return. Max 10,000 events. | Optional |
 | next_token | The token for the next set of events to return. Use the value returned in the previous response as nextToken to get the next page of results. | Optional |
 | unmask | Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false. Possible values are: true, false. | Optional |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5110,7 +5110,7 @@ Lists log events from the specified log group. You can list all the log events o
 ### aws-logs-log-groups-describe
 
 ***
-Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
+Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name. Required IAM Permission: `logs:DescribeLogGroups`.
 
 #### Base Command
 
@@ -5120,15 +5120,16 @@ Lists the specified log groups. You can list all your log groups or filter the r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_group_name_prefix | The prefix to match. logGroupNamePrefix and logGroupNamePattern are mutually exclusive. Only one of these parameters can be passed. | Optional |
-| log_group_name_pattern | A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. logGroupNamePrefix and logGroupNamePattern are mutually exclusive. | Optional |
-| account_identifiers | Comma-separated list of account IDs. When used with includeLinkedAccounts, returns log groups in the accounts listed. Used for cross-account querying. | Optional |
-| include_linked_accounts | If true, include log groups in the accounts specified by accountIdentifiers. If this parameter is set to true and accountIdentifiers is empty, returns all log groups in the monitoring account and all linked source accounts. Possible values are: true, false. | Optional |
-| log_group_class | Specifies the log group class for this log group. Possible values are STANDARD and INFREQUENT_ACCESS. Possible values are: STANDARD, INFREQUENT_ACCESS. | Optional |
-| limit | The maximum number of items returned. If you don't specify a value, the default is up to 50 items. | Optional |
-| next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
-| region | The AWS Region. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | account_id | The AWS account ID. | Required |
+| log_group_name_prefix | The prefix to match. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed. | Optional |
+| log_group_name_pattern | A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed. | Optional |
+| log_group_identifiers | Comma-separated list of log group ARNs or names to describe. If you specify log group names, they must be from the same account and Region. | Optional |
+| account_identifiers | Comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying. | Optional |
+| include_linked_accounts | If true, include log groups in the accounts specified by account_identifiers. If this parameter is set to true and account_identifiers is empty, returns all log groups in the monitoring account and all linked source accounts. Possible values are: true, false. | Optional |
+| log_group_class | Specifies the log group class for this log group. Possible values are: STANDARD, INFREQUENT_ACCESS. | Optional |
+| limit | The maximum number of items returned. If you don't specify a value, the default is up to 50 items.. | Optional |
+| next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -5146,7 +5147,7 @@ Lists the specified log groups. You can list all your log groups or filter the r
 ### aws-logs-log-streams-describe
 
 ***
-Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
+Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered. Required IAM Permission: `logs:DescribeLogStreams`.
 
 #### Base Command
 
@@ -5156,15 +5157,15 @@ Lists the log streams for the specified log group. You can list all the log stre
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_group_name | The name of the log group. | Required |
-| log_group_identifier | Specify either the name or ARN of the log group. You must include either logGroupIdentifier or logGroupName, but not both. | Optional |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
+| log_group_name | The name of the log group. You must include either log_group_name or log_group_identifier, but not both. | Optional |
+| log_group_identifier | Specify either the name or ARN of the log group. You must include either log_group_name or log_group_identifier, but not both. | Optional |
 | log_stream_name_prefix | The prefix to match. If orderBy is LastEventTime, you cannot specify this parameter. | Optional |
 | order_by | If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time. The default value is LogStreamName. Possible values are: LogStreamName, LastEventTime. | Optional |
 | descending | If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending). Possible values are: true, false. | Optional |
-| limit | The maximum number of items returned. If you don't specify a value, the default is up to 50 items. | Optional |
+| limit | The maximum number of items returned. If you don't specify a value, maximum 50 items. | Optional |
 | next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5184,7 +5185,7 @@ Lists the log streams for the specified log group. You can list all the log stre
 ### aws-logs-retention-policy-put
 
 ***
-Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
+Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group. Required IAM Permission: `logs:PutRetentionPolicy`.
 
 #### Base Command
 
@@ -5194,10 +5195,10 @@ Sets the retention of the specified log group. A retention policy allows you to 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Required |
 | retention_in_days | The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653. | Required |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5206,7 +5207,7 @@ There is no context output for this command.
 ### aws-logs-retention-policy-delete
 
 ***
-Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
+Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy. Required IAM Permission: `logs:DeleteRetentionPolicy`.
 
 #### Base Command
 
@@ -5216,33 +5217,35 @@ Deletes the specified retention policy. Log events do not expire if they belong 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_group_name | The name of the log group. | Required |
-| region | The AWS Region. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | account_id | The AWS account ID. | Required |
+| log_group_name | The name of the log group. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
-### aws-logs-log-events-put
+### aws-logs-log-event-put
 
 ***
-Uploads a batch of log events to the specified log stream.
+Uploads a log event to the specified log stream. Required IAM Permission: `logs:PutLogEvents`.
 
 #### Base Command
 
-`aws-logs-log-events-put`
+`aws-logs-log-event-put`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Required |
 | log_stream_name | The name of the log stream. | Required |
 | timestamp | The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). | Required |
 | message | The raw event message. | Required |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
+| key_attributes | Entity key attributes that identify the entity. Must be separated by a semicolon \(;\) and specified using the format: key=\<name\>,value=\<value\>;key=\<name\>,value=\<value\>. For example: key=Type,value=AWS::EC2::Instance;key=Name,value=my-instance. | Optional |
+| attributes | Additional entity attributes that describe the entity. Must be separated by a semicolon \(;\) and specified using the format: key=\<name\>,value=\<value\>;key=\<name\>,value=\<value\>. For example: key=Environment,value=production;key=Team,value=platform. | Optional |
 
 #### Context Output
 
@@ -5254,7 +5257,7 @@ Uploads a batch of log events to the specified log stream.
 ### aws-logs-metric-filter-put
 
 ***
-Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
+Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents. Required IAM Permission: `logs:PutMetricFilter`.
 
 #### Base Command
 
@@ -5264,6 +5267,8 @@ Creates or updates a metric filter and associates it with the specified log grou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Required |
 | filter_name | A name for the metric filter. | Required |
 | filter_pattern | A filter pattern for extracting metric data out of ingested log events. | Required |
@@ -5271,11 +5276,11 @@ Creates or updates a metric filter and associates it with the specified log grou
 | metric_namespace | The namespace of the CloudWatch metric. | Required |
 | metric_value | The value to publish to the CloudWatch metric when a filter pattern matches a log event. | Required |
 | default_value | The value to emit when a filter pattern does not match a log event. This value can be null. | Optional |
-| dimensions | The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Format: JSON object, e.g. {"EventType": "$.eventType"}. | Optional |
+| dimensions | The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Must be separated by a semicolon \(;\) and specified using the format: key=DimensionName,value=DimensionValueSource;key=DimensionName2,value=DimensionValueSource2. | Optional |
 | unit | The unit to assign to the metric. If you omit this, the unit is set as None. Possible values are: Seconds, Microseconds, Milliseconds, Bytes, Kilobytes, Megabytes, Gigabytes, Terabytes, Bits, Kilobits, Megabits, Gigabits, Terabits, Percent, Count, Bytes/Second, Kilobytes/Second, Megabytes/Second, Gigabytes/Second, Terabytes/Second, Bits/Second, Kilobits/Second, Megabits/Second, Gigabits/Second, Terabits/Second, Count/Second, None. | Optional |
+| field_selection_criteria | A filter expression that specifies which log events should be processed by this metric filter based on system fields such as source account and source region. Uses selection criteria syntax with operators like =, !=, AND, OR, IN, NOT IN. Maximum length of 2000 characters. | Optional |
+| emit_system_field_dimensions | Comma-separated list of system fields to emit as additional dimensions in the generated metrics. Valid values are @aws.account and @aws.region. | Optional |
 | apply_on_transformed_logs | Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false. Possible values are: true, false. | Optional |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5284,7 +5289,7 @@ There is no context output for this command.
 ### aws-logs-metric-filter-delete
 
 ***
-Deletes the specified metric filter.
+Deletes the specified metric filter. Required IAM Permission: `logs:DeleteMetricFilter`.
 
 #### Base Command
 
@@ -5294,10 +5299,10 @@ Deletes the specified metric filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Required |
 | filter_name | The name of the metric filter. | Required |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
@@ -5306,7 +5311,7 @@ There is no context output for this command.
 ### aws-logs-metric-filters-describe
 
 ***
-Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
+Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace. Required IAM Permission: `logs:DescribeMetricFilters`.
 
 #### Base Command
 
@@ -5316,14 +5321,14 @@ Lists the specified metric filters. You can list all the metric filters or filte
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| account_id | The AWS account ID. | Required |
 | log_group_name | The name of the log group. | Optional |
 | filter_name_prefix | The prefix to match. | Optional |
 | metric_name | Filters results to include only those with the specified metric name. If you include this parameter in your request, you must also include the metric_namespace parameter. | Optional |
 | metric_namespace | Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter. | Optional |
-| limit | The maximum number of items returned. If you don't specify a value, the default is up to 50 items. | Optional |
+| limit | The maximum number of items returned. If you don't specify a value, maximum 50 items. | Optional |
 | next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
-| region | The AWS Region. | Required |
-| account_id | The AWS account ID. | Required |
 
 #### Context Output
 

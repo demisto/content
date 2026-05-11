@@ -8114,7 +8114,7 @@ class CloudWatchLogs:
         kwargs: dict[str, Any] = {
             "logGroupName": log_group_name,
             "logGroupIdentifier": log_group_identifier,
-            "logStreamNames": argToList(log_stream_names) if log_stream_names else None,
+            "logStreamNames": argToList(log_stream_names),
             "logStreamNamePrefix": args.get("log_stream_name_prefix"),
             "startTime": arg_to_number(args.get("start_time")),
             "endTime": arg_to_number(args.get("end_time")),
@@ -8170,6 +8170,7 @@ class CloudWatchLogs:
             args (Dict[str, Any]): Command arguments containing:
                 - log_group_name_prefix: The prefix to match (optional).
                 - log_group_name_pattern: Case-sensitive substring to match against log group names (optional).
+                - log_group_identifiers: Comma-separated list of log group ARNs or names to describe (optional).
                 - account_identifiers: Comma-separated list of account IDs for cross-account querying (optional).
                 - include_linked_accounts: Whether to include log groups in linked source accounts (optional).
                 - log_group_class: Filter by log group class - STANDARD or INFREQUENT_ACCESS (optional).
@@ -8182,9 +8183,11 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
+        log_group_identifiers = args.get("log_group_identifiers")
         kwargs: dict[str, Any] = {
             "logGroupNamePrefix": args.get("log_group_name_prefix"),
             "logGroupNamePattern": args.get("log_group_name_pattern"),
+            "logGroupIdentifiers": argToList(log_group_identifiers) if log_group_identifiers else None,
             "accountIdentifiers": argToList(args.get("account_identifiers")),
             "includeLinkedAccounts": arg_to_bool_or_none(args.get("include_linked_accounts")),
             "logGroupClass": args.get("log_group_class"),
@@ -8256,7 +8259,7 @@ class CloudWatchLogs:
             "orderBy": args.get("order_by"),
             "descending": arg_to_bool_or_none(args.get("descending")),
         }
-        kwargs.update(build_pagination_kwargs(args, next_token_name="nextToken", limit_name="limit"))
+        kwargs.update(build_pagination_kwargs(args, next_token_name="nextToken", limit_name="limit", max_limit=50))
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
 
@@ -8287,8 +8290,9 @@ class CloudWatchLogs:
         )
         next_token = response.get("nextToken")
 
+        data_log = {"logGroupName": log_group_name, "LogStreams": data}
         outputs = {
-            "AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName).LogStreams": data,
+            "AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName)": data_log,
             "AWS.CloudWatchLogs.LogGroups(true)": {"LogStreamsNextToken": next_token},
         }
 
@@ -8411,7 +8415,6 @@ class CloudWatchLogs:
                 "rejectedLogEventsInfo": response.get("rejectedLogEventsInfo"),
                 "rejectedEntityInfo": response.get("rejectedEntityInfo"),
             }
-            remove_nulls_from_dictionary(data)
 
             readable = "Successfully created a log event!"
 
@@ -8440,6 +8443,10 @@ class CloudWatchLogs:
                 - default_value: The value to emit when a filter pattern does not match (optional).
                 - dimensions: The fields to use as dimensions for the metric, as JSON (optional).
                 - unit: The unit to assign to the metric (optional).
+                - field_selection_criteria: A filter expression that specifies which log events should be processed
+                    based on system fields such as source account and source region (optional, max 2000 chars).
+                - emit_system_field_dimensions: Comma-separated list of system fields to emit as additional
+                    dimensions. Valid values are @aws.account and @aws.region (optional).
                 - apply_on_transformed_logs: Whether to apply on transformed logs (optional).
 
         Returns:
@@ -8450,6 +8457,7 @@ class CloudWatchLogs:
         """
         default_value = args.get("default_value")
         dimensions = args.get("dimensions")
+        emit_system_field_dimensions = args.get("emit_system_field_dimensions")
         metric_transformation: dict[str, Any] = {
             "metricName": args.get("metric_name"),
             "metricNamespace": args.get("metric_namespace"),
@@ -8457,8 +8465,10 @@ class CloudWatchLogs:
             "defaultValue": float(default_value) if default_value else None,
             "dimensions": {tag["Key"]: tag["Value"] for tag in parse_tag_field(dimensions)} if dimensions else None,
             "unit": args.get("unit"),
+            "fieldSelectionCriteria": args.get("field_selection_criteria"),
+            "emitSystemFieldDimensions": argToList(emit_system_field_dimensions) if emit_system_field_dimensions else None,
         }
-        remove_nulls_from_dictionary(metric_transformation)
+        metric_transformation = remove_empty_elements(metric_transformation)
 
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),
@@ -8467,7 +8477,7 @@ class CloudWatchLogs:
             "metricTransformations": [metric_transformation],
             "applyOnTransformedLogs": arg_to_bool_or_none(args.get("apply_on_transformed_logs")),
         }
-        remove_nulls_from_dictionary(kwargs)
+        kwargs = remove_empty_elements(kwargs)
         demisto.debug(f"{kwargs=}")
 
         response = client.put_metric_filter(**kwargs)

@@ -14928,6 +14928,10 @@ def test_log_groups_describe_command_success(mocker):
     result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
+    mock_client.describe_log_groups.assert_called_once()
+    call_kwargs = mock_client.describe_log_groups.call_args[1]
+    assert "logGroupNamePrefix" not in call_kwargs
+    assert "logGroupNamePattern" not in call_kwargs
     data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName)"]
     assert len(data) == 1
     assert data[0]["logGroupName"] == "my-log-group"
@@ -14954,6 +14958,8 @@ def test_log_groups_describe_command_with_pagination(mocker):
 
     result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
 
+    call_kwargs = mock_client.describe_log_groups.call_args[1]
+    assert call_kwargs["limit"] == 1
     assert result.outputs["AWS.CloudWatchLogs(true)"]["LogGroupsNextToken"] == "next-page-token"
 
 
@@ -15005,6 +15011,8 @@ def test_log_streams_describe_command_success(mocker):
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_log_streams.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-group"
     data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName).LogStreams"]
     assert len(data) == 1
     assert data[0]["logStreamName"] == "my-stream"
@@ -15027,7 +15035,7 @@ def test_log_streams_describe_command_with_pagination(mocker):
         "nextToken": "stream-next-token",
     }
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-group"}
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-group", "limit": "1", "next_token": "token"}
 
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
@@ -15168,9 +15176,12 @@ def test_metric_filter_put_command_success(mocker):
     assert "ErrorFilter" in result.readable_output
     assert "my-log-group" in result.readable_output
     call_kwargs = mock_client.put_metric_filter.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
     assert call_kwargs["filterName"] == "ErrorFilter"
     assert call_kwargs["filterPattern"] == "ERROR"
     assert call_kwargs["metricTransformations"][0]["metricName"] == "ErrorCount"
+    assert call_kwargs["metricTransformations"][0]["metricNamespace"] == "MyApp"
+    assert call_kwargs["metricTransformations"][0]["metricValue"] == "1"
 
 
 def test_metric_filter_put_command_with_optional_params(mocker):
@@ -15196,17 +15207,27 @@ def test_metric_filter_put_command_with_optional_params(mocker):
         "default_value": "0",
         "dimensions": "key=EventType,value=$.eventType",
         "unit": "Count",
+        "field_selection_criteria": '@aws.region = "us-east-1"',
+        "emit_system_field_dimensions": "@aws.account,@aws.region",
         "apply_on_transformed_logs": "true",
     }
 
     CloudWatchLogs.metric_filter_put_command(mock_client, args)
 
     call_kwargs = mock_client.put_metric_filter.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
+    assert call_kwargs["filterName"] == "ErrorFilter"
+    assert call_kwargs["filterPattern"] == "ERROR"
+    assert call_kwargs["applyOnTransformedLogs"] is True
     transformation = call_kwargs["metricTransformations"][0]
+    assert transformation["metricName"] == "ErrorCount"
+    assert transformation["metricNamespace"] == "MyApp"
+    assert transformation["metricValue"] == "1"
+    assert transformation["fieldSelectionCriteria"] == '@aws.region = "us-east-1"'
+    assert transformation["emitSystemFieldDimensions"] == ["@aws.account", "@aws.region"]
     assert transformation["defaultValue"] == 0.0
     assert transformation["dimensions"] == {"EventType": "$.eventType"}
     assert transformation["unit"] == "Count"
-    assert call_kwargs["applyOnTransformedLogs"] is True
 
 
 def test_metric_filter_delete_command_success(mocker):
@@ -15262,6 +15283,8 @@ def test_metric_filters_describe_command_success(mocker):
     result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_metric_filters.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
     raw = result.outputs["AWS.CloudWatchLogs.MetricFilters(val.filterName && val.filterName == obj.filterName)"]
     assert len(raw) == 1
     assert raw[0]["filterName"] == "ErrorFilter"
@@ -15288,8 +15311,7 @@ def test_metric_filters_describe_command_with_pagination(mocker):
         "nextToken": "metric-next-token",
     }
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
-
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group", "limit": "1", "next_token": "token"}
     result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
 
     assert result.outputs["AWS.CloudWatchLogs(true)"]["MetricFiltersNextToken"] == "metric-next-token"

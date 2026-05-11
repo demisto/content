@@ -14220,7 +14220,7 @@ script:
       required: false
 
   - name: aws-logs-log-group-create
-    description: Creates a log group with the specified name.
+    description: "Creates a log group with the specified name. Required IAM Permission: logs:CreateLogGroup."
     execution: true
     arguments:
     - name: region
@@ -14286,7 +14286,7 @@ script:
       description: Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false.
 
   - name: aws-logs-log-stream-create
-    description: Creates a log stream for the specified log group.
+    description: "Creates a log stream for the specified log group. Required IAM Permission: logs:CreateLogStream."
     execution: true
     arguments:
     - name: region
@@ -14339,7 +14339,7 @@ script:
       description: The name of the log stream.
 
   - name: aws-logs-log-group-delete
-    description: Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
+    description: "Deletes the specified log group and permanently deletes all the archived log events associated with the log group. Required IAM Permission: logs:DeleteLogGroup."
     execution: true
     arguments:
     - name: region
@@ -14389,7 +14389,7 @@ script:
       description: The name of the log group.
 
   - name: aws-logs-log-stream-delete
-    description: Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
+    description: "Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream. Required IAM Permission: logs:DeleteLogStream."
     execution: true
     arguments:
     - name: region
@@ -14442,7 +14442,7 @@ script:
       description: The name of the log stream.
 
   - name: aws-logs-log-events-filter
-    description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
+    description: "Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream. Required IAM Permission: logs:FilterLogEvents."
     arguments:
     - name: region
       required: true
@@ -14503,7 +14503,7 @@ script:
     - name: filter_pattern
       description: The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation.
     - name: limit
-      description: The maximum number of events to return. Max 10,000 events.
+      description: The maximum number of events to return.
     - name: next_token
       description: The token for the next set of events to return. Use the value returned in the previous response as nextToken to get the next page of results.
     - name: unmask
@@ -14533,7 +14533,7 @@ script:
       type: string
 
   - name: aws-logs-log-groups-describe
-    description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
+    description: "Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name. Required IAM Permission: logs:DescribeLogGroups."
     arguments:
     - name: region
       required: true
@@ -14581,6 +14581,9 @@ script:
       description: The prefix to match. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed.
     - name: log_group_name_pattern
       description: A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed.
+    - name: log_group_identifiers
+      description: Comma-separated list of log group ARNs or names to describe. If you specify log group names, they must be from the same account and Region.
+      isArray: true
     - name: account_identifiers
       description: Comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying.
       isArray: true
@@ -14596,7 +14599,7 @@ script:
       - INFREQUENT_ACCESS
       description: Specifies the log group class for this log group.
     - name: limit
-      description: The maximum number of items returned. If you don’t specify a value, the default is up to 50 items..
+      description: The maximum number of items returned. Maximum value of 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
@@ -14626,7 +14629,7 @@ script:
       type: string
 
   - name: aws-logs-log-streams-describe
-    description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
+    description: "Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered. Required IAM Permission: logs:DescribeLogStreams."
     arguments:
     - name: region
       required: true
@@ -14689,7 +14692,7 @@ script:
       - "false"
       description: If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending).
     - name: limit
-      description: The maximum number of items returned. If you don't specify a value, maximum 50 items.
+      description: The maximum number of items returned. Maximum value of 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
@@ -14725,7 +14728,7 @@ script:
       type: string
 
   - name: aws-logs-retention-policy-put
-    description: Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
+    description: "Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group. Required IAM Permission: logs:PutRetentionPolicy."
     execution: true
     arguments:
     - name: region
@@ -14797,7 +14800,7 @@ script:
       description: The number of days to retain the log events in the specified log group.
 
   - name: aws-logs-retention-policy-delete
-    description: Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
+    description: "Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy. Required IAM Permission: logs:DeleteRetentionPolicy."
     execution: true
     arguments:
     - name: region
@@ -14847,7 +14850,7 @@ script:
       description: The name of the log group.
 
   - name: aws-logs-log-event-put
-    description: Uploads a log event to the specified log stream.
+    description: "Uploads a log event to the specified log stream. Required IAM Permission: logs:PutLogEvents."
     execution: true
     arguments:
     - name: region
@@ -14917,7 +14920,7 @@ script:
       type: Unknown
 
   - name: aws-logs-metric-filter-put
-    description: Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
+    description: "Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents. Required IAM Permission: logs:PutMetricFilter."
     execution: true
     arguments:
     - name: region
@@ -15015,6 +15018,11 @@ script:
       - Count/Second
       - None
       description: The unit to assign to the metric. If you omit this, the unit is set as None.
+    - name: field_selection_criteria
+      description: A filter expression that specifies which log events should be processed by this metric filter based on system fields such as source account and source region. Uses selection criteria syntax with operators like =, !=, AND, OR, IN, NOT IN. Maximum length of 2000 characters.
+    - name: emit_system_field_dimensions
+      description: Comma-separated list of system fields to emit as additional dimensions in the generated metrics. Valid values are @aws.account and @aws.region.
+      isArray: true
     - name: apply_on_transformed_logs
       auto: PREDEFINED
       predefined:
@@ -15023,7 +15031,7 @@ script:
       description: Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false.
 
   - name: aws-logs-metric-filter-delete
-    description: Deletes the specified metric filter.
+    description: "Deletes the specified metric filter. Required IAM Permission: logs:DeleteMetricFilter."
     execution: true
     arguments:
     - name: region
@@ -15076,7 +15084,7 @@ script:
       description: The name of the metric filter.
 
   - name: aws-logs-metric-filters-describe
-    description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
+    description: "Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace. Required IAM Permission: logs:DescribeMetricFilters."
     arguments:
     - name: region
       required: true
@@ -15129,7 +15137,7 @@ script:
     - name: metric_namespace
       description: Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter.
     - name: limit
-      description: The maximum number of items returned. If you don't specify a value, maximum 50 items.
+      description: The maximum number of items returned. Maximum value of 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
