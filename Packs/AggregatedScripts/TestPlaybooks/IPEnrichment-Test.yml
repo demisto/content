@@ -189,7 +189,7 @@ tasks:
       id: af346cda-1cbe-47d8-83d2-3695d562427b
       version: -1
       name: Endpoint Data Returned
-      description: Make sure Context output from wildfire
+      description: Make sure Context output from endpoints
       type: condition
       iscommand: false
       brand: ""
@@ -243,7 +243,7 @@ tasks:
       id: 31ad8980-d5a1-4a28-a64c-de08a947055c
       version: -1
       name: Main Keys Exists
-      description: MaxScore And MaxVerdict enriched for https://google.com
+      description: MaxScore And MaxVerdict enriched
       type: condition
       iscommand: false
       brand: ""
@@ -754,7 +754,7 @@ tasks:
       id: 98f4c9b6-4354-4269-8388-d69c57af1d48
       version: -1
       name: No Endpoint Data Returned
-      description: Make sure Context output from wildfire
+      description: Make sure no Context output
       type: condition
       iscommand: false
       brand: ""
