@@ -2209,15 +2209,6 @@ def normalize_key(key: str) -> str:
     return key
 
 
-# Asset types that use WILDCARD operator for exact matching (to avoid partial-name collisions).
-# "Server *" avoids matching "Serverless"; "Kubernetes Cluster *" avoids matching
-# "Kubernetes ClusterRole" and "Kubernetes ClusterRoleBinding".
-ASSET_TYPE_WILDCARD = {
-    "server",
-    "kubernetes cluster",
-}
-
-
 def search_assets_command(client: Client, args):
     """
     Search for assets in XDR based on the provided filters.
@@ -2270,10 +2261,7 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
 
     asset_types = argToList(args.get("asset_types", ""))
-    wildcard_values = [f"{v} *" for v in asset_types if v.lower() in ASSET_TYPE_WILDCARD]
-    contains_values = [v for v in asset_types if v.lower() not in ASSET_TYPE_WILDCARD]
-    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.WILDCARD, wildcard_values)
-    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, contains_values)
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT)) or SEARCH_ASSETS_DEFAULT_LIMIT
     page_number = arg_to_number(args.get("page_number", 0)) or 0

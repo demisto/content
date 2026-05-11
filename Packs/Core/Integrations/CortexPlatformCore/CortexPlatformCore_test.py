@@ -848,7 +848,6 @@ def test_search_assets_command_success(mocker):
                     },
                 ]
             },
-            # "server" is not in ASSET_TYPE_WILDCARD → goes into the CONTAINS field.
             {
                 "SEARCH_FIELD": "xdm__asset__type__name",
                 "SEARCH_TYPE": "CONTAINS",
@@ -913,43 +912,6 @@ def test_search_assets_asset_type_contains_only():
     assert [c["SEARCH_VALUE"] for c in conditions] == ["Endpoint", "Virtual Machine"]
     for c in conditions:
         assert c["SEARCH_TYPE"] == "CONTAINS"
-
-
-def test_search_assets_asset_type_wildcard_only():
-    """
-    GIVEN:
-        Asset types that are all WILDCARD ("Server", "Kubernetes Cluster").
-    WHEN:
-        search_assets_command builds the filter.
-    THEN:
-        A WILDCARD AND entry is added with " *" appended to each value.
-    """
-    from CortexPlatformCore import Client, search_assets_command
-
-    mock_client = Client(base_url="", headers={})
-
-    from unittest import mock
-
-    with (
-        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
-        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
-    ):
-        search_assets_command(mock_client, {"asset_types": "Server,Kubernetes Cluster"})
-
-    filter_arg = _get_filter_from_webapp_call(mock_get_webapp_data)
-    and_list = filter_arg["AND"]
-    wildcard_entries = [
-        b
-        for b in and_list
-        if b.get("SEARCH_TYPE") == "WILDCARD"
-        and b.get("SEARCH_FIELD") == "xdm__asset__type__name"
-        or "OR" in b
-        and any(c.get("SEARCH_TYPE") == "WILDCARD" and c.get("SEARCH_FIELD") == "xdm__asset__type__name" for c in b.get("OR", []))
-    ]
-    assert len(wildcard_entries) == 1
-    block = wildcard_entries[0]
-    conditions = block.get("OR", [block])
-    assert [c["SEARCH_VALUE"] for c in conditions] == ["Server *", "Kubernetes Cluster *"]
 
 
 def test_search_assets_asset_type_empty():
