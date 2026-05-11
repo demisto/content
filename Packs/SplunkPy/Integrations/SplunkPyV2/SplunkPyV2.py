@@ -814,7 +814,7 @@ def fetch_findings(
     enrichment_cache_mode = bool(enrich_findings and cache_object)
     last_run_extras: dict[str, Any] = {}
     if enrichment_cache_mode:
-        cache_object.not_yet_submitted_findings += findings
+        cache_object.not_yet_submitted_findings += findings  # type: ignore[union-attr]
         if DUMMY not in last_run_data:
             # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
             # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
@@ -5334,7 +5334,7 @@ def main() -> None:  # pragma: no cover
         extensive_log("[SplunkPy] Fetch Incidents was successfully executed.")
     elif command == "splunk-submit-event":
         splunk_submit_event_command(service, args)
-    elif command in ["splunk-finding-event-create", "splunk-investigation-edit"] and service is not None:
+    elif command in ["splunk-finding-event-edit", "splunk-investigation-edit"] and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         splunk_edit_finding_command(service, args)
     elif command == "splunk-submit-event-hec":
