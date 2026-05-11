@@ -714,7 +714,7 @@ def get_mitre_value_from_id(client, args):
                 if parent_object:
                     attack_pattern_name = f"{parent_object[0]['name']}: {attack_pattern_name}"
                 else:
-                                        demisto.debug(f"MA: Did not find parent attack pattern for sub-technique ID {attack_id}")
+                    demisto.debug(f"MA: Did not find parent attack pattern for sub-technique ID {attack_id}")
 
             if attack_pattern_name:
                 if not is_indicator_deprecated_or_revoked(attack_pattern[0]):
