@@ -1477,11 +1477,9 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
 
 def fetch_incidents_lookback(
     client: AzureSentinelClient,
-    look_back: int,
+    lookback_start_time: str,
     min_severity: str,
     statuses_to_fetch: list,
-    last_run: dict,
-    first_fetch_time: str,
     limit: int,
 ) -> list:
     """Fetch incidents that were modified within the lookback window.
@@ -1491,23 +1489,14 @@ def fetch_incidents_lookback(
 
     Args:
         client: The Azure Sentinel client.
-        look_back: Lookback time in minutes.
+        lookback_start_time: The start time of the lookback window.
         min_severity: Minimum severity to filter by.
         statuses_to_fetch: List of statuses to filter by.
-        last_run: The last run object.
-        first_fetch_time: The first fetch time string (e.g., '3 days').
         limit: Maximum number of incidents to fetch.
 
     Returns:
         List of incidents from the lookback window.
     """
-    lookback_last_run = {"time": last_run.get("last_fetch_time")}
-    lookback_start_time, _ = get_fetch_run_time_range(
-        last_run=lookback_last_run,
-        first_fetch=first_fetch_time,
-        look_back=look_back,
-        date_format=DATE_FORMAT,
-    )
     demisto.debug(f"Lookback: querying incidents modified since {lookback_start_time}")
 
     command_args = {
@@ -1529,12 +1518,74 @@ def fetch_incidents_lookback(
     return raw_incidents
 
 
+def dedup_lookback_incidents(
+    lookback_incidents: list,
+    previous_lookback_ids: dict,
+    incidents_ids_from_fetch: list,
+    look_back: int,
+) -> tuple[list, dict]:
+    """Dedup lookback incidents and return only new ones.
+
+    1. Compare new lookback incident IDs against the previous lookback IDs
+       (from previous cycles) to find only the truly new ones.
+    2. From those, remove any that were already fetched by the regular fetch mechanism.
+    Args:
+        lookback_incidents: Incidents from the lookback query.
+        previous_lookback_ids: {id: lastModifiedTimeUtc} from previous cycles.
+        incidents_ids_from_fetch: IDs already fetched by the regular fetch.
+        look_back: Lookback time in minutes. IDs older than 2x this value are removed.
+
+    Returns:
+        (deduped_incidents, updated {id: lastModifiedTimeUtc} for next_run).
+    """
+    # Calculate expiry threshold: 2x the lookback window (same as CSP's remove_old_incidents_ids)
+    expiry_threshold = (datetime.now(tz=timezone.utc) - timedelta(minutes=look_back * 2)).strftime(DATE_FORMAT)
+    demisto.debug(f"Lookback dedup: expiry threshold is {expiry_threshold} (2x {look_back} minutes)")
+
+    # Remove expired IDs that are older than 2x the lookback window
+    active_ids = {
+        inc_id: modified_time
+        for inc_id, modified_time in previous_lookback_ids.items()
+        if modified_time >= expiry_threshold
+    }
+    demisto.debug(f"Lookback dedup: removed {len(previous_lookback_ids) - len(active_ids)} expired IDs")
+
+    # Remove incidents already ingested in previous lookback cycles
+    new_lookback_incidents = [
+        inc for inc in lookback_incidents if inc.get("ID") not in active_ids
+    ]
+    demisto.debug(f"Lookback dedup - after previous-cycle dedup: {len(lookback_incidents)} → {len(new_lookback_incidents)}")
+
+    # Remove incidents already in the regular fetch
+    incidents_ids_from_fetch_set = set(incidents_ids_from_fetch)
+    deduped_incidents = [
+        inc for inc in new_lookback_incidents if inc.get("ID") not in incidents_ids_from_fetch_set
+    ]
+    demisto.debug(f"Lookback dedup - after regular-fetch dedup: {len(new_lookback_incidents)} → {len(deduped_incidents)}")
+
+    # Build updated lookback IDs: start with active previous IDs
+    updated_lookback_ids = dict(active_ids)
+
+    # Add newly ingested lookback incidents
+    for incident in deduped_incidents:
+        updated_lookback_ids[incident.get("ID")] = incident.get("LastModifiedTimeUTC")
+
+    # Also add incidents that were skipped because they were already in the regular fetch,
+    # so they won't be re-ingested in future cycles when they may no longer appear in the regular fetch
+    for incident in new_lookback_incidents:
+        if incident.get("ID") in incidents_ids_from_fetch_set:
+            updated_lookback_ids[incident.get("ID")] = incident.get("LastModifiedTimeUTC")
+
+    return deduped_incidents, updated_lookback_ids
+
+
 def fetch_incidents(
     client: AzureSentinelClient,
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
     statuses_to_fetch: list = [],
+    look_back: int = 0,
 ) -> tuple:
     """Fetching incidents.
     Args:
@@ -1543,6 +1594,8 @@ def fetch_incidents(
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
         statuses_to_fetch: A list of statuses to fetch.
+        look_back: Lookback time in minutes. When > 0, also fetches incidents
+            modified within this window to catch severity escalations.
 
     Returns:
         (tuple): 1. The LastRun object updated with the last run details.
@@ -1601,9 +1654,47 @@ def fetch_incidents(
     raw_incidents = list(filter(lambda incident: incident["ID"] not in last_fetch_ids, raw_incidents))
     demisto.debug(f"raw incidents id after dedup: {[incident['ID'] for incident in raw_incidents]}")
 
+    # Lookback mechanism based on fetching incidents by their modified time within the lookback window
+    current_lookback_ids: dict = {}
+    if look_back > 0:
+        demisto.debug(f"Lookback enabled with {look_back} minutes")
+
+        # Calculate the lookback start time
+        lookback_start_time, _ = get_fetch_run_time_range(
+            last_run={"time": last_run.get("last_fetch_time")},
+            first_fetch=first_fetch_time,
+            look_back=look_back,
+            date_format=DATE_FORMAT,
+        )
+
+        lookback_incidents = fetch_incidents_lookback(
+            client=client,
+            lookback_start_time=lookback_start_time,
+            min_severity=min_severity,
+            statuses_to_fetch=statuses_to_fetch,
+            limit=limit,
+        )
+
+        # Dedup lookback incidents using the lookback incidents from loop before and the fetched incidents
+        incidents_ids_from_fetch = [incident["ID"] for incident in raw_incidents]
+        previous_lookback_ids = last_run.get("lookback_fetch_ids", {})
+
+        lookback_deduped_incidents, current_lookback_ids = dedup_lookback_incidents(
+            lookback_incidents=lookback_incidents,
+            previous_lookback_ids=previous_lookback_ids,
+            incidents_ids_from_fetch=incidents_ids_from_fetch,
+            look_back=look_back,
+        )
+
+        # Merge deduped lookback incidents into the regular fetch results
+        raw_incidents.extend(lookback_deduped_incidents)
+        demisto.debug(f"Total incidents after lookback merge: {len(raw_incidents)}")
+
     fetch_incidents_additional_info(client, raw_incidents)
 
-    return process_incidents(raw_incidents, latest_created_time, last_incident_number)  # type: ignore[attr-defined]
+    return process_incidents(
+        raw_incidents, latest_created_time, last_incident_number, current_lookback_ids  # type: ignore[attr-defined]
+    )
 
 
 def fetch_incidents_command(client, params):
@@ -1611,6 +1702,7 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
     statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
+    look_back = arg_to_number(params.get("look_back")) or 0
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
@@ -1620,18 +1712,25 @@ def fetch_incidents_command(client, params):
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
         statuses_to_fetch=statuses_to_fetch,
+        look_back=look_back,
     )
-    demisto.debug(f"New last run is {last_run}")
+    demisto.debug(f"New last run is {next_run}")
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
 
 
-def process_incidents(raw_incidents: list, latest_created_time: datetime, last_incident_number):
+def process_incidents(
+    raw_incidents: list,
+    latest_created_time: datetime,
+    last_incident_number,
+    lookback_fetch_ids: dict,
+):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
         last_incident_number: The last incident number that was fetched.
         latest_created_time: The latest created time.
+        lookback_fetch_ids: IDs from the current lookback cycle to store in next_run.
 
     Returns:
         A next_run dictionary, and an array of incidents.
@@ -1666,11 +1765,13 @@ def process_incidents(raw_incidents: list, latest_created_time: datetime, last_i
             latest_created_time = incident_created_time
         if incident.get("IncidentNumber") > last_incident_number:
             last_incident_number = incident.get("IncidentNumber")
-    next_run = {
+    next_run: dict = {
         "last_fetch_time": latest_created_time.strftime(DATE_FORMAT),
         "last_fetch_ids": current_fetch_ids,
         "last_incident_number": last_incident_number,
+        "lookback_fetch_ids": lookback_fetch_ids or {},
     }
+
     return next_run, incidents
 
 
