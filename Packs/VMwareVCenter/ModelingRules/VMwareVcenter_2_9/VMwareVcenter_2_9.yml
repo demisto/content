@@ -4,3 +4,5 @@ name: VMware Vcenter 2.9 Modeling Rule
 rules: ''
 schema: ''
 tags: VMware vCenter
+supportedModules:
+- xsiam

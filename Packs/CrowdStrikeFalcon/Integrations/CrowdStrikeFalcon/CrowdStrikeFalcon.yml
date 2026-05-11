@@ -192,9 +192,6 @@ configuration:
   - xsoar
   supportedModules:
   - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - display: Incident type
   name: incidentType
   type: 13
@@ -656,7 +653,14 @@ script:
       isArray: true
       name: ids
       required: true
-    description: Lifts containment on the host, which returns its network communications to normal.
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to lift filesystem containment instead of network containment. When set to true, uses the lift_filesystem_containment_all action to remove filesystem containment from the specified hosts.
+      name: lift_filesystem_containment_all
+      predefined:
+      - 'true'
+      - 'false'
+    description: Lifts containment on the host, which returns its network communications to normal. When lift_filesystem_containment_all is set to true, lifts filesystem containment instead.
     name: cs-falcon-lift-host-containment
     compliantpolicies:
     - EndPoint Isolation
@@ -1548,6 +1552,9 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
     - contextPath: CrowdStrike.NextPageToken
       description: A pagination token used with the limit parameter to manage pagination of results.
   - arguments:
@@ -1604,6 +1611,9 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
   - arguments:
     - auto: PREDEFINED
       description: The type of the indicator.
@@ -1639,6 +1649,8 @@ script:
       - mac
       - windows
       - linux
+      - android
+      - ios
       required: true
     - auto: PREDEFINED
       description: The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action.
@@ -1669,6 +1681,20 @@ script:
       name: tags
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - auto: PREDEFINED
+      description: |-
+        The action to take on mobile devices when a host observes the custom IOC.
+        Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.
+        - no_action: The indicator is saved for future use, but no action is taken (no severity required).
+        - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
+        - detect: The connection is allowed and a detection is generated.
+        - prevent: The indicator is blocked and shown as a detection.
+      name: mobile_action
+      predefined:
+      - no_action
+      - allow
+      - detect
+      - prevent
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1717,6 +1743,9 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
     compliantpolicies:
     - Domain Blockage
     - IP Blockage
@@ -1757,6 +1786,20 @@ script:
       name: description
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - auto: PREDEFINED
+      description: |-
+        The action to take on mobile devices when a host observes the custom IOC.
+        Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.
+        - no_action: The indicator is saved for future use, but no action is taken (no severity required).
+        - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
+        - detect: The connection is allowed and a detection is generated.
+        - prevent: The indicator is blocked and shown as a detection.
+      name: mobile_action
+      predefined:
+      - no_action
+      - allow
+      - detect
+      - prevent
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1798,6 +1841,9 @@ script:
       type: string
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
 
   - arguments:
@@ -2616,6 +2662,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
   - arguments:
     - description: The host ID to kill the given process for.
       name: host_id
