@@ -796,9 +796,9 @@ class _ConcurrentEventFetcher:
 
 
 # --- ACL COMMAND HANDLERS ---
-async def acls_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+async def acl_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
-    Handle the ``ibm-storage-scale-acls-list`` command.
+    Handle the ``ibm-storage-scale-acl-list`` command.
 
     Lists access ACLs (optionally scoped to ``user_group``) and returns a CommandResults with
     the raw response under the ``IBMStorageScale.ACL`` context key (keyed on ``userGroup``).
@@ -977,8 +977,8 @@ async def main() -> None:
                 ),
             )
             return_results(command_results)
-        elif command == "ibm-storage-scale-acls-list":
-            return_results(await acls_list_command(client, demisto.args()))
+        elif command == "ibm-storage-scale-acl-list":
+            return_results(await acl_list_command(client, demisto.args()))
         elif command == "ibm-storage-scale-filesystem-acl-get":
             return_results(await filesystem_acl_get_command(client, demisto.args()))
         elif command == "ibm-storage-scale-acl-delete":

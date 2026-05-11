@@ -20,7 +20,7 @@ from IBMStorageScale import (
     _ConcurrentEventFetcher,
     acl_delete_command,
     acl_entry_delete_command,
-    acls_list_command,
+    acl_list_command,
     build_fetch_query,
     build_minute_fetch_queries,
     deduplicate_events,
@@ -658,23 +658,23 @@ def _build_acl_error_session(mocker: MockerFixture, status_code: int, text: str 
     return session
 
 
-# --- ACL: list_acls / acls_list_command ---
-class TestAclsList:
-    async def test_acls_list_no_user_group_calls_collection_endpoint(self, mocker: MockerFixture):
+# --- ACL: list_acls / acl_list_command ---
+class TestAclList:
+    async def test_acl_list_no_user_group_calls_collection_endpoint(self, mocker: MockerFixture):
         """Given no user_group, GET is called against the collection endpoint exactly once."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
         await client.list_acls()
         session.get.assert_called_once_with(ACCESS_ACLS_ENDPOINT)
 
-    async def test_acls_list_with_user_group_calls_specific_endpoint(self, mocker: MockerFixture):
+    async def test_acl_list_with_user_group_calls_specific_endpoint(self, mocker: MockerFixture):
         """Given user_group='admin', GET is called against /access/acls/admin."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
         await client.list_acls(user_group="admin")
         session.get.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin")
 
-    async def test_acls_list_url_encodes_user_group(self, mocker: MockerFixture):
+    async def test_acl_list_url_encodes_user_group(self, mocker: MockerFixture):
         """A user_group containing '/' must be URL-encoded so '/' becomes '%2F'."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
@@ -683,24 +683,24 @@ class TestAclsList:
         assert called_url == f"{ACCESS_ACLS_ENDPOINT}/admin%2Fgroup"
         assert "/group" not in called_url.split(ACCESS_ACLS_ENDPOINT, 1)[1].lstrip("/")
 
-    async def test_acls_list_command_returns_command_results(self, mocker: MockerFixture):
-        """`acls_list_command` wraps the raw response in CommandResults with the documented prefix."""
+    async def test_acl_list_command_returns_command_results(self, mocker: MockerFixture):
+        """`acl_list_command` wraps the raw response in CommandResults with the documented prefix."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         body = {"acls": [{"userGroup": "ProtocolAdmin", "entries": []}], "status": {"code": 200, "message": "ok"}}
         _build_acl_session(mocker, body)
-        result = await acls_list_command(client, {})
+        result = await acl_list_command(client, {})
         assert isinstance(result, CommandResults)
         assert result.outputs_prefix == "IBMStorageScale.ACL"
         assert result.outputs == body
 
-    async def test_acls_list_400_raises_invalid_request(self, mocker: MockerFixture):
+    async def test_acl_list_400_raises_invalid_request(self, mocker: MockerFixture):
         """A 400 response is mapped to 'Invalid Request'."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         _build_acl_error_session(mocker, 400, text="bad request body")
         with pytest.raises(DemistoException, match="Invalid Request"):
             await client.list_acls()
 
-    async def test_acls_list_500_raises_http_error(self, mocker: MockerFixture):
+    async def test_acl_list_500_raises_http_error(self, mocker: MockerFixture):
         """A 500 response is mapped to the generic 'HTTP Error' branch (includes server body)."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         _build_acl_error_session(mocker, 500, text="boom")
@@ -898,8 +898,8 @@ class TestMainAclDispatch:
         client_constructor_mock.return_value = mock_instance
         return mock_instance
 
-    async def test_main_dispatches_acls_list(self, mocker: MockerFixture, acl_client_mock: MagicMock, capfd):
-        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-acls-list")
+    async def test_main_dispatches_acl_list(self, mocker: MockerFixture, acl_client_mock: MagicMock, capfd):
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-acl-list")
         mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
         mocker.patch.object(demisto, "args", return_value={})
         mocker.patch("IBMStorageScale.return_results")

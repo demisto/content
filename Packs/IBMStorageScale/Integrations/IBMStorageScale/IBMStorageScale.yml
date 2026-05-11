@@ -128,7 +128,7 @@ script:
     - contextPath: IBMStorageScale.Debug.error_details
       description: Error details if connection failed.
       type: String
-  - name: ibm-storage-scale-acls-list
+  - name: ibm-storage-scale-acl-list
     description: Gets the list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
     arguments:
     - name: user_group
