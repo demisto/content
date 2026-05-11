@@ -1,4 +1,4 @@
-!ibm-storage-scale-get-events limit=2 should_push=false```
+!ibm-storage-scale-get-events limit=2 should_push=false
 !ibm-storage-scale-acls-list
 !ibm-storage-scale-acls-list user_group=ProtocolAdmin
 !ibm-storage-scale-filesystem-acl-get file_system_name=gpfs0 path=mnt/gpfs0/rest01
