@@ -4057,20 +4057,23 @@ def test_run_playbook_command_empty_response_success():
     When:
         The run_playbook_command function is called.
     Then:
-        The function should return a successful result with appropriate readable output.
+        The function should return a successful result with a descriptive message in result output.
     """
     from CortexPlatformCore import run_playbook_command
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "test_playbook_123", "name": "Test Playbook"},
+    ]
 
-    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+    args = {"playbook": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "executed successfully" in result.readable_output
-    assert "test_playbook_123" in result.readable_output
-    assert "issue_1, issue_2" in result.readable_output
+    assert "executed successfully" in result.outputs["result"]
+    assert "test_playbook_123" in result.outputs["result"]
+    assert "issue_1, issue_2" in result.outputs["result"]
 
 
 def test_run_playbook_command_multiple_errors_response():
@@ -4080,7 +4083,7 @@ def test_run_playbook_command_multiple_errors_response():
     When:
         The run_playbook_command function is called.
     Then:
-        A ValueError should be raised containing all error messages for the issues.
+        The result output field contains all error messages for the failing issues.
     """
     from CortexPlatformCore import run_playbook_command
 
@@ -4090,24 +4093,27 @@ def test_run_playbook_command_multiple_errors_response():
         "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
         "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
     }
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "multi_fail_playbook", "name": "Multi Fail Playbook"},
+    ]
 
-    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+    args = {"playbook": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
 
-    with pytest.raises(ValueError) as exc_info:
-        run_playbook_command(mock_client, args)
+    result = run_playbook_command(mock_client, args)
 
-    error_message = str(exc_info.value)
+    assert result.outputs["result"] is not None
+    error_message = result.outputs["result"]
     assert "multi_fail_playbook" in error_message
     assert (
-        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for issue issue_1, couldn't find issue"
         in error_message
     )
     assert (
-        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for issue issue_2, "
         "failed creating investigation playbook" in error_message
     )
     assert (
-        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for issue issue_3, "
         "failed creating investigation playbook" in error_message
     )
 
@@ -4125,12 +4131,15 @@ def test_run_playbook_command_string_issue_ids():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "test_playbook", "name": "Test Playbook"},
+    ]
 
-    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+    args = {"playbook": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "issue_1, issue_2, issue_3" in result.readable_output
+    assert "issue_1, issue_2, issue_3" in result.outputs["result"]
     mock_client.run_playbook.assert_called_once()
 
 
@@ -4147,12 +4156,182 @@ def test_run_playbook_command_client_call_parameters():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "param_test_playbook", "name": "Param Test Playbook"},
+    ]
 
-    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+    args = {"playbook": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
 
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_run_playbook_command_by_name_resolves_to_id():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument containing a playbook name.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The playbook name is resolved to its ID and client.run_playbook is called with the resolved ID.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+        {"id": "uuid-def-456", "name": "Another Playbook"},
+    ]
+
+    args = {"playbook": "My Custom Playbook", "issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["issue_1"], "uuid-abc-123")
+    assert "executed successfully" in result.outputs["result"]
+    assert "My Custom Playbook" in result.outputs["result"]
+
+
+def test_run_playbook_command_by_id_when_no_name_match():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument that matches a known ID (not a name).
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The value is recognised as a known ID and passed directly to client.run_playbook.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "some-direct-uuid-id", "name": "My Custom Playbook"},
+    ]
+
+    args = {"playbook": "some-direct-uuid-id", "issue_ids": ["issue_1"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["issue_1"], "some-direct-uuid-id")
+
+
+def test_run_playbook_command_unknown_playbook_returns_error_in_result():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument that matches neither a name nor a known ID.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A CommandResults is returned with the error message in the 'result' output field.
+        client.run_playbook is never called.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+    ]
+
+    args = {"playbook": "nonexistent-playbook", "issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "not found" in result.outputs["result"].lower()
+    assert "nonexistent-playbook" in result.outputs["result"]
+    mock_client.run_playbook.assert_not_called()
+
+
+def test_run_playbook_command_no_playbook_arg_returns_error_in_result():
+    """
+    Given:
+        A mock client and args with no 'playbook' argument (empty string default).
+    When:
+        The run_playbook_command function is called.
+    Then:
+        resolve_playbook_id raises DemistoException which is caught and returned
+        as a CommandResults with the error in the 'result' output field.
+        client.run_playbook is never called.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+    ]
+
+    args = {"issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "not found" in result.outputs["result"].lower()
+    mock_client.run_playbook.assert_not_called()
+
+
+def test_resolve_playbook_id_not_found_raises():
+    """
+    Given:
+        A mock client that returns playbooks metadata that does not contain the requested value.
+    When:
+        resolve_playbook_id is called with a value matching neither a name nor a known ID.
+    Then:
+        A DemistoException is raised with a 'not found' message.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "known-id", "name": "Known Playbook"},
+    ]
+
+    with pytest.raises(Exception) as exc_info:
+        resolve_playbook_id(mock_client, "nonexistent")
+
+    assert "not found" in str(exc_info.value).lower()
+
+
+def test_resolve_playbook_id_direct_id_match():
+    """
+    Given:
+        A mock client with playbooks metadata and a value that matches a known playbook ID (not a name).
+    When:
+        resolve_playbook_id is called with that ID.
+    Then:
+        The ID is returned as-is.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "known-uuid-123", "name": "Some Playbook"},
+    ]
+
+    result = resolve_playbook_id(mock_client, "known-uuid-123")
+
+    assert result == "known-uuid-123"
+
+
+def test_resolve_playbook_id_name_match():
+    """
+    Given:
+        A mock client with playbooks metadata containing a unique name.
+    When:
+        resolve_playbook_id is called with that name.
+    Then:
+        The corresponding ID is returned.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "resolved-id", "name": "My Playbook"},
+    ]
+
+    result = resolve_playbook_id(mock_client, "My Playbook")
+
+    assert result == "resolved-id"
 
 
 def test_get_endpoint_support_file_command_success(mocker):
