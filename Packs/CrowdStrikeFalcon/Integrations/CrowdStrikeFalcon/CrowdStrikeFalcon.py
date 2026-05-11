@@ -1129,6 +1129,109 @@ def create_json_iocs_list(
     return iocs_list
 
 
+def list_workflow_definitions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow definitions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., name.desc).
+
+    Returns:
+        Response JSON containing workflow definitions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_definitions: calling API with {params=}")
+    return http_request("GET", "/workflows/combined/definitions/v1", params=params)
+
+
+def execute_workflow(
+    definition_id: list[str] | None = None,
+    name: str | None = None,
+    execution_cid: list[str] | None = None,
+    key: str | None = None,
+    source_event_url: str | None = None,
+    body: str = "{}",
+) -> dict:
+    """
+    Execute an on-demand workflow.
+
+    Args:
+        definition_id: Workflow definition ID(s).
+        name: Workflow name.
+        execution_cid: CID(s) to execute the workflow on.
+        key: Deduplication key.
+        source_event_url: URL reference to the source that triggered the workflow.
+        body: JSON body to pass to the workflow execution.
+
+    Returns:
+        Response JSON from the workflow execution.
+    """
+    params = assign_params(
+        definition_id=definition_id,
+        name=name,
+        execution_cid=execution_cid,
+        key=key,
+        source_event_url=source_event_url,
+    )
+    try:
+        json_body = json.loads(body)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON in 'body' argument: {e}")
+    demisto.debug(f"[Workflow] execute_workflow: calling API with {params=}, body_keys={list(json_body.keys())}")
+    return http_request("POST", "/workflows/entities/execute/v1", params=params, json=json_body)
+
+
+def list_workflow_executions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow executions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., created_at.desc).
+
+    Returns:
+        Response JSON containing workflow executions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_executions: calling API with {params=}")
+    return http_request("GET", "/workflows/combined/executions/v1", params=params)
+
+
+def get_workflow_execution_results(ids: list[str]) -> dict:
+    """
+    Get detailed results for specific workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+
+    Returns:
+        Response JSON containing execution results.
+    """
+    params = {"ids": ids}
+    return http_request("GET", "/workflows/entities/execution-results/v1", params=params, status_code=404)
+
+
+def perform_workflow_execution_action(ids: list[str], action_name: str) -> dict:
+    """
+    Perform an action (cancel or resume) on workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+        action_name: The action to perform ('cancel' or 'resume').
+
+    Returns:
+        Response JSON from the action.
+    """
+    params = {"action_name": action_name}
+    body = {"ids": ids}
+    return http_request("POST", "/workflows/entities/execution-actions/v1", params=params, json=body, status_code=404)
+
+
 """ COMMAND SPECIFIC FUNCTIONS """
 
 
@@ -9662,6 +9765,304 @@ def get_ioarules_command(args: dict) -> CommandResults:
     )
 
 
+def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow definitions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    if raw_filter := args.get("filter"):
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"id:'{definition_id}'")
+        if activity_id := args.get("activity_id"):
+            filter_parts.append(f"activity_id:'{activity_id}'")
+        if name := args.get("name"):
+            filter_parts.append(f"name:~'{name}'")
+        if description := args.get("description"):
+            filter_parts.append(f"description:~'{description}'")
+        filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: built {filter_query=}")
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_definitions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    definitions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: found {len(definitions)} definitions")
+
+    # Build human-readable table
+    hr_data = []
+    for definition in definitions:
+        trigger = definition.get("trigger", {})
+        hr_data.append(
+            {
+                "Definition ID": definition.get("id"),
+                "Name": definition.get("name"),
+                "Description": definition.get("description"),
+                "Trigger Event": trigger.get("event"),
+                "Trigger Name": trigger.get("name"),
+                "Trigger Schedule": trigger.get("schedule"),
+                "Trigger Type": trigger.get("type"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        name="Workflow Definitions",
+        t=hr_data,
+        headers=["Definition ID", "Name", "Description", "Trigger Event", "Trigger Name", "Trigger Schedule", "Trigger Type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.WorkflowDefinition",
+        outputs_key_field="id",
+        outputs=definitions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Executes an on-demand workflow in CrowdStrike Falcon.
+    Either definition_id or name must be provided.
+    """
+    definition_id = argToList(args.get("definition_id"))
+    name = args.get("name")
+
+    if not definition_id and not name:
+        raise DemistoException("Either 'definition_id' or 'name' must be provided.")
+
+    execution_cid = argToList(args.get("execution_cid"))
+    key = args.get("key")
+    source_event_url = args.get("source_event_url")
+    # body is mendatory in the http request - if not provided, we set to empty dict
+    body = args.get("body", "{}")
+
+    response = execute_workflow(
+        definition_id=definition_id or None,
+        name=name,
+        execution_cid=execution_cid or None,
+        key=key,
+        source_event_url=source_event_url,
+        body=body,
+    )
+
+    resources = response.get("resources", [])
+    demisto.debug(f"[Workflow] workflow_execute_command: got {len(resources)} resources")
+
+    # Build human-readable output
+    # The API returns resources as a list of execution ID strings, not dicts.
+    hr_data = [{"Execution ID": resource} for resource in resources]
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution",
+        t=hr_data,
+        headers=["Execution ID"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflow",
+        outputs=resources,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow executions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    if raw_filter := args.get("filter"):
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"definition_id:'{definition_id}'")
+        if definition_name := args.get("definition_name"):
+            filter_parts.append(f"definition_name:~'{definition_name}'")
+        if execution_id := args.get("execution_id"):
+            filter_parts.append(f"id:'{execution_id}'")
+        filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_executions_command: built {filter_query=}")
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_executions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    executions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_executions_command: found {len(executions)} executions")
+
+    # Build human-readable table from activities
+    hr_data = []
+    for execution in executions:
+        execution_id_val = execution.get("execution_id", execution.get("id"))
+        activities = execution.get("activities", [])
+        if activities:
+            for activity in activities:
+                hr_data.append(
+                    {
+                        "Execution ID": execution_id_val,
+                        "Activity Node ID": activity.get("node_id"),
+                        "Activity Start Timestamp": activity.get("start_timestamp"),
+                        "Activity End Timestamp": activity.get("end_timestamp"),
+                        "Activity Status": activity.get("status"),
+                        "Activity Name": activity.get("name"),
+                        "Activity Type": activity.get("type"),
+                    }
+                )
+        else:
+            hr_data.append({"Execution ID": execution_id_val})
+
+    readable_output = tableToMarkdown(
+        name="Workflow Executions",
+        t=hr_data,
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity Name",
+            "Activity Type",
+        ],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.Execution",
+        outputs_key_field="execution_id",
+        outputs=executions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Gets detailed results for specific workflow executions.
+    """
+    ids = argToList(args.get("ids"))
+
+    response = get_workflow_execution_results(ids=ids)
+    results = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_execution_results_command: got {len(results)} results")
+
+    # Build human-readable table from nested activities
+    hr_data = []
+    for result in results:
+        execution_id = result.get("execution_id")
+        activities = result.get("activities", [])
+        for activity in activities:
+            hr_data.append(
+                {
+                    "Execution ID": execution_id,
+                    "Activity Node ID": activity.get("node_id"),
+                    "Activity Start Timestamp": activity.get("start_timestamp"),
+                    "Activity End Timestamp": activity.get("end_timestamp"),
+                    "Activity Status": activity.get("status"),
+                    "Activity ID": activity.get("id"),
+                    "Activity Name": activity.get("name"),
+                    "Activity Type": activity.get("type"),
+                }
+            )
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution Results",
+        t=hr_data,
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity ID",
+            "Activity Name",
+            "Activity Type",
+        ],
+        removeNull=True,
+    )
+
+    # Append errors if any (e.g., some IDs not found)
+    errors = response.get("errors", [])
+    if errors:
+        error_lines = ["\n**Errors:**"]
+        for error in errors:
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            error_lines.append(f"- Code: {error_code}, Message: {error_message}")
+        readable_output += "\n".join(error_lines)
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.ExecutionResult",
+        outputs_key_field="execution_id",
+        outputs=results,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Performs an action (cancel or resume) on one or more workflow executions.
+    Handles partial success where some IDs are affected and others return errors.
+    """
+    ids = argToList(args.get("ids"))
+    action_name = args.get("action_name", "")
+
+    if action_name not in ("cancel", "resume"):
+        raise DemistoException(f"Invalid action_name '{action_name}'. Must be 'cancel' or 'resume'.")
+
+    response = perform_workflow_execution_action(ids=ids, action_name=action_name)
+
+    action_past_tense = "cancelled" if action_name == "cancel" else "resumed"
+
+    # Extract resources_affected from meta.writes
+    resources_affected = response.get("meta", {}).get("writes", {}).get("resources_affected", 0)
+
+    # Extract errors if any
+    errors = response.get("errors", [])
+
+    # Calculate succeeded IDs
+    error_ids = {error.get("id") for error in errors if error.get("id")}
+    succeeded_ids = [id_ for id_ in ids if id_ not in error_ids]
+
+    # Build readable output
+    hr_parts: list[str] = []
+    if succeeded_ids:
+        hr_parts.append(f"{len(succeeded_ids)} workflow execution(s) {action_past_tense}: {', '.join(succeeded_ids)}")
+    else:
+        hr_parts.append(f"0 workflow execution(s) {action_past_tense}.")
+
+    if errors:
+        hr_parts.append("\n**Errors:**")
+        for error in errors:
+            error_id = error.get("id", "Unknown")
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            hr_parts.append(f"- ID: {error_id} — Code: {error_code}, Message: {error_message}")
+
+    readable_output = "\n".join(hr_parts)
+
+    demisto.debug(
+        f"[Workflow] workflow_execution_action_command: {action_name} completed, "
+        f"{resources_affected} affected, {len(errors)} errors for {len(ids)} ids"
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
@@ -9910,6 +10311,16 @@ def main():  # pragma: no cover
             return_results(resolve_case_command(args))
         elif command == "cs-falcon-search-ngsiem-events":
             return_results(cs_falcon_search_ngsiem_events_command(args))
+        elif command == "cs-falcon-list-workflow-definitions":
+            return_results(list_workflow_definitions_command(args))
+        elif command == "cs-falcon-workflow-execute":
+            return_results(workflow_execute_command(args))
+        elif command == "cs-falcon-list-workflow-executions":
+            return_results(list_workflow_executions_command(args))
+        elif command == "cs-falcon-list-workflow-execution-results":
+            return_results(list_workflow_execution_results_command(args))
+        elif command == "cs-falcon-workflow-execution-action":
+            return_results(workflow_execution_action_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
