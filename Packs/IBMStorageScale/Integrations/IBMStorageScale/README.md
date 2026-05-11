@@ -166,3 +166,97 @@ This command has no arguments.
 * **Certificate Validation Error**: If you see an SSL/TLS error, it means the XSIAM engine does not trust the certificate presented by the API server. For production environments, the best practice is to import the server's root CA certificate into the XSIAM trusted certificate store. As a temporary or non-production workaround, you can select the **Trust any certificate (not secure)** option.
 
 * **Fetch Cycle Reached Limit**: If you see a log message stating "Fetch cycle reached the event limit," it means there were more events on the server than the `Maximum number of events per fetch` value. The collector will pick up where it left off on the next cycle. If this message appears frequently, consider increasing the `max_fetch` parameter or decreasing the fetch interval.
+
+### ibm-storage-scale-acl-delete
+
+***
+Deletes all the REST API access control lists (ACL) defined for a user group. This is a potentially destructive operation.
+
+#### Base Command
+
+`ibm-storage-scale-acl-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_group | The user group name from which the ACLs are to be deleted. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### ibm-storage-scale-filesystem-acl-get
+
+***
+Gets information about the access control list (ACL) set for a file or directory in a filesystem.
+
+#### Base Command
+
+`ibm-storage-scale-filesystem-acl-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_system_name | The name of the filesystem (e.g., gpfs0). | Required |
+| path | The file path relative to the filesystem mount point, using forward slashes (e.g., mnt/gpfs0/rest01). The forward slashes are URL-encoded to %2F automatically when the request is built. | Required |
+| fields | Optional comma-separated list of fields to include in the response. Pass ':all:' to explicitly request all available fields. When omitted, the query parameter is not sent and the API applies its own default behavior (the API docs do not document what that default is). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IBMStorageScale.FileSystemACL.acl.type | String | Type of the ACL \(e.g., NFSv4\). |
+| IBMStorageScale.FileSystemACL.acl.entries | Unknown | The access control entries for the file or directory. |
+| IBMStorageScale.FileSystemACL.acl.entries.type | String | Type of the entry \(allow, deny, alarm, or audit\). |
+| IBMStorageScale.FileSystemACL.acl.entries.who | String | The name of the user or group for which the ACL is applicable \(e.g., 'special:owner@', 'special:group@', 'special:everyone@', 'user:\{name\}', 'group:\{name\}'\). |
+| IBMStorageScale.FileSystemACL.acl.entries.permissions | String | The access permissions string \(e.g., 'rxancs'\). |
+| IBMStorageScale.FileSystemACL.acl.entries.flags | String | Special flags and inheritance definition string \(e.g., 'fd'\). |
+
+### ibm-storage-scale-acls-list
+
+***
+Gets the list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
+
+#### Base Command
+
+`ibm-storage-scale-acls-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_group | Optional user group name. When provided, calls GET /scalemgmt/v2/access/acls/{userGroup} and returns only the ACLs for that user group. When omitted, lists all ACLs. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IBMStorageScale.ACL.acls | Unknown | The list of ACL objects returned by the API. |
+| IBMStorageScale.ACL.acls.userGroup | String | The user group for which the access control list is defined. |
+| IBMStorageScale.ACL.acls.entries | Unknown | The access control entries for the user group. |
+| IBMStorageScale.ACL.acls.entries.entryId | Number | The REST API access control list entry ID. |
+| IBMStorageScale.ACL.acls.entries.type | String | The type of access provided \(ALLOW or DENY\). |
+| IBMStorageScale.ACL.acls.entries.method | String | The REST API request method \(GET, PUT, POST, or DELETE\). |
+| IBMStorageScale.ACL.acls.entries.uri | String | The resource URL the access control entry applies to. |
+
+### ibm-storage-scale-acl-entry-delete
+
+***
+Deletes a specified REST API access control list (ACL) entry defined for a user group. This is a potentially destructive operation.
+
+#### Base Command
+
+`ibm-storage-scale-acl-entry-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_group | The user group name the ACL entry belongs to. | Required |
+| entry_id | The ID of the ACL entry that is to be deleted. | Required |
+
+#### Context Output
+
+There is no context output for this command.
