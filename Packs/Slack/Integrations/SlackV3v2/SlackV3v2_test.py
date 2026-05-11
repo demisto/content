@@ -5821,3 +5821,27 @@ def test_send_agent_response_adds_user_mention_for_model_type(mocker):
 
     call_args = SlackV3v2.slack_assistant_handler.send_agent_response.call_args[1]
     assert call_args["user_id"] == "U123"
+
+
+def test_create_script_notice_ui():
+    """
+    Given:
+    	A SlackAssistantHandler instance.
+    When:
+    	Creating a script availability notice UI block.
+    Then:
+    	Returns a rich_text block with a quoted notice containing the expected text.
+    """
+    from SlackV3v2 import slack_assistant_handler
+    from CortexAssistantApiModule import AssistantMessages
+
+    result = slack_assistant_handler.create_script_notice_ui()
+
+    assert result is not None
+    assert result["type"] == "rich_text"
+    elements = result["elements"]
+    assert len(elements) == 1
+    quote_block = elements[0]
+    assert quote_block["type"] == "rich_text_quote"
+    text_element = quote_block["elements"][1]
+    assert AssistantMessages.SCRIPT_AVAILABLE_NOTICE in text_element["text"]

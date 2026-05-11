@@ -3470,9 +3470,7 @@ def conversation_history() -> None:
 
     # When thread_id is provided, delegate to conversation replies logic
     if thread_id:
-        demisto.args()["channel_id"] = conversation_id
-        demisto.args()["thread_timestamp"] = thread_id
-        conversation_replies()
+        conversation_replies(channel_id=conversation_id, thread_timestamp=thread_id)
         return
 
     body = {"channel": conversation_id, "limit": limit}
@@ -3559,16 +3557,24 @@ def conversation_history() -> None:
     return_results(results)
 
 
-def conversation_replies():
+def conversation_replies(
+    channel_id: str | None = None,
+    thread_timestamp: str | None = None,
+):
     """
     Retrieves replies to specific messages, regardless of whether it's
     from a public or private channel, direct message, or otherwise.
+
+    Args:
+        channel_id: Optional channel ID override. Falls back to demisto.args().
+        thread_timestamp: Optional thread timestamp override. Falls back to demisto.args().
     """
     args = demisto.args()
-    channel_id = args.get("channel_id")
+    channel_id = channel_id or args.get("channel_id")
+    thread_timestamp = thread_timestamp or args.get("thread_timestamp")
     context: list = []
     readable_output: str = ""
-    body = {"channel": channel_id, "ts": args.get("thread_timestamp"), "limit": arg_to_number(args.get("limit"))}
+    body = {"channel": channel_id, "ts": thread_timestamp, "limit": arg_to_number(args.get("limit"))}
     raw_response = send_slack_request_sync(CLIENT, "conversations.replies", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
     if not raw_response.get("ok"):
