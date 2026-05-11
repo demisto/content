@@ -11,14 +11,20 @@ from pytest_mock import MockerFixture
 import demistomock as demisto
 from CommonServerPython import DemistoException
 from IBMStorageScale import (
+    ACCESS_ACLS_ENDPOINT,
     API_ENDPOINT,
     DEFAULT_FIRST_FETCH_MINUTES,
+    FILESYSTEM_ACL_ENDPOINT_TEMPLATE,
     Client,
     CommandResults,
     _ConcurrentEventFetcher,
+    acl_delete_command,
+    acl_entry_delete_command,
+    acls_list_command,
     build_fetch_query,
     build_minute_fetch_queries,
     deduplicate_events,
+    filesystem_acl_get_command,
     generate_event_hash,
     generate_time_filter_regex,
     get_fetch_start_time,
@@ -155,6 +161,10 @@ class TestMain:
         mock_instance.test_connection = AsyncMock()
         mock_instance.fetch_events = AsyncMock()
         mock_instance.get_events = AsyncMock(return_value=([], False))
+        mock_instance.list_acls = AsyncMock(return_value={"acls": []})
+        mock_instance.get_filesystem_acl = AsyncMock(return_value={})
+        mock_instance.delete_acl = AsyncMock(return_value={})
+        mock_instance.delete_acl_entry = AsyncMock(return_value={})
         client_constructor_mock.return_value = mock_instance
         return mock_instance
 
@@ -605,3 +615,325 @@ class TestParseTimezoneParam:
         tz, name = parse_timezone_param("Not/AZone")
         assert tz is UTC
         assert name == "UTC"
+
+
+# --- ACL test helpers ---
+DEFAULT_ACL_PARAMS: dict[str, Any] = {
+    "server_url": "https://test.com",
+    "credentials": {"identifier": "u", "password": "p"},
+    "insecure": True,
+    "proxy": None,
+}
+
+
+def _build_acl_session(mocker: MockerFixture, json_body: Any) -> AsyncMock:
+    """Build an AsyncMock httpx session whose get/delete return a 200 with `json_body`."""
+    mock_response = MagicMock(spec=httpx.Response)
+    mock_response.status_code = 200
+    mock_response.raise_for_status.return_value = None
+    mock_response.json.return_value = json_body
+
+    session = AsyncMock()
+    session.get = AsyncMock(return_value=mock_response)
+    session.delete = AsyncMock(return_value=mock_response)
+    session.__aenter__.return_value = session
+    mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+    return session
+
+
+def _build_acl_error_session(mocker: MockerFixture, status_code: int, text: str = "err body") -> AsyncMock:
+    """Build an AsyncMock httpx session whose get/delete raise an HTTPStatusError of the given code."""
+    error_response = httpx.Response(
+        status_code=status_code,
+        request=httpx.Request("GET", "https://test.com"),
+        text=text,
+    )
+    error = httpx.HTTPStatusError(f"Error {status_code}", request=error_response.request, response=error_response)
+
+    session = AsyncMock()
+    session.get = AsyncMock(side_effect=error)
+    session.delete = AsyncMock(side_effect=error)
+    session.__aenter__.return_value = session
+    mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+    return session
+
+
+# --- ACL: list_acls / acls_list_command ---
+class TestAclsList:
+    async def test_acls_list_no_user_group_calls_collection_endpoint(self, mocker: MockerFixture):
+        """Given no user_group, GET is called against the collection endpoint exactly once."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
+        await client.list_acls()
+        session.get.assert_called_once_with(ACCESS_ACLS_ENDPOINT)
+
+    async def test_acls_list_with_user_group_calls_specific_endpoint(self, mocker: MockerFixture):
+        """Given user_group='admin', GET is called against /access/acls/admin."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
+        await client.list_acls(user_group="admin")
+        session.get.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin")
+
+    async def test_acls_list_url_encodes_user_group(self, mocker: MockerFixture):
+        """A user_group containing '/' must be URL-encoded so '/' becomes '%2F'."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
+        await client.list_acls(user_group="admin/group")
+        called_url = session.get.call_args.args[0]
+        assert called_url == f"{ACCESS_ACLS_ENDPOINT}/admin%2Fgroup"
+        assert "/group" not in called_url.split(ACCESS_ACLS_ENDPOINT, 1)[1].lstrip("/")
+
+    async def test_acls_list_command_returns_command_results(self, mocker: MockerFixture):
+        """`acls_list_command` wraps the raw response in CommandResults with the documented prefix."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"acls": [{"userGroup": "ProtocolAdmin", "entries": []}], "status": {"code": 200, "message": "ok"}}
+        _build_acl_session(mocker, body)
+        result = await acls_list_command(client, {})
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "IBMStorageScale.ACL"
+        assert result.outputs == body
+
+    async def test_acls_list_400_raises_invalid_request(self, mocker: MockerFixture):
+        """A 400 response is mapped to 'Invalid Request'."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_error_session(mocker, 400, text="bad request body")
+        with pytest.raises(DemistoException, match="Invalid Request"):
+            await client.list_acls()
+
+    async def test_acls_list_500_raises_http_error(self, mocker: MockerFixture):
+        """A 500 response is mapped to the generic 'HTTP Error' branch (includes server body)."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_error_session(mocker, 500, text="boom")
+        with pytest.raises(DemistoException, match="HTTP Error"):
+            await client.list_acls()
+
+
+# --- ACL: get_filesystem_acl / filesystem_acl_get_command ---
+class TestFilesystemAclGet:
+    async def test_filesystem_acl_get_url_encodes_forward_slashes(self, mocker: MockerFixture):
+        """The path argument's '/' chars must be encoded as '%2F' in the URL."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        session = _build_acl_session(mocker, body)
+        await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01")
+        called_url = session.get.call_args.args[0]
+        assert called_url == "/scalemgmt/v2/filesystems/gpfs0/acl/mnt%2Fgpfs0%2Frest01"
+
+    async def test_filesystem_acl_get_no_fields_arg_omits_query_param(self, mocker: MockerFixture):
+        """When `fields` is omitted, no fields query parameter is sent at all."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        session = _build_acl_session(mocker, body)
+        await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01")
+        assert session.get.call_args.kwargs["params"] == {}
+
+    async def test_filesystem_acl_get_explicit_all_passed_through(self, mocker: MockerFixture):
+        """When fields=':all:' is explicitly provided, it is sent verbatim."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        session = _build_acl_session(mocker, body)
+        await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01", fields=":all:")
+        assert session.get.call_args.kwargs["params"] == {"fields": ":all:"}
+
+    async def test_filesystem_acl_get_custom_fields_passed_through_string(self, mocker: MockerFixture):
+        """When fields arrives as a CSV string from the user, it reaches the wire as that exact string."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        session = _build_acl_session(mocker, body)
+        await filesystem_acl_get_command(
+            client,
+            {"file_system_name": "gpfs0", "path": "mnt/gpfs0/rest01", "fields": "owner,group"},
+        )
+        assert session.get.call_args.kwargs["params"] == {"fields": "owner,group"}
+
+    async def test_filesystem_acl_get_custom_fields_passed_through_list(self, mocker: MockerFixture):
+        """When fields arrives pre-parsed as a list (YAML isArray:true), it is CSV-joined for the wire."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        session = _build_acl_session(mocker, body)
+        await filesystem_acl_get_command(
+            client,
+            {"file_system_name": "gpfs0", "path": "mnt/gpfs0/rest01", "fields": ["owner", "group"]},
+        )
+        assert session.get.call_args.kwargs["params"] == {"fields": "owner,group"}
+
+    async def test_filesystem_acl_get_command_outputs_prefix(self, mocker: MockerFixture):
+        """The command returns CommandResults with the documented prefix and `outputs == raw`."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        _build_acl_session(mocker, body)
+        result = await filesystem_acl_get_command(client, {"file_system_name": "gpfs0", "path": "mnt/gpfs0/rest01"})
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "IBMStorageScale.FileSystemACL"
+        assert result.outputs == body
+
+    async def test_filesystem_acl_get_hr_iterates_acl_entries(self, mocker: MockerFixture):
+        """The HR table is built from raw['acl']['entries'] (not from invented top-level fields)."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        body = {
+            "status": {"code": 200, "message": "ok"},
+            "acl": {
+                "type": "NFSv4",
+                "entries": [
+                    {"type": "allow", "who": "user:testuser", "permissions": "rxancs", "flags": "fd"},
+                ],
+            },
+        }
+        _build_acl_session(mocker, body)
+        result = await filesystem_acl_get_command(client, {"file_system_name": "gpfs0", "path": "mnt/gpfs0/rest01"})
+        assert "user:testuser" in result.readable_output
+        assert "rxancs" in result.readable_output
+
+    async def test_filesystem_acl_get_400_raises_invalid_request(self, mocker: MockerFixture):
+        """400 from the server is translated into 'Invalid Request' DemistoException."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_error_session(mocker, 400, text="bad path")
+        with pytest.raises(DemistoException, match="Invalid Request"):
+            await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01")
+
+
+# --- ACL: delete_acl / acl_delete_command ---
+class TestAclDelete:
+    async def test_acl_delete_calls_delete_endpoint(self, mocker: MockerFixture):
+        """DELETE is sent against /access/acls/{user_group}."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
+        await client.delete_acl(user_group="admin")
+        session.delete.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin")
+
+    async def test_acl_delete_url_encodes_user_group(self, mocker: MockerFixture):
+        """user_group with '/' is encoded so '/' becomes '%2F'."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
+        await client.delete_acl(user_group="grp/with/slash")
+        called_url = session.delete.call_args.args[0]
+        assert called_url == f"{ACCESS_ACLS_ENDPOINT}/grp%2Fwith%2Fslash"
+
+    async def test_acl_delete_readable_output_message(self, mocker: MockerFixture):
+        """HR string is taken verbatim from design.md."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
+        result = await acl_delete_command(client, {"user_group": "admin"})
+        assert result.readable_output == "All ACL from admin were deleted successfully"
+
+    async def test_acl_delete_returns_documented_jobs_body(self, mocker: MockerFixture):
+        """raw_response carries the documented `{jobs:[...], status:{...}}` envelope."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        documented_body = {
+            "jobs": [
+                {
+                    "jobId": 1000,
+                    "status": "COMPLETED",
+                    "submitted": "2024-01-01T00:00:00Z",
+                    "completed": "2024-01-01T00:00:01Z",
+                    "runtime": 1,
+                    "request": {"type": "DELETE", "url": "/scalemgmt/v2/access/acls/admin"},
+                    "result": {"progress": [], "commands": [], "stdout": [], "stderr": [], "exitCode": 0},
+                    "pids": [],
+                }
+            ],
+            "status": {"code": 200, "message": "ok"},
+        }
+        _build_acl_session(mocker, documented_body)
+        result = await acl_delete_command(client, {"user_group": "admin"})
+        assert result.raw_response == documented_body
+        assert result.readable_output == "All ACL from admin were deleted successfully"
+
+    async def test_acl_delete_400_raises_invalid_request(self, mocker: MockerFixture):
+        """400 from server is translated into 'Invalid Request' DemistoException."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_error_session(mocker, 400, text="bad user_group")
+        with pytest.raises(DemistoException, match="Invalid Request"):
+            await client.delete_acl(user_group="admin")
+
+
+# --- ACL: delete_acl_entry / acl_entry_delete_command ---
+class TestAclEntryDelete:
+    async def test_acl_entry_delete_calls_correct_endpoint(self, mocker: MockerFixture):
+        """DELETE is sent against /access/acls/{user_group}/entry/{entry_id}."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
+        await client.delete_acl_entry(user_group="admin", entry_id="42")
+        session.delete.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin/entry/42")
+
+    async def test_acl_entry_delete_url_encodes_both_segments(self, mocker: MockerFixture):
+        """Both user_group and entry_id are independently URL-encoded as path segments."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
+        await client.delete_acl_entry(user_group="g/x", entry_id="e/y")
+        called_url = session.delete.call_args.args[0]
+        assert called_url == f"{ACCESS_ACLS_ENDPOINT}/g%2Fx/entry/e%2Fy"
+
+    async def test_acl_entry_delete_readable_output_message(self, mocker: MockerFixture):
+        """HR string is taken verbatim from design.md (note grammatical quirk: 'were deleted')."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
+        result = await acl_entry_delete_command(client, {"user_group": "admin", "entry_id": "42"})
+        assert result.readable_output == "ACL from 42 were deleted successfully"
+
+    async def test_acl_entry_delete_500_raises_http_error(self, mocker: MockerFixture):
+        """500 falls through to the generic 'HTTP Error' branch."""
+        client = mock_client(mocker, DEFAULT_ACL_PARAMS)
+        _build_acl_error_session(mocker, 500, text="server boom")
+        with pytest.raises(DemistoException, match="HTTP Error"):
+            await client.delete_acl_entry(user_group="admin", entry_id="42")
+
+
+# --- ACL: main() dispatch wiring ---
+class TestMainAclDispatch:
+    @pytest.fixture
+    def acl_client_mock(self, mocker: MockerFixture) -> MagicMock:
+        """Same shape as TestMain.client_mock but exposes the new ACL async methods."""
+        client_constructor_mock = mocker.patch("IBMStorageScale.Client")
+        mock_instance = MagicMock()
+        mock_instance.test_connection = AsyncMock()
+        mock_instance.fetch_events = AsyncMock()
+        mock_instance.get_events = AsyncMock(return_value=([], False))
+        mock_instance.list_acls = AsyncMock(return_value={"acls": [], "status": {"code": 200, "message": "ok"}})
+        mock_instance.get_filesystem_acl = AsyncMock(
+            return_value={"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
+        )
+        mock_instance.delete_acl = AsyncMock(return_value={"jobs": [], "status": {"code": 200, "message": "ok"}})
+        mock_instance.delete_acl_entry = AsyncMock(return_value={"jobs": [], "status": {"code": 200, "message": "ok"}})
+        client_constructor_mock.return_value = mock_instance
+        return mock_instance
+
+    async def test_main_dispatches_acls_list(self, mocker: MockerFixture, acl_client_mock: MagicMock, capfd):
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-acls-list")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch("IBMStorageScale.return_results")
+        with capfd.disabled():
+            await main()
+        acl_client_mock.list_acls.assert_called_once_with(user_group=None)
+
+    async def test_main_dispatches_filesystem_acl_get(self, mocker: MockerFixture, acl_client_mock: MagicMock, capfd):
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-filesystem-acl-get")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={"file_system_name": "gpfs0", "path": "mnt/x"})
+        mocker.patch("IBMStorageScale.return_results")
+        with capfd.disabled():
+            await main()
+        acl_client_mock.get_filesystem_acl.assert_called_once()
+
+    async def test_main_dispatches_acl_delete(self, mocker: MockerFixture, acl_client_mock: MagicMock, capfd):
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-acl-delete")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={"user_group": "admin"})
+        mocker.patch("IBMStorageScale.return_results")
+        with capfd.disabled():
+            await main()
+        acl_client_mock.delete_acl.assert_called_once_with(user_group="admin")
+
+    async def test_main_dispatches_acl_entry_delete(self, mocker: MockerFixture, acl_client_mock: MagicMock, capfd):
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-acl-entry-delete")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={"user_group": "admin", "entry_id": "42"})
+        mocker.patch("IBMStorageScale.return_results")
+        with capfd.disabled():
+            await main()
+        acl_client_mock.delete_acl_entry.assert_called_once_with(user_group="admin", entry_id="42")
+
+
+# Quiet unused-import warnings for symbols only referenced in the ACL section.
+_ = FILESYSTEM_ACL_ENDPOINT_TEMPLATE
