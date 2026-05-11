@@ -23,7 +23,6 @@ MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
-BULK_ENRICHMENT_TIMEFRAME = '"7 Days"'  # timeFrame for bulk enrichment AQL queries
 
 
 class EVENT_TYPE:
@@ -802,9 +801,9 @@ def _bulk_fetch_entities_by_id(
 
     for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
         chunk = ids[offset : offset + BULK_ENRICHMENT_BATCH_SIZE]
-        aql = (
-            f"in:{entity_type} timeFrame:{BULK_ENRICHMENT_TIMEFRAME} " f"{aql_field}:{','.join(chunk)}"  # noqa: E231
-        )
+        # No timeFrame: per Armis (Sefi Maman, 2026-05-11) it is not required when
+        # the query specifies explicit IDs (UUID:... or deviceId:...).
+        aql = f"in:{entity_type} {aql_field}:{','.join(chunk)}"  # noqa: E231
         batch_start = datetime.now()
         try:
             results = client.fetch_by_ids_in_aql_query(aql_query=aql, order_by=order_by, length=BULK_ENRICHMENT_BATCH_SIZE)
