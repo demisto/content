@@ -8530,7 +8530,7 @@ class SSM:
         if not execution_id:
             # First execution — start the automation
             raw_filters = parse_filter_field(args.get("targets"))
-            targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] or None
+            targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
 
             # Build AlarmConfiguration from flat args
             alarm_names = argToList(args.get("alarm_names"))
