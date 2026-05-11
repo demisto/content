@@ -33,6 +33,10 @@
         "ServiceNow": {
             "mandatory": true,
             "display_name": "ServiceNow"
+        },
+        "CloudSecurityPolicyManagement": {
+            "mandatory": true,
+            "display_name": "Cloud Security Policy Management"
         }
     },
     "marketplaces": [
