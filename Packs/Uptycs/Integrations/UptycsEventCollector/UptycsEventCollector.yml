@@ -2,7 +2,8 @@ commonfields:
   id: UptycsEventCollector
   version: -1
 name: UptycsEventCollector
-display: Uptycs Event Collector
+display: Uptycs Event Collector (Beta)
+beta: true
 category: Analytics & SIEM
 provider: Uptycs
 description: Uptycs is a cloud-native security analytics platform that provides visibility, threat detection, and compliance across endpoints and cloud workloads.
@@ -60,7 +61,7 @@ script:
   commands:
   - name: uptycs-get-events
     description: |-
-      Gets alerts from Uptycs. This command is intended for developing and debugging and should be used with caution, as it can create duplicate events and exceed API rate limits.
+      Gets alerts from Uptycs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     deprecated: false
     arguments:
     - name: start_time
@@ -332,7 +333,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: devdemisto/fastapi:0.125.0.8001040
+  dockerimage: demisto/fastapi:0.125.0.8198656
 fromversion: 8.11.0
 marketplaces:
 - marketplacev2

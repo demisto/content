@@ -38,7 +38,7 @@ from UptycsEventCollector import (  # noqa: E402
 # Constants
 # ========================================
 
-SERVER_URL = "https://test.uptycs.io"
+SERVER_URL = "https://test.uptycs.io/"
 MOCK_API_KEY = "test-api-key-12345"
 MOCK_API_SECRET = "test-api-secret-67890"
 MOCK_CUSTOMER_ID = "test-customer-id-uuid"
@@ -97,12 +97,10 @@ def test_parse_date_or_use_current_success(date_string: str | None, expected_typ
     assert result.tzinfo == timezone.utc  # noqa: UP017
 
 
-def test_parse_date_or_use_current_invalid_returns_current():
-    """Tests parse_date_or_use_current returns current time for invalid date."""
-    before = datetime.now(timezone.utc)  # noqa: UP017
-    result = parse_date_or_use_current("invalid_date_string_12345")
-    after = datetime.now(timezone.utc)  # noqa: UP017
-    assert before <= result <= after
+def test_parse_date_or_use_current_invalid_raises():
+    """Tests parse_date_or_use_current raises DemistoException for invalid date."""
+    with pytest.raises(DemistoException, match="Failed to parse date string"):
+        parse_date_or_use_current("invalid_date_string_12345")
 
 
 @pytest.mark.parametrize(
@@ -226,7 +224,19 @@ def test_parse_integration_params_missing_required_fail(params: dict[str, Any], 
         ),
         (
             {
-                "url": f"{SERVER_URL}/",
+                "url": SERVER_URL.rstrip("/"),
+                "api_key": MOCK_API_KEY,
+                "credentials": {"password": MOCK_API_SECRET},
+                "customer_id": MOCK_CUSTOMER_ID,
+                "insecure": False,
+                "proxy": False,
+            },
+            True,
+            False,
+        ),
+        (
+            {
+                "url": f"{SERVER_URL}///",
                 "api_key": MOCK_API_KEY,
                 "credentials": {"password": MOCK_API_SECRET},
                 "customer_id": MOCK_CUSTOMER_ID,
@@ -314,6 +324,11 @@ def test_determine_entry_status(created_at: str, updated_at: str, expected_statu
             {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z"},
             "2024-01-01T00:00:00Z",
             "updated",
+        ),
+        (
+            {"id": "1", "createdAt": "2024-01-01T00:00:00Z"},
+            "2024-01-01T00:00:00Z",
+            None,
         ),
         (
             {"id": "1", "updatedAt": "2024-01-02T00:00:00Z"},
@@ -480,7 +495,7 @@ def test_deduplicate_events_preserves_order():
 def test_client_initialization(client: Client):
     """Tests Client initialization."""
     assert client.customer_id == MOCK_CUSTOMER_ID
-    assert client._base_url == f"{SERVER_URL}/"
+    assert client._base_url == SERVER_URL
 
 
 def test_client_initialization_with_optional_params(mocker):
@@ -520,10 +535,9 @@ def test_get_alerts_success(mocker, client: Client):
     ]
     mocker.patch.object(client, "_http_request", return_value={"items": mock_items})
 
-    items, count = client.get_alerts(created_after="2024-01-01T00:00:00")
+    items = client.get_alerts(created_after="2024-01-01T00:00:00", created_before="2024-01-03T00:00:00")
 
     assert len(items) == 2
-    assert count == 2
     assert items[0]["id"] == "alert1"
 
 
@@ -531,10 +545,9 @@ def test_get_alerts_empty_response(mocker, client: Client):
     """Tests get_alerts handles empty response."""
     mocker.patch.object(client, "_http_request", return_value={"items": []})
 
-    items, count = client.get_alerts(created_after="2024-01-01T00:00:00")
+    items = client.get_alerts(created_after="2024-01-01T00:00:00", created_before="2024-01-03T00:00:00")
 
     assert len(items) == 0
-    assert count == 0
 
 
 def test_get_alerts_with_date_range(mocker, client: Client):
@@ -571,7 +584,7 @@ def test_fetch_events_with_pagination_single_page(mocker, client: Client):
     """Tests fetch_events_with_pagination with single page of results."""
     mock_events = [{"id": f"event{i}", "createdAt": f"2024-01-0{i}T00:00:00Z"} for i in range(1, 4)]
 
-    mocker.patch.object(client, "get_alerts", return_value=(mock_events, len(mock_events)))
+    mocker.patch.object(client, "get_alerts", return_value=mock_events)
 
     events = fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 10)
 
@@ -588,10 +601,7 @@ def test_fetch_events_with_pagination_multiple_pages(mocker, client: Client):
     mock_get_alerts = mocker.patch.object(
         client,
         "get_alerts",
-        side_effect=[
-            (page1, len(page1)),
-            (page2, len(page2)),
-        ],
+        side_effect=[page1, page2],
     )
 
     events = fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 10)
@@ -609,10 +619,7 @@ def test_fetch_events_with_pagination_stops_at_max(mocker, client: Client):
     mocker.patch.object(
         client,
         "get_alerts",
-        side_effect=[
-            (page1, len(page1)),
-            (page2, len(page2)),
-        ],
+        side_effect=[page1, page2],
     )
 
     events = fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 7)
@@ -622,7 +629,7 @@ def test_fetch_events_with_pagination_stops_at_max(mocker, client: Client):
 
 def test_fetch_events_with_pagination_empty_page(mocker, client: Client):
     """Tests fetch_events_with_pagination handles empty page."""
-    mocker.patch.object(client, "get_alerts", return_value=([], 0))
+    mocker.patch.object(client, "get_alerts", return_value=[])
 
     events = fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 10)
 
@@ -637,7 +644,7 @@ def test_fetch_events_with_pagination_preserves_api_order(mocker, client: Client
         {"id": "event3", "createdAt": "2024-01-03T00:00:00Z"},
     ]
 
-    mocker.patch.object(client, "get_alerts", return_value=(mock_events, len(mock_events)))
+    mocker.patch.object(client, "get_alerts", return_value=mock_events)
 
     events = fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 10)
 
@@ -655,10 +662,7 @@ def test_fetch_events_with_pagination_slices_excess_events(mocker, client: Clien
     mocker.patch.object(
         client,
         "get_alerts",
-        side_effect=[
-            (page1, len(page1)),
-            (page2, len(page2)),
-        ],
+        side_effect=[page1, page2],
     )
 
     events = fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 12)
@@ -677,13 +681,37 @@ def test_fetch_events_with_pagination_slices_excess_events(mocker, client: Clien
 )
 def test_fetch_events_with_pagination_date_parameters(mocker, client: Client, created_after: str, created_before: str | None):
     """Tests fetch_events_with_pagination passes date parameters correctly."""
-    mock_get_alerts = mocker.patch.object(client, "get_alerts", return_value=([], 0))
+    mock_get_alerts = mocker.patch.object(client, "get_alerts", return_value=[])
 
     fetch_events_with_pagination(client, created_after, created_before, 10)
 
     call_kwargs = mock_get_alerts.call_args[1]
     assert call_kwargs["created_after"] == created_after
-    assert call_kwargs["created_before"] == created_before
+    if created_before is not None:
+        assert call_kwargs["created_before"] == created_before
+    else:
+        # When None is passed, fetch_events_with_pagination pins it to current UTC time
+        assert call_kwargs["created_before"] is not None
+
+
+def test_fetch_events_with_pagination_pins_created_before(mocker, client: Client):
+    """Tests fetch_events_with_pagination uses the same created_before across all pages when None is passed."""
+    mocker.patch.object(Config, "MAX_PAGE_SIZE", 2)
+    page1 = [{"id": "event1"}, {"id": "event2"}]
+    page2 = [{"id": "event3"}]
+
+    mock_get_alerts = mocker.patch.object(client, "get_alerts", side_effect=[page1, page2])
+
+    fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 10)
+
+    # Verify get_alerts was called twice (two pages)
+    assert mock_get_alerts.call_count == 2
+
+    # Verify the same created_before was used for both calls
+    first_call_created_before = mock_get_alerts.call_args_list[0][1]["created_before"]
+    second_call_created_before = mock_get_alerts.call_args_list[1][1]["created_before"]
+    assert first_call_created_before == second_call_created_before
+    assert first_call_created_before is not None
 
 
 # ========================================
@@ -802,6 +830,13 @@ def test_get_events_command_no_push_when_empty(mocker, client: Client):
     mock_send.assert_not_called()
 
 
+def test_get_events_command_invalid_start_time(client: Client):
+    """Tests get_events_command raises DemistoException for an unparseable start_time."""
+    args = {"start_time": "not_a_valid_date_12345", "limit": "10"}
+    with pytest.raises(DemistoException, match="Failed to parse date string"):
+        get_events_command(client, args)
+
+
 # ========================================
 # Tests: fetch_events_command
 # ========================================
@@ -815,8 +850,18 @@ def test_get_events_command_no_push_when_empty(mocker, client: Client):
             {},
             {"max_fetch": 100},
             [
-                {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
-                {"id": "2", "createdAt": "2024-01-02T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z"},
+                {
+                    "id": "1",
+                    "createdAt": "2024-01-01T00:00:00Z",
+                    "lastOccurredAt": "2024-01-01T00:00:00Z",
+                    "updatedAt": "2024-01-01T00:00:00Z",
+                },
+                {
+                    "id": "2",
+                    "createdAt": "2024-01-02T00:00:00Z",
+                    "lastOccurredAt": "2024-01-02T00:00:00Z",
+                    "updatedAt": "2024-01-02T00:00:00Z",
+                },
             ],
             "2024-01-02T00:00:00Z",
             2,
@@ -826,7 +871,12 @@ def test_get_events_command_no_push_when_empty(mocker, client: Client):
             {"last_fetch": "2024-01-01T00:00:00", "last_fetched_ids": []},
             {"max_fetch": 100},
             [
-                {"id": "3", "createdAt": "2024-01-03T00:00:00Z", "updatedAt": "2024-01-03T00:00:00Z"},
+                {
+                    "id": "3",
+                    "createdAt": "2024-01-03T00:00:00Z",
+                    "lastOccurredAt": "2024-01-03T00:00:00Z",
+                    "updatedAt": "2024-01-03T00:00:00Z",
+                },
             ],
             "2024-01-03T00:00:00Z",
             1,
@@ -866,9 +916,24 @@ def test_fetch_events_command_scenarios(
 def test_fetch_events_command_with_deduplication(mocker, client: Client):
     """Tests fetch_events_command deduplicates events based on last_fetched_ids."""
     mock_events = [
-        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
-        {"id": "2", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
-        {"id": "3", "createdAt": "2024-01-02T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z"},
+        {
+            "id": "1",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z",
+        },
+        {
+            "id": "2",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z",
+        },
+        {
+            "id": "3",
+            "createdAt": "2024-01-02T00:00:00Z",
+            "lastOccurredAt": "2024-01-02T00:00:00Z",
+            "updatedAt": "2024-01-02T00:00:00Z",
+        },
     ]
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00", "last_fetched_ids": ["1", "2"]})
@@ -888,8 +953,8 @@ def test_fetch_events_command_with_deduplication(mocker, client: Client):
 def test_fetch_events_command_all_duplicates(mocker, client: Client):
     """Tests fetch_events_command when all fetched events are duplicates."""
     mock_events = [
-        {"id": "1", "createdAt": "2024-01-01T00:00:00Z"},
-        {"id": "2", "createdAt": "2024-01-01T00:00:00Z"},
+        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "lastOccurredAt": "2024-01-01T00:00:00Z"},
+        {"id": "2", "createdAt": "2024-01-01T00:00:00Z", "lastOccurredAt": "2024-01-01T00:00:00Z"},
     ]
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00", "last_fetched_ids": ["1", "2"]})
@@ -934,12 +999,27 @@ def test_fetch_events_command_no_events_first_run_saves_state(mocker, client: Cl
     assert call_args["last_fetched_ids"] == []
 
 
-def test_fetch_events_command_multiple_events_same_created_at(mocker, client: Client):
-    """Tests fetch_events_command collects IDs at high-water mark timestamp."""
+def test_fetch_events_command_multiple_events_same_last_occurred_at(mocker, client: Client):
+    """Tests fetch_events_command collects IDs at the last_fetch timestamp."""
     mock_events = [
-        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
-        {"id": "2", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
-        {"id": "3", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
+        {
+            "id": "1",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z",
+        },
+        {
+            "id": "2",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z",
+        },
+        {
+            "id": "3",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z",
+        },
     ]
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
@@ -954,6 +1034,61 @@ def test_fetch_events_command_multiple_events_same_created_at(mocker, client: Cl
     call_args = demisto.setLastRun.call_args[0][0]  # type: ignore[attr-defined]
     assert call_args["last_fetch"] == "2024-01-01T00:00:00Z"
     assert sorted(call_args["last_fetched_ids"]) == ["1", "2", "3"]
+
+
+def test_fetch_events_command_missing_last_occurred_at_no_state_update(mocker, client: Client):
+    """Tests fetch_events_command does not update state when last event is missing lastOccurredAt."""
+    mock_events = [
+        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
+    ]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
+    mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(UptycsEventCollector, "enrich_events_for_xsiam")
+    mocker.patch.object(UptycsEventCollector, "send_events_to_xsiam")
+
+    fetch_events_command(client)
+
+    # Events should still be sent to XSIAM
+    UptycsEventCollector.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
+
+    # setLastRun should NOT be called since lastOccurredAt is missing
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+
+
+def test_fetch_events_command_last_fetch_uses_last_occurred_at_not_created_at(mocker, client: Client):
+    """Tests fetch_events_command sets last_fetch from lastOccurredAt, not createdAt, when they differ."""
+    mock_events = [
+        {
+            "id": "1",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-10T00:00:00Z",
+            "updatedAt": "2024-01-10T00:00:00Z",
+        },
+        {
+            "id": "2",
+            "createdAt": "2024-01-05T00:00:00Z",
+            "lastOccurredAt": "2024-01-15T00:00:00Z",
+            "updatedAt": "2024-01-15T00:00:00Z",
+        },
+    ]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
+    mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(UptycsEventCollector, "enrich_events_for_xsiam")
+    mocker.patch.object(UptycsEventCollector, "send_events_to_xsiam")
+
+    fetch_events_command(client)
+
+    call_args = demisto.setLastRun.call_args[0][0]  # type: ignore[attr-defined]
+    # last_fetch should be from lastOccurredAt of the last event, NOT createdAt
+    assert call_args["last_fetch"] == "2024-01-15T00:00:00Z"
+    assert call_args["last_fetch"] != "2024-01-05T00:00:00Z"  # createdAt of last event
+    assert call_args["last_fetched_ids"] == ["2"]
 
 
 # ========================================
@@ -1061,4 +1196,4 @@ def test_main_parse_params_error(mocker, capfd):
 
         mock_return_error.assert_called_once()
         error_message = mock_return_error.call_args[0][0]
-        assert re.search(r"server url is required", error_message, re.IGNORECASE)
+        assert re.search(r"(server url|api key|api secret|customer id) is required", error_message, re.IGNORECASE)
