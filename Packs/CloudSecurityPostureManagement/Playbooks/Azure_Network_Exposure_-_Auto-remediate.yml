@@ -1,5 +1,5 @@
 id: Azure Network Exposure - Auto-remediate
-version: -1e
+version: -1
 name: Azure Network Exposure - Auto-remediate
 description: |-
   This playbook remediates the following Azure Network Exposure detections:
