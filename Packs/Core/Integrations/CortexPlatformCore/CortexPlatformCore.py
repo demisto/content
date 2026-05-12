@@ -2225,7 +2225,6 @@ def search_assets_command(client: Client, args):
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
-    print(f"{asset_group_ids=}")
     software_package_versions = args.get("software_package_versions", "")
     kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
