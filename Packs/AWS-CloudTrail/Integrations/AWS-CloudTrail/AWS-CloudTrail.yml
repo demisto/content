@@ -1,5 +1,4 @@
 category: IT Services
-provider: Amazon
 commonfields:
   id: AWS - CloudTrail
   version: -1

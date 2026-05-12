@@ -4,5 +4,3 @@ name: Forcepoint Email Security Modeling Rules
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

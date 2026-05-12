@@ -595,8 +595,5 @@
 		}
 	],
     "description": "",
-    "isPredefined": true,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "isPredefined": true
 }

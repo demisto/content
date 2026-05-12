@@ -1,5 +1,4 @@
 category: Network Security
-provider: IBM
 commonfields:
   id: Polar Security
   version: -1
@@ -268,7 +267,7 @@ script:
       type: textArea
     description: Add or update a custom label to a data store.
     name: polar-apply-label
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116439
   runonce: false
   script: ''
   subtype: python3

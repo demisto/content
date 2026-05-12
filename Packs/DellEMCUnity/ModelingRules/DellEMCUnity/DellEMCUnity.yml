@@ -4,5 +4,3 @@ name: Dell EMC Unity Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

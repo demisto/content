@@ -4,5 +4,3 @@ name: SymantecDLP Modeling Rule
 rules: ''
 schema: ''
 tags:
-supportedModules:
-- xsiam

@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Amazon
 commonfields:
   id: AWS - AccessAnalyzer
   version: -1

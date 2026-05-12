@@ -4,5 +4,3 @@ name: Unix Auditd Modeling Rule
 rules: ''
 schema: ''
 tags: Unix Auditd
-supportedModules:
-- xsiam

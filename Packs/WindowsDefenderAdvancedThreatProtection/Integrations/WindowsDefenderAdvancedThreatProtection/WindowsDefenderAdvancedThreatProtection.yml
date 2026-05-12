@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Microsoft
 commonfields:
   id: Windows Defender Advanced Threat Protection
   version: -1
@@ -615,6 +614,3 @@ tests:
 - No Tests - Deprected (Test - Windows Defender Advanced Threat Protection is in NonCircleTests directory)
 
 fromversion: 5.0.0
-supportedModules:
-- xsiam
-- agentix

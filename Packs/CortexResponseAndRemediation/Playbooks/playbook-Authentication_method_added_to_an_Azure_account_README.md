@@ -46,22 +46,21 @@ This playbook does not use any integrations.
 ### Scripts
 
 * GetTime
-* IncreaseAlertSeverity
 * IsIntegrationAvailable
 * SearchAlertsV2
 * SetAndHandleEmpty
-* clear-user-session
-* disable-user
-* get-user-data
-* ip-enrichment
 
 ### Commands
 
+* azure-risky-users-list
 * azure-risky-users-risk-detections-list
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-list-risky-users
+* ip
 * microsoft-365-defender-advanced-hunting
-* msgraph-user-get
+* msgraph-user-account-disable
+* msgraph-user-session-revoke
 
 ## Playbook Inputs
 

@@ -117,14 +117,7 @@ class Client:
             indicator_obj["fields"]["trafficlightprotocol"] = self.tlp_color
 
         if item_type.lower() == "tactic":
-            tactic_mitre_id = self.tactic_name_to_mitre_id.get(value)
-            if tactic_mitre_id:
-                indicator_obj["value"] = f"{tactic_mitre_id} - {value}"
-            else:
-                demisto.debug(
-                    f"MA: Tactic '{value}' not found in tactic_name_to_mitre_id mapping, value will not include MITRE ID."
-                )
-                indicator_obj["value"] = value
+            indicator_obj["value"] = f"{self.tactic_name_to_mitre_id[value]} - {value}"
 
         if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
             tactics = []
@@ -134,21 +127,14 @@ class Client:
 
                 else:
                     tactic_name = tactic["phase_name"].title().replace("-", " ").replace("And", "and")
-                    tactic_mitre_id = self.tactic_name_to_mitre_id.get(tactic_name)
-                    if tactic_mitre_id:
-                        tactic_value = f"{tactic_mitre_id} - {tactic_name}"
-                    else:
-                        demisto.debug(
-                            f"MA: Tactic '{tactic_name}' not found in tactic_name_to_mitre_id mapping, "
-                            "creating relationship without MITRE ID prefix."
-                        )
-                        tactic_value = tactic_name
+                    tactic_mitre_id = self.tactic_name_to_mitre_id[tactic_name]
+                    tactic = f"{tactic_mitre_id} - {tactic_name}"
                     tactics.append(
                         EntityRelationship(
                             name=EntityRelationship.Relationships.PART_OF,
                             entity_a=indicator_obj["value"],
                             entity_a_type=indicator_obj["type"],
-                            entity_b=tactic_value,
+                            entity_b=tactic,
                             entity_b_type="Tactic",
                         ).to_indicator()
                     )

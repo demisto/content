@@ -235,16 +235,16 @@ def process_timeline(detection_id):
                 }
                 files.append(
                     {
-                        "Name": os.path.basename(image.get("path") or ""),
+                        "Name": os.path.basename(image.get("path", "")),
                         "MD5": image.get("md5"),
                         "SHA256": image.get("sha256"),
                         "Path": image.get("path"),
-                        "Extension": os.path.splitext(image.get("path") or "")[-1],
+                        "Extension": os.path.splitext(image.get("path", ""))[-1],
                     }
                 )
                 processes.append(
                     {
-                        "Name": os.path.basename(image.get("path") or ""),
+                        "Name": os.path.basename(image.get("path", "")),
                         "Path": image.get("path"),
                         "MD5": image.get("md5"),
                         "SHA256": image.get("sha256"),
@@ -377,9 +377,7 @@ def detections_to_entry(detections, show_timeline=False):
     }
 
 
-def get_unacknowledged_detections(
-    t: datetime, per_page: int = 50, is_fetch_acknowledged: bool = False
-) -> Generator[dict, None, None]:
+def get_unacknowledged_detections(t: datetime, per_page: int = 50) -> Generator[dict, None, None]:
     """iterate over all unacknowledged detections later then time t
 
     Args:
@@ -396,10 +394,7 @@ def get_unacknowledged_detections(
             attributes = detection.get("attributes", {})
             # If 'last_acknowledged_at' or 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
-            # If is_fetch_acknowledged is True, then we want to fetch acknowledged incidents as well.
-            if is_fetch_acknowledged or (
-                attributes.get("last_acknowledged_at") is None and attributes.get("last_acknowledged_by") is None
-            ):
+            if attributes.get("last_acknowledged_at") is None and attributes.get("last_acknowledged_by") is None:
                 yield detection
 
         page += 1
@@ -613,7 +608,7 @@ def execute_playbook(playbook_id, detection_id):
     return res
 
 
-def fetch_incidents(last_run, per_page, is_fetch_acknowledged: bool = False):
+def fetch_incidents(last_run, per_page):
     last_incidents_ids = []
 
     if last_run:
@@ -627,9 +622,7 @@ def fetch_incidents(last_run, per_page, is_fetch_acknowledged: bool = False):
     demisto.debug(f"iterating on detections, looking for more recent than {last_fetch}")
     incidents = []
     new_incidents_ids = []
-    for raw_detection in get_unacknowledged_detections(
-        last_fetch, per_page=per_page, is_fetch_acknowledged=is_fetch_acknowledged
-    ):
+    for raw_detection in get_unacknowledged_detections(last_fetch, per_page=per_page):
         demisto.debug("found a new detection in RedCanary #{}".format(raw_detection["id"]))
         incident = detection_to_incident(raw_detection)
         # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
@@ -659,7 +652,6 @@ def main():
     API_KEY = params.get("api_key_creds", {}).get("password") or params.get("api_key")
     USE_SSL = not params.get("insecure", False)
     per_page = params.get("fetch_limit", 2)
-    is_fetch_acknowledged = argToBoolean(params.get("isFetchAcknowledged", False))
 
     """ EXECUTION CODE """
     COMMANDS = {
@@ -682,7 +674,7 @@ def main():
         if command_func is not None:
             if demisto.command() == "fetch-incidents":
                 initial_last_run = demisto.getLastRun()
-                last_run, incidents = fetch_incidents(initial_last_run, per_page, is_fetch_acknowledged)
+                last_run, incidents = fetch_incidents(initial_last_run, per_page)
                 demisto.incidents(incidents)
                 demisto.setLastRun(last_run)
             else:

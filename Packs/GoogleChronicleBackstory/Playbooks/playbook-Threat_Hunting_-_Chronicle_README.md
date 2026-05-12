@@ -1,7 +1,6 @@
 Use this playbook to investigate and remediate suspicious IOC domain matches with recent activity found in the enterprise. This playbook also creates indicators for the entities fetched, as well as investigating and enriching them.
 Supported Integrations:
 - Chronicle
-- Google SecOps
 - Whois
 
 ## Dependencies

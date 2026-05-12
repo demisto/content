@@ -246,7 +246,7 @@ def main():
     parse_command: Callable = parse_ip_response
 
     try:
-        if not indicators and command != "test-module":
+        if not indicators:
             raise ValueError("An indicator is required.")
 
         if command == "test-module":

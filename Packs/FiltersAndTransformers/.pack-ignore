@@ -21,6 +21,3 @@ ignore=BA124
 
 [file:ExtractEmailTransformer_6_10.yml]
 ignore=BA108,BA109
-
-[file:GetListContent.yml]
-ignore=BA129

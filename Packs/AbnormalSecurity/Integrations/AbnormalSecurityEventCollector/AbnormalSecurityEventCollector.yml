@@ -4,8 +4,7 @@ commonfields:
 name: Abnormal Security Event Collector
 display: Abnormal Security Event Collector
 category: Analytics & SIEM
-provider: Abnormal Security
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 description: Abnormal Security Event Collector integration for XSIAM.
@@ -60,5 +59,3 @@ marketplaces:
 - platform
 tests:
 - No tests
-supportedModules:
-- xsiam

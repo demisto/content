@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Palo Alto Networks
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -154,7 +153,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.12.13.8319994
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   script: '-'
   subtype: python3
@@ -165,5 +164,3 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.8.0
-supportedModules:
-- xsiam

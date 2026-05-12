@@ -1,6 +1,5 @@
 category: Identity and Access Management
-provider: Microsoft
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

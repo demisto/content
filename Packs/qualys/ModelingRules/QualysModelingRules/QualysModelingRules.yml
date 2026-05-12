@@ -4,5 +4,3 @@ name: Qualys Modeling Rule
 rules: ''
 schema: ''
 tags: Qualys
-supportedModules:
-- xsiam

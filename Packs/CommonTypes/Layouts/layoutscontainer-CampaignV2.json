@@ -589,6 +589,5 @@
     "name": "Campaign",
     "system": false,
     "version": -1,
-    "fromVersion": "6.10.0",
-    "marketplaces": ["xsoar", "xsoar_saas", "xsoar_on_prem"]
+    "fromVersion": "6.10.0"
 }

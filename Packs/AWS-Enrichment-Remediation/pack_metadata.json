@@ -2,7 +2,7 @@
     "name": "AWS Enrichment and Remediation",
     "description": "Playbooks using multiple AWS content packs for enrichment and remediation purposes",
     "support": "xsoar",
-    "currentVersion": "1.1.30",
+    "currentVersion": "1.1.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -48,12 +48,9 @@
         "AWS_SystemManager"
     ],
     "supportedModules": [
-        "asm",
-        "exposure_management",
-        "agentix",
-        "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

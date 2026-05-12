@@ -1,9 +1,8 @@
 category: Utilities
-provider: Open Source
 commonfields:
   id: Netmiko
   version: -1
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 configuration:

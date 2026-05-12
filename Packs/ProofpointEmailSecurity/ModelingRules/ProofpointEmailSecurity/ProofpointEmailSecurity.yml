@@ -4,5 +4,3 @@ name: Proofpoint Email Security Modeling Rule
 rules: ''
 schema: ''
 tags: proofpoint
-supportedModules:
-- xsiam

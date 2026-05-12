@@ -21,8 +21,7 @@ args:
   description: An array of domains to allow list.
   isArray: true
 scripttarget: 0
-isllm: false
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.11.10.116949
 runas: DBotWeakRole
 tests:
 - No test - unit test

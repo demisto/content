@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Amazon
 commonfields:
   id: AWS - GuardDuty Event Collector
   version: -1
@@ -131,5 +130,3 @@ marketplaces:
 tests:
 - No test
 fromversion: 6.8.0
-supportedModules:
-- xsiam

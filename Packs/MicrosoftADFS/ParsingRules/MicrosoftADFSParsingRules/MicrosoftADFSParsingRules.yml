@@ -5,5 +5,3 @@ tags:
  - Microsoft Windows Active Directory Federation Services ADFS Event Colletion
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

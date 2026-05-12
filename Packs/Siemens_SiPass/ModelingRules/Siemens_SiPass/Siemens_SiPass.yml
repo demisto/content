@@ -4,5 +4,3 @@ name: Siemens SiPass Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

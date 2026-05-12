@@ -1,13 +1,12 @@
 commonfields:
   id: IntSights
   version: -1
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 name: IntSights
 display: IntSights (Deprecated)
 category: Data Enrichment & Threat Intelligence
-provider: Rapid7
 description: Deprecated. Use Rapid7 Threat Command instead.
 deprecated: true
 configuration:

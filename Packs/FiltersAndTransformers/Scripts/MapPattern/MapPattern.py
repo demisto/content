@@ -509,7 +509,8 @@ def main():
                     obj_value=value, field_mapping=mappings, priority=priority, algorithm=algorithm
                 )
         else:
-            value, matched = tr.translate(source=value, pattern_mapping=mappings, priority=priority, algorithm=algorithm)
+            if not isinstance(value, dict | list):
+                value, matched = tr.translate(source=value, pattern_mapping=mappings, priority=priority, algorithm=algorithm)
         if default_value and not matched:
             value = default_value
     except Exception as err:

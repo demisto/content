@@ -4,7 +4,10 @@ from operator import itemgetter
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
+THRESHOLDS = {
+    "numberofincidentswithmorethan500entries": 300,
+    "numberofincidentsbiggerthan1mb": 300,
+}
 DESCRIPTION = [
     "Too many incidents with high number of war room entries were found, consider to use quiet mode in task settings",
     "Large incidents were found, consider to use quiet mode in task settings and delete unneeded Context",
@@ -83,6 +86,7 @@ def get_month_db_from_date(date):
 
 
 def main(args):
+    thresholds = args.get("Thresholds", THRESHOLDS)
     append = args.get("Append", "False")
     investigations: Dict = {}
     args: Dict = demisto.args()
@@ -139,7 +143,7 @@ def main(args):
         demisto.executeCommand("setIncident", analyzeFields)
 
     action_items = []
-    if numberofincidentswithmorethan500entries > 300:
+    if numberofincidentswithmorethan500entries > int(thresholds["numberofincidentswithmorethan500entries"]):
         action_items.append(
             {
                 "category": "DB Analysis",
@@ -149,7 +153,7 @@ def main(args):
             }
         )
 
-    if numberofincidentsbiggerthan1mb > 300:
+    if numberofincidentsbiggerthan1mb > thresholds["numberofincidentsbiggerthan1mb"]:
         action_items.append(
             {
                 "category": "DB Analysis",

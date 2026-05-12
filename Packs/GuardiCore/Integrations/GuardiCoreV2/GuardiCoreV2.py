@@ -448,19 +448,19 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
 
     # fetch incidents params
-    severity = params.get("severity")
+    severity = params.get("severity", None)
     if "All" in severity:
         severity = None
     elif severity:
         severity = ",".join(severity)
-    source = params.get("source")
-    destination = params.get("destination")
-    incident_type = params.get("incident_type")
+    source = params.get("source", None)
+    destination = params.get("destination", None)
+    incident_type = params.get("incident_type", None)
     if "All" in incident_type:
         incident_type = None
     elif incident_type:
         incident_type = ",".join(incident_type).lower()
-    tag = params.get("tag")
+    tag = params.get("tag", None)
     first_fetch = params.get("first_fetch", "7 days")
     limit = int(params.get("max_fetch", 50))
     GLOBAL_TIMEOUT = int(params.get("timeout", 10))

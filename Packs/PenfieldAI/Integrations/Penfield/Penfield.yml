@@ -1,5 +1,4 @@
 category: Case Management
-provider: PenfieldAI
 commonfields:
   id: Penfield
   version: -1
@@ -57,7 +56,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

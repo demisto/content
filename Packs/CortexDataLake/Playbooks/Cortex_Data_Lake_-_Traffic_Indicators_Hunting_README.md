@@ -4,30 +4,24 @@ Note that multiple search values should be separated by commas only (without spa
 
 
 ## Dependencies
-
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-
 * Strata Logging Service
 
 ### Scripts
-
 * SetAndHandleEmpty
 
 ### Commands
-
 * cdl-query-file-data
 * cdl-query-threat-logs
 * cdl-query-traffic-logs
 * cdl-query-url-logs
 
 ## Playbook Inputs
-
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -45,7 +39,6 @@ This playbook does not use any sub-playbooks.
 | rule_matched | Filter network traffic logs to be retrieved from Strata Logging Service based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -97,6 +90,5 @@ This playbook does not use any sub-playbooks.
 | CDL.HuntingResults.HTTPMethod | The HTTP Method used<br/>in the web request | string |
 
 ## Playbook Image
-
 ---
 ![Strata Logging Service - Traffic Indicators Hunting](../doc_files/Cortex_Data_Lake_-_Traffic_Indicators_Hunting.png)

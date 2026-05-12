@@ -1,6 +1,5 @@
 category: Network Security
-provider: SolarWinds Corporation
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

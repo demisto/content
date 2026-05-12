@@ -4,5 +4,3 @@ name: Thinkst Canary Modeling Rule
 rules: ''
 schema: ''
 tags: Thinkst Canary
-supportedModules:
-- xsiam

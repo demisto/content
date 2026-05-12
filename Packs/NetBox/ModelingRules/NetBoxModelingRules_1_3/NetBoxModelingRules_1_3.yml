@@ -4,5 +4,3 @@ name: NetBox IRM Modeling Rule
 rules: ''
 schema: ''
 tags: NetBox
-supportedModules:
-- xsiam

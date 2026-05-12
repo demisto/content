@@ -1,5 +1,3 @@
-Note: Support for this Pack will be moved to Partner starting October 20, 2025.
-
 # BloodHound Enterprise
 
 ## Overview

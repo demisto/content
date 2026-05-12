@@ -20,8 +20,7 @@
     "openEnded": false,
     "associatedTypes": [
         "CrowdStrike Falcon On-Demand Scans Detection",
-        "CrowdStrike Falcon OFP Detection",
-        "CrowdStrike Falcon NGSIEM Incident"
+        "CrowdStrike Falcon OFP Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,

@@ -582,8 +582,5 @@
     "version": -1,
     "fromVersion": "6.2.0",
     "description": "Cost Optimization Playbooks",
-    "isPredefined": true,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "isPredefined": true
 }

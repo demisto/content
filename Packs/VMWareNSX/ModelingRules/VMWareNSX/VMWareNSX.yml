@@ -4,5 +4,3 @@ name: VMWare NSX Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

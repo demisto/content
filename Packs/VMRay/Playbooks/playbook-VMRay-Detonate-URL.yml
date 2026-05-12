@@ -6,20 +6,18 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 60d14579-f27c-4014-b49a-4df09938a69e
     type: start
     task:
-      id: 60d14579-f27c-4014-b49a-4df09938a69e
       version: -1
       name: ""
       description: start
       iscommand: false
       brand: ""
+      id: 60d14579-f27c-4014-b49a-4df09938a69e
     nexttasks:
       '#none#':
       - "15"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,16 +28,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 60d14579-f27c-4014-b49a-4df09938a69e
   "1":
     id: "1"
-    taskid: 628e8784-3064-4afb-8b31-3db10b925a01
     type: playbook
     task:
-      id: 628e8784-3064-4afb-8b31-3db10b925a01
       version: -1
       name: GenericPolling
       description: |-
@@ -54,10 +47,13 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      id: 628e8784-3064-4afb-8b31-3db10b925a01
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: VMRay.Submission
@@ -75,12 +71,10 @@ tasks:
       dt:
         simple: VMRay.Submission(val.IsFinished == false).SubmissionID
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -91,22 +85,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 628e8784-3064-4afb-8b31-3db10b925a01
   "4":
     id: "4"
-    taskid: 0d7a60e2-d686-4f14-b43b-0576d74bf00d
     type: condition
     task:
-      id: 0d7a60e2-d686-4f14-b43b-0576d74bf00d
       version: -1
       name: Is there a URL to detonate?
       description: Checks if there is a URL in the playbook’s input.
       type: condition
       iscommand: false
       brand: ""
+      id: 0d7a60e2-d686-4f14-b43b-0576d74bf00d
     nexttasks:
       '#default#':
       - "7"
@@ -121,7 +111,6 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -132,16 +121,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 0d7a60e2-d686-4f14-b43b-0576d74bf00d
   "6":
     id: "6"
-    taskid: 936c15f7-7d0f-4c41-b6f3-cf05881f4969
     type: regular
     task:
-      id: 936c15f7-7d0f-4c41-b6f3-cf05881f4969
       version: -1
       name: VMRay Upload URL
       description: Submit URL for analysis.
@@ -149,6 +133,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: 936c15f7-7d0f-4c41-b6f3-cf05881f4969
     nexttasks:
       '#none#':
       - "10"
@@ -157,7 +142,6 @@ tasks:
         complex:
           root: inputs.URL
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -168,44 +152,34 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 936c15f7-7d0f-4c41-b6f3-cf05881f4969
   "7":
     id: "7"
-    taskid: dca7b75c-681b-4ed9-a9b8-94198974c0db
     type: title
     task:
-      id: dca7b75c-681b-4ed9-a9b8-94198974c0db
       version: -1
       name: Done
       description: Done
       type: title
       iscommand: false
       brand: ""
+      id: dca7b75c-681b-4ed9-a9b8-94198974c0db
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2600
+          "y": 1980
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: dca7b75c-681b-4ed9-a9b8-94198974c0db
   "8":
     id: "8"
-    taskid: e04293bd-c0a1-4f96-8abc-444ea5d42cee
     type: regular
     task:
-      id: e04293bd-c0a1-4f96-8abc-444ea5d42cee
       version: -1
       name: Get sample
       description: get sample by sample id
@@ -213,6 +187,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: e04293bd-c0a1-4f96-8abc-444ea5d42cee
     nexttasks:
       '#none#':
       - "11"
@@ -224,7 +199,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -235,16 +209,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: e04293bd-c0a1-4f96-8abc-444ea5d42cee
   "10":
     id: "10"
-    taskid: a7dcb1e4-dbfc-4e16-a586-f5ba0c9fbb7d
     type: regular
     task:
-      id: a7dcb1e4-dbfc-4e16-a586-f5ba0c9fbb7d
       version: -1
       name: Get submission
       description: Gets a submission result
@@ -252,6 +221,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: a7dcb1e4-dbfc-4e16-a586-f5ba0c9fbb7d
     nexttasks:
       '#none#':
       - "1"
@@ -263,7 +233,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -274,16 +243,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: a7dcb1e4-dbfc-4e16-a586-f5ba0c9fbb7d
   "11":
     id: "11"
-    taskid: c3457fa4-7b07-41cb-b9e5-f0b523141429
     type: regular
     task:
-      id: c3457fa4-7b07-41cb-b9e5-f0b523141429
       version: -1
       name: Get analysis
       description: Retrieves all analysis details for a specified sample.
@@ -291,24 +255,19 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: c3457fa4-7b07-41cb-b9e5-f0b523141429
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
+      limit: {}
       sample_id:
         complex:
           root: VMRay
           accessor: Sample.SampleID
           transformers:
           - operator: uniq
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${VMRay.Sample.SampleID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -319,22 +278,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: c3457fa4-7b07-41cb-b9e5-f0b523141429
   "12":
     id: "12"
-    taskid: 74eb49b0-5fca-48a6-865a-3bd4ca6e727a
     type: condition
     task:
-      id: 74eb49b0-5fca-48a6-865a-3bd4ca6e727a
-      version: -1
-      name: Is sample suspicious or malicious?
       description: check term
+      version: -1
+      name: Is analysis suspicious or malicious?
       type: condition
       iscommand: false
       brand: ""
+      id: 74eb49b0-5fca-48a6-865a-3bd4ca6e727a
     nexttasks:
       '#default#':
       - "7"
@@ -358,10 +313,8 @@ tasks:
                     right:
                       value:
                         simple: Malicious
-                accessor: Sample.Verdict
+                accessor: Analysis.Verdict
             iscontext: true
-          right:
-            value: {}
         - operator: isExists
           left:
             value:
@@ -376,9 +329,8 @@ tasks:
                     right:
                       value:
                         simple: Suspicious
-                accessor: Sample.Verdict
+                accessor: Analysis.Verdict
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -389,16 +341,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 74eb49b0-5fca-48a6-865a-3bd4ca6e727a
   "13":
     id: "13"
-    taskid: 399942d7-ccfe-491e-87c0-dc9534f491ae
     type: regular
     task:
-      id: 399942d7-ccfe-491e-87c0-dc9534f491ae
       version: -1
       name: Get IOCs
       description: Retrieves indicators of compromise for a specified sample.
@@ -406,6 +353,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: 399942d7-ccfe-491e-87c0-dc9534f491ae
     nexttasks:
       '#none#':
       - "14"
@@ -416,15 +364,8 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${VMRay.Sample.SampleID}
     reputationcalc: 2
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -435,16 +376,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 399942d7-ccfe-491e-87c0-dc9534f491ae
   "14":
     id: "14"
-    taskid: 4a576c94-a14a-4b4c-ad71-837742cfd371
     type: regular
     task:
-      id: 4a576c94-a14a-4b4c-ad71-837742cfd371
       version: -1
       name: Get Threat Indicators
       description: Retrieves threat indicators (VTI).
@@ -452,9 +388,10 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: 4a576c94-a14a-4b4c-ad71-837742cfd371
     nexttasks:
       '#none#':
-      - "18"
+      - "7"
     scriptarguments:
       sample_id:
         complex:
@@ -462,14 +399,7 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${VMRay.Sample.SampleID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -480,10 +410,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    taskid: 4a576c94-a14a-4b4c-ad71-837742cfd371
   "15":
     id: "15"
     taskid: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
@@ -505,8 +432,9 @@ tasks:
     scriptarguments:
       brandname:
         simple: vmray
+    results:
+    - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -517,123 +445,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: d3234463-264c-4371-8845-78f6f9196ef0
-    type: regular
-    task:
-      id: d3234463-264c-4371-8845-78f6f9196ef0
-      version: -1
-      name: Get Child IOCs
-      description: Retrieves Indicators of Compromise for a specified sample.
-      script: '|||vmray-get-iocs'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      sample_id:
-        simple: ${VMRay.Sample.ChildSampleIDs}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 2140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 98e20401-9c9c-4174-85dc-84a2692ffb04
-    type: regular
-    task:
-      id: 98e20401-9c9c-4174-85dc-84a2692ffb04
-      version: -1
-      name: Get Child VTIs
-      description: Retrieves threat indicators (VTI).
-      script: '|||vmray-get-threat-indicators'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      sample_id:
-        simple: ${VMRay.Sample.ChildSampleIDs}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 2300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: d5411c51-eb22-4011-8734-060194ab795f
-    type: condition
-    task:
-      id: d5411c51-eb22-4011-8734-060194ab795f
-      version: -1
-      name: Is there a child submission?
-      description: Returns "yes" if a child submission is available
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: VMRay.Sample.ChildSampleIDs
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 1930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -641,8 +452,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2615,
-        "width": 1170,
+        "height": 1995,
+        "width": 930,
         "x": 50,
         "y": 50
       }
@@ -656,19 +467,16 @@ inputs:
       accessor: Data
   required: false
   description: The URL to detonate.
-  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
   description: How often to poll for results (minutes).
-  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results (minutes).
-  playbookInputQuery:
 outputs:
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.

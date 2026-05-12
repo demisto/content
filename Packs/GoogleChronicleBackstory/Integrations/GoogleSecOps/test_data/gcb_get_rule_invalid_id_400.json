@@ -1,7 +1,0 @@
-{
-    "error": {
-        "code": 400,
-        "message": "invalid rule_id",
-        "status": "INVALID_ARGUMENT"
-    }
-}

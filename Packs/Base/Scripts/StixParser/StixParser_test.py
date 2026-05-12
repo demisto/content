@@ -1,16 +1,6 @@
 import json
-from copy import deepcopy
 
 import pytest
-
-
-def normalize_tags(indicators):
-    """Normalize tags in indicators by converting to sorted lists for comparison."""
-    normalized = deepcopy(indicators)
-    for indicator in normalized:
-        if tags := indicator.get("customFields", {}).get("tags"):
-            indicator["customFields"]["tags"] = sorted(tags)
-    return normalized
 
 
 @pytest.mark.parametrize(
@@ -86,28 +76,4 @@ def test_parse_stix2(indicators_file, expected_result):
     with open(f"test_data/stix2_tests/{expected_result}") as json_f:
         expected_result = json.load(json_f)
 
-    assert normalize_tags(observables) == normalize_tags(expected_result)
-
-
-def test_build_observables_uses_safe_xml_parser_settings(mocker):
-    """
-    Given:
-        - A call to build_observables which parses XML.
-    When:
-        - The function invokes etree.iterparse.
-    Then:
-        - Verify that safe XML parser settings are used:
-          resolve_entities=False, load_dtd=False, no_network=True.
-    """
-    mock_iterparse = mocker.patch("StixParser.etree.iterparse", return_value=iter([]))
-
-    from StixParser import build_observables
-
-    build_observables("dummy_file.xml")
-
-    mock_iterparse.assert_called_once()
-    call_kwargs = mock_iterparse.call_args
-    # Check keyword arguments for safe XML parser configuration
-    assert call_kwargs[1].get("resolve_entities") is False, "resolve_entities should be False"
-    assert call_kwargs[1].get("load_dtd") is False, "load_dtd should be False"
-    assert call_kwargs[1].get("no_network") is True, "no_network should be True"
+    assert observables == expected_result

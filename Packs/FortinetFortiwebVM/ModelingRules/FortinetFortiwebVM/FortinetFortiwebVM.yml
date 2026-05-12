@@ -4,5 +4,3 @@ name: Fortinet Fortiweb Modeling Rule
 rules: ''
 schema: ''
 tags: 
-supportedModules:
-- xsiam

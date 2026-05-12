@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Once updating to this version, the integration will support the native collector ingestion path."
-}

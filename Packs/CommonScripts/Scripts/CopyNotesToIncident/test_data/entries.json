@@ -1,6 +1,5 @@
 [
     {
-        "Type": 1,
         "ContentsFormat": "text",
         "Tags": null,
         "Brand": "Builtin",
@@ -17,7 +16,6 @@
         "Note": true
     },
     {
-        "Type": 1,
         "ContentsFormat": "text",
         "Tags": [
             "Tag1"
@@ -36,7 +34,6 @@
         "Note": true
     },
     {
-        "Type": 1,
         "ContentsFormat": "text",
         "Tags": [
             "Tag2"
@@ -55,7 +52,6 @@
         "Note": true
     },
     {
-        "Type": 1,
         "ContentsFormat": "text",
         "Tags": [
             "Tag2"
@@ -74,7 +70,6 @@
         "Note": false
     },
     {
-        "Type": 1,
         "ContentsFormat": "text",
         "Tags": [
             "Tag2"
@@ -93,7 +88,6 @@
         "Note": false
     },
     {
-        "Type": 1,
         "ContentsFormat": "text",
         "Tags": null,
         "Brand": "Builtin",

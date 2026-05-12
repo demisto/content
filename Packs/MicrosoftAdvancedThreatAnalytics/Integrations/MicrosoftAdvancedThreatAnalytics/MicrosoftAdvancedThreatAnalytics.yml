@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: Microsoft
 commonfields:
   id: Microsoft Advanced Threat Analytics
   version: -1

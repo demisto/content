@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Maltiverse
 commonfields:
   id: Maltiverse
   version: -1
@@ -367,7 +366,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

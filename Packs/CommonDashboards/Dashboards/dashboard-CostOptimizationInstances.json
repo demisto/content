@@ -635,8 +635,5 @@
     "version": -1,
     "fromVersion": "6.2.0",
     "description": "Cost Optimization Instances",
-    "isPredefined": true,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "isPredefined": true
 }

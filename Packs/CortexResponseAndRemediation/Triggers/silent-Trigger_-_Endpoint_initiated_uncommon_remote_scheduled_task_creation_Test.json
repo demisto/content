@@ -1,0 +1,25 @@
+{
+    "trigger_id": "a7ca7229e794c8355cea0ec9827ac9f9",
+    "playbook_id": "silent-Endpoint initiated uncommon remote scheduled task creation Test",
+    "suggestion_reason": "Recommended for the 'Uncommon remote scheduled task creation' alert",
+    "description": "This trigger is responsible for handling 'Uncommon remote scheduled task creation' alerts",
+    "trigger_name": "silent-Endpoint initiated uncommon remote scheduled task creation Test",
+    "fromVersion": "8.9.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Uncommon remote scheduled task creation"
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

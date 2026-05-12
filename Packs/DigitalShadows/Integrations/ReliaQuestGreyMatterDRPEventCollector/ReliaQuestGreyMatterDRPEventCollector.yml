@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: ReliaQuest
 commonfields:
   id: ReliaQuest GreyMatter DRP Event Collector
   version: -1
@@ -67,7 +66,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetchevents: true
 fromversion: 8.0.0
 supportlevelheader: xsoar
@@ -76,5 +75,3 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

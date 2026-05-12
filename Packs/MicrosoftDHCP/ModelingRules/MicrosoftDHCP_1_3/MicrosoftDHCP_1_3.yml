@@ -4,5 +4,3 @@ name: Microsoft DHCP Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

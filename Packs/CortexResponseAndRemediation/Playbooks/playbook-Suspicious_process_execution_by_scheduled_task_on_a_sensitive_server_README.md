@@ -8,7 +8,7 @@ Analysis:
 
 Investigation:
 
-- Searches for related alerts to identify any malicious activity on the server.
+- Searches for related XSIAM agent alerts to identify any malicious activity on the server.
 
 Remediation:
 
@@ -16,7 +16,6 @@ If the suspicious process reputation is malicious, or if a related alert is foun
 
 - Disable the scheduled task responsible for executing the process.
 - Terminate the malicious process.
-- Quarantine the malicious process.
 - Automatically Close the alert.
 
 ## Dependencies
@@ -29,20 +28,21 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* CoreIOCs
+* CortexCoreIR
+* CortexCoreXQLQueryEngine
 
 ### Scripts
 
 * SearchIncidentsV2
-* file-enrichment
-* quarantine-file
 
 ### Commands
 
 * closeInvestigation
-* core-execute-command
-* core-get-cloud-original-alerts
+* core-get-script-execution-results
+* core-run-script-execute-commands
 * core-terminate-causality
+* file
 
 ## Playbook Inputs
 

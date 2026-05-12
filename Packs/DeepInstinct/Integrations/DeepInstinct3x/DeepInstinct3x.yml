@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Deep Instinct
 commonfields:
   id: DeepInstinct v3
   version: -1
@@ -471,7 +470,7 @@ script:
       required: true
     description: Remove agent from device at next check-in.
     name: deepinstinctv3-remove-device
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: '-'
   type: python

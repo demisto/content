@@ -38,9 +38,10 @@ SERVER_DECOM_REQ = json.loads("""{ "ticket": { "subject": "", "priority": "", "w
 
 # remove proxy if not set to true in params
 if not demisto.params().get("proxy"):
-    # Remove proxy environment variables if they exist
-    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-        os.environ.pop(proxy_var, None)
+    del os.environ["HTTP_PROXY"]
+    del os.environ["HTTPS_PROXY"]
+    del os.environ["http_proxy"]
+    del os.environ["https_proxy"]
 
 
 def tos_request(tos_app, req_type, path, params=None, headers=None, data=None):

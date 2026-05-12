@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Rubrik Radar",
-        "Rubrik Threat Monitoring Object"
+        "Rubrik Radar"
     ],
     "caseInsensitive": true,
     "cliName": "rubrikpolarisobjecttype",

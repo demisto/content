@@ -1,6 +1,5 @@
 category: Network Security
-provider: Microsoft
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

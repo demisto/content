@@ -838,7 +838,6 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
     command_results_list: List[CommandResults] = []
 
     if report_ids:
-        demisto.debug(f"Requesting report IDs: {report_ids}")
         try:
             response = client.atp_batch_report_request(args="id", value=report_ids)
         except DemistoException as err:
@@ -850,9 +849,8 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
                 raise
 
         if response:
-            report_infos: List[dict] = response.get("data", {}).get("reports", {}).get("reports", [])
-            for idx, report_info in enumerate(report_infos):
-                demisto.debug(f"Processing report {idx + 1}/{len(report_infos)}: {report_info.get('report_id', 'unknown')}")
+            report_infos: List[dict] = response.get("data", {}).get("reports", [])
+            for report_info in report_infos:
                 readable_output = tableToMarkdown(
                     name=f"Advanced Threat Prevention Report ID: {report_info.get('report_id')}:",
                     t=report_info,
@@ -867,7 +865,6 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
                     )
                 )
 
-            demisto.debug(f"Successfully processed {len(command_results_list)} reports")
     return command_results_list
 
 

@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Microsoft
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -41,19 +40,11 @@ configuration:
   section: Connect
   required: false
   hidden: true
-- displaypassword: Client ID
-  name: creds_client_id
-  hiddenusername: true
-  type: 9
-  section: Connect
-  required: false
-  additionalinfo: The Application (Client) ID of the Azure app registration.
-- displaypassword: Client Secret
+- display: Client ID
   name: credentials
   type: 9
   section: Connect
   required: false
-  hiddenusername: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
@@ -205,17 +196,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  section: Collect
-  advanced: true
-  required: false
-- additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched.'
-  display: Incident Statuses to Fetch
-  name: statuses_to_fetch
-  options:
-  - New
-  - Active
-  - Closed
-  type: 16
   section: Collect
   advanced: true
   required: false
@@ -2511,7 +2491,7 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
-  dockerimage: demisto/crypto:1.0.0.7704170
+  dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
   runonce: false
   script: '-'

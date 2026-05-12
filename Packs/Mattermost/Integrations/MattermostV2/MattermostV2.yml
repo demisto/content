@@ -1,8 +1,7 @@
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 category: Messaging and Conferencing
-provider: Mattermost Inc
 commonfields:
   id: MattermostV2
   version: -1

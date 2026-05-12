@@ -1,5 +1,4 @@
 category: Identity and Access Management
-provider: ServiceNow
 commonfields:
   id: ServiceNow IAM
   version: -1

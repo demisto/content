@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Tanium
 commonfields:
   id: Tanium Threat Response
   version: -1
@@ -1361,7 +1360,7 @@ script:
     - contextPath: Tanium.QuickScan.QuestionID
       description: The ID of the quick scan question.
       type: number
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.9.110419
   isfetch: true
   runonce: false
   script: '-'

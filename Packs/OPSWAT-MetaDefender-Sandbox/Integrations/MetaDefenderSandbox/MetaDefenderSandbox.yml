@@ -2,11 +2,9 @@ commonfields:
   id: MetaDefender Sandbox
   version: -1
 name: MetaDefender Sandbox
-display: MetaDefender Sandbox (Deprecated)
+display: MetaDefender Sandbox
 category: Forensics & Malware Analysis
-provider: OPSWAT
-description: Deprecated. Use MetaDefender Aether instead.
-deprecated: true
+description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction (previously known as OPSWAT Filescan Sandbox).
 configuration:
 - name: url
   display: Server URL (e.g. https://www.filescan.io/api)
@@ -31,7 +29,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.9.110419
   runonce: false
   commands:
   - name: metadefender-sandbox-scan-url

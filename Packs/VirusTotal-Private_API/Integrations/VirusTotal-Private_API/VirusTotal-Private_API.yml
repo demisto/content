@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Google
 commonfields:
   id: VirusTotal - Private API
   version: -1
@@ -464,9 +463,3 @@ tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
 fromversion: 5.0.0
-supportedModules:
-- edr
-- cloud
-- cloud_runtime_security
-- xsiam
-- agentix

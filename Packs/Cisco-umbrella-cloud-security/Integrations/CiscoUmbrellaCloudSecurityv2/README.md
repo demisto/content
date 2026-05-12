@@ -9,7 +9,6 @@ This integration was tested with version 2 of Cisco Umbrella Cloud Security
 | API Secret | True |
 | Use system proxy settings | False |
 | Trust any certificate (not secure) | False |
-| Base URL | True |
 
 ## Commands
 

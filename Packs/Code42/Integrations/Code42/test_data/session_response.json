@@ -1,5 +1,5 @@
 {
-  "sessionId": "sessionid-abc-1",
+  "sessionId": "sessionid-abc-123",
   "tenantId": "sometenantid",
   "actorId": "someactorid",
   "beginTime": 1726082760680,
@@ -37,7 +37,6 @@
   "states": [
     {
       "state": "OPEN",
-      "stateV2": "OPEN",
       "sourceTimestamp": 1726083300017,
       "userId": null
     }

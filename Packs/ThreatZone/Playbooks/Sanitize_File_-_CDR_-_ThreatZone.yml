@@ -371,13 +371,13 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Frequency (in minutes) between polling attempts.
+  description: Duration for executing the pooling (in minutes)
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: Maximum polling duration (in minutes) before the playbook resumes.
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
   playbookInputQuery:
 outputs:
 - contextPath: ThreatZone.Analysis.STATUS

@@ -715,7 +715,7 @@ Get details of a specific email rule by ID for a user's mailbox using Microsoft 
 ### msgraph-mail-delete-rule
 
 ***
-Deletes a specific email rule by ID from a user's mailbox using the Microsoft Graph API.
+Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
 
 #### Base Command
 

@@ -1,5 +1,4 @@
 category: Database
-provider: MinIO Inc
 commonfields:
   id: MinIO
   version: -1

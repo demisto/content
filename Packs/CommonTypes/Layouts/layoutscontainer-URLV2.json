@@ -285,9 +285,6 @@
 							},
 							{
 								"args": {
-									"delimiter": {
-											"simple": "|"
-									},
 									"field": {
 										"simple": "tags"
 									}
@@ -304,9 +301,6 @@
 							},
 							{
 								"args": {
-									"delimiter": {
-											"simple": "|"
-									},
 									"field": {
 										"simple": "tags"
 									}

@@ -52,10 +52,6 @@
           "type": "string",
           "is_array": false
       },
-      "session_id": {
-          "type": "string",
-          "is_array": false
-      },      
       "proto": {
           "type": "string",
           "is_array": false

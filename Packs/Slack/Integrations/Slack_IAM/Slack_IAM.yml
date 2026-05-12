@@ -1,6 +1,5 @@
 category: Identity and Access Management
-provider: Slack
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -371,9 +370,3 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
-supportedModules:
-- xsiam
-- agentix
-- edr
-- cloud
-- cloud_runtime_security

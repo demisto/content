@@ -4,5 +4,3 @@ name: ForeScout CounterACT Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

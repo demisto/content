@@ -1,5 +1,4 @@
 category: Case Management
-provider: Open Source
 commonfields:
   id: IRIS DFIR
   version: -1
@@ -263,7 +262,7 @@ script:
     - contextPath: IRIS.ioc_type
       description: IoC Type.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isFetchSamples: true
   isfetch: true
   runonce: false

@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Cisco Systems
 commonfields:
   id: CiscoAMP
   version: -1

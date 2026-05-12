@@ -9,41 +9,44 @@ inputs:
   value: {}
   required: true
   description: The name of the compliance search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: delete_type
   value:
     simple: Soft
   required: true
   description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: polling_timeout
   value:
     simple: "45"
   required: false
   description: Search action polling timeout.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: polling_interval
   value:
     simple: "3"
   required: false
   description: Search action polling interval.
-  playbookInputQuery:
+  playbookInputQuery: null
 name: O365 - Security And Compliance - Search Action - Delete
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
   description: Security and compliance search action type. Either "Purge" or "Preview".
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
-  description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+  description: Whether to include mailboxes other than regular user mailboxes in the
+    compliance search.
   type: Boolean
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
   description: Whether the Azure Batch Framework is enabled for job processing.
   type: Boolean
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
-  description: Identity of a Core eDiscovery case which is associated with the compliance search.
+  description: Identity of a Core eDiscovery case which is associated with the compliance
+    search.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
-  description: Name of a Core eDiscovery case which is associated with the compliance search.
+  description: Name of a Core eDiscovery case which is associated with the compliance
+    search.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
   description: Security and compliance search action creator.
@@ -166,7 +169,9 @@ tasks:
       id: 3ca34222-609f-4072-89f2-38c38f12bf3c
       version: -1
       name: Search action - Hard delete
-      description: After you create a content search using the !o365-sc-new-search command and run it using the !o365-sc-start-search command, you assign a search action to the search using the !o365-sc-new-search-action command.
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
       script: '|||o365-sc-new-search-action'
       type: regular
       iscommand: true
@@ -236,7 +241,9 @@ tasks:
       Timeout:
         simple: ${inputs.polling_timeout}
       dt:
-        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status && val.Status == "InProgress" || val.Status == "Starting" || val.Status == "Purging").Name
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&
+          val.Status == "InProgress" || val.Status == "Starting" || val.Status ==
+          "Purging").Name
     separatecontext: true
     loop:
       iscommand: false
@@ -351,7 +358,9 @@ tasks:
       id: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
       version: -1
       name: Search action - Soft delete.
-      description: After you create a content search using the !o365-sc-new-search command and run it using the !o365-sc-start-search command, you assign a search action to the search using the !o365-sc-new-search-action command.
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
       script: '|||o365-sc-new-search-action'
       type: regular
       iscommand: true
@@ -392,7 +401,8 @@ tasks:
       id: a366b3b2-a1b5-498b-84c5-ea740e05437c
       version: -1
       name: Get the search action.
-      description: Get the compliance search action from the Security & Compliance Center.
+      description: Get the compliance search action from the Security & Compliance
+        Center.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
@@ -475,6 +485,7 @@ fromversion: 5.5.0
 tests:
 - O365-SecurityAndCompliance-Test
 supportedModules:
-- agentix
-- cloud
-- xsiam
+- X1
+- X3
+- X5
+- ENT_PLUS

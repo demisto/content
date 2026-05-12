@@ -305,13 +305,6 @@ class STIX2Parser:
         kill_chain_mitre = [chain.get("phase_name", "") for chain in attack_pattern_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
-        # Extract MitreID from external_references
-        mitre_id = ""
-        for external_ref in attack_pattern_obj.get("external_references", []):
-            if external_ref.get("source_name") == "mitre":
-                mitre_id = external_ref.get("external_id", "")
-                break
-
         attack_pattern = {
             "value": attack_pattern_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
@@ -319,7 +312,6 @@ class STIX2Parser:
             "rawJSON": attack_pattern_obj,
         }
         fields = {
-            "mitreid": mitre_id,
             "stixid": attack_pattern_obj.get("id"),
             "killchainphases": kill_chain_phases,
             "firstseenbysource": attack_pattern_obj.get("created"),
@@ -327,7 +319,6 @@ class STIX2Parser:
             "description": attack_pattern_obj.get("description", ""),
             "operatingsystemrefs": attack_pattern_obj.get("x_mitre_platforms"),
             "publications": publications,
-            "tags": list(set(attack_pattern_obj.get("labels", []))),
         }
 
         attack_pattern["customFields"] = fields
@@ -437,7 +428,6 @@ class STIX2Parser:
             "kill_chain_phases": kill_chain_phases,
             "firstseenbysource": infrastructure_obj.get("created"),
             "modified": infrastructure_obj.get("modified"),
-            "tags": list(set(infrastructure_obj.get("labels", []))),
         }
 
         infrastructure["customFields"] = fields
@@ -504,7 +494,6 @@ class STIX2Parser:
             "description": tool_obj.get("description", ""),
             "aliases": tool_obj.get("aliases", []),
             "tool_version": tool_obj.get("tool_version", ""),
-            "tags": list(set(tool_obj.get("labels", []))),
         }
 
         tool["customFields"] = fields
@@ -532,7 +521,6 @@ class STIX2Parser:
             "description": coa_obj.get("description", ""),
             "action_type": coa_obj.get("action_type", ""),
             "publications": publications,
-            "tags": list(set(coa_obj.get("labels", []))),
         }
 
         course_of_action["customFields"] = fields
@@ -558,7 +546,6 @@ class STIX2Parser:
             "description": campaign_obj.get("description", ""),
             "aliases": campaign_obj.get("aliases", []),
             "objective": campaign_obj.get("objective", ""),
-            "tags": list(set(campaign_obj.get("labels", []))),
         }
 
         campaign["customFields"] = fields
@@ -590,7 +577,6 @@ class STIX2Parser:
             "primary_motivation": intrusion_set_obj.get("primary_motivation", ""),
             "secondary_motivations": intrusion_set_obj.get("secondary_motivations", []),
             "publications": publications,
-            "tags": list(set(intrusion_set_obj.get("labels", []))),
         }
         intrusion_set["customFields"] = fields
         return [intrusion_set]
@@ -1503,12 +1489,12 @@ class StixDecode:
             title = next((c for c in ttp[0] if c.name == "Title"), None)  # type: ignore
             if title is not None:
                 title = title.text  # type: ignore
-                ttp_info["stix_ttp_title"] = title  # type: ignore
+                ttp_info["stix_ttp_title"] = title
 
             description = next((c for c in ttp[0] if c.name == "Description"), None)  # type: ignore
             if description is not None:
                 description = description.text  # type: ignore
-                ttp_info["ttp_description"] = description  # type: ignore
+                ttp_info["ttp_description"] = description
 
             if behavior := package.find_all("Behavior"):
                 if behavior[0].find_all("Malware"):  # type: ignore
@@ -1528,14 +1514,7 @@ def build_observables(file_name):
     indicators = {}
     ttps = {}
 
-    for action, element in etree.iterparse(
-        file_name,
-        events=("start", "end"),
-        recover=True,
-        resolve_entities=False,
-        load_dtd=False,
-        no_network=True,
-    ):
+    for action, element in etree.iterparse(file_name, events=("start", "end"), recover=True):
         if action == "start":
             tag_stack.append(element.tag)
 

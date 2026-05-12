@@ -17,7 +17,6 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
 | Fetch types | Choose which service record type to fetch - incidents, requests, problems, changes, or all. | False |
 | Included statuses | A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
 | Include Archived |  | False |
-| Use SysAid Classic Date Format | **For SysAid Classic instances only** (older versions that do not return ISO 8601 format timestamps). Enable this option to ensure correct timestamp parsing. Both American and European formats are supported.| False |
 
 ## Commands
 
@@ -94,7 +93,7 @@ Retrieve all lists (tables) related to a specific entity, or a specific list fro
 ### sysaid-asset-list
 
 ***
-List all assets or get a specific asset by ID. Cortex recommends filtering the results by the desired fields.
+List all assets or get a specific asset by ID. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -3087,7 +3086,7 @@ List all assets or get a specific asset by ID. Cortex recommends filtering the r
 ### sysaid-asset-search
 
 ***
-Get information about a specific asset. Cortex recommends filtering the results by the desired fields.
+Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -5099,7 +5098,7 @@ Get information about a specific asset. Cortex recommends filtering the results 
 ### sysaid-filter-list
 
 ***
-List all filters. Cortex recommends filtering the results by the desired fields.
+List all filters. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -6700,7 +6699,7 @@ List all filters. Cortex recommends filtering the results by the desired fields.
 ### sysaid-user-list
 
 ***
-Get list of users in SysAid. Cortex recommends filtering the results by the desired fields.
+Get list of users in SysAid. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -7773,7 +7772,7 @@ Get list of users in SysAid. Cortex recommends filtering the results by the desi
 ### sysaid-user-search
 
 ***
-Get information about a specific asset. Cortex recommends filtering the results by the desired fields.
+Get information about a specific asset. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -8507,7 +8506,7 @@ Get information about a specific asset. Cortex recommends filtering the results 
 ### sysaid-service-record-list
 
 ***
-List all service requests. Cortex recommends filtering the results by the desired fields.
+List all service requests. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -13446,7 +13445,7 @@ List all service requests. Cortex recommends filtering the results by the desire
 ### sysaid-service-record-search
 
 ***
-Search by a query through all service records. Cortex recommends filtering the results by the desired fields.
+Search by a query through all service records. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -17923,7 +17922,7 @@ There is no context output for this command.
 ### sysaid-service-record-template-get
 
 ***
-Gets the template of a service record. Cortex recommends filtering the results by the desired fields.
+Gets the template of a service record. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 
@@ -18755,7 +18754,7 @@ Gets the template of a service record. Cortex recommends filtering the results b
 ### sysaid-service-record-create
 
 ***
-Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command. Cortex recommends filtering the results by the desired fields.
+Create a new service record and return the newly created service record. The valid statuses can be retrieved using the "sysaid-table-list" command. Cortex XSOAR recommends filtering the results by the desired fields.
 
 #### Base Command
 

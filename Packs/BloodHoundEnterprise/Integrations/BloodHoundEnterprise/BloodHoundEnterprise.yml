@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Specter Ops Inc
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -63,7 +62,7 @@ script:
       required: false
     description: Gets events from BloodHound Enterprise.
     name: bloodhound-get-events
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.11.10.116949
   isfetchevents: true
   runonce: false
   script: '-'
@@ -73,8 +72,5 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 8.4.0
-supportlevelheader: xsoar
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

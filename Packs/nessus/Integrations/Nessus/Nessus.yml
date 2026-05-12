@@ -1,12 +1,11 @@
 commonfields:
   id: Nessus
   version: -1
-sectionorder:
+sectionOrder:
 - Connect
 name: Nessus
 display: Nessus
 category: Vulnerability Management
-provider: Tenable
 description: Vulnerability scanner for auditors and security analysts by Tenable Network Security.
 configuration:
 - display: 'Server Url (format : https://127.0.0.1:8834)'

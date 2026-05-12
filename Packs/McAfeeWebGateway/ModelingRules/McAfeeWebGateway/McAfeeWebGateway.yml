@@ -4,5 +4,3 @@ name: Macfee Web Gateway Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

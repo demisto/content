@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Trend Micro
 description: Palo Alto Networks Trend Micro Email Security Event Collector integration for XSIAM.
 display: Trend Micro Email Security Event Collector
 name: Trend Micro Email Security Event Collector
@@ -63,7 +62,7 @@ script:
       - 'true'
       - 'false'
       required: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116949
   isfetchevents: true
   script: '-'
   subtype: python3
@@ -74,5 +73,3 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.8.0
-supportedModules:
-- xsiam

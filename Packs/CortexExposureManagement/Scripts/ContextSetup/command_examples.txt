@@ -1,2 +1,0 @@
-!ContextSetup keys=url,verified val1="https://xsoar.pan.dev/" val2="verified" context_key="urlsslverification"
-!ContextSetup keys=url,verified val1="https://www.paloaltonetworks.com" val2="verified" context_key="urlsslverification" overwrite=true

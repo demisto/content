@@ -3,5 +3,3 @@ id: oracle_cloud_infrastructure_modeling_rule
 name: OracleCloudInfrastructure Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

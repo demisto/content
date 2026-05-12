@@ -11,7 +11,6 @@ Playbook Stages:
 
 Triage:
 
-- Checks the processes’ reputation.
 - Retrieve all alerts associated with the case for initial analysis.
 
 Early Containment:
@@ -23,7 +22,6 @@ Early Containment:
 
 Investigation:
 
-- Checks for a malicious process by reputation and continues to containment if found.
 - Check for commonly triggered alerts that often precede process injection:
   - If found, initiate containment.
   - If not found, proceed with additional checks.
@@ -38,9 +36,13 @@ Containment:
 
 - For alerts validated as threats, execute the following actions:
   - Terminate the causality process (CGO) if deemed malicious.
-  - Quarantine the malicious process.
-  - Adds the malicious process to the block list.
   - Isolate the endpoint in high-risk scenarios to prevent further compromise.
+
+Requirements:
+
+For response actions, you need the following integrations:
+
+- Cortex Core - Investigation and Response.
 
 ## Dependencies
 
@@ -52,21 +54,17 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* CortexCoreIR
 
 ### Scripts
 
 * Print
 * SearchIncidentsV2
-* SetMultipleValues
-* file-enrichment
-* isolate-endpoint
-* quarantine-file
 
 ### Commands
 
 * closeInvestigation
-* core-blocklist-files
+* core-isolate-endpoint
 * core-terminate-causality
 
 ## Playbook Inputs

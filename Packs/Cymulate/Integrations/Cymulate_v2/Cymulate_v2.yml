@@ -1,6 +1,5 @@
 category: Deception & Breach Simulation
-provider: Cymulate
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

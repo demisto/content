@@ -79,9 +79,5 @@
     "widgetType": "line",
     "fromVersion": "6.8.0",
     "id": "API Call Results for Microsoft Defender for Endpoint",
-    "description": "",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "description": ""
 }

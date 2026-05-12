@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Microsoft
 commonfields:
   id: AzureFeed
   version: -1
@@ -256,7 +255,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: azure-get-indicators
-  dockerimage: demisto/python3:3.12.12.6922358
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   script: '-'
@@ -265,6 +264,6 @@ script:
 tests:
 - AzureFeed - Test
 fromversion: 5.5.0
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

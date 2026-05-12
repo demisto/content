@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Cloudflare
 commonfields:
   id: Cloudflare Feed
   version: -1
@@ -152,6 +151,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

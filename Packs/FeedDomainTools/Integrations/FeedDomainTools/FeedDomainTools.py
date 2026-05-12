@@ -9,8 +9,6 @@ from collections.abc import Callable, Iterator
 # disable insecure warnings
 urllib3.disable_warnings()
 
-RISK_THRESHOLD = 70
-
 
 class DomainToolsClient(BaseClient):
     """
@@ -26,8 +24,6 @@ class DomainToolsClient(BaseClient):
     NOH_FEED = "noh"
     DOMAINRDAP = "domainrdap"
     DOMAINDISCOVERY = "domaindiscovery"
-    DOMAINRISK = "domainrisk"
-    DOMAINHOTLIST = "domainhotlist"
 
     FEED_URL = "/v1/feed"
     DOMAINTOOLS_API_BASE_URL = "https://api.domaintools.com"
@@ -39,21 +35,22 @@ class DomainToolsClient(BaseClient):
         verify_ssl: bool = True,
         proxy: bool = False,
         tags: str = "",
-        tlp_color: str | None = None,
+        tlp_color: str | None = None
     ):
         self.feed_type = "nod"  # default to NOD feeds
         self.tags = tags
         self.tlp_color = tlp_color
 
         if not (api_username and api_key):
-            raise DemistoException("The 'API Username' and 'API Key' parameters are required.")
+            raise DemistoException(
+                "The 'API Username' and 'API Key' parameters are required."
+            )
 
         self.api_username = api_username
         self.api_key = api_key
 
-        super().__init__(
-            base_url=self.DOMAINTOOLS_API_BASE_URL, headers={"Content-Type": "application/json"}, verify=verify_ssl, proxy=proxy
-        )
+        super().__init__(base_url=self.DOMAINTOOLS_API_BASE_URL, headers={
+            "Content-Type": "application/json"}, verify=verify_ssl, proxy=proxy)
 
     def _get_dt_feeds(
         self,
@@ -77,11 +74,12 @@ class DomainToolsClient(BaseClient):
             "domain": domain,
         }
 
-        demisto.info(f"Fetching DomainTools {feed_type_name} feed type with params: {query_params}")
-
-        response = self._http_request(
-            "GET", url_suffix=f"{self.FEED_URL}/{self.feed_type}/", params=query_params, resp_type="text", raise_on_status=True
+        demisto.info(
+            f"Fetching DomainTools {feed_type_name} feed type with params: {query_params}"
         )
+
+        response = self._http_request("GET", url_suffix=f"{self.FEED_URL}/{self.feed_type}/",
+                                      params=query_params, resp_type="text", raise_on_status=True)
 
         results = response.strip().split("\n") if response else []
         return results
@@ -101,7 +99,9 @@ class DomainToolsClient(BaseClient):
 
         return value
 
-    def build_iterator(self, feed_type: str = "nod", dt_feed_kwargs: dict = {}) -> Iterator:
+    def build_iterator(
+        self, feed_type: str = "nod", dt_feed_kwargs: dict = {}
+    ) -> Iterator:
         """
         Retrieves all entries from the feed.
 
@@ -117,7 +117,7 @@ class DomainToolsClient(BaseClient):
 
         # DomainTools feeds optional arguments
         session_id = dt_feed_kwargs.get("session_id", "dt-cortex-feeds")
-        top = int(dt_feed_kwargs.get("top") or "5000")
+        top = int(dt_feed_kwargs.get("top", "5000"))
         domain = dt_feed_kwargs.get("domain")
         after = dt_feed_kwargs.get("after")
         before = dt_feed_kwargs.get("before")
@@ -156,41 +156,20 @@ class DomainToolsClient(BaseClient):
 
                 timestamp = json_feed.get("timestamp", "")
                 indicator = json_feed.get("domain")
-                indicator_type = FeedIndicatorType.Domain
+                indicator_type = auto_detect_indicator_type(indicator)
 
                 # for `domainrdap` feed, we have more data to display including the parsed data.
                 parsed_record = json_feed.get("parsed_record", {})
-                overall_risk_score = json_feed.get("overall_risk", None)
-                risk_score_details = None
-
-                dt_feed_data = {
-                    "value": indicator,
-                    "type": indicator_type,
-                    "timestamp": timestamp,
-                    "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
-                    "tlp_color": self.tlp_color,
-                    "parsed_record": parsed_record,
-                    "overall_risk_score": overall_risk_score,
-                }
-
-                # for domaihotlist & domainriks feed, we will be returning the risk scores
-                if self.feed_type in (self.DOMAINRISK, self.DOMAINHOTLIST):
-                    risk_score_details = {
-                        "phishing_risk": json_feed.get("phishing_risk"),
-                        "malware_risk": json_feed.get("malware_risk"),
-                        "spam_risk": json_feed.get("spam_risk"),
-                        "proximity_risk": json_feed.get("proximity_risk"),
-                        "overall_risk": json_feed.get("overall_risk"),
-                    }
-
-                    if self.feed_type == self.DOMAINHOTLIST:
-                        risk_score_details["expires"] = json_feed.get("expires")
-
-                    # update the parsed dt feed data
-                    dt_feed_data["risk_score_details"] = risk_score_details
 
                 if indicator and indicator_type:
-                    yield dt_feed_data
+                    yield {
+                        "value": indicator,
+                        "type": indicator_type,
+                        "timestamp": timestamp,
+                        "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
+                        "tlp_color": self.tlp_color,
+                        "parsed_record": parsed_record
+                    }
 
                     limit_counter += 1
                     processed_feeds += 1
@@ -198,37 +177,9 @@ class DomainToolsClient(BaseClient):
             demisto.info(f"Done processing {processed_feeds} out of {total_dt_feeds} {self.feed_type} feeds.")
         except Exception as err:
             demisto.debug(str(err))
-            raise ValueError(f"Could not parse returned data as indicator. \n\nError massage: {str(err)}")
-
-
-def get_dbot_score(overall_risk_score: int | None = None):
-    """
-    Gets the DBot score
-    score info:
-        NONE = 0
-        GOOD = 1
-        SUSPICIOUS = 2
-        BAD = 3
-    Args:
-        overall_risk_score: The overall riskscore. Defaults to None.
-
-    Returns: DBot Score
-
-    """
-    # Unknown scores
-    if overall_risk_score is None:
-        return Common.DBotScore.NONE
-
-    # check for the 'BAD' condition then return.
-    if overall_risk_score >= RISK_THRESHOLD:
-        return Common.DBotScore.BAD
-
-    # check for 'SUSPICIOUS' conditions as we know both scores will be lower.
-    if 50 <= overall_risk_score <= 69:
-        return Common.DBotScore.SUSPICIOUS
-
-    # If the domain is not BAD and not SUSPICIOUS, then return GOOD.
-    return Common.DBotScore.GOOD
+            raise ValueError(
+                f"Could not parse returned data as indicator. \n\nError massage: {str(err)}"
+            )
 
 
 def batch_create_indicators(indicators: list[dict[str, Any]], batch_size: int = 2000):
@@ -242,7 +193,9 @@ def batch_create_indicators(indicators: list[dict[str, Any]], batch_size: int = 
         demisto.createIndicators(iter_)
 
 
-def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_kwargs: dict[str, Any] = {}) -> list[dict]:
+def fetch_indicators(
+    client: DomainToolsClient, feed_type: str = "nod", dt_feed_kwargs: dict[str, Any] = {}
+) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
@@ -262,8 +215,6 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
             tags_ = item.get("tags", [])
             tlp_color_ = item.get("tlp_color")
             parsed_record_ = item.get("parsed_record")
-            overall_risk_score_ = item.get("overall_risk_score")
-            risk_score_details_ = item.get("risk_score_details")
 
             indicator_tags = ",".join(tags_).rstrip(",")
 
@@ -276,9 +227,6 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
             if parsed_record_:
                 raw_data["parsed_record"] = parsed_record_
 
-            if risk_score_details_:
-                raw_data["risk_score_details"] = risk_score_details_
-
             # Create indicator object for each value.
             indicator_obj = {
                 "value": value_,
@@ -287,16 +235,13 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
                     "tags": indicator_tags,
                     "service": "DomainTools Feeds",
                     "firstseenbysource": timestamp_,
-                    "sourcebrands": "FeedDomainTools",
+                    "sourcebrands": "FeedDomainTools"
                 },
                 "rawJSON": raw_data,
             }
 
             if tlp_color_:
                 indicator_obj["fields"]["trafficlightprotocol"] = tlp_color_
-
-            if overall_risk_score_:
-                indicator_obj["score"] = get_dbot_score(overall_risk_score=overall_risk_score_)
 
             indicators.append(indicator_obj)
 
@@ -332,7 +277,9 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
     }
 
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")
-    indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feeds_kwargs)
+    indicators = fetch_indicators(
+        client, feed_type=feed_type, dt_feed_kwargs=dt_feeds_kwargs
+    )
 
     human_readable = tableToMarkdown(
         f"Indicators from DomainTools {feed_type.upper()} Feed:",
@@ -343,7 +290,11 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
 
     batch_create_indicators(indicators, batch_size=100)
 
-    return CommandResults(readable_output=human_readable, raw_response=indicators, ignore_auto_extract=True)
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=indicators,
+        ignore_auto_extract=True
+    )
 
 
 def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] = {}) -> list[dict]:
@@ -367,9 +318,7 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
         client.NAD_FEED,
         client.NOH_FEED,
         client.DOMAINRDAP,
-        client.DOMAINDISCOVERY,
-        client.DOMAINRISK,
-        client.DOMAINHOTLIST,
+        client.DOMAINDISCOVERY
     ]
 
     dt_feed_kwargs = {"top": top, "after": after, "session_id": session_id}
@@ -384,7 +333,6 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
             indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
 
         fetched_indicators.extend(indicators)
-
     return fetched_indicators
 
 
@@ -395,12 +343,12 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
     Returns:
         str.
     """
-    dt_feed_kwargs = {"top": 1, "after": None}
-
-    feed_type_ = params.get("feed_type", "nod")
-    feed_type_ = "nod" if feed_type_ == "ALL" else feed_type_
+    dt_feed_kwargs = {
+        "top": 1,
+        "after": None
+    }
     try:
-        next(client.build_iterator(feed_type=feed_type_, dt_feed_kwargs=dt_feed_kwargs))
+        next(client.build_iterator(dt_feed_kwargs=dt_feed_kwargs))
     except Exception as e:
         raise Exception(
             "Could not fetch DomainTools Feed\n"
@@ -423,19 +371,13 @@ def main():
     api_username = params.get("credentials", {}).get("identifier", "")
     api_key = params.get("credentials", {}).get("password", "")
     insecure = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    proxy = params.get('proxy', False)
     user_defined_tags = params.get("feedTags", "")
     tlp_color = params.get("tlp_color")
 
     try:
-        client = DomainToolsClient(
-            api_username=api_username,
-            api_key=api_key,
-            verify_ssl=insecure,
-            proxy=proxy,
-            tags=user_defined_tags,
-            tlp_color=tlp_color,
-        )
+        client = DomainToolsClient(api_username=api_username, api_key=api_key, verify_ssl=insecure,
+                                   proxy=proxy, tags=user_defined_tags, tlp_color=tlp_color)
 
         demisto.debug(f"Command being called is {command}")
         if command in commands:

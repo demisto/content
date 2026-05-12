@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Cisco Systems
 commonfields:
   id: Cisco WebEx Feed
   version: -1
@@ -137,6 +136,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

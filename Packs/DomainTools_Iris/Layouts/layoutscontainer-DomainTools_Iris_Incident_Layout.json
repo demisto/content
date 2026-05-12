@@ -330,8 +330,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.6.0",
-    "marketplaces": [
-        "xsoar"
-    ],
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }

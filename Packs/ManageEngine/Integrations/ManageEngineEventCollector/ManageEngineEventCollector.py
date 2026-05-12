@@ -118,7 +118,7 @@ class Client(BaseClient):
             raise DemistoException(response.get("error"))
         access_token = response["access_token"]
         new_ctx = {
-            "refresh_token": response.get("refresh_token") or ctx.get("refresh_token"),
+            "refresh_token": ctx.get("refresh_token") or response.get("refresh_token"),
             "access_token": access_token,
             "expire_date": (now + timedelta(seconds=int(response.get("expires_in", 0)) - 60)).isoformat(),
         }
@@ -150,7 +150,7 @@ class Client(BaseClient):
         }
 
         params = {"startTime": start_time, "endTime": end_time, "pageLimit": PAGE_LIMIT_DEFAULT}
-        demisto.debug(f"Time interval: {start_time} to {end_time}.")
+        demisto.debug(f"Time intervarl: {start_time} to {end_time}.")
 
         while True:
             params["page"] = str(page)
@@ -166,7 +166,7 @@ class Client(BaseClient):
 
             events_page = response.get("messageResponse", [])
             status = response.get("status")
-            demisto.debug(f"Successfully fetched {len(events_page)} events on page {page}")
+            demisto.debug(f"Successfully fetched {events_page} on page {page}")
             if status != "success":
                 demisto.debug(f"API returned status='{status}', stopping pagination.")
                 break
@@ -214,8 +214,8 @@ def get_events(client: Client, args: dict) -> CommandResults:
 
     now_ts = int(time.time() * 1000)
 
-    start_date = date_to_timestamp(start_date_str, DATE_FORMAT) if start_date_str else (now_ts - 60 * 1000)
-    end_date = date_to_timestamp(end_date_str, DATE_FORMAT) if end_date_str else now_ts
+    start_date = date_to_timestamp(start_date_str, DATE_FORMAT) if start_date_str else now_ts
+    end_date = date_to_timestamp(end_date_str, DATE_FORMAT) if end_date_str else (now_ts - 60 * 1000)
 
     events = client.search_events(str(start_date), str(end_date), limit)
     add_time_to_events(events)
@@ -292,7 +292,7 @@ def main() -> None:  # pragma: no cover
     server_url = params.get("server_url")
     if server_url not in ENDPOINT_TO_ZOHO_ACCOUNTS:
         return_error("Invalid URL: Make sure it matches one of the options listed in the help section.")
-    client_id = params.get("credentials", {}).get("identifier")
+    client_id = params.get("credentials", {}).get("username")
     client_secret = params.get("credentials", {}).get("password")
     client_code = params.get("client_code", {}).get("password")
     verify = not params.get("insecure", False)
@@ -311,7 +311,7 @@ def main() -> None:  # pragma: no cover
         )
         if command == "test-module":
             raise Exception("Please use !manage-engine-test instead")
-        elif command == "manage-engine-test":
+        if command == "manage-engine-test":
             return_results(test_module(client))
         elif command == "manage-engine-get-events":
             return_results(get_events(client, demisto.args()))

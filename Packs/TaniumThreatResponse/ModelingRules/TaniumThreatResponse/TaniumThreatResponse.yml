@@ -4,5 +4,3 @@ name: Tanium Threat Response Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

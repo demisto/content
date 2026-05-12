@@ -29,17 +29,17 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+CortexCoreIR
 
 ### Scripts
 
-* SearchIncidentsV2
-* get-endpoint-data
-* isolate-endpoint
+SearchIncidentsV2
 
 ### Commands
 
 * closeInvestigation
+* core-isolate-endpoint
+* core-get-endpoints
 * core-terminate-causality
 
 ## Playbook Inputs

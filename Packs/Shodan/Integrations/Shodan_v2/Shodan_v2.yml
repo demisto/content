@@ -1,6 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-provider: Shodan
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -80,8 +79,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2

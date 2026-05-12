@@ -4,5 +4,3 @@ name: CyberArk PTA Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

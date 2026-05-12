@@ -17,12 +17,7 @@ def main():
 
     fileInfos = []
     for item in entryIDs:
-        item_params = {"id": item}
-        if "@" in item:
-            entry_incident_id = item.split("@")[-1]
-            item_params["incidentId"] = entry_incident_id
-
-        res = demisto.executeCommand("getFilePath", item_params)
+        res = demisto.executeCommand("getFilePath", {"id": item})
         if is_error(res):
             return_error(get_error(res))
         if type(res[0]["Contents"]) is dict:

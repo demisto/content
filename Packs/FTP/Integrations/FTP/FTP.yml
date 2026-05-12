@@ -1,5 +1,4 @@
 category: Utilities
-provider: Open Source
 commonfields:
   id: FTP
   version: -1
@@ -53,7 +52,7 @@ script:
       description: The file name to download from the FTP server.
     description: Download file from FTP server.
     name: ftp-get
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   subtype: python3

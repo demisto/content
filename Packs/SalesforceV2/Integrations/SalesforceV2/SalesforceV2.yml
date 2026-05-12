@@ -1,5 +1,4 @@
 category: Case Management
-provider: Salesforce
 commonfields:
   id: SalesforceV2
   version: -1
@@ -1088,7 +1087,7 @@ script:
       name: caseNumber
     description: Retrieve a case file by file ID.
     name: salesforce-get-case-file-by-id
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   ismappable: true
   isremotesyncin: true

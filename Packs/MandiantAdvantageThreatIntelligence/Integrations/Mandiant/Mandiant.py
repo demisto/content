@@ -156,8 +156,8 @@ class MatiIndicator:
             elif association_type == "malware":
                 relationships.append(
                     EntityRelationship(
-                        name="indicator-of",
-                        reverse_name="indicated-by",
+                        name="indicates",
+                        reverse_name="indicator-of",
                         brand="Mandiant",
                         entity_a=self.ioc_value,
                         entity_a_type=self.ioc_type,

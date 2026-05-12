@@ -3,5 +3,3 @@ id: TeamViewer_Tensor_ModelingRule
 name: TeamViewer Tensor Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

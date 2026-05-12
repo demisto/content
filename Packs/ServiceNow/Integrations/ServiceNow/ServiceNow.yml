@@ -1,5 +1,4 @@
 category: Case Management
-provider: ServiceNow
 commonfields:
   id: ServiceNow
   version: -1
@@ -2087,3 +2086,6 @@ script:
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
+supportedModules:
+- X3
+- X5

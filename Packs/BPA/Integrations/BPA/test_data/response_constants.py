@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 GET_RESULTS_RESPONSE = {
     "status": "complete",
     "results": {

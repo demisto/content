@@ -3,5 +3,3 @@ id: sentinelone_modeling_rule
 name: SentinelOne Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

@@ -3,8 +3,7 @@
   "associatedTypes": [
     "Qradar Generic",
     "FW change management",
-    "Vectra Detection",
-    "CrowdStrike Falcon NGSIEM Detection"
+    "Vectra Detection"
   ],
   "breachScript": "",
   "caseInsensitive": true,

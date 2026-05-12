@@ -22,7 +22,7 @@ def client():
         client_id=MOCK_CLIENT_ID,
         client_secret=MOCK_CLIENT_SECRET,
         use_proxy=False,
-        ok_codes=OK_CODES,
+        ok_codes=OK_CODES
     )
 
 
@@ -33,13 +33,13 @@ def test_update_time_values_detections():
     Then: Ensure the events are added the new time fields
     """
     from ExtrahopRevealXEventCollector import update_time_values_detections
-
     raw_detections = util_load_json("test_data/detections-dummy.json")
     update_time_values_detections(raw_detections)
 
     for detection in raw_detections:
         assert "_TIME" in detection
         assert "_ENTRY_STATUS" in detection
+
 
 
 def test_fetch_events_update_last_run(client, mocker):
@@ -49,7 +49,6 @@ def test_fetch_events_update_last_run(client, mocker):
     Then: Make sure that the last run object was updated as expected
     """
     from ExtrahopRevealXEventCollector import fetch_events
-
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -67,7 +66,6 @@ def test_fetch_events_already_fetched(client, mocker):
     Then: Ensure the function does not return any events
     """
     from ExtrahopRevealXEventCollector import fetch_events
-
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -87,7 +85,6 @@ def test_fetch_events_reaching_limit(client, mocker):
     Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
     """
     from ExtrahopRevealXEventCollector import fetch_events
-
     raw_detections = util_load_json("test_data/detections-dummy.json")[:-2]
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -104,7 +101,6 @@ def test_fetch_events_more_than_exist(client, mocker):
     Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
     """
     from ExtrahopRevealXEventCollector import fetch_events
-
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -121,7 +117,6 @@ def test_fetch_events_same_mod_time(client, mocker):
     Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
     """
     from ExtrahopRevealXEventCollector import fetch_events
-
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mod_time_all = 1000
     for d in raw_detections:
@@ -133,39 +128,3 @@ def test_fetch_events_same_mod_time(client, mocker):
 
     assert len(output) == len(raw_detections) - 2
     assert new_last_run.get("detection_start_time") == mod_time_all
-
-
-def test_authenticate_uses_basic_auth(requests_mock) -> None:
-    """Test that authenticate sends client credentials via HTTP Basic Auth, not in the request body.
-
-    Given:
-        - An ExtraHop Event Collector client with client_id and client_secret.
-    When:
-        - authenticate is called to obtain an access token.
-    Then:
-        - The POST to /oauth2/token uses HTTP Basic Auth with client_id and client_secret.
-        - The request body does NOT contain client_id or client_secret.
-        - The returned token and expiry match the mocked response.
-    """
-    mock_response = {"access_token": "fake-token", "expires_in": 3600, "token_type": "Bearer"}
-    token_request = requests_mock.post(f"{MOCK_BASEURL}/oauth2/token", json=mock_response)
-
-    client = Client(
-        base_url=MOCK_BASEURL,
-        verify=False,
-        client_id=MOCK_CLIENT_ID,
-        client_secret=MOCK_CLIENT_SECRET,
-        use_proxy=False,
-        ok_codes=OK_CODES,
-    )
-
-    token, expires_in = client.authenticate(MOCK_CLIENT_ID, MOCK_CLIENT_SECRET)
-
-    assert token == mock_response["access_token"]
-    assert expires_in == mock_response["expires_in"]
-
-    last_request = token_request.last_request
-    assert last_request.headers.get("Authorization", "").startswith("Basic ")
-    body = last_request.text
-    assert "client_id" not in body
-    assert "client_secret" not in body

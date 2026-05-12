@@ -1,6 +1,5 @@
 category: Messaging and Conferencing
-provider: Google
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

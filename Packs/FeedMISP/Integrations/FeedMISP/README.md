@@ -19,8 +19,6 @@ To ingest feeds via a URL, you could use one of the following content packs:
 | --- | --- | --- |
 | Your server URL |  | True |
 | API Key | The API Key to use for the connection. | True |
-| Client Certificate |  | False |
-| Private Key |  | False |
 | Timeout | The timeout of the HTTP requests sent to the MISP API (in seconds). If no value is provided, the timeout will be set to 60 seconds.| False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

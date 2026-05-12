@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: QwietAI
 commonfields:
   id: ShiftLeft CORE
   version: -1
@@ -67,7 +66,7 @@ script:
     - name: entropy
       description: Entropy.
     description: Return list of app secrets.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116439
   runonce: false
   subtype: python3
 fromversion: 6.0.0

@@ -238,9 +238,6 @@ class Client:
         )
         return self.http_request("GET", "/siem/issues", params=params)
 
-    def get_all_siem(self, format: str, since: int):
-        return self.http_request("GET", "/siem/all", params={"format": format, "sinceSeconds": since})
-
 
 def test_module(client: Client) -> str:
     """
@@ -252,7 +249,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.get_all_siem(format="JSON", since=60)
+        client.get_top_clickers(window="90")
     except Exception as exception:
         if "Unauthorized" in str(exception) or "authentication" in str(exception):
             return "Authorization Error: make sure API Credentials are correctly set"

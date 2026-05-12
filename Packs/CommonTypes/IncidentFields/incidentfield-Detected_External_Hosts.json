@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "PANW Endpoint Malware",
-        "CrowdStrike Falcon NGSIEM Incident"
+        "PANW Endpoint Malware"
     ],
     "breachScript": "",
     "caseInsensitive": true,

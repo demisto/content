@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Open Source
 commonfields:
   id: JSON Feed
   version: -1
@@ -198,6 +197,6 @@ script:
 tests:
 - JSON_Feed_Test
 fromversion: 5.5.0
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

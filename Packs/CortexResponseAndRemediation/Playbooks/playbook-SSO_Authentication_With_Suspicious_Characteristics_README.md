@@ -41,29 +41,28 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-This playbook does not use any sub-playbooks.
+* Containment Plan - Clear User Sessions
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Cortex Core - IR
+* Okta v2
 
 ### Scripts
 
 * GetTime
-* IncreaseAlertSeverity
 * SearchAlertsV2
 * SetAndHandleEmpty
-* clear-user-session
-* disable-user
-* get-user-data
-* ip-enrichment
 
 ### Commands
 
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-list-risky-users
+* ip
 * okta-get-failed-logins
 * okta-get-logs
+* okta-suspend-user
 
 ## Playbook Inputs
 

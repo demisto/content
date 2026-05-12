@@ -5,5 +5,3 @@ name: Symantec Cloud Secure Web Gateway Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

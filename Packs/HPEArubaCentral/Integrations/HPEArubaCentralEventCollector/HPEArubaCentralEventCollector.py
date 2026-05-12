@@ -504,38 +504,26 @@ def push_events(audit_events: list | None, networking_events: list | None):
 """ COMMAND FUNCTIONS """
 
 
-def test_module():
-    """
-    Aurba's API limitations only allow one access token to be generated every 30 minutes.
-    In this collector, we use an alternative command referred to as 'aruba-auth-test', which allows us to keep the access token
-    generated just in the integration context when testing the connection and have access for it if it already exists.
-    """
-    raise DemistoException(
-        "Test module is not available for HPE Aruba Central Event Collector due to Aruba's API limitations."
-        " Use the aruba-auth-test command instead."
-    )
-
-
-def aruba_auth_test(
+def test_module(
     client: Client,
     first_fetch_time: int,
     fetch_networking_events: bool,
     max_audit_events_per_fetch: int,
     max_networking_events_per_fetch: int,
-) -> CommandResults:
+) -> str:
     """
-    Executes the test module flow (since integration context can't be accessed during test_module)
+    Tests API connectivity and authentication
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
     Raises exceptions if something goes wrong.
 
     Args:
         client (Client): Aruba Central client to use.
         first_fetch_time(str): The first fetch time as configured in the integration params.
         fetch_networking_events (bool): Whether to fetch networking events, as configured in the integration params.
-        max_audit_events_per_fetch: The maximum number of audit log events to retrieve in a single fetch cycle.
-        max_networking_events_per_fetch: The maximum number of networking log events to retrieve in a single fetch cycle.
+
     Returns:
-        CommandResults: CommandResults which contains an informative message if the Authentication was successful or not.
-        Anything else will raise an exception and will fail the test.
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
     if not max_audit_events_per_fetch or max_audit_events_per_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
@@ -559,11 +547,11 @@ def aruba_auth_test(
 
     except Exception as e:
         if "Forbidden" in str(e) or "UNAUTHORIZED" in str(e):
-            return CommandResults(readable_output="Authorization Error: make sure credentials are correctly set")
+            return "Authorization Error: make sure credentials are correctly set"
         else:
             raise e
 
-    return CommandResults(readable_output="Authentication was successful.")
+    return "ok"
 
 
 def get_events(
@@ -707,10 +695,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            test_module()
-
-        if command == "aruba-auth-test":
-            result = aruba_auth_test(
+            result = test_module(
                 client,
                 first_fetch_time=first_fetch_time,
                 fetch_networking_events=fetch_networking_events,

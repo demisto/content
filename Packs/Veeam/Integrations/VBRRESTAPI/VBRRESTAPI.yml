@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Veeam
 commonfields:
   id: VBR REST API
   version: -1
@@ -571,7 +570,7 @@ script:
     - contextPath: Veeam.VBR.start_recovery.usn
       description: "Update sequence number."
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116949
   isFetchSamples: true
   isfetch: true
   runonce: false

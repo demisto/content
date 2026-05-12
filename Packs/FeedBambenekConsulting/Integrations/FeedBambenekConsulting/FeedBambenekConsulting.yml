@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Netenrich
 commonfields:
   id: Bambenek Consulting Feed
   version: -1
@@ -126,7 +125,7 @@ script:
       name: indicator_type
     description: Gets the feed indicators.
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

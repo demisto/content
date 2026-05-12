@@ -16,5 +16,3 @@ ignore=MR108
 [file:jamf.yml]
 ignore=PR101
 
-[file:jamfV2.yml]
-ignore=BA127

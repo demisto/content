@@ -1,0 +1,1066 @@
+description: "This playbook is designed to handle the following alerts:\n\n- Suspicious\
+  \ SaaS API call from a Tor exit node\n- Suspicious SaaS API call from a Tor exit\
+  \ node via a mobile device\n- Suspicious API call from a Tor exit node\n- Suspicious\
+  \ Kubernetes API call from a Tor exit node\n\nPlaybook Stages:\n\nEarly Containment:\n\
+  - To terminate the connection from the Tor exit node, the playbook will clear/revoke\
+  \ the user's sessions and force re-authentication. Depending on the alert source,\
+  \ the playbook will use either MS-Graph or G-Suite to clear the user sessions.\n\
+  \nInvestigation:\n- The playbook will assess the risk score of the user connected\
+  \ from the Tor exit node and examine the legitimacy of the user agent.\n\nContainment:\n\
+  - If the user's risk score is high or the user agent is detected as suspicious,\
+  \ the playbook will recommend blocking the account connected from the Tor exit node.\
+  \ The playbook will use MS-Graph, G-Suite, or AWS-IAM, depending on the alert source.\n\
+  \nEradication:\n- For users with PAN-OS enabled, the playbook will recommend blocking\
+  \ all IPs from the Palo Alto Intelligence-based external dynamic list that contains\
+  \ Tor exit nodes. The goal is to prevent the use of Tor within the organization.\n\
+  \nRequirements:\n\nFor any response action, you will need one of the following integrations:\
+  \ \n- Microsoft Graph User\n- G-Suite Admin\n- AWS-IAM."
+fromversion: 8.9.0
+id: silent-Suspicious SaaS Access From a TOR Exit Node Test
+inputs: []
+issilent: true
+name: silent-Suspicious SaaS Access From a TOR Exit Node Test
+outputs: []
+starttaskid: '0'
+tags:
+- T1090 - Proxy
+- TA0011 - Command and Control
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 9ce3ec2e-49a5-43c6-8812-1c8724eb4f95
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 9ce3ec2e-49a5-43c6-8812-1c8724eb4f95
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 240\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      alert_ids:
+        complex:
+          accessor: id
+          root: alert
+          transformers:
+          - operator: uniq
+      filter_alert_fields:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns information about each alert ID.
+      id: 34b46f03-e24e-463b-8df9-2743ae0df003
+      iscommand: true
+      name: Get User Identity
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      version: -1
+    taskid: 34b46f03-e24e-463b-8df9-2743ae0df003
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        complex:
+          accessor: id
+          root: alert
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0f076c81-4bbc-4f05-8306-4f8c0ac400b3
+      iscommand: true
+      name: Close Alert
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0f076c81-4bbc-4f05-8306-4f8c0ac400b3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3160\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 102922e3-2b05-4241-825c-8c4e325be898
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 102922e3-2b05-4241-825c-8c4e325be898
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3320\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.RiskyUser.risk_level
+          operator: isEqualString
+          right:
+            value:
+              simple: HIGH
+        - left:
+            iscontext: true
+            value:
+              simple: SuspiciousUserAgent
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: GSuite.User.id
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: MSGraphUser.ID
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - IAM
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '21'
+      'yes':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f939fd39-89a2-4416-8475-6b8fe49537d8
+      iscommand: false
+      name: Check if risk level is high or user agent is suspicious
+      type: condition
+      version: -1
+    taskid: f939fd39-89a2-4416-8475-6b8fe49537d8
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1630\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    form:
+      description: You can block the user who created the connection.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Block The Account ${alert.username.[0]} using ${Account.Type}?
+        options: []
+        optionsarg:
+        - {}
+        - simple: 'Yes'
+        - simple: 'No'
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      sender: ''
+      title: Decide if you want to block the account
+      totalanswers: 0
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ''
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f8073e61-3193-43f2-819b-a8f4ea98e87a
+      iscommand: false
+      name: Decide if you want to block the account
+      type: collection
+      version: -1
+    taskid: f8073e61-3193-43f2-819b-a8f4ea98e87a
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 1800\n  }\n}"
+  '15':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousUserAgent
+      data:
+        simple: ${alert.useragent.[0]}
+      regex:
+        simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|REST)\b
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Extracts regex data from the provided text. The script supports
+        groups and looping.
+      id: dd1a92cb-c7eb-42c9-8679-429bd572a0b7
+      iscommand: false
+      name: Check if user agent is suspicious
+      scriptName: MatchRegexV2
+      type: regular
+      version: -1
+    taskid: dd1a92cb-c7eb-42c9-8679-429bd572a0b7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 1330\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Decide if you want to block the account.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      - - left:
+            iscontext: true
+            value:
+              simple: MSGraphUser.ID
+          operator: isNotEmpty
+      label: Block Using MS-Graph
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Decide if you want to block the account.Answers.0
+          operator: containsString
+          right:
+            value:
+              simple: 'Yes'
+      - - left:
+            iscontext: true
+            value:
+              simple: GSuite.User.id
+          operator: isNotEmpty
+      label: Block Using G-Suite
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Decide if you want to block the account.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - IAM
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: Delete Login Profile Using AWS
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '21'
+      Block Using G-Suite:
+      - '18'
+      Block Using MS-Graph:
+      - '17'
+      Delete Login Profile Using AWS:
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: d70543c6-1970-4c3d-8c98-d02aaad561fb
+      iscommand: false
+      name: Block the account that used TOR?
+      type: condition
+      version: -1
+    taskid: d70543c6-1970-4c3d-8c98-d02aaad561fb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 1960\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user:
+        simple: ${MSGraphUser.ID}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'Disables a user from all Office 365 applications, and prevents
+        sign in. Note: This command disables a user,
+
+        but does not terminate an existing session. Supported only in a self-deployed
+        app flow.
+
+        Permission: Directory.AccessAsUser.All(Delegated).'
+      id: e7c3404d-5ca2-4ed4-875e-100cb2900acd
+      iscommand: true
+      name: Block user with MS-Graph
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      version: -1
+    taskid: e7c3404d-5ca2-4ed4-875e-100cb2900acd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 2160\n  }\n}"
+  '18':
+    continueonerrortype: ''
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      suspended:
+        simple: 'true'
+      user_key:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Updates a user.
+      id: 19ca9654-14bf-486d-8832-2a5835b118f2
+      iscommand: true
+      name: Block user with G-Suite
+      script: '|||gsuite-user-update'
+      type: regular
+      version: -1
+    taskid: 19ca9654-14bf-486d-8832-2a5835b118f2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 2160\n  }\n}"
+  '19':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Choose whether to block TOR using PAN-OS.Answers.0
+          operator: containsString
+          right:
+            value:
+              simple: 'Yes'
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+      label: Block TOR using PAN-OS
+    continueonerrortype: ''
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '10'
+      Block TOR using PAN-OS:
+      - '24'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: be2a62ff-1113-46b6-8817-0811b761b3a5
+      iscommand: false
+      name: Block TOR application with PAN-OS?
+      type: condition
+      version: -1
+    taskid: be2a62ff-1113-46b6-8817-0811b761b3a5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": 2805\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f9caeafe-1135-44a4-8288-2f6b3196e20a
+      iscommand: false
+      name: Early Containment
+      type: title
+      version: -1
+    taskid: f9caeafe-1135-44a4-8288-2f6b3196e20a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 530\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 9032908c-104c-4178-896d-26343b3a9e4f
+      iscommand: false
+      name: Eradication
+      type: title
+      version: -1
+    taskid: 9032908c-104c-4178-896d-26343b3a9e4f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2330\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    form:
+      description: 'You can block traffic from TOR exit node IPs using Palo Alto''s
+        built-in External Dynamic List (EDL). For more information on predefined EDLs,
+        visit:
+
+
+        https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-admin/policy/use-an-external-dynamic-list-in-policy/built-in-edls'
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Block TOR exit nodes using PAN-OS?
+        options: []
+        optionsarg:
+        - {}
+        - simple: 'Yes'
+        - simple: 'No'
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      sender: ''
+      title: Choose whether to block TOR using PAN-OS
+      totalanswers: 0
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ''
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: fb9aab48-672e-4c9d-8ff4-7b5ab3c9f4d1
+      iscommand: false
+      name: Choose whether to block TOR IPs using PAN-OS
+      type: collection
+      version: -1
+    taskid: fb9aab48-672e-4c9d-8ff4-7b5ab3c9f4d1
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": 2640\n  }\n}"
+  '23':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'Yes'
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '10'
+      'Yes':
+      - '22'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 54c87fa9-5981-42ed-8593-2fe4818214cc
+      iscommand: false
+      name: PAN-OS Enabled?
+      type: condition
+      version: -1
+    taskid: 54c87fa9-5981-42ed-8593-2fe4818214cc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2460\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: 'No'
+      EDLName:
+        simple: panw-torexit-ip-list
+      RuleName:
+        simple: TOR Exit nodes from predefined EDLs was Blocked by XSIAM
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: ''
+      id: 34616d1d-37f0-4406-8961-5e59b8de3af9
+      iscommand: false
+      name: PAN-OS - Block IPs From EDL - Custom Block Rule
+      playbookName: PAN-OS - Block IPs From EDL - Custom Block Rule
+      type: playbook
+      version: -1
+    taskid: 34616d1d-37f0-4406-8961-5e59b8de3af9
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2990\n  }\n}"
+  '25':
+    continueonerrortype: ''
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userName:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Deletes the password for the specified IAM user, which terminates
+        the user's ability to access AWS services through the AWS Management Console.
+      id: e19e02a9-b241-4f18-8b4d-8f7754efbc19
+      iscommand: true
+      name: Delete Login Profile Using AWS
+      script: '|||aws-iam-delete-login-profile'
+      type: regular
+      version: -1
+    taskid: e19e02a9-b241-4f18-8b4d-8f7754efbc19
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1480,\n    \"y\": 2160\n  }\n}"
+  '3':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user:
+        simple: ${MSGraphUser.ID}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'Revoke a user session. Invalidates all the refresh tokens issued
+        to applications for a user.
+
+        Permission: Directory.AccessAsUser.All(Delegated).'
+      id: ef5395e8-62d0-407d-8c63-7b162bb01358
+      iscommand: true
+      name: Clear user sessions using MS-Graph
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      version: -1
+    taskid: ef5395e8-62d0-407d-8c63-7b162bb01358
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1150,\n    \"y\": 1020\n  }\n}"
+  '4':
+    continueonerror: true
+    continueonerrortype: ''
+    fieldMapping:
+    - incidentfield: User SID
+      output:
+        complex:
+          accessor: '[0]'
+          root: alert.username
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filter:
+        simple: mail eq '${Core.OriginalAlert.event.identity_name}'
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'Retrieves a list of user objects.
+
+        Permissions: User.ReadBasic.All (Delegated), User.Read.All (Application).'
+      id: 250319b5-dde5-40f9-853f-2b3442d2ed52
+      iscommand: true
+      name: Get User ID from MS-Graph
+      script: '|||msgraph-user-list'
+      type: regular
+      version: -1
+    taskid: 250319b5-dde5-40f9-853f-2b3442d2ed52
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1150,\n    \"y\": 860\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cloudprovider.[0]
+          operator: isEqualString
+          right:
+            value:
+              simple: MSFT
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cloudprovider.[0]
+          operator: isEqualString
+          right:
+            value:
+              simple: AZURE
+      label: O365
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cloudprovider.[0]
+          operator: isEqualString
+          right:
+            value:
+              simple: GOOGLE
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cloudprovider.[0]
+          operator: isEqualString
+          right:
+            value:
+              simple: GCP
+      label: Google Workspaces
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '7'
+      Google Workspaces:
+      - '6'
+      O365:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 826d5083-fff2-4ee9-846e-ab2cef5765e9
+      iscommand: false
+      name: Which SaaS application?
+      type: condition
+      version: -1
+    taskid: 826d5083-fff2-4ee9-846e-ab2cef5765e9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 670\n  }\n}"
+  '6':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_key:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Signs a user out of all web and device sessions and resets their
+        sign-in cookies.
+      id: deb95ec9-2850-45c8-8a1c-1d2f2ccf07fe
+      iscommand: true
+      name: Sign out User using G-Suite Admin
+      script: '|||gsuite-user-signout'
+      type: regular
+      version: -1
+    taskid: deb95ec9-2850-45c8-8a1c-1d2f2ccf07fe
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 1020\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: c8772496-b9c9-442b-88e1-f5500d700142
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: c8772496-b9c9-442b-88e1-f5500d700142
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1190\n  }\n}"
+  '8':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieve the risk score of a specific user or list of users with
+        the highest risk score in the environment along with the reason affecting
+        each score.
+      id: d6425055-2cd8-401c-83ac-81aba1c11524
+      iscommand: true
+      name: Get User Risk Level
+      script: '|||core-list-risky-users'
+      type: regular
+      version: -1
+    taskid: d6425055-2cd8-401c-83ac-81aba1c11524
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 1330\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 2ff5c5ea-6357-4ef6-8c43-8c3c52b6fe33
+      iscommand: false
+      name: Containment
+      type: title
+      version: -1
+    taskid: 2ff5c5ea-6357-4ef6-8c43-8c3c52b6fe33
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1500\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"12_21_#default#\": 0.2,\n    \"16_17_Block\
+  \ Using MS-Graph\": 0.7,\n    \"16_18_Block Using G-Suite\": 0.62,\n    \"16_21_#default#\"\
+  : 0.4,\n    \"19_10_#default#\": 0.34,\n    \"23_10_#default#\": 0.14,\n    \"23_22_Yes\"\
+  : 0.44,\n    \"5_4_O365\": 0.73,\n    \"5_6_Google Workspaces\": 0.7,\n    \"5_7_#default#\"\
+  : 0.14\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3145,\n \
+  \     \"width\": 1620,\n      \"x\": 240,\n      \"y\": 240\n    }\n  }\n}"

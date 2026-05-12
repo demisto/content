@@ -4,5 +4,3 @@ fromversion: 8.4.0
 tags: [BeyondTrust, "Beyond Trust", "Remote Support"]
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

@@ -4,5 +4,3 @@ name: Citrix ADC Modeling Rule
 rules: ''
 schema: ''
 tags: Citrix ADC
-supportedModules:
-- xsiam

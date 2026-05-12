@@ -3,5 +3,3 @@ id: ProofpointTAP_ModelingRule
 name: ProofpointTAP Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

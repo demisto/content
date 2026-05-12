@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: Brocade Switch
 toversion: 6.9.9
-supportedModules:
-- xsiam

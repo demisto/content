@@ -12,7 +12,6 @@ PRODUCT = "defender_for_cloud"
 API_VERSION = "2022-01-01"
 DEFAULT_LIMIT = 50
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-LOG_PREFIX = "[MicrosoftDefenderForCloudEventCollector]"
 
 """ CLIENT CLASS """
 
@@ -69,8 +68,6 @@ class MsClient:
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {"api-version": API_VERSION}
         events: list = []
-        demisto.debug(f"{LOG_PREFIX} Fetching events with last_run={last_run}")
-
         response = self.ms_client.http_request(
             method="GET",
             url_suffix=cmd_url,
@@ -79,45 +76,22 @@ class MsClient:
             resource=Resources.management_azure,
         )
         curr_events = response.get("value", [])
-        demisto.debug(f"{LOG_PREFIX} API returned {len(curr_events)} events in first page.")
 
         curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
         if check_events_were_filtered_out(curr_events, curr_filtered_events):
-            demisto.debug(f"{LOG_PREFIX} Events were filtered in first page, returning {len(curr_filtered_events)} events.")
             return curr_filtered_events
 
         events.extend(curr_filtered_events)
 
-        page_count = 1
         while nextLink := response.get("nextLink", None):
-            page_count += 1
             response = self.ms_client.http_request(method="GET", full_url=nextLink)
             curr_events = response.get("value", [])
-            demisto.debug(f"{LOG_PREFIX} API returned {len(curr_events)} events in page {page_count}.")
             curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
             events.extend(curr_filtered_events)
             if check_events_were_filtered_out(curr_events, curr_filtered_events):
-                demisto.debug(f"{LOG_PREFIX} Events were filtered in page {page_count}, stopping pagination.")
                 break
 
-        demisto.debug(f"{LOG_PREFIX} Total events collected: {len(events)} from {page_count} page(s).")
         return events
-
-
-def get_alert_name(event: dict) -> str:
-    """
-    Extracts the alert name (GUID) from an event.
-    The 'name' field contains just the alert GUID, while 'id' contains the full resource path
-    which can differ by location (e.g., centralus vs eastus2) for the same alert.
-    Falls back to 'id' if 'name' is not present.
-
-    Args:
-        event (dict): The event dictionary from the API
-
-    Returns:
-        str: The alert name/GUID, the id, or empty string if neither found
-    """
-    return event.get("name") or event.get("id", "") or ""
 
 
 def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
@@ -129,22 +103,14 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
         (list): A list with all the duplicates from lastrun filtered out
     """
     if not last_run:
-        demisto.debug(f"{LOG_PREFIX} No last_run provided, returning all {len(events)} events without filtering.")
         return events
-
-    last_run_time = last_run.get("last_run", "")
-    dup_names = last_run.get("dup_digested_time_id", [])
-    demisto.debug(f"{LOG_PREFIX} Filtering events with last_run_time={last_run_time}, dup_names count={len(dup_names)}")
-
-    filtered_events = [
+    events = [
         event
         for event in events
-        if event.get("properties", {}).get("startTimeUtc", "") > last_run_time
-        or (event.get("properties", {}).get("startTimeUtc", "") == last_run_time and get_alert_name(event) not in dup_names)
+        if event.get("properties", {}).get("startTimeUtc", "") >= last_run.get("last_run", "")
+        and event.get("id", "") not in last_run.get("dup_digested_time_id", [])
     ]
-
-    demisto.debug(f"{LOG_PREFIX} Filtered {len(events)} events down to {len(filtered_events)} events.")
-    return filtered_events
+    return events
 
 
 def check_events_were_filtered_out(events: list, filtered_events: list) -> bool:
@@ -163,8 +129,8 @@ def test_module(client: MsClient):  # pragma: no cover
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    events_res = client.get_event_list_basic()
-    if "value" in events_res:
+    evetns_res = client.get_event_list_basic()
+    if "value" in evetns_res:
         demisto.results("ok")
 
 
@@ -176,12 +142,9 @@ def get_events(client: MsClient, last_run: dict, limit: int) -> tuple:
     Returns:
         (tuple): (events_list, CommandResults)
     """
-    demisto.debug(f"{LOG_PREFIX} get_events called with last_run={last_run}, limit={limit}")
     events_list = client.get_event_list(last_run)
-    demisto.debug(f"{LOG_PREFIX} get_events received {len(events_list)} events from client")
 
     if limit and len(events_list) > limit:
-        demisto.debug(f"{LOG_PREFIX} Limiting events from {len(events_list)} to {limit}")
         events_list = events_list[-limit:]
 
     outputs = []
@@ -225,23 +188,15 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
     Returns:
         The next run for the next fetch-event command.
     """
-    demisto.debug(f"{LOG_PREFIX} find_next_run called with {len(events_list)} events, last_run={last_run}")
     if not events_list:
-        demisto.debug(f"{LOG_PREFIX} No events in list, returning previous last_run")
         return last_run
 
-    # Sort events by startTimeUtc descending to ensure we get the newest event's timestamp
-    # This prevents issues when the API returns events in an unexpected order
-    sorted_events = sorted(events_list, key=lambda x: x.get("properties", {}).get("startTimeUtc", ""), reverse=True)
-
-    next_run = sorted_events[0].get("properties", {}).get("startTimeUtc", "")
-    # Use alert name (GUID) instead of full id for deduplication
-    # This prevents duplicates when the same alert appears from different locations (e.g., centralus vs eastus2)
-    names_same_next_run_list = [
-        get_alert_name(event) for event in sorted_events if event.get("properties", {}).get("startTimeUtc") == next_run
+    next_run = events_list[0].get("properties", {}).get("startTimeUtc", "")
+    id_same_next_run_list = [
+        event.get("id") for event in events_list if event.get("properties", {}).get("startTimeUtc") == next_run
     ]
-    demisto.info(f"{LOG_PREFIX} Setting next run time to {next_run}, alert names with same time are {names_same_next_run_list}.")
-    return {"last_run": next_run, "dup_digested_time_id": names_same_next_run_list}
+    demisto.info(f"Setting next run time to {next_run}, events with same time are {id_same_next_run_list}.")
+    return {"last_run": next_run, "dup_digested_time_id": id_same_next_run_list}
 
 
 def fetch_events(client: MsClient, last_run: dict) -> list:
@@ -253,7 +208,7 @@ def fetch_events(client: MsClient, last_run: dict) -> list:
         events: The list of fetched events.
     """
     events = client.get_event_list(last_run)
-    demisto.info(f"{LOG_PREFIX} Fetched {len(events)} events.")
+    demisto.info(f"Fetched {len(events)} events.")
     return events
 
 
@@ -265,10 +220,8 @@ def add_time_key_to_events(events: list) -> list:
     Returns:
         list: The events with the _time key.
     """
-    demisto.debug(f"{LOG_PREFIX} Adding _time key to {len(events)} events")
     for event in events:
-        time_generated = event.get("properties", {}).get("timeGeneratedUtc")
-        event["_time"] = time_generated or event.get("properties", {}).get("startTimeUtc", "")
+        event["_time"] = event.get("properties").get("timeGeneratedUtc")
     return events
 
 
@@ -280,12 +233,7 @@ def handle_last_run(first_fetch_time: str) -> dict:
     Returns:
         The last run object.
     """
-    existing_last_run = demisto.getLastRun()
-    if existing_last_run:
-        demisto.debug(f"{LOG_PREFIX} Using existing last_run from previous execution: {existing_last_run}")
-        return existing_last_run
-    demisto.debug(f"{LOG_PREFIX} No existing last_run found, initializing with first_fetch_time: {first_fetch_time}")
-    return {
+    return demisto.getLastRun() or {
         "last_run": first_fetch_time,
         "dup_digested_time_id": [],
     }
@@ -325,7 +273,7 @@ def main() -> None:  # pragma: no cover
 
     first_fetch_time_strftime = first_fetch_time.strftime(DATE_FORMAT)
 
-    demisto.debug(f"{LOG_PREFIX} Command being called is {command}")
+    demisto.debug(f"Command being called is {command}")
     try:
         client = MsClient(
             tenant_id=tenant,
@@ -361,16 +309,12 @@ def main() -> None:  # pragma: no cover
                 should_push_events = True
                 events = fetch_events(client=client, last_run=last_run)
 
-            demisto.debug(f"{LOG_PREFIX} Before adding _time key, events count: {len(events)}")
             events = add_time_key_to_events(events)
 
             if should_push_events:
-                next_run = find_next_run(events, last_run)
-                demisto.debug(f"{LOG_PREFIX} Sending {len(events)} events to XSIAM")
+                # saves next_run for the time fetch-events is invoked
+                demisto.setLastRun(find_next_run(events, last_run))
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                # saves next_run only after events are successfully sent to prevent data loss
-                demisto.debug(f"{LOG_PREFIX} Setting next_run to: {next_run}")
-                demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:

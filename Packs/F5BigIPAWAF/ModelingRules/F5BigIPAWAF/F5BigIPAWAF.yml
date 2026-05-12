@@ -4,5 +4,3 @@ name: F5 BIG-IP Advanced WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

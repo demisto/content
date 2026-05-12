@@ -4,5 +4,3 @@ name: Corelight Zeek Modeling Rules
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

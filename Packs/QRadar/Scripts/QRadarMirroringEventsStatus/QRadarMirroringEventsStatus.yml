@@ -11,11 +11,12 @@ tags:
 - dynamic-section
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.0.0
 tests:
 - No tests
 supportedModules:
-- agentix
-- xsiam
-- edr
+- X1
+- X3
+- X5
+- ENT_PLUS

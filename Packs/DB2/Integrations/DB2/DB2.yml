@@ -1,5 +1,4 @@
 category: Database
-provider: IBM
 commonfields:
   id: DB2
   version: -1

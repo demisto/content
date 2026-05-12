@@ -25,19 +25,19 @@
     "type": "user",
     "id": "14342567114",
     "name": "Andrew Shamah",
-    "login": "ashamah@example.com"
+    "login": "ashamah@paloaltonetworks.com"
   },
   "modified_by": {
   "type": "user",
     "id": "14342567114",
     "name": "Andrew Shamah",
-    "login": "ashamah@example.com"
+    "login": "ashamah@paloaltonetworks.com"
   },
   "owned_by": {
     "type": "user",
     "id": "14342567114",
     "name": "Andrew Shamah",
-    "login": "ashamah@example.com"
+    "login": "ashamah@paloaltonetworks.com"
   },
   "shared_link": "None",
   "parent": "None",

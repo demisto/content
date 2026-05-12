@@ -1,6 +1,5 @@
 category: IT Services
-provider: Qualys
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -400,7 +399,7 @@ script:
     - contextPath: QualysFIM.Assets.created
       description: Date the asset was created.
       type: String
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.11.10.116439
   isfetch: true
   runonce: false
   script: '-'

@@ -5,6 +5,12 @@ import pytest
 
 TEST_MODULE_DATA = [
     ("true_key", {"message": "pong", "expiration": "2025-12-31", "offering": "enterprise"}, 200, "ok"),
+    (
+        "false_key",
+        {"message": "pong", "expiration": "2020-12-31", "offering": "community"},
+        200,
+        "Invalid API Offering (community)or Expiration Date (2020-12-31 00:00:00)",
+    ),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),
     (
@@ -22,14 +28,12 @@ TEST_MODULE_DATA = [
 ]
 
 GET_IP_REPUTATION_SCORE_DATA = [
-    ("unknown", 0),
-    ("suspicious", 2),
+    ("unknown", 2),
+    ("", 0),
     ("benign", 1),
     ("malicious", 3),
     ("dummy", 0),
 ]
-
-GET_IP_TAG_NAMES_DATA = [([], []), ([{"name": "Mirai"}], ["Mirai"])]
 
 FORMAT_TIMESTAMP_DATA = [("2023-11-23", "2023-11-23T00:00:00Z")]
 
@@ -37,13 +41,11 @@ FORMAT_INDICATOR_DATA = [
     (
         {
             "ip": "1.2.3.4",
-            "internet_scanner_intelligence": {
-                "last_seen": "2000-01-01",
-                "first_seen": "1911-12-12",
-                "tags": [],
-                "classification": "benign",
-                "metadata": {"source_country": "US"},
-            },
+            "last_seen": "2000-01-01",
+            "first_seen": "1911-12-12",
+            "tags": [],
+            "classification": "benign",
+            "metadata": {"country_code": "US"},
         },
         "GREEN",
         {
@@ -52,20 +54,17 @@ FORMAT_INDICATOR_DATA = [
             "fields": {
                 "firstseenbysource": "1911-12-12T00:00:00Z",
                 "geocountry": "US",
-                "geolocation": "",
                 "lastseenbysource": "2000-01-01T00:00:00Z",
                 "tags": "INTERNET SCANNER",
                 "trafficlightprotocol": "GREEN",
             },
             "rawJSON": {
+                "classification": "benign",
+                "first_seen": "1911-12-12",
                 "ip": "1.2.3.4",
-                "internet_scanner_intelligence": {
-                    "classification": "benign",
-                    "first_seen": "1911-12-12",
-                    "last_seen": "2000-01-01",
-                    "metadata": {"source_country": "US"},
-                    "tags": [],
-                },
+                "last_seen": "2000-01-01",
+                "metadata": {"country_code": "US"},
+                "tags": [],
             },
             "score": 1,
         },
@@ -73,13 +72,11 @@ FORMAT_INDICATOR_DATA = [
     (
         {
             "ip": "1.2.3.4",
-            "internet_scanner_intelligence": {
-                "last_seen": "2000-01-01",
-                "first_seen": "1911-12-12",
-                "tags": [{"name": "Mirai"}],
-                "classification": "benign",
-                "metadata": {"source_country": "US"},
-            },
+            "last_seen": "2000-01-01",
+            "first_seen": "1911-12-12",
+            "tags": ["Mirai"],
+            "classification": "benign",
+            "metadata": {"country_code": "US"},
         },
         "GREEN",
         {
@@ -88,20 +85,17 @@ FORMAT_INDICATOR_DATA = [
             "fields": {
                 "firstseenbysource": "1911-12-12T00:00:00Z",
                 "geocountry": "US",
-                "geolocation": "",
                 "lastseenbysource": "2000-01-01T00:00:00Z",
                 "tags": "INTERNET SCANNER,Mirai",
                 "trafficlightprotocol": "GREEN",
             },
             "rawJSON": {
+                "classification": "benign",
+                "first_seen": "1911-12-12",
                 "ip": "1.2.3.4",
-                "internet_scanner_intelligence": {
-                    "classification": "benign",
-                    "first_seen": "1911-12-12",
-                    "last_seen": "2000-01-01",
-                    "metadata": {"source_country": "US"},
-                    "tags": [{"name": "Mirai"}],
-                },
+                "last_seen": "2000-01-01",
+                "metadata": {"country_code": "US"},
+                "tags": ["Mirai"],
             },
             "score": 1,
         },
@@ -122,32 +116,23 @@ VALID_QUERY = {
     "data": [
         {
             "ip": "1.1.1.1",
-            "internet_scanner_intelligence": {
-                "bot": False,
-                "vpn": False,
-                "vpn_service": "N/A",
-                "spoofable": False,
-                "raw_data": {},
-                "first_seen": "2024-01-28",
-                "last_seen": "2024-01-30",
-                "seen": True,
-                "tags": [],
-                "actor": "unknown",
-                "classification": "unknown",
-                "cve": [],
-                "metadata": {
-                    "source_country": "US",
-                    "latitude": "37.774929",
-                    "longitude": "-122.419416",
-                },
-            },
+            "bot": False,
+            "vpn": False,
+            "vpn_service": "N/A",
+            "spoofable": False,
+            "raw_data": {},
+            "first_seen": "2024-01-28",
+            "last_seen": "2024-01-30",
+            "seen": True,
+            "tags": [],
+            "actor": "unknown",
+            "classification": "unknown",
+            "cve": [],
         }
     ],
-    "request_metadata": {
-        "complete": True,
-        "count": 1,
-        "scroll": "scroll_token",
-    },
+    "message": "ok",
+    "query": "last_seen:1d",
+    "scroll": "scroll_token",
 }
 
 COMMAND_OUTPUT = [
@@ -156,35 +141,26 @@ COMMAND_OUTPUT = [
         "Value": "1.1.1.1",
         "fields": {
             "firstseenbysource": "2024-01-28T00:00:00Z",
-            "geocountry": "US",
-            "geolocation": "37.774929,-122.419416",
+            "geocountry": "",
             "lastseenbysource": "2024-01-30T00:00:00Z",
             "tags": "INTERNET SCANNER",
             "trafficlightprotocol": None,
         },
         "rawJSON": {
+            "actor": "unknown",
+            "bot": False,
+            "classification": "unknown",
+            "cve": [],
+            "first_seen": "2024-01-28",
             "ip": "1.1.1.1",
-            "internet_scanner_intelligence": {
-                "bot": False,
-                "vpn": False,
-                "vpn_service": "N/A",
-                "spoofable": False,
-                "raw_data": {},
-                "first_seen": "2024-01-28",
-                "last_seen": "2024-01-30",
-                "seen": True,
-                "tags": [],
-                "actor": "unknown",
-                "classification": "unknown",
-                "cve": [],
-                "metadata": {
-                    "source_country": "US",
-                    "latitude": "37.774929",
-                    "longitude": "-122.419416",
-                },
-            },
+            "last_seen": "2024-01-30",
+            "seen": True,
+            "spoofable": False,
+            "tags": [],
+            "vpn": False,
+            "vpn_service": "N/A",
         },
-        "score": 0,
+        "score": 2,
     }
 ]
 
@@ -217,8 +193,7 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
     """
     Tests test_module for GreyNoise integration.
     """
-    api_config = GreyNoiseIndicator.APIConfig(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
-    client = GreyNoiseIndicator.Client(api_config)
+    client = GreyNoiseIndicator.Client(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
     if isinstance(api_key, str) and api_key == "true_key":
         mocker.patch("greynoise.GreyNoise._request", return_value=api_response)
         response = GreyNoiseIndicator.test_module(client)
@@ -237,15 +212,6 @@ def test_get_ip_reputation_score(input_data, expected_output):
     Tests various combinations of GreyNoise classification data.
     """
     response = GreyNoiseIndicator.get_ip_reputation_score(input_data)
-    assert response == expected_output
-
-
-@pytest.mark.parametrize("input_data, expected_output", GET_IP_TAG_NAMES_DATA)
-def test_get_ip_tag_names(input_data, expected_output):
-    """
-    Tests various combinations of GreyNoise classification data.
-    """
-    response = GreyNoiseIndicator.get_ip_tag_names(input_data)
     assert response == expected_output
 
 
@@ -281,8 +247,7 @@ def test_get_indicators_command(args, api_response, status_code, expected_output
     """
     Tests various combinations of valid and invalid responses for query command.
     """
-    api_config = GreyNoiseIndicator.APIConfig("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
-    client = GreyNoiseIndicator.Client(api_config)
+    client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
     response = GreyNoiseIndicator.get_indicators_command(client, args)
@@ -294,8 +259,7 @@ def test_fetch_indicators_command(args, api_response, status_code, expected_outp
     """
     Tests various combinations of valid and invalid responses for query command.
     """
-    api_config = GreyNoiseIndicator.APIConfig("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
-    client = GreyNoiseIndicator.Client(api_config)
+    client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
     response = GreyNoiseIndicator.fetch_indicators_command(client, args)
@@ -307,8 +271,7 @@ def test_fetch_indicators(test_case, api_response, status_code, expected_output,
     """
     Tests various combinations of valid and invalid responses for query command.
     """
-    api_config = GreyNoiseIndicator.APIConfig("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
-    client = GreyNoiseIndicator.Client(api_config)
+    client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
     params = {}

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Commvault
 commonfields:
   id: CommvaultSecurityIQ
   version: -1

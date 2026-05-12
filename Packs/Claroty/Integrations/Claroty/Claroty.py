@@ -5,11 +5,15 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 import json
-
+from distutils.util import strtobool
 from typing import Any
 
 import dateparser
 import requests
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 class Filter:
@@ -38,7 +42,6 @@ ALERT_CTD_FIELD_TO_DEMISTO_FIELD = {
     "alert_indicators": "Indicator",
     "category__": "Category",
     "timestamp": "Timestamp",
-    "initial_arr_flow_completed": "InitialArrFlowCompleted",
 }
 ASSET_CTD_FIELD_TO_DEMISTO_FIELD = {
     "id": "AssetID",
@@ -71,7 +74,6 @@ DEFAULT_ALERT_FIELD_LIST = [
     "alert_indicators",
     "actionable_assets",
     "category",
-    "initial_arr_flow_completed",
 ]
 DEFAULT_ASSET_FIELD_LIST = [
     "id",
@@ -155,9 +157,6 @@ class Client(BaseClient):
 
         if bool(demisto.params().get("exclude_resolved_alerts", False)):
             extra_filters_list = _add_exclude_resolved_alerts_filters(extra_filters_list)
-
-        if argToBoolean(demisto.params().get("include_only_arr_completed_alerts", False)):
-            extra_filters_list = _add_include_only_arr_completed_alerts_filters(extra_filters_list)
 
         return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
 
@@ -259,7 +258,7 @@ def get_assets_command(client: Client, args: dict) -> tuple:
 
     result = client.get_assets(relevant_fields, sort_by, filters, limit)
 
-    should_enrich_assets = argToBoolean(args.get("should_enrich_assets", "False"))
+    should_enrich_assets = strtobool(args.get("should_enrich_assets", "False"))
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
         relevant_fields.append("insights")
@@ -337,11 +336,8 @@ def query_alerts_command(client: Client, args: dict) -> tuple:
     if alert_severity:
         filters.append(Filter("severity", get_severity_filter(alert_severity), "gte"))
 
-    if argToBoolean(args.get("exclude_resolved_alerts", "False")):
+    if strtobool(args.get("exclude_resolved_alerts", "False")):
         filters = _add_exclude_resolved_alerts_filters(filters)
-
-    if argToBoolean(args.get("include_only_arr_completed_alerts", "False")):
-        filters = _add_include_only_arr_completed_alerts_filters(filters)
 
     site_id = demisto.params().get("site_id", None)
     if site_id:
@@ -364,14 +360,6 @@ def _add_exclude_resolved_alerts_filters(filters: list[Filter]):
         return [Filter("resolved", "false", "exact")]
 
     filters += [Filter("resolved", "false", "exact")]
-    return filters
-
-
-def _add_include_only_arr_completed_alerts_filters(filters: list[Filter]):
-    if not filters:
-        return [Filter("initial_arr_flow_completed", "true", "exact")]
-
-    filters.append(Filter("initial_arr_flow_completed", "true", "exact"))
     return filters
 
 

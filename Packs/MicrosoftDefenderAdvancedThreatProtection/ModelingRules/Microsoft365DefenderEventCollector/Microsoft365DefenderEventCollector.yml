@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: Microsoft 365 Defender
 toversion: 6.9.9
-supportedModules:
-- xsiam

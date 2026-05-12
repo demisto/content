@@ -60,46 +60,6 @@ DEFAULT_PAGE_NUMBER = 1
 """ HELPER FUNCTIONS """
 
 
-def github_delete_file_command():
-    args = demisto.args()
-    commit_message = args.get("commit_message")
-    path_to_file = args.get("path_to_file")
-    branch = args.get("branch_name")
-
-    # 1. Get the file's current SHA
-    # Endpoint: GET /repos/{owner}/{repo}/contents/{path}
-    get_url = f"{FILE_SUFFIX}/{path_to_file}"
-    try:
-        response = http_request("GET", get_url)
-        file_sha = response.get("sha")
-    except Exception as e:
-        # Handle file not found (404) or other API errors
-        raise DemistoException(f"Could not retrieve file SHA for deletion: {e}")
-
-    # 2. Build the DELETE request body
-    delete_body = {"message": commit_message, "sha": file_sha, "branch": branch}
-
-    # 3. Delete the file by sending a DELETE request with the commit info
-    # Endpoint: DELETE /repos/{owner}/{repo}/contents/{path}
-    try:
-        delete_url = f"{FILE_SUFFIX}/{path_to_file}"
-        response = http_request("DELETE", delete_url, data=delete_body)
-
-        # Format the command result for XSOAR
-        hr_output = f"Successfully deleted file **{path_to_file}** from branch **{branch}**."
-        return_results(
-            CommandResults(
-                readable_output=hr_output,
-                outputs_prefix="GitHub.File",
-                outputs_key_field="path",
-                outputs={"path": path_to_file, "sha": response.get("commit", {}).get("sha"), "deleted": True},
-            )
-        )
-
-    except Exception as e:
-        raise DemistoException(f"Failed to delete file on GitHub: {e}")
-
-
 def create_jwt(private_key: str, integration_id: str):
     """
     Create a JWT token used for getting access token. It's needed for github bots.
@@ -1593,16 +1553,8 @@ def list_files_command():
 
     res = http_request(method="GET", url_suffix=suffix, params=params)
 
-    # We may get either a list of dicts or a single dict as a result from the API call above
-    # Modify object type to allow iteration below to work.
-    if isinstance(res, dict):
-        results = []
-        results.append(res)
-    else:
-        results = res
-
     ec_object = []
-    for file in results:
+    for file in res:
         ec_object.append(
             {
                 "Type": file.get("type"),
@@ -2015,8 +1967,7 @@ def github_trigger_workflow_command():
             inputs (str): The inputs of the workflow.
 
         Returns:
-            CommandResults with the workflow run details when the API returns a JSON body,
-            or a plain success message when the API returns 204 No Content.
+            CommandResults object with informative printout if trigger the workflow succeeded or not.
     """
     args = demisto.args()
     owner = args.get("owner") or USER
@@ -2026,76 +1977,16 @@ def github_trigger_workflow_command():
     inputs = json.loads(args.get("inputs", "{}"), strict=False)
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
     data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
-    # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
-    if isinstance(response, dict):
-        outputs = {
-            "ID": response.get("workflow_run_id") or response.get("id"),
-            "RunUrl": response.get("run_url") or response.get("url"),
-            "HtmlUrl": response.get("html_url"),
-        }
-        return_results(
-            CommandResults(
-                outputs_prefix="GitHub.WorkflowRun",
-                outputs_key_field="ID",
-                outputs=outputs,
-                raw_response=response,
-                readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
-            )
-        )
-    else:
+
+    if response.status_code == 204:
         return_results(CommandResults(readable_output="Workflow triggered successfully."))
-
-
-def github_get_workflow_run_command():
-    """Gets a specific workflow run (dispatched event) in a repository.
-
-    Args:
-        owner (str): The GitHub owner (organization or username) of the repository.
-        repository (str): The GitHub repository name.
-        run_id (str): The unique identifier of the workflow run.
-
-    Returns:
-        CommandResults with the workflow run details.
-    """
-    args = demisto.args()
-    owner = args.get("owner") or USER
-    repository = args.get("repository") or REPOSITORY
-    run_id = args.get("run_id")
-
-    suffix = f"/repos/{owner}/{repository}/actions/runs/{run_id}"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
-
-    response = http_request("GET", url_suffix=suffix, headers=headers)
-
-    output = {
-        "ID": response.get("id"),
-        "Name": response.get("name"),
-        "HeadBranch": response.get("head_branch"),
-        "HeadSha": response.get("head_sha"),
-        "DisplayTitle": response.get("display_title"),
-        "RunNumber": response.get("run_number"),
-        "Event": response.get("event"),
-        "Status": response.get("status"),
-        "Conclusion": response.get("conclusion"),
-        "WorkflowID": response.get("workflow_id"),
-        "CreatedAt": response.get("created_at"),
-        "UpdatedAt": response.get("updated_at"),
-        "Url": response.get("url"),
-        "HtmlUrl": response.get("html_url"),
-    }
-
-    return_results(
-        CommandResults(
-            outputs_prefix="GitHub.WorkflowRun",
-            outputs_key_field="ID",
-            outputs=output,
-            raw_response=response,
-            readable_output=tableToMarkdown(f"Workflow Run {run_id}", output, removeNull=True),
+    else:
+        return_results(
+            CommandResults(raw_response=response, readable_output=f"Failed to trigger workflow. {response.json().get('message')}")
         )
-    )
 
 
 def github_cancel_workflow_command():
@@ -2184,49 +2075,11 @@ def github_list_workflows_command():
     )
 
 
-VALID_CREDENTIAL_PREFIXES = ("ghp_", "github_pat_", "gho_", "ghu_", "ghr_")
-
-
-def github_revoke_credentials_command() -> None:
-    """Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API.
-
-    This endpoint is unauthenticated by design -- sending an Authorization header returns 403.
-    Accepts up to 1000 tokens per request. Rate-limited to 60 unauthenticated requests/hour.
-    """
-    credentials: list[str] = argToList(demisto.args().get("credentials"))
-    if not credentials:
-        raise DemistoException("The 'credentials' argument is required and must contain at least one token.")
-
-    if len(credentials) > 1000:
-        raise DemistoException(f"The GitHub API accepts a maximum of 1000 credentials per request. Received {len(credentials)}.")
-
-    invalid = [c for c in credentials if not c.startswith(VALID_CREDENTIAL_PREFIXES)]
-    if invalid:
-        raise DemistoException(
-            f"{len(invalid)} credential(s) have invalid prefixes. " f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
-        )
-
-    headers = {"Accept": "application/vnd.github+json"}
-    response = http_request("POST", "/credentials/revoke", data={"credentials": credentials}, headers=headers)
-
-    if response.status_code == 202:
-        return_results(
-            CommandResults(
-                readable_output=f"Successfully submitted {len(credentials)} credential(s) for revocation.",
-            )
-        )
-    else:
-        raise DemistoException(
-            f"Unexpected response from GitHub credential revocation API: [{response.status_code}] {response.reason}"
-        )
-
-
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 COMMANDS = {
     "test-module": test_module,
     "fetch-incidents": fetch_incidents_command,
-    # Deprecated commands (kept for backward compatibility)
     "GitHub-create-issue": create_command,
     "GitHub-close-issue": close_command,
     "GitHub-update-issue": update_command,
@@ -2271,55 +2124,6 @@ COMMANDS = {
     "GitHub-trigger-workflow": github_trigger_workflow_command,
     "GitHub-cancel-workflow": github_cancel_workflow_command,
     "GitHub-list-workflows": github_list_workflows_command,
-    "GitHub-delete-file": github_delete_file_command,
-    # New lowercase kebab-case commands (canonical names)
-    "github-create-issue": create_command,
-    "github-close-issue": close_command,
-    "github-update-issue": update_command,
-    "github-list-all-issues": list_all_command,
-    "github-list-all-projects": list_all_projects_command,
-    "github-search-issues": search_command,
-    "github-get-download-count": get_download_count,
-    "github-get-stale-prs": get_stale_prs_command,
-    "github-get-branch": get_branch_command,
-    "github-create-branch": create_branch_command,
-    "github-get-team-membership": get_team_membership_command,
-    "github-request-review": request_review_command,
-    "github-create-comment": create_comment_command,
-    "github-list-issue-comments": list_issue_comments_command,
-    "github-list-pr-files": list_pr_files_command,
-    "github-list-pr-reviews": list_pr_reviews_command,
-    "github-get-commit": get_commit_command,
-    "github-add-label": add_label_command,
-    "github-get-pull-request": get_pull_request_command,
-    "github-list-teams": list_teams_command,
-    "github-delete-branch": delete_branch_command,
-    "github-list-pr-review-comments": list_pr_review_comments_command,
-    "github-update-pull-request": update_pull_request_command,
-    "github-is-pr-merged": is_pr_merged_command,
-    "github-create-pull-request": create_pull_request_command,
-    "github-get-github-actions-usage": get_github_actions_usage,
-    "github-list-files": list_files_command,
-    "github-get-file-content": get_file_content_from_repo,
-    "github-search-code": search_code_command,
-    "github-list-team-members": list_team_members_command,
-    "github-list-branch-pull-requests": list_branch_pull_requests_command,
-    "github-get-check-run": get_github_get_check_run,
-    "github-commit-file": commit_file_command,
-    "github-create-release": create_release_command,
-    "github-list-issue-events": get_issue_events_command,
-    "github-add-issue-to-project-board": add_issue_to_project_board_command,
-    "github-get-path-data": get_path_data,
-    "github-releases-list": github_releases_list_command,
-    "github-update-comment": github_update_comment_command,
-    "github-delete-comment": github_delete_comment_command,
-    "github-add-assignee": github_add_assignee_command,
-    "github-trigger-workflow": github_trigger_workflow_command,
-    "github-cancel-workflow": github_cancel_workflow_command,
-    "github-list-workflows": github_list_workflows_command,
-    "github-get-workflow-run": github_get_workflow_run_command,
-    "github-delete-file": github_delete_file_command,
-    "github-revoke-credentials": github_revoke_credentials_command,
 }
 
 

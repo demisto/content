@@ -4,5 +4,3 @@ name: AWS WAF Modeling Rule
 rules: ''
 schema: ''
 tags: AWS_WAF
-supportedModules:
-- xsiam

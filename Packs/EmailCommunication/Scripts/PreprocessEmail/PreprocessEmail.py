@@ -1,84 +1,12 @@
-import html as html_module
 import json
 import random
 import re
 from datetime import datetime as dt
-from zoneinfo import ZoneInfo
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ERROR_TEMPLATE = "ERROR: PreprocessEmail - {function_name}: {reason}"
-
-ALLOWED_EMAIL_TAGS = {
-    "p",
-    "br",
-    "div",
-    "span",
-    "b",
-    "i",
-    "u",
-    "a",
-    "img",
-    "table",
-    "tr",
-    "td",
-    "th",
-    "thead",
-    "tbody",
-    "ul",
-    "ol",
-    "li",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "pre",
-    "code",
-    "blockquote",
-    "strong",
-    "em",
-    "hr",
-    "font",
-    "center",
-    "small",
-    "big",
-    "sub",
-    "sup",
-    "dl",
-    "dt",
-    "dd",
-    "caption",
-}
-
-ALLOWED_EMAIL_ATTRIBUTES: dict[str, set[str]] = {
-    "*": {"style", "class", "id", "dir", "align", "width", "height", "bgcolor", "valign"},
-    "a": {"href", "target"},
-    "img": {"src", "alt", "title"},
-    "td": {"colspan", "rowspan"},
-    "th": {"colspan", "rowspan", "scope"},
-    "font": {"color", "face", "size"},
-    "table": {"border", "cellpadding", "cellspacing"},
-}
-
-
-def sanitize_html_body(html_body: str) -> str:
-    """Sanitize email body HTML using an allowlist of tags and attributes.
-
-    When nh3 is available, strips disallowed tags and attributes while preserving safe ones.
-    When nh3 is not available, returns the HTML as-is since full escaping
-    would break legitimate formatting in an HTML rendering context.
-    """
-    try:
-        import nh3
-
-        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS, attributes=ALLOWED_EMAIL_ATTRIBUTES)  # pylint: disable=no-member
-    except ImportError:
-        demisto.debug("nh3 is not available; HTML sanitization skipped")
-        return html_body
-
 
 # List of strings that mail clients use to separate new message content from previous thread messages when replying
 QUOTE_MARKERS = [
@@ -88,18 +16,13 @@ QUOTE_MARKERS = [
 ]
 
 
-def get_current_time_in_timezone(tz_name: str = "UTC") -> str:
+def get_utc_now():
+    """A wrapper function for datetime.utcnow
+    Helps handle tests
+    Returns:
+        datetime: current UTC time
     """
-    Returns current time formatted in the requested timezone.
-    Falls back to UTC if timezone is invalid.
-    """
-    try:
-        tz = ZoneInfo(tz_name)
-    except Exception:
-        demisto.debug(f"Invalid timezone '{tz_name}' provided. Falling back to UTC.")
-        tz = ZoneInfo("UTC")
-
-    return dt.now(tz).isoformat()
+    return dt.utcnow()
 
 
 def get_query_window():
@@ -150,15 +73,13 @@ def create_email_html(email_html="", entry_id_list=[]):
         saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
         if "-attachmentName-" in image_name:
             content_id = image_name.split("-attachmentName-", 1)[0]
-        escaped_image_name = re.escape(image_name)
-        escaped_content_id = re.escape(content_id)
-        if re.search(rf'(src="cid:{escaped_content_id}")', email_html):
+        if re.search(rf'(src="cid:{content_id}")', email_html):
             email_html = re.sub(
-                f'src="cid:{escaped_content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
+                f'src="cid:{content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
             )
-        elif re.search(f'src="[^>]+"(?=[^>]+alt="{escaped_image_name}")', email_html):
+        elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+"(?=[^>]+alt="{escaped_image_name}")',
+                f'src="[^>]+"(?=[^>]+alt="{image_name}")',
                 f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}",
                 email_html,
             )
@@ -237,16 +158,16 @@ def set_email_reply(email_from, email_to, email_cc, html_body, attachments):
 
     """
     email_reply = f"""
-    From: *{html_module.escape(email_from or '')}*
-    To: *{html_module.escape(email_to or '')}*
-    CC: *{html_module.escape(email_cc or '')}*
+    From: *{email_from}*
+    To: *{email_to}*
+    CC: *{email_cc}*
 
     """
     if attachments:
-        attachment_names = [html_module.escape(attachment.get("name") or "") for attachment in attachments]
+        attachment_names = [attachment.get("name", "") for attachment in attachments]
         email_reply += f"Attachments: {attachment_names}\n\n"
 
-    email_reply += f"{sanitize_html_body(html_body or '')}\n"
+    email_reply += f"{html_body}\n"
 
     return email_reply
 
@@ -451,7 +372,6 @@ def create_thread_context(
     email_to,
     incident_id,
     attachments,
-    time_zone,
 ):
     """Creates a new context entry to store the email in the incident context.  Checks current threads
     stored on the incident to get the thread number associated with this new message, if present.
@@ -469,7 +389,6 @@ def create_thread_context(
         email_to: The address the email was delivered to
         incident_id: ID of the related incident
         attachments: File attachments from the email
-        time_zone: timezone used for email thread timestamps
     """
     thread_number = ""
     thread_found = False
@@ -524,7 +443,7 @@ def create_thread_context(
             "EmailTo": email_to,
             "EmailAttachments": f"{attachment_names}",
             "MessageDirection": "inbound",
-            "MessageTime": get_current_time_in_timezone(time_zone),
+            "MessageTime": get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC"),
         }
         # Add email message to context key
         try:
@@ -559,7 +478,7 @@ def main():
     email_latest_message = custom_fields.get("emaillatestmessage", "")
 
     reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
-    time_zone = args.get("timezone", "UTC")
+
     try:
         email_related_incident_code = email_subject.split("<")[1].split(">")[0]
         email_original_subject = email_subject.split("<")[-1].split(">")[1].strip()
@@ -606,7 +525,6 @@ def main():
                 email_to,
                 email_related_incident,
                 attachments,
-                time_zone,
             )
 
         # Return False - tell pre-processing to not create new incident

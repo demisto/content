@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Microsoft
-sectionorder:
+sectionOrder:
 - Connect
 commonfields:
   id: AzureDataExplorer

@@ -1,5 +1,4 @@
 category: Network Security
-provider: Netskope
 commonfields:
   id: NetskopeAPIv1
   version: -1
@@ -495,7 +494,7 @@ script:
     - contextPath: Netskope.Host.agent_status
       description: The status of the agent on the device.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: "-"

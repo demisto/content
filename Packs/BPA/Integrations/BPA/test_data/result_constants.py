@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 GET_RESULTS_NO_FILTER = {
     'PAN-OS-BPA.JobResults(val.JobID && val.JobID === obj.JobID)': {
         'JobID': '1234',

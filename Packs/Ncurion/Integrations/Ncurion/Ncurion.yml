@@ -1,5 +1,4 @@
 category: Network Security
-provider: Ncurion
 commonfields:
   id: Ncurion
   version: -1
@@ -54,7 +53,7 @@ script:
     description: Get the Ncurion Log server list.
     name: ncurion-get-log-list
     outputs: []
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isFetchSamples: true
   isfetch: true
   script: ''

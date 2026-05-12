@@ -21,6 +21,3 @@ ignore=GR107
 
 [file:RecordedFutureLists_description.md]
 ignore=DS107
-
-[file:RecordedFuture.yml]
-ignore=ST111

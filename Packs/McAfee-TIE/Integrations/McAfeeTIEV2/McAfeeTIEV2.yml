@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Trellix
 commonfields:
   id: McAfee Threat Intelligence Exchange V2
   version: -1

@@ -2,7 +2,7 @@
     "name": "FortiGate",
     "description": "Manage FortiGate Firewall",
     "support": "xsoar",
-    "currentVersion": "2.0.16",
+    "currentVersion": "2.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,20 +12,16 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "fortinet",
-        "fortigate"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
-        "agentix",
-        "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

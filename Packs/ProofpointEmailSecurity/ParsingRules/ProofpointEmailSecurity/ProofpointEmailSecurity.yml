@@ -4,5 +4,3 @@ name: Proofpoint Email Security Parsing Rule
 rules: ''
 samples: ''
 tags: []
-supportedModules:
-- xsiam

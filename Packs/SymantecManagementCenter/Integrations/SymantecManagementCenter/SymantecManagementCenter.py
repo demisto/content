@@ -6,9 +6,13 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 import json
-
+from distutils.util import strtobool
 
 import requests
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
@@ -895,14 +899,14 @@ def add_policy_content_request(
         if "ipAddresses" not in content["content"]:
             content["content"]["ipAddresses"] = []
         content["content"]["ipAddresses"] += [
-            {"ipAddress": ip, "description": description, "enabled": argToBoolean(enabled)} for ip in ips
+            {"ipAddress": ip, "description": description, "enabled": bool(strtobool(enabled))} for ip in ips
         ]
     elif urls:
         existing_urls = [x["url"].lower() for x in content["content"]["urls"]]
         if "urls" not in content["content"]:
             content["content"]["urls"] = []
         content["content"]["urls"] += [
-            {"url": url, "description": description, "enabled": argToBoolean(enabled)}
+            {"url": url, "description": description, "enabled": bool(strtobool(enabled))}
             for url in urls
             if url.lower() not in existing_urls
         ]
@@ -1161,7 +1165,7 @@ def update_policy_content_request(
                     if content_description:
                         ip["description"] = content_description
                     if content_enabled:
-                        ip["enabled"] = argToBoolean(content_enabled)
+                        ip["enabled"] = bool(strtobool(content_enabled))
     elif urls and "urls" in content["content"]:
         for url in content["content"]["urls"]:
             found_object_to_update = True
@@ -1170,7 +1174,7 @@ def update_policy_content_request(
                 if content_description:
                     url["description"] = content_description
                 if content_enabled:
-                    url["enabled"] = argToBoolean(content_enabled)
+                    url["enabled"] = bool(strtobool(content_enabled))
 
     if not found_object_to_update:
         raise Exception("Update failed - Could not find object to update.")

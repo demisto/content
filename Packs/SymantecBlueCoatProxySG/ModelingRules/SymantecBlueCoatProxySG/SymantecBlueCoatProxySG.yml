@@ -4,5 +4,3 @@ name: Symantec BlueCoat ProxySG Modeling Rules
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

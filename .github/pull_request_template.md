@@ -10,11 +10,11 @@ Make sure to register your contribution by filling the [contribution registratio
 - [ ] In Hold - (Reason for hold)
 
 ## Related Issues
-<!-- To link a Jira ticket use fixes/related: link to the issue, for example fixes: CIAC-XXXX -->
+fixes: link to the issue
 
 ## Description
-<!-- A few sentences describing the overall goals of the pull request's commits. -->
+A few sentences describing the overall goals of the pull request's commits.
 
 ## Must have
 - [ ] Tests
-- [ ] Documentation
+- [ ] Documentation 

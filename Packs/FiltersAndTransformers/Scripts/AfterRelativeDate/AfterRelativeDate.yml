@@ -18,9 +18,8 @@ tags:
 - filter
 - Condition
 timeout: '0'
-isllm: false
 type: python
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

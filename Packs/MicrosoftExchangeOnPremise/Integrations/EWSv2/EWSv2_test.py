@@ -232,10 +232,7 @@ def test_get_formatted_message_bad_header():
     msg.set_payload(body)
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
     msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
-
-    formatted_message = get_formatted_message(msg)
-    assert type(formatted_message) is bytes
-    assert body in str(formatted_message)
+    assert get_formatted_message(msg) == " Could not format message"
 
 
 def test_get_formatted_message_good_header():
@@ -1234,7 +1231,7 @@ def test_get_item_as_eml(mocker):
     )
     client = TestNormalCommands.MockClient()
 
-    get_item_as_eml(client, {"item_id": "Inbox", "target_mailbox": "test@gmail.com"})
+    get_item_as_eml(client, "Inbox", "test@gmail.com")
     mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
 
 

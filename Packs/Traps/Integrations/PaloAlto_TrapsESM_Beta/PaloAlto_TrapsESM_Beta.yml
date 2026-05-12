@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Traps ESM (Beta)
   version: -1

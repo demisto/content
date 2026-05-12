@@ -1,7 +1,7 @@
 id: Test XDR Playbook
 version: -1
 name: Test XDR Playbook
-description: Cortex XDR Test Playbook.
+description: Cortex XDR Test Playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -14,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -23,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 50
+          "x": 377.5,
+          "y": 40
         }
       }
     note: false
@@ -58,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 210
+          "x": 377.5,
+          "y": 195
         }
       }
     note: false
@@ -87,7 +86,7 @@ tasks:
       - "3"
     scriptarguments:
       gte_creation_time:
-        simple: "2010-10-10 00:00:00"
+        simple: 2010-10-10T00:00:00
       limit:
         simple: "3"
       sort_by_creation_time:
@@ -97,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 385
+          "x": 377.5,
+          "y": 370
         }
       }
     note: false
@@ -151,8 +150,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 560
+          "x": 377.5,
+          "y": 545
         }
       }
     note: false
@@ -186,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 735
+          "x": 377.5,
+          "y": 720
         }
       }
     note: false
@@ -229,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1085
+          "x": 377.5,
+          "y": 1070
         }
       }
     note: false
@@ -280,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 2135
+          "x": 377.5,
+          "y": 2120
         }
       }
     note: false
@@ -315,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 2485
+          "x": 377.5,
+          "y": 2470
         }
       }
     note: false
@@ -351,7 +350,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3010
+          "y": 3170
         }
       }
     note: false
@@ -386,7 +385,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3010
+          "y": 3170
         }
       }
     note: false
@@ -421,7 +420,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3345
+          "y": 3490
         }
       }
     note: false
@@ -473,7 +472,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3520
+          "y": 3665
         }
       }
     note: false
@@ -505,7 +504,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3695
+          "y": 3840
         }
       }
     note: false
@@ -549,7 +548,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3870
+          "y": 4015
         }
       }
     note: false
@@ -596,7 +595,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4045
+          "y": 4190
         }
       }
     note: false
@@ -640,7 +639,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4220
+          "y": 4365
         }
       }
     note: false
@@ -677,7 +676,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 4890
         }
       }
     note: false
@@ -716,7 +715,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4920
+          "y": 5065
         }
       }
     note: false
@@ -751,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4395
+          "y": 4540
         }
       }
     note: false
@@ -801,7 +800,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4570
+          "y": 4715
         }
       }
     note: false
@@ -844,7 +843,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5095
+          "y": 5240
         }
       }
     note: false
@@ -891,7 +890,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5270
+          "y": 5415
         }
       }
     note: false
@@ -940,7 +939,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 5590
         }
       }
     note: false
@@ -992,7 +991,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5620
+          "y": 5765
         }
       }
     note: false
@@ -1019,8 +1018,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 10345
+          "x": 480,
+          "y": 10870
         }
       }
     note: false
@@ -1098,8 +1097,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 910
+          "x": 377.5,
+          "y": 895
         }
       }
     note: false
@@ -1139,8 +1138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1260
+          "x": 377.5,
+          "y": 1245
         }
       }
     note: false
@@ -1176,8 +1175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1435
+          "x": 377.5,
+          "y": 1420
         }
       }
     note: false
@@ -1213,8 +1212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1610
+          "x": 377.5,
+          "y": 1595
         }
       }
     note: false
@@ -1263,8 +1262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1785
+          "x": 377.5,
+          "y": 1770
         }
       }
     note: false
@@ -1302,8 +1301,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1960
+          "x": 377.5,
+          "y": 1945
         }
       }
     note: false
@@ -1345,8 +1344,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 2310
+          "x": 377.5,
+          "y": 2295
         }
       }
     note: false
@@ -1364,7 +1363,10 @@ tasks:
       id: 7cdff9bb-9586-4184-888e-a8128c9952cb
       version: -1
       name: Get Endpoint f8a2f58846b542579c12090652e79f3d
-      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. Filtering
+        by multiple fields will be concatenated using AND condition (OR is not supported).
+        Maximum result set size is 100. Offset is the zero-based number of endpoint
+        from the start of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -1380,8 +1382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 2660
+          "x": 377.5,
+          "y": 2645
         }
       }
     note: false
@@ -1393,26 +1395,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: e226c357-fdfe-4e73-9fbb-e0b29950f4ec
+    taskid: fbd54c5b-7b83-4b6f-86c1-a9774184a9c3
     type: condition
     task:
-      id: e226c357-fdfe-4e73-9fbb-e0b29950f4ec
+      id: fbd54c5b-7b83-4b6f-86c1-a9774184a9c3
       version: -1
-      name: Isolate or unisolate
+      name: To isolate ?
       description: To isolate
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "36"
-      Isolate:
+      - "35"
+      "yes":
       - "9"
-      Unisolate:
-      - "10"
     separatecontext: false
     conditions:
-    - label: "Isolate"
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1422,7 +1422,41 @@ tasks:
           right:
             value:
               simple: AGENT_UNISOLATED
-    - label: Unisolate
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: c83f6289-c16a-4483-8892-bb2abfee0e9b
+    type: condition
+    task:
+      id: c83f6289-c16a-4483-8892-bb2abfee0e9b
+      version: -1
+      name: To unisolate?
+      description: To unisolate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1437,7 +1471,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2835
+          "y": 2995
         }
       }
     note: false
@@ -1468,7 +1502,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3185
+          "y": 3345
         }
       }
     note: false
@@ -1486,21 +1520,115 @@ tasks:
       id: f2670578-35d2-4876-827c-ecae5c6601c8
       version: -1
       name: xdr-get-endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "38"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5795
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 90e5e310-c7aa-4ab1-8bef-8c2bbe482c83
+    type: condition
+    task:
+      id: 90e5e310-c7aa-4ab1-8bef-8c2bbe482c83
+      version: -1
+      name: Check the number of endpoints in context
+      description: Check the number of endpoints in context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Endpoint
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 1cf6f029-5857-46cd-8ae4-779f8ed30e07
+    type: playbook
+    task:
+      id: 1cf6f029-5857-46cd-8ae4-779f8ed30e07
+      version: -1
+      name: Cortex XDR - quarantine file
+      description: Cortex XDR - quarantine file
+      playbookName: Cortex XDR - quarantine file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      endpoint_id:
+        simple: f8a2f58846b542579c12090652e79f3d
+      file_hash:
+        simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+      file_path:
+        simple: /home/ec2-user/test_file.txt
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6290
         }
       }
     note: false
@@ -1539,7 +1667,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5970
+          "y": 6465
         }
       }
     note: false
@@ -1578,7 +1706,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6145
+          "y": 6640
         }
       }
     note: false
@@ -1596,7 +1724,8 @@ tasks:
       id: 14876a40-fc86-4345-8311-483f98ee9779
       version: -1
       name: xdr-get-endpoint-device-control-violations
-      description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+      description: Gets a list of device control violations filtered by selected fields.
+        You can retrieve up to 100 violations.
       script: '|||xdr-get-endpoint-device-control-violations'
       type: regular
       iscommand: true
@@ -1610,7 +1739,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6320
+          "y": 6815
         }
       }
     note: false
@@ -1649,7 +1778,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6495
+          "y": 6990
         }
       }
     note: false
@@ -1681,7 +1810,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6670
+          "y": 7165
         }
       }
     note: false
@@ -1724,7 +1853,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6845
+          "y": 7340
         }
       }
     note: false
@@ -1763,7 +1892,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7020
+          "y": 7515
         }
       }
     note: false
@@ -1802,7 +1931,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7195
+          "y": 7690
         }
       }
     note: false
@@ -1841,7 +1970,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7370
+          "y": 7865
         }
       }
     note: false
@@ -1865,6 +1994,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
+      - "60"
       - "61"
     separatecontext: false
     conditions:
@@ -1880,7 +2010,53 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7545
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: bb182bc5-81e1-46e1-82c1-112b5204d754
+    type: playbook
+    task:
+      id: bb182bc5-81e1-46e1-82c1-112b5204d754
+      version: -1
+      name: Cortex XDR - Retrieve File Playbook
+      description: |-
+        Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+        Inputs for this playbook are:
+        - A comma-separated list of endpoint IDs.
+        - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+      playbookName: Cortex XDR - Retrieve File Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      endpoint_ids:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      windows_file_paths:
+        simple: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8390
         }
       }
     note: false
@@ -1898,7 +2074,11 @@ tasks:
       id: 87667850-e8f5-480b-8693-1994ce5d156f
       version: -1
       name: xdr-retrieve-files
-      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to
+        20 files, from no more than 10 endpoints. At least one endpoint ID and one
+        file path are necessary in order to run the command. After running this command,
+        you can use the xdr-action-status-get command with returned action_id, to
+        check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
@@ -1935,8 +2115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 7720
+          "x": 592.5,
+          "y": 8215
         }
       }
     note: false
@@ -1954,7 +2134,8 @@ tasks:
       id: 2b0d7839-ae27-4adf-84d4-253d08098c29
       version: -1
       name: Cortex XDR - Check Action Status
-      description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
       playbookName: Cortex XDR - Check Action Status
       type: playbook
       iscommand: false
@@ -1975,8 +2156,46 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 7895
+          "x": 592.5,
+          "y": 8390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 010db6d6-f9a4-4dcc-8665-8daee84bfad1
+    type: condition
+    task:
+      id: 010db6d6-f9a4-4dcc-8665-8daee84bfad1
+      version: -1
+      name: Verify retrieve file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8565
         }
       }
     note: false
@@ -2013,8 +2232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 8070
+          "x": 592.5,
+          "y": 8565
         }
       }
     note: false
@@ -2032,7 +2251,8 @@ tasks:
       id: 72886e2f-e74e-43d8-8bae-2865b393f15f
       version: -1
       name: Run Script
-      description: Initiate a new endpoint script execution action using a script from the script library.
+      description: Initiate a new endpoint script execution action using a script
+        from the script library.
       script: '|||xdr-run-script'
       type: regular
       iscommand: true
@@ -2075,7 +2295,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8245
+          "y": 8740
         }
       }
     note: false
@@ -2110,7 +2330,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8420
+          "y": 8915
         }
       }
     note: false
@@ -2159,7 +2379,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8595
+          "y": 9090
         }
       }
     note: false
@@ -2194,7 +2414,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8770
+          "y": 9265
         }
       }
     note: false
@@ -2243,7 +2463,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8945
+          "y": 9440
         }
       }
     note: false
@@ -2261,7 +2481,8 @@ tasks:
       id: 5209be1d-9e96-4f28-814e-0890aac0dd83
       version: -1
       name: Run snippet code script
-      description: Initiate a new endpoint script execution action using provided snippet code.
+      description: Initiate a new endpoint script execution action using provided
+        snippet code.
       script: '|||xdr-snippet-code-script-execute'
       type: regular
       iscommand: true
@@ -2291,7 +2512,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9120
+          "y": 9615
         }
       }
     note: false
@@ -2341,7 +2562,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9295
+          "y": 9790
         }
       }
     note: false
@@ -2359,7 +2580,8 @@ tasks:
       id: d732097d-e30f-4be2-86cf-bcb3c687ff3f
       version: -1
       name: Run Script With Empty Params
-      description: Initiate a new endpoint script execution action using a script from the script library.
+      description: Initiate a new endpoint script execution action using a script
+        from the script library.
       script: '|||xdr-run-script'
       type: regular
       iscommand: true
@@ -2391,7 +2613,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9470
+          "y": 9965
         }
       }
     note: false
@@ -2408,8 +2630,10 @@ tasks:
     task:
       id: 2e087af1-2953-447a-8fa6-8f22c263ef8b
       version: -1
-      name: Adds requested files to block list if they are not already added to the block list or allow list
-      description: Adds requested files to block list if they are not already added to the block list or allow list.
+      name: Adds requested files to block list if they are not already added to the
+        block list or allow list
+      description: Adds requested files to block list if they are not already added
+        to the block list or allow list.
       script: '|||xdr-blocklist-files'
       type: regular
       iscommand: true
@@ -2426,7 +2650,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9645
+          "y": 10140
         }
       }
     note: false
@@ -2467,7 +2691,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9820
+          "y": 10315
         }
       }
     note: false
@@ -2502,7 +2726,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9995
+          "y": 10500
         }
       }
     note: false
@@ -2548,7 +2772,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 10170
+          "y": 10665
         }
       }
     note: false
@@ -2582,8 +2806,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9645
+          "x": 480,
+          "y": 10840
         }
       }
     note: false
@@ -2635,8 +2859,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9820
+          "x": 480,
+          "y": 11015
         }
       }
     note: false
@@ -2654,7 +2878,8 @@ tasks:
       id: 5acb16ed-2d79-4b21-8a5e-12d32d9f4aaf
       version: -1
       name: xdr-replace-featured-field
-      description: Replace the featured hosts\users\ips\active-directory_groups listed in your environment.
+      description: Replace the featured hosts\users\ips\active-directory_groups listed
+        in your environment.
       script: '|||xdr-replace-featured-field'
       type: regular
       iscommand: true
@@ -2674,8 +2899,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9995
+          "x": 480,
+          "y": 11190
         }
       }
     note: false
@@ -2727,8 +2952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 10170
+          "x": 480,
+          "y": 11365
         }
       }
     note: false
@@ -2743,10 +2968,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10355,
+        "height": 10865,
         "width": 922.5,
         "x": 50,
-        "y": 50
+        "y": 70
       }
     }
   }
@@ -2755,8 +2980,6 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields: {}

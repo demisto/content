@@ -1,13 +1,12 @@
 commonfields:
   id: Alibaba Action Trail Event Collector
   version: -1
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 name: Alibaba Action Trail Event Collector
 display: Alibaba Action Trail Event Collector
 category: Analytics & SIEM
-provider: Alibaba Group
 description: Alibaba logs event collector integration for XSIAM.
 configuration:
 - display: Endpoint
@@ -82,7 +81,7 @@ script:
       - "True"
       - "False"
       required: true
-  dockerimage: demisto/auth-utils:1.0.0.5295726
+  dockerimage: demisto/auth-utils:1.0.0.1968974
   isfetchevents: true
   subtype: python3
 marketplaces:
@@ -91,5 +90,3 @@ marketplaces:
 fromversion: 6.8.0
 tests:
 - No tests
-supportedModules:
-- xsiam

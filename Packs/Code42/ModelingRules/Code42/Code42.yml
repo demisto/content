@@ -4,5 +4,3 @@ name: Code42 Code42 Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

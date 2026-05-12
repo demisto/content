@@ -4,5 +4,3 @@ name: Infoblox Blox One Threat Defense Modeling Rule
 rules: ""
 schema: ""
 tags: Infoblox
-supportedModules:
-- xsiam

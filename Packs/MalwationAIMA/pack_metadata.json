@@ -3,7 +3,7 @@
     "description": "Deprecated. Use ThreatZone instead.",
     "support": "partner",
     "hidden": true,
-    "currentVersion": "1.0.14",
+    "currentVersion": "1.0.13",
     "author": "MALWATION",
     "url": "https://malwation.com",
     "email": "info@malwation.com",
@@ -20,6 +20,9 @@
     ],
     "githubUser": [],
     "supportedModules": [
-        "agentix"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

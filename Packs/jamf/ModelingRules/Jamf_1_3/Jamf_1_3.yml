@@ -4,5 +4,3 @@ name: jamf Modeling Rule
 rules: ''
 schema: ''
 tags: jamf
-supportedModules:
-- xsiam

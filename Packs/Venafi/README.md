@@ -3,7 +3,7 @@ The certificates you don’t know about can be dangerous to your organization’
 
 ## What does this pack do?
 
-The **CyberArk Certificate Manager** integration enables you to:
+The **Venafi** integration enables you to:
 
 - Get a list of all your certificates in Venafi.
 - Get the details of a single certificate in Venafi.

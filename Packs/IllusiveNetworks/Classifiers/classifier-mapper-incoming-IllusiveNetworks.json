@@ -44,9 +44,5 @@
         }
     },
     "version": -1,
-    "fromVersion": "6.0.0",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "fromVersion": "6.0.0"
 }

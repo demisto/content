@@ -1,8 +1,11 @@
-fromversion: 8.13.0
-id: Slack_ParsingRule
+fromversion: 6.10.0
+id: Slack Parsing Rule
 name: Slack Parsing Rule
 rules: ''
 samples: ''
 supportedModules:
-- xsiam
+- X1
+- X3
+- X5
+- ENT_PLUS
 tags: []

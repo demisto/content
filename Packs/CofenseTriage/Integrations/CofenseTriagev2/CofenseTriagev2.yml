@@ -5,9 +5,8 @@ name: Cofense Triage v2
 fromversion: 5.0.0
 display: Cofense Triage v2
 category: Data Enrichment & Threat Intelligence
-provider: Cofense
 description: Use the Cofense Triage integration to ingest reported phishing indicators.
-sectionorder:
+sectionOrder:
   - Connect
   - Collect
 configuration:

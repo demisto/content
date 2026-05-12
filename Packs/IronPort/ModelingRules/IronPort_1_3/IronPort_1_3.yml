@@ -4,5 +4,3 @@ name: Cisco ESA Modeling Rule
 rules: ''
 schema: ''
 tags: Cisco ESA
-supportedModules:
-- xsiam

@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: BitSight
 commonfields:
   id: Sixgill_DVE_Feed
   version: -1
@@ -106,11 +105,11 @@ script:
   - arguments:
     - default: true
       defaultValue: '5'
-      description: 'The number of records to display in War Room.'
+      description: 'The number of records to display in War Room'
       name: limit
-    description: Fetching Sixgill DVE Feed indicators.
+    description: Fetching Sixgill DVE Feed indicators
     name: cybersixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.4887903
+  dockerimage: demisto/sixgill:1.0.0.20925
   feed: true
   runonce: false
   script: '-'

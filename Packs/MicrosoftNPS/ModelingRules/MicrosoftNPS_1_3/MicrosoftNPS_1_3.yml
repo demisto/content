@@ -4,5 +4,3 @@ name: Microsoft NPS Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft NPS
-supportedModules:
-- xsiam

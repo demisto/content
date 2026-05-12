@@ -748,8 +748,5 @@
     "version": -1,
     "fromVersion": "6.2.0",
     "description": "Troubleshooting Playbooks",
-    "isPredefined": true,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "isPredefined": true
 }

@@ -2,7 +2,7 @@
     "name": "CrowdStrike Falcon",
     "description": "The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.",
     "support": "xsoar",
-    "currentVersion": "2.10.1",
+    "currentVersion": "2.1.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,9 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "CrowdStrike"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
@@ -75,10 +73,9 @@
         "FeedMitreAttackv2"
     ],
     "supportedModules": [
-        "agentix",
-        "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

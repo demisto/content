@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Broadcom
 commonfields:
   id: Symantec Deepsight Intelligence
   version: -1

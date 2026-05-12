@@ -1,4 +1,4 @@
-Deprecated. Use mimecast-query command instead.
+Deprecated. Use mimecsat-query command instead.
 
 ## Script Data
 ---

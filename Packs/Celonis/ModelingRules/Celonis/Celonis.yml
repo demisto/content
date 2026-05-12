@@ -4,5 +4,3 @@ name: Celonis Celonis Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

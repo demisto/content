@@ -4,5 +4,3 @@ name: Trellix ePO Parsing Rule
 rules: ''
 samples: ''
 tags: []
-supportedModules:
-- xsiam

@@ -26,8 +26,7 @@
   "associatedTypes": [
     "FireEye NX IPS Event",
     "FireEye NX Alert",
-    "FireEye EX Alert",
-    "Trellix Incident"
+    "FireEye EX Alert"
   ],
   "associatedToAll": false,
   "unmapped": false,

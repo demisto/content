@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: OpenText
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -384,7 +383,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.1983910
   type: python
 tests:
 - ArcSight ESM v2 Test

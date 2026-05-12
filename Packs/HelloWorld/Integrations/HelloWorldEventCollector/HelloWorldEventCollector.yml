@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Open Source
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -77,7 +76,7 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: hello-world-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   runonce: false
   script: '-'
@@ -89,5 +88,3 @@ marketplaces:
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

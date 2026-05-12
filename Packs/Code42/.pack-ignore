@@ -1,5 +1,5 @@
 [file:Code42.yml]
-ignore=IN126,IN124
+ignore=IN126
 
 [file:README.md]
 ignore=RM102
@@ -25,3 +25,4 @@ ignore=GR103
 
 [file:playbook-Code42_File_Search.yml]
 ignore=GR107
+

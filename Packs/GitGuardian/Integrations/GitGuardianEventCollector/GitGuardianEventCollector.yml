@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: GitGuardian
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -67,7 +66,7 @@ script:
     description: Gets events from GitGuardian.
     execution: false
     name: gitguardian-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
   script: '-'
@@ -79,5 +78,3 @@ marketplaces:
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

@@ -280,9 +280,6 @@ ignore=BA101,LO107
 [file:layoutscontainer-MalwareV2.json]
 ignore=BA101,LO107
 
-[file:layoutscontainer-MalwareV2_XSIAM.json]
-ignore=BA101,LO107
-
 [file:layoutscontainer-ReportV2.json]
 ignore=BA101,LO107
 
@@ -320,9 +317,6 @@ ignore=RN115
 ignore=LO107
 
 [file:layoutscontainer-CampaignV2.json]
-ignore=LO107
-
-[file:layoutscontainer-CampaignV2_XSIAM.json]
 ignore=LO107
 
 [file:layoutscontainer-Course_of_ActionV2.json]

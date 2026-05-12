@@ -1,9 +1,0 @@
-{
-    "GravityZone.Command.AddIncidentNote(val.IncidentID && val.IncidentID == obj.IncidentID)": [
-        {
-            "IncidentID": "INCIDENT_ID_1",
-            "Note": "This is a test note from unit test.",
-            "CommandStatus": "Success"
-        }
-    ]
-}

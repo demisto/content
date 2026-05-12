@@ -388,11 +388,11 @@ tasks:
       id: cdde9f89-b5ae-4db0-85e0-bbcebbb4fd1a
       version: -1
       name: Continue with the investigation
-      description: The AutoCloseAlert input is false, hence, a manual decision whether
-        to close it or investigate further is needed.
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "23"
@@ -969,9 +969,7 @@ marketplaces:
 fromversion: 6.6.0
 
 supportedModules:
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+- X1
+- X3
+- X5
+- ENT_PLUS

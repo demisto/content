@@ -1,5 +1,4 @@
 category: IT Services
-provider: Broadcom
 commonfields:
   id: VMwareV2
   version: -1

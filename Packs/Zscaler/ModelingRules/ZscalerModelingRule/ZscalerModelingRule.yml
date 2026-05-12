@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: Zscaler Internet Access
 toversion: 6.9.9
-supportedModules:
-- xsiam

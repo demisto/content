@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 EXPECTED_SEARCH_EVENTS = [
     {
         "eventId": "c4220bdf-0c0b-489c-a915-7d71bba7197a",
@@ -6103,7 +6102,7 @@ EXPECTED_REPORT_GET_ITUNESID = {
                             "name_server": "udns1.cscdns.net,udns2.cscdns.uk",
                             "registrant_email": "inethost@starbucks.com",
                             "registrant_name": "Domain Admin",
-                            "registrant_organization": "TestCoffee Corporation",
+                            "registrant_organization": "Starbucks Corporation",
                         },
                     },
                 },

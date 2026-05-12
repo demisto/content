@@ -40,9 +40,6 @@ class RegistryKey(Common.Indicator):
         key_context = {"Path": self.path, "Name": self.name, "Value": self.value}
         return {"RegistryKey": key_context}
 
-    def to_minimum_context(self):
-        return {"Path": self.path, "Value": self.value}
-
 
 class Process(Common.Indicator):
     """
@@ -94,9 +91,6 @@ class Process(Common.Indicator):
         }
 
         return {"Process": process_context}
-
-    def to_minimum_context(self):
-        return {"Name": self.name, "PID": self.pid}
 
 
 class Client(BaseClient):

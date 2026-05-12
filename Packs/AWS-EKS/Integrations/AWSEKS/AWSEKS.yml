@@ -1,5 +1,4 @@
 category: Cloud Services
-provider: Amazon
 commonfields:
   id: AWS-EKS
   version: -1

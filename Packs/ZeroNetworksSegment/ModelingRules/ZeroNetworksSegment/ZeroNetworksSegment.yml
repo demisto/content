@@ -4,5 +4,3 @@ name: Zero Networks Segment Modeling Rule
 rules: ''
 schema: ''
 tags: Zero Networks Segment
-supportedModules:
-- xsiam

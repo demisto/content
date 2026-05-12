@@ -2,32 +2,24 @@
     "name": "ManageEngine",
     "description": "ManageEngine Endpoint Central is a Unified Endpoint Management solution that helps in managing thousands of servers, desktops, laptops and mobile devices from a single console.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2025-07-01T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-        "IT"
-    ],
-    "useCases": [
-        "Asset Management"
-    ],
-    "keywords": [
-        "Desktop Central",
-        "Endpoint Central",
-        "ManageEngine",
-        "Zoho"
-    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

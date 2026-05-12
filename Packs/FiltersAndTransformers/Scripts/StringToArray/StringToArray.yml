@@ -13,9 +13,8 @@ subtype: python3
 tags:
 - transformer
 timeout: '0'
-isllm: false
 type: python
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.0.0
 tests:
 - StringToArray_test

@@ -394,8 +394,7 @@ def main():
             playbook_id = get_playbook_id(playbook_id, playbook_name, playbooks_dict)
 
         flag_pending_idle = False
-        lower_query = original_query.lower()
-        if "pending" in lower_query or "idle" in lower_query:
+        if "pending" in original_query or "idle" in original_query:
             demisto.debug("The query includes runStatus of pending or idle. Setting flag_pending_idle true.")
             flag_pending_idle = True
 

@@ -4,5 +4,3 @@ name: Duo 2.0 Modeling Rule
 rules: ''
 schema: ''
 tags: duo
-supportedModules:
-- xsiam

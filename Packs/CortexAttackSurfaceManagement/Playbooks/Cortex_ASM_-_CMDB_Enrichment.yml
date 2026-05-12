@@ -553,3 +553,8 @@ tests:
 - No tests
 fromversion: 6.5.0
 deprecated: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

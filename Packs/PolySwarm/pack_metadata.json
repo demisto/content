@@ -2,9 +2,9 @@
     "name": "PolySwarm",
     "description": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.",
     "support": "partner",
-    "currentVersion": "2.0.12",
+    "currentVersion": "2.0.8",
     "author": "PolySwarm",
-    "url": "https://polyswarm.network/",
+    "url": "",
     "email": "support@polyswarm.io",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
@@ -17,8 +17,7 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "JavierBotella",
-        "alanjds"
+        "JavierBotella"
     ],
     "certification": "certified",
     "marketplaces": [
@@ -27,7 +26,9 @@
         "platform"
     ],
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

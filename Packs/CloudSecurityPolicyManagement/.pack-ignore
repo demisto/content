@@ -1,5 +1,0 @@
-[file:AWSRemediateSG.yml]
-ignore=BA129
-
-[file:AWSIdentifySGPublicExposure.yml]
-ignore=BA129

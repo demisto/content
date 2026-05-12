@@ -1505,9 +1505,9 @@ tasks:
     task:
       id: c345ae45-fd4e-4ad7-848c-748c6d536baa
       version: -1
-      name: get cases
-      description: Lists case summaries.
-      script: '|||cs-falcon-list-case-summaries'
+      name: get incidents
+      description: Lists incident summaries.
+      script: '|||cs-falcon-list-incident-summaries'
       type: regular
       iscommand: true
       brand: ""
@@ -1537,9 +1537,9 @@ tasks:
     task:
       id: 18dcea75-b40b-4b91-856d-bb561d673be0
       version: -1
-      name: cs-falcon-resolve-case
-      description: Resolve cases.
-      script: '|||cs-falcon-resolve-case'
+      name: cs-falcon-resolve-incident
+      description: Resolve incidents.
+      script: '|||cs-falcon-resolve-incident'
       type: regular
       iscommand: true
       brand: ""
@@ -1547,10 +1547,10 @@ tasks:
       '#none#':
       - "56"
     scriptarguments:
-      id:
-        simple: ${CrowdStrike.Case.id}
+      ids:
+        simple: ${CrowdStrike.Incidents.incident_id}
       status:
-        simple: new
+        simple: New
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2171,7 +2171,7 @@ tasks:
     task:
       id: 48568a8e-357d-4379-875f-bcc6e7f82882
       version: -1
-      name: Delete CrowdStrike.Case Context
+      name: Delete CrowdStrike.Incidents Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -2182,7 +2182,7 @@ tasks:
       - "57"
     scriptarguments:
       key:
-        simple: CrowdStrike.Case
+        simple: CrowdStrike.Incidents
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2206,9 +2206,9 @@ tasks:
     task:
       id: 74f66633-20c7-4911-80d1-0a81be3d1230
       version: -1
-      name: Get Cases
-      description: Lists case summaries.
-      script: '|||cs-falcon-list-case-summaries'
+      name: Get Incidents
+      description: Lists incident summaries.
+      script: '|||cs-falcon-list-incident-summaries'
       type: regular
       iscommand: true
       brand: ""
@@ -2252,11 +2252,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CrowdStrike.Case.status
+              simple: CrowdStrike.Incidents.status
             iscontext: true
           right:
             value:
-              simple: new
+              simple: "20"
     continueonerrortype: ""
     view: |-
       {
@@ -2919,8 +2919,6 @@ tasks:
     scriptarguments:
       comment:
         simple: demo comment
-      value:
-        simple: test_${RandomString}
       id:
         complex:
           root: CrowdStrike.MLExclusion
@@ -3689,32 +3687,13 @@ tasks:
       file_paths:
         simple: C:\\Users\\admin\\Downloads\\
       host_groups:
-        complex:
-          root: CrowdStrike.HostGroup
-          accessor: id
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+        simple: ${CrowdStrike.HostGroup.id}
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:
         simple: "1000"
     separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorType
-    scriptresult:
-      filters:
-      - - operator: containsString
-          left:
-            value:
-              simple: lastCompletedTaskEntries.Contents
-            iscontext: true
-          right:
-            value:
-              simple: No hosts found in host group
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3818,8 +3797,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "112"
       "yes":
       - "112"
     separatecontext: false
@@ -4515,7 +4492,7 @@ tasks:
     task:
       id: 1307b645-2a6f-48ca-8c92-5432341986ea
       version: -1
-      name: Are there cases?
+      name: Are there incidents?
       type: condition
       iscommand: false
       brand: ""
@@ -4531,7 +4508,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CrowdStrike.Case
+              simple: CrowdStrike.Incidents
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -4562,4 +4539,3 @@ view: |-
   }
 inputs: []
 outputs: []
-

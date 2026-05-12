@@ -136,7 +136,7 @@ def remove_prefix(prefix, full_str):
     :return: full_str without the provided prefix
     """
     if full_str.startswith(prefix):
-        return full_str[len(prefix) :]
+        return full_str[len(prefix):]
     return full_str
 
 
@@ -1182,7 +1182,7 @@ def update_file_rule(
     :param report_only: True if this has a report-only ban
     :param reputation_approvals_enabled: True if reputation approvals are enabled for this file
     :param force_installer: True if this file is forced to act as installer
-    :param force_not_installer: True if this file is forced to act as 'not installer'
+    :param force_not_installer: True if this file is forced to act as ‘not installer'
     :param policy_ids: List of IDs of policies where this rule applies.
     :param platform_flags: Set of platform flags where this file rule will be valid
     :return: Result json of the request
@@ -2076,45 +2076,6 @@ def resolve_approval_request(id, resolution, requestor_email=None, res_comments=
     return http_request("POST", "/approvalRequest", data=body_params)
 
 
-def get_user_data():
-    """
-    Sends request to get user information
-    :param user_email: user email address
-    :return: Result of the request
-    """
-    args = demisto.args()
-    user_email = args.get("user_email")
-    query = f"name:{user_email}"
-    params = {"q": query}
-
-    user_data = http_request("GET", "/user", params=params)
-
-    human_readable = tableToMarkdown("User Data", user_data, headers=[])
-
-    result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserData", outputs=user_data)
-
-    return_results(result)
-
-
-def disable_user_command():
-    """
-    Sends request to disable user account
-    :param user_id: ID of user to disable - retrieved from cbp-retrieve-user-data
-    :return: Result of the request
-    """
-    args = demisto.args()
-    user_id = args.get("user_id")
-    payload = {"enabled": False}
-
-    user_data = http_request("PUT", f"/user/{user_id}", data=payload)
-
-    human_readable = tableToMarkdown("User Data", user_data, headers=[])
-
-    result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserDisable", outputs=user_data)
-
-    return_results(result)
-
-
 def fetch_incidents():
     """
     Fetches incident using the events API
@@ -2215,10 +2176,6 @@ def main():
                 search_connector_command()
             elif command == "cbp-approvalRequest-resolve":
                 resolve_approval_request_command()
-            elif command == "cbp-user-disable":
-                disable_user_command()
-            elif command == "cbp-user-data-get":
-                get_user_data()
             else:
                 return_error(f"Command {command} is not supported.")
         # Log exceptions

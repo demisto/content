@@ -1,8 +1,7 @@
 category: Forensics & Malware Analysis
-provider: AnyRun
-sectionorder:
-- Connect
-- Collect
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: ANYRUN
   version: -1
@@ -30,8 +29,8 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Deprecated. Use ANY.RUN TI Feeds, ANY.RUN TI Lookup, ANY.RUN Cloud Sandbox instead.
-display: ANY.RUN (Deprecated)
+description: ANY.RUN is a cloud-based sandbox with interactive access.
+display: ANY.RUN
 name: ANYRUN
 script:
   commands:
@@ -395,4 +394,3 @@ script:
 tests:
 - ANYRUN-Test
 fromversion: 5.0.0
-deprecated: true

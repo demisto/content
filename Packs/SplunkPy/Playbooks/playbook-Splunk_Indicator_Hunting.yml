@@ -795,14 +795,14 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: inList
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
                       iscontext: true
                     right:
                       value:
-                        simple: SplunkPy,SplunkPy v2
+                        simple: SplunkPy
                 - - operator: isEqualString
                     left:
                       value:
@@ -4125,9 +4125,3 @@ tests:
 - Splunk Indicator Hunting Test
 - SplunkPy-Test-V2
 fromversion: 5.0.0
-supportedModules:
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security

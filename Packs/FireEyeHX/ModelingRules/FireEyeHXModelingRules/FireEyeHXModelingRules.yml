@@ -3,5 +3,3 @@ id: fireeye_hx_ModelingRule
 name: FireEye HX Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

@@ -5,19 +5,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b034ab7e-f25a-4d9f-8b3f-6b466e9b17b7
+    taskid: bf28a79a-4575-4765-8511-3898e44b7495
     type: start
     task:
-      id: b034ab7e-f25a-4d9f-8b3f-6b466e9b17b7
+      id: bf28a79a-4575-4765-8511-3898e44b7495
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,14 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fc251b7b-1d64-4227-868c-b287762376ea
+    taskid: c77403db-6926-4d41-8d75-bf5a6872e767
     type: regular
     task:
-      id: fc251b7b-1d64-4227-868c-b287762376ea
+      id: c77403db-6926-4d41-8d75-bf5a6872e767
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -52,7 +53,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,14 +65,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 93093fbd-d481-4e3a-8dc2-6cbb851714a3
+    taskid: e688e4ad-0a4c-43e5-8921-4f15e13f8115
     type: regular
     task:
-      id: 93093fbd-d481-4e3a-8dc2-6cbb851714a3
+      id: e688e4ad-0a4c-43e5-8921-4f15e13f8115
       version: -1
       name: Upload New File To Demisto
       description: |
@@ -90,7 +91,6 @@ tasks:
       filename:
         simple: playbook1.txt
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -103,14 +103,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aed09050-41ec-4504-88e5-17cbbd7441e5
+    taskid: 3121e044-761a-4f2a-884c-beff92d7a16b
     type: regular
     task:
-      id: aed09050-41ec-4504-88e5-17cbbd7441e5
+      id: 3121e044-761a-4f2a-884c-beff92d7a16b
       version: -1
       name: Upload New File To Ms Graph
       script: '|||msgraph-upload-new-file'
@@ -134,7 +135,6 @@ tasks:
       parent_id:
         simple: 01VX7CPKF6Y2GOVW7725BZO354PWSELRRZ
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -147,14 +147,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8c516ab3-2491-4cc8-8ce1-d78145c8a4a8
+    taskid: 10d9eeb5-18a0-480b-8b7a-b0c36261aa3f
     type: condition
     task:
-      id: 8c516ab3-2491-4cc8-8ce1-d78145c8a4a8
+      id: 10d9eeb5-18a0-480b-8b7a-b0c36261aa3f
       version: -1
       name: Test If File Was Uploaded In Context
       type: condition
@@ -196,7 +197,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: UploadedFiles.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -209,14 +209,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6333093f-061b-4e75-87cc-93a503f82895
+    taskid: 972f4f02-8e55-448b-85b8-cf28a85f22df
     type: regular
     task:
-      id: 6333093f-061b-4e75-87cc-93a503f82895
+      id: 972f4f02-8e55-448b-85b8-cf28a85f22df
       version: -1
       name: Upload New File To Demisto
       description: |
@@ -234,7 +235,6 @@ tasks:
       filename:
         simple: playbook2.txt
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -247,21 +247,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 74a966c0-b9a5-45ad-848b-8ddbc3499825
+    taskid: 11f9c0be-e5b0-4ea6-87e6-40b6ded6c1ef
     type: regular
     task:
-      id: 74a966c0-b9a5-45ad-848b-8ddbc3499825
+      id: 11f9c0be-e5b0-4ea6-87e6-40b6ded6c1ef
       version: -1
       name: Replace File's Content In MS Graph
-      description: Replaces the content of the file in the specified MS Graph resource.
       script: '|||msgraph-replace-existing-file'
       type: regular
       iscommand: true
       brand: ""
+      description: Replaces the content of the file in the specified MS Graph resource.
     nexttasks:
       '#none#':
       - "37"
@@ -278,7 +279,6 @@ tasks:
       object_type_id:
         simple: 83900b2c-617f-4642-b778-17303be19009
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -291,14 +291,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a2e91be4-66f2-4e1f-81ed-199d043771dd
+    taskid: cefd85bd-e0cd-4d2d-8bca-63ad584b6496
     type: regular
     task:
-      id: a2e91be4-66f2-4e1f-81ed-199d043771dd
+      id: cefd85bd-e0cd-4d2d-8bca-63ad584b6496
       version: -1
       name: Delete File Context
       description: Delete field from context
@@ -315,7 +316,6 @@ tasks:
       key:
         simple: File
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -328,14 +328,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a1f85dd4-0f60-4078-88fe-9d6981901ad0
+    taskid: 75bf161c-b58d-4ccc-8d84-324a2300e93b
     type: regular
     task:
-      id: a1f85dd4-0f60-4078-88fe-9d6981901ad0
+      id: 75bf161c-b58d-4ccc-8d84-324a2300e93b
       version: -1
       name: Save File ID
       description: Set a value in context under the key you entered.
@@ -354,7 +355,6 @@ tasks:
           root: MsGraphFiles
           accessor: UploadedFiles.ID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -367,14 +367,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 67cda1f2-b087-42ed-8316-7cc8ef2ee871
+    taskid: dac74919-0d8e-44e3-867b-36979cb34985
     type: regular
     task:
-      id: 67cda1f2-b087-42ed-8316-7cc8ef2ee871
+      id: dac74919-0d8e-44e3-867b-36979cb34985
       version: -1
       name: Delete MsGraphFiles Context
       description: Delete field from context
@@ -391,7 +392,6 @@ tasks:
       key:
         simple: ${MsGraphFiles}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -404,14 +404,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 69cf8581-b91c-41a5-88e5-32449356ca29
+    taskid: 10c2a4df-b72d-4236-8d0b-961d0acee244
     type: condition
     task:
-      id: 69cf8581-b91c-41a5-88e5-32449356ca29
+      id: 10c2a4df-b72d-4236-8d0b-961d0acee244
       version: -1
       name: Test If Replace Command
       type: condition
@@ -453,7 +454,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ReplacedFiles.File.Hashes
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -466,24 +466,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 194f7931-b7cb-440a-896b-c9c0b7e2b082
+    taskid: 84350faa-e9a3-41e2-8285-f1a08a82fd1f
     type: title
     task:
-      id: 194f7931-b7cb-440a-896b-c9c0b7e2b082
+      id: 84350faa-e9a3-41e2-8285-f1a08a82fd1f
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -496,22 +497,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: edd14b8c-3278-4d1a-879f-3ca7ec9bc4bd
+    taskid: e6b2242d-339f-4a87-8136-2c7e934c4e98
     type: regular
     task:
-      id: edd14b8c-3278-4d1a-879f-3ca7ec9bc4bd
+      id: e6b2242d-339f-4a87-8136-2c7e934c4e98
       version: -1
       name: Create New Folder In MS Graph
-      description: Creates a new folder in a drive with the specified parent item
-        or path.
       script: '|||msgraph-create-new-folder'
       type: regular
       iscommand: true
       brand: ""
+      description: Creates a new folder in a drive with the specified parent item or path.
     nexttasks:
       '#none#':
       - "14"
@@ -525,7 +526,6 @@ tasks:
       parent_id:
         simple: 01YGQTXW56Y2GOVW7725BZO354PWSELRRZ
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -538,14 +538,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a48fb6e6-edb7-487c-882c-3043677cc328
+    taskid: e54cdb88-f134-4e5d-8b5c-0d48a6addf4e
     type: condition
     task:
-      id: a48fb6e6-edb7-487c-882c-3043677cc328
+      id: e54cdb88-f134-4e5d-8b5c-0d48a6addf4e
       version: -1
       name: Test If New Folder Was Uploaded
       type: condition
@@ -589,7 +590,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: CreatedFolders.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -602,14 +602,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 686b9886-eade-4635-8069-7d5da99ac4f0
+    taskid: 9b0c1913-1eeb-431b-8c93-dbb97f738982
     type: regular
     task:
-      id: 686b9886-eade-4635-8069-7d5da99ac4f0
+      id: 9b0c1913-1eeb-431b-8c93-dbb97f738982
       version: -1
       name: Save Folder ID In Context
       description: Set a value in context under the key you entered.
@@ -628,7 +629,6 @@ tasks:
           root: MsGraphFiles
           accessor: CreatedFolders.ID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -641,24 +641,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 64d23df2-5583-45e0-80d4-e2cde54ebd1f
+    taskid: 161695e7-3198-4597-80ba-26bff8a7f7ce
     type: title
     task:
-      id: 64d23df2-5583-45e0-80d4-e2cde54ebd1f
+      id: 161695e7-3198-4597-80ba-26bff8a7f7ce
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -671,21 +672,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7bce3793-a4c2-46ac-8f8e-63715127d0fd
+    taskid: 25a10790-d12d-408e-8a9a-cbba991c1500
     type: regular
     task:
-      id: 7bce3793-a4c2-46ac-8f8e-63715127d0fd
+      id: 25a10790-d12d-408e-8a9a-cbba991c1500
       version: -1
       name: Test Download File From Graph
-      description: Downloads the file contents of the drive item.
       script: '|||msgraph-download-file'
       type: regular
       iscommand: true
       brand: ""
+      description: Downloads the file contents of the drive item.
     nexttasks:
       '#none#':
       - "19"
@@ -698,7 +700,6 @@ tasks:
       object_type_id:
         simple: b!ZAovhtvn4Eapf5FWtPaT7lybnnqOkQpPspFV4riUtXuy_S3BgrgsSp0DNvpsLWoV
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -711,14 +712,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 6926c7a6-6f22-4370-868a-af9895227cd3
+    taskid: d9656af3-15f8-491e-8560-f7858b8aca49
     type: regular
     task:
-      id: 6926c7a6-6f22-4370-868a-af9895227cd3
+      id: d9656af3-15f8-491e-8560-f7858b8aca49
       version: -1
       name: Delete File Context
       description: Delete field from context
@@ -735,7 +737,6 @@ tasks:
       key:
         simple: File
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -748,14 +749,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 17ba4a3a-23de-4bac-8ef4-7c523b152f38
+    taskid: 3114a3fb-6427-4343-8e1d-b79319f1344d
     type: condition
     task:
-      id: 17ba4a3a-23de-4bac-8ef4-7c523b152f38
+      id: 3114a3fb-6427-4343-8e1d-b79319f1344d
       version: -1
       name: Test If File Was Downloaded
       type: condition
@@ -780,7 +782,6 @@ tasks:
               complex:
                 root: UploadedFileID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -793,24 +794,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1772d989-fa83-47ec-86fb-4c3a6955c067
+    taskid: 5ff5b25a-a51a-4169-853c-99d16d8cb27f
     type: title
     task:
-      id: 1772d989-fa83-47ec-86fb-4c3a6955c067
+      id: 5ff5b25a-a51a-4169-853c-99d16d8cb27f
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -823,14 +825,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: cb085594-3314-421b-8ddb-2cfb582f8010
+    taskid: 3e5b79f0-deb5-4d78-85b1-5ff69a65ee5e
     type: regular
     task:
-      id: cb085594-3314-421b-8ddb-2cfb582f8010
+      id: 3e5b79f0-deb5-4d78-85b1-5ff69a65ee5e
       version: -1
       name: Test List Sites
       description: Returns a list of the tenant sites.
@@ -842,7 +845,6 @@ tasks:
       '#none#':
       - "39"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -855,14 +857,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 4cc2f857-972a-4fd1-8b94-b51adb047da8
+    taskid: 39a88e25-d75d-4a98-8a5d-68e14cb92e3f
     type: condition
     task:
-      id: 4cc2f857-972a-4fd1-8b94-b51adb047da8
+      id: 39a88e25-d75d-4a98-8a5d-68e14cb92e3f
       version: -1
       name: Test If Got Sites In Context
       type: condition
@@ -903,7 +906,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ListSites.Value.[0].WebUrl
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -916,24 +918,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: c3536f5a-4664-40c8-8f62-4af3b17ca629
+    taskid: 4e04153a-037e-4afc-80b4-c039655f31c7
     type: title
     task:
-      id: c3536f5a-4664-40c8-8f62-4af3b17ca629
+      id: 4e04153a-037e-4afc-80b4-c039655f31c7
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -946,22 +949,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 847cd45d-11b1-459c-8af4-cacb7cba2e6c
+    taskid: 15c2262a-1d88-4689-8b7d-72771aef55a0
     type: regular
     task:
-      id: 847cd45d-11b1-459c-8af4-cacb7cba2e6c
+      id: 15c2262a-1d88-4689-8b7d-72771aef55a0
       version: -1
       name: List Drives In Site
-      description: Returns the list of document libraries (drives) available for a
-        target site.
       script: '|||msgraph-list-drives-in-site'
       type: regular
       iscommand: true
       brand: ""
+      description: Returns the list of document libraries (drives) available for a target site.
     nexttasks:
       '#none#':
       - "34"
@@ -971,7 +974,6 @@ tasks:
       site_id:
         simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -984,14 +986,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 18dab965-8cfe-4105-bb0e-767f1652e6ca
+    taskid: f29cc155-77b1-4ebb-8060-d4d5d6ab3dcb
     type: condition
     task:
-      id: 18dab965-8cfe-4105-bb0e-767f1652e6ca
+      id: f29cc155-77b1-4ebb-8060-d4d5d6ab3dcb
       version: -1
       name: Test If Site's Drives Are Saved In Context
       type: condition
@@ -1032,7 +1035,13 @@ tasks:
                 root: MsGraphFiles
                 accessor: ListDrives.Value.[0].CreatedBy.DisplayName
             iscontext: true
-    continueonerrortype: ""
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraphFiles
+                accessor: ListDrives.Value.[0].LastModifiedBy.ID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1045,24 +1054,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 00c3937e-cbb0-4a1f-80eb-6d4d653fdf07
+    taskid: b0070df5-9801-49da-847f-8bac6f6cfd5a
     type: title
     task:
-      id: 00c3937e-cbb0-4a1f-80eb-6d4d653fdf07
+      id: b0070df5-9801-49da-847f-8bac6f6cfd5a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1075,14 +1085,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 041c39f3-5575-43e2-814b-ef73dd0143c2
+    taskid: 2cd67540-b1cb-4f6a-87a8-214c07062bf0
     type: regular
     task:
-      id: 041c39f3-5575-43e2-814b-ef73dd0143c2
+      id: 2cd67540-b1cb-4f6a-87a8-214c07062bf0
       version: -1
       name: List All Drive's Children
       description: Returns a list of files and folders in the specified drive.
@@ -1101,7 +1112,6 @@ tasks:
       object_type_id:
         simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1114,14 +1124,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 5c280c99-5840-48bd-8d84-d1662816ab9d
+    taskid: 42c8af3c-7b8a-4b89-85d9-b58ce21ea389
     type: condition
     task:
-      id: 5c280c99-5840-48bd-8d84-d1662816ab9d
+      id: 42c8af3c-7b8a-4b89-85d9-b58ce21ea389
       version: -1
       name: Test If Drive Children List In Context
       type: condition
@@ -1155,7 +1166,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ListChildren.Children.Value.[0].ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1168,24 +1178,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 27fa2e1e-c555-42fd-8ddd-4d1221924a3c
+    taskid: 9ca27cdb-44d7-40ee-87df-82a2a6fbac37
     type: title
     task:
-      id: 27fa2e1e-c555-42fd-8ddd-4d1221924a3c
+      id: 9ca27cdb-44d7-40ee-87df-82a2a6fbac37
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1198,21 +1209,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 052acdcc-c658-48cf-8906-c64a3f3e1714
+    taskid: 36f398ee-7304-47c3-84a1-68d4ad08d8fb
     type: regular
     task:
-      id: 052acdcc-c658-48cf-8906-c64a3f3e1714
+      id: 36f398ee-7304-47c3-84a1-68d4ad08d8fb
       version: -1
       name: Delete File From Graph
-      description: Deletes an item from OneDrive.
       script: '|||msgraph-delete-file'
       type: regular
       iscommand: true
       brand: ""
+      description: Deletes an item from OneDrive.
     nexttasks:
       '#none#':
       - "43"
@@ -1226,7 +1238,6 @@ tasks:
         complex:
           root: UploadedFileParent
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1239,14 +1250,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: a9c5d216-7529-493b-8cac-2011b2cb1b52
+    taskid: da9a1ae8-7021-4b90-8abe-61b3e9f7cc88
     type: regular
     task:
-      id: a9c5d216-7529-493b-8cac-2011b2cb1b52
+      id: da9a1ae8-7021-4b90-8abe-61b3e9f7cc88
       version: -1
       name: Save File DriveID
       description: Set a value in context under the key you entered.
@@ -1265,7 +1277,6 @@ tasks:
           root: MsGraphFiles
           accessor: UploadedFiles.ParentReference.DriveId
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1278,14 +1289,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 876b0058-56f0-4d33-837d-aa88bd6ef89f
+    taskid: a1b7f682-d9a8-4388-8141-894b66791931
     type: regular
     task:
-      id: 876b0058-56f0-4d33-837d-aa88bd6ef89f
+      id: a1b7f682-d9a8-4388-8141-894b66791931
       version: -1
       name: Save Folder Parent ID
       description: Set a value in context under the key you entered.
@@ -1304,7 +1316,6 @@ tasks:
           root: MsGraphFiles
           accessor: CreatedFolders.ParentReference.DriveId
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1317,21 +1328,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 964933f2-8979-4d4a-8c97-85e427018de0
+    taskid: 4383e96c-4796-4bed-8443-cefabf231296
     type: regular
     task:
-      id: 964933f2-8979-4d4a-8c97-85e427018de0
+      id: 4383e96c-4796-4bed-8443-cefabf231296
       version: -1
       name: Delete Folder From Graph
-      description: Deletes an item from OneDrive.
       script: '|||msgraph-delete-file'
       type: regular
       iscommand: true
       brand: ""
+      description: Deletes an item from OneDrive.
     nexttasks:
       '#none#':
       - "42"
@@ -1345,7 +1357,6 @@ tasks:
         complex:
           root: UploadedFolderParentID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1358,14 +1369,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 0f71e9c8-c62c-4320-82b2-0e22b0050ca3
+    taskid: 9d0d7f51-36a3-4b47-84ae-926ae8ee428b
     type: regular
     task:
-      id: 0f71e9c8-c62c-4320-82b2-0e22b0050ca3
+      id: 9d0d7f51-36a3-4b47-84ae-926ae8ee428b
       version: -1
       name: sleep
       description: Sleep for X seconds
@@ -1380,7 +1392,6 @@ tasks:
       seconds:
         simple: "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1393,14 +1404,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 4970fc35-af3e-4a29-838f-81dc0f0df7c7
+    taskid: 6a12b13a-7076-4ac8-8f2e-56946cd65618
     type: regular
     task:
-      id: 4970fc35-af3e-4a29-838f-81dc0f0df7c7
+      id: 6a12b13a-7076-4ac8-8f2e-56946cd65618
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1415,7 +1427,6 @@ tasks:
       seconds:
         simple: "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1428,14 +1439,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 7fb68746-c123-4f93-87e2-97df0aa68801
+    taskid: 54bec5ad-24ea-4099-8267-695f50e03dd7
     type: regular
     task:
-      id: 7fb68746-c123-4f93-87e2-97df0aa68801
+      id: 54bec5ad-24ea-4099-8267-695f50e03dd7
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1450,7 +1462,6 @@ tasks:
       seconds:
         simple: "6"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1463,14 +1474,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 9fb575a2-e8d5-45a8-8ae3-b7d322828468
+    taskid: 26c2ccaa-d8a9-444d-8170-9a4df880519b
     type: regular
     task:
-      id: 9fb575a2-e8d5-45a8-8ae3-b7d322828468
+      id: 26c2ccaa-d8a9-444d-8170-9a4df880519b
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1485,7 +1497,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1498,14 +1509,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: fa4d253b-44c7-495e-8cb5-5dc0f65ba0ab
+    taskid: 0c15ce33-60df-442a-8001-81600b0ab54c
     type: regular
     task:
-      id: fa4d253b-44c7-495e-8cb5-5dc0f65ba0ab
+      id: 0c15ce33-60df-442a-8001-81600b0ab54c
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1520,7 +1532,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1533,14 +1544,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 1d4ec122-a6af-4a23-8d2a-c4d1c64502d9
+    taskid: f1873b05-84d9-406b-8377-d4c56964fc34
     type: regular
     task:
-      id: 1d4ec122-a6af-4a23-8d2a-c4d1c64502d9
+      id: f1873b05-84d9-406b-8377-d4c56964fc34
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1555,7 +1567,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1568,14 +1579,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: a262c453-ff53-411b-884b-9923b3cda470
+    taskid: b50895fc-362d-49e7-8db2-639bfeb87818
     type: regular
     task:
-      id: a262c453-ff53-411b-884b-9923b3cda470
+      id: b50895fc-362d-49e7-8db2-639bfeb87818
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1590,7 +1602,6 @@ tasks:
       seconds:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1603,14 +1614,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: b4643230-07ff-4a8c-8626-0945d4655000
+    taskid: 7ffa1248-7b35-443e-84aa-73bdf51370a5
     type: regular
     task:
-      id: b4643230-07ff-4a8c-8626-0945d4655000
+      id: 7ffa1248-7b35-443e-84aa-73bdf51370a5
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1625,7 +1637,6 @@ tasks:
       seconds:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1638,14 +1649,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: ebdd9a3a-3e75-4820-8f32-a9d2d5f022c2
+    taskid: eb5983c4-372c-413d-8ce4-3e1743bd5700
     type: regular
     task:
-      id: ebdd9a3a-3e75-4820-8f32-a9d2d5f022c2
+      id: eb5983c4-372c-413d-8ce4-3e1743bd5700
       version: -1
       name: sleep
       description: Sleep for X seconds
@@ -1660,7 +1672,6 @@ tasks:
       seconds:
         simple: "7"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1673,24 +1684,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 6a6c09d1-111e-4dcd-8bd5-72003283c450
+    taskid: 2c88d5d5-92d5-4261-8992-8bfbfd715e9a
     type: title
     task:
-      id: 6a6c09d1-111e-4dcd-8bd5-72003283c450
+      id: 2c88d5d5-92d5-4261-8992-8bfbfd715e9a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "68"
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1703,14 +1712,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    nexttasks:
+      '#none#':
+      - "68"
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: e5c79e2b-75be-41b9-8d66-705aea43c5c8
+    taskid: e162a68a-3f9f-4aa9-8d28-0020f7da6d55
     type: regular
     task:
-      id: e5c79e2b-75be-41b9-8d66-705aea43c5c8
+      id: e162a68a-3f9f-4aa9-8d28-0020f7da6d55
       version: -1
       name: sleep
       description: Sleep for X seconds
@@ -1725,7 +1738,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1738,19 +1750,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: e998fce4-0160-4531-8c49-fe289d09ce1b
+    taskid: 9c3ed83f-b03f-4494-84a8-ea728c086d43
     type: title
     task:
-      id: e998fce4-0160-4531-8c49-fe289d09ce1b
+      id: 9c3ed83f-b03f-4494-84a8-ea728c086d43
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1769,10 +1783,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: dad64de1-8349-40f6-8040-bdf21a31e69e
+    taskid: d4bc2d1b-bab4-41e2-8980-843e3e354a38
     type: regular
     task:
-      id: dad64de1-8349-40f6-8040-bdf21a31e69e
+      id: d4bc2d1b-bab4-41e2-8980-843e3e354a38
       version: -1
       name: get large file
       description: Sends http request. Returns the response as json.
@@ -1810,10 +1824,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 73be8228-98b8-4a6d-8217-fe0d835119a5
+    taskid: 1c8fe1a8-904d-416c-838b-a0ae277589b6
     type: regular
     task:
-      id: 73be8228-98b8-4a6d-8217-fe0d835119a5
+      id: 1c8fe1a8-904d-416c-838b-a0ae277589b6
       version: -1
       name: 'upload  new file '
       description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
@@ -1866,10 +1880,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 2fcaeb7e-9e5f-47c3-8a3d-a392dc466fa6
+    taskid: e84c580b-c13f-45c3-8c89-9ca95794e3db
     type: condition
     task:
-      id: 2fcaeb7e-9e5f-47c3-8a3d-a392dc466fa6
+      id: e84c580b-c13f-45c3-8c89-9ca95794e3db
       version: -1
       name: Verify Results
       type: condition
@@ -1907,10 +1921,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 8e29cd2c-2854-42a9-87c9-cbab5a451820
+    taskid: cf6fdabb-5285-44c7-8209-97ffd762c5b1
     type: regular
     task:
-      id: 8e29cd2c-2854-42a9-87c9-cbab5a451820
+      id: cf6fdabb-5285-44c7-8209-97ffd762c5b1
       version: -1
       name: Replace existing file
       description: Replaces the content of the file in the specified MS Graph resource.
@@ -1960,10 +1974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: c54f3d73-04f3-4304-87d3-4d59f93520e7
+    taskid: 9c86bb65-3613-4c33-87a2-3069b6069bf8
     type: condition
     task:
-      id: c54f3d73-04f3-4304-87d3-4d59f93520e7
+      id: 9c86bb65-3613-4c33-87a2-3069b6069bf8
       version: -1
       name: Verify Results
       type: condition
@@ -2001,10 +2015,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 32bf3332-c3cf-4771-82b2-35657c6d21e1
+    taskid: 03b7b35c-30aa-4165-8744-af9b4c756748
     type: regular
     task:
-      id: 32bf3332-c3cf-4771-82b2-35657c6d21e1
+      id: 03b7b35c-30aa-4165-8744-af9b4c756748
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -2038,10 +2052,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 2eba2c98-0535-4817-82d7-fc982e6fb730
+    taskid: 6b57885c-06d3-43ec-81e5-097ea19f176a
     type: regular
     task:
-      id: 2eba2c98-0535-4817-82d7-fc982e6fb730
+      id: 6b57885c-06d3-43ec-81e5-097ea19f176a
       version: -1
       name: save id
       description: Set a value in context under the key you entered.
@@ -2086,10 +2100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 5d5e6814-8fc9-40ad-873a-1cf66b0b5dcc
+    taskid: dc418a6c-b31f-4d2c-855d-814128936a12
     type: regular
     task:
-      id: 5d5e6814-8fc9-40ad-873a-1cf66b0b5dcc
+      id: dc418a6c-b31f-4d2c-855d-814128936a12
       version: -1
       name: delete file
       description: Deletes an item from OneDrive.
@@ -2125,10 +2139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 438bdb75-2ac3-4cd8-80e5-dd4e693568d7
+    taskid: f9ad9b12-f3f7-47fb-8993-6f9ccabb9a21
     type: regular
     task:
-      id: 438bdb75-2ac3-4cd8-80e5-dd4e693568d7
+      id: f9ad9b12-f3f7-47fb-8993-6f9ccabb9a21
       version: -1
       name: get large file
       description: Sends http request. Returns the response as json.
@@ -2166,10 +2180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 840faf09-1e96-46fc-8835-d786a25f64d9
+    taskid: 68699637-6d91-4a55-8b51-58eecf560bd0
     type: regular
     task:
-      id: 840faf09-1e96-46fc-8835-d786a25f64d9
+      id: 68699637-6d91-4a55-8b51-58eecf560bd0
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -2201,10 +2215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: c77bf55d-c81e-4a80-8ac6-6c46262a10e4
+    taskid: e5c38d32-4bfd-4e06-853d-72a37afe5515
     type: regular
     task:
-      id: c77bf55d-c81e-4a80-8ac6-6c46262a10e4
+      id: e5c38d32-4bfd-4e06-853d-72a37afe5515
       version: -1
       name: list site content
       description: Returns a list of files and folders in the specified drive.
@@ -2240,10 +2254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: d71d24a5-0538-4af5-8564-9830dd806c11
+    taskid: 7e798b7d-2086-405f-8180-12cba4b8e1cb
     type: condition
     task:
-      id: d71d24a5-0538-4af5-8564-9830dd806c11
+      id: 7e798b7d-2086-405f-8180-12cba4b8e1cb
       version: -1
       name: Verify Results
       type: condition
@@ -2291,10 +2305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 70ccf950-5034-4f17-8562-9b11c233714f
+    taskid: 97785dc7-3c2a-4e93-8cbf-dfc2c2518ef0
     type: regular
     task:
-      id: 70ccf950-5034-4f17-8562-9b11c233714f
+      id: 97785dc7-3c2a-4e93-8cbf-dfc2c2518ef0
       version: -1
       name: Generate_file_name
       description: Generates random string
@@ -2334,10 +2348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 97ccb42f-8326-4538-8d16-a255878299de
+    taskid: 72d82261-c636-428a-8871-7ca616d1d8aa
     type: regular
     task:
-      id: 97ccb42f-8326-4538-8d16-a255878299de
+      id: 72d82261-c636-428a-8871-7ca616d1d8aa
       version: -1
       name: save file name
       description: Set a value in context under the key you entered.
@@ -2371,10 +2385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: b0041d7e-2634-4de1-8c2e-e26a7b6789b5
+    taskid: 9eeba59d-b81e-4631-88ff-a136ffd28a8b
     type: regular
     task:
-      id: b0041d7e-2634-4de1-8c2e-e26a7b6789b5
+      id: 9eeba59d-b81e-4631-88ff-a136ffd28a8b
       version: -1
       name: Test If File Exists
       description: Returns a list of files and folders in the specified drive.
@@ -2411,10 +2425,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 9f3dac4e-7d7a-435b-853f-308ff39cbd07
+    taskid: b1da4808-e408-42ab-8426-6b3dbd0dc699
     type: regular
     task:
-      id: 9f3dac4e-7d7a-435b-853f-308ff39cbd07
+      id: b1da4808-e408-42ab-8426-6b3dbd0dc699
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -2449,7 +2463,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10320,
+        "height": 10325,
         "width": 380,
         "x": 50,
         "y": 50
@@ -2460,3 +2474,4 @@ inputs: []
 outputs: []
 sourceplaybookid: test_MsGraphFiles
 fromversion: 5.0.0
+description: ''

@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Google
 commonfields:
   id: google-vault
   version: -1
@@ -557,6 +556,6 @@ script:
 tests:
 - Google-Vault-Generic-Test
 fromversion: 5.0.0
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

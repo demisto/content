@@ -29,7 +29,6 @@ from Reco import (
     get_private_email_list_with_access,
     get_apps_command,
     set_app_authorization_status_command,
-    parse_alerts_to_incidents,
 )
 
 from test_data.structs import (
@@ -99,7 +98,6 @@ def get_random_table_response() -> GetIncidentTableResponse:
 
 def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str, Any]]:
     alert = {
-        "riskLevel": 30,
         "alert": {
             "id": INCIDET_ID_UUID,
             "policyId": "7f174580-81b6-4349-a4ca-ca8873b48b78",
@@ -118,7 +116,7 @@ def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str,
                 ]
             },
             "status": "ALERT_STATUS_NEW",
-            "riskLevel": 30,
+            "riskLevel": "HIGH",
             "policyViolations": [
                 {
                     "id": "75123c18-5ea2-4511-b9c0-1aad67e8b2ff",
@@ -131,7 +129,7 @@ def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str,
             ],
             "createdAt": "2023-05-03T10:21:04.765477Z",
             "updatedAt": "2023-05-03T10:21:04.078627Z",
-        },
+        }
     }
     alerts_table = GetIncidentTableResponse(
         get_table_response=GetTableResponse(
@@ -151,7 +149,7 @@ def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str,
                             ),
                             KeyValuePair(
                                 key="risk_level",
-                                value=base64.b64encode("30".encode(ENCODING)).decode(ENCODING),
+                                value=base64.b64encode("HIGH".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="created_at",
@@ -378,6 +376,10 @@ def reco_client() -> RecoClient:
 
 
 def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) -> None:
+    random_incidents = get_random_table_response()
+    assets = get_mock_assets()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets)
     random_alerts_response, alert = get_alerts_and_table_response()
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
@@ -389,17 +391,23 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         last_run={},
         max_fetch=1,
     )
-    expected_count = random_alerts_response.getTableResponse.total_number_of_results
+    expected_count = (
+        random_incidents.getTableResponse.total_number_of_results
+        + random_alerts_response.getTableResponse.total_number_of_results
+    )
 
     assert len(fetched_incidents) == expected_count
-    assert fetched_incidents[0].get("name") == "1 sensitive file exposed publicly by t@acme.ai (part of ACME IL)"
+    assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
-    assert fetched_incidents[0].get("severity") == 3  # risk_level 30 -> Demisto high
     res_json = json.loads(fetched_incidents[0].get("rawJSON"))
-    assert "id" in res_json
+    assert res_json.get("assets", {}) == assets.get("assets")
 
 
 def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
+    random_incidents = get_random_table_response()
+    assets = get_mock_assets()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets)
     random_alerts_response, alert = get_alerts_and_table_response()
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
@@ -410,7 +418,10 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         last_run={},
         max_fetch=1,
     )
-    expected_count = random_alerts_response.getTableResponse.total_number_of_results
+    expected_count = (
+        random_incidents.getTableResponse.total_number_of_results
+        + random_alerts_response.getTableResponse.total_number_of_results
+    )
 
     assert len(fetched_incidents) == expected_count
     last_run, incidents = fetch_incidents(
@@ -424,18 +435,31 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoClient) -> None:
+    random_incidents = get_random_table_response()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={})
     random_alerts_response, alert = get_alerts_and_table_response()
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
     last_run, fetched_incidents = fetch_incidents(reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1)
 
-    expected_count = random_alerts_response.getTableResponse.total_number_of_results
+    expected_count = (
+        random_incidents.getTableResponse.total_number_of_results
+        + random_alerts_response.getTableResponse.total_number_of_results
+    )
 
     assert len(fetched_incidents) == expected_count
-    assert fetched_incidents[0].get("name") == "1 sensitive file exposed publicly by t@acme.ai (part of ACME IL)"
+    assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
     res_json = json.loads(fetched_incidents[0].get("rawJSON"))
-    assert "id" in res_json
+    assert res_json.get("assets", {}) == []
+
+
+def test_fetch_assets_with_empty_response(requests_mock, reco_client: RecoClient) -> None:
+    incident_id = uuid.uuid1()
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{incident_id}", json={})
+    assets = reco_client.get_incidents_assets(incident_id=incident_id)
+    assert assets == []
 
 
 def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
@@ -447,6 +471,10 @@ def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
             dynamic_table_definition="",
             token="",
         )
+    )
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident",
+        json=table_empty,
     )
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
     last_run, fetched_incidents = fetch_incidents(reco_client=reco_client, last_run={}, max_fetch=1)
@@ -465,6 +493,10 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
             token="",
         )
     )
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident",
+        json=table_empty,
+    )
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
     last_run, fetched_incidents = fetch_incidents(reco_client=reco_client, last_run={}, max_fetch=1)
 
@@ -473,12 +505,13 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json={"getTableResponse": {}})
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json={"getTableResponse": {}})
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
         last_run={},
         max_fetch=1,
-        risk_level=RiskLevel.HIGH.value,
+        risk_level=str(RiskLevel.HIGH),
         source="GSUITE_GDRIVE_AUDIT_LOG_API",
     )
 
@@ -487,64 +520,12 @@ def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_risk_level_mapper():
-    """Map Reco numeric risk score (10-40) to Demisto severity."""
-    assert map_reco_score_to_demisto_score(40) == 4
-    assert map_reco_score_to_demisto_score(30) == 3
-    assert map_reco_score_to_demisto_score(20) == 2
-    assert map_reco_score_to_demisto_score(10) == 0.5
-    assert map_reco_score_to_demisto_score(0) == 0.5
-
-
-def test_risk_level_mapper_mid_range():
-    """Mid-range scores (10-40) normalize to tier: 10->0.5, 20->2, 30->3, 40->4."""
-    assert map_reco_score_to_demisto_score(15) == 0.5
-    assert map_reco_score_to_demisto_score(25) == 2
-    assert map_reco_score_to_demisto_score(35) == 3
-    assert map_reco_score_to_demisto_score(37) == 3
+    risk_level_high = 40
+    assert map_reco_score_to_demisto_score(risk_level_high) == 4
 
 
 def test_alert_mapper():
     assert map_reco_alert_score_to_demisto_score("CRITICAL") == 4
-
-
-def test_parse_alerts_to_incidents_numeric_risk():
-    """parse_alerts_to_incidents maps numeric risk_level (10-40) to severity."""
-    alerts = [
-        {"riskLevel": 40, "description": "Critical", "id": "1", "createdAt": "2023-01-01T00:00:00Z"},
-        {"risk_level": 20, "description": "Medium", "id": "2", "created_at": "2023-01-01T00:00:00Z"},
-        {"riskLevel": 15, "description": "Low tier", "id": "3", "createdAt": "2023-01-01T00:00:00Z"},
-    ]
-    incidents = parse_alerts_to_incidents(alerts)
-    assert len(incidents) == 3
-    assert incidents[0]["severity"] == 4
-    assert incidents[1]["severity"] == 2
-    assert incidents[2]["severity"] == 0.5
-
-
-def test_parse_alerts_to_incidents_missing_risk_defaults_to_low():
-    """When risk_level is missing or invalid, severity defaults to 0.5 (LOW)."""
-    alerts = [{"description": "No risk", "id": "1", "createdAt": "2023-01-01T00:00:00Z"}]
-    incidents = parse_alerts_to_incidents(alerts)
-    assert len(incidents) == 1
-    assert incidents[0]["severity"] == 0.5
-
-
-def test_parse_alerts_to_incidents_risk_level_string_and_int():
-    """risk_level works as string labels ('HIGH'), string numbers ('10'), and ints (40)."""
-    alerts = [
-        {"riskLevel": "HIGH", "description": "High", "id": "1", "createdAt": "2023-01-01T00:00:00Z"},
-        {"risk_level": "10", "description": "Low str", "id": "2", "created_at": "2023-01-01T00:00:00Z"},
-        {"riskLevel": 40, "description": "Critical int", "id": "3", "createdAt": "2023-01-01T00:00:00Z"},
-        {"riskLevel": "30", "description": "High str num", "id": "4", "createdAt": "2023-01-01T00:00:00Z"},
-        {"risk_level": "MEDIUM", "description": "Medium", "id": "5", "created_at": "2023-01-01T00:00:00Z"},
-    ]
-    incidents = parse_alerts_to_incidents(alerts)
-    assert len(incidents) == 5
-    assert incidents[0]["severity"] == 3  # "HIGH" -> high
-    assert incidents[1]["severity"] == 0.5  # "10" -> low
-    assert incidents[2]["severity"] == 4  # 40 -> critical
-    assert incidents[3]["severity"] == 3  # "30" -> high
-    assert incidents[4]["severity"] == 2  # "MEDIUM" -> medium
 
 
 def test_get_max_fetch_bigger():
@@ -561,8 +542,8 @@ def test_max_fetch():
 
 def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/share-service/share-comment",
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
         json={},
         status_code=200,
     )
@@ -572,8 +553,8 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/share-service/share-comment",
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
         json={},
         status_code=404,
     )

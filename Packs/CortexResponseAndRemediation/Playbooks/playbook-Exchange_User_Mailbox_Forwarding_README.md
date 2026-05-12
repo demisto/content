@@ -49,18 +49,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Cortex Core - IR
+* AzureRiskyUsers
+* Microsoft 365 Defender
+* Microsoft Graph User
+* EWSO365
+* SecurityAndComplianceV2
 
 ### Scripts
 
 * GetTime
-* IncreaseAlertSeverity
 * SetAndHandleEmpty
-* clear-user-session
-* disable-user
-* domain-enrichment
-* get-user-data
-* ip-enrichment
 
 ### Commands
 
@@ -68,9 +67,14 @@ This playbook does not use any integrations.
 * azure-risky-users-risk-detections-list
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-list-risky-users
+* domain
 * email
 * ews-mail-forwarding-disable
+* ip
 * microsoft-365-defender-advanced-hunting
+* msgraph-user-account-disable
+* msgraph-user-session-revoke
 
 ## Playbook Inputs
 

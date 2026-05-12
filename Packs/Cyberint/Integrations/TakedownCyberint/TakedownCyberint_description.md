@@ -1,1 +1,0 @@
-Use the Cyberint Takedowns integration to manage takedowns requests

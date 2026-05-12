@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Changed the dataset name to forescout_technologies_counteract_raw, aligning the dataset name with the incoming CEF format."
-}

@@ -1068,7 +1068,6 @@ def test_submit_threat_command(requests_mock, mocker):
     alert_type = "email"
     violation = "phishing"
     entity_id = "123"
-    request_takedown = True
     alert_id = "123"
     submit_response = load_json("test_data/alerts/submit_threat.json")
     alert_response = load_json("test_data/alerts/opened_alert.json")
@@ -1081,7 +1080,6 @@ def test_submit_threat_command(requests_mock, mocker):
         "alert_type": alert_type,
         "violation": violation,
         "entity_id": entity_id,
-        "request_takedown": request_takedown,
     }
 
     results = submit_threat_command(client, args)

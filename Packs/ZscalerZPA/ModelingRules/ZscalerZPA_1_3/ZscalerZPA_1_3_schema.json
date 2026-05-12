@@ -16,6 +16,14 @@
           "type": "string",
           "is_array": false
         },
+        "_vendor": {
+          "type": "string",
+          "is_array": false
+        },
+        "_product": {
+          "type": "string",
+          "is_array": false
+        },
         "usrName": {
           "type": "string",
           "is_array": false
@@ -112,6 +120,10 @@
             "type": "string",
             "is_array": false
           },
+        "_id": {
+            "type": "string",
+            "is_array": false
+          },
         "Version": {
             "type": "string",
             "is_array": false
@@ -121,6 +133,10 @@
             "is_array": false
           },
         "Customer": {
+            "type": "string",
+            "is_array": false
+          },
+        "_final_reporting_device_ip": {
             "type": "string",
             "is_array": false
           },

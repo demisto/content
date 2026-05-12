@@ -3,7 +3,7 @@ import re
 import demistomock as demisto
 import requests
 from CommonServerPython import *
-from packaging.version import parse as parse_version
+from pkg_resources import parse_version
 
 from CommonServerUserPython import *
 
@@ -132,9 +132,10 @@ def find_latest_tag_by_date(tags):
 
 def main():
     if demisto.args().get("use_system_proxy") == "no":
-        # Remove proxy environment variables if they exist
-        for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-            os.environ.pop(proxy_var, None)
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
     verify_ssl = demisto.args().get("trust_any_certificate") != "yes"
     docker_full_name = demisto.args()["docker_image"]
     gateway_creds = demisto.args().get("creds_for_opp", "")

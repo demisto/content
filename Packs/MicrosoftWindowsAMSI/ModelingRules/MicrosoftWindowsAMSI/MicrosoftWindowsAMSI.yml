@@ -4,5 +4,3 @@ name: Microsoft Windows AMSI Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

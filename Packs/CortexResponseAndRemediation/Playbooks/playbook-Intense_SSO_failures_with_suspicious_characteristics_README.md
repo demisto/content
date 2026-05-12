@@ -44,7 +44,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-This playbook does not use any sub-playbooks.
+* Containment Plan - Clear User Sessions
 
 ### Integrations
 
@@ -54,13 +54,8 @@ This playbook does not use any integrations.
 
 * AnalyzeTimestampIntervals
 * GetTime
-* IncreaseAlertSeverity
 * SearchAlertsV2
 * SetAndHandleEmpty
-* clear-user-session
-* disable-user
-* get-user-data
-* ip-enrichment
 
 ### Commands
 
@@ -68,7 +63,10 @@ This playbook does not use any integrations.
 * azure-risky-users-risk-detections-list
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-list-risky-users
+* ip
 * microsoft-365-defender-advanced-hunting
+* msgraph-user-account-disable
 
 ## Playbook Inputs
 

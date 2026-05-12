@@ -1,5 +1,4 @@
 category: Network Security
-provider: Broadcom
 commonfields:
   id: Symantec Data Loss Prevention
   version: -1

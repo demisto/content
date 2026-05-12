@@ -1,8 +1,6 @@
 name: VMware ESXi Parsing Rule
-id: VMware_ESXi_ParsingRule
-fromversion: 8.13.0
+id: VMwareESXi Parsing Rule
+fromversion: 6.10.0
 tags: []
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

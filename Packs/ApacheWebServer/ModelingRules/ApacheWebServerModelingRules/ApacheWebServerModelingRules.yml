@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: Apache Web Server
 toversion: 6.9.9
-supportedModules:
-- xsiam

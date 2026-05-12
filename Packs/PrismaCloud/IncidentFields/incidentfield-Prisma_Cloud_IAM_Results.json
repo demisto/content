@@ -178,9 +178,5 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.8.0",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "fromVersion": "6.8.0"
 }

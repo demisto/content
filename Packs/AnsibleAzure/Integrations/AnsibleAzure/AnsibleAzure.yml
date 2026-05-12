@@ -1,5 +1,4 @@
 category: IT Services
-provider: IBM
 commonfields:
   id: AnsibleAzure
   version: -1

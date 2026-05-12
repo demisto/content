@@ -10,10 +10,16 @@
                 {
                     "SEARCH_FIELD": "alert_source",
                     "SEARCH_TYPE": "EQ",
-                    "SEARCH_VALUE": "XPANSE"
+                    "SEARCH_VALUE": "ASM"
                 }
             ]
         }
     },
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

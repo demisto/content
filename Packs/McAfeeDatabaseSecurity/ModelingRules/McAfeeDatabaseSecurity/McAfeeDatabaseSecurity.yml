@@ -4,5 +4,3 @@ name: McAfee Database Security Modeling Rule
 rules: ''
 schema: ''
 tags: McAfee Database Security
-supportedModules:
-- xsiam

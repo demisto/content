@@ -1,6 +1,5 @@
 category: Utilities
-provider: Microsoft
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

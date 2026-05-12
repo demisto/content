@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Salesforce
 commonfields:
   id: Salesforce Fusion IAM
   version: -1

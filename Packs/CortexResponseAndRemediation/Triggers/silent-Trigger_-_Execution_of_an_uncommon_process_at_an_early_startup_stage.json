@@ -1,0 +1,35 @@
+{
+  "trigger_id": "f3f3a1f57fa6e83957487dc5e62f8c7e",
+  "playbook_id": "silent-Execution of an uncommon process at an early startup stage",
+  "suggestion_reason": "Recommended for 'Execution of an uncommon process at an early startup stage with suspicious characteristics' and the 'Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics' alerts",
+  "description": "This trigger is responsible for handling the 'Execution of an uncommon process at an early startup stage with suspicious characteristics' and the 'Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics' alerts",
+  "trigger_name": "silent-Execution of an uncommon process at an early startup stage",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Execution of an uncommon process at an early startup stage with suspicious characteristics"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics"
+                }
+                ]
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
+    }
+  }
+}
+

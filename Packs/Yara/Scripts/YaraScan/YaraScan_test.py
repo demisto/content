@@ -7,7 +7,7 @@ def test_main(mocker):
     rule = """rule PE_file_identifier
 {
     meta:
-        author = "Adam Testburt"
+        author = "Adam Burt"
         description = "Detects PE files"
         date = "12/08/2016"
 
@@ -26,7 +26,7 @@ def test_main(mocker):
         else:
             raise ValueError(f"Unimplemented command called: {name}")
 
-    mocker.patch.object(demisto, "args", return_value={"entryIDs": "test@1111", "yaraRule": rule})
+    mocker.patch.object(demisto, "args", return_value={"entryIDs": "test", "yaraRule": rule})
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     mocker.patch.object(demisto, "results")
     main()

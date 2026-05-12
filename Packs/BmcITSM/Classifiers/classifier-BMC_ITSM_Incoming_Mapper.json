@@ -58,60 +58,6 @@
                 },
                 "BmcITSM VIP Flag": {
                     "simple": "VIP"
-                },
-                "Bmc Contact Sensitivity": {
-                    "simple": "ContactSensitivity"
-                },
-                "Bmc Display ID": {
-                    "simple": "DisplayID"
-                },
-                "Bmc Impact": {
-                    "simple": "Impact"
-                },
-                "Bmc Request ID": {
-                    "simple": "RequestID"
-                },
-                "Bmc Status Reason": {
-                    "simple": "StatusReason"
-                },
-                "Bmc Sub-Type": {
-                    "simple": "SubType"
-                },
-                "Bmc Submitter": {
-                    "simple": "Submitter"
-                },
-                "Bmc VIP Flag": {
-                    "simple": "VIP"
-                },
-                "Bmc Assignee": {
-                    "simple": "Assignee"
-                },
-                "Bmc Customer": {
-                    "simple": "Customer"
-                },
-                "Bmc Reason For Change": {
-                    "simple": "ReasonForChange"
-                },
-                "Bmc Requester": {
-                    "simple": "Requester"
-                },
-                "Bmc Risk Level": {
-                    "simple": "RiskLevel"
-                },
-                "BmcITSM Assignee": {
-                    "simple": "Assignee"
-                },
-                "BmcITSM Customer": {
-                    "simple": "Customer"
-                },
-                "BmcITSM Reason For Change": {
-                    "simple": "ReasonForChange"
-                },
-                "BmcITSM Requester": {
-                    "simple": "Requester"
-                },
-                "BmcITSM Risk Level": {
-                    "simple": "RiskLevel"
                 }
             }
         },
@@ -212,24 +158,10 @@
                         "filters": [],
                         "root": "Assignee",
                         "transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							},
-							{
-								"args": {
-									"empty_values": {
-										"isContext": false
-									},
-									"remove_keys": {
-										"isContext": false,
-										"value": {
-											"simple": "true"
-										}
-									}
-								},
-								"operator": "RemoveEmpty"
-							}
-						]
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
                     }
                 },
                 "BmcITSM Customer": {
@@ -237,24 +169,10 @@
                         "filters": [],
                         "root": "Customer",
                         "transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							},
-							{
-								"args": {
-									"empty_values": {
-										"isContext": false
-									},
-									"remove_keys": {
-										"isContext": false,
-										"value": {
-											"simple": "true"
-										}
-									}
-								},
-								"operator": "RemoveEmpty"
-							}
-						]
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
                     }
                 },
                 "BmcITSM Requester": {
@@ -262,24 +180,10 @@
                         "filters": [],
                         "root": "Requester",
                         "transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							},
-							{
-								"args": {
-									"empty_values": {
-										"isContext": false
-									},
-									"remove_keys": {
-										"isContext": false,
-										"value": {
-											"simple": "true"
-										}
-									}
-								},
-								"operator": "RemoveEmpty"
-							}
-						]
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
                     }
                 },
                 "Description": {

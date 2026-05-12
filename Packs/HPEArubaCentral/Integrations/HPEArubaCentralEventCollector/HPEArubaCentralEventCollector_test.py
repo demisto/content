@@ -1,4 +1,3 @@
-from CommonServerPython import DemistoException
 from HPEArubaCentralEventCollector import main, Client
 import pytest
 import demistomock as demisto
@@ -346,19 +345,18 @@ def test_fetch_with_duplicates(mocker, requests_mock):
 
 
 @pytest.mark.parametrize("should_fail", [True, False])
-def test_aruba_auth_test(mocker, should_fail):
+def test_test_module(mocker, should_fail):
     """
     Given:
-    - aruba-auth-test command
+    - test module command
 
     When:
-    - executing the 'aruba-auth-test' command
+    - Pressing test button
 
     Then:
-    - CommnadResults will be returned with an informative message of success or failure if it's a known failure,
-      otherwise an exception will be raised.
+    - Test module passed
     """
-    mocker.patch.object(demisto, "command", return_value="aruba-auth-test")
+    mocker.patch.object(demisto, "command", return_value="test-module")
     mock_instance_params(mocker)
 
     if should_fail:
@@ -377,24 +375,7 @@ def test_aruba_auth_test(mocker, should_fail):
     else:
         return_results_mock = mocker.patch("HPEArubaCentralEventCollector.return_results")
         main()
-        assert return_results_mock.call_args[0][0].readable_output == "Authentication was successful."
-
-
-def test_test_module():
-    """
-    Given:
-    - test-module command
-
-    When:
-    - Pressing test button
-
-    Then:
-    - Demisto Exception should be raised
-    """
-    from HPEArubaCentralEventCollector import test_module
-
-    with pytest.raises(DemistoException):
-        test_module()
+        return_results_mock.assert_called_once_with("ok")
 
 
 @freeze_time(FETCH_DATE)

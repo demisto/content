@@ -11,12 +11,6 @@
 				},
 				"sentinelonethreatanalystverdict": {
 					"simple": "analystVerdict"
-				},
-				"sentineloneuamalertstatus": {
-					"simple": "uamStatus"
-				},
-				"sentineloneuamalertanalystverdictmapped": {
-					"simple": "uamAnalystVerdict"
 				}
             }
         }

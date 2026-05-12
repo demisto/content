@@ -20,8 +20,7 @@ The Reco and Palo Alto Networks Cortex XSOAR integration automates SaaS threat d
 
 ## Key Commands
 
-- **reco-add-comment-to-alert**
-- **reco-update-incident-timeline**
+- **update-reco-incident-timeline**
 - **resolve-visibility-event**
 - **reco-get-risky-users**
 - **reco-add-risky-user-label**

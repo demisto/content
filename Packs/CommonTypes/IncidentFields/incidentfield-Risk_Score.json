@@ -15,8 +15,7 @@
 		"AWS Security Hub Finding",
 		"Prisma Cloud - VM Alert Prioritization",
         "Exabeam Notable User",
-        "Exabeam Platform Case",
-        "CrowdStrike Falcon NGSIEM Automated Lead"
+        "Exabeam Platform Case"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

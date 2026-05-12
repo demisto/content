@@ -8,23 +8,23 @@
             "internalMapping": {
                 "Orca Cloud Account": {
                     "complex": null,
-                    "simple": "AssetData.cloud_provider_id"
+                    "simple": "cloud_provider_id"
                 },
                 "Orca Alert ID": {
                     "complex": null,
-                    "simple": "AlertId"
+                    "simple": "state.alert_id"
                 },
                 "Orca Asset Unique ID": {
                     "complex": null,
-                    "simple": "GroupUniqueId"
+                    "simple": "asset_unique_id"
                 },
                 "Orca Reason": {
                     "complex": null,
-                    "simple": "AlertType"
+                    "simple": "type_string"
                 },
                 "details": {
                     "complex": null,
-                    "simple": "Details"
+                    "simple": "details"
                 },
                 "severity": {
                     "complex": null,
@@ -46,11 +46,11 @@
             "internalMapping": {
                 "details": {
                     "complex": null,
-                    "simple": "Description"
+                    "simple": "description"
                 },
                 "name": {
                     "complex": null,
-                    "simple": "AlertId"
+                    "simple": "state.alert_id"
                 },
                 "severity": {
                     "complex": null,
@@ -64,7 +64,9 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

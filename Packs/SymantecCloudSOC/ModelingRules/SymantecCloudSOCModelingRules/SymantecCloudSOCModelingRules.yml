@@ -4,5 +4,3 @@ name: SymantecCloudSOC Modeling Rule
 rules: ''
 schema: ''
 tags: SymantecCloudSOC
-supportedModules:
-- xsiam

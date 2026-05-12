@@ -1,8 +1,0 @@
-fromversion: 8.14.0
-id: Slack_ModelingRule
-name: Slack Modeling Rule
-rules: ''
-schema: ''
-supportedModules:
-- xsiam
-tags: 'slack'

@@ -3,8 +3,7 @@
     "feed": false,
     "id": "Rubrik Polaris Radar - Classification",
     "keyTypeMap": {
-        "RubrikRadar": "Rubrik Radar",
-        "RubrikThreatMonitoringObject": "Rubrik Threat Monitoring Object"
+        "RubrikRadar": "Rubrik Radar"
     },
     "name": "Rubrik Polaris Radar - Classification",
     "transformer": {

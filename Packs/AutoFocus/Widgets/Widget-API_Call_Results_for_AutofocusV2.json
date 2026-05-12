@@ -94,7 +94,9 @@
     "fromVersion": "6.10.0",
     "description": "",
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

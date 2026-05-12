@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "***Breaking Change*** Implemented a new Orca fetch alerts API. Alerts will have a new format"
-}

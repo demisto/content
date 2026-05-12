@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Cofense
 commonfields:
   id: Cofense Feed
   version: -1
@@ -114,7 +113,7 @@ script:
       name: from_time
     description: Gets indicators from the feed.
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

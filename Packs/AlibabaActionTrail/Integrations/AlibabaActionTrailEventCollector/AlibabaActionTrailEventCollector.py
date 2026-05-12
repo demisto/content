@@ -12,7 +12,7 @@ from SiemApiModule import *
 
 API_VERSION = "0.6.0"
 VENDOR = "alibaba"
-PRODUCT = "action_trail"
+PRODUCT = "action-trail"
 urllib3.disable_warnings()
 
 

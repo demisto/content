@@ -4,5 +4,3 @@ name: Google Apigee Edge Modeling Rule
 rules: ''
 schema: ''
 tags:
-supportedModules:
-- xsiam

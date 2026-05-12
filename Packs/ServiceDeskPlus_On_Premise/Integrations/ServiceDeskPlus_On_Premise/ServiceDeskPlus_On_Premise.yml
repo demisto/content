@@ -1,5 +1,4 @@
 category: Case Management
-provider: Zoho Corporation
 commonfields:
   id: ServiceDeskPlus (On-Premise)
   version: -1

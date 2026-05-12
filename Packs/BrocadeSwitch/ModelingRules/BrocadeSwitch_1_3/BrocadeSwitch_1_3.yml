@@ -4,5 +4,3 @@ name: Brocade Switch Modeling Rule
 rules: ''
 schema: ''
 tags: Brocade Switch
-supportedModules:
-- xsiam

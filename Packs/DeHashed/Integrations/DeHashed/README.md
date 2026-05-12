@@ -4,10 +4,10 @@ This integration allows you to check if your personal information such as your e
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API Key | For generating an API Key, see https://www.dehashed.com. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS) |  | False |
+| credentials | Username | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| email_dbot_score | Email Severity: The DBot reputation for compromised emails \(SUSPICIOUS or MALICIOUS\) | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## Commands
@@ -28,12 +28,12 @@ Performs a search to check if information is compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument. Possible values are: email, ip_address, username, hashed_password, name, vin, address, phone, all_fields. | Required |
+| asset_type | If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument. | Required |
 | value | The searched value. | Required |
-| operation | The search operator. Possible values are: is, regex. | Required |
-| page | The number of page to return. Each page contains up to 5,000 results. | Optional |
-| results_from | Starting result number to display. Default is 1. | Optional |
-| results_to | Ending result number to display. Default is 50. | Optional |
+| operation | Search operator. Can be "is", "contains", or "regex". | Required |
+| page | The number of page to return. Each page contains a maximum of 5,000 results. entries. | Optional |
+| results_from | Starting result number to display. Default is 0. Dehashed response can include more than 5,000 results. | Optional |
+| results_to | Ending result number to display. Default is 100. Dehashed response can include more than 5,000 results. | Optional |
 
 #### Context Output
 
@@ -45,27 +45,22 @@ Performs a search to check if information is compromised.
 | DeHashed.Search.Password | String | Password of the object. |
 | DeHashed.Search.HashedPassword | String | Hashed password of the object. |
 | DeHashed.Search.Name | String | Name of the object. |
+| DeHashed.Search.Vin | Number | Vehicle identification of the object. |
 | DeHashed.Search.Address | String | Address of the object. |
-| DeHashed.Search.IpAddress | String | IP address of the object. |
+| DeHashed.Search.IpDddress | Number | IP address of the object. |
 | DeHashed.Search.Phone | Number | Phone number of the object. |
-| DeHashed.Search.Dob | String | Date of birth. |
-| DeHashed.Search.LicensePlate | String | License plate. |
-| DeHashed.Search.Company | String | Company name. |
-| DeHashed.Search.Url | String | Associated URL. |
-| DeHashed.Search.Social | String | Social media handle. |
-| DeHashed.Search.CryptocurrencyAddress | String | Cryptocurrency address. |
-| DeHashed.Search.DatabaseName | String | Source database/breach name \(drives DBot score\). |
-| Dehashed.LastQuery.ResultsFrom | Number | The value of the "results_from" argument that was passed in the last query. |
-| Dehashed.LastQuery.ResultsTo | Unknown | The value of the "results_to" argument that was passed in the last query. |
+| DeHashed.Search.ObtainedFrom | String | Source of the object. |
+| Dehashed.LastQuery.ResultsFrom | Number | The value of the "results\_from" argument that was passed in the last query. |
+| Dehashed.LastQuery.ResultsTo | Unknown | The value of the "results\_to" argument that was passed in the last query. |
 | Dehashed.LastQuery.TotalResults | Number | The total number of entries returned from the last query. |
 | Dehashed.LastQuery.DisplayedResults | Number | The number of entries that were displayed in Cortex XSOAR from the last query. |
 
 #### Command Example
 
-`!dehashed-search asset_type=all_fields operation=contains value=or-gal@gmail.com results_to=4 results_from=1`
-`!dehashed-search asset_type=email operation=is value=or-gal@gmail.com page=1`
-`!dehashed-search asset_type=name operation=contains value=gal,gil,test1 results_from=2 results_to=30 page=3`
-`!dehashed-search asset_type=name operation=regex value=joh?n(ath[oa]n)`
+!dehashed-search asset_type=all_fields operation=contains value=or-gal@gmail.com results_to=4 results_from=0
+!dehashed-search asset_type=email operation=is value=or-gal@gmail.com page=1
+!dehashed-search asset_type=name operation=contains value=gal,gil,test1 results_from=2 results_to=30 page=3
+!dehashed-search asset_type=name operation=regex value=joh?n(ath[oa]n)
 
 #### Human Readable Output
 
@@ -94,16 +89,11 @@ Checks if an email address was compromised.
 | DeHashed.Search.Password | String | Password of the object. |
 | DeHashed.Search.HashedPassword | String | Hashed password of the object. |
 | DeHashed.Search.Name | String | Name of the object. |
+| DeHashed.Search.Vin | Number | Vehicle identification of the object. |
 | DeHashed.Search.Address | String | Address of the object. |
-| DeHashed.Search.IpAddress | String | IP address of the object. |
+| DeHashed.Search.IpDddress | Number | IP address of the object. |
 | DeHashed.Search.Phone | Number | Phone number of the object. |
-| DeHashed.Search.Dob | String | Date of birth. |
-| DeHashed.Search.LicensePlate | String | License plate. |
-| DeHashed.Search.Company | String | Company name. |
-| DeHashed.Search.Url | String | Associated URL. |
-| DeHashed.Search.Social | String | Social media handle. |
-| DeHashed.Search.CryptocurrencyAddress | String | Cryptocurrency address. |
-| DeHashed.Search.DatabaseName | String | Source database/breach name \(drives DBot score\). |
+| DeHashed.Search.ObtainedFrom | String | Source of the object. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
@@ -112,6 +102,6 @@ Checks if an email address was compromised.
 
 #### Command Example
 
-`!email email=or-gal@gmail.com`
+!email email=or-gal@gmail.com
 
 #### Human Readable Output

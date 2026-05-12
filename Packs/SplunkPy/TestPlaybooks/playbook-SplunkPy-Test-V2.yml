@@ -556,6 +556,7 @@ tasks:
       script: '|||splunk-job-status'
       type: regular
       iscommand: true
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "8"

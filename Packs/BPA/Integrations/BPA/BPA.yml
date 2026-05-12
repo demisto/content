@@ -1,5 +1,4 @@
 category: Utilities
-provider: BPA Securities
 commonfields:
   id: BPA
   version: -1

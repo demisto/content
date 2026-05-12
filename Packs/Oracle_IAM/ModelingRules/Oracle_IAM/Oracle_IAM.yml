@@ -1,8 +1,0 @@
-fromversion: 8.5.0
-id: Oracle_OAM_ModelingRule
-name: Oracle OAM Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam

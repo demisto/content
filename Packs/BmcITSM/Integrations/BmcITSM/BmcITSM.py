@@ -14,115 +14,59 @@ KNOWN_ERROR = "known error"
 WORK_ORDER = "work order"
 
 SERVICE_REQUEST_CONTEXT_MAPPER = {
-    "Assigned Group": "Assigned Group",  # Migrated from Common Mapper
-    "Assigned Support Company": "Assigned Support Company",  # Migrated from Common Mapper
-    "Assigned Support Organization": "Assigned Support Organization",  # Migrated from Common Mapper
-    "Assignee Group": "Assignee Group",  # Migrated from Common Mapper
-    "Assignee": "Assignee",  # Migrated from Common Mapper
-    "Customer Company": "Customer Company",  # Migrated from Common Mapper
-    "Customer Department": "Customer Department",  # Migrated from Common Mapper
-    "Customer First Name": "Customer First Name",  # Migrated from Common Mapper
-    "Customer Internet E-mail": "Customer Internet E-mail",  # Migrated from Common Mapper
-    "Customer Last Name": "Customer Last Name",  # Migrated from Common Mapper
-    "Customer Organization": "Customer Organization",  # Migrated from Common Mapper
-    "Customer Phone Number": "Customer Phone Number",  # Migrated from Common Mapper
-    "Details": "Details",
-    "Last Modified Date": "LastModifiedDate",
-    "Next Target Date": "TargetDate",
-    "Request Number": "DisplayID",
-    "Request Type": "Request Type",  # Migrated from Common Mapper
-    "Resolution": "Resolution",  # Migrated from Common Mapper
-    "Status_Reason": "StatusReason",
-    "Status": "Status",
-    "Submit Date": "CreateDate",
-    "Summary": "Summary",
     "SysRequestID": "RequestID",
+    "Request Number": "DisplayID",
+    "Submit Date": "CreateDate",
+    "Next Target Date": "TargetDate",
+    "Status": "Status",
+    "Summary": "Summary",
+    "Last Modified Date": "LastModifiedDate",
+    "Request Type": "SubType",
+    "Status_Reason": "StatusReason",
+    "Details": "Details",
 }
 CHANGE_REQUEST_CONTEXT_MAPPER = {
-    "Assigned To": "Assignee",
-    "Change Request Status": "Status",
-    "Change Type": "SubType",
-    "Customer Company": "Customer Company",  # Migrated from Common Mapper
-    "Customer Department": "Customer Department",  # Migrated from Common Mapper
-    "Customer First Name": "Customer First Name",  # Migrated from Common Mapper
-    "Customer Internet E-mail": "Customer Internet E-mail",  # Migrated from Common Mapper
-    "Customer Last Name": "Customer Last Name",  # Migrated from Common Mapper
-    "Customer Organization": "Customer Organization",  # Migrated from Common Mapper
-    "Customer Phone Number": "Customer Phone Number",  # Migrated from Common Mapper
-    "Description": "Summary",
-    "Detailed Description": "Details",
-    "Infrastructure Change ID": "DisplayID",
-    "Last Modified Date": "LastModifiedDate",
-    "Next Target Date": "TargetDate",
-    "Reason For Change": "ReasonForChange",
     "Request ID": "RequestID",
-    "Risk Level": "RiskLevel",
-    "Status Reason": "StatusReason",
+    "Infrastructure Change ID": "DisplayID",
     "Submit Date": "CreateDate",
+    "Next Target Date": "TargetDate",
+    "Change Request Status": "Status",
+    "Description": "Summary",
+    "Risk Level": "RiskLevel",
+    "Reason For Change": "ReasonForChange",
+    "Last Modified Date": "LastModifiedDate",
+    "Assigned To": "Assignee",
+    "Detailed Description": "Details",
+    "Change Type": "SubType",
+    "Status Reason": "StatusReason",
 }
 INCIDENT_CONTEXT_MAPPER = {
-    "Assigned Group": "Assigned Group",  # Migrated from Common Mapper
-    "Assigned Support Company": "Assigned Support Company",  # Migrated from Common Mapper
-    "Assigned Support Organization": "Assigned Support Organization",  # Migrated from Common Mapper
-    "Assignee": "Assignee",  # Migrated from Common Mapper
-    "Categorization Tier 1": "OperationalCategory1",
-    "Categorization Tier 2": "OperationalCategory2",
-    "Categorization Tier 3": "OperationalCategory3",
-    "Company": "Company",
-    "Contact Sensitivity": "ContactSensitivity",
-    "Department": "Department",
-    "Description": "Summary",
-    "Detailed Decription": "Details",  # The product has typo in the response
-    "Direct Contact Company": "Direct Contact Company",
-    "Direct Contact First Name": "Direct Contact First Name",
-    "Direct Contact Last Name": "Direct Contact Last Name",
-    "Direct Contact Region": "Direct Contact Region",
-    "Direct Contact Site Group": "Direct Contact Site Group",
-    "Direct Contact Site": "Direct Contact Site",
-    "Direct Contact Internet E-mail": "Direct Contact Internet E-mail",
-    "First Name": "First Name",
-    "Incident Number": "DisplayID",
-    "Internet E-mail": "Internet E-mail",
-    "Last Modified Date": "LastModifiedDate",
-    "Last Name": "Last Name",
-    "Organization": "Organization",
-    "Phone Number": "Phone Number",
-    "Product Categorization Tier 1": "ProductCategory1",
-    "Product Categorization Tier 2": "ProductCategory2",
-    "Product Categorization Tier 3": "ProductCategory3",
-    "Reported Source": "ReportedSource",
     "Request ID": "RequestID",
-    "Resolution": "Resolution",  # Migrated from Common Mapper
-    "Service Type": "SubType",
-    "Status_Reason": "StatusReason",
-    "Status": "Status",
+    "Incident Number": "DisplayID",
     "Submit Date": "CreateDate",
-    "Vendor Ticket Number": "VendorTicketNumber",
+    "Status": "Status",
+    "Description": "Summary",
+    "Contact Sensitivity": "ContactSensitivity",
+    "Last Modified Date": "LastModifiedDate",
+    "Detailed Decription": "Details",  # The product has typo in the response
     "VIP": "VIP",
-    "Work Logs": "WorkLogs",
+    "Service Type": "SubType",
+    "Reported Source": "ReportedSource",
+    "Status_Reason": "StatusReason",
 }
 
 TASK_CONTEXT_MAPPER = {
-    "Assignee Group": "Assignee Group",  # Migrated from Common Mapper
-    "Assignee": "Assignee",  # Migrated from Common Mapper
-    "Create Date": "CreateDate",
-    "Customer Company": "Customer Company",  # Migrated from Common Mapper
-    "Customer Department": "Customer Department",  # Migrated from Common Mapper
-    "Customer First Name": "Customer First Name",  # Migrated from Common Mapper
-    "Customer Internet E-mail": "Customer Internet E-mail",  # Migrated from Common Mapper
-    "Customer Last Name": "Customer Last Name",  # Migrated from Common Mapper
-    "Customer Organization": "Customer Organization",  # Migrated from Common Mapper
-    "Customer Phone Number": "Customer Phone Number",  # Migrated from Common Mapper
-    "Modified Date": "LastModifiedDate",
-    "Notes": "Details",
-    "Scheduled End Date": "ScheduledEndDate",
-    "Scheduled Start Date": "ScheduledStartDate",
-    "Status": "Status",
-    "StatusReasonSelection": "StatusReason",
-    "Summary": "Summary",
-    "Task ID": "DisplayID",
     "Task Interface ID": "RequestID",
+    "Task ID": "DisplayID",
+    "Create Date": "CreateDate",
+    "Modified Date": "LastModifiedDate",
+    "Status": "Status",
+    "Notes": "Details",
     "TaskType": "SubType",
+    "Summary": "Summary",
+    "Scheduled Start Date": "ScheduledStartDate",
+    "Scheduled End Date": "ScheduledEndDate",
+    "StatusReasonSelection": "StatusReason",
 }
 
 PROBLEM_INVESTIGATION_CONTEXT_MAPPER = {
@@ -178,13 +122,27 @@ COMMON_PROPERTIES = [
     "Urgency",
     "Impact",
     "InstanceId",
+    "Customer First Name",
+    "Customer Last Name",
+    "Customer Company",
+    "Customer Organization",
+    "Customer Department",
+    "Customer Internet E-mail",
+    "Customer Phone Number",
     "First Name",
     "Last Name",
     "Company",
     "Region",
     "Site",
     "Site Group",
+    "Assignee",
+    "Assignee Group",
+    "Assigned Group",
+    "Assigned Support Organization",
+    "Assigned Support Company",
+    "Request Type",
     "Priority",
+    "Resolution",
     "Status-History",
 ]
 
@@ -199,15 +157,6 @@ TICKET_TYPE_TO_LIST_FORM = {
 }
 
 TICKET_TYPE_TO_DELETE_FORM = {
-    CHANGE_REQUEST: "CHG:Infrastructure Change",
-    INCIDENT: "HPD:Help Desk",
-    TASK: "TMS:Task",
-    PROBLEM_INVESTIGATION: "PBM:Problem Investigation",
-    KNOWN_ERROR: "PBM:Known Error",
-    WORK_ORDER: "WOI:WorkOrderInterface",
-}
-
-TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM = {
     CHANGE_REQUEST: "CHG:Infrastructure Change",
     INCIDENT: "HPD:Help Desk",
     TASK: "TMS:Task",
@@ -355,7 +304,6 @@ MIRRORING_COMMON_FIELDS = [
     "Impact",
     "Details",
     "CloseReason",
-    "Resolution",
 ]
 
 TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS = {
@@ -387,7 +335,6 @@ class Client(BaseClient):
         jwt_token = self.retrieve_access_token(username, password)
         self._headers = {}
         self._headers["Authorization"] = f"AR-JWT {jwt_token}"
-        add_sensitive_log_strs(jwt_token)
 
     def retrieve_access_token(self, username: str, password: str) -> str:
         """
@@ -440,50 +387,6 @@ class Client(BaseClient):
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
         return response
 
-    def worklog_attachment_get_request(self, worklog_id: str) -> List[dict]:
-        """
-        Get BmcITSM Work Log Attachments.
-
-        Args:
-            worklog_id (str): The Work Log ID to pull the attachments from.
-
-        Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
-        """
-        attachments = []
-        for i in range(1, 4):
-            res = self._http_request(
-                "GET", f"arsys/v1/entry/HPD:WorkLog/{worklog_id}/attach/z2AF Work Log0{i}", resp_type="response"
-            )
-            try:
-                content_disposition = res.headers["content-disposition"]
-            except KeyError:
-                continue
-            fname = re.findall("filename*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
-            if fname:
-                fname = fname[0].strip().strip('"')
-                attachments.append(fileResult(fname, res.content))
-
-        return attachments
-
-    def worklog_add_request(self, incident_number, worklog_type, view_access, detailed_description, files=None):
-        data = {
-            "values": {
-                "Detailed Description": detailed_description,
-                "Incident Number": incident_number,
-                "Work Log Type": worklog_type,
-                "View Access": view_access,
-            }
-        }
-        if files:
-            data["values"]["z1D Action"] = "NEW"
-            for i, file in enumerate(files.values()):
-                data["values"][f"z2AF Work Log0{i+1}"] = file[0]
-            files["entry"] = (None, json.dumps(data), "application/json")
-            self._http_request("POST", "arsys/v1/entry/HPD:WorkLog/", files=files, resp_type="response")
-        else:
-            self._http_request("POST", "arsys/v1/entry/HPD:WorkLog/", json_data=data, resp_type="response")
-
     def ticket_delete_request(self, ticket_form: str, ticket_id: str) -> str:
         """
         BmcITSM ticket delete request.
@@ -498,45 +401,6 @@ class Client(BaseClient):
 
         response = self._http_request("DELETE", f"arsys/v1/entry/{ticket_form}/{ticket_id}", resp_type="text")
         return response
-
-    def ticket_create_relationship_request(
-        self,
-        request_type: str,
-        request_description: str,
-        association_type: str,
-        first_form_name: str,
-        first_request_id: str,
-        second_form_name: str,
-        second_request_id: str,
-    ):
-        """
-        BmcITSM ticket relationship request.
-
-        Args:
-            request_type (str): The ticket type to create relationship.
-            request_description (str): The description of the relationship.
-            association_type: The association type of the relationship.
-            first_form_name: The form name of the incident.
-            first_request_id: The ID of the incident to create relationship.
-            second_form_name: The form name of the incident.
-            second_request_id: The ID of the incident to create relationship.
-
-        Returns:
-            str: A success message.
-        """
-
-        data = {
-            "values": {
-                "Request Type01": request_type,
-                "Request Description01": request_description,
-                "Association Type01": association_type,
-                "Form Name01": first_form_name,
-                "Request ID01": first_request_id,
-                "Form Name02": second_form_name,
-                "Request ID02": second_request_id,
-            }
-        }
-        self._http_request("POST", "arsys/v1/entry/HPD:Associations", json_data=data, resp_type="text")
 
     def create_service_request_request(
         self,
@@ -683,7 +547,6 @@ class Client(BaseClient):
         site_group: str,
         site: str,
         region: str,
-        vendor_ticket_number: str,
         **additional_fields,
     ) -> Dict[str, Any]:
         """
@@ -725,7 +588,6 @@ class Client(BaseClient):
                 "Assignee": assignee,
                 "Assignee Login ID": assignee_login_id,
                 "Assigned Support Company": assigned_support_company,
-                "Vendor Ticket Number": vendor_ticket_number,
                 "Site Group": site_group,
                 "Region": region,
                 "Site": site,
@@ -803,9 +665,7 @@ class Client(BaseClient):
                 "First_Name": first_name,
                 "Last_Name": last_name,
                 "Description": summary,
-                # Note that when creating a new incident using the bmc-itsm-incident-create command,
-                # the details field is called "Detailed_Decription" with an underscore.
-                "Detailed Decription": details,
+                "Detailed_Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,
@@ -1645,14 +1505,13 @@ def list_command(
     query_with_filtering = generate_query_with_filtering(query, filtering_mapper)
 
     response = client.list_request(form_name, query_with_filtering if query_with_filtering else None)
-
     relevant_records, header_suffix = get_paginated_records_with_hr(
         response.get("entries"),  # type: ignore[arg-type]
         limit,  # type: ignore[arg-type]
         page,
         page_size,
     )
-    outputs = format_command_output(relevant_records, context_output_mapper, ticket_type, arranger)
+    outputs = format_command_output(relevant_records, context_output_mapper, arranger)
     readable_output = tableToMarkdown(
         header_prefix,
         metadata=header_suffix,
@@ -1804,58 +1663,6 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return commands_results
 
 
-def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """BmcITSM ticket create relationship command.
-
-    Args:
-        client (Client): BmcITSM API client.
-        args (Dict[str, Any]): command arguments.
-
-    Returns:
-        CommandResults: Command result with a success message.
-    """
-
-    request_type = args.get("request_type")
-    request_description = args.get("request_description")
-    association_type = args.get("association_type")
-    first_form_name = args.get("first_form_name")
-    first_request_id = args.get("first_request_id")
-    second_form_name = args.get("second_form_name")
-    second_request_id = args.get("second_request_id")
-    bidirectional = argToBoolean(args.get("bidirectional"))
-    client.ticket_create_relationship_request(
-        request_type=request_type,  # type: ignore[arg-type]
-        request_description=request_description,  # type: ignore[arg-type]
-        association_type=association_type,  # type: ignore[arg-type]
-        first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],  # type: ignore[index]
-        first_request_id=first_request_id,  # type: ignore[arg-type]
-        second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],  # type: ignore[index]
-        second_request_id=second_request_id,  # type: ignore[arg-type]
-    )
-
-    if bidirectional:
-        association_types = {
-            "Caused": "Caused by",
-            "Caused by": "Caused",
-            "Duplicate of": "Original of",
-            "Original of": "Duplicate of",
-            "Resolved": "Resolved by",
-            "Resolved by": "Resolved",
-        }
-
-        client.ticket_create_relationship_request(
-            request_type=request_type,  # type: ignore[arg-type]
-            request_description=request_description,  # type: ignore[arg-type]
-            association_type=association_types[association_type],  # type: ignore[index]
-            first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],  # type: ignore[index]
-            first_request_id=second_request_id,  # type: ignore[arg-type]
-            second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],  # type: ignore[index]
-            second_request_id=first_request_id,  # type: ignore[arg-type]
-        )
-
-    return CommandResults(readable_output=f"Created relationship between {first_request_id} and {second_request_id}.")
-
-
 def service_request_definition_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """List BmcITSM service request definitions command.
 
@@ -1883,71 +1690,6 @@ def service_request_definition_list_command(client: Client, args: Dict[str, Any]
         record_id_key="Request ID",
     )
     return command_results
-
-
-def worklog_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """List BmcITSM Work Log command.
-
-    Args:
-        client (Client): BmcITSM API client.
-        args (Dict[str, Any]): command arguments.
-
-    Returns:
-        CommandResults: Command results with raw response, outputs and readable outputs.
-    """
-    context_output_mapper = {
-        "Work Log Type": "Type",
-        "Description": "Description",
-        "Detailed Description": "DetailedDescription",
-        "Work Log Submitter": "Submitter",
-        "Communication Type": "CommunicationType",
-        "Communication Source": "CommunicationSource",
-        "Number of Attachments": "NumberOfAttachments",
-        "Work Log ID": "WorkLogID",
-    }
-    args["ids"] = argToList(args.get("ticket_ids"))
-    command_results = list_command(
-        client,
-        args,
-        "HPD:WorkLog",
-        context_output_mapper,
-        header_prefix="List Work Logs.",
-        outputs_prefix="BmcITSM.WorkLog",
-        outputs_key_field="ID",
-        record_id_key="Incident Number",
-    )
-    return command_results
-
-
-def worklog_attachment_get_command(client: Client, args: Dict[str, Any]) -> List[dict]:
-    worklog_id = args.get("worklog_id")
-    res = client.worklog_attachment_get_request(worklog_id)  # type: ignore[arg-type]
-    return res
-
-
-def worklog_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    entry_ids = argToList(args.get("entry_ids"))
-    incident_number = args.get("incident_number")
-    worklog_type = args.get("worklog_type")
-    view_access = args.get("view_access")
-    detailed_description = args.get("detailed_description")
-    fps = []
-    files = {}
-    for i, entry_id in enumerate(entry_ids):
-        file_path = demisto.getFilePath(entry_id).get("path")
-        file_name = demisto.getFilePath(entry_id).get("name")
-        # open files
-        fp = open(file_path, "rb")
-        fps.append(fp)
-        files[f"attach-z2AF Work Log0{i+1}"] = (file_name, fp, "application/octet-stream")
-
-    client.worklog_add_request(incident_number, worklog_type, view_access, detailed_description, files=files)
-
-    # close files
-    for f in fps:
-        f.close()
-
-    return CommandResults(readable_output="Worklog is successfully added")
 
 
 def incident_template_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2172,7 +1914,6 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     assigned_support_company = args.get("assigned_support_company")
     assigned_group = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
-    vendor_ticket_number = args.get("vendor_ticket_number")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
     site = args.get("site")
@@ -2185,16 +1926,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
-        validate_required_arguments_provided(
-            summary=summary,
-            service_type=service_type,
-            reported_source=reported_source,
-            first_name=first_name,
-            last_name=last_name,
-            status=status,
-            urgency=urgency,
-            impact=impact,
-        )
+        validate_related_arguments_provided(summary=summary, service_type=service_type, reported_source=reported_source)
 
     response = client.create_incident_request(  # type: ignore[arg-type,call-arg]
         template_id,  # type: ignore[arg-type]
@@ -2216,7 +1948,6 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
         site_group=site_group,  # type: ignore[arg-type]
         site=site,  # type: ignore[arg-type]
         region=region,  # type: ignore[arg-type]
-        vendor_ticket_number=vendor_ticket_number,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -2259,8 +1990,8 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_name = args.get("last_name")
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
-    details = args.get("detailed_description")
-    company = args.get("company")
+    details = args.get("details")
+    company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
     assigned_group = args.get("assigned_group")
@@ -2495,18 +2226,6 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         args.get("additional_fields"),  # type: ignore[arg-type]
         "additional_fields",
     )
-
-    if not template_id:
-        validate_required_arguments_provided(
-            summary=summary,
-            details=details,
-            root_ticket_type=args.get("root_ticket_type"),
-            root_request_id=root_request_id,
-            status=status,
-            priority=priority,
-            location_company=company,
-        )
-
     parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)  # type: ignore[arg-type]
     response = client.create_task_request(  # type: ignore[arg-type,call-arg]
         template_id,  # type: ignore[arg-type]
@@ -3173,9 +2892,7 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def format_command_output(
-    records: List[dict], mapper: Dict[str, Any], ticket_type: Optional[str], context_data_arranger: Callable = None
-) -> Dict[str, Any]:
+def format_command_output(records: List[dict], mapper: Dict[str, Any], context_data_arranger: Callable = None) -> Dict[str, Any]:
     """
     Format the returned records from the API according to the provided mapper.
     The main objective is to extract relevant attributes from the response to
@@ -3211,7 +2928,7 @@ def format_command_output(
                 else:
                     formatted_record[formatted_attrib_name] = record_attributes[origin_attrib_name]  # type: ignore[index]
         if context_data_arranger:
-            context_data_arranger(formatted_record, ticket_type)
+            context_data_arranger(formatted_record)
         outputs.append(formatted_record)
 
     return outputs  # type: ignore[return-value]
@@ -3283,21 +3000,6 @@ def format_ticket_request_id(request_id: str) -> str:
     return request_id
 
 
-def validate_required_arguments_provided(**required_args):
-    """
-    Validates that all passed keyword arguments have non-None values.
-
-    Args:
-        **required_args: Keyword arguments to validate.
-
-    Raises:
-        ValueError: If any of the arguments has a None value.
-    """
-    missing_args = [key for key, value in required_args.items() if not value]
-    if missing_args:
-        raise ValueError(f"The following required arguments are missing: {missing_args}")
-
-
 def validate_related_arguments_provided(**related_args):
     """
     Validates that the passed keyword arguments provided together:
@@ -3348,7 +3050,7 @@ def extract_args_from_additional_fields_arg(additional_fields: str, field_name: 
     return formatted_additional_fields  # type: ignore[return-value]
 
 
-def arrange_ticket_context_data(ticket: Dict[str, Any], ticket_type: Optional[str]) -> Dict[str, Any]:
+def arrange_ticket_context_data(ticket: Dict[str, Any]) -> Dict[str, Any]:
     """
     Arranges the ticket context data.
 
@@ -3361,7 +3063,7 @@ def arrange_ticket_context_data(ticket: Dict[str, Any], ticket_type: Optional[st
     customer = {}
     requester = {}
     assignee = {}
-    customer_mapper = {  # Customer fields change based on the Ticket Type. This should take that into account.
+    customer_mapper = {
         "FirstName": "Customer First Name",
         "LastName": "Customer Last Name",
         "Company": "Customer Company",
@@ -3370,6 +3072,7 @@ def arrange_ticket_context_data(ticket: Dict[str, Any], ticket_type: Optional[st
         "E-mail": "Customer Internet E-mail",
         "PhoneNumber": "Customer Phone Number",
     }
+
     requester_mapper = {
         "FirstName": "First Name",
         "LastName": "Last Name",
@@ -3378,6 +3081,7 @@ def arrange_ticket_context_data(ticket: Dict[str, Any], ticket_type: Optional[st
         "Site": "Site",
         "SiteGroup": "Site Group",
     }
+
     assignee_mapper = {
         "FullName": "Assignee",
         "Group": "Assignee Group",
@@ -3385,50 +3089,14 @@ def arrange_ticket_context_data(ticket: Dict[str, Any], ticket_type: Optional[st
         "SupportCompany": "Assigned Support Company",
         "AssignedGroup": "Assigned Group",
     }
-    match ticket_type:
-        case "task":
-            customer_mapper["E-mail"] = "Internet E-mail"
-            assignee_mapper["SupportOrganization"] = "Assignee Organization"
-            assignee_mapper["SupportCompany"] = "Company"
-            assignee_mapper["AssignedGroup"] = "Assignee Group"
-        case "service request":
-            pass
-        case "incident":
-            customer_mapper = {
-                "FirstName": "First Name",
-                "LastName": "Last Name",
-                "Company": "Company",
-                "Organization": "Organization",
-                "Department": "Department",
-                "E-mail": "Internet E-mail",
-                "PhoneNumber": "Phone Number",
-            }
-            requester_mapper = {
-                "FirstName": "Direct Contact First Name",
-                "LastName": "Direct Contact Last Name",
-                "Company": "Direct Contact Company",
-                "Region": "Direct Contact Region",
-                "Site": "Direct Contact Site",
-                "SiteGroup": "Direct Contact Site Group",
-                "E-mail": "Direct Contact Internet E-mail",
-            }
-            assignee_mapper["AssignedGroup"] = "Assigned Group"
-            assignee_mapper["Group"] = "Assigned Group"
-        case "change request":
-            assignee_mapper = {
-                "FullName": "ASCHG",
-                "Group": "ASGRP",
-                "SupportOrganization": "ASORG",
-                "SupportCompany": "ASCPY",
-                "AssignedGroup": "ASGRP",
-            }
-        case _:
-            pass
+
     customer = generate_complex_entity_for_context_data(ticket, customer_mapper)
     requester = generate_complex_entity_for_context_data(ticket, requester_mapper)
     assignee = generate_complex_entity_for_context_data(ticket, assignee_mapper)
 
     ticket["Type"] = get_ticket_type_by_display_id(ticket["DisplayID"])
+    if ticket["Type"] == "incident":
+        customer.update({key: requester[key] for key in ["FirstName", "LastName", "Company"]})
     ticket["RequestID"] = ticket.get("RequestID", ticket["DisplayID"])
     ticket["Customer"] = customer if not all_keys_empty(customer) else None
     ticket["Requester"] = requester if not all_keys_empty(requester) else None
@@ -3747,10 +3415,11 @@ def fetch_relevant_tickets_by_ticket_type(
     )
 
     response = client.list_request(ticket_form, fetch_query)
-
     relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)  # type: ignore[arg-type]
     outputs: List[dict] = format_command_output(  # type: ignore[assignment]
-        deepcopy(relevant_records), generate_ticket_context_data_mapper(ticket_type), ticket_type, arrange_ticket_context_data
+        deepcopy(relevant_records),
+        generate_ticket_context_data_mapper(ticket_type),
+        arrange_ticket_context_data,
     )
     return outputs
 
@@ -4022,7 +3691,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], close_incident
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("LastModifiedDate")))
     if last_update > ticket_last_update:
         mirrored_ticket = {}
-    if mirrored_ticket.get("Status") in ["Closed", "Resolved"] and close_incident:
+    if mirrored_ticket.get("Status") == "Closed" and close_incident:
         entries.append(
             {
                 "Type": EntryType.NOTE,
@@ -4130,7 +3799,6 @@ def fit_update_args(delta: dict, data: dict, ticket_id: str) -> dict:
     """
     arguments = {
         "summary": delta.get("Summary"),
-        "resolution": delta.get("Resolution"),
         "details": delta.get("Details"),
         "impact": delta.get("Impact"),
         "urgency": delta.get("Urgency"),
@@ -4250,10 +3918,6 @@ def main() -> None:
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
             "bmc-itsm-ticket-delete": ticket_delete_command,
-            "bmc-itsm-ticket-create-relationship": ticket_create_relationship_command,
-            "bmc-itsm-worklog-list": worklog_list_command,
-            "bmc-itsm-worklog-add": worklog_add_command,
-            "bmc-itsm-worklog-attachment-get": worklog_attachment_get_command,
             "bmc-itsm-user-list": user_list_command,
             "bmc-itsm-company-list": company_list_command,
             "bmc-itsm-service-request-create": service_request_create_command,

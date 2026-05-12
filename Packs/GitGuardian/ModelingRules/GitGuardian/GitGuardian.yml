@@ -4,5 +4,3 @@ name: GitGuardian Modeling Rule
 rules: ''
 schema: ''
 tags: GitGuardian
-supportedModules:
-- xsiam

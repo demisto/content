@@ -221,7 +221,7 @@ NUMBER_OF_MESSAGES = """query {{
 """
 
 FETCH_WITHOUT_EVENTS = """query {{
-  phisherMessages(all: false, page: 1, per: {}, query: {}, sortField: REPORTED_AT, sortDirection: ASCENDING) {{
+  phisherMessages(all: false, page: 1, per: {}, query: {}) {{
     nodes {{
       actionStatus
       attachments(status: UNKNOWN) {{
@@ -655,29 +655,31 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
         incidents: list of incidents to be written to XSOAR
     """
     last_time = last_run.get("last_fetch", first_fetch_time)
-    query = f'" reported_at:{{{last_time} TO *}}"'
+    query = f'" reported_at:[{last_time} TO *]"'
+    limit = calculate_number_of_events(client, query)
     incidents = []
     # create request
-    payload_init = FETCH_WITHOUT_EVENTS.format(max_fetch, query)
+    payload_init = FETCH_WITHOUT_EVENTS.format(limit, query)
     payload = json.dumps({"query": payload_init, "variables": {}})
     req = create_gql_request(payload)
     # get all messages
     items = client.phisher_gql_request(req)
     messages = items.get("data", {}).get("phisherMessages", {}).get("nodes", [])
-    for message in messages:
+    # check if they need to be fetched
+    message_index = 0
+    for message in reversed(messages):
         events = message.get("events", {})
         creation_time = get_created_time(events)
         message["created at"] = arg_to_datetime(creation_time).isoformat()  # type: ignore
         message.pop("events")
-        incident = {
-            "dbotMirrorId": message.get("id"),
-            "name": message.get("subject"),
-            "occurred": message.get("created at"),
-            "rawJSON": json.dumps(message),
-        }
+        incident = {"name": message.get("subject"), "occurred": message.get("created at"), "rawJSON": json.dumps(message)}
 
+        # Update last run and add incident if the incident is newer than last fetch
         last_time = message["created at"]
         incidents.append(incident)
+        message_index += 1
+        if message_index == max_fetch:
+            break
 
     next_run = last_time
     return next_run, incidents

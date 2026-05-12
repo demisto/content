@@ -1,6 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-provider: Thoma Bravo
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -24,10 +23,8 @@ configuration:
   name: isFetch
   type: 8
   required: false
-  section: Collect
 - additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen, all severity levels will be returned.
   display: Fetch Severity
-  section: Collect
   name: fetch_severity
   options:
   - low
@@ -1432,7 +1429,7 @@ script:
       name: searchFields
     - description: List the items that match the given domain.
       name: domain
-    - description: Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory.
+    - description: Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory.
       name: sourceType
       predefined:
       - custom
@@ -1468,7 +1465,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: "Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory."
+      description: "Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory."
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1517,7 +1514,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
+      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1571,7 +1568,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
+      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1625,7 +1622,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
+      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -2418,7 +2415,7 @@ script:
     - contextPath: SophosCentral.DeletedUsers.deletedUserId
       description: Deleted User's Id.
       type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

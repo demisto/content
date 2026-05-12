@@ -32,16 +32,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcitsmdisplayid",
-            "type": "shortText",
-            "name": "Bmc Display ID"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }

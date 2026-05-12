@@ -1,5 +1,4 @@
 category: Messaging and Conferencing
-provider: Anthropic
 commonfields:
   id: Anthropic Claude
   version: -1

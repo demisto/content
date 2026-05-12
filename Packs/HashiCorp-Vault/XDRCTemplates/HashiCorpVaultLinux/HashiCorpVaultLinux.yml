@@ -2,12 +2,10 @@ filebeat.inputs:
 - type: filestream
   enabled: true
   id: hashicorp-vault
-  paths:
-  - /var/log/vault_audit.log      # customize path as needed 
-  processors:
-  - add_fields:
-      fields:
-        vendor: hashicorp
-        product: vault
-supportedModules:
-- xsiam
+  paths:       
+    - /var/log/vault_audit.log    # customize path as needed 
+  processors: 
+    - add_fields:       
+        fields:             
+          vendor: hashicorp
+          product: vault

@@ -1182,7 +1182,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Benign samples are not available for download.
+              simple: Sample was not found.
     view: |-
       {
         "position": {

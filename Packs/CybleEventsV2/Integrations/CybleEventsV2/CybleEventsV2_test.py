@@ -6,7 +6,6 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 from CommonServerPython import GetRemoteDataResponse, GetMappingFieldsResponse, CommandResults, DemistoException
 from CybleEventsV2 import (
     Client,
-    cyble_vision_update_alerts_command,
     get_remote_data_command,
     manual_fetch,
     update_remote_system,
@@ -17,18 +16,8 @@ from CybleEventsV2 import (
     set_request,
     DEFAULT_TAKE_LIMIT,
     ensure_aware,
-    FETCH_INCIDENT_RETRY_BACKOFF_SECONDS,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
-from CybleEventsV2 import check_response
-
-
-def test_test_response_success(mock_client):
-    mock_client._http_request = Mock(return_value={"status": "ok"})
-    with patch("CybleEventsV2.demisto", demisto_mock):
-        result = check_response(mock_client, "GET", "https://example.com", "dummy-token")
-    assert result == "ok"
-
 
 try:
     from CybleEventsV2 import (
@@ -1070,55 +1059,6 @@ class TestGetAlertById:
                 assert result is None
 
 
-@patch("CybleEventsV2.get_alert_by_id")
-@patch("CybleEventsV2.Client")
-def test_update_single_alert(mock_client_class, mock_get_alert):
-    args = {"ids": "id1", "status": "UNDER_REVIEW", "severity": "HIGH"}
-    mock_url = "https://example.com"
-    mock_token = "dummy-token"
-
-    mock_client = Mock()
-    mock_client_class.return_value = mock_client
-
-    mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
-    mock_client.update_alert.return_value = {"message": "Success"}
-
-    result = cyble_vision_update_alerts_command(mock_client, mock_url, mock_token, args)
-
-    assert isinstance(result, CommandResults)
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["id"] == "id1"
-    assert result.outputs[0]["status"] == "UNDER_REVIEW"
-    assert result.outputs[0]["user_severity"] == "HIGH"
-    mock_client.update_alert.assert_called_once()
-
-
-@patch("CybleEventsV2.Client.update_alert")
-@patch("CybleEventsV2.get_alert_by_id")
-def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
-    args = {"ids": "id1,id2", "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED", "severity": "LOW,HIGH"}
-    mock_url = "https://example.com"
-    mock_token = "dummy-token"
-
-    # Mock return values for get_alert_by_id
-    mock_get_alert.side_effect = [
-        {"id": "id1", "service": "mock_service"},
-        {"id": "id2", "service": "mock_service"},
-    ]
-
-    # Mock return value for update_alert
-    mock_update_alert.return_value = {"message": "Success"}
-
-    # Create Client instance
-    client = Client(base_url=mock_url, headers={"Authorization": f"Bearer {mock_token}"}, verify=False, proxy=False)
-
-    result = cyble_vision_update_alerts_command(client, mock_url, mock_token, args)
-
-    assert result.outputs_prefix == "CybleEvents.AlertUpdate"
-    assert result.outputs[0]["id"] == "id1"
-    assert result.outputs[1]["id"] == "id2"
-
-
 def test_get_alert_payload_by_id_success():
     """Test successful alert payload retrieval"""
     # Mock client
@@ -1732,98 +1672,6 @@ class TestClientMethods(unittest.TestCase):
             mock_make_request.assert_called_once_with(self.test_url, self.test_api_key, "POST", json.dumps({"dummy": "payload"}))
             assert mock_demisto.debug.called
 
-    @patch("CybleEventsV2.get_alert_payload", return_value={"dummy": "payload"})
-    def test_get_data_raises_when_missing_url_or_api_key(self, _mock_get_alert_payload):
-        with pytest.raises(ValueError, match="Missing required URL or API key"):
-            self.client.get_data(self.test_service, {"api_key": self.test_api_key})
-        with pytest.raises(ValueError, match="Missing required URL or API key"):
-            self.client.get_data(self.test_service, {"url": self.test_url})
-
-    @patch("CybleEventsV2.get_alert_payload", return_value={"dummy": "payload"})
-    @patch("CybleEventsV2.demisto")
-    def test_get_data_retries_on_non_200_then_success(self, mock_demisto, _mock_get_alert_payload):
-        input_params = {"url": self.test_url, "api_key": self.test_api_key}
-        fail_resp = Mock()
-        fail_resp.status_code = 503
-        fail_resp.text = "unavailable"
-        ok_resp = Mock()
-        ok_resp.status_code = 200
-        ok_resp.json.return_value = {"recovered": True}
-
-        with (
-            patch.object(self.client, "make_request", side_effect=[fail_resp, ok_resp]) as mock_make,
-            patch("CybleEventsV2.time.sleep") as mock_sleep,
-        ):
-            result = self.client.get_data(self.test_service, input_params)
-
-        assert result == {"recovered": True}
-        assert mock_make.call_count == 2
-        mock_sleep.assert_called()
-
-    @patch("CybleEventsV2.get_alert_payload", return_value={"dummy": "payload"})
-    @patch("CybleEventsV2.demisto")
-    def test_get_data_retries_on_invalid_json_then_success(self, mock_demisto, _mock_get_alert_payload):
-        input_params = {"url": self.test_url, "api_key": self.test_api_key}
-        bad_json = Mock()
-        bad_json.status_code = 200
-        bad_json.json.side_effect = ValueError("not json")
-        good_json = Mock()
-        good_json.status_code = 200
-        good_json.json.return_value = {"parsed": True}
-
-        with (
-            patch.object(self.client, "make_request", side_effect=[bad_json, good_json]),
-            patch("CybleEventsV2.time.sleep") as mock_sleep,
-        ):
-            result = self.client.get_data(self.test_service, input_params)
-
-        assert result == {"parsed": True}
-        mock_sleep.assert_called_once()
-        assert mock_sleep.call_args[0][0] == FETCH_INCIDENT_RETRY_BACKOFF_SECONDS[0]
-
-    @patch("CybleEventsV2.demisto")
-    def test_get_all_services_retries_on_request_error_then_success(self, mock_demisto):
-        fail_resp = Mock()
-        fail_resp.status_code = 200
-        fail_resp.json.return_value = {"data": ["a"]}
-        with (
-            patch.object(self.client, "make_request", side_effect=[ConnectionError("reset"), fail_resp]),
-            patch("CybleEventsV2.time.sleep") as mock_sleep,
-        ):
-            result = self.client.get_all_services(self.test_api_key, self.test_url)
-        assert result == ["a"]
-        mock_sleep.assert_called()
-
-    @patch("CybleEventsV2.demisto")
-    def test_get_all_services_exhausts_retries_raises(self, mock_demisto):
-        """After 1 initial try + len(backoffs) retries, the last request error is raised."""
-        attempts = len(FETCH_INCIDENT_RETRY_BACKOFF_SECONDS) + 1
-        with (
-            patch.object(self.client, "make_request", side_effect=[ConnectionError("reset")] * attempts),
-            patch("CybleEventsV2.time.sleep") as mock_sleep,
-            pytest.raises(Exception, match="Failed to get services: reset"),
-        ):
-            self.client.get_all_services(self.test_api_key, self.test_url)
-
-        assert mock_sleep.call_count == len(FETCH_INCIDENT_RETRY_BACKOFF_SECONDS)
-
-    @patch("CybleEventsV2.demisto")
-    def test_get_all_services_wrong_format_raises_without_backoff(self, mock_demisto):
-        """Wrong response shape after 200 + valid JSON must not use retry backoff."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"wrong_key": []}
-
-        with (
-            patch.object(self.client, "make_request", return_value=mock_response) as mock_make,
-            patch("CybleEventsV2.time.sleep") as mock_sleep,
-            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"),
-        ):
-            self.client.get_all_services(self.test_api_key, self.test_url)
-
-        mock_make.assert_called_once()
-        mock_sleep.assert_not_called()
-
     def test_insert_data_in_cortex_successful_processing(self):
         test_input_params = {"limit": "10", "hce": False}
 
@@ -2011,6 +1859,34 @@ class TestClientMethods(unittest.TestCase):
             result_ids = self.client.get_ids_with_retry(service, input_params)
 
             assert result_ids == ["id1", "id2"]
+
+
+# Test for test_response function
+def test_test_response_success():
+    """Test successful connection test"""
+    client = Mock()
+    client._http_request.return_value = {"status": "ok"}
+
+    from CybleEventsV2 import test_response
+
+    result = test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
+
+    assert result == "ok"
+    client._http_request.assert_called_once()
+
+
+def test_test_response_empty_response():
+    """Test when response is empty"""
+    client = Mock()
+    client._http_request.return_value = None
+
+    with patch("CybleEventsV2.demisto") as mock_demisto:
+        from CybleEventsV2 import test_response
+
+        with pytest.raises(Exception, match="failed to connect"):
+            test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
+
+        mock_demisto.error.assert_called()
 
 
 class TestCybleEventsLogical(unittest.TestCase):

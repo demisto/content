@@ -100,10 +100,6 @@ def fetch_incidents(
     client: Client, max_results: int, last_run: dict[str, int], first_fetch_time: int | None
 ) -> tuple[dict[str, int], list[dict]]:
     last_fetch = last_run.get("last_fetch", None)
-
-    maxCaseId = last_run.get("maxCaseId")
-    tempMaxCaseId = maxCaseId
-
     case_status = "OPEN"
     url_access_time = datetime.now().timestamp()
     endDate = datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT)
@@ -128,44 +124,24 @@ def fetch_incidents(
             "startDate": startDate,
             "endDate": endDate,
         }
-
-        # Only add maxCaseId if it exists
-        if maxCaseId is not None:
-            params["maxCaseId"] = maxCaseId
-
         case_data = client.fetch_command_result(case_url, params, None)
-
         if len(case_data) < max_results:
             isContinue = False
         else:
             page += 1
         for record in case_data:
-            case_id = record.get("caseId")
-            if case_id is None:
-                continue
-
-            # Update maxCaseId to the highest value seen
-            if tempMaxCaseId is None or case_id > tempMaxCaseId:
-                tempMaxCaseId = case_id
-
             incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
             record["incidentType"] = "GRACase"
-
-            incidents.append(
-                {
+            if record.get("caseId") is not None:
+                inc = {
                     "name": record.get("entity"),
                     "occurred": timestamp_to_datestring(incident_created_time_ms),
                     "rawJSON": json.dumps(record),
                 }
-            )
+                incidents.append(inc)
 
-    next_run = {
-        "last_fetch": int(url_access_time),
-    }
-    if tempMaxCaseId is not None:
-        next_run["maxCaseId"] = tempMaxCaseId
-
+        next_run = {"last_fetch": int(url_access_time)}
     return next_run, incidents
 
 

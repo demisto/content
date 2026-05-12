@@ -1,6 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-provider: Check Point Software Technologies
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -24,17 +23,6 @@ configuration:
   name: environment
   required: true
   type: 0
-  section: Connect
-- display: Data residency
-  name: region
-  type: 15
-  required: false
-  hidden: true
-  additionalinfo: Deprecated. Data residency field has been removed in favor of automatic routing.
-  options:
-  - US
-  - EU
-  defaultvalue: US
   section: Connect
 - display: Create an incident per CSV record
   additionalinfo: An incident will be created with the originated Alert details per CSV file record.
@@ -145,17 +133,13 @@ configuration:
   - exposed_web_interfaces
   - hijackable_subdomains
   - website_vulnerabilities
-  - vulnerabilities
   - exposed_cloud_storage
   - exploitable_ports
   - mail_servers_in_blacklist
   - server_connected_to_botnet
   - email_security_issues
   - certificate_authority_issues
-  - user_defined_saved_query
   - other
-  - ssl_tls
-  - web_app_security
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -269,17 +253,13 @@ script:
       - exposed_web_interfaces
       - hijackable_subdomains
       - website_vulnerabilities
-      - vulnerabilities
       - exposed_cloud_storage
       - exploitable_ports
       - mail_servers_in_blacklist
       - server_connected_to_botnet
       - email_security_issues
       - certificate_authority_issues
-      - user_defined_saved_query
       - other
-      - ssl_tls
-      - web_app_security
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
@@ -472,14 +452,14 @@ script:
       required: true
       isArray: false
     - auto: PREDEFINED
-      description: Reason for updating the alert status to 'closed'. Only required in case the 'closed' value was chosen for the 'status' argument. Note that for the 'Other' value, it's required to specify the value for the 'closure_reason_description' argument.
+      description: Reason for updating the alert status to 'closed'. Only required in case the 'closed' value was chosen for the 'status' argument. Note that for the 'other' value, it's required to specify the value for the 'closure_reason_description' argument.
       name: closure_reason
       predefined:
-      - Resolved
-      - No Longer a Threat
-      - Irrelevant Alert Subtype
-      - False Positive
-      - Other
+      - resolved
+      - no_longer_a_threat
+      - irrelevant_alert_subtype
+      - false_positive
+      - other
       isArray: false
       required: false
     - description: "Free text for closure reason. Only required in case the 'other' value was chosen for the 'closure_reason' argument. "
@@ -601,7 +581,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   runonce: false
   script: '-'
@@ -615,7 +595,4 @@ script:
   longRunningPort: false
 tests:
 - No tests
-defaultclassifier: Cyberint - Classifier
-defaultmapperin: abcd-5678
-defaultmapperout: CyberInt Outgoing (mapper)
 fromversion: 5.0.0

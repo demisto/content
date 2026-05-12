@@ -1,8 +1,6 @@
 id: ANYRUN-Test
 version: -1
 name: ANYRUN-Test
-deprecated: true
-description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":

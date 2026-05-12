@@ -1,8 +1,6 @@
 name: CiscoASA Parsing Rule
 id: Cisco_ASA_ParsingRule
-fromversion: 8.11.0
+fromversion: 6.10.0
 tags: []
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

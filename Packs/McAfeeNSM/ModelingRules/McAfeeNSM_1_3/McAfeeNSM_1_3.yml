@@ -4,5 +4,3 @@ name: McAfee NSM Modeling Rule
 rules: ''
 schema: ''
 tags: McAfee NSM Modeling Rule
-supportedModules:
-- xsiam

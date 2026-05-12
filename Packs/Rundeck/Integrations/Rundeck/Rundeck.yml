@@ -1,5 +1,4 @@
 category: Utilities
-provider: PagerDuty
 commonfields:
   id: Rundeck
   version: -1
@@ -751,7 +750,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.11.1940698
   runonce: false
   script: '-'
   subtype: python3

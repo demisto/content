@@ -1,6 +1,5 @@
 import hashlib
 import hmac
-import os
 import shutil
 from collections.abc import Callable
 from urllib import parse  # noqa: F401
@@ -157,7 +156,7 @@ class Client:
 
         xsoar_file_data = demisto.getFilePath(file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
         xsoar_system_file_path = xsoar_file_data["path"]
-        blob_name = file_name if file_name else os.path.basename(xsoar_file_data["name"])
+        blob_name = file_name if file_name else xsoar_file_data["name"]
 
         headers = {"x-ms-blob-type": "BlockBlob"}
 
@@ -179,7 +178,7 @@ class Client:
                 )
 
         finally:
-            os.remove(blob_name)
+            shutil.rmtree(blob_name, ignore_errors=True)
 
         return response
 

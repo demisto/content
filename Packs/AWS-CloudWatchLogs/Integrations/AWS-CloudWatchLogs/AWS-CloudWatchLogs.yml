@@ -4,7 +4,6 @@ commonfields:
 name: AWS - CloudWatchLogs
 display: AWS - CloudWatchLogs
 category: IT Services
-provider: Amazon
 description: Amazon Web Services CloudWatch Logs (logs).
 configuration:
 - display: Default Region

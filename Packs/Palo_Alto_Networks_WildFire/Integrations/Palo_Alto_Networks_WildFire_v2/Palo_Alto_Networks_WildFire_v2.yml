@@ -1,6 +1,5 @@
 category: Forensics & Malware Analysis
-provider: Palo Alto Networks
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -35,7 +34,7 @@ configuration:
   required: false
 - display: Source Reliability
   name: integrationReliability
-  required: false
+  required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -1265,12 +1264,12 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Wildfire Test
-- Detonate URL - WildFire-v2 - Test
+- Detonate File - WildFire - Test
 fromversion: 5.0.0

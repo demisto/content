@@ -2,7 +2,7 @@
     "name": "ForeScout NAC - CounterACT",
     "description": "ForeScout CounterACT",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -24,11 +24,6 @@
         "NAC"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "agentix",
-        "xsiam"
+        "marketplacev2"
     ]
 }

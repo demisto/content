@@ -4,5 +4,3 @@ name: Fortimail Modeling Rule
 rules: ''
 schema: ''
 tags: Fortimail
-supportedModules:
-- xsiam

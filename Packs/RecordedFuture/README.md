@@ -9,9 +9,7 @@
 ### Recorded Future v2
 
 Access Recorded Future data to enrich IPs, domains, URLs, CVEs, Files, and Malwares and assess
-threats in regards to a specific context.
-
-**Deprecated functionality**: you should no longer use this integration to fetch incidents, but instead the  *Recorded Future Alerts* integration from *Recorded Future* pack.
+threats in regards to a specific context. Use this integration to fetch Recorded Future non-playbook alerts
 ​
 
 #### Available Actions
@@ -28,7 +26,7 @@ threats in regards to a specific context.
 * Malware search action
   * Search for malware family names curated by Recorded Future
   * Look up and enrich malware families with Recorded Future context
-* Alert actions (**deprecated**: use *Recorded Future Alerts* integration from *Recorded Future* pack instead)
+* Alert actions
   * Fetch alerting rules defined at Recorded Future.
   * Fetch alert summaries from one or more alerting rules.
   * Set alert status in Recorded Future
@@ -98,24 +96,21 @@ Classifier and Incoming Mapper allows you to classify and map fetched incident o
 ---
 ​
 
-### Recorded Future - Playbook Alerts (deprecated)
+### Recorded Future - Playbook Alerts
 
 Fetch & triage Recorded Future Playbook Alerts
-
-**Deprecated**: Use the *Recorded Future Alerts* integration from *Recorded Future* pack instead.
-
 ​
 
 #### Available Actions
 
 ​
 
-* recordedfuture-playbook-alerts-details **(deprecated)**
+* recordedfuture-playbook-alerts-details
   * View details of a specific Recorded Future playbook alert
   * Get Playbook alert details by id
-* recordedfuture-playbook-alerts-update **(deprecated)**
+* recordedfuture-playbook-alerts-update
   * Update the status of one or multiple Playbook alerts
-* recordedfuture-playbook-alerts-search **(deprecated)**
+* recordedfuture-playbook-alerts-search
   * View which Recorded Future playbook alerts  are set up in Recorded Future enterprise to be brought into XSOAR
   * Search playbook alerts based on filters
 ​

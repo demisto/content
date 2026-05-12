@@ -4,5 +4,3 @@ name: HashiCorp Vault Modeling Rule
 rules: ''
 schema: ''
 tags:
-supportedModules:
-- xsiam

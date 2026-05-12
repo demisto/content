@@ -4,5 +4,3 @@ name: Mcafee Epo Modeling Rule
 rules: ''
 schema: ''
 tags: McafeeEpoModelingRules
-supportedModules:
-- xsiam

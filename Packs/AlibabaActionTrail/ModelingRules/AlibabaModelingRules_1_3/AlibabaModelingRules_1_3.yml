@@ -4,5 +4,3 @@ name: Alibaba Modeling Rule
 rules: ''
 schema: ''
 tags: alibaba
-supportedModules:
-- xsiam

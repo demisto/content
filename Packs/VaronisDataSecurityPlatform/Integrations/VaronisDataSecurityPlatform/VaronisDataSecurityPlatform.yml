@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Varonis
 commonfields:
   id: VaronisDataSecurityPlatform
   version: -1

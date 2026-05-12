@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Box
 commonfields:
   id: BoxEventsCollector
   version: -1
@@ -70,5 +69,3 @@ marketplaces:
 tests:
 - No tests
 fromversion: 6.6.0
-supportedModules:
-- xsiam

@@ -36,7 +36,6 @@ SCRIPTS = "scripts"
 
 ENABLED = "enabled"
 DEPRECATED = "deprecated"
-HIDDEN = "hidden"
 IS_INTEGRATION_SCRIPT = "isIntegrationScript"
 
 """ HELPER FUNCTION """
@@ -143,7 +142,7 @@ def extract_dockers_from_automation_search_result(content: str, ignore_deprecate
     for script in json_content[SCRIPTS]:
         if (
             (ignore_deprecated and (DEPRECATED in script and script[DEPRECATED] is True))
-            or (HIDDEN in script and script[HIDDEN] is True)
+            or (ENABLED in script and script[ENABLED] is False)
             or (SCRIPT_TYPE in script and script[SCRIPT_TYPE] == JAVA_SCRIPT)
         ):
             continue

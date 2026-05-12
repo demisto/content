@@ -3,5 +3,3 @@ id: armis_security_ParsingRule
 name: Armis Security Parsing Rule
 rules: ''
 tags: []
-supportedModules:
-- xsiam

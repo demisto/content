@@ -1,0 +1,33 @@
+{
+  "trigger_id": "4c039023b3a5216ba6774484bf1859ea",
+  "playbook_id": "SSO Brute Force",
+  "suggestion_reason": "Recommended for 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
+  "description": "This trigger is responsible for handling the 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
+  "trigger_name": "SSO Brute Force Activity",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "SSO Brute Force Threat Detected"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "SSO Brute Force Activity Observed"
+                }
+                ]
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]    
+    }
+  }
+}
+

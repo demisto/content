@@ -1,5 +1,4 @@
 category: Utilities
-provider: Palo Alto Networks
 commonfields:
   id: XSOAR Storage
   version: -1
@@ -46,7 +45,7 @@ script:
     - contextPath: XSOAR.Store
       description: The data retrieved from the key.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116439
   runonce: false
   script: ''
   subtype: python3

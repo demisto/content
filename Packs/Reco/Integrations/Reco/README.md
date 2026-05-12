@@ -46,7 +46,7 @@ There is no context output for this command.
 ### reco-update-incident-timeline
 
 ***
-Update incident timelines
+Add a comment to an incident in Reco
 
 #### Base Command
 
@@ -58,26 +58,6 @@ Update incident timelines
 | --- | --- | --- |
 | comment | Comment to add to the incident. | Required |
 | incident_id | Incident ID to add the comment to. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### reco-add-comment-to-alert
-
-***
-Add a comment to an alert in Reco
-
-#### Base Command
-
-`reco-add-comment-to-alert`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| comment | Comment to add to the incident. | Required |
-| alert_id | Alert ID to add the comment to. | Required |
 
 #### Context Output
 

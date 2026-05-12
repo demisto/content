@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 RESPONSE_SEARCH_EVENTS = {
     "content": [
         {
@@ -20229,7 +20228,7 @@ RESPONSE_REPORT_GET_ITUNES_ID = {
                                     "name_server": "udns1.cscdns.net,udns2.cscdns.uk",
                                     "registrant_email": "inethost@starbucks.com",
                                     "registrant_name": "Domain Admin",
-                                    "registrant_organization": "TestCoffee Corporation",
+                                    "registrant_organization": "Starbucks Corporation",
                                 },
                             },
                         },

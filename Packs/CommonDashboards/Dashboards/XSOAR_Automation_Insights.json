@@ -1055,8 +1055,5 @@
     ],
     "fromVersion": "6.10.0",
     "description": "",
-    "isPredefined": true,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "isPredefined": true
 }

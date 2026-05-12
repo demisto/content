@@ -58,7 +58,7 @@
         "hash": {
           "md5": null,
           "md5Error": null,
-          "sha256": "testhash",
+          "sha256": null,
           "sha256Error": null
         },
         "id": null,
@@ -818,7 +818,7 @@
       }
     }
   ],
-  "nextPgToken": null,
+  "nextPgToken": "06689ebf-cfc8-46f9-a0e0-428a24a800c9",
   "problems": null,
   "totalCount": 3327
 }

@@ -1,12 +1,9 @@
 ## DeHashed.com
-
-This integration checks if personal information, such as emails, usernames, or passwords, has been compromised.
+- This integration allows you to check if your personal information such as your email, username, or password is being compromised. 
 
 ### Authentication
-
-- In the **API Key** field, enter your API key.
-- To obtain an API key, register at [DeHashed.com](https://www.dehashed.com) and visit the [API documentation page](https://app.dehashed.com/documentation/api).
-
+- In the "Username" field, enter your email address
+- In the "Password" field, enter your API key.
+- To generate an API key, see https://www.dehashed.com.
 ### Note
-
-Click the **Test** button to validate the instance configuration by checking the available API credits.
+In order to test the instance configuration, the "Test" button passes your API credits.

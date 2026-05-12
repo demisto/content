@@ -1,6 +1,5 @@
 category: Messaging and Conferencing
-provider: Zoom
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -1242,11 +1241,11 @@ script:
     description: Revoke a user's Zoom SSO session. Use the zoom-list-users command to get the user ID or user email.
     execution: true
     arguments:
-    - name: user_id
-      description: Email or unique identifier of the user.
-      required: true
-      type: string
-    outputs: []
+      - name: user_id
+        description: Email or unique identifier of the user.
+        required: true
+        type: string
+    outputs: [ ]
   - name: send-notification
     description: Send a message using a chatbot app.
     arguments:
@@ -1303,14 +1302,10 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:0.120.0.5547621
+  dockerimage: demisto/fastapi:0.115.12.3243695
   script: "-"
   subtype: python3
   type: python
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- agentix
-- xsiam
-- edr

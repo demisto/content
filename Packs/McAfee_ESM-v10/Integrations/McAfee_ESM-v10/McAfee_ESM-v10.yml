@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Trellix
 commonfields:
   id: McAfee ESM-v10
   version: -1

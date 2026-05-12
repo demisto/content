@@ -3,5 +3,3 @@ id: Trend_Micro_Email_Security_ModelingRule
 name: Trend Micro Email Security Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

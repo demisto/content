@@ -6,7 +6,7 @@ import json
 ###############################################################################
 import os
 from datetime import datetime, timedelta
-from signal import SIG_DFL, SIGPIPE, signal as signal_func
+from signal import SIG_DFL, SIGPIPE, signal  # type: ignore[no-redef]
 from urllib.parse import unquote
 
 import demistomock as demisto
@@ -14,16 +14,21 @@ import jwt
 import requests
 from CommonServerPython import *
 
-signal_func(SIGPIPE, SIG_DFL)
+signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
 
 ###############################################################################
 # packages to handle IOerror
 ###############################################################################
 
 if not demisto.params().get("proxy", False) or demisto.params()["proxy"] == "false":
-    # Remove proxy environment variables if they exist
-    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-        os.environ.pop(proxy_var, None)
+    if "HTTP_PROXY" in os.environ:
+        del os.environ["HTTP_PROXY"]
+    if "HTTPS_PROXY" in os.environ:
+        del os.environ["HTTPS_PROXY"]
+    if "http_proxy" in os.environ:
+        del os.environ["http_proxy"]
+    if "https_proxy" in os.environ:
+        del os.environ["https_proxy"]
 
 
 """GLOBAL VARS"""

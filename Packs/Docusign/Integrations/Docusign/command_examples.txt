@@ -1,2 +1,0 @@
-!docusign-generate-consent-url
-!docusign-reset-access-token

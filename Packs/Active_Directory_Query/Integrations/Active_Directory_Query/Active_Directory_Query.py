@@ -8,7 +8,6 @@ from ldap3 import (
     ALL_ATTRIBUTES,
     AUTO_BIND_NO_TLS,
     AUTO_BIND_TLS_BEFORE_BIND,
-    BASE,
     NTLM,
     SUBTREE,
     Connection,
@@ -133,10 +132,14 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
         # For establishing a secure connection via SSL/TLS protocol - use the 'SSL' option.
         # For establishing a secure connection via Start TLS - use the 'Start TLS' option.
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        tls = get_tls_object(unsecure, ssl_version)
+        if unsecure:
+            # Add support for all CIPHERS_STRING
+            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING, version=get_ssl_version(ssl_version))
+        else:
+            tls = Tls(validate=ssl.CERT_NONE, version=get_ssl_version(ssl_version))
         if port:
-            return Server(host, port=port, use_ssl=True, tls=tls)
-        return Server(host, use_ssl=True, tls=tls)
+            return Server(host, port=port, use_ssl=unsecure, tls=tls)
+        return Server(host, use_ssl=unsecure, tls=tls)
 
     if secure_connection == SSL:  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
@@ -283,39 +286,14 @@ def group_entry(group_object, custom_attributes):
     return group
 
 
-def base_dn_verified(base_dn: str) -> bool:
-    """
-    Verifies the base DN is configured correctly.
-    Uses BASE scope, size limit of 1, and 'no attributes' OID for maximum performance.
-
-    This function performs an optimized LDAP search that only checks if the base DN entry itself exists,
-    rather than searching the entire directory tree. This reduces the complexity from O(n) to O(1).
-
-    Args:
-        base_dn: The base DN to verify (e.g., 'dc=example,dc=com')
-
-    Returns:
-        bool: True if the base DN is valid and accessible, False otherwise
-    """
-    assert connection is not None
+def base_dn_verified(base_dn):
+    # search AD with a simple query to test base DN is configured correctly
     try:
-        # Optimized search with three performance improvements:
-        # 1. search_scope=BASE: Only looks at the DN itself (O(1) complexity)
-        # 2. size_limit=1: Safety guard to ensure only one record is processed
-        # 3. attributes=['1.1']: Special OID meaning 'return no attributes' (minimal data transfer)
-        success = connection.search(
-            search_base=base_dn, search_filter="(objectClass=*)", search_scope=BASE, size_limit=1, attributes=["1.1"]
-        )
-
-        if not success:
-            demisto.info(f"Base DN verification failed. Result: {connection.result}")
-            return False
-
-        return True
-
+        search("(objectClass=*)", base_dn, size_limit=1)
     except Exception as e:
-        demisto.error(f"Error during Base DN verification: {e}\n{traceback.format_exc()}")
+        demisto.info(str(e))
         return False
+    return True
 
 
 def generate_unique_cn(default_base_dn, cn):
@@ -439,13 +417,11 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
 
     """
     assert connection is not None
-    demisto.debug(f"searching using {search_filter=} {search_base=}")
     success = connection.search(
         search_base=search_base, search_filter=search_filter, attributes=attributes, size_limit=size_limit, time_limit=time_limit
     )
 
     if not success:
-        demisto.info("Search failed")
         raise Exception("Search failed")
     return connection.entries
 
@@ -466,16 +442,9 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
     entries: list[Entry] = []
     entries_left_to_fetch = size_limit
-    page_num_debug = 0
     while True:
-        page_num_debug += 1
         if 0 < entries_left_to_fetch < page_size:
             page_size = entries_left_to_fetch
-        demisto.debug(
-            f"search_with_paging: fetching page {page_num_debug}. "
-            f"{page_size=}, total_so_far={total_entries} "
-            f"has_cookie={bool(cookie)}, elapsed={(datetime.now() - start).total_seconds():.2f}s"
-        )
         connection.search(
             search_base, search_filter, search_scope=SUBTREE, attributes=attributes, paged_size=page_size, paged_cookie=cookie
         )
@@ -488,11 +457,6 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         # stop when: 1.reached size limit 2.reached time limit 3. no cookie
         if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
-            demisto.debug(
-                f"search_with_paging: stopping after {page_num_debug} page(s). "
-                f"total_entries={total_entries}, size_limit={size_limit}, time_limit={time_limit}, "
-                f"time_elapsed={time_diff}s, has_more_pages={bool(cookie)}"
-            )
             break
 
     # keep the raw entry for raw content (backward compatibility)
@@ -515,10 +479,6 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
 
 def user_dn(sam_account_name, search_base):
-    if "\\" in sam_account_name:
-        domain_throw_out, sam_account_name = sam_account_name.split("\\", 1)
-        demisto.info(f"chopping off domain {domain_throw_out} and using {sam_account_name=}")
-
     search_filter = f"(&(objectClass=user)(sAMAccountName={sam_account_name}))"
     entries = search(search_filter, search_base)
     if not entries:
@@ -659,15 +619,9 @@ def search_users(default_base_dn, page_size):
     attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES) - set(argToList(args.get("attributes-to-exclude"))))
     if "userAccountControl" in attributes:
         attributes.append("msDS-User-Account-Control-Computed")
-
-    demisto.debug(
-        f"ad-get-user: starting search_with_paging. "
-        f"{query=}, {default_base_dn=}, {limit=}, {page_size=}, attributes={attributes}"
-    )
     entries = search_with_paging(
         query, default_base_dn, page_cookie=page_cookie, attributes=attributes, size_limit=limit, page_size=page_size
     )
-    demisto.debug(f"ad-get-user: search_with_paging completed.\nReturned {len(entries.get('flat', []))} entries.")
 
     accounts = [account_entry(entry, custom_attributes) for entry in entries["flat"]]
     if "userAccountControl" in attributes:
@@ -799,15 +753,9 @@ def search_computers(default_base_dn, page_size):
     if args.get("attributes"):
         custom_attributes = args["attributes"].split(",")
     attributes = list(set(custom_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
-
-    demisto.debug(
-        f"ad-get-computer: starting search_with_paging. "
-        f"{query=}, {default_base_dn=}, {size_limit=}, {page_size=}, attributes={attributes}"
-    )
     entries = search_with_paging(
         query, default_base_dn, attributes=attributes, page_size=page_size, size_limit=size_limit, page_cookie=page_cookie
     )
-    demisto.debug(f"ad-get-computer: search_with_paging completed.\nReturned {len(entries.get('flat', []))} entries.")
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries["flat"]]
     readable_output = tableToMarkdown("Active Directory - Get Computers", entries["flat"])
@@ -1827,7 +1775,7 @@ def main():
     server_ip = params.get("server_ip")
     username = params.get("credentials")["identifier"]
     password = params.get("credentials")["password"]
-    default_base_dn = params.get("base_dn", "")
+    default_base_dn = params.get("base_dn")
     secure_connection = params.get("secure_connection")
     ssl_version = params.get("ssl_version", "None")
     default_page_size = int(params.get("page_size"))
@@ -1839,7 +1787,6 @@ def main():
     create_if_not_exists = params.get("create-if-not-exists")
     mapper_in = params.get("mapper-in", DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get("mapper-out", DEFAULT_OUTGOING_MAPPER)
-    verify_base_dn = params.get("verify_base_dn", True) or command == "test-module"
 
     if port:
         # port was configured, cast to int
@@ -1886,17 +1833,16 @@ def main():
 
         demisto.info(f"Established connection with AD LDAP server.\nLDAP Connection Details: {connection}")
 
-        if verify_base_dn:
-            demisto.info(f'Starting to verify base DN "{default_base_dn}"')
-            if not base_dn_verified(default_base_dn):
-                message = (
-                    f"Failed to verify the base DN configured for the instance.\n"
-                    f"Last connection result: {json.dumps(connection.result)}\n"
-                    f"Last error from LDAP server: {json.dumps(connection.last_error)}"
-                )
-                return_error(message)
-                return None
-            demisto.info(f'Verified base DN "{default_base_dn}"')
+        if not base_dn_verified(default_base_dn):
+            message = (
+                f"Failed to verify the base DN configured for the instance.\n"
+                f"Last connection result: {json.dumps(connection.result)}\n"
+                f"Last error from LDAP server: {json.dumps(connection.last_error)}"
+            )
+            return_error(message)
+            return None
+
+        demisto.info(f'Verified base DN "{default_base_dn}"')
 
         """ COMMAND EXECUTION """
 

@@ -4,5 +4,3 @@ name: Netskope Modeling Rule
 rules: ''
 schema: ''
 tags: netskope
-supportedModules:
-- xsiam

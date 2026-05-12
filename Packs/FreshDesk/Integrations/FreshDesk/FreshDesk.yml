@@ -1,5 +1,4 @@
 category: Case Management
-provider: Freshworks Inc.
 commonfields:
   id: Freshdesk
   version: -1
@@ -1012,7 +1011,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.11.1940698
   type: python
 tests:
 - Freshdesk-Test

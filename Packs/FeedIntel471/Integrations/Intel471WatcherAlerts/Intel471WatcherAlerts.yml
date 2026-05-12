@@ -1,45 +1,27 @@
 category: Data Enrichment & Threat Intelligence
-provider: Intel 471
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: Intel471 Watcher Alerts
   version: -1
 configuration:
-- additionalinfo: The Intel 471 backend from which to source data
-  display: Intel 471 backend
-  name: intel471_backend
-  defaultvalue: TITAN
-  options:
-  - TITAN
-  - Verity471
-  type: 15
-  required: true
-  section: Connect
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-  section: Collect
 - defaultvalue: Intel 471 Watcher Alert
   display: Incident type
   name: incidentType
   type: 13
   required: false
-  section: Connect
 - defaultvalue: '100'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   required: false
-  section: Collect
 - display: Username
   name: credentials
   type: 9
   required: false
-  section: Connect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to incidents fetched from the feed
   defaultvalue: AMBER
   display: Traffic Light Protocol Color
@@ -51,34 +33,38 @@ configuration:
   - WHITE
   type: 15
   required: false
-  section: Collect
+- additionalinfo: The severity to apply to incidents
+  defaultvalue: Medium
+  display: Severity
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
 - additionalinfo: How far back in time to go when performing the first fetch.
   defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
-  section: Collect
 - additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched (comma separated).
   display: Watcher group UID(s)
   name: watcher_group_uids
   type: 0
   required: false
-  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
-  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  section: Connect
-  advanced: true
 description: |-
-  Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Intel471 content that is most relevant to them.
+  'Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.'
 display: Intel471 Watcher Alerts
 name: Intel471 Watcher Alerts
 script:
@@ -87,7 +73,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.8544956
+  dockerimage: demisto/py3-tools:1.0.0.114656
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

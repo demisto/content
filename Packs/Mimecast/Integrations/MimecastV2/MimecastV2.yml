@@ -1,5 +1,4 @@
 category: Email
-provider: Permira
 commonfields:
   id: MimecastV2
   version: -1
@@ -1010,8 +1009,6 @@ script:
       - DELIVERED
       - RECEIVED
       required: true
-    - description: The email address of the mailbox to search. Required when context is DELIVERED.
-      name: mailbox
     - auto: PREDEFINED
       defaultValue: PLAIN
       description: The message type to return. (Only relevant for part argument = message or all).
@@ -1984,8 +1981,7 @@ script:
       - subject
       - sender
       - recipient
-      - reasonCode
-      - senderIP
+      - reason_code
     - name: page_size
       description: Number of results per page to display.
       defaultValue: ""
@@ -2572,7 +2568,7 @@ script:
       description: The receiver type.
       type: String
   - name: mimecast-update-block-sender-policy
-    description: "Updates an existing Blocked Senders policy. This command performs a full policy replacement at the API level. Arguments that are explicitly provided will overwrite the current policy values. Arguments that are left blank will be automatically preserved from the existing policy. To modify only specific fields, provide the policy_id and the fields to be changed — all other fields will remain unchanged. Note: Each policy supports a single sender value (fromValue). To block additional senders, separate policies should be created using the mimecast-create-block-sender-policy command."
+    description: Updates the specified policy.
     arguments:
     - description: The ID of the policy to update.
       name: policy_id
@@ -3418,7 +3414,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - Mimecast test
 - Mimecast Test api 2.0

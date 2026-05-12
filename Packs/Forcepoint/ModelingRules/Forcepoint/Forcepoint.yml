@@ -4,5 +4,3 @@ name: Forcepoint NGFW Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

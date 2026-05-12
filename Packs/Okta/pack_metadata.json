@@ -2,7 +2,7 @@
     "name": "Okta",
     "description": "Integration with Okta's cloud-based identity management service.",
     "support": "xsoar",
-    "currentVersion": "3.3.40",
+    "currentVersion": "3.3.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -20,11 +20,12 @@
     ],
     "defaultDataSource": "Okta Event Collector",
     "supportedModules": [
-        "agentix",
-        "cloud_runtime_security",
-        "cloud_posture",
-        "xsiam",
-        "edr",
-        "cloud"
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

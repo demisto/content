@@ -1,5 +1,4 @@
 category: Identity and Access Management
-provider: Signum
 commonfields:
   id: Signum
   version: -1
@@ -43,7 +42,7 @@ script:
     outputs:
     - contextPath: Signum.ListDomainUsers
       description: The result of the signum-list-domain-users command.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

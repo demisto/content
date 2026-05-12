@@ -1,0 +1,48 @@
+{
+  "trigger_id": "934cafcebab59e0ca332603850b0e2e5",
+  "playbook_id": "Unsigned and unpopular process performed an injection",
+  "suggestion_reason": "Recommended for 'Unsigned and unpopular process performed an injection' alerts",
+  "description": "This trigger is responsible for handling several the 'Unsigned and unpopular process performed an injection' alerts",
+  "trigger_name": "Unsigned and unpopular process performed an injection",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a commonly abused process"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed process hollowing injection"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed queue APC injection"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a sensitive process"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into svchost.exe"
+                }
+                ]
+            },
+          {
+                "SEARCH_FIELD": "alert_type",
+                "SEARCH_TYPE": "NEQ",
+                "SEARCH_VALUE": "Correlation"
+          }
+        ]    
+    }
+  }
+}

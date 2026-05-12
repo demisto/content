@@ -358,6 +358,7 @@ dependson:
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
 supportedModules:
-- agentix
-- xsiam
-- edr
+- X1
+- X3
+- X5
+- ENT_PLUS

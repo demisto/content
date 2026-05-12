@@ -4,5 +4,3 @@ name: Cisco ThousandEyes Modeling Rule
 rules: ''
 schema: ''
 tags: 
-supportedModules:
-- xsiam

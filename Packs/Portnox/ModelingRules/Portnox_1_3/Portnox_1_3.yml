@@ -4,5 +4,3 @@ name: Portnox Modeling Rule
 rules: ''
 schema: ''
 tags: portnox
-supportedModules:
-- xsiam

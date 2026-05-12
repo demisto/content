@@ -2710,7 +2710,7 @@ RESPONSE_ITEM_DETAILS = {
                     },
                     {
                         "index": 5,
-                        "label": "TestMobile USA",
+                        "label": "T-Mobile USA",
                         "price": 0,
                         "price_currency": "USD",
                         "recurring_price": 0,
@@ -3496,8 +3496,7 @@ MIRROR_ENTRIES_WITH_EMPTY_USERNAME = [
 
 OAUTH_PARAMS = {
     "insecure": False,
-    "username": "user1",
-    "password": "12345",
+    "credentials": {"identifier": "user1", "password:": "12345"},
     "proxy": False,
     "client_id": "client_id",
     "client_secret": "client_secret",

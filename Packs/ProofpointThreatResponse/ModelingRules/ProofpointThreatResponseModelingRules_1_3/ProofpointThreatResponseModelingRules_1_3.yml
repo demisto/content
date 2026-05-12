@@ -4,5 +4,3 @@ name: Proofpoint Threat Response Modeling Rule
 rules: ''
 schema: ''
 tags: proofpoint
-supportedModules:
-- xsiam

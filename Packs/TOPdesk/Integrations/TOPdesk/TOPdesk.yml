@@ -1,5 +1,4 @@
 category: Case Management
-provider: TOPdesk
 commonfields:
   id: TOPdesk
   version: -1
@@ -5944,6 +5943,6 @@ defaultmapperin: TOPdesk-incoming-mapper
 defaultmapperout: TOPdesk Outgoing Mapper
 tests:
 - No tests (auto formatted)
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

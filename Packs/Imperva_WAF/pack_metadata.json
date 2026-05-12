@@ -2,7 +2,7 @@
     "name": "Imperva WAF",
     "description": "Use the Imperva WAF integration to manage IP groups and Web security policies in Imperva WAF.",
     "support": "xsoar",
-    "currentVersion": "1.0.27",
+    "currentVersion": "1.0.21",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,24 +10,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "Network",
-        "Security"
-    ],
-    "useCases": [
-        "Network Security"
-    ],
-    "keywords": [
-        "Waf",
-        "Gateway"
-    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -1,6 +1,5 @@
 category: Utilities
-provider: Insight Partners
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

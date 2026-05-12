@@ -1,9 +1,8 @@
 category: Endpoint
-provider: Tanium
 commonfields:
   id: Tanium Threat Response v2
   version: -1
-sectionorder:
+sectionOrder:
   - Connect
   - Collect
 configuration:
@@ -1931,7 +1930,7 @@ script:
     - contextPath: Tanium.ResponseActions.eid
       description: ''
       type: String
-  dockerimage: demisto/lxml:1.0.0.6978288
+  dockerimage: demisto/lxml:1.0.0.3547829
   isfetch: true
   script: ''
   subtype: python3

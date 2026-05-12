@@ -1,5 +1,4 @@
 category: Network Security
-provider: BainCapital
 commonfields:
   id: ExtraHop
   version: -1

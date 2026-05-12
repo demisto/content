@@ -4,5 +4,3 @@ name: Radware Cloud Services Modeling Rule
 rules: ''
 schema: ''
 tags: Radware
-supportedModules:
-- xsiam

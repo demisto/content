@@ -1,5 +1,4 @@
 category: IT Services
-provider: Docker Inc
 commonfields:
   id: Docker Engine API
   version: -1
@@ -1235,7 +1234,7 @@ script:
     - contextPath: Docker.ImageTag.Status Code
       description: Image Tag Result.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

@@ -4,5 +4,3 @@ name: IBM AIX Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

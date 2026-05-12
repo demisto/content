@@ -4,5 +4,3 @@ name: Azure Firewall Modeling Rule
 rules: ''
 schema: ''
 tags:
-supportedModules:
-- xsiam

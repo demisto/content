@@ -4,5 +4,3 @@ name: Defender For Cloud Microsoft Modeling Rule
 rules: ''
 schema: ''
 tags: defender_for_cloud
-supportedModules:
-- xsiam

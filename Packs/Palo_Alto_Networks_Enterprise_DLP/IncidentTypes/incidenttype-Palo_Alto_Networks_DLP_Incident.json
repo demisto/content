@@ -26,9 +26,5 @@
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "5.5.0",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "fromVersion": "5.5.0"
 }

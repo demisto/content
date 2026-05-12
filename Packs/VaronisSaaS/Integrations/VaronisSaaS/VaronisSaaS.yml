@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Varonis
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -65,7 +64,6 @@ configuration:
   - Low
   - Medium
   - High
-  - Informational
   required: false
   type: 15
   section: Collect
@@ -540,7 +538,7 @@ script:
     name: get-mapping-fields
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.8.3720084
   feed: false
   isfetch: true
   ismappable: true

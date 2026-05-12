@@ -4,5 +4,3 @@ name: Microsoft Exchange Server Modeling Rule
 rules: ''
 schema: ''
 tags: microsoft
-supportedModules:
-- xsiam

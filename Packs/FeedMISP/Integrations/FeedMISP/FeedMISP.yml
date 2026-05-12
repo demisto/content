@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: OpenSource
 commonfields:
   id: MISP Feed
   version: -1
@@ -18,12 +17,6 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-  section: Connect
-- display: Client Certificate
-  displaypassword: Private Key
-  name: certificate
-  type: 9
-  required: false
   section: Connect
 - display: Max. indicators per fetch
   name: max_indicator_to_fetch
@@ -183,7 +176,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 5.5.0
 tests:
 - MISPfeed Test

@@ -2,6 +2,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from collections.abc import Callable
 
+import urllib3
 import traceback
 from urllib.parse import urlparse
 
@@ -9,6 +10,8 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 from requests.auth import HTTPBasicAuth
 
+# Disable insecure warnings
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 create_incident_mutation = gql("""
 mutation CreateIncident(
@@ -122,19 +125,12 @@ class BreachRxClient:
         severities = self.get_incident_severities()
         types = self.get_incident_types()
 
-        request = create_incident_mutation
-        request.variable_values = {
-            "severity": severities[0]["name"],
-            "name": name,
-            "type": types[0]["name"],
-            "description": description,
-        }
-        return self.client.execute(request)["createIncident"]
+        params = {"severity": severities[0]["name"], "name": name, "type": types[0]["name"], "description": description}
+        return self.client.execute(create_incident_mutation, params)["createIncident"]
 
     def get_incident(self, name: Optional[str], identifier: Optional[str]):
-        request = get_incident_by_name
-        request.variable_values = {"name": name, "identifier": identifier}
-        results = self.client.execute(request)["incidents"]
+        params = {"name": name, "identifier": identifier}
+        results = self.client.execute(get_incident_by_name, params)["incidents"]
 
         if results:
             return results.pop()
@@ -142,10 +138,9 @@ class BreachRxClient:
             return None
 
     def get_actions_for_incident(self, incident_id):
-        request = get_actions_for_incident
-        request.variable_values = {"incidentId": incident_id}
+        params = {"incidentId": incident_id}
 
-        return self.client.execute(request)["actions"]
+        return self.client.execute(get_actions_for_incident, params)["actions"]
 
 
 def test_module(client: BreachRxClient):
@@ -156,9 +151,7 @@ def test_module(client: BreachRxClient):
         raise Exception("Authorization Error: make sure your API Key and Secret Key are correctly set")
 
 
-def create_incident_command(
-    client: BreachRxClient, incident_name: str | None = None, description: str | None = None
-) -> CommandResults:
+def create_incident_command(client: BreachRxClient, incident_name: str = None, description: str = None) -> CommandResults:
     if not incident_name:
         incident_name = demisto.incident().get("name")
     if not description:
@@ -181,7 +174,7 @@ def create_incident_command(
 
 
 def get_incident_actions_command(
-    client: BreachRxClient, incident_name: str | None = None, incident_identifier: str | None = None
+    client: BreachRxClient, incident_name: str = None, incident_identifier: str = None
 ) -> Union[CommandResults, str]:
     incidents = demisto.dt(demisto.context(), "BreachRx.Incident")
 
@@ -196,7 +189,7 @@ def get_incident_actions_command(
         if not incidents:
             raise Exception("Error: No BreachRx privacy Incident found using the search terms provided.")
 
-    if not isinstance(incidents, list):
+    if type(incidents) is not list:
         incidents = [incidents]
 
     for incident in incidents:
@@ -221,7 +214,7 @@ def get_incident_actions_command(
 
 
 def import_incident_command(
-    client: BreachRxClient, incident_name: str | None = None, incident_identifier: str | None = None
+    client: BreachRxClient, incident_name: str = None, incident_identifier: str = None
 ) -> Union[CommandResults, str]:
     incident = client.get_incident(incident_name, incident_identifier)
 
@@ -238,7 +231,7 @@ def import_incident_command(
 
 
 def get_incident_command(
-    client: BreachRxClient, incident_name: str | None = None, incident_identifier: str | None = None
+    client: BreachRxClient, incident_name: str = None, incident_identifier: str = None
 ) -> Union[CommandResults, str]:
     incident = client.get_incident(incident_name, incident_identifier)
 
@@ -260,7 +253,7 @@ COMMANDS = {
 }
 
 
-def is_valid_url(url: str):
+def is_valid_url(url):
     try:
         result = urlparse(url)
         return all([result.scheme, result.netloc])
@@ -270,33 +263,29 @@ def is_valid_url(url: str):
 
 def main() -> None:  # pragma: no cover
     try:
-        params = demisto.params()
-        args = demisto.args()
-        command = demisto.command()
-
-        base_url = params["api_url"]
-        org_name = params["url"].split(".")[0].replace("https://", "")
-        api_key = params.get("credentials", {}).get("identifier")
-        secret_key = params.get("credentials", {}).get("password")
-        verify = params.get("insecure", False)
+        base_url = demisto.params()["api_url"]
+        org_name = demisto.params()["url"].split(".")[0].replace("https://", "")
+        api_key = demisto.params().get("credentials", {}).get("identifier")
+        secret_key = demisto.params().get("credentials", {}).get("password")
+        verify = demisto.params().get("insecure", False)
 
         if not is_valid_url(base_url):
             raise Exception("The GraphQL API URL is not a valid URL.")
 
-        if not is_valid_url(params["url"]):
+        if not is_valid_url(demisto.params()["url"]):
             raise Exception("The BreachRx instance URL is not a valid URL.")
 
         client = BreachRxClient(base_url, api_key, secret_key, org_name, verify)
 
-        command_func: Any[Callable, None] = COMMANDS.get(command)
+        command_func: Any[Callable, None] = COMMANDS.get(demisto.command())
 
         if command_func:
-            return_results(command_func(client, **args))
+            return_results(command_func(client, **demisto.args()))
         else:
-            raise NotImplementedError(f"{command} command is not implemented.")
+            raise NotImplementedError(f"{demisto.command()} command is not implemented.")
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

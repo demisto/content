@@ -1,1 +1,0 @@
-AWS Sagemaker - Cortex XSOAR Phishing Email Classifier

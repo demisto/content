@@ -70,14 +70,14 @@ class Client(BaseClient):
 
     def get_credentials(self, creds_object: str):
         url_suffix = "/AIMWebService/api/Accounts"
-        body = {
+        params = {
             "AppID": self._app_id,
             "Safe": self._safe,
             "Folder": self._folder,
             "Object": creds_object,
         }
 
-        return self._http_request("POST", url_suffix, json_data=body, auth=self.auth, cert=self.crt)
+        return self._http_request("GET", url_suffix, params=params, auth=self.auth, cert=self.crt)
 
     def list_credentials(self):
         credential_result = [self.get_credentials(credentials) for credentials in self._credentials_list]
@@ -127,7 +127,7 @@ def fetch_credentials(client, args: dict):
             {
                 "user": cred.get("UserName"),
                 "password": cred.get("Content"),
-                "name": cred.get("Name") or cred.get("Object"),
+                "name": cred.get("Name"),
             }
         )
     demisto.credentials(credentials)
@@ -159,11 +159,7 @@ def main():
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    app_id = params.get("app_id")
-
-    if not app_id:
-        raise DemistoException("The 'AppID' parameter is required")
-
+    app_id = params.get("app_id") or ""
     folder = params.get("folder")
     safe = params.get("safe")
     credentials_object = params.get("credential_names") or ""

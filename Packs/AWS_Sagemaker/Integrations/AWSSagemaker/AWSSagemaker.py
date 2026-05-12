@@ -8,9 +8,10 @@ from CommonServerPython import *  # noqa: F401
 
 params = demisto.params()
 if not params["proxy"]:
-    # Remove proxy environment variables if they exist
-    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-        os.environ.pop(proxy_var, None)
+    del os.environ["http_proxy"]
+    del os.environ["https_proxy"]
+    del os.environ["HTTP_PROXY"]
+    del os.environ["HTTPS_PROXY"]
 
 
 def invoke_enpoint(runtime, endpoint_name, payload):

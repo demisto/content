@@ -4,7 +4,6 @@ commonfields:
 name: Qualys
 display: Qualys (Deprecated)
 category: Vulnerability Management
-provider: Qualys
 description: Deprecated. Use Qualys VMDR instead.
 configuration:
 - display: Qualys API server URL

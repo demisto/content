@@ -4,5 +4,3 @@ name: Proofpoint Isolation Modeling Rule
 rules: ''
 schema: ''
 tags: proofpoint
-supportedModules:
-- xsiam

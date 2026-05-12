@@ -5,5 +5,3 @@ name: IBM MaaS360 Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

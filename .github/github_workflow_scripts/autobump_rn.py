@@ -22,7 +22,7 @@ from skip_conditions import (
     AllowedBumpCondition,
     UpdateType,
 )
-from utils import timestamped_print, Checkout, ORGANIZATION_NAME, REPO_NAME
+from utils import timestamped_print, Checkout
 from git import Repo
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 import os
@@ -32,6 +32,8 @@ urllib3.disable_warnings()
 print = timestamped_print
 t = Terminal()
 
+ORGANIZATION_NAME = "demisto"
+REPO_MANE = "content"
 BASE = "master"
 PR_COMMENT_TITLE = (
     "### This PR was automatically updated by a " "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
@@ -291,7 +293,7 @@ def main():  # pragma: no cover
     git_repo_obj.remote().fetch()
 
     github_client: Github = Github(github_token, verify=False)
-    github_repo_obj: Repository = github_client.get_repo(f"{ORGANIZATION_NAME}/{REPO_NAME}")
+    github_repo_obj: Repository = github_client.get_repo(f"{ORGANIZATION_NAME}/{REPO_MANE}")
 
     autobump_manager = AutoBumperManager(
         git_repo_obj=git_repo_obj,

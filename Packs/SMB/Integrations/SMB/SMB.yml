@@ -1,5 +1,4 @@
 category: Utilities
-provider: Microsoft
 commonfields:
   id: Server Message Block (SMB)
   version: -1

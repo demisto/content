@@ -15,9 +15,10 @@ from CommonServerPython import *  # noqa: F401
 requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 if not demisto.params().get("proxy", True):
-    # Remove proxy environment variables if they exist
-    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-        os.environ.pop(proxy_var, None)
+    del os.environ["HTTP_PROXY"]
+    del os.environ["HTTPS_PROXY"]
+    del os.environ["http_proxy"]
+    del os.environ["https_proxy"]
 
 # HELPER FUNCTIONS #
 

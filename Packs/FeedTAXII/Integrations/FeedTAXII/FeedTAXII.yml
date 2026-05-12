@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Open Source
 commonfields:
   id: TAXIIFeed
   version: -1
@@ -232,7 +231,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.8240011
+  dockerimage: demisto/taxii:1.0.0.117607
   feed: true
   runonce: false
   script: ''
@@ -241,6 +240,6 @@ script:
 tests:
 - TAXII_Feed_Test
 fromversion: 5.5.0
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

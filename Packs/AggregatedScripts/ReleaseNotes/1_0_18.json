@@ -1,4 +1,0 @@
-{
-  "breakingChanges": true,
-  "breakingChangesNotes": "In File Enrichment, updated the 'enrichment_brands' argument name to 'brands' for consistency with other Aggregated Scripts conventions."
-}

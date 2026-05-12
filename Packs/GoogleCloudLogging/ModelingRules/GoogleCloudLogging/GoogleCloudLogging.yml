@@ -4,5 +4,3 @@ name: Google Cloud Logging Modeling Rule
 rules: ''
 schema: ''
 tags:
-supportedModules:
-- xsiam

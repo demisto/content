@@ -65,7 +65,7 @@ The transformer concatenates prefix and suffix which supports DT expressions to 
 #### Output
 
 ```
-jdoe@example.com
+jdoe@paloaltonetworks.com
 ```
 
 ---
@@ -96,7 +96,7 @@ jdoe@example.com
 #### Output
 
 ```
-jdoe@example.com
+jdoe@paloaltonetworks.com
 ```
 
 ---
@@ -127,7 +127,7 @@ jdoe@example.com
 #### Output
 
 ```
-jdoe@example.com
+jdoe@paloaltonetworks.com
 ```
 
 ---
@@ -158,7 +158,7 @@ jdoe@example.com
 #### Output
 
 ```
-jdoe@example.com
+jdoe@paloaltonetworks.com
 ```
 
 ---
@@ -219,7 +219,7 @@ ${userid}@paloaltonetworks.com
 #### Output
 
 ```
-jdoe@example.com
+JDOE@paloaltonetworks.com
 ```
 
 ---

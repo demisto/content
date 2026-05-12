@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: Rapid7
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

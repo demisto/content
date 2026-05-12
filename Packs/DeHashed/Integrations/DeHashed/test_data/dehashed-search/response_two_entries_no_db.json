@@ -1,9 +1,0 @@
-{
-  "balance": 100,
-  "entries": [
-    {"id": "id_1", "email": ["a@b.co"]},
-    {"id": "id_2", "email": ["c@d.co"]}
-  ],
-  "took": "1ms",
-  "total": 2
-}

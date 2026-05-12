@@ -3,12 +3,11 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    delimiter = demisto.args().get("delimiter", ",")
-    keys = [k.strip() for k in demisto.args()["keys"].split(delimiter)]
+    keys = [k.strip() for k in demisto.args()["keys"].split(",")]
     values_str = demisto.args()["values"]
     if "[" in values_str and "]" in values_str:
         values_str = f"[{values_str}]"
-    values = argToList(values_str, separator=delimiter)
+    values = argToList(values_str)
 
     ec = {demisto.args()["parent"] + "(true)": dict(zip(keys, values))}
     demisto.results(

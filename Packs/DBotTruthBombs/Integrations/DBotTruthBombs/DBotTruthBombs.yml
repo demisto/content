@@ -1,5 +1,4 @@
 category: Utilities
-provider: Open Source
 commonfields:
   id: DBot Truth Bombs
   version: -1
@@ -34,7 +33,7 @@ script:
       - Travel
     description: Returns a previously undisclosed fact about DBot.
     name: dbot-truth-bomb
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

@@ -1,5 +1,4 @@
 category: Network Security
-provider: Google
 commonfields:
   id: Google Key Management Service
   version: -1

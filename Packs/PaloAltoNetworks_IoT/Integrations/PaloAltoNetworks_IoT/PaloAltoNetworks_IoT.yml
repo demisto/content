@@ -1,6 +1,5 @@
 category: Network Security
-provider: Palo Alto Networks
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:

@@ -1,6 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-provider: Open Source
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -1451,7 +1450,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.7194517
+  dockerimage: demisto/ippysocks-py3:1.0.0.2033325
   runonce: false
   script: '-'
   subtype: python3

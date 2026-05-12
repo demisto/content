@@ -4,5 +4,3 @@ fromversion: 8.4.0
 tags: ["Kiteworks"]
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

@@ -1,9 +1,8 @@
 category: Identity and Access Management
-provider: Amazon
 commonfields:
   id: AWS - Organizations
   version: -1
-sectionorder:
+sectionOrder:
 - Connect
 configuration:
 - display: Role Arn

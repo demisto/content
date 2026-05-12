@@ -1,7 +1,0 @@
-{
-"error": {
-"code": 400,
-"message": "updating reference list: validating parsed content: invalid cidr pattern dummy_lines",
-"status": "INVALID_ARGUMENT"
-}
-}

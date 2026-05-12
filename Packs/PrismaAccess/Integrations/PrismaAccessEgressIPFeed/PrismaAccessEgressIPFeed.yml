@@ -4,8 +4,7 @@ commonfields:
 name: Prisma Access Egress IP feed
 display: Prisma Access Egress IP feed
 category: Data Enrichment & Threat Intelligence
-provider: Palo Alto Networks
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 description: Dynamically retrieve and add to allow list IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
@@ -22,7 +21,7 @@ configuration:
   type: 0
   section: Connect
   required: true
-- displaypassword: Prisma Access API Key from Panorama
+- displaypassword: Prisma Access API Key
   name: credentials
   type: 9
   section: Connect
@@ -33,22 +32,20 @@ configuration:
   defaultvalue: all
   type: 15
   section: Collect
-  required: false
+  required: true
   options:
   - all
   - remote_network
   - gp_gateway
   - gp_portal
   - clean_pipe
-  - swg_proxy
-  - rbi
   additionalinfo: https://docs.paloaltonetworks.com/prisma/prisma-access/prisma-access-panorama-admin/prisma-access-overview/retrieve-ip-addresses-for-prisma-access
 - display: Address Type
   name: addrType
   defaultvalue: all
   type: 15
   section: Collect
-  required: false
+  required: true
   options:
   - all
   - active
@@ -81,7 +78,7 @@ configuration:
   defaultvalue: A - Completely reliable
   type: 15
   section: Collect
-  required: false
+  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -170,7 +167,7 @@ script:
       description: Prisma Access Egress IP zone.
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.8.3720084
   feed: true
   subtype: python3
 fromversion: 5.5.0

@@ -1,6 +1,5 @@
 category: Endpoint
-provider: Absolute Software
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -40,8 +39,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 - defaultvalue: 10000
   section: Collect
   display: Max number of events per fetch
@@ -50,8 +47,6 @@ configuration:
   type: 0
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 - defaultvalue: 'false'
   name: isFetchEvents
   type: 8
@@ -59,8 +54,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 description: "Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
 display: Absolute
 name: Absolute

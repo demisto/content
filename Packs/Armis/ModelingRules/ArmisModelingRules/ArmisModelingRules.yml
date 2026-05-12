@@ -4,5 +4,3 @@ name: Armis Security Modeling Rule
 rules: ''
 schema: ''
 tags: security
-supportedModules:
-- xsiam

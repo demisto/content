@@ -1,13 +1,12 @@
 commonfields:
   id: TheHive Project
   version: -1
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 name: TheHive Project
 display: TheHive Project
 category: Case Management
-provider: StrangeBee
 description: Integration with The Hive Project Security Incident Response Platform.
 configuration:
 - display: Host

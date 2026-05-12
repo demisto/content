@@ -394,26 +394,17 @@ def fetch_incidents_command(
 
 
 @logger
-def get_cases_command(client: Client, args: dict) -> tuple[object, dict, list | dict]:
+def get_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all case by filters and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        args: demisto.args() dictionary
+        kwargs: Usually demisto.args()
 
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.get_cases(
-        status=args.get("status"),
-        case_type=args.get("case_type"),
-        max_records=args.get("max_records", 20),
-        offset=args.get("offset", 0),
-        date_field=args.get("date_field", "dateModified"),
-        begin_date=args.get("begin_date"),
-        end_date=args.get("end_date"),
-        period=args.get("period"),
-    )
+    raw_response: dict = client.get_cases(**kwargs)  # type: ignore
     if raw_response:
         title = f"{INTEGRATION_NAME} - cases"
         phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
@@ -434,20 +425,19 @@ def get_cases_command(client: Client, args: dict) -> tuple[object, dict, list | 
 
 
 @logger
-def get_case_by_id_command(client: Client, args: dict) -> tuple[object, dict, list | dict]:
+def get_case_by_id_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get case by ID and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        args: demisto.args() dictionary
+        kwargs: Usually demisto.args()
 
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    case_id = args.get("case_id", "")
-    raw_response: dict = client.get_case_by_id(case_id=case_id)
+    raw_response: dict = client.get_case_by_id(**kwargs)  # type: ignore
     if raw_response:
-        title = f"{INTEGRATION_NAME} - case ID {case_id}"
+        title = f'{INTEGRATION_NAME} - case ID {kwargs.get("caseid")}'
         phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
         context_entry: dict = {
             f"{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && "
@@ -466,27 +456,17 @@ def get_case_by_id_command(client: Client, args: dict) -> tuple[object, dict, li
 
 
 @logger
-def get_open_cases_command(client: Client, args: dict) -> tuple[object, dict, list | dict]:
+def get_open_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all open case by filters and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        args: demisto.args() dictionary
+        kwargs: Usually demisto.args()
 
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.get_cases(
-        status=args.get("status"),
-        case_type=args.get("case_type"),
-        max_records=args.get("max_records", 20),
-        offset=args.get("offset", 0),
-        date_field=args.get("date_field", "dateModified"),
-        begin_date=args.get("begin_date"),
-        end_date=args.get("end_date"),
-        period=args.get("period"),
-        query_type="open",
-    )
+    raw_response: dict = client.get_cases(**kwargs, query_type="open")  # type: ignore
     if raw_response:
         title = f"{INTEGRATION_NAME} - open cases"
         phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
@@ -507,27 +487,17 @@ def get_open_cases_command(client: Client, args: dict) -> tuple[object, dict, li
 
 
 @logger
-def get_closed_cases_command(client: Client, args: dict) -> tuple[object, dict, list | dict]:
+def get_closed_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all closed case by filters and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        args: demisto.args() dictionary
+        kwargs: Usually demisto.args()
 
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.get_cases(
-        status=args.get("status"),
-        case_type=args.get("case_type"),
-        max_records=args.get("max_records", 20),
-        offset=args.get("offset", 0),
-        date_field=args.get("date_field", "dateModified"),
-        begin_date=args.get("begin_date"),
-        end_date=args.get("end_date"),
-        period=args.get("period"),
-        query_type="closed",
-    )
+    raw_response: dict = client.get_cases(**kwargs, query_type="closed")  # type: ignore
     if raw_response:
         title = f"{INTEGRATION_NAME} - Closed cases"
         phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
@@ -582,7 +552,7 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun({"lastRun": new_last_run})
         else:
-            readable_output, outputs, raw_response = commands[command](client=client, args=demisto.args())
+            readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
             return_outputs(readable_output, outputs, raw_response)
 
     except Exception as e:

@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Microsoft
 commonfields:
   id: Office 365 Feed
   version: -1
@@ -181,6 +180,6 @@ script:
 tests:
 - Office365_Feed_Test
 fromversion: 5.5.0
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

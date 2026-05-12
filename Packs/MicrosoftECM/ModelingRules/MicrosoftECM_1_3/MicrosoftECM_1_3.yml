@@ -4,5 +4,3 @@ name: Microsoft System Center Configuration Manager
 rules: ''
 schema: ''
 tags: Microsoft System Center Configuration Manager sccm
-supportedModules:
-- xsiam

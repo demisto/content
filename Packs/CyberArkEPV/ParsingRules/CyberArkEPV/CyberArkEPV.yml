@@ -4,5 +4,3 @@ fromversion: 8.3.0
 tags: [EPV, Vault, CyberArk, EnterprisePassWordVault]
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

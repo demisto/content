@@ -107,8 +107,7 @@ def test_save_device_tokens(
         - The set_integration_context function should be called with the correct device private key, device token, and login
         token.
     """
-    from keepercommander import utils
-    from keepercommander.proto import APIRequest_pb2
+    from KeeperSecurity import APIRequest_pb2, utils
 
     device_private_key = "private_key1"
     device_token = "device_token1"
@@ -150,7 +149,7 @@ def test_start_registering_device_success(mocker: MockerFixture, client_class: C
     Then
         - The device_approval's send_push method should be called once.
     """
-    from keepercommander.proto import APIRequest_pb2
+    from KeeperSecurity import APIRequest_pb2
 
     device_approval = client_class.DeviceApproval()
     mocker.patch(
@@ -179,9 +178,7 @@ def test_start_registering_device_already_registered(mocker: MockerFixture, clie
     Then
         - The function should raise a DemistoException with a message indicating the device is already registered.
     """
-    from keepercommander.proto import APIRequest_pb2
-
-    from KeeperSecurity import DEVICE_ALREADY_REGISTERED
+    from KeeperSecurity import DEVICE_ALREADY_REGISTERED, APIRequest_pb2
 
     mocker.patch(
         "KeeperSecurity.LoginV3API.get_device_id",
@@ -208,7 +205,7 @@ def test_start_registering_device_unknown_state(mocker: MockerFixture, client_cl
     Then
         - The function should raise a DemistoException with a message indicating an unknown login state.
     """
-    from keepercommander.proto import APIRequest_pb2
+    from KeeperSecurity import APIRequest_pb2
 
     mocker.patch(
         "KeeperSecurity.LoginV3API.get_device_id",
@@ -237,7 +234,7 @@ def test_validate_device_registration_requires_auth_hash(mocker: MockerFixture, 
     Then
         - The function should call the appropriate methods to process the login and verify the password.
     """
-    from keepercommander.proto import APIRequest_pb2
+    from KeeperSecurity import APIRequest_pb2
 
     # Arrange
     encrypted_device_token = b"encrypted_device_token"
@@ -280,7 +277,7 @@ def test_validate_device_registration_unknown_login_state_after_verify_password(
         - The function should raise a DemistoException with a message indicating an unknown login state after
         password verification.
     """
-    from keepercommander.proto import APIRequest_pb2
+    from KeeperSecurity import APIRequest_pb2
 
     # Arrange
     encrypted_device_token = b"encrypted_device_token"
@@ -313,7 +310,7 @@ def test_validate_device_registration_unknown_login_state(mocker: MockerFixture,
     Then
         - The function should raise a DemistoException with a message indicating an unknown login state.
     """
-    from keepercommander.proto import APIRequest_pb2
+    from KeeperSecurity import APIRequest_pb2
 
     # Arrange
     encrypted_device_token = b"encrypted_device_token"

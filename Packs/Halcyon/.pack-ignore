@@ -1,6 +1,0 @@
-# Ignore test data files
-[file:Halcyon_test.py]
-ignore=IN136
-
-[file:Halcyon.py]
-ignore=IN136

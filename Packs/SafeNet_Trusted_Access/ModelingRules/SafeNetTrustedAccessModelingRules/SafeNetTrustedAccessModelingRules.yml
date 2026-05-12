@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: safenet
 toversion: 6.9.9
-supportedModules:
-- xsiam

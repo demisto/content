@@ -4,5 +4,3 @@ name: TrendMicro InterScan Web Security Suite Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

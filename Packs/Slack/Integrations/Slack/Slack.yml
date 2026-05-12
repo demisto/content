@@ -1,7 +1,6 @@
 category: Messaging and Conferencing
-provider: Slack
 deprecated: true
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -437,6 +436,3 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam
-- agentix

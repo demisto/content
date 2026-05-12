@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: HCL Technologies
 commonfields:
   id: BigFix
   version: -1
@@ -479,7 +478,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

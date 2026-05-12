@@ -1,5 +1,8 @@
+[file:AutofocusV2.yml]
+ignore=IN136
+
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM106
 
 [known_words]
 panw

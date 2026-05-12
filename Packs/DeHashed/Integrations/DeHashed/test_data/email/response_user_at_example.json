@@ -1,8 +1,0 @@
-{
-  "balance": 100,
-  "entries": [
-    {"id": "id_1", "email": ["user@example.com"], "database_name": "DB-A"}
-  ],
-  "took": "1ms",
-  "total": 1
-}

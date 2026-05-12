@@ -4,5 +4,3 @@ name: AWS ELB Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

@@ -2,7 +2,7 @@
     "name": "PhishLabs",
     "description": "IOC information from PhishLabs.",
     "support": "xsoar",
-    "currentVersion": "1.1.32",
+    "currentVersion": "1.1.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -20,7 +20,9 @@
     ],
     "defaultDataSource": "PhishLabs IOC",
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

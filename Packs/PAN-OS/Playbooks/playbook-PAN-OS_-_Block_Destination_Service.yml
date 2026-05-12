@@ -1118,5 +1118,7 @@ fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- agentix
-- xsiam
+- X1
+- X3
+- X5
+- ENT_PLUS

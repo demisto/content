@@ -1,0 +1,40 @@
+{
+    "trigger_id": "a69c1c4b366ed567ee21a788e0146b21",
+    "playbook_id": "Suspicious execution from tmp folder",
+    "suggestion_reason": "Recommended for 'Suspicious interactive execution of a binary from the tmp folder', 'Suspicious cron job task execution of a binary from the tmp folder' and 'A web server process executed an unpopular application from the tmp folder' alerts",
+    "description": "This trigger is responsible for handling the 'Suspicious interactive execution of a binary from the tmp folder', 'Suspicious cron job task execution of a binary from the tmp folder' and 'A web server process executed an unpopular application from the tmp folder' alerts via the 'Suspicious execution from tmp folder' playbook",
+    "trigger_name": "Suspicious execution from tmp folder",
+    "fromVersion": "8.8.0",
+    "alerts_filter": {
+      "filter": {
+          "AND": [
+              {
+              "OR": [
+                  {
+                  "SEARCH_FIELD": "alert_name",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "Suspicious process execution from tmp folder"
+                  },
+                  {
+                  "SEARCH_FIELD": "alert_name",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "Suspicious interactive execution of a binary from the tmp folder"
+                  },
+                  {
+                  "SEARCH_FIELD": "alert_name",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "Suspicious cron job task execution of a binary from the tmp folder"
+                  },
+                  {
+                  "SEARCH_FIELD": "alert_name",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "A web server process executed an unpopular application from the tmp folder"
+                  }
+                  ]
+              }
+          ]
+      }
+    }
+  }
+  
+  

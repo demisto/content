@@ -1,8 +1,8 @@
 {
-    "name": "ReliaQuest Digital Risk Protection",
-    "description": "GreyMatter Digital Risk Protection minimize digital risk by identifying unwanted exposure and protecting against external threats. The award-winning solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.",
+    "name": "ReliaQuest Takedown",
+    "description": "ReliaQuest's Managed Takedown service provides customers with end-to-end takedown management that quickly removes infringing content, domains, documents and mobile applications.",
     "support": "partner",
-    "currentVersion": "3.0.8",
+    "currentVersion": "3.0.1",
     "author": "ReliaQuest",
     "url": "https:// www.reliaquest.com/",
     "email": "drpsupport@reliaquest.com",
@@ -75,7 +75,9 @@
     ],
     "defaultDataSource": "ReliaquestTakedown",
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

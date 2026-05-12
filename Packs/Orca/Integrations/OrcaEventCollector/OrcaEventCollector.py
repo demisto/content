@@ -21,125 +21,52 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
     def get_alerts_request(self, max_fetch: int, last_fetch: str, next_page_token: Optional[str]) -> dict:
-        """Retrieve information about alerts using the new Serving Layer API.
+        """Retrieve information about alerts.
         Args:
             max_fetch: int - Limit number of returned records.
-            last_fetch: str - The date and time of the last fetch.
-                             **MUST be a valid ISO 8601 string (e.g., "2023-10-27T10:00:00Z" or "2023-10-27T10:00:00+00:00").**
-                             The API is very strict about this format.
-            next_page_token: Optional[str] - The token for the next page, used as start_at_index.
+            last_fetch: str - the date and time of the last fetch
+            next_page_token: Optional[str] - the token to the next page
         Returns:
             A dictionary with the alerts details.
         """
-
-        start_index = 0
-        if next_page_token:
-            try:
-                start_index = int(next_page_token)
-            except ValueError:
-                demisto.info(
-                    f"Invalid next_page_token (expected integer for start_at_index): {next_page_token}. Defaulting to 0."
-                )
-                start_index = 0
-
-        payload = {
-            "query": {
-                "models": ["Alert"],
-                "type": "object_set",
-                "with": {
-                    "type": "operation",
-                    "operator": "and",
-                    "values": [
-                        {
-                            "key": "CreatedAt",
-                            "values": [last_fetch],
-                            "type": "datetime",
-                            "operator": "date_gte",
-                            "value_type": "days",
-                        }
-                    ],
-                },
-            },
+        params = {
             "limit": max_fetch,
-            "start_at_index": start_index,
-            "order_by[]": ["CreatedAt"],
-            "select": [
-                "AlertId",
-                "AlertType",
-                "OrcaScore",
-                "RiskLevel",
-                "RuleSource",
-                "ScoreVector",
-                "Category",
-                "Inventory.Name",
-                "CloudAccount.Name",
-                "CloudAccount.CloudProvider",
-                "Source",
-                "Status",
-                "CreatedAt",
-                "LastSeen",
-                "Labels",
-            ],
+            "dsl_filter": '{\n"filter":\n[\n{\n"field": "state.created_at",\n"range": {\n"'
+            'gt": "' + last_fetch + '"\n}\n}\n],\n"sort":\n[\n{"field":'
+            '"state.created_at",\n"order":"asc"\n}\n]}',
+            "show_all_statuses_alerts": True,
+            "show_informational_alerts": True,
         }
+        if next_page_token:
+            params["next_page_token"] = next_page_token
 
-        demisto.debug(f"In get_alerts (Serving Layer API) request payload: {json.dumps(payload)}")
-
-        return self._http_request(method="POST", url_suffix="/serving-layer/query", json_data=payload)
+        demisto.info(f"In get_alerts request {params=}")
+        return self._http_request(method="GET", url_suffix="/query/alerts", params=params)
 
 
 """ HELPER FUNCTIONS """
 
 
-def add_time_key_to_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_alerts(alerts: List[dict]) -> List[dict]:
     """
-    Adds the _time key to the alerts with improved logging and clarity.
-    This function mutates the 'alerts' list in place and also returns it.
-
+    Adds the _time key to the alerts.
     Args:
-        alerts: A list of alert dictionaries to process.
-
+        alerts: List[Dict] - list of events to add the _time key to.
     Returns:
-        The mutated list of alerts, now including the '_time' key.
+        list: The events with the _time key.
     """
-    now_utc = datetime.now(timezone.utc)
-    fallback_time_str = now_utc.strftime(DATE_FORMAT)
-
-    if not alerts:
-        return alerts
-
-    for alert in alerts:
-        alert_data = alert.get("data", {})
-        create_time_str = alert_data.get("CreatedAt", {}).get("value")
-        alert_id = alert_data.get("AlertId", {}).get("value") or alert.get("id", "UNKNOWN_ID")
-        create_time = None
-        if create_time_str:
-            try:
-                create_time = arg_to_datetime(arg=create_time_str)
-            except Exception as e:
-                demisto.error(
-                    f"arg_to_datetime failed unexpectedly while parsing for AlertId: {alert_id} "
-                    f"with value '{create_time_str}', setting fallback time {now_utc}. Error: {e}"
-                )
-                create_time = now_utc
-
-        if create_time:
-            alert["_time"] = create_time.strftime(DATE_FORMAT)
-        else:
-            demisto.info(
-                f"Could not parse or find 'CreatedAt' value for AlertId: {alert_id}. "
-                f"Raw 'CreatedAt' value was: '{create_time_str}'. Setting '_time' to {fallback_time_str}."
-            )
-            alert["_time"] = fallback_time_str
-
-        demisto.debug(f"Processed AlertId: {alert_id}, final _time: {alert.get('_time')}")
-
+    if alerts:
+        for alert in alerts:
+            create_time = arg_to_datetime(arg=alert.get("state", {}).get("created_at"))
+            alert["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+            demisto.debug(f'{alert.get("state", {}).get("alert_id")=} , {alert.get("_time")=}')
     return alerts
 
 
 """ COMMAND FUNCTIONS """
 
 
-def orca_test_module(client: Client, last_fetch: str, max_fetch: int) -> str:
+def test_module(client: Client, last_fetch: str, max_fetch: int) -> str:
     """Test the connection to Orca Security.
     Args:
         client: client - An Orca client.
@@ -170,7 +97,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
         - next_page_token if exist
     """
     response = client.get_alerts_request(max_fetch, last_fetch, next_page_token)
-    next_page_token = response.get("next_page_token", None)
+    next_page_token = response.get("next_page_token")
     alerts = response.get("data", [])
     demisto.debug(f"Get Alerts Response {next_page_token=} , {len(alerts)=}\n {alerts=}")
     return alerts, next_page_token
@@ -208,7 +135,7 @@ def main() -> None:
         next_page_token = last_run.get("next_page_token")
 
         if command == "test-module":
-            return_results(orca_test_module(client, last_fetch, 3))
+            return_results(test_module(client, last_fetch, max_fetch))
         elif command in ("fetch-events", "orca-security-get-events"):
             alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
 
@@ -224,7 +151,7 @@ def main() -> None:
                     )
                 )
 
-            if should_push_events and alerts:
+            if should_push_events:
                 alerts = add_time_key_to_alerts(alerts)
                 demisto.debug(f"before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
@@ -234,8 +161,7 @@ def main() -> None:
             if next_page_token:
                 current_last_run["lastRun"] = last_fetch
             else:
-                last_updated_str = alerts[-1].get("data", {}).get("CreatedAt", {}).get("value") if alerts else None
-                last_updated = arg_to_datetime(arg=last_updated_str)
+                last_updated = arg_to_datetime(arg=alerts[-1].get("state", {}).get("created_at")) if alerts else None
                 current_last_run["lastRun"] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
 
             demisto.setLastRun(current_last_run)

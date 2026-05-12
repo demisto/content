@@ -59,7 +59,7 @@ script: '-'
 subtype: python3
 timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.6144857
+dockerimage: demisto/ml:1.0.0.3261948
 tests:
 - DbotPredictOufOfTheBoxTestV2
 - VerifyOOBV2Predictions-Test
@@ -68,3 +68,4 @@ tags:
 - ml
 comment: Predict phishing incidents using the out-of-the-box pre-trained model.
 fromversion: 5.5.0
+autoUpdateDockerImage: false

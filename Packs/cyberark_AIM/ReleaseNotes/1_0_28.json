@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Make the **AppID as configured in AIM** parameter mandatory to support more secure authentication requests."
-}

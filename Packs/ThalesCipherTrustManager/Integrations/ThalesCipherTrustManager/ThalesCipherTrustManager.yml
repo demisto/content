@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Thales
 description: Manage secrets and protect sensitive data through Thales CipherTrust security platform.
 commonfields:
   id: CipherTrust

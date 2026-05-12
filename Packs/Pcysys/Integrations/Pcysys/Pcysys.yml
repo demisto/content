@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Pentera
 commonfields:
   id: Pentera
   version: -1
@@ -122,7 +121,7 @@ script:
     - contextPath: Pentera.TaskRun.FullActionReport.Status
       description: 'The status of the action. Can be: success, failed, canceled, no_results.'
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.115527
   runonce: false
   script: '-'
   subtype: python3

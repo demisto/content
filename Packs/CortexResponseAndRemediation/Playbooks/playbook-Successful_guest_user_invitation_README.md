@@ -1,4 +1,4 @@
-**This playbook addresses the following alert**:
+**This playbook addresses the following alerts**:
 - Rare successful guest invitation in the organization
 
 **Playbook Stages**:
@@ -42,17 +42,14 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* CoreIOCs
+* CortexCoreIR
+* CortexCoreXQLQueryEngine
 
 ### Scripts
 
 * GetTime
 * SetAndHandleEmpty
-* clear-user-session
-* disable-user
-* domain-enrichment
-* get-user-data
-* ip-enrichment
 
 ### Commands
 
@@ -60,8 +57,13 @@ This playbook does not use any integrations.
 * azure-risky-users-risk-detections-list
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-list-risky-users
+* domain
 * email
+* ip
 * microsoft-365-defender-advanced-hunting
+* msgraph-user-account-disable
+* msgraph-user-session-revoke
 
 ## Playbook Inputs
 
@@ -77,4 +79,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Successful guest user invitation](../doc_files/Successful_guest_user_invitation.png)
+![Successful_guest user invitation](../doc_files/Successful_guest_user_invitation.png)

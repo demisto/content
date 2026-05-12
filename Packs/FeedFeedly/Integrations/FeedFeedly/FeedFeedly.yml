@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Feedly Inc
 commonfields:
   id: Feedly Feed
   version: -1
@@ -117,7 +116,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: feedly-get-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   isfetch: false
   longRunning: false

@@ -4,5 +4,3 @@ name: Clearswift DLP Modeling Rules
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

@@ -4,7 +4,6 @@ commonfields:
 name: Windows Remote Management
 display: Windows Remote Management (Beta)
 category: Endpoint
-provider: Microsoft
 description: Uses the Python pywinrm library and commands to execute either a process or using Powershell scripts.
 configuration:
 - display: Credentials
@@ -339,7 +338,7 @@ script:
     - contextPath: WinRM.Powershell.Status
       description: Status code of the WInRM command.
     description: Executes a Powershell script on the endpoint.
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.1839651
   subtype: python3
 fromversion: 5.0.0
 tests:

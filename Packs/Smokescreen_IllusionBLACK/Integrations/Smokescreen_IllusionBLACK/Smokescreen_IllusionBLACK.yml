@@ -1,5 +1,4 @@
 category: Deception & Breach Simulation
-provider: Zscaler
 commonfields:
   id: Smokescreen IllusionBLACK
   version: -1
@@ -139,7 +138,7 @@ script:
     - contextPath: IllusionBlack.Event.type
       description: IllusionBLACK Event Attack Type.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

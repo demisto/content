@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Workday
 beta: true
 commonfields:
   id: WorkdaySignonEventGenerator

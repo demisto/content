@@ -161,9 +161,5 @@
     "name": "ExtraHop Detections - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.5.0",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "fromVersion": "6.5.0"
 }

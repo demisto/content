@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Planview
 commonfields:
   id: Clarizen IAM
   version: -1

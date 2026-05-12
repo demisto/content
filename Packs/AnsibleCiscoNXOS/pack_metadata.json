@@ -2,7 +2,7 @@
     "name": "Ansible Cisco NXOS",
     "description": "Manage and control Cisco NXOS based network devices.",
     "support": "xsoar",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -26,7 +26,9 @@
         "platform"
     ],
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

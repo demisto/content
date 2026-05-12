@@ -713,4 +713,7 @@ sourceplaybookid: PAN-OS EDL Setup v2
 tests:
 - PAN-OS EDL Setup v3 Test
 supportedModules:
-- agentix
+- X1
+- X3
+- X5
+- ENT_PLUS

@@ -4,5 +4,3 @@ name: Trellix ePO Modeling Rule
 rules: ''
 schema: ''
 tags: TrellixEpoModelingRules
-supportedModules:
-- xsiam

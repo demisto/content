@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Thoma Bravo
 sectionorder:
 - Connect
 - Collect
@@ -72,12 +71,10 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 - platform
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

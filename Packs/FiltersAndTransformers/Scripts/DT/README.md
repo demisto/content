@@ -1,4 +1,4 @@
-This automation allows the usage of DT scripts within playbooks transformers.
+Allows the usage of DT scripts within playbooks transformers.
 
 ## Script Data
 
@@ -6,9 +6,8 @@ This automation allows the usage of DT scripts within playbooks transformers.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | python |
 | Tags | transformer, general |
-| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 

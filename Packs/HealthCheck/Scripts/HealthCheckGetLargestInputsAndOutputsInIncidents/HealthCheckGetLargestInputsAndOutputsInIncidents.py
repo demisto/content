@@ -1,6 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+THRESHOLDS = {
+    "numberofincidentsIObiggerthan10mb": 1,
+    "numberofincidentsIObiggerthan1mb": 10,
+}
+
 
 def get_investigations(raw_output, investigations):
     # in case getDBStatistics fails to fetch information it will return a message like so:
@@ -106,6 +111,8 @@ def FormatSize(size):
 
 def main():
     try:
+        args = demisto.args()
+        incident_thresholds = args.get("Thresholds", THRESHOLDS)
         incident = demisto.incidents()[0]
         investigations: Dict = {}
         now = datetime.now()
@@ -155,7 +162,7 @@ def main():
             "Extending Context and Ignore Outputs: https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context",
         ]
 
-        if numIncidentsList >= 10:
+        if numIncidentsList >= incident_thresholds["numberofincidentsIObiggerthan1mb"]:
             actionableItems.append(
                 {
                     "category": "DB analysis",
@@ -164,7 +171,7 @@ def main():
                     "resolution": RESOLUTION[0],
                 }
             )
-        if numIncidentsListBiggerThan10 >= 1:
+        if numIncidentsListBiggerThan10 >= incident_thresholds["numberofincidentsIObiggerthan10mb"]:
             actionableItems.append(
                 {
                     "category": "DB analysis",

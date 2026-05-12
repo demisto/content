@@ -4,5 +4,3 @@ name: Microsoft IIS Web Server
 rules: ''
 schema: ''
 tags: Microsoft IIS Web Server
-supportedModules:
-- xsiam

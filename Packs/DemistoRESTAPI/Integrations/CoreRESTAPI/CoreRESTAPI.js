@@ -2,10 +2,6 @@
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
 const PLAYBOOK_METADATA = 'playbook_metadata';
 const INTEGRATION_NAME = 'CoreRESTAPI';
-const xsoar_hosted = ['xsoar', 'xsoar_hosted']
-const platform_hosted = ['x2', 'unified_platform']
-// Default timeout for HTTP requests (3 minutes in milliseconds)
-const default_timeout = 3 * 60 * 1000;
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -16,7 +12,7 @@ if (serverURL.slice(-1) === '/') {
 isHosted = function () {
     res = getDemistoVersion();
     platform = res.platform;
-    if  ((xsoar_hosted.includes(platform) && isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION)) || platform_hosted.includes(platform)) {
+    if  (((platform === "xsoar" || platform === "xsoar_hosted") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
         return true
     }
     return false
@@ -74,14 +70,10 @@ getRequestURL = function (uri) {
     var requestUrl = serverURL;
 
     // only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
-    // and only when it is not a /public_api or /platform endpoint.
+    // and only when it is not a /public_api endpoint.
     if (isHosted()) {
-        const isPublicApi = uri.startsWith('/public_api');
-        const isPlatformApi = uri.startsWith('/platform');
-        const isXsoarApi = serverURL.endsWith('/xsoar');
-
-        if (!isXsoarApi && !isPublicApi && !isPlatformApi) {
-            requestUrl += '/xsoar';
+        if ((!serverURL.endsWith('/xsoar')) && (!uri.startsWith('/public_api'))) {
+            requestUrl += '/xsoar'
         }
     }
     if (params.use_tenant){
@@ -91,10 +83,10 @@ getRequestURL = function (uri) {
         requestUrl += '/';
     }
     requestUrl += uri;
-    return requestUrl;
+    return requestUrl
 }
 
-sendMultipart = function (uri, entryID, body, timeoutInMilliseconds) {
+sendMultipart = function (uri, entryID, body) {
     var requestUrl = getRequestURL(uri)
     try {
         body = JSON.parse(body);
@@ -116,13 +108,12 @@ sendMultipart = function (uri, entryID, body, timeoutInMilliseconds) {
     else if (params.auth_method == 'Advanced') {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
-    // Default timeout to 3 minutes if not provided
-    timeoutInMilliseconds = timeoutInMilliseconds ? timeoutInMilliseconds : 3 * 60 * 1000; // timeout in milliseconds
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
 
     var res;
     var tries = 0;
     do {
-        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeoutInMilliseconds);
+        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeout);
         res = httpMultipart(
             requestUrl,
             entryID,
@@ -136,7 +127,7 @@ sendMultipart = function (uri, entryID, body, timeoutInMilliseconds) {
             'file',
             undefined,
             undefined,
-            timeoutInMilliseconds
+            timeout
         );
         logDebug('The result of calling httpMultipart, with the requestUrl = ' + requestUrl + ' is ' + res.Status + ' and res is ' + JSON.stringify(res))
         tries++;
@@ -185,86 +176,67 @@ var addPlaybookMetadataToRequest = function(body, command) {
 };
 
 
-var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
+var sendRequest = function(method, uri, body, raw) {
     var requestUrl = getRequestURL(uri);
-
-    var key = params.apikey ? params.apikey : (params.creds_apikey ? params.creds_apikey.password : '');
-    if (key == '') {
+    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
+    if (key == ''){
         throw 'API Key must be provided.';
     }
-
-    var auth_id = params.auth_id ? params.auth_id : (params.creds_apikey ? params.creds_apikey.identifier : '');
-
-    var headers = {};
-    if (!params.auth_method || params.auth_method == 'Standard') {
-        headers = getStandardAuthMethodHeaders(key, auth_id, 'application/json');
-    } else if (params.auth_method == 'Advanced') {
+    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
+    var headers = {}
+    // in case the integration was installed before auth_method was added, the auth_method param will be empty so
+    // we will use the standard auth method
+    if (!params.auth_method || params.auth_method == 'Standard'){
+        headers = getStandardAuthMethodHeaders(key, auth_id, 'application/json')
+    }
+    else if (params.auth_method == 'Advanced') {
         if (!auth_id) {
             throw 'Core REST APIs - please choose "Standard Authentication method" or provide the API Key ID.';
         }
-        headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json');
+        headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
-
-    if (requestUrl.includes("start_xql_query") && method === 'POST') {
+    if (requestUrl.includes("start_xql_query") && method === 'POST' ) {
         body = addPlaybookMetadataToRequest(body, command);
     }
 
-    var res;
-    var tries = 0;
-    var maxTries = 3;
-
-    do {
-        logDebug('Calling http() from sendRequest, try number ' + tries);
-
-        res = http(
-            requestUrl,
-            {
-                Method: method,
-                Headers: headers,
-                Body: body,
-                SaveToFile: raw
-            },
-            params.insecure,
-            params.proxy,
-            undefined,
-            undefined,
-            timeout
-        );
-
-        logDebug(
-            'Result of http() requestUrl = ' + requestUrl +
-            ' status = ' + res.Status);
-
-        tries++;
-
-    } while (tries < maxTries && res.Status && res.Status.startsWith('timeout'));
-
-    logDebug("Ran http() " + tries + " time(s)");
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
+    logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
+    var res = http(
+        requestUrl,
+        {
+            Method: method,
+            Headers: headers,
+            Body: body,
+            SaveToFile: raw
+        },
+        params.insecure,
+        params.proxy,
+        undefined,
+        undefined,
+        timeout
+    );
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        logDebug('http() request failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res));
-        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl +
-              ' Failed.\nStatus code: ' + res.StatusCode +
-              '.\nBody: ' + JSON.stringify(res);
+        logDebug('http() request to requestUrl = ' + requestUrl + ' failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.');
+        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
-
-    logDebug('http() request was successful.');
-
+    else {
+        logDebug('http() request to requestUrl = ' + requestUrl + ' was successful.');
+    }
     if (raw) {
         return res;
-    }
-
-    try {
-        var response = res.Body;
+    } else {
         try {
-            response = JSON.parse(res.Body);
+            var response = res.Body;
+            try {
+                response = JSON.parse(res.Body);
+            } catch (ex) {
+                // do nothing, already handled prior the try/catch
+            }
+            return {response: response};
         } catch (ex) {
-            // keep raw body if not JSON
+            throw 'Core REST APIs - Error parsing response - http() request to requestUrl = ' + requestUrl + '\nError: ' + ex + '\nBody:' + res.Body;
         }
-        return { response: response };
-    } catch (ex) {
-        throw 'Core REST APIs - Error parsing response - http() request to requestUrl = ' +
-              requestUrl + '\nError: ' + ex + '\nBody:' + res.Body;
     }
 };
 
@@ -305,11 +277,8 @@ var deleteIncidents = function(ids_to_delete) {
     };
 };
 
-var installPack = function(pack_url, entry_id, skip_verify, skip_validation, timeoutInSeconds){
+var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
     let file_path;
-    // Convert timeout from seconds to milliseconds, default to 180 seconds (3 minutes)
-    var timeoutInMilliseconds = timeoutInSeconds ? parseInt(timeoutInSeconds) * 1000 : 3 * 60 * 1000;
-    
     if (entry_id){
         file_path = entry_id;
     }
@@ -317,7 +286,8 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation, tim
         var method = 'GET';
         var save_to_file = true;
         // download pack zip file
-        logDebug('Calling http() from installPack, with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file + ', timeout in milliseconds = ' + timeoutInMilliseconds);
+        timeout = 3 * 60 * 1000; // timeout in milliseconds
+        logDebug('Calling http() from installPack, with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file + ', timeout in milliseconds = ' + timeout);
         var res = http(
         pack_url,
         {
@@ -329,7 +299,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation, tim
         undefined,
         undefined,
         undefined,
-        timeoutInMilliseconds
+        timeout
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -359,20 +329,20 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation, tim
         }
     }
     // upload the pack
-    sendMultipart(upload_url, file_path,'{}', timeoutInMilliseconds);
+    sendMultipart(upload_url, file_path,'{}');
 };
 
-var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation, timeoutInSeconds = 3 * 60) {
+var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation) {
     if ((!packs_to_install) && (!file_url) && (!entry_id)) {
         throw 'Either packs_to_install, file_url or entry_id argument must be provided.';
     }
     else if (file_url) {
-        installPack(file_url, undefined, skip_verify, skip_validation, timeoutInSeconds)
+        installPack(file_url, undefined, skip_verify, skip_validation)
         logDebug('Pack installed successfully from ' + file_url)
         return 'The pack installed successfully from the file ' + file_url
     }
     else if (entry_id) {
-        installPack(undefined, entry_id, skip_verify, skip_validation, timeoutInSeconds)
+        installPack(undefined, entry_id, skip_verify, skip_validation)
         logDebug('The pack installed successfully from the file.')
         return 'The pack installed successfully from the file.'
     }
@@ -386,7 +356,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             let pack_version = pack[pack_id]
 
             let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
-            installPack(pack_url, undefined, skip_verify, skip_validation, timeoutInSeconds)
+            installPack(pack_url, undefined, skip_verify, skip_validation)
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
@@ -614,28 +584,19 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
 
 switch (command) {
     case 'test-module':
-        res = sendRequest('GET','user');  // throws an exception if the request fails
+        res = sendRequest('GET','user');
+        if (res.response.id == undefined){
+            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
+        }
         return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
         if(args.body)
             var body = JSON.parse(args.body);
         else
-            logDebug('The body is empty.');
-        var timeout; // Declare timeout.
-        if (args.timeout) {
-            var parsedTimeout = parseInt(args.timeout);
-            if (!isNaN(parsedTimeout) && parsedTimeout >= 0) {
-                timeout = parsedTimeout * 60 * 1000; // timeout in milliseconds
-                logDebug('Timeout was set to ' + timeout + ' milliseconds.');
-            }
-        }
-        if (!timeout) {
-            timeout = default_timeout; // Default 3 minutes timeout
-            logDebug('Timeout was not provided or it is invalid. Will use the default 3 minutes timeout.');
-        }
+            logDebug('The body is empty.')
 
-        return sendRequest('POST', args.uri, args.body, false, timeout);
+        return sendRequest('POST',args.uri, args.body);
     case 'demisto-api-get':
     case 'core-api-get':
         return sendRequest('GET',args.uri);
@@ -669,7 +630,7 @@ switch (command) {
         return deleteIncidents(ids);
     case 'demisto-api-install-packs':
     case 'core-api-install-packs':
-        return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation, args.timeout_in_seconds);
+        return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     case 'core-api-file-upload':
         return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entry_id)
     case 'core-api-file-delete':

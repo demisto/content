@@ -1,6 +1,5 @@
 category: Deception & Breach Simulation
-provider: Proofpoint Inc
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -53,7 +52,7 @@ configuration:
   - 'True'
   - 'False'
   - ALL
-  required: false
+  required: true
   type: 15
   section: Collect
 description: The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
@@ -496,7 +495,7 @@ script:
       required: true
     description: Retrieve forensics artifacts from Illusive's forensics.
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: NGINX Web Server
 toversion: 6.9.9
-supportedModules:
-- xsiam

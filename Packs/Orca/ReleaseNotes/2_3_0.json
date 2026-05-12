@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "***Breaking Change*** In response to a change in the API, the events are now fetched using the Service Layer API."
-}

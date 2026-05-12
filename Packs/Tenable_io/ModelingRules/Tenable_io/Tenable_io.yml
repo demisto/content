@@ -4,5 +4,3 @@ name: Tenable_io Modeling Rule
 rules: ''
 schema: ''
 tags: tenable
-supportedModules:
-- xsiam

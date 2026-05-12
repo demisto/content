@@ -1,5 +1,4 @@
 category: Network Security
-provider: BlueCat Networks
 commonfields:
   id: Indeni
   version: -1
@@ -155,7 +154,7 @@ script:
     - contextPath: Indeni.AlertInfo.Note
       description: Notes for the given issue.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   longRunning: true
   runonce: false

@@ -3,5 +3,3 @@ id: HelloWorldModelingRule
 name: HelloWorld Modeling Rule
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

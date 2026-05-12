@@ -4,5 +4,3 @@ name: AWS Security Hub Modeling Rule
 rules: ''
 schema: ''
 tags: AWS
-supportedModules:
-- xsiam

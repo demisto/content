@@ -1,9 +1,6 @@
 fromversion: 6.10.0
-id: VMware_ESXi_ModelingRule
-name: VMware ESXi Modeling Rule
+id: VMwareESXi
+name: VMware ESXi
 rules: ''
 schema: ''
 tags: VMwareESXi
-toversion: 8.12.0
-supportedModules:
-- xsiam

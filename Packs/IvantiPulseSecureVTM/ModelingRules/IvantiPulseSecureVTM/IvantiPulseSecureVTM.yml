@@ -4,5 +4,3 @@ name: Ivanti VTM Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

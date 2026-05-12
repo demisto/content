@@ -4,5 +4,3 @@ id: fireeye_nx_modeling_rule
 rules: ''
 schema: ''
 tags: FireEyeNX
-supportedModules:
-- xsiam

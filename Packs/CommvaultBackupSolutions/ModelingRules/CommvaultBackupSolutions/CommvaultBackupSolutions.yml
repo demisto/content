@@ -1,8 +1,0 @@
-fromversion: 8.2.0
-id: Commvault_Backup_Solutions_ModelingRule
-name: Commvault Backup Solutions Modeling Rule
-rules: ''
-schema: ''
-tags:
-supportedModules:
-- xsiam

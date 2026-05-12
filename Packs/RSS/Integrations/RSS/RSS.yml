@@ -1,6 +1,5 @@
 deprecated: true
 category: Messaging and Conferencing
-provider: Open Source
 commonfields:
   id: RSS
   version: -1

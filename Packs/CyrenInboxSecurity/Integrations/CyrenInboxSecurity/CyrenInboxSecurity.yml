@@ -1,5 +1,4 @@
 category: Utilities
-provider: Data443
 commonfields:
   id: Cyren Inbox Security
   version: -1
@@ -84,7 +83,7 @@ script:
     - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: ''
   subtype: python3

@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Delinea
 commonfields:
   id: ThycoticDSV
   version: -1

@@ -4,5 +4,3 @@ name: Forcepoint Secure Web Gateway
 rules: ''
 schema: ''
 tags: Forcepoint Secure Web Gateway
-supportedModules:
-- xsiam

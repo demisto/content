@@ -18,7 +18,7 @@ import tldextract
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from flask import Flask, Response, request, send_file
-from netaddr import IPNetwork, IPRange, IPSet
+from netaddr import IPNetwork, IPSet
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -226,9 +226,7 @@ class RequestArguments:
     def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
-        # Fixes legacy query mode silently lost after the first refresh because
-        # `get_fields_to_present("")` returned "name,type" instead of ""
-        if fields_to_present == "use_legacy_query" or (not fields_to_present and self.out_format == FORMAT_TEXT):
+        if fields_to_present == "use_legacy_query":
             return ""
 
         fields_for_format = {
@@ -583,26 +581,19 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
 
 
 @debug_function
-def ip_groups_to_cidrs(ip_range_groups: Iterable[IPNetwork]) -> set[str]:
-    """Collapse IP groups list to CIDRs
+def ip_groups_to_cidrs(ip_range_groups: Iterable):
+    """Collapse ip groups list to CIDRs
 
     Args:
-        ip_range_groups (Iterable[IPNetwork]): An iterable of IPNetwork objects representing connected IPs.
+        ip_range_groups (Iterable): an Iterable of lists containing connected IPs
 
     Returns:
-        set[str]: A set of CIDR strings (e.g., {'192.168.1.0/24', '10.0.0.1'})
+        Set. a set of CIDRs.
     """
-    ip_ranges: set[str] = set()
+    ip_ranges = set()
     for cidr in ip_range_groups:
-        # handle single IPs
-        # Use .size property instead of len() to avoid IndexError for very large ranges
-        try:
-            cidr_size = cidr.size
-        except Exception as e:
-            demisto.error(f"edl: Failed to collapse IP group {cidr} to CIDRs. Got error: {e}.")
-            raise
-
-        if cidr_size == 1:
+        # handle single ips
+        if len(cidr) == 1:
             # CIDR with a single IP appears with "/32" suffix so handle them differently
             ip_ranges.add(str(cidr[0]))
             continue
@@ -613,26 +604,19 @@ def ip_groups_to_cidrs(ip_range_groups: Iterable[IPNetwork]) -> set[str]:
 
 
 @debug_function
-def ip_groups_to_ranges(ip_range_groups: Iterable[IPRange]) -> set[str]:
-    """Collapse IP groups to ranges.
+def ip_groups_to_ranges(ip_range_groups: Iterable):
+    """Collapse ip groups to ranges.
 
     Args:
-        ip_range_groups (Iterable[IPRange]): An iterable of IPRange objects representing connected IPs.
+        ip_range_groups (Iterable): a list of lists containing connected IPs
 
     Returns:
-        set[str]: A set of IP range strings (e.g., {'192.168.1.1-192.168.1.255', '10.0.0.1'})
+        Set. a set of Ranges.
     """
-    ip_ranges: set[str] = set()
+    ip_ranges = set()
     for group in ip_range_groups:
-        # handle single IPs
-        # Use .size property instead of len() to avoid IndexError for very large ranges
-        try:
-            group_size = group.size
-        except Exception as e:
-            demisto.error(f"edl: Failed to collapse IP group {group} to range. Got error: {e}.")
-            raise
-
-        if group_size == 1:
+        # handle single ips
+        if len(group) == 1:
             ip_ranges.add(str(group[0]))
             continue
 
@@ -869,8 +853,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
             # for PAN-OS *.domain.com does not match domain.com
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
-            # Handle DomainGlob type indicators even when value doesn't start with "*."
-            if indicator.startswith("*.") or ioc_type == FeedIndicatorType.DomainGlob:
+            if indicator.startswith("*."):
                 domain = str(indicator.lstrip("*."))
                 # if we should ignore TLDs and the domain is a TLD
                 if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:

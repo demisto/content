@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: ElasticNV
 commonfields:
   id: ElasticsearchFeed
   version: -1
@@ -231,7 +230,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.5954979
+  dockerimage: demisto/elasticsearch:1.0.0.117175
   feed: true
   runonce: false
   script: '-'
@@ -241,6 +240,6 @@ fromversion: 5.5.0
 tests:
 - Elasticsearch_Fetch_Custom_Indicators_Test
 - Elasticsearch_Fetch_Demisto_Indicators_Test
-sectionorder:
+sectionOrder:
 - Connect
 - Collect

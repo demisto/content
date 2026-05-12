@@ -23,11 +23,11 @@
     "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "FirstName",
+            "key": "firstname",
             "displayName": "First Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -40,7 +40,7 @@
             "selectValues": null
         },
         {
-            "key": "LastName",
+            "key": "lastname",
             "displayName": "Last Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -53,7 +53,7 @@
             "selectValues": null
         },
         {
-            "key": "Company",
+            "key": "company",
             "displayName": "Company",
             "type": "shortText",
             "orgType": "shortText",
@@ -66,7 +66,7 @@
             "selectValues": null
         },
         {
-            "key": "Organization",
+            "key": "organization",
             "displayName": "Organization",
             "type": "shortText",
             "orgType": "shortText",
@@ -79,7 +79,7 @@
             "selectValues": null
         },
         {
-            "key": "Department",
+            "key": "department",
             "displayName": "Department",
             "type": "shortText",
             "orgType": "shortText",
@@ -92,8 +92,8 @@
             "selectValues": null
         },
         {
-            "key": "E-mail",
-            "displayName": "E-mail",
+            "key": "email",
+            "displayName": "E-Mail",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -105,7 +105,7 @@
             "selectValues": null
         },
         {
-            "key": "PhoneNumber",
+            "key": "phonenumber",
             "displayName": "Phone Number",
             "type": "shortText",
             "orgType": "shortText",
@@ -123,12 +123,5 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcitsmcustomer",
-            "type": "grid",
-            "name": "Bmc Customer"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }

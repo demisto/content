@@ -1,5 +1,4 @@
 category: Case Management
-provider: Serco
 commonfields:
   id: Wolken ITSM
   version: -1
@@ -294,7 +293,7 @@ script:
     - contextPath: Wolken.GetIncidents.status
       description: ''
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3

@@ -35,9 +35,7 @@ def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
                 note_entries.append(entry)
 
         if len(note_entries) > 0:
-            res = demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
-            if is_error(res):
-                raise DemistoException(get_error(res))
+            demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
             md = f"## {len(note_entries)} notes copied"
         else:
             md = "## No notes found"

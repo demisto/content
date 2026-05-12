@@ -36,9 +36,9 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": str(get_pack_version()),
+            "X-Integration-Version": "1.1.6",
         }
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=self._headers)
+        super().__init__(base_url, verify=verify, proxy=proxy)
 
     @logger
     def request_daily_feed(
@@ -241,7 +241,7 @@ class Client(BaseClient):
         return response
 
 
-def test_module(client: Client, feed_enabled: Optional[bool]) -> str:
+def test_module(client: Client) -> str:
     """
     Builds the iterator to check that the feed is accessible.
 
@@ -251,14 +251,8 @@ def test_module(client: Client, feed_enabled: Optional[bool]) -> str:
     Returns:
         Outputs.
     """
-
     try:
-        if feed_enabled:
-            demisto.info("Feed is enabled. Check that the feed is accessible.")
-            client.request_daily_feed(limit=10, test=True)
-        else:
-            demisto.info("Feed is disabled. Check that the enrichment is accessible.")
-            client.retrieve_domain_from_api("checkpoint.com")
+        client.request_daily_feed(limit=10, test=True)
     except DemistoException as exc:
         if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN):
             return "Authorization Error: invalid `API Token`"
@@ -835,7 +829,6 @@ def fetch_indicators_command(
     Returns:
         Indicators.
     """
-    feed_enabled = params.get("feed", True)
     tlp_color = params.get("tlp_color", "")
     feed_tags = argToList(params.get("feedTags"))
     severity_from = arg_to_number(params.get("severity_from")) or 0
@@ -846,22 +839,11 @@ def fetch_indicators_command(
 
     indicators = []
 
-    if feed_enabled:
-        # if now-interval is yesterday, call feeds for yesterday too
-        if is_x_minutes_ago_yesterday(fetch_interval):
-            indicators = fetch_indicators(
-                client=client,
-                date_time=get_yesterday_time(),
-                tlp_color=tlp_color,
-                feed_tags=feed_tags,
-                feed_names=feed_names,
-                indicator_types=indicator_types,
-                severity_from=severity_from,
-                confidence_from=confidence_from,
-            )
-
-        indicators += fetch_indicators(
+    # if now-interval is yesterday, call feeds for yesterday too
+    if is_x_minutes_ago_yesterday(fetch_interval):
+        indicators = fetch_indicators(
             client=client,
+            date_time=get_yesterday_time(),
             tlp_color=tlp_color,
             feed_tags=feed_tags,
             feed_names=feed_names,
@@ -869,6 +851,16 @@ def fetch_indicators_command(
             severity_from=severity_from,
             confidence_from=confidence_from,
         )
+
+    indicators += fetch_indicators(
+        client=client,
+        tlp_color=tlp_color,
+        feed_tags=feed_tags,
+        feed_names=feed_names,
+        indicator_types=indicator_types,
+        severity_from=severity_from,
+        confidence_from=confidence_from,
+    )
     return indicators
 
 
@@ -919,7 +911,6 @@ def main():
     access_token = params.get("access_token").get("password")
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    feed_enabled = demisto.params().get("feed", True)
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -933,7 +924,7 @@ def main():
         )
 
         if command == "test-module":
-            return_results(test_module(client, feed_enabled))
+            return_results(test_module(client))
 
         elif command == "cyberint-get-indicators":
             return_results(get_indicators_command(client, args))
@@ -979,7 +970,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     Returns:
         bool: true, if execution passed timeout settings, false otherwise.
     """
-    end_time = datetime.now()
+    end_time = datetime.utcnow()
     secs_from_beginning = (end_time - start_time).seconds
     demisto.debug(f"Execution duration is {secs_from_beginning} secs so far")
 

@@ -2,7 +2,9 @@ id: Detonate File - ANYRUN
 version: -1
 name: Detonate File - ANYRUN
 description: |-
-  Deprecated. Use ANY.RUN Detonate File [Windows, Linux, Android] instead.
+  Detonates one or more files using the ANYRUN sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  All file types are supported.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -513,4 +515,3 @@ outputs:
   type: String
 tests:
 - Detonate File From URL - ANYRUN - Test
-deprecated: true

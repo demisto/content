@@ -1,26 +1,23 @@
 id: Cortex XDR - XQL Query - Test
-version: -1
+version: 43
 vcShouldKeepItemLegacyProdMachine: false
 name: Cortex XDR - XQL Query - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 93fbe742-2b28-41f7-83a5-5ac8556d44ce
+    taskid: dd8afb9f-1b0f-46b0-8068-14a87b6af9a0
     type: start
     task:
-      id: 93fbe742-2b28-41f7-83a5-5ac8556d44ce
+      id: dd8afb9f-1b0f-46b0-8068-14a87b6af9a0
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -37,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 281b5993-7fea-4fb4-8738-84dc5baa42e8
+    taskid: 5df6875d-86a5-4416-8a9f-92e2ee5b9762
     type: regular
     task:
-      id: 281b5993-7fea-4fb4-8738-84dc5baa42e8
+      id: 5df6875d-86a5-4416-8a9f-92e2ee5b9762
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -48,8 +45,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "2"
@@ -57,12 +52,11 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 220
+          "y": 195
         }
       }
     note: false
@@ -74,27 +68,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a04d17ac-e9c3-452b-83b8-16c3273d1147
+    taskid: def5d2f3-f275-4792-8885-231ca85749fd
     type: title
     task:
-      id: a04d17ac-e9c3-452b-83b8-16c3273d1147
+      id: def5d2f3-f275-4792-8885-231ca85749fd
       version: -1
       name: Generic Queries
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 405
+          "y": 370
         }
       }
     note: false
@@ -106,10 +97,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ddf20606-65e3-4106-8fd6-4b1ab3a779de
+    taskid: 13a1401a-913f-4bbb-8230-93e29ceee5f6
     type: regular
     task:
-      id: ddf20606-65e3-4106-8fd6-4b1ab3a779de
+      id: 13a1401a-913f-4bbb-8230-93e29ceee5f6
       version: -1
       name: XDR start xql query
       description: Execute an XQL query and retrieve results of an executed XQL query
@@ -119,8 +110,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "4"
@@ -133,12 +122,11 @@ tasks:
       time_frame:
         simple: 1 month
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 515
         }
       }
     note: false
@@ -150,17 +138,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f51ddf5b-68b5-444a-81b1-85c404497ee9
+    taskid: c6d101d6-d916-46c6-8f32-31a8882877c6
     type: condition
     task:
-      id: f51ddf5b-68b5-444a-81b1-85c404497ee9
+      id: c6d101d6-d916-46c6-8f32-31a8882877c6
       version: -1
       name: Verify query results
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "5"
@@ -203,12 +189,11 @@ tasks:
           right:
             value:
               simple: SUCCESS
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 760
+          "y": 690
         }
       }
     note: false
@@ -220,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5cd66c63-ef9d-4f32-8d08-885a0ddbec5c
+    taskid: e73ba607-cb62-41ff-8322-97dba461b313
     type: regular
     task:
-      id: 5cd66c63-ef9d-4f32-8d08-885a0ddbec5c
+      id: e73ba607-cb62-41ff-8322-97dba461b313
       version: -1
       name: XDR get query results
       description: Retrieve results of an executed XQL query API.
@@ -231,8 +216,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "6"
@@ -251,12 +234,11 @@ tasks:
                   simple: PlaybookTest1
           accessor: execution_id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 945
+          "y": 865
         }
       }
     note: false
@@ -268,17 +250,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dced7bc0-4b8f-4e79-80d3-77fc458fea04
+    taskid: eb927654-400a-4b0f-8e21-815b6af5a189
     type: condition
     task:
-      id: dced7bc0-4b8f-4e79-80d3-77fc458fea04
+      id: eb927654-400a-4b0f-8e21-815b6af5a189
       version: -1
       name: Verify query results
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -299,12 +279,11 @@ tasks:
           right:
             value:
               simple: SUCCESS
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1130
+          "y": 1040
         }
       }
     note: false
@@ -316,10 +295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0665912e-9997-4f2c-8fcd-4e37bebc6829
+    taskid: 14d491e5-6f1e-4a58-85f8-f36dda48aba9
     type: regular
     task:
-      id: 0665912e-9997-4f2c-8fcd-4e37bebc6829
+      id: 14d491e5-6f1e-4a58-85f8-f36dda48aba9
       version: -1
       name: XDR get quota
       description: Retrieve the amount of query quota available and used.
@@ -327,18 +306,15 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1315
+          "y": 1215
         }
       }
     note: false
@@ -350,17 +326,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e32b1058-fbc4-487c-82f6-adbd46dabb76
+    taskid: ce76c376-2c03-45be-8b07-c2f508dbc8d5
     type: condition
     task:
-      id: e32b1058-fbc4-487c-82f6-adbd46dabb76
+      id: ce76c376-2c03-45be-8b07-c2f508dbc8d5
       version: -1
       name: Verify quota results
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "11"
@@ -378,12 +352,11 @@ tasks:
             value:
               simple: PaloAltoNetworksXQL.Quota.used_quota
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1500
+          "y": 1390
         }
       }
     note: false
@@ -395,27 +368,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d2c44954-fec6-4c85-8ab8-21f281c38266
+    taskid: 70831878-9265-4788-8601-b39a68f2b708
     type: title
     task:
-      id: d2c44954-fec6-4c85-8ab8-21f281c38266
+      id: 70831878-9265-4788-8601-b39a68f2b708
       version: -1
       name: Built-In Queries
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1870
+          "y": 1740
         }
       }
     note: false
@@ -427,10 +397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 65c65186-3fde-44bb-858c-e753fa025e0c
+    taskid: dfd8fdc5-5670-4fba-8127-6d1994cd757a
     type: regular
     task:
-      id: 65c65186-3fde-44bb-858c-e753fa025e0c
+      id: dfd8fdc5-5670-4fba-8127-6d1994cd757a
       version: -1
       name: XDR file event query
       description: Query file events by file sha256.
@@ -438,8 +408,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "32"
@@ -453,12 +421,11 @@ tasks:
       query_name:
         simple: FileEvent1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2040
+          "y": 1885
         }
       }
     note: false
@@ -470,10 +437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 7f403930-970c-47f4-8c6c-6b169b84e235
+    taskid: 64817da8-9a35-4f44-8ae1-00c9a232d3b3
     type: regular
     task:
-      id: 7f403930-970c-47f4-8c6c-6b169b84e235
+      id: 64817da8-9a35-4f44-8ae1-00c9a232d3b3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -481,8 +448,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "9"
@@ -490,12 +455,11 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1685
+          "y": 1565
         }
       }
     note: false
@@ -507,10 +471,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2c06f096-d723-48f7-8ab0-082650f1cfe9
+    taskid: e12726ee-af09-401c-8aca-536c98046200
     type: regular
     task:
-      id: 2c06f096-d723-48f7-8ab0-082650f1cfe9
+      id: e12726ee-af09-401c-8aca-536c98046200
       version: -1
       name: XDR dll module query
       description: Query DLL module events by DLL sha256.
@@ -518,8 +482,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "17"
@@ -533,12 +495,11 @@ tasks:
       query_name:
         simple: DllModule1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2235
         }
       }
     note: false
@@ -550,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 6ca2c2e2-29b1-48b9-84fa-f5f8f775d033
+    taskid: e189ddf4-f8cc-4812-883c-7d6652654179
     type: regular
     task:
-      id: 6ca2c2e2-29b1-48b9-84fa-f5f8f775d033
+      id: e189ddf4-f8cc-4812-883c-7d6652654179
       version: -1
       name: XDR network connection query
       description: Query network connections between a source ip, destination ip and
@@ -562,8 +523,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "19"
@@ -581,12 +540,11 @@ tasks:
       remote_ip:
         simple: '*'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2595
+          "y": 2410
         }
       }
     note: false
@@ -598,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 56cd0b81-b01e-443e-85bb-e378344bef97
+    taskid: 192bda7b-a4ff-4f48-85fe-cdf6feb59b93
     type: regular
     task:
-      id: 56cd0b81-b01e-443e-85bb-e378344bef97
+      id: 192bda7b-a4ff-4f48-85fe-cdf6feb59b93
       version: -1
       name: XDR registry query
       description: Query windows registry by registry key name.
@@ -609,8 +567,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "21"
@@ -624,12 +580,11 @@ tasks:
       reg_key_name:
         simple: '*'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2780
+          "y": 2585
         }
       }
     note: false
@@ -641,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a017a28a-d110-4eeb-802d-802b7d36531e
+    taskid: 4d4a0eb8-83e1-4075-8f63-4beecdea0176
     type: regular
     task:
-      id: a017a28a-d110-4eeb-802d-802b7d36531e
+      id: 4d4a0eb8-83e1-4075-8f63-4beecdea0176
       version: -1
       name: XDR event log query
       description: Query event logs by event ID.
@@ -652,8 +607,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "23"
@@ -667,12 +620,11 @@ tasks:
       query_name:
         simple: EventLog1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2965
+          "y": 2760
         }
       }
     note: false
@@ -684,10 +636,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 80009096-308d-4e40-8c43-fefab670458a
+    taskid: cff72d8b-db4a-413d-858a-af992a69606a
     type: regular
     task:
-      id: 80009096-308d-4e40-8c43-fefab670458a
+      id: cff72d8b-db4a-413d-858a-af992a69606a
       version: -1
       name: XDR dns query
       description: Query by dns query or domain name.
@@ -695,8 +647,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "25"
@@ -710,12 +660,11 @@ tasks:
       query_name:
         simple: DNS1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3150
+          "y": 2935
         }
       }
     note: false
@@ -727,10 +676,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1c742401-45dd-4bc2-87ae-7cca0317ef57
+    taskid: e4e34945-f2b1-41d5-80e8-578736f65120
     type: regular
     task:
-      id: 1c742401-45dd-4bc2-87ae-7cca0317ef57
+      id: e4e34945-f2b1-41d5-80e8-578736f65120
       version: -1
       name: XDR file dropper query
       description: Search for the process who wrote the given file, by its sha256
@@ -739,8 +688,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "27"
@@ -756,12 +703,11 @@ tasks:
       query_name:
         simple: FileDropper1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3335
+          "y": 3110
         }
       }
     note: false
@@ -773,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: ab1a1f4b-5a16-4513-8758-586f319cbf81
+    taskid: dc5a3b62-9437-42f2-8efb-bcaade332de6
     type: regular
     task:
-      id: ab1a1f4b-5a16-4513-8758-586f319cbf81
+      id: dc5a3b62-9437-42f2-8efb-bcaade332de6
       version: -1
       name: XDR process instance network activity query
       description: Search for network connection created by a given process instace
@@ -785,8 +731,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "29"
@@ -802,12 +746,11 @@ tasks:
       query_name:
         simple: ProcessInstanceNetwork1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3285
         }
       }
     note: false
@@ -819,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: f3c70dd4-9b1d-42f1-88c5-2a45909956bf
+    taskid: 91b90b1f-855d-4902-8d8b-e0f1c8f83508
     type: regular
     task:
-      id: f3c70dd4-9b1d-42f1-88c5-2a45909956bf
+      id: 91b90b1f-855d-4902-8d8b-e0f1c8f83508
       version: -1
       name: XDR process instance causality activity query
       description: Search for network connection created by a given process causality
@@ -831,8 +774,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "30"
@@ -846,12 +787,11 @@ tasks:
       query_name:
         simple: ProcessInstanceCasuality1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3705
+          "y": 3460
         }
       }
     note: false
@@ -863,20 +803,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 5f09bb7e-0c46-427e-8c6a-ed4d4f142b88
+    taskid: 57320003-8df8-48ca-8444-ba8f5b4b0f90
     type: condition
     task:
-      id: 5f09bb7e-0c46-427e-8c6a-ed4d4f142b88
+      id: 57320003-8df8-48ca-8444-ba8f5b4b0f90
       version: -1
       name: Verify query results
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
-      - "33"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1041,12 +979,11 @@ tasks:
                         simple: ProcessInstanceCasuality1
                 accessor: execution_id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3890
+          "y": 3635
         }
       }
     note: false
@@ -1058,24 +995,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 0ecc13e2-215b-4408-8d51-d09472b0c6c5
+    taskid: 8b15999a-999e-4161-80d7-2a3a3e7e3db8
     type: title
     task:
-      id: 0ecc13e2-215b-4408-8d51-d09472b0c6c5
+      id: 8b15999a-999e-4161-80d7-2a3a3e7e3db8
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5170
+          "y": 3810
         }
       }
     note: false
@@ -1087,10 +1021,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b5c0c79d-2e89-4238-8480-9f1722bb44e1
+    taskid: 46c83ff1-4470-4506-8ad3-ef525803e803
     type: regular
     task:
-      id: b5c0c79d-2e89-4238-8480-9f1722bb44e1
+      id: 46c83ff1-4470-4506-8ad3-ef525803e803
       version: -1
       name: XDR process event query
       description: Query process events by process sha256.
@@ -1098,8 +1032,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "15"
@@ -1113,241 +1045,11 @@ tasks:
       query_name:
         simple: ProcessEvent1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2225
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 9b1363c7-5dd0-4236-bae5-9cf9961ecc42
-    type: title
-    task:
-      id: 9b1363c7-5dd0-4236-bae5-9cf9961ecc42
-      version: -1
-      name: Library Query V4
-      type: title
-      iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
-    nexttasks:
-      '#none#':
-      - "34"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 91a260f8-d4fb-4a5d-bbcf-b3bb5c16caa8
-    type: regular
-    task:
-      id: 91a260f8-d4fb-4a5d-bbcf-b3bb5c16caa8
-      version: -1
-      name: List Queries
-      description: Gets a list of XQL queries from the library.
-      script: Cortex XDR - XQL Query Engine|||xdr-xql-library-list
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - XQL Query Engine
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      extra_data:
-        simple: "true"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 0c439ae2-4a95-4540-a8d0-070c701d0ba4
-    type: regular
-    task:
-      id: 0c439ae2-4a95-4540-a8d0-070c701d0ba4
-      version: -1
-      name: Create Query
-      description: Creates or updates XQL queries in the library.
-      script: Cortex XDR - XQL Query Engine|||xdr-xql-library-create
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - XQL Query Engine
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      override_existing:
-        simple: "true"
-      xql_query:
-        simple: '"TPB TEST | TEST"'
-      xql_query_name:
-        simple: '"TPB TEST"'
-      xql_query_tag:
-        simple: '"TPB TEST TAG"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: b93ea0c4-354e-4afa-86b3-23c7c753aa87
-    type: regular
-    task:
-      id: b93ea0c4-354e-4afa-86b3-23c7c753aa87
-      version: -1
-      name: Search Query
-      description: Gets a list of XQL queries from the library.
-      script: Cortex XDR - XQL Query Engine|||xdr-xql-library-list
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - XQL Query Engine
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      xql_query_name:
-        simple: '"TPB TEST"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4615
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 19ae939d-3abc-4f02-a1dd-ef82be0484bc
-    type: condition
-    task:
-      id: 19ae939d-3abc-4f02-a1dd-ef82be0484bc
-      version: -1
-      name: Verify Results
-      type: condition
-      iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
-    nexttasks:
-      "yes":
-      - "38"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PaloAltoNetworksXQL.Library.name
-            iscontext: true
-          right:
-            value:
-              simple: '"TPB TEST"'
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 591485f6-0761-44cd-abf6-bebd849f2f39
-    type: regular
-    task:
-      id: 591485f6-0761-44cd-abf6-bebd849f2f39
-      version: -1
-      name: Delete new Query
-      description: Deletes XQL queries from the library.
-      script: Cortex XDR - XQL Query Engine|||xdr-xql-library-delete
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - XQL Query Engine
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      xql_query_name:
-        simple: '"TPB TEST"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4985
+          "y": 2060
         }
       }
     note: false
@@ -1364,7 +1066,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5180,
+        "height": 3825,
         "width": 380,
         "x": 50,
         "y": 50

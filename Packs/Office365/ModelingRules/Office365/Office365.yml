@@ -4,5 +4,3 @@ name: Office 365 Modeling Rule
 rules: ''
 schema: ''
 tags: ''
-supportedModules:
-- xsiam

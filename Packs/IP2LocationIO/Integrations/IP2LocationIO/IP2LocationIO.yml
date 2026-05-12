@@ -1,5 +1,4 @@
 category: Utilities
-provider: IP2Location
 commonfields:
   id: IP2LocationIO
   version: -1
@@ -105,7 +104,7 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

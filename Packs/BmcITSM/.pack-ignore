@@ -1,4 +1,2 @@
 [file:classifier-BMC_ITSM_Outgoing_Mapper.json]
 ignore=MP106
-[file:classifier-BMC_ITSM_Incoming_Mapper.json]
-ignore=GR103

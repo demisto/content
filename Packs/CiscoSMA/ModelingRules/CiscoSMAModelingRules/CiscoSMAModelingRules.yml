@@ -5,5 +5,3 @@ rules: ''
 schema: ''
 tags: Cisco Security Management Appliance
 toversion: 6.9.9
-supportedModules:
-- xsiam

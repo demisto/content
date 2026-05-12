@@ -4,7 +4,6 @@ commonfields:
 name: PassiveTotal
 display: PassiveTotal (Deprecated)
 category: Data Enrichment & Threat Intelligence
-provider: Microsoft
 system: true
 description: Deprecated. Use the PassiveTotal v2 integration instead.
 configuration:

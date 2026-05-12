@@ -2,14 +2,12 @@ filebeat.inputs:
 - type: filestream
   enabled: true
   paths:
-  - /var/log/syslog
-  - /var/log/auth.log
-  - /var/log/messages
-  - /var/log/secure
+    - /var/log/syslog
+    - /var/log/auth.log
+    - /var/log/messages
+    - /var/log/secure
   processors:
-  - add_fields:
-      fields:
-        vendor: linux
-        product: linux
-supportedModules:
-- xsiam
+    - add_fields:
+        fields:
+          vendor: linux
+          product: linux

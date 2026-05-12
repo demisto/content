@@ -7,10 +7,6 @@
       "properties": {
         "type": "string",
         "is_array": false
-      },
-      "operationname": {
-        "type": "string",
-        "is_array": false
       }
     }
   }

@@ -97,8 +97,6 @@ Follow these steps for a self-deployed configuration:
 | Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender. | False |
 | Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender. | False |
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
-| Custom close-reason mapping (XSOAR -> Defender mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR) | Define how to close the mirrored incidents from Cortex XSOAR into Defender with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Defender close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to `Outgoing Closing Logic (XSOAR → Microsoft 365 Defender)` for possible close-reasons. | False |
-| Custom close-reason mapping (Defender -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR) | Define how to close the mirrored incidents from Defender into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Defender close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to `Incoming Closing Logic (Microsoft 365 Defender → XSOAR)` for possible close-reasons. | False |
 
 5. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
@@ -537,8 +535,6 @@ Update the incident with the given ID.
 >| Automated investigation started manually on one endpoint | test5 | Informational | 263 | SuspiciousActivity |  | 10 / 12 | MicrosoftDefenderForEndpoint | AutomatedInvestigation | 2021-03-22T12:34:31.8123759Z | 2021-03-22T12:59:07.526847Z | Active | User | Unknown | computer |
 
 ### microsoft-365-defender-advanced-hunting
-
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 
 ***
 Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender.

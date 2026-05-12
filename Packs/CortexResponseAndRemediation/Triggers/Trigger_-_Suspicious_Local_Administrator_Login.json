@@ -1,0 +1,23 @@
+{
+    "trigger_id": "1dd58cf4145efadf6f4d34f53ef5d034",
+    "playbook_id": "Suspicious Local Administrator Login",
+    "suggestion_reason": "Recommended for Suspicious local administrator login alerts.",
+    "description": "This trigger is responsible for handling alerts for Suspicious local administrator login.",
+    "trigger_name": "Suspicious local administrator login",
+    "alerts_filter": {
+      "filter": {
+        "AND": [
+          {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Suspicious local administrator login"
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
+      }
+    }
+  }

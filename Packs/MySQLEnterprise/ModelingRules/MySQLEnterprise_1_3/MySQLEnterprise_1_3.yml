@@ -4,5 +4,3 @@ name: MySQL Enterprise Modeling Rules
 rules: ''
 schema: ''
 tags: MySQL Enterprise
-supportedModules:
-- xsiam

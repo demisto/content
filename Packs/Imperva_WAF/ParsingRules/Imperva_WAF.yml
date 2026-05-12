@@ -1,8 +1,0 @@
-id: Imperva WAF ParsingRule
-name: Imperva WAF Parsing Rule
-fromversion: 8.4.0 
-tags: []
-rules: ''
-samples: ''
-supportedModules:
-- xsiam

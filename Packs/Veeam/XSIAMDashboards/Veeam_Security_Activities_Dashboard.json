@@ -21,9 +21,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n    _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n    _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
-                "time_frame": {
-                  "relativeTime": 86400000
-                },
+                "time_frame": { "relativeTime": 86400000 },
                 "viewOptions": {
                   "type": "pie",
                   "commands": [
@@ -50,37 +48,25 @@
                     },
                     {
                       "func": {
-                        "args": [
-                          "Critical",
-                          "#D10000"
-                        ],
+                        "args": [ "Critical", "#D10000" ],
                         "name": "valuecolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "High",
-                          "#FF8F2E"
-                        ],
+                        "args": [ "High", "#FF8F2E" ],
                         "name": "valuecolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "Medium",
-                          "#0084D1"
-                        ],
+                        "args": [ "Medium", "#0084D1" ],
                         "name": "valuecolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "Information",
-                          "#00D15F"
-                        ],
+                        "args": [ "Information", "#00D15F" ],
                         "name": "valuecolor"
                       }
                     }
@@ -114,9 +100,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0),\r\n    _oneInstanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n    OR _oneInstanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter _host=if(_instanceId != null, arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0), \r\n        _oneInstanceId != null, arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0))\r\n| filter _host in ($vbr_hosts) OR _host in ($one_hosts)\r\n| comp count(1) as _count\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-                "time_frame": {
-                  "relativeTime": 604800000
-                },
+                "time_frame": { "relativeTime": 604800000 },
                 "viewOptions": {
                   "type": "single",
                   "commands": [
@@ -150,10 +134,8 @@
                     "value": "*"
                   }
                 ],
-                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| alter  _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| comp count(_instanceId ) as _count by _severity\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _severity yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
-                "time_frame": {
-                  "relativeTime": 86400000
-                },
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| alter  _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| comp count(_instanceId ) as _count by _severity\r\n\r\n\r\n\r\n| view graph type = pie subtype = full xaxis = _severity yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 86400000 },
                 "viewOptions": {
                   "type": "pie",
                   "commands": [
@@ -180,37 +162,25 @@
                     },
                     {
                       "func": {
-                        "args": [
-                          "\"Critical\"",
-                          "\"#D10000\""
-                        ],
+                        "args": [ "\"Critical\"", "\"#D10000\"" ],
                         "name": "valuecolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "\"High\"",
-                          "\"#FF8F2E\""
-                        ],
+                        "args": [ "\"High\"", "\"#FF8F2E\"" ],
                         "name": "valuecolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "\"Medium\"",
-                          "\"#0084D1\""
-                        ],
+                        "args": [ "\"Medium\"", "\"#0084D1\"" ],
                         "name": "valuecolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "\"Information\"",
-                          "\"#00D15F\""
-                        ],
+                        "args": [ "\"Information\"", "\"#00D15F\"" ],
                         "name": "valuecolor"
                       }
                     }
@@ -245,9 +215,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42220\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "single",
                   "commands": [
@@ -291,9 +259,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "single",
                   "commands": [
@@ -337,9 +303,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "single",
                   "commands": [
@@ -383,9 +347,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| comp count(_instanceId ) as _count by _alarmName\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _alarmName yaxis = _count ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "pie",
                   "commands": [
@@ -441,9 +403,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n_day=date_floor(_time ,\"d\")\r\n| filter _host in ($vbr_hosts)\r\n| comp \r\n    count(if(_instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), 1)) as Critical, \r\n    count(if(_instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), 1)) as High,\r\n    count(if(_instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), 1)) as Medium,\r\n    count(if(_instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), 1)) as Information by _day\r\n| sort asc _day\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Critical,High,Medium,Information seriescolor(\"Critical\",\"#D10000\") seriescolor(\"Medium\",\"#0084D1\") seriescolor(\"High\",\"#FF8F2E\") seriescolor(\"Information\",\"#00D15F\") ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "area",
                   "commands": [
@@ -477,37 +437,25 @@
                     },
                     {
                       "func": {
-                        "args": [
-                          "Critical",
-                          "#D10000"
-                        ],
+                        "args": [ "Critical", "#D10000" ],
                         "name": "seriescolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "Medium",
-                          "#0084D1"
-                        ],
+                        "args": [ "Medium", "#0084D1" ],
                         "name": "seriescolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "High",
-                          "#FF8F2E"
-                        ],
+                        "args": [ "High", "#FF8F2E" ],
                         "name": "seriescolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "Information",
-                          "#00D15F"
-                        ],
+                        "args": [ "Information", "#00D15F" ],
                         "name": "seriescolor"
                       }
                     }
@@ -537,9 +485,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| alter  _day=date_floor(_time ,\"d\"),\r\n    _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| comp \r\n    count(if(_severity = \"Critical\", 1)) as Critical, \r\n    count(if(_severity = \"High\", 1)) as High,\r\n    count(if(_severity = \"Medium\", 1)) as Medium,\r\n    count(if(_severity = \"Information\", 1)) as Information by _day\r\n| sort asc _day\r\n\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Critical,High,Medium,Information seriescolor(\"Critical\",\"#D10000\") seriescolor(\"Medium\",\"#0084D1\") seriescolor(\"High\",\"#FF8F2E\") seriescolor(\"Information\",\"#00D15F\") ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "area",
                   "commands": [
@@ -573,37 +519,25 @@
                     },
                     {
                       "func": {
-                        "args": [
-                          "Critical",
-                          "#D10000"
-                        ],
+                        "args": [ "Critical", "#D10000" ],
                         "name": "seriescolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "Medium",
-                          "#0084D1"
-                        ],
+                        "args": [ "Medium", "#0084D1" ],
                         "name": "seriescolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "High",
-                          "#FF8F2E"
-                        ],
+                        "args": [ "High", "#FF8F2E" ],
                         "name": "seriescolor"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "Information",
-                          "#00D15F"
-                        ],
+                        "args": [ "Information", "#00D15F" ],
                         "name": "seriescolor"
                       }
                     }
@@ -645,9 +579,7 @@
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=if(\r\n        _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n        _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n        _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n        _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\", \"\"),\r\n    _user=arrayindex(if(\r\n        _instanceId in (\"40201\",\"42402\",\"42404\",\"42405\",\"40204\",\"40400\",\"40500\",\"40600\",\"40700\",\"42400\",\"42401\",\"42403\"), regextract(_raw_log, \"fullName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"36013\"), regextract(_raw_log, \"InitiatorName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"41800\",\"41810\"), regextract(_raw_log, \"param3\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"23090\",\"23420\",\"41402\"), regextract(_raw_log, \"param6\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"40205\",\"40206\",\"41610\",\"42301\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"25500\",\"28100\",\"29800\",\"31600\",\"31700\",\"31800\",\"31900\",\"42260\",\"42270\",\"42280\",\"42302\",\"30100\",\"30400\",\"31500\",\"31210\",\"31400\",\"41600\", \"31200\",\"28970\",\"28980\",\"42230\",\"42220\",\"42290\"), regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), \r\n        regextract(_raw_log, \"user\\=\\\"([^\\\"]*)\\\"\")\r\n        ), 0)\r\n| filter _host in ($vbr_hosts) \r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`",
                 "entityType": "xql-widget-table-e56e365c-5f88-4e5c-b983-6653dfc566e0",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "table",
                   "commands": []
@@ -674,9 +606,7 @@
                 ],
                 "phrase": " dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter  _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| filter _host in ($one_hosts)\r\n| sort desc _time\r\n| fields _host as `Data Source`, _time as `Date`, _alarmName as `Alarm Name`, _severity as `Severity`, _alarmType as `Alarm Type`, _description  as `Message Details`, _statusOld  as `Previous Status`, _statusNew as `Current Status`, _objectName as `Object Name`, _objectPath as `Object Path`\r\n| limit 100",
                 "entityType": "xql-widget-table-a5d3d14d-bf13-4220-a9f0-6c5dbdbbe376",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "table",
                   "commands": []
@@ -707,9 +637,7 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n        _day=date_floor(_time ,\"d\"),\r\n        _operationId=arrayindex(regextract(_raw_log, \"OperationId\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($hosts)\r\n| comp \r\n        count(if(_operationId = \"0\", 1)) as _MDAEnabled,\r\n        count(if(_operationId = \"1\", 1)) as _MDADisabled,\r\n        count(if(_operationId = \"100\", 1)) as _MDABackupDeletion,\r\n        count(if(_operationId = \"101\", 1)) as _MDALogBackupDeletion,\r\n        count(if(_operationId = \"102\", 1)) as _MDAConfigurationBackupDeletion,\r\n        count(if(_operationId = \"103\", 1)) as _MDAAdminApproval,\r\n        count(if(_operationId = \"104\", 1)) as _MDASanSnapshotDeletion,\r\n        count(if(_operationId = \"105\", 1)) as _MDAInfraItemDeletion,\r\n        count(if(_operationId = \"106\", 1)) as _MDAServiceProviderDeletion,\r\n        count(if(_operationId = \"107\", 1)) as _MDAStorageDeletion,\r\n        count(if(_operationId = \"108\", 1)) as _MDAVbrSecuritySettingsChange,\r\n        count(if(_operationId = \"10000\", 1)) as _MDAStaticInfo by _day\r\n| sort asc _day\r\n\r\n\n| view graph type = column subtype = stacked xaxis = _day yaxis = _MDAEnabled,_MDADisabled,_MDABackupDeletion,_MDALogBackupDeletion,_MDAConfigurationBackupDeletion,_MDAAdminApproval,_MDASanSnapshotDeletion,_MDAInfraItemDeletion,_MDAServiceProviderDeletion,_MDAStorageDeletion,_MDAVbrSecuritySettingsChange,_MDAStaticInfo seriestitle(\"_MDAEnabled\",\"Four-eyes authorization has been enabled\") seriestitle(\"_MDADisabled\",\"Four-eyes authorization has been disabled\") seriestitle(\"_MDABackupDeletion\",\"Delete backup\") seriestitle(\"_MDALogBackupDeletion\",\"Delete log backup\") seriestitle(\"_MDAConfigurationBackupDeletion\",\"Delete configuration backup\") seriestitle(\"_MDAAdminApproval\",\"Disable four-eyes authorization\") seriestitle(\"_MDASanSnapshotDeletion\",\"Delete snapshot\") seriestitle(\"_MDAInfraItemDeletion\",\"Delete infrastructure object\") seriestitle(\"_MDAServiceProviderDeletion\",\"Delete service provider\") seriestitle(\"_MDAStorageDeletion\",\"Delete storage\") seriestitle(\"_MDAVbrSecuritySettingsChange\",\"Update Veeam Backup & Replication security settings\") seriestitle(\"_MDAStaticInfo\",\"Other operations\") ",
-                "time_frame": {
-                  "relativeTime": 2592000000
-                },
+                "time_frame": { "relativeTime": 2592000000 },
                 "viewOptions": {
                   "type": "column",
                   "commands": [
@@ -736,109 +664,73 @@
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAEnabled",
-                          "Four-eyes authorization has been enabled"
-                        ],
+                        "args": [ "_MDAEnabled", "Four-eyes authorization has been enabled" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDADisabled",
-                          "Four-eyes authorization has been disabled"
-                        ],
+                        "args": [ "_MDADisabled", "Four-eyes authorization has been disabled" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDABackupDeletion",
-                          "Delete backup"
-                        ],
+                        "args": [ "_MDABackupDeletion", "Delete backup" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDALogBackupDeletion",
-                          "Delete log backup"
-                        ],
+                        "args": [ "_MDALogBackupDeletion", "Delete log backup" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAConfigurationBackupDeletion",
-                          "Delete configuration backup"
-                        ],
+                        "args": [ "_MDAConfigurationBackupDeletion", "Delete configuration backup" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAAdminApproval",
-                          "Disable four-eyes authorization"
-                        ],
+                        "args": [ "_MDAAdminApproval", "Disable four-eyes authorization" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDASanSnapshotDeletion",
-                          "Delete snapshot"
-                        ],
+                        "args": [ "_MDASanSnapshotDeletion", "Delete snapshot" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAInfraItemDeletion",
-                          "Delete infrastructure object"
-                        ],
+                        "args": [ "_MDAInfraItemDeletion", "Delete infrastructure object" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAServiceProviderDeletion",
-                          "Delete service provider"
-                        ],
+                        "args": [ "_MDAServiceProviderDeletion", "Delete service provider" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAStorageDeletion",
-                          "Delete storage"
-                        ],
+                        "args": [ "_MDAStorageDeletion", "Delete storage" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAVbrSecuritySettingsChange",
-                          "Update Veeam Backup & Replication security settings"
-                        ],
+                        "args": [ "_MDAVbrSecuritySettingsChange", "Update Veeam Backup & Replication security settings" ],
                         "name": "seriestitle"
                       }
                     },
                     {
                       "func": {
-                        "args": [
-                          "_MDAStaticInfo",
-                          "Other operations"
-                        ],
+                        "args": [ "_MDAStaticInfo", "Other operations" ],
                         "name": "seriestitle"
                       }
                     }
@@ -872,9 +764,7 @@
             "investigation": {
               "ttl": "0",
               "source": "investigation",
-              "timeframe": {
-                "relativeTime": 2592000000
-              },
+              "timeframe": { "relativeTime": 2592000000 },
               "input_dict": {
                 "xql": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter \r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| dedup _host \r\n| fields\r\n    _host",
                 "tenants": [],
@@ -900,9 +790,7 @@
             "investigation": {
               "ttl": "0",
               "source": "investigation",
-              "timeframe": {
-                "relativeTime": 2592000000
-              },
+              "timeframe": { "relativeTime": 2592000000 },
               "input_dict": {
                 "xql": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _oneInstanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _oneInstanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\")\r\n| alter \r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0)\r\n| dedup _host \r\n| fields\r\n    _host",
                 "tenants": [],
@@ -936,9 +824,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n    _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n    _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "pie",
           "commands": [
@@ -965,37 +851,25 @@
             },
             {
               "func": {
-                "args": [
-                  "Critical",
-                  "#D10000"
-                ],
+                "args": [ "Critical", "#D10000" ],
                 "name": "valuecolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "High",
-                  "#FF8F2E"
-                ],
+                "args": [ "High", "#FF8F2E" ],
                 "name": "valuecolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "Medium",
-                  "#0084D1"
-                ],
+                "args": [ "Medium", "#0084D1" ],
                 "name": "valuecolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "Information",
-                  "#00D15F"
-                ],
+                "args": [ "Information", "#00D15F" ],
                 "name": "valuecolor"
               }
             }
@@ -1004,9 +878,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1027,9 +899,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0),\r\n    _oneInstanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n    OR _oneInstanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter _host=if(_instanceId != null, arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0), \r\n        _oneInstanceId != null, arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0))\r\n| filter _host in ($vbr_hosts) OR _host in ($one_hosts)\r\n| comp count(1) as _count\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "single",
           "commands": [
@@ -1052,9 +922,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1071,9 +939,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42220\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "single",
           "commands": [
@@ -1096,9 +962,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1115,9 +979,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "single",
           "commands": [
@@ -1140,9 +1002,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1159,9 +1019,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "single",
           "commands": [
@@ -1184,9 +1042,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1203,9 +1059,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n_day=date_floor(_time ,\"d\")\r\n| filter _host in ($vbr_hosts)\r\n| comp \r\n    count(if(_instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), 1)) as Critical, \r\n    count(if(_instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), 1)) as High,\r\n    count(if(_instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), 1)) as Medium,\r\n    count(if(_instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), 1)) as Information by _day\r\n| sort asc _day\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Critical,High,Medium,Information seriescolor(\"Critical\",\"#D10000\") seriescolor(\"Medium\",\"#0084D1\") seriescolor(\"High\",\"#FF8F2E\") seriescolor(\"Information\",\"#00D15F\") ",
-        "time_frame": {
-          "relativeTime": 2592000000
-        },
+        "time_frame": { "relativeTime": 2592000000 },
         "viewOptions": {
           "type": "area",
           "commands": [
@@ -1239,37 +1093,25 @@
             },
             {
               "func": {
-                "args": [
-                  "Critical",
-                  "#D10000"
-                ],
+                "args": [ "Critical", "#D10000" ],
                 "name": "seriescolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "Medium",
-                  "#0084D1"
-                ],
+                "args": [ "Medium", "#0084D1" ],
                 "name": "seriescolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "High",
-                  "#FF8F2E"
-                ],
+                "args": [ "High", "#FF8F2E" ],
                 "name": "seriescolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "Information",
-                  "#00D15F"
-                ],
+                "args": [ "Information", "#00D15F" ],
                 "name": "seriescolor"
               }
             }
@@ -1278,9 +1120,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1297,9 +1137,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=if(\r\n        _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n        _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n        _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n        _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\", \"\"),\r\n    _user=arrayindex(if(\r\n        _instanceId in (\"40201\",\"42402\",\"42404\",\"42405\",\"40204\",\"40400\",\"40500\",\"40600\",\"40700\",\"42400\",\"42401\",\"42403\"), regextract(_raw_log, \"fullName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"36013\"), regextract(_raw_log, \"InitiatorName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"41800\",\"41810\"), regextract(_raw_log, \"param3\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"23090\",\"23420\",\"41402\"), regextract(_raw_log, \"param6\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"40205\",\"40206\",\"41610\",\"42301\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"25500\",\"28100\",\"29800\",\"31600\",\"31700\",\"31800\",\"31900\",\"42260\",\"42270\",\"42280\",\"42302\",\"30100\",\"30400\",\"31500\",\"31210\",\"31400\",\"41600\", \"31200\",\"28970\",\"28980\",\"42230\",\"42220\",\"42290\"), regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), \r\n        regextract(_raw_log, \"user\\=\\\"([^\\\"]*)\\\"\")\r\n        ), 0)\r\n| filter _host in ($vbr_hosts) \r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "table",
           "commands": []
@@ -1313,9 +1151,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1332,9 +1168,7 @@
           }
         ],
         "phrase": " dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter  _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| filter _host in ($one_hosts)\r\n| sort desc _time\r\n| fields _host as `Data Source`, _time as `Date`, _alarmName as `Alarm Name`, _severity as `Severity`, _alarmType as `Alarm Type`, _description  as `Message Details`, _statusOld  as `Previous Status`, _statusNew as `Current Status`, _objectName as `Object Name`, _objectPath as `Object Path`\r\n| limit 100",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "table",
           "commands": []
@@ -1348,9 +1182,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1367,9 +1199,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| alter  _day=date_floor(_time ,\"d\"),\r\n    _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| comp \r\n    count(if(_severity = \"Critical\", 1)) as Critical, \r\n    count(if(_severity = \"High\", 1)) as High,\r\n    count(if(_severity = \"Medium\", 1)) as Medium,\r\n    count(if(_severity = \"Information\", 1)) as Information by _day\r\n| sort asc _day\r\n\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Critical,High,Medium,Information seriescolor(\"Critical\",\"#D10000\") seriescolor(\"Medium\",\"#0084D1\") seriescolor(\"High\",\"#FF8F2E\") seriescolor(\"Information\",\"#00D15F\") ",
-        "time_frame": {
-          "relativeTime": 2592000000
-        },
+        "time_frame": { "relativeTime": 2592000000 },
         "viewOptions": {
           "type": "area",
           "commands": [
@@ -1403,37 +1233,25 @@
             },
             {
               "func": {
-                "args": [
-                  "Critical",
-                  "#D10000"
-                ],
+                "args": [ "Critical", "#D10000" ],
                 "name": "seriescolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "Medium",
-                  "#0084D1"
-                ],
+                "args": [ "Medium", "#0084D1" ],
                 "name": "seriescolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "High",
-                  "#FF8F2E"
-                ],
+                "args": [ "High", "#FF8F2E" ],
                 "name": "seriescolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "Information",
-                  "#00D15F"
-                ],
+                "args": [ "Information", "#00D15F" ],
                 "name": "seriescolor"
               }
             }
@@ -1448,9 +1266,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1467,9 +1283,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| alter  _severity=if(\r\n        _instanceId in (\"364\",\"391\",\"365\",\"370\",\"314\",\"331\",\"403\",\"342\",\"315\",\"332\",\"344\"), \"Critical\", \r\n        _instanceId in (\"395\",\"369\",\"376\",\"377\",\"316\",\"381\",\"378\"), \"Medium\")\r\n| comp count(_instanceId ) as _count by _severity\r\n\r\n\r\n\r\n| view graph type = pie subtype = full xaxis = _severity yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
-        "time_frame": {
-          "relativeTime": 2592000000
-        },
+        "time_frame": { "relativeTime": 2592000000 },
         "viewOptions": {
           "type": "pie",
           "commands": [
@@ -1496,37 +1310,25 @@
             },
             {
               "func": {
-                "args": [
-                  "\"Critical\"",
-                  "\"#D10000\""
-                ],
+                "args": [ "\"Critical\"", "\"#D10000\"" ],
                 "name": "valuecolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "\"High\"",
-                  "\"#FF8F2E\""
-                ],
+                "args": [ "\"High\"", "\"#FF8F2E\"" ],
                 "name": "valuecolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "\"Medium\"",
-                  "\"#0084D1\""
-                ],
+                "args": [ "\"Medium\"", "\"#0084D1\"" ],
                 "name": "valuecolor"
               }
             },
             {
               "func": {
-                "args": [
-                  "\"Information\"",
-                  "\"#00D15F\""
-                ],
+                "args": [ "\"Information\"", "\"#00D15F\"" ],
                 "name": "valuecolor"
               }
             }
@@ -1535,9 +1337,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1554,9 +1354,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"predefined_alarm_id\\=\\\"(\\d+)\\\"\"),0)\r\n| filter _instanceId in (\"395\", \"364\", \"369\", \"391\", \"365\", \"370\", \"314\", \"331\", \"376\", \"377\", \"403\", \"316\", \"342\", \"381\", \"315\", \"332\", \"344\", \"378\")\r\n| alter\r\n    _host=arrayindex(regextract(_raw_log , \"<\\d+>\\d\\s+\\S+\\s+(\\S+)\\s\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"alarm_details\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmName=arrayindex(regextract(_raw_log, \"alarm_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _alarmType=arrayindex(regextract(_raw_log, \"alarm_type\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectName=arrayindex(regextract(_raw_log, \"object_name\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusNew=arrayindex(regextract(_raw_log, \"status_new\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _statusOld=arrayindex(regextract(_raw_log, \"status_old\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _objectPath=arrayindex(regextract(_raw_log, \"object_path\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($one_hosts)\r\n| comp count(_instanceId ) as _count by _alarmName\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _alarmName yaxis = _count ",
-        "time_frame": {
-          "relativeTime": 86400000
-        },
+        "time_frame": { "relativeTime": 86400000 },
         "viewOptions": {
           "type": "pie",
           "commands": [
@@ -1586,9 +1384,7 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     },
@@ -1605,9 +1401,7 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n        _day=date_floor(_time ,\"d\"),\r\n        _operationId=arrayindex(regextract(_raw_log, \"OperationId\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($hosts)\r\n| comp \r\n        count(if(_operationId = \"0\", 1)) as _MDAEnabled,\r\n        count(if(_operationId = \"1\", 1)) as _MDADisabled,\r\n        count(if(_operationId = \"100\", 1)) as _MDABackupDeletion,\r\n        count(if(_operationId = \"101\", 1)) as _MDALogBackupDeletion,\r\n        count(if(_operationId = \"102\", 1)) as _MDAConfigurationBackupDeletion,\r\n        count(if(_operationId = \"103\", 1)) as _MDAAdminApproval,\r\n        count(if(_operationId = \"104\", 1)) as _MDASanSnapshotDeletion,\r\n        count(if(_operationId = \"105\", 1)) as _MDAInfraItemDeletion,\r\n        count(if(_operationId = \"106\", 1)) as _MDAServiceProviderDeletion,\r\n        count(if(_operationId = \"107\", 1)) as _MDAStorageDeletion,\r\n        count(if(_operationId = \"108\", 1)) as _MDAVbrSecuritySettingsChange,\r\n        count(if(_operationId = \"10000\", 1)) as _MDAStaticInfo by _day\r\n| sort asc _day\r\n\r\n\n| view graph type = column subtype = stacked xaxis = _day yaxis = _MDAEnabled,_MDADisabled,_MDABackupDeletion,_MDALogBackupDeletion,_MDAConfigurationBackupDeletion,_MDAAdminApproval,_MDASanSnapshotDeletion,_MDAInfraItemDeletion,_MDAServiceProviderDeletion,_MDAStorageDeletion,_MDAVbrSecuritySettingsChange,_MDAStaticInfo seriestitle(\"_MDAEnabled\",\"Four-eyes authorization has been enabled\") seriestitle(\"_MDADisabled\",\"Four-eyes authorization has been disabled\") seriestitle(\"_MDABackupDeletion\",\"Delete backup\") seriestitle(\"_MDALogBackupDeletion\",\"Delete log backup\") seriestitle(\"_MDAConfigurationBackupDeletion\",\"Delete configuration backup\") seriestitle(\"_MDAAdminApproval\",\"Disable four-eyes authorization\") seriestitle(\"_MDASanSnapshotDeletion\",\"Delete snapshot\") seriestitle(\"_MDAInfraItemDeletion\",\"Delete infrastructure object\") seriestitle(\"_MDAServiceProviderDeletion\",\"Delete service provider\") seriestitle(\"_MDAStorageDeletion\",\"Delete storage\") seriestitle(\"_MDAVbrSecuritySettingsChange\",\"Update Veeam Backup & Replication security settings\") seriestitle(\"_MDAStaticInfo\",\"Other operations\") ",
-        "time_frame": {
-          "relativeTime": 2592000000
-        },
+        "time_frame": { "relativeTime": 2592000000 },
         "viewOptions": {
           "type": "column",
           "commands": [
@@ -1634,109 +1428,73 @@
             },
             {
               "func": {
-                "args": [
-                  "_MDAEnabled",
-                  "Four-eyes authorization has been enabled"
-                ],
+                "args": [ "_MDAEnabled", "Four-eyes authorization has been enabled" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDADisabled",
-                  "Four-eyes authorization has been disabled"
-                ],
+                "args": [ "_MDADisabled", "Four-eyes authorization has been disabled" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDABackupDeletion",
-                  "Delete backup"
-                ],
+                "args": [ "_MDABackupDeletion", "Delete backup" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDALogBackupDeletion",
-                  "Delete log backup"
-                ],
+                "args": [ "_MDALogBackupDeletion", "Delete log backup" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAConfigurationBackupDeletion",
-                  "Delete configuration backup"
-                ],
+                "args": [ "_MDAConfigurationBackupDeletion", "Delete configuration backup" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAAdminApproval",
-                  "Disable four-eyes authorization"
-                ],
+                "args": [ "_MDAAdminApproval", "Disable four-eyes authorization" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDASanSnapshotDeletion",
-                  "Delete snapshot"
-                ],
+                "args": [ "_MDASanSnapshotDeletion", "Delete snapshot" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAInfraItemDeletion",
-                  "Delete infrastructure object"
-                ],
+                "args": [ "_MDAInfraItemDeletion", "Delete infrastructure object" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAServiceProviderDeletion",
-                  "Delete service provider"
-                ],
+                "args": [ "_MDAServiceProviderDeletion", "Delete service provider" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAStorageDeletion",
-                  "Delete storage"
-                ],
+                "args": [ "_MDAStorageDeletion", "Delete storage" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAVbrSecuritySettingsChange",
-                  "Update Veeam Backup & Replication security settings"
-                ],
+                "args": [ "_MDAVbrSecuritySettingsChange", "Update Veeam Backup & Replication security settings" ],
                 "name": "seriestitle"
               }
             },
             {
               "func": {
-                "args": [
-                  "_MDAStaticInfo",
-                  "Other operations"
-                ],
+                "args": [ "_MDAStaticInfo", "Other operations" ],
                 "name": "seriestitle"
               }
             }
@@ -1745,15 +1503,10 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [
-          "veeam_*"
-        ],
+        "query_tables": [ "veeam_*" ],
         "query_uses_library": false
       }
     }
   ],
-  "fromVersion": "8.9.0",
-  "supportedModules": [
-    "xsiam"
-  ]
+  "fromVersion": "8.9.0"
 }

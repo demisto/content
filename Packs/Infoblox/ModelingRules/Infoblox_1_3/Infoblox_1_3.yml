@@ -4,5 +4,3 @@ name: Infoblox Modeling Rules
 rules: ''
 schema: ''
 tags: Infoblox
-supportedModules:
-- xsiam

@@ -1,135 +1,66 @@
-# Cyble Threat Intelligence – Cortex XSOAR Integration
+Cyble Threat Intel is an integration which will help users to fetch Cyble's TAXII Feed service into XSOAR Environment. User needs to contact their Cyble Account Manager for getting required pre-requisites to access the Cyble's TAXII Feed Service.
 
-This integration enables Cortex XSOAR to ingest and query Indicators of
-Compromise (IOCs) from the **Cyble Vision API**.
-It supports two capabilities:
+## Configure Cyble Threat Intel on Cortex XSOAR
 
-1. **IOC Lookup (Interactive command for analysts)**
-2. **IOC Fetching (Fetch Indicators)**
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for Cyble Threat Intel.
+3. Click __Add instance__ to create and configure a new integration instance.
+    * __Name__: a textual name for the integration instance.
+    * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
+    * __Fetch Interval__: Interval of the fetches.
+    * __Reliability__: Reliability of the feed.
+    * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+    * __Discovery Service__: TAXII discovery service endpoint.
+    * __Collection__: Collection name to fetch indicators from.
+    * __Username__: Username/Password (if required)
+    * __First Fetch Time__: The time interval for the first fetch (retroactive). Maximum of 7 days for retroactive value is allowed.
+    * __Indicator Fetch Limit__: The value to limit the indicator to be fetched per iteration
 
----
-
-## Overview
-
-The Cyble Vision platform provides enriched, high-fidelity threat
-intelligence including malware associations, threat actor links,
-behaviour tags, risk scoring, and more.
-This integration allows XSOAR to:
-
-* Pull fresh IOCs at scheduled intervals
-* Tag, score, and store indicators in the Cortex XSOAR indicator store
-* Support analyst lookups for a single IOC via the command line or
-  playbooks
-
----
-
-## Configuration
-
-### Required Parameters
-
-| Parameter                    | Description                                                        | Example                              |
-|------------------------------| ------------------------------------------------------------------ | ------------------------------------ |
-| **Base URL**                 | Cyble Vision API endpoint                                          | `https://api.cyble.ai/engine/api/v4` |
-| **API Key (Access Token)**   | Cyble Vision API Bearer token                                      | *(stored securely in XSOAR)*         |
-| **First fetch time (hours)** | Number of hours to fetch backward on first run                     | `2`                                  |
-|                              | (1–3 hours allowed)                                                |                                      |
-| **Indicator Fetch Limit**    | Maximum indicators per API page                                    | `100`                                |
-
-### Fetch Behavior
-
-* Fetch is performed **in 1-hour chunks** until the full range is covered.
-* Each page of IOCs is inserted immediately using
-  `demisto.createIndicators`.
-* Fetch uses a retry mechanism (up to 5 attempts per page).
-* `last_run` is updated after every chunk.
-* Supported fetch window: **1–3 hours** (anything outside is
-  automatically corrected).
-
----
+4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
 
-## 📌 1. cyble-vision-ioc-lookup
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
+successfully execute a command, a DBot message appears in the War Room with the command details.
 
-Lookup a single IOC using the Cyble Vision API.
+This integration provides following command(s) which can be used to access the Threat Intelligence
 
-### **Command**
+### cyble-vision-fetch-taxii
 
-```text
-!cyble-vision-ioc-lookup ioc=<IOC_VALUE>
-```
+***
+Fetch the indicators based on the taxii service
 
-### **Arguments**
+#### Base Command
 
-| Name    | Required | Description                           |
-| ------- | -------- | ------------------------------------- |
-| **ioc** | Yes      | IOC string (IP / Domain / URL / Hash) |
+`cyble-vision-fetch-taxii`
 
-### **Outputs**
+#### Input
 
-Prefix: `CybleIntel.IOCLookup`
+| __Argument Name__ | __Description__                                                                                        | __Required__ |
+|-----------------|------------------------------------------------------------------------------------------------------| --- |
+| limit           | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional |
+| begin           | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                            | Optional |
+| end             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                            | Optional |
+| collection      | Collection name to fetch indicators from                                                             | Required |
 
-| Field                 | Description               |
-| --------------------- | ------------------------- |
-| IOC                   | IOC value                 |
-| IOC Type              | Type (IP / Domain / URL / Hash) |
-| First Seen            | UTC timestamp             |
-| Last Seen             | UTC timestamp             |
-| Risk Score            | 0–100                     |
-| Sources               | Reporting sources         |
-| Behaviour Tags        | Tags assigned by Cyble    |
-| Confidence Rating     | Low / Medium / High       |
-| Target Countries      | Target geography          |
-| Target Regions        | Regions affected          |
-| Target Industries     | Target verticals          |
-| Related Malware       | Linked malware families   |
-| Related Threat Actors | Associated threat actors  |
+#### Context Output
 
-### **Example**
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| CybleIntel.Threat.details | String | Returns the Threat Intel details from the Taxii service |
 
-```text
-!cyble-vision-ioc-lookup ioc=45.67.23.9
+### cyble-vision-get-collection-names
 
-```
+***
+Fetch the available collection name for the taxii service
 
----
+#### Base Command
 
-## 📌 2. fetch-indicators
+`cyble-vision-get-collection-names`
 
-Fetch IOCs from Cyble Vision and insert them into XSOAR's indicator store.
+#### Context Output
 
-### **Execution**
-
-This command is **not run manually**.
-It is used by the XSOAR engine when *Fetches Indicators* is enabled.
-
-### Behavior
-
-* Builds indicators with:
-
-  * `cybleverdict`
-  * `cybleriskscore`
-  * `cyblefirstseen`
-  * `cyblelastseen`
-  * `cyblebehaviourtags`
-  * `cyblesources`
-  * `cybletargetcountries`
-  * `cybletargetregions`
-  * `cybletargetindustries`
-  * `cyblerelatedmalware`
-  * `cyblerelatedthreatactors`
-
-* Automatically maps each IOC into XSOAR Indicator fields.
-* Updates `last_run` after each successful chunk.
-
-## Known Limitations
-
-* Fetching supports **hours only** (days are not supported).
-* Maximum initial backfill is **3 hours**.
-
----
-
-## Support
-
-For issues, contact **[support@cyble.com](mailto:support@cyble.com)**
-or your assigned Cyble Technical Advisor.
+| __Path__                      | __Type__ | __Description__                                |
+|-----------------------------| --- |----------------------------------------------|
+| CybleIntel.collection.names | String | Available collection names for the feed service |

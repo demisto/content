@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Palo Alto Networks
 commonfields:
   id: AutoFocus Feed
   version: -1
@@ -118,9 +117,8 @@ configuration:
   name: feedTags
   type: 0
   required: false
-deprecated: true
-description: Deprecated. Use Unit 42 Feed integration instead.
-display: AutoFocus Feed (Deprecated)
+description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
+display: AutoFocus Feed
 name: AutoFocus Feed
 script:
   commands:

@@ -1,11 +1,15 @@
 {
     "associatedToAll": true,
+    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "servicenowstate",
     "closeForm": false,
+    "columns": null,
     "content": true,
+    "defaultRows": null,
     "description": "The ticket state",
     "editForm": true,
+    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_servicenowstate",
@@ -14,7 +18,9 @@
     "name": "ServiceNow State",
     "neverSetAsRequired": false,
     "ownerOnly": false,
+    "placeholder": "",
     "required": false,
+    "script": "",
     "selectValues": [
         "1 - New",
         "2 - In Progress",
@@ -27,15 +33,19 @@
     ],
     "sla": 0,
     "system": false,
+    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "singleSelect",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
+    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.0.0",
     "supportedModules": [
-        "agentix",
-        "xsiam"
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

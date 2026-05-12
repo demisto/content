@@ -1,0 +1,1563 @@
+id: AppleScript Process Executed With Rare Command Line
+version: -1
+name: AppleScript Process Executed With Rare Command Line
+description: |-
+  This playbook handles "AppleScript Process Executed With Rare Command Line" alerts.
+
+  Playbook Stages:
+
+  Investigation:
+  During the alert investigation, the playbook will perform the following:
+
+  - Searches for XSIAM prevention alerts with the same causality process ID.
+  - Checks if the causality|actor image has bad reputation or is not signed.
+  - Checks if malicious|suspicious patterns found in the command line.
+  - Searches for XSIAM insights alerts indicating a suspicious activity.
+
+
+  Remediation:
+
+  - Automatically terminate the causality process.
+  - Quarantine the causality|actor image (requires analyst approval).
+  - Automatically Close the alert.
+tags:
+- T1059 - Command and Scripting Interpreter
+- TA0002 - Execution
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 96b3467b-22f7-49f9-854b-4db18875a216
+    type: start
+    task:
+      id: 96b3467b-22f7-49f9-854b-4db18875a216
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "2"
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 54fc54f0-02d2-489a-87e2-b8eb888d1d45
+    type: regular
+    task:
+      id: 54fc54f0-02d2-489a-87e2-b8eb888d1d45
+      version: -1
+      name: Retrieve all alerts for the agent ID
+      description: |-
+        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+
+        For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+
+        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fromdate:
+        simple: 24 hours ago
+      query:
+        simple: agentid:${alert.agentid}
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 914ee865-e0e8-49e2-8aa8-2fdde662ded1
+    type: title
+    task:
+      id: 914ee865-e0e8-49e2-8aa8-2fdde662ded1
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d66bb77c-00b8-4780-82d0-1dd3b0ac5991
+    type: regular
+    task:
+      id: d66bb77c-00b8-4780-82d0-1dd3b0ac5991
+      version: -1
+      name: Get the reputation of the causality and actor processes
+      description: Checks the file reputation of the specified hash.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      file:
+        complex:
+          root: alert
+          accessor: cgosha256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.initiatorsha256
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4fac2339-3584-4626-8ec6-9171c7e72097
+    type: condition
+    task:
+      id: 4fac2339-3584-4626-8ec6-9171c7e72097
+      version: -1
+      name: Prevention rule with the same causality ID?
+      description: Determine if a prevention rule is triggered for the same causality ID (an identifier linking a chain of events or processes).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Malicious:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: BLOCKED
+                    ignorecase: true
+                accessor: cid
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: cid
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2cd75c00-6cae-42f3-82c3-9c2d50fc2a67
+    type: condition
+    task:
+      id: 2cd75c00-6cae-42f3-82c3-9c2d50fc2a67
+      version: -1
+      name: Is the causality or actor process unsigned and not prevalent?
+      description: Check if the causality or actor process is unsigned and not prevalent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      Malicious:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.initiatorsignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Process
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.AnalyticsPrevalence.Process.process_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgoname
+                      iscontext: true
+                    ignorecase: true
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Process
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Core.AnalyticsPrevalence.Process.process_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.osparentname
+                      iscontext: true
+                    ignorecase: true
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0c2c3e68-9530-4ade-8748-4be6db12df2e
+    type: condition
+    task:
+      id: 0c2c3e68-9530-4ade-8748-4be6db12df2e
+      version: -1
+      name: Insight alerts indicating a malicious usage?
+      description: |-
+        Checks if any of the following Insight alerts are present for agentid:${alert.agentid}:
+
+        - Rare process accessed a Keychain file
+        - A process connected to a rare external host
+        - AppleScript executed a shell script
+        - Netcat shell via named pipe
+        - Sudoers discovery
+        - Shell History Access
+        - Unusual process accessed web browser cookies
+        - Unusual process accessed a web browser history file
+
+        If one or more of these alerts are detected, proceed with the required remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Suspicious:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Suspicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Insights.Contents.data.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 579c3360-a41e-4206-870e-45bc391a2cc4
+    type: regular
+    task:
+      id: 579c3360-a41e-4206-870e-45bc391a2cc4
+      version: -1
+      name: Retrieve insights alerts for the agent ID
+      description: |-
+        Searches Cortex XSIAM alerts. A summarized version of this script is available with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+
+        For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+
+        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: Insights=
+      fromdate:
+        simple: 3 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "true"
+      query:
+        simple: "agentid:${alert.agentid} AND (name:\"Rare process accessed a Keychain file\" OR \nname:\"A process connected to a rare external host\" OR \nname:\"AppleScript executed a shell script\" OR \nname:\"Netcat shell via named pipe\" OR \nname:\"Sudoers discovery\" OR \nname:\"Shell History Access\" OR \nname:\"Unusual process accessed web browser cookies\" OR \nname:\"Unusual process accessed a web browser history file\")"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: de15924d-c9ea-437a-8ae6-fefcaa0e3eed
+    type: condition
+    task:
+      id: de15924d-c9ea-437a-8ae6-fefcaa0e3eed
+      version: -1
+      name: Malicious or Suspicious patterns detected?
+      description: Identify if there are any known IOCs (Indicators of Compromise) or suspicious behaviors.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Malicious:
+      - "11"
+      Suspicious:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: '}'
+                transformers:
+                - operator: If-Elif
+                  args:
+                    conditions:
+                      value:
+                        simple: |-
+                          [
+                            {
+                              "condition": "'telegram' in #{alert.targetprocesscmd.[0]} and 'walletDesk' in #{alert.targetprocesscmd.[0]}",
+                              "return": "Malicious"
+                            },
+                            {
+                              "condition": "'to set visible' in #{alert.targetprocesscmd.[0]} and 'false' in #{alert.targetprocesscmd.[0]}",
+                              "return": "Malicious"
+                            },
+                            {
+                              "condition": "'display dialog' in #{alert.targetprocesscmd.[0]} or 'curl -' in #{alert.targetprocesscmd.[0]}",
+                              "return": "Malicious"
+                            },
+                            {
+                              "default": "None"
+                            }
+                          ]
+                    flags:
+                      value:
+                        simple: case_insensitive
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    - label: Suspicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: '}'
+                transformers:
+                - operator: If-Elif
+                  args:
+                    conditions:
+                      value:
+                        simple: |-
+                          [
+                            {
+                              "condition": "'hidden answer' in #{alert.targetprocesscmd.[0]}",
+                              "return": "Suspicious"
+                            },
+                            {
+                              "condition": "'chflags hidden' in #{alert.targetprocesscmd.[0]}",
+                              "return": "Suspicious"
+                            },
+                            {
+                              "condition": "'curl -' in #{alert.targetprocesscmd.[0]}",
+                              "return": "Suspicious"
+                            },
+                            {
+                              "default": "None"
+                            }
+                          ]
+                    flags:
+                      value:
+                        simple: case_insensitive
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6e8e4f36-db87-4688-8b5a-5d4f54a8c809
+    type: condition
+    task:
+      id: 6e8e4f36-db87-4688-8b5a-5d4f54a8c809
+      version: -1
+      name: 'Approval Required: Suspicious Activity Detected'
+      description: |-
+        **Approval Required: Suspicious Activity Detection**
+
+        The investigation does not meet the thresholds for a definitive malicious verdict. It falls into a suspicious category based on the following conditions:
+
+        **Matched Verdicts:**
+        * Insights alerts indicating a suspicious activity found for the same agent ID.
+        * Medium-confidence patterns indicating a suspicious activity found in the command line.
+
+        **Unmatched Verdicts:**
+        * No prevention rule found for the same process ID.
+        * No High-confidence patterns matches.
+        * Causality and actor process images signature and reputation.
+
+        Analyst approval is required to proceed with further remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Approved:
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1b0568f2-929c-4dd5-807c-cd47f4352ecb
+    type: title
+    task:
+      id: 1b0568f2-929c-4dd5-807c-cd47f4352ecb
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0994341d-bfbd-40ac-81d3-39bc702d5050
+    type: regular
+    task:
+      id: 0994341d-bfbd-40ac-81d3-39bc702d5050
+      version: -1
+      name: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "AppleScript Process Executed With Rare Command Line" as False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: aa718280-de78-4665-850d-baa2cf62a48b
+    type: title
+    task:
+      id: aa718280-de78-4665-850d-baa2cf62a48b
+      version: -1
+      name: Terminate Process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 793cc8a3-8328-4262-89cd-079e187751cb
+    type: regular
+    task:
+      id: 793cc8a3-8328-4262-89cd-079e187751cb
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available from Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4318ccac-8f25-4e2f-89fd-db65f27eed83
+    type: regular
+    task:
+      id: 4318ccac-8f25-4e2f-89fd-db65f27eed83
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      closeNotes:
+        simple: A malicious activity of an AppleScript Process Executed With a Rare Command Line was identified and remediated.
+      closeReason:
+        simple: Resolved - Handled by the playbook "AppleScript Process Executed With Rare Command Line"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ae1771df-b9da-49ce-83ee-fd1e479f4e2d
+    type: title
+    task:
+      id: ae1771df-b9da-49ce-83ee-fd1e479f4e2d
+      version: -1
+      name: Quarantine file
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c17a5312-b5cf-4b26-84eb-8c1a721c8f9d
+    type: regular
+    task:
+      id: c17a5312-b5cf-4b26-84eb-8c1a721c8f9d
+      version: -1
+      name: Get file quarantine status
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||core-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${fileToQuarantine.sha256}
+      file_path:
+        simple: ${fileToQuarantine.path}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 197835c5-10a3-4a1c-876f-753da8e45112
+    type: condition
+    task:
+      id: 197835c5-10a3-4a1c-876f-753da8e45112
+      version: -1
+      name: Analyst approval for quarantine the file
+      description: Analyst approval for quarantine the initiator file.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Don't Quarantine:
+      - "22"
+      Quarantine:
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |-
+          Dear Analyst,
+          Should perform quarantine on the suspected file?
+          ${fileToQuarantine.path}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Quarantine
+      - Don't Quarantine
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8d5f2618-1b50-453e-86bc-a685df65cad6
+    type: condition
+    task:
+      id: 8d5f2618-1b50-453e-86bc-a685df65cad6
+      version: -1
+      name: Was the file already quarantined?
+      description: Determines whether to quarantine the files based on their quarantine status.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "Yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.quarantineFiles.status.status
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 8bc6262d-0b2e-4efe-843e-a3fa0219ac88
+    type: regular
+    task:
+      id: 8bc6262d-0b2e-4efe-843e-a3fa0219ac88
+      version: -1
+      name: Manual action needed – The file couldn't be quarantined
+      description: |-
+        Dear Analyst,
+
+        The playbook was unable to quarantine the suspected file due to the following possible reasons:
+
+        - The file was not found or no longer exists on the local host.
+        - The endpoint is currently disconnected.
+
+        Please take manual action to terminate the causality process if needed and quarantine the file.
+        ${fileToQuarantine.path}
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 3640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 8b6abfb1-5cdb-4610-8984-2096d60c453c
+    type: title
+    task:
+      id: 8b6abfb1-5cdb-4610-8984-2096d60c453c
+      version: -1
+      name: Quarantine file  - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8bfa2daf-8f92-4b36-86ab-d5aca7289056
+    type: regular
+    task:
+      id: 8bfa2daf-8f92-4b36-86ab-d5aca7289056
+      version: -1
+      name: File quarantine
+      description: Quarantines a file on selected endpoints.
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "21"
+      '#none#':
+      - "22"
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${fileToQuarantine.sha256}
+      file_path:
+        simple: ${fileToQuarantine.path}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: ccc94600-7dae-4b57-810a-78235a30902b
+    type: title
+    task:
+      id: ccc94600-7dae-4b57-810a-78235a30902b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e5bba677-0576-4269-8aa2-4261f39f1f07
+    type: title
+    task:
+      id: e5bba677-0576-4269-8aa2-4261f39f1f07
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e30c2f55-4e28-41bd-8d51-55979a512d75
+    type: condition
+    task:
+      id: e30c2f55-4e28-41bd-8d51-55979a512d75
+      version: -1
+      name: Should quarantine the malicious/unsigned file?
+      description: Checks if the verdict is malicious/unsigned+not prevalent was matched; if so, a quarantine approval will be prompt.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.initiatorsignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.initiatorsha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 9d42c881-fdc3-401c-8e1f-b102a17de188
+    type: condition
+    task:
+      id: 9d42c881-fdc3-401c-8e1f-b102a17de188
+      version: -1
+      name: check which file is malicious/unsigned
+      description: Clearly identify the exact file causing concern.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      CGO:
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: CGO
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.cgosignature
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: dc5b6061-54c0-438e-8abe-92693f2a1cdc
+    type: regular
+    task:
+      id: dc5b6061-54c0-438e-8abe-92693f2a1cdc
+      version: -1
+      name: Set actor image for quarantine
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      keys:
+        simple: sha256, path
+      parent:
+        simple: fileToQuarantine
+      values:
+        simple: ${alert.initiatorsha256}, ${alert.initiatorpath}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 20a50139-428e-4edf-8391-8509df0e7e11
+    type: regular
+    task:
+      id: 20a50139-428e-4edf-8391-8509df0e7e11
+      version: -1
+      name: Set causality image for quarantine
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      keys:
+        simple: sha256, path
+      parent:
+        simple: fileToQuarantine
+      values:
+        simple: ${alert.cgosha256}, ${alert.cgopath}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4bf441b3-1834-4a7f-82dd-280b369469f8
+    type: regular
+    task:
+      id: 4bf441b3-1834-4a7f-82dd-280b369469f8
+      version: -1
+      name: Get the prevalence of the causality and actor processes
+      description: Get the prevalence of a file, identified by SHA256.
+      script: '|||core-get-hash-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      sha256:
+        complex:
+          root: alert
+          accessor: cgosha256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.initiatorsha256
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3dcdc9d4-b47d-45d7-8861-d85f24643a4e
+    type: condition
+    task:
+      id: 3dcdc9d4-b47d-45d7-8861-d85f24643a4e
+      version: -1
+      name: Is the causality or actor process malicious?
+      description: Check if the causality or actor process is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      Malicious:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.initiatorsha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.initiatorsha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_Approved": 0.21,
+      "10_12_#default#": 0.39,
+      "19_22_Don't Quarantine": 0.35,
+      "19_23_Quarantine": 0.61,
+      "26_16_#default#": 0.1,
+      "27_29_#default#": 0.8,
+      "27_30_CGO": 0.63,
+      "32_11_Malicious": 0.4,
+      "32_9_#default#": 0.65,
+      "5_11_Malicious": 0.1,
+      "5_6_#default#": 0.64,
+      "6_11_Malicious": 0.18,
+      "6_32_#default#": 0.65,
+      "7_10_Suspicious": 0.55,
+      "7_12_#default#": 0.37,
+      "9_10_Suspicious": 0.49,
+      "9_11_Malicious": 0.6,
+      "9_8_#default#": 0.65
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4145,
+        "width": 2270,
+        "x": -420,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0

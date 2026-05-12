@@ -1,5 +1,4 @@
 category: Utilities
-provider: Google
 commonfields:
   id: GoogleDocs
   version: -1

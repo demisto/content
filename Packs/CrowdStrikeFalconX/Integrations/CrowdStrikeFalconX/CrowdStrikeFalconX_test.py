@@ -62,46 +62,47 @@ class ResMocker:
 
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
     "sha256": "sha256",
-    "environment_id": "160: Windows 10 (64-bit)",
+    "environment_id": "160: Windows 10",
     "action_script": "",
     "command_line": "",
     "document_password": "",
+    "enable_tor": "false",
     "submit_name": "",
     "system_date": "",
     "system_time": "",
-    "network_settings": "tor",
 }
 
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING = {
     "sha256": "sha256",
-    "environment_id": "160: Windows 10 (64-bit)",
+    "environment_id": "160: Windows 10",
     "action_script": "",
     "command_line": "",
     "document_password": "",
+    "enable_tor": "false",
     "submit_name": "",
     "system_date": "",
     "system_time": "",
     "polling": True,
     "interval_in_seconds": "60",
     "extended_data": "true",
-    "network_settings": "tor",
 }
 
 SEND_URL_TO_SANDBOX_ANALYSIS_ARGS = {
     "url": "https://www.google.com",
-    "environment_id": "160: Windows 10 (64-bit)",
+    "environment_id": "160: Windows 10",
+    "enable_tor": "False",
     "action_script": "",
     "command_line": "",
     "document_password": "",
     "submit_name": "",
     "system_date": "",
     "system_time": "",
-    "network_settings": "tor",
 }
 
 SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING = {
     "url": "https://www.google.com",
-    "environment_id": "160: Windows 10 (64-bit)",
+    "environment_id": "160: Windows 10",
+    "enable_tor": "False",
     "action_script": "",
     "command_line": "",
     "document_password": "",
@@ -111,7 +112,6 @@ SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING = {
     "polling": "true",
     "interval_in_seconds": "10",
     "extended_data": "true",
-    "network_settings": "tor",
 }
 
 GET_FULL_REPORT_ARGS = {"ids": ["ids"], "extended_data": "false"}

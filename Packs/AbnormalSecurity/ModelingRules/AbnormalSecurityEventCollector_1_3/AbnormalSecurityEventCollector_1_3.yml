@@ -4,5 +4,3 @@ id: Abnormal_Security_ModelingRule
 tags:
 rules: ''
 schema: ''
-supportedModules:
-- xsiam

@@ -5,7 +5,6 @@ description: |-
   Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise, as well as notify the SOC lead and network team about the matches.
   Supported Integrations:
   - Chronicle
-  - Google SecOps
   - Whois
   - Mail Sender (New)
   - Palo Alto Networks PAN-OS
@@ -14,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7f9565f7-4c9d-4ab8-833a-d08404013b90
+    taskid: 1c4259fc-1834-43b4-8a8d-2b0a69e00b17
     type: start
     task:
-      id: 7f9565f7-4c9d-4ab8-833a-d08404013b90
+      id: 1c4259fc-1834-43b4-8a8d-2b0a69e00b17
       version: -1
       name: ""
       iscommand: false
@@ -41,15 +40,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: abc3462f-9f0e-4b6e-8981-19e9c9b77ddf
+    taskid: 46153c29-6ca3-403b-8a36-fdf0694870be
     type: regular
     task:
-      id: abc3462f-9f0e-4b6e-8981-19e9c9b77ddf
+      id: 46153c29-6ca3-403b-8a36-fdf0694870be
       version: -1
       name: Perform domain reputation check using Autofocus
       description: Checks the reputation of a domain.
@@ -83,15 +79,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6cd0aff0-a7c6-4a80-8062-6d4cb87327e1
+    taskid: 91f53dce-eafd-4ef5-804a-924e73a30bcf
     type: title
     task:
-      id: 6cd0aff0-a7c6-4a80-8062-6d4cb87327e1
+      id: 91f53dce-eafd-4ef5-804a-924e73a30bcf
       version: -1
       name: Done
       type: title
@@ -103,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 260,
-          "y": 3380
+          "y": 3370
         }
       }
     note: false
@@ -111,18 +104,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 62b951c8-0b11-4e5e-8ec5-1b3cae015293
+    taskid: 478ec1f3-99bf-433f-8639-7683c1d81d7f
     type: regular
     task:
-      id: 62b951c8-0b11-4e5e-8ec5-1b3cae015293
+      id: 478ec1f3-99bf-433f-8639-7683c1d81d7f
       version: -1
       name: Get list of assets that connected to the suspicious domain
-      description: Returns a list of the assets that accessed the input artifact (IP, domain, MD5, SHA1 and SHA256) during the specified time.
+      description: Returns a list of the assets that accessed the input artifact (IP,
+        domain, MD5, SHA1 and SHA256) during the specified time.
       script: '|||gcb-assets'
       type: regular
       iscommand: true
@@ -135,15 +126,18 @@ tasks:
         complex:
           root: Domain
           accessor: Name
+      end_time: {}
+      page_size: {}
       preset_time_range:
         simple: Last 30 days
+      start_time: {}
     reputationcalc: 3
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -870,
-          "y": 1020
+          "x": -1070,
+          "y": 850
         }
       }
     note: true
@@ -151,18 +145,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 47af3975-1339-4483-855f-854807bbd1bf
+    taskid: 8267a2a2-4985-40ca-8707-dc644805ec0a
     type: condition
     task:
-      id: 47af3975-1339-4483-855f-854807bbd1bf
+      id: 8267a2a2-4985-40ca-8707-dc644805ec0a
       version: -1
       name: 'Is the domain benign? '
-      description: Check if a given value exists in the context. Will return 'no' for empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       type: condition
       iscommand: false
       brand: ""
@@ -200,15 +192,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9c7b6f31-fe47-4c9e-86a8-73f3f7206691
+    taskid: 57d2bad0-ddf2-4278-8cca-4c9125d2f43b
     type: regular
     task:
-      id: 9c7b6f31-fe47-4c9e-86a8-73f3f7206691
+      id: 57d2bad0-ddf2-4278-8cca-4c9125d2f43b
       version: -1
       name: Assign analyst to incident
       description: |-
@@ -227,6 +216,10 @@ tasks:
     scriptarguments:
       assignBy:
         simple: less-busy-user
+      email: {}
+      onCall: {}
+      roles: {}
+      username: {}
     separatecontext: false
     view: |-
       {
@@ -240,18 +233,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: dec74d63-36de-459f-82db-985f30125fe7
+    taskid: 9dcfa248-f379-4d2e-896f-c90af39f16b7
     type: regular
     task:
-      id: dec74d63-36de-459f-82db-985f30125fe7
+      id: 9dcfa248-f379-4d2e-896f-c90af39f16b7
       version: -1
       name: Notify network team
-      description: Sends an email to the network team that a malicious domain has been detected.
+      description: Sends an email to the network team that a malicious domain has
+        been detected.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -260,13 +251,26 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
       body:
         simple: Malicious Domain has been found
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
       subject:
         simple: Malicious Domain Found
+      templateParams: {}
       to:
         complex:
           root: inputs.networkteam_email
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -281,15 +285,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 0d617ba4-e13c-4f7b-837d-b913c1652b77
+    taskid: 27387840-4a7f-4ec0-833e-ee526ea10ec2
     type: regular
     task:
-      id: 0d617ba4-e13c-4f7b-837d-b913c1652b77
+      id: 27387840-4a7f-4ec0-833e-ee526ea10ec2
       version: -1
       name: 'Perform Final Review '
       description: Review the incident and context data.
@@ -313,15 +314,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 05272dee-d4a9-4546-8967-9fec4080cc9f
+    taskid: 87804b8a-8480-432e-803f-cbe315f0e6c5
     type: regular
     task:
-      id: 05272dee-d4a9-4546-8967-9fec4080cc9f
+      id: 87804b8a-8480-432e-803f-cbe315f0e6c5
       version: -1
       name: Generate investigation summary report
       description: |-
@@ -339,6 +337,8 @@ tasks:
         complex:
           root: incident
           accessor: id
+      name: {}
+      type: {}
     separatecontext: false
     view: |-
       {
@@ -352,18 +352,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1b6e29aa-b5a4-428c-848d-710afbd85d44
+    taskid: b107edce-fa83-41c4-8c84-8e2ec2d6a1d3
     type: regular
     task:
-      id: 1b6e29aa-b5a4-428c-848d-710afbd85d44
+      id: b107edce-fa83-41c4-8c84-8e2ec2d6a1d3
       version: -1
       name: Get IOC details from Chronicle
-      description: Accepts an artifact indicator and returns any threat intelligence associated with the artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
+      description: Accepts an artifact indicator and returns any threat intelligence
+        associated with the artifact. The threat intelligence information is drawn
+        from your enterprise security systems and from Chronicle's IoC partners (for
+        example, the DHS threat feed).
       script: '|||gcb-ioc-details'
       type: regular
       iscommand: true
@@ -394,15 +394,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 580d1eed-8a88-457c-8455-c06d2ac1cb8b
+    taskid: ee5dbbee-1621-4508-875e-305a5b4543d2
     type: regular
     task:
-      id: 580d1eed-8a88-457c-8455-c06d2ac1cb8b
+      id: ee5dbbee-1621-4508-875e-305a5b4543d2
       version: -1
       name: Email the report to stakeholders
       description: Emails the report to the relevant stakeholders.
@@ -414,15 +411,28 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
       attachIDs:
         complex:
           root: InfoFile
           accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
       subject:
         simple: Investigation Summary Report
+      templateParams: {}
       to:
         complex:
           root: inputs.stakeholder_email
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -437,15 +447,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 46f08dc8-08f4-4ab1-8967-bfdc84d2b256
+    taskid: d18a53b7-7781-4b0b-8d1f-52a99fe0cde1
     type: regular
     task:
-      id: 46f08dc8-08f4-4ab1-8967-bfdc84d2b256
+      id: d18a53b7-7781-4b0b-8d1f-52a99fe0cde1
       version: -1
       name: Perform domain reputation check using Chronicle
       description: Returns a complete profile of the domain.
@@ -467,6 +474,10 @@ tasks:
         simple: "true"
       long:
         simple: "true"
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     reputationcalc: 3
     separatecontext: false
     view: |-
@@ -485,18 +496,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 299759dc-40f0-4c99-8083-41a24ca2ef7f
+    taskid: 44262ee6-66bd-4830-8fa4-f85b04955786
     type: collection
     task:
-      id: 299759dc-40f0-4c99-8083-41a24ca2ef7f
+      id: 44262ee6-66bd-4830-8fa4-f85b04955786
       version: -1
       name: Get userid and tagname via email
-      description: Collect the user id for the employee that is trying to get access to this bad domain, and the corresponding tag name.
+      description: Collect the user id for the employee that is trying to get access
+        to this bad domain, and the corresponding tag name.
       type: collection
       iscommand: false
       brand: ""
@@ -508,12 +517,10 @@ tasks:
       hours: 4
       days: 0
       weeks: 0
-      minutes: 0
     slareminder:
       hours: 0
       days: 1
       weeks: 0
-      minutes: 0
     view: |-
       {
         "position": {
@@ -531,7 +538,8 @@ tasks:
       subject:
         simple: please enter the userid and tagname
       body:
-        simple: 'Hi, Please provide the user id for the employee, and the corresponding tagname, that is trying to access this bad domain? '
+        simple: 'Hi, Please provide the user id for the employee, and the corresponding
+          tagname, that is trying to access this bad domain? '
       methods:
       - email
       format: ""
@@ -541,8 +549,6 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
-        completeaftersla: false
     form:
       questions:
       - id: "0"
@@ -558,7 +564,6 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-        optionsarg: []
       - id: "1"
         label: ""
         labelarg:
@@ -574,7 +579,6 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-        optionsarg: []
       title: getuserid
       description: Employee User ID
       sender: Your SOC team
@@ -582,15 +586,12 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: cd0eb5fa-f5d2-47e6-802e-8f6455ceba72
+    taskid: 1b284313-88ee-4a43-8b10-a8ee23d31a4b
     type: regular
     task:
-      id: cd0eb5fa-f5d2-47e6-802e-8f6455ceba72
+      id: 1b284313-88ee-4a43-8b10-a8ee23d31a4b
       version: -1
       name: Apply user tag at the firewall
       description: Registers Users to a tag.
@@ -624,15 +625,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 57c602be-60db-4b4a-81fc-a94097814e8b
+    taskid: 78a113c8-a877-421d-8bac-530a1681ad8e
     type: regular
     task:
-      id: 57c602be-60db-4b4a-81fc-a94097814e8b
+      id: 78a113c8-a877-421d-8bac-530a1681ad8e
       version: -1
       name: Get WhoIs information
       description: Provides data enrichment for domains.
@@ -662,15 +660,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 13046aa9-bef7-4aa4-8f3d-74bb9246aef2
+    taskid: e283ce90-2de5-47b8-891c-dbede9b4fb06
     type: regular
     task:
-      id: 13046aa9-bef7-4aa4-8f3d-74bb9246aef2
+      id: e283ce90-2de5-47b8-891c-dbede9b4fb06
       version: -1
       name: Get hostnames
       description: Prints text to war room (markdown supported)
@@ -699,15 +694,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: ddff01a1-3cc7-4022-8dbe-e7cf510dd0d6
+    taskid: e43251ad-8498-4ffd-8372-cc4daaa50c4f
     type: regular
     task:
-      id: ddff01a1-3cc7-4022-8dbe-e7cf510dd0d6
+      id: e43251ad-8498-4ffd-8372-cc4daaa50c4f
       version: -1
       name: Print category
       description: Prints text to war room (markdown supported)
@@ -736,18 +728,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 66c74fba-a451-42e6-8c5e-5601a3265a0c
+    taskid: 4dece52a-a185-4735-8097-d1c2bac02508
     type: condition
     task:
-      id: 66c74fba-a451-42e6-8c5e-5601a3265a0c
+      id: 4dece52a-a185-4735-8097-d1c2bac02508
       version: -1
       name: Is Palo Alto Networks AutoFocus v2 integration enabled?
-      description: Checks whether there is an active instance of the Palo Alto Networks AutoFocus v2 integration enabled.
+      description: Checks whether there is an active instance of the Palo Alto Networks
+        AutoFocus v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -796,18 +786,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: dcfffda7-024b-44d0-8a82-987bf959b671
+    taskid: 30c60822-8090-4a93-86cd-27cf36a100e0
     type: condition
     task:
-      id: dcfffda7-024b-44d0-8a82-987bf959b671
+      id: 30c60822-8090-4a93-86cd-27cf36a100e0
       version: -1
       name: Is Whois integration enabled?
-      description: Checks whether there is an active instance of the Whois integration enabled.
+      description: Checks whether there is an active instance of the Whois integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -856,18 +844,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 43620652-80c2-46bd-8fc9-6fa293e507c9
+    taskid: ba414d45-15f6-4ef8-8ba8-b2729f7b3578
     type: condition
     task:
-      id: 43620652-80c2-46bd-8fc9-6fa293e507c9
+      id: ba414d45-15f6-4ef8-8ba8-b2729f7b3578
       version: -1
-      name: Is the Chronicle or Google SecOps integration enabled?
-      description: Checks whether there is an active instance of the Chronicle or Google SecOps integration enabled.
+      name: Is Chronicle integration enabled?
+      description: Checks whether there is an active instance of the Chronicle integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -877,7 +863,7 @@ tasks:
       "yes":
       - "15"
       - "17"
-      - "36"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -906,32 +892,6 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
-          right:
-            value: {}
-        - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: GoogleSecOps
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
     view: |-
       {
         "position": {
@@ -944,18 +904,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: deadd74a-c465-44cd-88b7-2883024f4f68
+    taskid: b95ce21c-55c6-4a93-8d7f-4634356ca450
     type: condition
     task:
-      id: deadd74a-c465-44cd-88b7-2883024f4f68
+      id: b95ce21c-55c6-4a93-8d7f-4634356ca450
       version: -1
       name: Is Palo Alto Networks PAN-OS integration enabled?
-      description: Checks whether there is an active instance of the Palo Alto Networks PAN-OS integration enabled.
+      description: Checks whether there is an active instance of the Palo Alto Networks
+        PAN-OS integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1004,18 +962,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 195489ac-429e-4d69-84c5-1d51efad19ab
+    taskid: decbbe90-2f1e-4114-8361-dd0daf6859bf
     type: condition
     task:
-      id: 195489ac-429e-4d69-84c5-1d51efad19ab
+      id: decbbe90-2f1e-4114-8361-dd0daf6859bf
       version: -1
       name: Is Mail Sender integration enabled?
-      description: Checks whether there is an active instance of the Mail Sender integration enabled.
+      description: Checks whether there is an active instance of the Mail Sender integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1064,18 +1020,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: bf74a846-4907-4a34-8c85-994675204ae3
+    taskid: 80b7063d-592a-4824-8c32-137e481981df
     type: condition
     task:
-      id: bf74a846-4907-4a34-8c85-994675204ae3
+      id: 80b7063d-592a-4824-8c32-137e481981df
       version: -1
       name: Is Mail Sender integration enabled?
-      description: Checks whether there is an active instance of the Mail Sender integration enabled.
+      description: Checks whether there is an active instance of the Mail Sender integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1124,15 +1078,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c08def3d-01b2-428a-882a-10a2db6d7077
+    taskid: 0d2f9b6b-fc76-4949-8fdf-751073e13bb2
     type: condition
     task:
-      id: c08def3d-01b2-428a-882a-10a2db6d7077
+      id: 0d2f9b6b-fc76-4949-8fdf-751073e13bb2
       version: -1
       name: Is network team email address set?
       type: condition
@@ -1166,18 +1117,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c56e8621-2123-4a17-8153-391f413e950e
+    taskid: 307d253e-5072-438f-8a36-f6e9e39ec58c
     type: collection
     task:
-      id: c56e8621-2123-4a17-8153-391f413e950e
+      id: 307d253e-5072-438f-8a36-f6e9e39ec58c
       version: -1
       name: Get userid and tagname
-      description: Collect the user id, and the corresponding tag name, for the employee that is trying to get access to this bad domain.
+      description: Collect the user id, and the corresponding tag name, for the employee
+        that is trying to get access to this bad domain.
       type: collection
       iscommand: false
       brand: ""
@@ -1189,12 +1138,10 @@ tasks:
       hours: 4
       days: 0
       weeks: 0
-      minutes: 0
     slareminder:
       hours: 0
       days: 1
       weeks: 0
-      minutes: 0
     view: |-
       {
         "position": {
@@ -1210,7 +1157,8 @@ tasks:
       subject:
         simple: please enter the userid and tagname
       body:
-        simple: 'Hi, Please provide the user id, and the corresponding tag name, for the employee that is trying to get access to this bad domain. '
+        simple: 'Hi, Please provide the user id, and the corresponding tag name, for
+          the employee that is trying to get access to this bad domain. '
       methods: []
       format: ""
       bcc:
@@ -1219,8 +1167,6 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
-        completeaftersla: false
     form:
       questions:
       - id: "0"
@@ -1236,7 +1182,6 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-        optionsarg: []
       - id: "1"
         label: ""
         labelarg:
@@ -1252,7 +1197,6 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-        optionsarg: []
       title: getuserid
       description: Employee User ID
       sender: Your SOC team
@@ -1260,15 +1204,12 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: bba15b98-4c04-4685-8516-7892a80cb1fa
+    taskid: 6c38cb7b-54b5-4423-8044-24ef58598b50
     type: condition
     task:
-      id: bba15b98-4c04-4685-8516-7892a80cb1fa
+      id: 6c38cb7b-54b5-4423-8044-24ef58598b50
       version: -1
       name: Is Stakeholder email address set?
       type: condition
@@ -1302,18 +1243,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 4b08d8c8-f242-4679-8493-7914b2484ae5
+    taskid: d735d256-8d4d-45f2-83e7-ff215fd39c11
     type: collection
     task:
-      id: 4b08d8c8-f242-4679-8493-7914b2484ae5
+      id: d735d256-8d4d-45f2-83e7-ff215fd39c11
       version: -1
       name: Get stakeholder email address.
-      description: Collect the user id, and the corresponding tag name, for the employee that is trying to get access to this bad domain.
+      description: Collect the user id, and the corresponding tag name, for the employee
+        that is trying to get access to this bad domain.
       type: collection
       iscommand: false
       brand: ""
@@ -1325,12 +1264,10 @@ tasks:
       hours: 4
       days: 0
       weeks: 0
-      minutes: 0
     slareminder:
       hours: 0
       days: 1
       weeks: 0
-      minutes: 0
     view: |-
       {
         "position": {
@@ -1355,8 +1292,6 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
-        completeaftersla: false
     form:
       questions:
       - id: "0"
@@ -1372,7 +1307,6 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-        optionsarg: []
       title: Stakeholder Email
       description: Enter the email address of stakeholder
       sender: Your SOC team
@@ -1380,15 +1314,12 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 0cc2d897-a0b0-4e97-8d38-58b4b237fa31
+    taskid: cd699d30-f712-41e0-88bb-3ac3c4ba86e0
     type: regular
     task:
-      id: 0cc2d897-a0b0-4e97-8d38-58b4b237fa31
+      id: cd699d30-f712-41e0-88bb-3ac3c4ba86e0
       version: -1
       name: Email the report to stakeholders
       description: Send an email
@@ -1400,16 +1331,29 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
       attachIDs:
         complex:
           root: InfoFile
           accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
       subject:
         simple: Investigation Summary Report
+      templateParams: {}
       to:
         complex:
           root: Stakeholder Email
           accessor: Answers.0
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1424,18 +1368,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 731b4700-7f03-4195-8efd-b17eefc02606
+    taskid: d965f315-3f37-41ba-8ada-d8e4e70b3bc4
     type: condition
     task:
-      id: 731b4700-7f03-4195-8efd-b17eefc02606
+      id: d965f315-3f37-41ba-8ada-d8e4e70b3bc4
       version: -1
       name: Is hostname found?
-      description: Check if GoogleChronicleBackstory.Asset.HostName is present in context or not.
+      description: Check if GoogleChronicleBackstory.Asset.HostName is present in
+        context or not.
       type: condition
       iscommand: false
       brand: ""
@@ -1467,69 +1409,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 5074d4d2-59de-4be2-8653-438f5b7b6ff2
-    type: condition
-    task:
-      id: 5074d4d2-59de-4be2-8653-438f5b7b6ff2
-      version: -1
-      name: Is Chronicle integration enabled?
-      description: Checks whether there is an active instance of the Chronicle integration enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Google Chronicle Backstory
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1070,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1541,17 +1420,17 @@ view: |-
       "26_15_yes": 0.49,
       "26_17_yes": 0.64,
       "26_2_#default#": 0.37,
+      "26_7_yes": 0.63,
       "27_19_yes": 0.37,
       "27_2_#default#": 0.13,
       "28_2_#default#": 0.18,
       "29_2_#default#": 0.24,
       "32_33_#default#": 0.54,
-      "35_14_#default#": 0.48,
-      "36_2_#default#": 0.1
+      "35_14_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 3865,
+        "height": 3855,
         "width": 3910,
         "x": -1070,
         "y": -420
@@ -1567,7 +1446,8 @@ inputs:
 - key: stakeholder_email
   value: {}
   required: false
-  description: Enter the email of the stakeholder to whom you want to send the investigation summary report.
+  description: Enter the email of the stakeholder to whom you want to send the investigation
+    summary report.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0

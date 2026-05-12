@@ -1,6 +1,5 @@
 category: Analytics & SIEM
-provider: SailPoint Technologies
-sectionorder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -17,7 +16,6 @@ configuration:
   type: 9
   required: true
   displaypassword: Client Secret
-  section: Connect
 - defaultvalue: 50000
   section: Collect
   display: Max number of events per fetch
@@ -34,14 +32,6 @@ configuration:
   required: false
   type: 8
   section: Connect
-- display: Minutes to look back when fetching
-  name: look_back
-  additionalinfo: Helps avoid missing events due to vendor-side indexing delays. Use caution when increasing this value as significant increases may result in performance degradation.
-  required: false
-  defaultvalue: 0
-  type: 0
-  section: Collect
-  advanced: true
 description: This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
 display: SailPoint IdentityNow Event Collector
 name: SailPointIdentityNowEventCollector
@@ -71,7 +61,7 @@ script:
     description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
 
     name: identitynow-get-events
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
   script: '-'
@@ -80,8 +70,11 @@ script:
 marketplaces:
 - marketplacev2
 - platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

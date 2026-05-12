@@ -4,5 +4,3 @@ name: HelloWorld Parsing Rule
 tags: []
 rules: ''
 samples: ''
-supportedModules:
-- xsiam

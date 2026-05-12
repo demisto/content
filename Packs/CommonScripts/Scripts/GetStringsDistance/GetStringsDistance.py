@@ -21,13 +21,12 @@ found = False
 
 
 def main():
-    args = demisto.args()
     res = []
 
-    close_distance = demisto.get(args, "distance")
+    close_distance = demisto.get(demisto.args(), "distance")
     close_distance_int = int(close_distance) if close_distance else 3
 
-    compare_string = argToList(demisto.get(args, "compareString"))
+    compare_string = argToList(demisto.get(demisto.args(), "compareString"))
     if not compare_string:
         res.append(
             {
@@ -37,7 +36,7 @@ def main():
             }
         )
     else:
-        input_string = demisto.get(args, "inputString")
+        input_string = demisto.get(demisto.args(), "inputString")
         if input_string:
             distances = []
             for cur_string in compare_string:
@@ -47,7 +46,7 @@ def main():
                         "StringA": input_string,
                         "StringB": cur_string,
                         "LevenshteinDistance": levenshtein_distance,
-                        "TooClose": 0 <= levenshtein_distance < close_distance_int,
+                        "TooClose": 0 < levenshtein_distance < close_distance_int,
                     }
                 )
             res.append(

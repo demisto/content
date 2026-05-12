@@ -13,7 +13,7 @@ from typing import Any, cast
 MAX_INCIDENTS_TO_FETCH = 20
 DEFAULT_HEADERS = {"Content-Type": "application/json"}
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-DEFAULT_LOOKBACK_SECONDS = 300  # 5 minutes
+
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
@@ -907,16 +907,15 @@ def get_modified_remote_data_command(client: Client, args: Any) -> Any:
 def fetch_incidents(
     client: Client,
     max_results: int,
-    last_run: dict[str, Any],
+    last_run: dict[str, int],
     first_fetch_time: Optional[int],
     fetch_query: Optional[str],
     pull_signals: Optional[bool],
     record_summary_fields: Optional[str],
-    other_args: dict[str, Any] | None,
-) -> tuple[dict[str, Any], list[dict]]:
+    other_args: Union[dict[str, Any], None],
+) -> tuple[dict[str, int], list[dict]]:
     """
-    Retrieve new incidents periodically based on pre-defined instance parameters.
-    Implements a lookback window and deduplication to avoid missing delayed insights.
+    Retrieve new incidents periodically based on pre-defined instance parameters
     """
 
     # Get the last fetch time, if exists
@@ -924,57 +923,30 @@ def fetch_incidents(
     demisto.debug(f"Sumo Logic Integration last run: {last_run}")
     last_fetch = last_run.get("last_fetch", None)
 
-    # Track IDs from previous run for deduplication during lookback window overlap
-    last_seen_ids = last_run.get("last_fetch_ids", [])
-    last_seen_ids = set(last_seen_ids) if last_seen_ids else set()  # convert to set for O(1) deduplication lookup
+    # track last_fetch_ids to handle insights with the same timestamp
+    last_fetch_ids: list[str] = cast(list[str], last_run.get("last_fetch_ids", []))
     current_fetch_ids: list[str] = []
 
-    # Set lookback seconds based on whether this is first run
-    lookback_seconds = 0 if last_fetch is None else DEFAULT_LOOKBACK_SECONDS
+    # Handle first fetch time
     if last_fetch is None:
-        # First run: no lookback, use provided first_fetch_time
-        if first_fetch_time is None:
-            raise ValueError("first_fetch_time must be provided on first run")
-        fetch_start_time = int(first_fetch_time)
-        # Store first_fetch_time to persist across cycles
-        stored_first_fetch_time = fetch_start_time
+        # if missing, use what provided via first_fetch_time
+        last_fetch = first_fetch_time
     else:
-        # Subsequent runs: apply lookback window to catch delayed insights
+        # otherwise use the stored last fetch
         last_fetch = int(last_fetch)
-        fetch_start_time = last_fetch - lookback_seconds
 
-        # Retrieve stored first_fetch_time or initialize it for backwards compatibility
-        # For existing instances without stored value, use current fetch_start_time as the floor
-        # This value will be persisted to prevent infinite backward regression
-        stored_first_fetch_time = last_run.get("first_fetch_time", fetch_start_time)
-
-        # Cap fetch_start_time to never go below the original first_fetch_time
-        # This prevents infinite backward regression when hitting fetch limits
-        fetch_start_time = max(fetch_start_time, stored_first_fetch_time)
-
-        # Throw error if fetch_start_time is negative to prevent querying from Unix epoch
-        if fetch_start_time <= 0:
-            raise ValueError(
-                f"Calculated fetch_start_time ({fetch_start_time}) is negative. "
-                f"last_fetch={last_fetch}, lookback_seconds={lookback_seconds}"
-            )
-
-    # Track the latest timestamp for next run's last_fetch
-    latest_created_time = last_fetch if last_fetch else fetch_start_time
+    # for type checking, making sure that latest_created_time is int
+    latest_created_time = cast(int, last_fetch)
+    last_fetch_created_time = latest_created_time
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
     incidents: list[dict[str, Any]] = []
 
-    # Set query values that do not change with pagination
-    q = f"created:>={insight_timestamp_to_created_format(fetch_start_time)}"
+    # set query values that do not change with pagination
+    q = f"created:>={insight_timestamp_to_created_format(last_fetch_created_time)}"
     offset = 0
-
-    # ensure consistent ordering for pagination, even if new insights are created during the fetch process
-    query = {
-        "sort": "CREATED",
-        "sortDir": "ASC",
-    }
+    query = {}
     if fetch_query:
         query["q"] = q + " " + fetch_query
     else:
@@ -982,6 +954,7 @@ def fetch_incidents(
     query["limit"] = str(max_results)
     if record_summary_fields:
         query["recordSummaryFields"] = record_summary_fields
+    incidents = []
     hasNextPage = True
     instance_endpoint = client.get_extra_params()["instance_endpoint"]
     signal_ids = []
@@ -991,27 +964,27 @@ def fetch_incidents(
         # only query parameter that changes loop to loop is the offset
         query["offset"] = str(offset)
         resp_json = client.req("GET", "sec/v1/insights", query)
-        if not resp_json:
-            break
-        for insight in resp_json.get("objects", []):
+        for a in resp_json.get("objects"):
             # If no created_time set is as epoch (0). We use time in ms so we must
             # convert it from the API response
-            insight_timestamp = insight.get("created")
-            insight_id = insight.get("id")
-            insight_readableid = insight.get("readableId")
+            insight_timestamp = a.get("created")
+            insight_id = a.get("id")
+            insight_readableid = a.get("readableId")
             # add sumoUrl to raw insight:
-            insight["sumoUrl"] = craft_sumo_url(instance_endpoint, "insight", insight_id)
+            a["sumoUrl"] = craft_sumo_url(instance_endpoint, "insight", insight_id)
             if other_args is not None:
-                insight["mirror_instance"] = other_args["mirror_instance"]
-                insight["mirror_direction"] = other_args["mirror_direction"]
+                a["mirror_instance"] = other_args["mirror_instance"]
+                a["mirror_direction"] = other_args["mirror_direction"]
 
-            # Skip already processed insights to prevent duplicates during lookback overlap
-            if insight_id and insight_timestamp and insight_id not in last_seen_ids:
+            if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
                 incident_created_time_ms = convert_timestampstr_to_epochms(insight_timestamp)
-                incident_created_time = int(incident_created_time_ms / 1000)
+                incident_created_time = (int)(incident_created_time_ms / 1000)
 
-                # Process signals associated with this insight
-                signals = insight.get("signals", [])
+                # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
+                if last_fetch and incident_created_time < last_fetch:
+                    continue
+
+                signals = a.get("signals")
                 for signal in signals:
                     # add sumoUrl to signal:
                     signal_id = signal["id"]
@@ -1019,78 +992,73 @@ def fetch_incidents(
                     signal["sumoUrl"] = craft_sumo_url(instance_endpoint, "signal", signal_id)
                     cleanup_records(signal)
 
-                # Create incident
                 incidents.append(
                     {
-                        "name": insight.get("name", "No name") + " - " + insight_readableid,
+                        "name": a.get("name", "No name") + " - " + insight_readableid,
                         "occurred": timestamp_to_datestring(incident_created_time_ms),
-                        "details": insight.get("description"),
-                        "severity": translate_severity(insight.get("severity")),
-                        "rawJSON": json.dumps(insight),
+                        "details": a.get("description"),
+                        "severity": translate_severity(a.get("severity")),
+                        "rawJSON": json.dumps(a),
                     }
                 )
+                current_fetch_ids.append(insight_id)
                 counter += 1
-                # Update latest timestamp if this insight is newer
+                # Update last run and add incident if the incident is newer than last fetch
                 if incident_created_time > latest_created_time:
                     latest_created_time = incident_created_time
 
-            # Track this insight ID for deduplication in the next run if it's within the lookback window
-            current_fetch_ids.append(insight_id)
+        total = resp_json.get("total")
 
-        if not resp_json.get("hasNextPage"):
+        if not resp_json.get("hasNextPage") or (total and isinstance(total, int) and len(incidents) >= total):
             hasNextPage = False
         else:
-            offset += len(resp_json.get("objects", []))
+            offset = len(incidents)
 
     final_incidents = []
     if pull_signals:
         # Retrieve Signals associated with the insights
-        signal_query = {}
+        query = {}
         i = 0
         batch_size = 10
         signal_incidents = []
         while i < len(signal_ids):
             signal_list_str = ",".join([f'"{x}"' for x in signal_ids[i : i + batch_size]])
-            signal_query["q"] = f"id:in({signal_list_str})"
-            resp_json = client.req("GET", "sec/v1/signals", signal_query)
-            if not resp_json:
-                break
-            for signal in resp_json.get("objects", []):
-                signal_id = signal.get("id")
+            query["q"] = f"id:in({signal_list_str})"
+            resp_json = client.req("GET", "sec/v1/signals", query)
+            for a in resp_json.get("objects"):
+                signal_id = a.get("id")
                 # add sumoUrl to signal:
-                signal["sumoUrl"] = craft_sumo_url(instance_endpoint, "signal", signal_id)
+                a["sumoUrl"] = craft_sumo_url(instance_endpoint, "signal", signal_id)
                 # field inserted for classifier
-                signal["readableId"] = "SIGNAL-" + signal_id
-                cleanup_records(signal)
-                signal_created_time_ms = convert_timestampstr_to_epochms(signal["timestamp"])
+                a["readableId"] = "SIGNAL-" + signal_id
+                cleanup_records(a)
+                signal_created_time_ms = convert_timestampstr_to_epochms(a["timestamp"])
                 signal_incidents.append(
                     {
-                        "name": signal.get("name", "No name") + " - " + signal_id,
+                        "name": a.get("name", "No name") + " - " + signal_id,
                         "occurred": timestamp_to_datestring(signal_created_time_ms),
-                        "details": signal.get("description"),
-                        "severity": translate_severity(signal.get("severity")),
-                        "rawJSON": json.dumps(signal),
+                        "details": a.get("description"),
+                        "severity": translate_severity(a.get("severity")),
+                        "rawJSON": json.dumps(a),
                     }
                 )
                 if other_args is not None:
-                    signal["mirror_instance"] = other_args["mirror_instance"]
-                    signal["mirror_direction"] = other_args["mirror_direction"]
+                    a["mirror_instance"] = other_args["mirror_instance"]
+                    a["mirror_direction"] = other_args["mirror_direction"]
             i += batch_size
 
         # Append incidents to the signal list so the signals will be created first:
         final_incidents.extend(signal_incidents)
         del signal_incidents
-
     final_incidents.extend(incidents)
     del incidents
 
-    # Save the next_run as a dict with the last_fetch and last_seen_ids keys to be stored
+    # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
         dict[str, Any],
         {
             "last_fetch": latest_created_time,
-            "last_fetch_ids": current_fetch_ids if len(current_fetch_ids) > 0 else list(last_seen_ids),
-            "first_fetch_time": stored_first_fetch_time,
+            "last_fetch_ids": current_fetch_ids if len(current_fetch_ids) > 0 else last_fetch_ids,
         },
     )
     return next_run, final_incidents
@@ -1212,6 +1180,7 @@ def main() -> None:  # pragma: no cover
 
 
 """ ENTRY POINT """
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
