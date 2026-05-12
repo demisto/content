@@ -350,6 +350,8 @@ MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Inc
 
 HOST_STATUS_DICT = {"online": "Online", "offline": "Offline", "unknown": "Unknown"}
 
+NO_QUARANTINED_FILES_MSG = "The arguments/filters you provided did not match any files."
+
 QUARANTINE_FILES_OUTPUT_HEADERS = [
     "id",
     "aid",
@@ -728,23 +730,52 @@ def create_publications(cve: dict) -> list:
 
 
 def build_query_params(query_params: dict) -> str:
-    """
-    Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
-    For example: {'name': 'test', 'os_name': 'WINDOWS'} => '?name=test+os_name=WINDOWS'
+    r"""
+    Gets a dict of {property: value} and returns a string to use as an FQL ``q`` parameter.
+
+    For example::
+
+        {}                                     => ""
+        {'name': 'test', 'os_name': 'WINDOWS'} => "name:'test'+os_name:'WINDOWS'"
+        {'filename': ['a.txt']}                => "filename:'a.txt'"
+        {'filename': ['a.txt', 'b.txt']}       => "filename:['a.txt','b.txt']"
+        {'filename': []}                       => ""        # empty list is skipped
+
+    List values are unwrapped (single element) or rendered in FQL multi-value bracket
+    notation (multiple elements). Without this, a list value would be interpolated as a
+    Python ``repr`` (e.g. ``filename:'['a.txt']'``), which CrowdStrike's FQL parser does
+    not match against. Single quotes inside values are escaped with a backslash so values
+    like ``O'Brien.txt`` do not break the FQL syntax.
 
     Args:
-        query_params: dict of exclusion property: value.
+        query_params: dict of property: value (value may be scalar or list).
+            ``None`` values and empty lists are ignored.
     Returns:
-        String to use as a query param in the requests of exclusion.
+        String to use as the FQL ``q`` query param (``""`` if no usable values).
     """
-    query = ""
+
+    def _fql_quote(v: Any) -> str:
+        # Escape single quotes inside the value so they don't terminate the FQL string.
+        return "'" + str(v).replace("'", "\\'") + "'"
+
+    parts: list[str] = []
 
     for key, value in query_params.items():
-        if query:
-            query += "+"
-        query += f"{key}:'{value}'"
+        if value is None:
+            continue
+        if isinstance(value, list):
+            if not value:
+                # Empty list: nothing to filter on for this key.
+                continue
+            if len(value) == 1:
+                parts.append(f"{key}:{_fql_quote(value[0])}")
+            else:
+                joined = ",".join(_fql_quote(v) for v in value)
+                parts.append(f"{key}:[{joined}]")
+        else:
+            parts.append(f"{key}:{_fql_quote(value)}")
 
-    return query
+    return "+".join(parts)
 
 
 def modify_detection_summaries_outputs(detection: dict):
@@ -8702,7 +8733,7 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
         ids = list_quarantined_files_id(args.get("filter"), search_args, pagination_args).get("resources")
 
     if not ids:
-        return CommandResults(readable_output="The arguments/filters you provided did not match any files.")
+        return CommandResults(readable_output=NO_QUARANTINED_FILES_MSG)
 
     files = list_quarantined_files(ids).get("resources")
     if isinstance(files, list):
@@ -8754,6 +8785,12 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
             )
 
         ids = list_quarantined_files_id(args.get("filter"), search_args, pagination_args).get("resources")
+
+    if not ids:
+        # No matching quarantined files were found for the given search arguments/filter.
+        # Returning a friendly message instead of letting the PATCH go out without ids,
+        # which CrowdStrike rejects with HTTP 400 Validation error.
+        return CommandResults(readable_output=NO_QUARANTINED_FILES_MSG)
 
     update_args = assign_params(
         ids=ids,
