@@ -141,6 +141,38 @@ def test_get_issue(checkAPIerrors):
     assert res == result_response
 
 
+_resolved_issue_response = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "id": "11111111-2222-3333-4444-555555555555",
+                    "type": "THREAT_DETECTION",
+                    "createdAt": "2022-01-02T15:46:34Z",
+                    "updatedAt": "2022-01-10T09:15:00Z",
+                    "status": "RESOLVED",
+                    "resolutionReason": "FALSE_POSITIVE",
+                    "severity": "HIGH",
+                }
+            ],
+            "pageInfo": {"hasNextPage": False, "endCursor": ""},
+        }
+    }
+}
+
+
+@patch("Wiz.checkAPIerrors", return_value=_resolved_issue_response)
+def test_get_issue_surfaces_resolution_reason(checkAPIerrors):
+    """WZ-111555: wiz-get-issue must surface resolutionReason for resolved/rejected issues."""
+    from Wiz import get_issue
+
+    res = get_issue("11111111-2222-3333-4444-555555555555")
+
+    assert isinstance(res, list) and len(res) == 1
+    assert res[0]["status"] == "RESOLVED"
+    assert res[0]["resolutionReason"] == "FALSE_POSITIVE"
+
+
 test_get_resource_response = {
     "data": {
         "cloudResources": {

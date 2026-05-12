@@ -151,6 +151,7 @@ query IssuesTable(
         }
       }
       status
+      resolutionReason
       severity
       entitySnapshot {
         id
