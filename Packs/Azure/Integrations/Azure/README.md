@@ -218,7 +218,7 @@ Creates a policy assignment.
 ### azure-postgres-config-set
 
 ***
-Updates a configuration of a server.
+Updates a configuration of a server. The command is deprecated.
 
 #### Base Command
 
@@ -621,7 +621,7 @@ Updates a container registry.
 ### azure-postgres-server-update
 
 ***
-Updates an existing server.
+Updates an existing server. The command is deprecated.
 
 #### Base Command
 
