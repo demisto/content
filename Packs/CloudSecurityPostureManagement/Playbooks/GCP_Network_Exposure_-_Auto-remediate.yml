@@ -1,21 +1,5 @@
 id: GCP Network Exposure - Auto-remediate
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: CloudSecurityPostureManagement
-    packName: Cloud Security Posture Management Playbooks
-    itemVersion: 2.0.0
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ""
-  type: ""
-  name: ""
 name: GCP Network Exposure - Auto-remediate
 description: |-
   Automatically remediates the following Network Exposure detection:
@@ -31,10 +15,9 @@ tasks:
       id: e91dfe86-40af-4f41-8f9e-65c3325f2e70
       version: -1
       name: ""
+      description: Playbook Triggered header
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "12"
@@ -68,8 +51,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
@@ -100,11 +81,10 @@ tasks:
       id: a512fe76-9637-4568-98df-f916a011934b
       version: -1
       name: Check remediation flag and notification preference
+      description: Checks if the issue was remediated successfully and the notification preference to determine the next steps.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "7"
@@ -177,9 +157,7 @@ tasks:
       script: Builtin|||setIssueStatus
       type: regular
       iscommand: true
-      brand: Builtin
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      brand: Builtin      
     nexttasks:
       '#none#':
       - "8"
@@ -214,9 +192,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      brand: ""     
     nexttasks:
       '#none#':
       - "8"
@@ -247,11 +223,10 @@ tasks:
       id: 90360b36-dc6e-4f8b-8f62-e2b3a5dae2da
       version: -1
       name: Done
+      description: "Section header to mark completion of the playbook."
       type: title
       iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      brand: ""     
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -285,9 +260,7 @@ tasks:
       playbookName: GCP - VM Instance Firewall Rule Remediation
       type: playbook
       iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      brand: ""     
     nexttasks:
       '#none#':
       - "5"
@@ -338,9 +311,7 @@ tasks:
       playbookName: Notify Stakeholders
       type: playbook
       iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      brand: ""   
     nexttasks:
       '#none#':
       - "6"
@@ -380,8 +351,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      
     nexttasks:
       '#default#':
       - "13"
@@ -435,9 +405,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      brand: "" 
     nexttasks:
       '#none#':
       - "8"
@@ -461,7 +429,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 system: true
 view: |-
   {
@@ -498,7 +465,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 quiet: true
-dirtyInputs: true
 adopted: true
-possibleresponses: []
 fromversion: 8.0.0

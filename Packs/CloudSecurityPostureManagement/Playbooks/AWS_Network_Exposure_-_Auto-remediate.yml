@@ -1,21 +1,5 @@
 id: AWS Network Exposure - Auto-remediate
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: CloudSecurityPostureManagement
-    packName: Cloud Security Posture Management Playbooks
-    itemVersion: 2.0.0
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ""
-  type: ""
-  name: ""
 name: AWS Network Exposure - Auto-remediate
 description: |-
   This playbook remediates the following AWS Network Exposure detections:
@@ -31,10 +15,9 @@ tasks:
       id: 4df3f304-fdc8-401b-8664-101e2cdfae51
       version: -1
       name: ""
+      description: "Playbook trigger"
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "32"
@@ -68,8 +51,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "22"
@@ -104,8 +85,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "27"
@@ -147,11 +126,10 @@ tasks:
       id: 14554aa0-66e4-4fc5-8ed8-1a79308e39f9
       version: -1
       name: Check remediation flag and notification preference
+      description: Checks if the remediation was successful and if notifications should be sent.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "27"
@@ -229,8 +207,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "28"
@@ -266,8 +242,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "28"
@@ -301,8 +275,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -337,8 +309,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "26"
@@ -380,8 +350,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "25"
@@ -429,8 +397,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "33"
@@ -485,8 +451,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "28"
@@ -551,7 +515,5 @@ outputs:
   description: Output key to determine if remediation was successfully done.
   type: boolean
 sourceplaybookid: AWS - EC2 Instance Security Group Remediation
-dirtyInputs: true
 adopted: true
-possibleresponses: []
 fromversion: 8.0.0

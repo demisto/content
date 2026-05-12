@@ -1,21 +1,5 @@
 id: Notify Stakeholders
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: CloudSecurityPostureManagement
-    packName: Cloud Security Posture Management Playbooks
-    itemVersion: 2.0.0
-    fromServerVersion: 6.10.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ""
-  type: ""
-  name: ""
 name: Notify Stakeholders
 description: This playbook automates notifying stakeholders via Slack v3, Microsoft
   Teams, or email. You have the flexibility to notify other teams via Slack, Microsoft
@@ -36,8 +20,6 @@ tasks:
       description: Playbook Triggered header
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "46"
@@ -69,8 +51,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -99,8 +79,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "15"
@@ -170,8 +148,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "15"
@@ -288,8 +264,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "15"
@@ -445,8 +419,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "15"
@@ -512,8 +484,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "15"
@@ -581,8 +551,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "47"
@@ -636,8 +604,6 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "48"
@@ -736,8 +702,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "49"
@@ -792,8 +756,6 @@ tasks:
       type: regular
       iscommand: false
       brand: Builtin
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "15"
@@ -829,8 +791,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "52"
@@ -865,8 +825,6 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "15"
@@ -972,8 +930,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "53"
@@ -1021,8 +977,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "16"
@@ -1058,8 +1012,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "53"
@@ -1108,8 +1060,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "53"
@@ -1153,8 +1103,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "36"
@@ -1221,8 +1169,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "51"
@@ -1280,8 +1226,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "42"
@@ -1348,8 +1292,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "42"
@@ -1389,7 +1331,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 system: true
 view: |-
   {
@@ -1510,7 +1451,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 sourceplaybookid: Create Ticket and Notify
-dirtyInputs: true
 adopted: true
-possibleresponses: []
 fromversion: 8.0.0

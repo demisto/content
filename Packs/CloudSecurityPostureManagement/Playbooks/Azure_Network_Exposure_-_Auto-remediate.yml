@@ -1,21 +1,5 @@
 id: Azure Network Exposure - Auto-remediate
-version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: CloudSecurityPostureManagement
-    packName: Cloud Security Posture Management Playbooks
-    itemVersion: 2.0.0
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ""
-  type: ""
-  name: ""
+version: -1e
 name: Azure Network Exposure - Auto-remediate
 description: |-
   This playbook remediates the following Azure Network Exposure detections:
@@ -31,10 +15,9 @@ tasks:
       id: ae362446-53c6-4ad4-8602-64a489e63ea1
       version: -1
       name: ""
+      description: "Start"
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "12"
@@ -68,8 +51,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
@@ -100,11 +81,10 @@ tasks:
       id: e1746aab-ac1d-42dc-bf03-6132015c239f
       version: -1
       name: Check remediation flag
+      description: Checks if the issue was remediated successfully by the sub-playbook.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "7"
@@ -178,8 +158,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
@@ -215,8 +193,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
@@ -247,11 +223,10 @@ tasks:
       id: a9a21ac6-7426-42d0-a898-cf9391b98c66
       version: -1
       name: Done
+      description: This is the end of the playbook. The issue was either resolved or pending review.   
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -287,8 +262,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "5"
@@ -342,8 +315,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "6"
@@ -415,10 +386,8 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
+      '#default#':
       - "13"
       "yes":
       - "4"
@@ -471,8 +440,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
@@ -496,7 +463,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 system: true
 view: |-
   {
@@ -533,7 +499,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 quiet: true
-dirtyInputs: true
 adopted: true
-possibleresponses: []
 fromversion: 8.0.0
