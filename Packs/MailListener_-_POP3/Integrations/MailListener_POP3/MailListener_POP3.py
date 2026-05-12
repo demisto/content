@@ -83,10 +83,16 @@ def get_attachment_name(headers):
         if m:
             name = m.group(1)
 
-    if re.match("^.+\..{3,5}$", name):
+    if re.match(r"^.+\..{3,5}$", name):
         return name
 
-    extension = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt")).group(1)  # type: ignore
+    content_type = headers.get("content-type", "txt")
+    demisto.debug(f"Extracting extension from content-type: {content_type}")
+    if "message/rfc822" in content_type:
+        extension = "eml"
+    else:
+        extension = re.match(r".*[\\/]([\d\w]{2,4}).*", content_type).group(1)  # type: ignore
+    demisto.debug(f"Extracted extension: {extension}")
 
     return name + "." + extension
 
@@ -293,8 +299,13 @@ def mail_to_incident(msg):
     file_names = []
     for attachment in parsed_msg.get("Attachments", []):
         file_data = attachment["Data"]
-        if not attachment.get("Name", "").endswith(".eml"):
+        attachment_name = attachment.get("Name", "")
+        demisto.debug(f"Processing attachment: {attachment_name}")
+        if not attachment_name.endswith((".eml", ".msg")):
+            demisto.debug(f"Attachment {attachment_name} does not end with .eml or .msg, applying base64 decode")
             file_data = base64.urlsafe_b64decode(file_data.encode("ascii"))
+        else:
+            demisto.debug(f"Attachment {attachment_name} ends with .eml or .msg, skipping base64 decode")
 
         # save the attachment
         file_result = fileResult(attachment["Name"], file_data)
