@@ -27,9 +27,16 @@ Per-integration authentication classification. One JSON object per row.
       "interpolated": <bool>
     }
   ],
-  "config": "REQUIRED(<connection_type_name>, ...) [+ OPTIONAL(<connection_type_name2>, ...)] | CHOICE(<connection_type_name>, <connection_type_name>) | NoneRequired"
+  "config": "REQUIRED(<connection_type_name>, ...) [+ OPTIONAL(<connection_type_name2>, ...)] | CHOICE(<connection_type_name>, <connection_type_name>) | NoneRequired",
+  "other_connection": ["<yml_param_id>", "<yml_param_id>", ...]
 }
 ```
+
+All three top-level keys (`auth_types`, `config`, `other_connection`) are
+**required** on every `set-auth` write. Legacy CSV rows written before
+`other_connection` existed lack the key; the read/display path tolerates
+that and surfaces a `(not set — re-run set-auth)` hint, but new writes
+must include it.
 
 - `auth_types` — **Each entry is one complete UCP connection type** — for
   example, one `APIKey` auth, one `Plain` auth (which bundles a username
@@ -79,9 +86,43 @@ Per-integration authentication classification. One JSON object per row.
   - `CHOICE(credentials, hunting_credentials)` — pick one of two optional connection types
   - `REQUIRED(credentials) + OPTIONAL(credentials_consumer)` — Plain connection required, OAuth connection optional
   - `NoneRequired` — no auth required
+- `other_connection` — Flat sorted list of YML param ids that are
+  **connection-adjacent but not auth secrets**: everything you reasonably
+  need to define the integration's connection besides the secrets
+  themselves. Typical members: `url`, `proxy`, `insecure`, `port`,
+  `verify_certificate`, `server`, `host`, `region`. The list captures
+  the ids exactly as they appear in the integration YML's
+  `configuration[].name`. Constraints:
+  - Must be a JSON array of non-empty strings.
+  - Strings must be unique within the list.
+  - Must be sorted ascending (alphabetical). The validator rejects
+    unsorted input with a clear suggestion of the sorted form.
+  - Empty list `[]` is valid (= the integration has no connection-adjacent
+    params besides its auth secrets).
+  - There is **no overlap requirement** with `auth_types[].xsoar_params`
+    — keeping the two lists disjoint is the classifier's responsibility,
+    not the validator's. (Auth secrets go in `auth_types[].xsoar_params`;
+    per-command behavioral params go in `Params to Commands`; framework
+    params like `longRunning`/`feedReputation` are ignored entirely.)
+
+Worked example with `other_connection`:
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "APIKey",
+      "name": "api_key",
+      "xsoar_params": ["api_key"]
+    }
+  ],
+  "config": "REQUIRED(api_key)",
+  "other_connection": ["insecure", "proxy", "url"]
+}
+```
 
 Schema validation is enforced by
-[`workflow_state.py validate_auth_detail()`](workflow_state.py:432) and runs
+[`workflow_state.py validate_auth_detail()`](workflow_state.py:520) and runs
 automatically on every `set-auth` invocation.
 
 Setter:
@@ -94,8 +135,10 @@ Setting this value resets the workflow back to the first checkpoint
 ## `Params to Commands`
 
 Mapping of integration commands to the parameter IDs each command needs (by
-name). Connection-level params (e.g. URL, credentials) are intentionally NOT
-listed per-command — those are configured once at the integration level.
+name). Connection-level params (e.g. URL, credentials, proxy, insecure,
+longRunning) are intentionally NOT listed per-command — those are configured
+once at the integration level and are stripped by the analyzer's default
+ignore list (see [Production source](#production-source) below).
 
 ```json
 {
@@ -106,15 +149,15 @@ listed per-command — those are configured once at the integration level.
 }
 ```
 
-Example:
+Example (post-ignore-list — only behavioral params remain):
 
 ```json
 {
   "integration": "QRadar v3",
   "commands": {
-    "test-module": ["url", "credentials", "longRunning", "max_fetch"],
-    "fetch-incidents": ["url", "credentials", "max_fetch", "longRunning"],
-    "qradar-offenses-list": ["max_fetch", "longRunning"]
+    "test-module":          ["adv_params", "fetch_query"],
+    "fetch-incidents":      ["fetch_query", "first_fetch", "max_fetch"],
+    "qradar-offenses-list": ["fetch_query", "filter"]
   }
 }
 ```
@@ -122,9 +165,69 @@ Example:
 Notes:
 
 - `commands` is a flat object: command name → array of parameter IDs.
+- Per-command lists are **sorted alphabetically (case-sensitive)** when
+  produced by the analyzer; downstream consumers should treat them as
+  sorted sets.
+- An empty list (`[]`) is the valid value for a command with no
+  behavioral params.
 - Parameter IDs match those in the integration's YML `configuration` section.
 - Free-form: no enforced ordering or required keys beyond `integration` and
   `commands`.
+- **Disjointness with `Auth Details`:** `set-params-to-commands` HARD
+  REJECTS any payload whose per-command lists include a YML param id
+  that is already declared in the integration's `Auth Details` cell —
+  either as a projected `auth_types[].xsoar_params` entry (dotted forms
+  collapse to the segment before the first `.`) or as an
+  `other_connection` entry. Inspect the live exclusion set with
+  [`workflow_state.py auth-params <Integration ID>`](workflow_state.py:1)
+  and see [`connectus/Readme.md`](Readme.md:1) for the full CLI
+  reference. The analyzer can also pull this set automatically when
+  invoked with `--integration-id <id>` (see below).
+
+### Production source
+
+The `commands` object is produced by the
+[`connectus/check_command_params.py`](check_command_params.py:1) analyzer
+(see [`check_command_params_design.md`](check_command_params_design.md:1)
+for full design and current implementation status). The standard
+invocation is:
+
+```bash
+python3 connectus/check_command_params.py <integration_dir> \
+    --ignore-params-file connectus/default_ignore_params.txt \
+    --integration-id "<Integration ID>"
+```
+
+Pass `--integration-id <id>` to make the analyzer additionally pull the
+integration's auth-derived ignore set from
+[`workflow_state.py auth-params <id>`](workflow_state.py:1) and union it
+into its own ignore set. This guarantees the per-command output is
+disjoint from the integration's `Auth Details` cell from the start.
+
+The ignore list at
+[`connectus/default_ignore_params.txt`](default_ignore_params.txt:1)
+strips ~154 framework / auth / connection params (`url`,
+`credentials`, `proxy`, `insecure`, `longRunning`, the feed
+framework, …) so only **behavioral, per-command-meaningful** params
+remain.
+
+The analyzer's stdout is:
+
+```text
+{ "integration": "...", "commands": {...}, "diagnostics": {...} }
+```
+
+> ⚠️ **The `diagnostics` field MUST be stripped before persisting.**
+> It is internal AI signal (per-command status enum, failure
+> excerpts, captured-request counts, Scope-1 narrowing trace) for the
+> migration skill's decision-making — it is NEVER part of the
+> persisted `Params to Commands` cell. The
+> `set-params-to-commands` payload must contain ONLY the
+> `integration` and `commands` keys. See
+> [`check_command_params_design.md`](check_command_params_design.md:1)
+> §"Implementation Status" and
+> [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
+> §5 for the full rule.
 
 Setter:
 [`workflow_state.py set-params-to-commands "<Integration ID>" '<json>'`](workflow_state.py:682).
