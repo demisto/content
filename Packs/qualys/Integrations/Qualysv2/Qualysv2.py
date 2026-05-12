@@ -1770,7 +1770,7 @@ class Client(BaseClient):
                 error_handler=self.error_handler,
             )
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
-            demisto.debug(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
+            demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
             raise
 
         return response
