@@ -218,7 +218,7 @@ Creates a policy assignment.
 ### azure-postgres-config-set
 
 ***
-Updates a configuration of a server. The command is deprecated.
+Updates a configuration of a server. The command is deprecated due to the retirement of Azure PostgreSQL Single Server.
 
 #### Base Command
 
@@ -621,7 +621,7 @@ Updates a container registry.
 ### azure-postgres-server-update
 
 ***
-Updates an existing server. The command is deprecated.
+Updates an existing server. The command is deprecated due to the retirement of Azure PostgreSQL Single Server.
 
 #### Base Command
 
