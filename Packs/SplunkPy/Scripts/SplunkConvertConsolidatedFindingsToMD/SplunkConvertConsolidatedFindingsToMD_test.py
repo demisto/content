@@ -128,25 +128,6 @@ def test_render_when_string_is_invalid_json(mocker):
     assert "Splunk Consolidated Findings" in result.readable_output
 
 
-def test_format_value_handles_empty_and_complex_types():
-    """
-    Given:
-        - Various edge-case values: None, "", [], list of strings, dict, int.
-    When:
-        - _format_value is called on each.
-    Then:
-        - Empties render as "-", lists join with ", ", dicts JSON-serialize,
-          and scalars convert via str().
-    """
-    fmt = SplunkConvertConsolidatedFindingsToMD._format_value
-    assert fmt(None) == "-"
-    assert fmt("") == "-"
-    assert fmt([]) == "-"
-    assert fmt(["a", "b"]) == "a, b"
-    assert fmt({"k": "v"}) == '{"k": "v"}'
-    assert fmt(42) == "42"
-
-
 def test_coerce_to_dict_variants():
     """
     Given:

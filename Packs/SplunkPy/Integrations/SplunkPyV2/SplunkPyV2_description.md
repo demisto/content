@@ -62,7 +62,7 @@ This article will help you configure your Splunk v2 integration, set up a basic 
     * **Investigations fetch query** — keep as-is unless you need to filter further. The query must contain the literal token `FETCH_FILTER_PLACEHOLDER` — **do not modify or remove this token**. The integration replaces it at runtime with the time-range and pagination filters required to manage the fetch cycle. To add custom filters, append extra URL parameters such as `&status=New` alongside the placeholder.
 12. To enable mirroring in both environments, in the Incident Mirroring Direction field, select **Incoming and Outgoing**.
 Outgoing mirroring is recommended for Cortex XSOAR version 6.2 and above.
-13. Select *Close Mirrored XSOAR Incident* and *Close Mirrored Splunk Finding Event* so that closing an incident in one environment automatically closes it in the other.
+13. Select *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* and *Close Mirrored Splunk ES Events (Outgoing Mirroring)* so that closing an incident in one environment automatically closes it in the other.
 14. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
 This enrichment provides additional information about assets, drilldown, and identities that are related to the finding events you ingest.
 For more information, see [Enriching Finding Events](#enriching-finding-events).

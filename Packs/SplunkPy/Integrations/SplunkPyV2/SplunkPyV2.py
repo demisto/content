@@ -913,7 +913,10 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject):
         try:
             result = handler.fetch(service, scope_last_run, mapper, params)
         except Exception as e:
-            demisto.error(f"fetch_incidents: handler={type(handler).__name__} " f"event_type={handler.event_type} failed: {e}")
+            demisto.error(
+                f"fetch_incidents: handler={type(handler).__name__} "
+                f"event_type={handler.event_type} failed: {e}\n{traceback.format_exc()}"
+            )
             raise
         per_handler_counts[handler.event_type] = len(result.incidents)
         demisto.info(
@@ -1179,8 +1182,8 @@ def prepare_investigations_query(
             'See the "Fetching investigation events" section in the integration documentation for details.'
         )
 
-    params_str = "&".join(f"{k}={v}" for k, v in managed.items())
-    demisto.debug(f"prepare_investigations_query: placeholder substitution; params={list(managed)}")
+    params_str = urlencode(managed)
+    demisto.debug(f"prepare_investigations_query: placeholder substitution; params={dict(managed)}")
     return user_query.replace(PLACEHOLDER, params_str)
 
 
@@ -1338,11 +1341,11 @@ class Investigation:
         """
         epoch = self.data.get("create_time") or self.data.get("mc_create_time")
         if epoch is None:
-            return datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE)
+            return datetime.now(UTC).strftime(ISO_FORMAT_TZ_AWARE)
         try:
-            return datetime.fromtimestamp(float(epoch), tz=pytz.UTC).isoformat()
+            return datetime.fromtimestamp(float(epoch), tz=UTC).isoformat()
         except (TypeError, ValueError):
-            return datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE)
+            return datetime.now(UTC).strftime(ISO_FORMAT_TZ_AWARE)
 
     def to_incident(self, mapper: "UserMappingObject") -> dict[str, Any]:
         """Build an XSOAR incident dict from this investigation.
@@ -1500,7 +1503,7 @@ class InvestigationsFetchHandler(FetchHandler):
         try:
             return self._do_fetch(service, last_run, mapper, params)
         except Exception as e:
-            demisto.error(f"handler=InvestigationsFetchHandler event_type=Investigation failed: {e}")
+            demisto.error(f"handler=InvestigationsFetchHandler event_type=Investigation failed: {e}\n{traceback.format_exc()}")
             raise
 
     def _do_fetch(
@@ -1516,7 +1519,7 @@ class InvestigationsFetchHandler(FetchHandler):
         # We deliberately reuse the same window helper Findings uses so the
         # `investigations_first_fetch` parameter participates in the standard
         # first-fetch path.
-        params_for_window = dict(params, first_fetch=params["investigations_first_fetch"])
+        params_for_window = dict(params, first_fetch=params.get("investigations_first_fetch"))
         earliest, latest = get_fetch_time_window(params_for_window, service, earliest_raw, latest_raw)
 
         ts_min = to_mc_iso8601_utc(earliest)
@@ -1571,6 +1574,7 @@ class InvestigationsFetchHandler(FetchHandler):
 
         incidents: list[dict[str, Any]] = []
         ids_to_add: list[str] = []
+        dropped_duplicate_ids: list[str] = []
         for row in rows:
             parsed = parse_investigation(row)
             investigation = Investigation(parsed)
@@ -1587,10 +1591,13 @@ class InvestigationsFetchHandler(FetchHandler):
                 )
             )
             if stable_id in last_run_fetched_ids:
-                demisto.debug(f"investigations: dropped duplicate id={stable_id}")
+                dropped_duplicate_ids.append(stable_id)
                 continue
             ids_to_add.append(stable_id)
             incidents.append(incident)
+
+        if dropped_duplicate_ids:
+            demisto.debug(f"investigations: dropped duplicate ids={dropped_duplicate_ids}")
 
         if error_message and not ids_to_add:
             raise DemistoException(
@@ -2807,7 +2814,7 @@ def enrich_with_splunk_notes(
         )
 
     except Exception as e:
-        demisto.error(f"enrich_with_splunk_notes: Failed to query notes: {e}")
+        demisto.error(f"enrich_with_splunk_notes: Failed to query notes: {e}\n{traceback.format_exc()}")
         return []
 
     # Process the retrieved notes
@@ -2887,21 +2894,21 @@ def enrich_with_splunk_notes_v2(
 
     entity_ids = list(id_to_entity_map.keys())
 
-    # NOTE: For now, only filter by update_time. Filtering by entity_ids
-    # (notable_id/incident_id) is intentionally disabled and may be enabled later.
+    # Filter notes by either `notable_id` (findings) or `incident_id` (investigations)
+    # so we only fetch notes that belong to the entities passed in `id_to_entity_map`.
+    # The additional `update_time` filter (added below) bounds the lookup to the last 7 days.
     query_filter: dict[str, Any] = {
         "$or": [
             {"notable_id": {"$in": entity_ids}},
             {"incident_id": {"$in": entity_ids}},
         ]
     }
-    # query_filter: dict[str, Any] = {}
 
     # Always query notes from the last 7 days (regardless of last_update_splunk_timestamp).
     # `last_update_splunk_timestamp` is used later only to decide which notes should be
     # surfaced as XSOAR war-room note entries.
     # update_time in mc_notes is stored as a numeric epoch value.
-    seven_days_ago_epoch = (datetime.now(tz=pytz.UTC) - timedelta(days=7)).timestamp()
+    seven_days_ago_epoch = (datetime.now(tz=UTC) - timedelta(days=7)).timestamp()
     query_filter["update_time"] = {"$gte": seven_days_ago_epoch}
 
     query = json.dumps(query_filter)
@@ -2918,7 +2925,7 @@ def enrich_with_splunk_notes_v2(
             f"retrieved {len(mc_notes)} notes"
         )
     except Exception as e:
-        demisto.error(f"enrich_with_splunk_notes_v2: Failed to query notes: {e}")
+        demisto.error(f"enrich_with_splunk_notes_v2: Failed to query notes: {e}\n{traceback.format_exc()}")
         return []
 
     if not mc_notes:
@@ -3202,6 +3209,7 @@ def get_modified_remote_data_command(
             # against `processed_events_cache`. Newly-seen events are recorded in
             # `current_run_processed_events` so the next iteration can skip them too.
             deduped_investigations: list[dict[str, Any]] = []
+            skipped_event_keys: list[str] = []
             for inv in modified_investigations:
                 investigation_id = inv.get("investigation_guid")
                 last_modified = inv.get("update_time")
@@ -3209,10 +3217,13 @@ def get_modified_remote_data_command(
                     continue
                 event_key = f"{investigation_id}:{last_modified}"
                 if event_key in processed_events_cache:
-                    extensive_log(f"mirror-in: Skipping already processed investigation: {event_key}")
+                    skipped_event_keys.append(event_key)
                     continue
                 deduped_investigations.append(inv)
                 current_run_processed_events.add(event_key)
+
+            if skipped_event_keys:
+                extensive_log(f"mirror-in: Skipping already processed investigations: {skipped_event_keys}")
 
             modified_investigations = deduped_investigations
 
@@ -4180,7 +4191,7 @@ def list_modified_investigations(
         )
         return collected_investigations
     except Exception as exc:
-        demisto.error(f"list_modified_investigations: failed to query v2 endpoint: {exc}")
+        demisto.error(f"list_modified_investigations: failed to query v2 endpoint: {exc}\n{traceback.format_exc()}")
         return []
 
 
@@ -4718,7 +4729,7 @@ def splunk_submit_event_hec_command(params: dict[str, Any], service: client.Serv
             return_results("The events were sent successfully to Splunk.")
 
 
-def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
+def splunk_edit_event_command(service: client.Service, args: dict) -> None:
     """Edit finding or investigations events in Splunk ES using the v2 investigations API.
 
     Args:
@@ -4934,8 +4945,8 @@ def test_module(service: client.Service, params: dict[str, Any]) -> None:
             # Bounded probe window: 1 day back, single record. Real fetch parameters
             # (window, pagination) are not needed here — we only want to validate
             # the SPL/placeholder/connectivity round-trip.
-            probe_min = to_mc_iso8601_utc((datetime.now(pytz.UTC) - timedelta(days=1)).strftime(ISO_FORMAT_TZ_AWARE))
-            probe_max = to_mc_iso8601_utc(datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE))
+            probe_min = to_mc_iso8601_utc((datetime.now(UTC) - timedelta(days=1)).strftime(ISO_FORMAT_TZ_AWARE))
+            probe_max = to_mc_iso8601_utc(datetime.now(UTC).strftime(ISO_FORMAT_TZ_AWARE))
             try:
                 probe_spl = prepare_investigations_query(investigations_query, probe_min, probe_max, limit=1, offset=0)
             except DemistoException as e:
@@ -5336,7 +5347,7 @@ def main() -> None:  # pragma: no cover
         splunk_submit_event_command(service, args)
     elif command in ["splunk-finding-event-edit", "splunk-investigation-edit"] and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
-        splunk_edit_finding_command(service, args)
+        splunk_edit_event_command(service, args)
     elif command == "splunk-submit-event-hec":
         splunk_submit_event_hec_command(params, service, args)
     elif command == "splunk-job-status":

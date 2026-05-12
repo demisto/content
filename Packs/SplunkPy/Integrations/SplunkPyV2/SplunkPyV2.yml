@@ -769,21 +769,6 @@ script:
   subtype: python3
   type: python
   runonce: false
-triggers:
-  - conditions:
-      - name: fetch_event_types
-        operator: equal
-        value: Investigations
-    effects:
-      - name: investigations_first_fetch
-        action:
-          required: true
-      - name: investigations_max_fetch
-        action:
-          hidden: true
-      - name: investigations_fetch_query
-        action:
-          hidden: true
 tests:
 - SplunkPy KV commands
 - SplunkPy parse-raw - Test

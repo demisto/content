@@ -13,7 +13,7 @@ Renders the Splunk Investigation `consolidated_findings` JSON payload as a Markd
 ## Inputs
 
 ---
-There are no inputs for this script.
+There are no input arguments for this script.
 
 ## Outputs
 

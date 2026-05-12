@@ -560,13 +560,21 @@ Updates existing investigations in Splunk ES.
 | event_ids | A comma-separated list of investigation IDs. | Required |
 | owner | A Splunk user to assign to the investigations. | Optional |
 | note | Note to add to the investigation. | Optional |
-| disposition | Disposition of the investigation. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list. Possible values are: Unassigned, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. | Optional |
+| disposition | Disposition of the investigation. If more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list. Possible values are: Unassigned, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. | Optional |
 | status | Investigation status. Possible values are: Open, In Progress, Pending, Resolved, Closed. | Optional |
-| urgency | Investigation urgency. Possible values: "critical", "high", "medium", "low", and "informational". Possible values are: critical, high, medium, low, informational. | Optional |
+| urgency | Investigation urgency. Possible values are: critical, high, medium, low, informational. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+`!splunk-investigation-edit event_ids="ES00019"`
+
+#### Human Readable Output
+>
+> Successfully updated Splunk ES event ES-00019.
 
 ### splunk-job-create
 

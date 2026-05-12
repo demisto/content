@@ -22,25 +22,6 @@ def _coerce_to_dict(raw_value):
     return {}
 
 
-def _format_value(value) -> str:
-    """Format a payload value as a single Markdown-cell-friendly string.
-
-    - Empty / None -> "-"
-    - List         -> comma-separated formatted items
-    - Dict         -> compact JSON
-    - Scalar       -> str(value)
-    """
-    if value is None or value == "":
-        return "-"
-    if isinstance(value, list):
-        if not value:
-            return "-"
-        return ", ".join(_format_value(item) for item in value)
-    if isinstance(value, dict):
-        return json.dumps(value)
-    return str(value)
-
-
 def main():
     incident = demisto.incident()
     if not incident:

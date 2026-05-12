@@ -13,7 +13,7 @@
     "defaultDataSource": "SplunkPy",
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Splunk"],
     "dependencies": {
         "CommonScripts": {
             "mandatory": true,

@@ -2495,7 +2495,7 @@ def test_edit_finding_event__failed_to_update(mocker):
     mocker.patch.object(splunk, "update_investigation_or_finding", side_effect=Exception("ValueError: Invalid owner value."))
 
     with pytest.raises(Exception, match="Failed to update Splunk ES event ID100: ValueError: Invalid owner value."):
-        splunk.splunk_edit_finding_command(service=MagicMock(), args=test_args)
+        splunk.splunk_edit_event_command(service=MagicMock(), args=test_args)
 
     assert splunk.return_error.call_count == 1
     error_message = splunk.return_error.call_args[0][0]
@@ -5930,7 +5930,8 @@ class TestPrepareInvestigationsQuery:
     def test_given_placeholder_when_called_then_substituted_with_all_four_params(self):
         """Given the default SPL containing FETCH_FILTER_PLACEHOLDER,
         when prepare_investigations_query runs,
-        then the placeholder is replaced and all four managed params appear once."""
+        then the placeholder is replaced and all four managed params appear once
+        (timestamps are URL-encoded by ``urlencode``, so ':' becomes '%3A')."""
         out = splunk.prepare_investigations_query(
             user_query=self.DEFAULT_QUERY,
             create_time_min="2025-01-01T00:00:00Z",
@@ -5940,8 +5941,8 @@ class TestPrepareInvestigationsQuery:
         )
         assert "FETCH_FILTER_PLACEHOLDER" not in out
         for fragment in (
-            "create_time_min=2025-01-01T00:00:00Z",
-            "create_time_max=2025-01-02T00:00:00Z",
+            "create_time_min=2025-01-01T00%3A00%3A00Z",
+            "create_time_max=2025-01-02T00%3A00%3A00Z",
             "limit=50",
             "offset=0",
         ):
@@ -5976,10 +5977,13 @@ class TestPrepareInvestigationsQuery:
     )
     def test_given_iso_boundary_strings_when_substituted_then_passed_through(self, ts_min, ts_max):
         """Given seconds-only and sub-second ISO 8601 inputs (placeholder path),
-        when called, then the strings are inserted as-is (no urlencode mangling)."""
+        when called, then the strings are inserted as URL-encoded query parameters
+        (``urlencode`` percent-encodes the ':' separators)."""
+        from urllib.parse import quote_plus
+
         out = splunk.prepare_investigations_query(self.DEFAULT_QUERY, ts_min, ts_max, 10, 0)
-        assert f"create_time_min={ts_min}" in out
-        assert f"create_time_max={ts_max}" in out
+        assert f"create_time_min={quote_plus(ts_min)}" in out
+        assert f"create_time_max={quote_plus(ts_max)}" in out
 
 
 # --------------------------- to_mc_iso8601_utc ---------------------------
