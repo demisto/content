@@ -53,24 +53,13 @@ they work whatever your stack looks like.
 - `Darkmon - Generic User Action` (suspend, force password reset on
   Active Directory | Okta | Azure AD)
 
-### Polish
-- A **setup wizard** that walks first-time users through API key, base URL, and
-  optional provider hookups.
-- **Dashboard**: Darkmon Threat Overview (6 widgets covering compromised
-  credentials, active criticals, active typosquats, ransomware and VIP
-  30-day trends, and top stealer families).
-- **Report**: weekly threat-intel digest PDF.
-
 ## Quick start
 
 1. Install this pack from the Cortex Marketplace.
 2. Open *Settings → Integrations → Darkmon* and click **Add instance**.
 3. Paste your Darkmon API key. Leave **API Base URL** at the default unless
    instructed otherwise.
-4. (Optional) Run the **Darkmon Setup Wizard** from
-   *Cortex XSOAR → Use Cases → Wizards* to wire up notification, blocking, and
-   user-action providers.
-5. Run `!test-module` from the War Room. Expect "Success".
+4. Run `!test-module` from the War Room. Expect "Success".
 
 For full configuration, command examples, and playbook docs, see the
 per-artifact READMEs under each subfolder.
