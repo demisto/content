@@ -767,7 +767,7 @@ def add_request_note_command(client: Client, args: dict) -> CommandResults:
             "description": description,
         }
     }
-    raw_result = client.http_request(method="POST", url_suffix=f"requests/{request_id}/notes", data=data)
+    raw_result = client.http_request(method="POST", url_suffix=f"requests/{request_id}/notes", params={"input_data": f"{data}"})
     res = raw_result.get("request_note")
 
     return CommandResults(
@@ -809,7 +809,9 @@ def update_request_note_command(client: Client, args: dict) -> CommandResults:
             "description": description,
         }
     }
-    raw_result = client.http_request(method="PUT", url_suffix=f"requests/{request_id}/notes/{request_note_id}", data=data)
+    raw_result = client.http_request(
+        method="PUT", url_suffix=f"requests/{request_id}/notes/{request_note_id}", params={"input_data": f"{data}"}
+    )
     res = raw_result.get("request_note")
 
     return CommandResults(
@@ -1012,7 +1014,7 @@ def main():
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         elif command in notes_commands:
-            return_results(*commands[command](client, demisto.args()))
+            return_results(notes_commands[command](client, demisto.args()))
         else:
             return_error("Command not found.")
     except Exception as e:

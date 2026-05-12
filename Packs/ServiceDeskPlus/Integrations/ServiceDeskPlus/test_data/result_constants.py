@@ -340,3 +340,48 @@ EXPECTED_RESOLUTION_LIST = {
 }
 
 EXPECTED_NO_RESOLUTION_LIST = {}
+
+EXPECTED_GET_NOTES_LIST = [
+    {
+        "id": "1",
+        "request": {"id": "123"},
+        "description": "Note 1",
+        "created_time": {"display_value": "2023-01-01 10:00:00"}
+    },
+    {
+        "id": "2",
+        "request": {"id": "123"},
+        "description": "Note 2",
+        "created_time": {"display_value": "2023-01-02 10:00:00"}
+    }
+]
+
+EXPECTED_GET_NOTE = [
+    {
+        "id": "1",
+        "request": {"id": "123"},
+        "description": "Note 1",
+        "created_time": {"display_value": "2023-01-01 10:00:00"}
+    }
+]
+
+EXPECTED_ADD_NOTE = {
+    "id": "3",
+    "request": {"id": "123"},
+    "description": "New Note",
+    "created_time": {"display_value": "2023-01-03 10:00:00"}
+}
+
+EXPECTED_DELETE_NOTE = {
+    "id": "1",
+    "request": {"id": "123"},
+    "description": "Note 1",
+    "created_time": {"display_value": "2023-01-01 10:00:00"}
+}
+
+EXPECTED_UPDATE_NOTE = {
+    "id": "1",
+    "request": {"id": "123"},
+    "description": "Updated Note 1",
+    "created_time": {"display_value": "2023-01-01 10:00:00"}
+}
