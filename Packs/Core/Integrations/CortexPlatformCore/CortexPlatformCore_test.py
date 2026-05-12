@@ -4057,20 +4057,23 @@ def test_run_playbook_command_empty_response_success():
     When:
         The run_playbook_command function is called.
     Then:
-        The function should return a successful result with appropriate readable output.
+        The function should return a successful result with a descriptive message in result output.
     """
     from CortexPlatformCore import run_playbook_command
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "test_playbook_123", "name": "Test Playbook"},
+    ]
 
-    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+    args = {"playbook": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "executed successfully" in result.readable_output
-    assert "test_playbook_123" in result.readable_output
-    assert "issue_1, issue_2" in result.readable_output
+    assert "executed successfully" in result.outputs["result"]
+    assert "test_playbook_123" in result.outputs["result"]
+    assert "issue_1, issue_2" in result.outputs["result"]
 
 
 def test_run_playbook_command_multiple_errors_response():
@@ -4080,7 +4083,7 @@ def test_run_playbook_command_multiple_errors_response():
     When:
         The run_playbook_command function is called.
     Then:
-        A ValueError should be raised containing all error messages for the issues.
+        The result output field contains all error messages for the failing issues.
     """
     from CortexPlatformCore import run_playbook_command
 
@@ -4090,24 +4093,27 @@ def test_run_playbook_command_multiple_errors_response():
         "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
         "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
     }
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "multi_fail_playbook", "name": "Multi Fail Playbook"},
+    ]
 
-    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+    args = {"playbook": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
 
-    with pytest.raises(ValueError) as exc_info:
-        run_playbook_command(mock_client, args)
+    result = run_playbook_command(mock_client, args)
 
-    error_message = str(exc_info.value)
+    assert result.outputs["result"] is not None
+    error_message = result.outputs["result"]
     assert "multi_fail_playbook" in error_message
     assert (
-        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for issue issue_1, couldn't find issue"
         in error_message
     )
     assert (
-        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for issue issue_2, "
         "failed creating investigation playbook" in error_message
     )
     assert (
-        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for issue issue_3, "
         "failed creating investigation playbook" in error_message
     )
 
@@ -4125,12 +4131,15 @@ def test_run_playbook_command_string_issue_ids():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "test_playbook", "name": "Test Playbook"},
+    ]
 
-    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+    args = {"playbook": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "issue_1, issue_2, issue_3" in result.readable_output
+    assert "issue_1, issue_2, issue_3" in result.outputs["result"]
     mock_client.run_playbook.assert_called_once()
 
 
@@ -4147,12 +4156,182 @@ def test_run_playbook_command_client_call_parameters():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "param_test_playbook", "name": "Param Test Playbook"},
+    ]
 
-    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+    args = {"playbook": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
 
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_run_playbook_command_by_name_resolves_to_id():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument containing a playbook name.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The playbook name is resolved to its ID and client.run_playbook is called with the resolved ID.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+        {"id": "uuid-def-456", "name": "Another Playbook"},
+    ]
+
+    args = {"playbook": "My Custom Playbook", "issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["issue_1"], "uuid-abc-123")
+    assert "executed successfully" in result.outputs["result"]
+    assert "My Custom Playbook" in result.outputs["result"]
+
+
+def test_run_playbook_command_by_id_when_no_name_match():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument that matches a known ID (not a name).
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The value is recognised as a known ID and passed directly to client.run_playbook.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "some-direct-uuid-id", "name": "My Custom Playbook"},
+    ]
+
+    args = {"playbook": "some-direct-uuid-id", "issue_ids": ["issue_1"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["issue_1"], "some-direct-uuid-id")
+
+
+def test_run_playbook_command_unknown_playbook_returns_error_in_result():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument that matches neither a name nor a known ID.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A CommandResults is returned with the error message in the 'result' output field.
+        client.run_playbook is never called.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+    ]
+
+    args = {"playbook": "nonexistent-playbook", "issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "not found" in result.outputs["result"].lower()
+    assert "nonexistent-playbook" in result.outputs["result"]
+    mock_client.run_playbook.assert_not_called()
+
+
+def test_run_playbook_command_no_playbook_arg_returns_error_in_result():
+    """
+    Given:
+        A mock client and args with no 'playbook' argument (empty string default).
+    When:
+        The run_playbook_command function is called.
+    Then:
+        resolve_playbook_id raises DemistoException which is caught and returned
+        as a CommandResults with the error in the 'result' output field.
+        client.run_playbook is never called.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+    ]
+
+    args = {"issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "not found" in result.outputs["result"].lower()
+    mock_client.run_playbook.assert_not_called()
+
+
+def test_resolve_playbook_id_not_found_raises():
+    """
+    Given:
+        A mock client that returns playbooks metadata that does not contain the requested value.
+    When:
+        resolve_playbook_id is called with a value matching neither a name nor a known ID.
+    Then:
+        A DemistoException is raised with a 'not found' message.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "known-id", "name": "Known Playbook"},
+    ]
+
+    with pytest.raises(Exception) as exc_info:
+        resolve_playbook_id(mock_client, "nonexistent")
+
+    assert "not found" in str(exc_info.value).lower()
+
+
+def test_resolve_playbook_id_direct_id_match():
+    """
+    Given:
+        A mock client with playbooks metadata and a value that matches a known playbook ID (not a name).
+    When:
+        resolve_playbook_id is called with that ID.
+    Then:
+        The ID is returned as-is.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "known-uuid-123", "name": "Some Playbook"},
+    ]
+
+    result = resolve_playbook_id(mock_client, "known-uuid-123")
+
+    assert result == "known-uuid-123"
+
+
+def test_resolve_playbook_id_name_match():
+    """
+    Given:
+        A mock client with playbooks metadata containing a unique name.
+    When:
+        resolve_playbook_id is called with that name.
+    Then:
+        The corresponding ID is returned.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "resolved-id", "name": "My Playbook"},
+    ]
+
+    result = resolve_playbook_id(mock_client, "My Playbook")
+
+    assert result == "resolved-id"
 
 
 def test_get_endpoint_support_file_command_success(mocker):
@@ -8765,9 +8944,9 @@ def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
 def test_validate_custom_fields_success(mocker):
     """
     GIVEN:
-        Valid custom fields and client with metadata.
+        Valid custom fields with CLI names and client with metadata.
     WHEN:
-        validate_custom_fields is called.
+        validate_custom_fields is called with CLI names.
     THEN:
         All fields are returned as valid and no error messages.
     """
@@ -8775,18 +8954,20 @@ def test_validate_custom_fields_success(mocker):
 
     client = Client(base_url="", headers={})
 
-    # Mock metadata response
+    # Mock metadata response — CLI name is the machine name users pass
     metadata_response = {
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_NAME": "Field 1",
+                    "CUSTOM_FIELD_CLI_NAME": "field1",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_NAME": "Field 2",
+                    "CUSTOM_FIELD_CLI_NAME": "field2",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8806,7 +8987,7 @@ def test_validate_custom_fields_success(mocker):
 def test_validate_custom_fields_system_field(mocker):
     """
     GIVEN:
-        Custom fields containing a system field.
+        Custom fields containing a system field (looked up by CLI name).
     WHEN:
         validate_custom_fields is called.
     THEN:
@@ -8820,13 +9001,15 @@ def test_validate_custom_fields_system_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_NAME": "System Field",
+                    "CUSTOM_FIELD_CLI_NAME": "system_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "System Field",
                     "CUSTOM_FIELD_IS_SYSTEM": True,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_NAME": "Custom Field",
+                    "CUSTOM_FIELD_CLI_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8862,7 +9045,8 @@ def test_validate_custom_fields_non_existent_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_NAME": "Existing Field",
+                    "CUSTOM_FIELD_CLI_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8879,6 +9063,44 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+    assert "CLI/machine name" in error_messages
+
+
+def test_validate_custom_fields_cli_name_lookup(mocker):
+    """
+    GIVEN:
+        A custom field with display name "ServiceNow Ticket ID" and CLI name "servicenowticketid".
+        User passes the CLI name (machine name) as the field key.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is matched by CLI name and accepted as valid.
+        This is the scenario from XSUP-67819.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_CLI_NAME": "servicenowticketid",
+                    "CUSTOM_FIELD_PRETTY_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"servicenowticketid": "SN12345"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"servicenowticketid": "SN12345"}
+    assert not error_messages
 
 
 def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
@@ -8898,7 +9120,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8934,7 +9157,8 @@ def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8969,7 +9193,8 @@ def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_NAME": "Single Field",
+                    "CUSTOM_FIELD_CLI_NAME": "single_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "shortText",
@@ -9022,7 +9247,8 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_NAME": "My Field",
+                    "CUSTOM_FIELD_CLI_NAME": "my_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "My Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": field_type,
