@@ -756,13 +756,14 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
     if execution_id == "FAILURE":
         demisto.debug("Did not succeed to start query, retrying.")
         # the 'start_xql_query' function failed because it reached the maximum allowed number of parallel running queries.
-        # Schedule the get-results command (not the start command) with a _query_not_started flag
+        # Schedule the get-results command (not the start command) with query_id="PENDING_RETRY"
         # so the retry stays within the same polling chain and respects the timeout.
+        # We use query_id="PENDING_RETRY" as the indicator that the query hasn't started yet.
         command_results = CommandResults()
         interval_in_secs = int(args.get("interval_in_seconds", 20))
         timeout_in_secs = int(args.get("timeout_in_seconds", 600))
-        args["_query_not_started"] = "true"
         args["command_name"] = demisto.command()
+        args["query_id"] = "PENDING_RETRY"
         scheduled_command = ScheduledCommand(
             command="xdr-xql-get-query-results",
             next_run_in_seconds=interval_in_secs,
@@ -807,7 +808,9 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         raise DemistoException("Please provide a valid number for max_fields argument.")
 
     # If the query hasn't been started yet (retry from FAILURE), attempt to start it first.
-    if argToBoolean(args.get("_query_not_started", "false")):
+    # We use query_id == "PENDING_RETRY" as the indicator instead of a custom flag,
+    # because the XSOAR platform may strip undefined arguments from scheduled commands.
+    if args.get("query_id") == "PENDING_RETRY":
         execution_id = start_xql_query(client, args)
         if execution_id == "FAILURE":
             demisto.debug("Still unable to start query, scheduling another retry.")
@@ -828,8 +831,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
             return CommandResults(readable_output="Autonomous playbook slot reservation not enabled or missing")
         if not execution_id:
             raise DemistoException("Failed to start query\n")
-        # Query started successfully — remove the flag and set query_id
-        args.pop("_query_not_started", None)
+        # Query started successfully — set the real query_id (replacing PENDING_RETRY)
         args["query_id"] = execution_id
         demisto.debug(f"Query started successfully on retry with {execution_id=}.")
 
