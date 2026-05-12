@@ -9966,6 +9966,9 @@ script:
       - contextPath: AWS.SSM.Associations.Versions.Name
         description: The name specified when the association was created.
         type: String
+      - contextPath: AWS.SSM.Associations.Versions.AssociationDispatchAssumeRole
+        description: A role used by association to take actions on your behalf.
+        type: String
       - contextPath: AWS.SSM.Associations.Versions.AssociationName
         description: The name specified for the association version when the association version was created.
         type: String
@@ -10089,6 +10092,9 @@ script:
         type: String
       - contextPath: AWS.SSM.Associations.AssociationVersion
         description: The association version.
+        type: String
+      - contextPath: AWS.SSM.Associations.AssociationDispatchAssumeRole
+        description: A role used by association to take actions on your behalf.
         type: String
       - contextPath: AWS.SSM.Associations.InstanceId
         description: The managed node ID.
@@ -10354,20 +10360,8 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: filters
-        description: "One or more filters separated by ';' in the format name=<key>,values=<values>. Use a filter to return a more specific list of results. For example: name=AWS:InstanceInformation.InstanceStatus,values=Active."
+        description: "One or more filters separated by ';' in the format key=<key>,values=<values>,type=<type>. The type must be one of: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists. For example: key=AWS:InstanceInformation.PlatformType,values=Linux,type=Equal."
         required: false
-      - name: filter_type
-        description: "The type of filter to apply to the inventory filters. Possible values: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
-        required: false
-        defaultValue: Equal
-        auto: PREDEFINED
-        predefined:
-          - Equal
-          - NotEqual
-          - BeginWith
-          - LessThan
-          - GreaterThan
-          - Exists
       - name: result_attributes
         description: "A comma-separated list of inventory type names to return. For example: AWS:InstanceInformation,AWS:Application. If not specified, all inventory types are returned."
         required: false
@@ -11008,14 +11002,6 @@ script:
       - name: version_name
         description: An optional field specifying the version of the artifact associated with the document.
         required: false
-      - name: document_format
-        description: Returns the document in the specified format. The document format can be either JSON or YAML. JSON is the default format.
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - YAML
-          - JSON
-          - TEXT
     outputs:
       - contextPath: AWS.SSM.Documents.AttachmentsContent.Hash
         description: The Sha256 or Sha1 hash created by the system when the document was created.
@@ -11061,9 +11047,6 @@ script:
         type: String
       - contextPath: AWS.SSM.Documents.ReviewStatus
         description: The current status of a document review.
-        type: String
-      - contextPath: AWS.SSM.Documents.Content
-        description: The contents of the SSM document.
         type: String
       - contextPath: AWS.SSM.Documents.Requires.Name
         description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
@@ -11426,6 +11409,9 @@ script:
       - contextPath: AWS.SSM.AutomationExecution.ProgressCounters
         description: An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields.
         type: Unknown
+      - contextPath: AWS.SSM.AutomationExecution.TargetLocationsURL
+        description: Specify a publicly accessible URL for a file that contains the TargetLocations body. Currently, only files in presigned Amazon S3 buckets are supported.
+        type: String
       - contextPath: AWS.SSM.AutomationExecution.AlarmConfiguration
         description: The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields.
         type: Unknown
@@ -11506,7 +11492,7 @@ script:
         auto: PREDEFINED
         predefined:
           - Cancel
-          - CompleteExecution
+          - Complete
         defaultValue: Cancel
       - name: interval_in_seconds
         description: The interval in seconds between polling attempts.

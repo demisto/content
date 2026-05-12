@@ -14882,8 +14882,8 @@ def test_inventory_list_command_no_entities(mocker):
 
 def test_inventory_list_command_with_filters(mocker):
     """
-    Given: A mocked SSM client and filter args.
-    When: inventory_list_command is called with filters and filter_type.
+    Given: A mocked SSM client and filter args using the key/values/type format.
+    When: inventory_list_command is called with filters.
     Then: It should pass the correct Key/Type/Values filter structure to get_inventory.
     """
     from AWS import SSM
@@ -14898,8 +14898,7 @@ def test_inventory_list_command_with_filters(mocker):
     args = {
         "account_id": "123456789012",
         "region": "us-east-1",
-        "filters": "name=AWS:InstanceInformation.PlatformType,values=Linux",
-        "filter_type": "Equal",
+        "filters": "key=AWS:InstanceInformation.PlatformType,values=Linux,type=Equal",
     }
 
     SSM.inventory_list_command(mock_client, args)
@@ -15469,22 +15468,56 @@ def test_automation_execution_list_command_with_filters(mocker):
 
 def test_automation_execution_run_command_first_execution(mocker):
     """
-    Given: No execution_id in args (first run) and a mocked SSM client.
+    Given: No execution_id in args (first run) and a mocked SSM client with all supported arguments.
     When: automation_execution_run_command is called.
-    Then: It should call start_automation_execution and return a PollResult with continue_to_poll=True.
+    Then: It should call start_automation_execution with all expected kwargs and return a PollResult
+          with continue_to_poll=True and the execution_id stored in scheduled_command args.
     """
     from AWS import SSM
 
     mock_client = mocker.Mock()
     mock_client.start_automation_execution.return_value = {"AutomationExecutionId": "exec-abc"}
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "document_name": "AWS-StartEC2Instance"}
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "document_name": "AWS-StartEC2Instance",
+        "document_version": "$LATEST",
+        "parameters": "key=InstanceId,values=i-1234567890abcdef0",
+        "mode": "Auto",
+        "client_token": "my-idempotency-token",
+        "max_concurrency": "10",
+        "max_errors": "5",
+        "target_parameter_name": "InstanceId",
+        "targets": "name=tag:Env,values=prod",
+        "target_locations": "Key=Accounts,Value=123456789012",
+        "target_locations_url": "https://s3.amazonaws.com/my-bucket/locations.json",
+        "target_maps": "key=InstanceId,values=i-abc123",
+        "alarm_names": "MyAlarm",
+        "alarm_ignore_poll_failure": "true",
+        "tags": "Key=Owner,Value=team",
+    }
 
     result = SSM.automation_execution_run_command(args, mock_client)
 
     assert result.scheduled_command is not None
     assert result.scheduled_command._args["execution_id"] == "exec-abc"
     mock_client.start_automation_execution.assert_called_once()
+
+    call_kwargs = mock_client.start_automation_execution.call_args[1]
+    assert call_kwargs["DocumentName"] == "AWS-StartEC2Instance"
+    assert call_kwargs["DocumentVersion"] == "$LATEST"
+    assert call_kwargs["Parameters"] == {"InstanceId": ["i-1234567890abcdef0"]}
+    assert call_kwargs["Mode"] == "Auto"
+    assert call_kwargs["ClientToken"] == "my-idempotency-token"
+    assert call_kwargs["MaxConcurrency"] == "10"
+    assert call_kwargs["MaxErrors"] == "5"
+    assert call_kwargs["TargetParameterName"] == "InstanceId"
+    assert call_kwargs["Targets"] == [{"Key": "tag:Env", "Values": ["prod"]}]
+    assert call_kwargs["TargetLocationsURL"] == "https://s3.amazonaws.com/my-bucket/locations.json"
+    assert call_kwargs["AlarmConfiguration"]["Alarms"] == [{"Name": "MyAlarm"}]
+    assert call_kwargs["AlarmConfiguration"]["IgnorePollAlarmFailure"] is True
+    assert call_kwargs["Tags"] == [{"Key": "Owner", "Value": "team"}]
 
 
 def test_automation_execution_run_command_polling_in_progress(mocker):

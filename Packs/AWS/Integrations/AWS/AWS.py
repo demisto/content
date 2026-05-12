@@ -7918,7 +7918,7 @@ class SSM:
                     f"Command timeout must be between {min_command_timeout} and {max_command_timeout} seconds."
                 )
             kwargs["TimeoutSeconds"] = command_timeout
-        kwargs = remove_empty_elements(kwargs)
+        remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
 
         response_command_run = client.send_command(**kwargs)
@@ -8044,7 +8044,7 @@ class SSM:
 
         Args:
             client (BotoClient): The boto3 client for SSM service.
-            args (Dict[str, Any]): Command arguments including optional filters, filter_type,
+            args (Dict[str, Any]): Command arguments including optional filters (key/values/type format),
                 result_attributes, aggregator_expression, aggregator_groups (JSON),
                 inventory_aggregator, limit, and next_token.
 
@@ -8068,12 +8068,8 @@ class SSM:
                 "Groups must be nested inside a parent aggregator that has an Expression."
             )
 
-        # GetInventory Filters use Key/Type/Values
-        raw_filters = parse_filter_field(args.get("filters"))
-        filter_type = args.get("filter_type", "Equal")
-        inventory_filters = (
-            [{"Key": f["Name"], "Type": filter_type, "Values": f["Values"]} for f in raw_filters] if raw_filters else None
-        )
+        # GetInventory Filters use Key/Type/Values — parsed directly from the triple-format filter string
+        inventory_filters = parse_name_value_type_format_filter(args.get("filters"))
 
         # Build aggregator — Groups must live in a nested sub-aggregator under Expression.
         # AWS enforces: Groups cannot coexist with Expression in the same aggregator object.
@@ -8409,7 +8405,6 @@ class SSM:
                 "Name": args.get("document_name"),
                 "DocumentVersion": args.get("document_version"),
                 "VersionName": args.get("version_name"),
-                "DocumentFormat": args.get("document_format"),
             }
         )
         print_debug_logs(client, f"Describing SSM document with {kwargs=}")
@@ -8529,7 +8524,7 @@ class SSM:
 
         if not execution_id:
             # First execution — start the automation
-            raw_filters = parse_filter_field(args.get("targets"))
+            raw_filters = parse_target_field(args.get("targets"))
             targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
 
             # Build AlarmConfiguration from flat args
