@@ -77,7 +77,7 @@ configuration:
   options:
   - Finding
   - Investigation
-  additionalinfo: Select which Splunk event types to ingest as incidents. Default `Finding`.
+  additionalinfo: Select the Splunk event types to ingest. Default is `Finding`.
 - display: First fetch timestamp (Investigations)
   name: investigations_first_fetch
   type: 0
@@ -85,16 +85,16 @@ configuration:
   advanced: true
   required: false
   defaultvalue: 10 minutes
-  additionalinfo: The amount of time to go back when performing the first investigations fetch (e.g., 12 hours, 7 days, 3 months).
+  additionalinfo: The relative time interval to look back during the initial investigation fetch (for example, 12 hours, 7 days, 3 months).
 - display: Investigations fetch query
   name: investigations_fetch_query
   type: 0
   section: Collect
-  advanced: false
+  advanced: true
   required: false
   defaultvalue: |
     | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&FETCH_FILTER_PLACEHOLDER"
-  additionalinfo: SPL used when "Investigation" is selected in "Event types to fetch". The query must contain the literal token `FETCH_FILTER_PLACEHOLDER` — do not modify or remove it. For customization options (e.g., adding extra filters such as `&status=New`), see the "Fetching investigation events" section in the integration documentation.
+  additionalinfo: The SPL query used when "Investigation" is selected for "Event types to fetch". The query must include the `FETCH_FILTER_PLACEHOLDER` token. Do not modify or remove this token. For more information on customizing the query (for example, adding the filter &status=New), see the integration documentation under "Fetching investigation events".
 - display: Maximum investigations per fetch
   name: investigations_max_fetch
   type: 0
@@ -102,7 +102,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '50'
-  additionalinfo: Maximum number of investigations to fetch per cycle. Hard-clamped to 100 (Splunk investigations endpoint maximum).
+  additionalinfo: The maximum number of investigations to fetch per cycle. Limited to 100 by the Splunk investigations endpoint.
 - display: Extract Fields - CSV fields that will be parsed out of raw finding events
   name: extractFields
   type: 0
@@ -142,7 +142,7 @@ configuration:
   advanced: true
   additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
   required: false
-- additionalinfo: When selected, Splunk ES events (Findings and Investigations) with a status that is marked as "End Status" will close the Cortex XSOAR incident.
+- additionalinfo: When selected, automatically close the Cortex XSOAR incident when the Splunk ES event (Finding or Investigation) is marked as 'End Status'.
   defaultvalue: 'false'
   display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
   name: close_end_status_statuses
@@ -161,7 +161,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  additionalinfo: When selected, closing the Cortex XSOAR incident will close the corresponding Splunk ES event (Finding or Investigation) in Splunk.
+  additionalinfo: When selected, automatically close the corresponding Splunk ES event (Finding or Investigation) when the Cortex XSOAR incident is closed.
   defaultvalue: 'false'
   required: false
 - display: Trust any certificate (not secure)
@@ -472,9 +472,9 @@ script:
       name: event_ids
       required: true
       isArray: true
-    - description: A Splunk user to assign to the investigations.
+    - description: The Splunk user to assign to the investigations.
       name: owner
-    - description: Note to add to the investigation.
+    - description: The note to add to the investigation.
       name: note
     - name: disposition
       auto: PREDEFINED
@@ -486,9 +486,9 @@ script:
       - False Positive - Inaccurate Data
       - Other
       - Undetermined
-      description: Disposition of the investigation. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
+      description: The disposition to set for the investigation. To use a custom disposition not available in the dropdown, provide the numerical ID using the format disposition:# (for example, disposition:12).
     - auto: PREDEFINED
-      description: Investigation status.
+      description: The investigation status.
       name: status
       predefined:
       - Open
@@ -497,7 +497,7 @@ script:
       - Resolved
       - Closed
     - auto: PREDEFINED
-      description: 'Investigation urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
+      description: 'The investigation urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
       name: urgency
       predefined:
       - critical

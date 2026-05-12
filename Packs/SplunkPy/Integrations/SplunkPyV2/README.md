@@ -107,23 +107,23 @@ Configured by the instance configuration max_fetch (behind the scenes an query c
 | --- | --- | --- |
 | Server URL | The Splunk server URL. Port 8089 \(Splunk's default REST API port\) is used automatically. Only include the port in the URL if using a non-default port. Examples: 'https://splunk.example.com' \(uses default port 8089\) or 'https://splunk.example.com:8090' \(uses custom port 8090\). | True |
 | Splunk Token |  | True |
-| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \`notable\` macro in your query. | False |
+| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \\\`notable\\\` macro in your query. | False |
 | Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Parse Raw Part of Finding Events | Whether to parse the raw part of the Findings, or not. | False |
 | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Findings, or not. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
-| Event types to fetch | Select which Splunk event types to ingest as incidents. Default \`Finding\`. | False |
-| First fetch timestamp (Investigations) | The amount of time to go back when performing the first investigations fetch \(e.g., 12 hours, 7 days, 3 months\). | False |
-| Investigations fetch query | SPL used when "Investigation" is selected in "Event types to fetch". The query must contain the literal token \`FETCH_FILTER_PLACEHOLDER\` — do not modify or remove it. For customization options \(e.g., adding extra filters such as \`&amp;status=New\`\), see the "Fetching investigation events" section in the integration documentation. | False |
-| Maximum investigations per fetch | Maximum number of investigations to fetch per cycle. Hard-clamped to 100 \(Splunk investigations endpoint maximum\). | False |
+| Event types to fetch | Select the Splunk event types to ingest. Default is \`Finding\`. | False |
+| First fetch timestamp (Investigations) | The relative time interval to look back during the initial investigation fetch \(for example, 12 hours, 7 days, 3 months\). | False |
+| Investigations fetch query | The SPL query used when "Investigation" is selected for "Event types to fetch". The query must include the \`FETCH_FILTER_PLACEHOLDER\` token. Do not modify or remove this token. For more information on customizing the query \(for example, adding the filter &amp;status=New\), see the integration documentation under "Fetching investigation events". | False |
+| Maximum investigations per fetch | The maximum number of investigations to fetch per cycle. Limited to 100 by the Splunk investigations endpoint. | False |
 | Extract Fields - CSV fields that will be parsed out of raw finding events |  | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
 | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk finding event with a "Closed" status will close the Cortex XSOAR incident. | False |
 | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
-| Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, Splunk ES events \(Findings and Investigations\) with a status that is marked as "End Status" will close the Cortex XSOAR incident. | False |
-| Close Mirrored Splunk ES Events (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident will close the corresponding Splunk ES event \(Finding or Investigation\) in Splunk. | False |
+| Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, automatically close the Cortex XSOAR incident when the Splunk ES event \(Finding or Investigation\) is marked as 'End Status'. | False |
+| Close Mirrored Splunk ES Events (Outgoing Mirroring) | When selected, automatically close the corresponding Splunk ES event \(Finding or Investigation\) when the Cortex XSOAR incident is closed. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | The app context of the namespace |  | False |
@@ -514,13 +514,13 @@ There is no context output for this command.
 ### splunk-finding-event-edit
 
 ***
-Updates existing finding events in Splunk ES.
+Update an existing finding event in Splunk ES.
 
-#### Base Command
+##### Base Command
 
 `splunk-finding-event-edit`
 
-#### Input
+##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |

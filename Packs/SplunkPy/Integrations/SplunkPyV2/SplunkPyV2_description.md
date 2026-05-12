@@ -39,34 +39,41 @@ There are two main use cases for the SplunkPy v2 integration.
 
 ## Fetching events
 The integration allows for fetching Splunk **Finding** and **Investigation** events using default queries. The queries can be changed and modified to support different Splunk use cases.
+<~XSOAR>
 Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
-This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR/XSIAM.
+This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
+</~XSOAR>
+<~XSIAM>
+This section will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting events from Splunk to Cortex XSIAM.
+</~XSIAM>
 
 ### How to configure
 1. Navigate to one of the following:
     * Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances > SplunkPy v2
     * Cortex XSOAR 6: Settings > Integrations > Servers & Services > SplunkPy v2.
-    * Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations > SplunkPy v2
+    * Cortex XSIAM: Settings > Data Sources & Integrations > SplunkPy v2
 2. Click **Add Instance**.
 3. Type the **Server URL** and **Splunk Token**.
 4. Select **Fetches incidents**.
 5. Under Classifier, select **SplunkPyV2 - Classifier**. The classifier routes Finding events to the **Splunk Finding** incident type and Investigation events to the **Splunk Investigation** incident type.
 6. Under Mapper (incoming), select **Splunk ES - Incoming Mapper**.
 7. Under Mapper (outgoing), select **Splunk ES - Outgoing Mapper**.
-8. In the **Event types to fetch** parameter, select which Splunk event types to ingest. **Finding** is selected by default. Add **Investigation** to additionally fetch Splunk investigations (you can keep both selected to fetch them together).
-9. Keep the **Fetch events query** as is, as we use the \`notable\` macro when ingesting Finding events. You can create a more granular search by specifying specific conditions such as specific security domain, event ID, etc.
+8. In the **Event types to fetch** parameter, select which Splunk event types to ingest. Default is **Finding**. Add **Investigation** to also fetch Splunk investigations (select both to fetch them together).
+9. Keep the **Fetch events query** as-is, since we use the \`notable\` macro when ingesting Finding events. You can create a more granular search by specifying specific conditions, for example specific security domain or event ID.
 10. Keep the default values for the Finding **fetch limit** and **First fetch timestamp**.
 11. (Investigation only) If **Investigation** is selected in step 8, configure the following Investigation-specific parameters:
-    * **First fetch timestamp (Investigations)** — the backfill window for the first investigations fetch (e.g., `7 days`).
-    * **Maximum investigations per fetch** — the per-cycle limit (capped at 100 by Splunk).
-    * **Investigations fetch query** — keep as-is unless you need to filter further. The query must contain the literal token `FETCH_FILTER_PLACEHOLDER` — **do not modify or remove this token**. The integration replaces it at runtime with the time-range and pagination filters required to manage the fetch cycle. To add custom filters, append extra URL parameters such as `&status=New` alongside the placeholder.
-12. To enable mirroring in both environments, in the Incident Mirroring Direction field, select **Incoming and Outgoing**.
+    * **First fetch timestamp (Investigations)**: The relative time interval to look back during the initial investigation fetch (for example, `7 days`).
+    * **Maximum investigations per fetch**: The maximum number of investigations to fetch per cycle. Limited to 100 by the Splunk investigations endpoint.
+    * **Investigations fetch query**: Keep the SPL query as-is unless you need to filter further. The query must include the `FETCH_FILTER_PLACEHOLDER` token. Do not modify or remove this token. To add custom filters, append extra URL parameters such as `&status=New` after the placeholder.
+<~XSOAR>
+12. To enable mirroring in both environments, in the **Incident Mirroring Direction** field, select **Incoming and Outgoing**.
 Outgoing mirroring is recommended for Cortex XSOAR version 6.2 and above.
 13. Select *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* and *Close Mirrored Splunk ES Events (Outgoing Mirroring)* so that closing an incident in one environment automatically closes it in the other.
+</~XSOAR>
 14. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
 This enrichment provides additional information about assets, drilldown, and identities that are related to the finding events you ingest.
 For more information, see [Enriching Finding Events](#enriching-finding-events).
-15. Fetch backwards window - this backward window is for cases where there is a gap between the event occurrence time and the event index time on the Splunk server.
+15. Fetch backwards window - the time overlap for each fetch to account for the gap between event creation and indexing on Splunk. This helps prevent data gaps caused by ingestion lag.
 In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
 This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g., if some endpoints or machines that generate Splunk events are frequently offline.
 Another point to note is that Splunk's searches are based on the occurrence time behind the scenes. Meaning, Splunk itself uses occurrence time as its determining factor for bucket division and search.
@@ -137,7 +144,7 @@ To set up mirroring:
     - None - Turns off incident mirroring.
 6. Optional: Check the *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding finding is closed on the Splunk side.
    By default, only Findings closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
-7. Optional: Check the *Close Mirrored Splunk Finding Event* integration parameter to close the Splunk finding when the corresponding Cortex XSOAR incident is closed.
+7. Optional: Check the *Close Mirrored Splunk ES Events (Outgoing Mirroring)* integration parameter to close the Splunk finding when the corresponding Cortex XSOAR incident is closed.
 **Note: This will not affect existing incidents.**
 
 
