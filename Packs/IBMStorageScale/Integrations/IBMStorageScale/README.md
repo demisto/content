@@ -214,14 +214,14 @@ Gets information about the access control list (ACL) set for a file or directory
 | IBMStorageScale.FileSystemACL.acl.entries.permissions | String | The access permissions string \(e.g., 'rxancs'\). |
 | IBMStorageScale.FileSystemACL.acl.entries.flags | String | Special flags and inheritance definition string \(e.g., 'fd'\). |
 
-### ibm-storage-scale-acls-list
+### ibm-storage-scale-acl-list
 
 ***
 Gets the list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
 
 #### Base Command
 
-`ibm-storage-scale-acls-list`
+`ibm-storage-scale-acl-list`
 
 #### Input
 
