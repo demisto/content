@@ -2275,6 +2275,15 @@ def _split_csv_to_list(value):
     return [str(x) for x in re.split(r"[,\s]+", value.strip()) if x]
 
 
+def _add_csv_filter(filter_by, arg, key):
+    """Add a CSV-parsed filter to a `filterBy` dict, only if `arg` yields any non-empty tokens."""
+    if not arg:
+        return
+    formatted = _split_csv_to_list(arg)
+    if formatted:
+        filter_by[key] = formatted
+
+
 def get_resources(
     search,
     entity_type,
@@ -2328,18 +2337,10 @@ def get_resources(
         variables["filterBy"]["search"] = search
     if entity_type:
         variables["filterBy"]["type"] = [entity_type]
-    csv_filters = [
-        (subscription_external_ids, "subscriptionExternalId"),
-        (provider_unique_ids, "providerUniqueId"),
-        (project_ids, "projectId"),
-        (native_types, "nativeType"),
-    ]
-    for arg, filter_key in csv_filters:
-        if not arg:
-            continue
-        formatted = _split_csv_to_list(arg)
-        if formatted:
-            variables["filterBy"][filter_key] = formatted
+    _add_csv_filter(variables["filterBy"], subscription_external_ids, "subscriptionExternalId")
+    _add_csv_filter(variables["filterBy"], provider_unique_ids, "providerUniqueId")
+    _add_csv_filter(variables["filterBy"], project_ids, "projectId")
+    _add_csv_filter(variables["filterBy"], native_types, "nativeType")
     if updated_at_before or updated_at_after:
         updated_at: Dict[str, str] = {}
         if updated_at_before:
