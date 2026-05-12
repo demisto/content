@@ -36,7 +36,7 @@ class Config:
     AUDIT_DATASET = "openai_chatgpt_audit_raw"
     COMPLIANCE_DATASET = "openai_chatgpt_compliance_raw"
 
-    DEFAULT_COMPLIANCE_URL = "https://api.chatgpt.com"
+    DEFAULT_CHATGPT_URL = "https://api.chatgpt.com"
 
     DEFAULT_AUDIT_MAX_FETCH = 1000
     DEFAULT_COMPLIANCE_MAX_FETCH = 900
@@ -65,9 +65,7 @@ EML_FILE_PREFIX = ".eml"
 class ApiPaths:
     """Centralized OpenAI API endpoint paths.
 
-    The chat-completions endpoint is hosted on the OpenAI Platform (`api.openai.com`),
-    while the audit/compliance endpoints live on the ChatGPT Platform (`api.chatgpt.com`).
-    Use the classmethods for parameterized routes (e.g., a workspace-scoped log).
+    Chat-completions is hosted on `api.openai.com`; audit/compliance live on `api.chatgpt.com`.
     """
 
     CHAT_COMPLETIONS = "v1/chat/completions"
@@ -75,18 +73,11 @@ class ApiPaths:
 
     @classmethod
     def compliance_logs(cls, workspace_id: str) -> str:
-        """Return the path for the compliance logs list endpoint of a given workspace."""
         return f"v1/compliance/workspaces/{workspace_id}/logs"
 
     @classmethod
     def compliance_log_content(cls, workspace_id: str, log_id: str) -> str:
-        """Return the path for the compliance log content endpoint of a given log id."""
         return f"v1/compliance/workspaces/{workspace_id}/logs/{log_id}"
-
-    @classmethod
-    def compliance_users(cls, workspace_id: str) -> str:
-        """Return the path for the compliance users endpoint of a given workspace."""
-        return f"v1/compliance/workspaces/{workspace_id}/users"
 
 
 class EventType:
@@ -243,21 +234,16 @@ class EmailParts:
     BODY = "body"
 
 
-""" CLIENT CLASS """
-
-
 class OpenAiClient(BaseClient):
     """OpenAI HTTP client.
 
-    Wraps three logically distinct API surfaces under a single client:
+    Wraps two API surfaces under one client:
         - Chat Completions (`api.openai.com/v1/chat/completions`) - existing GPT functionality.
-        - Audit Logs (`api.openai.com/v1/organization/audit_logs`) - admin API key required.
-        - Compliance Logs/Users (`api.chatgpt.com/v1/compliance/...`) - compliance API key required.
-    Each surface uses its own bearer token; `BaseClient.base_url` defaults to the chat URL,
-    while audit/compliance calls pass an absolute URL via `full_url=`.
-    """
+        - Audit Logs (`api.openai.com/v1/organization/audit_logs`) - requires Admin API key.
+        - Compliance Logs (`api.chatgpt.com/v1/compliance/...`) - requires Compliance API key.
 
-    CHAT_COMPLETIONS_ENDPOINT = "v1/chat/completions"
+    Each surface uses its own bearer token; audit/compliance calls pass an absolute URL via `full_url=`.
+    """
 
     def __init__(
         self,
@@ -268,7 +254,7 @@ class OpenAiClient(BaseClient):
         verify: bool,
         admin_api_key: str = "",
         compliance_api_key: str = "",
-        compliance_base_url: str = Config.DEFAULT_COMPLIANCE_URL,
+        chatgpt_base_url: str = Config.DEFAULT_CHATGPT_URL,
     ):
         super().__init__(base_url=url, proxy=proxy, verify=verify)
 
@@ -276,7 +262,7 @@ class OpenAiClient(BaseClient):
         self.model = model
         self.admin_api_key = admin_api_key
         self.compliance_api_key = compliance_api_key
-        self.compliance_base_url = compliance_base_url.rstrip("/") + "/"
+        self.chatgpt_base_url = chatgpt_base_url.rstrip("/") + "/"
         self.headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
     def get_chat_completions(
@@ -311,9 +297,7 @@ class OpenAiClient(BaseClient):
             f"temperature={options.get(ArgAndParamNames.TEMPERATURE)} | "
             f"top_p={options.get(ArgAndParamNames.TOP_P)}"
         )
-        return self._http_request(
-            method="POST", url_suffix=OpenAiClient.CHAT_COMPLETIONS_ENDPOINT, json_data=options, headers=self.headers
-        )
+        return self._http_request(method="POST", url_suffix=ApiPaths.CHAT_COMPLETIONS, json_data=options, headers=self.headers)
 
     # region Event Collector - Audit Logs (Admin API)
     def get_audit_logs(
@@ -322,20 +306,12 @@ class OpenAiClient(BaseClient):
         limit: int = Config.AUDIT_PAGE_SIZE,
         effective_at_gt: int | None = None,
     ) -> dict[str, Any]:
-        """Fetch a single page of audit logs (cursor-based pagination).
+        """Fetch one cursor-based page of audit logs.
 
-        The Admin API exposes a native cursor: every response contains `last_id`, which the
-        caller passes back as `after=` to fetch the next page (and to dedupe across runs).
+        On the first ever run, `after` is omitted and `effective_at_gt` (Unix seconds) bounds
+        the starting point. On subsequent runs, `after` is the previous response's `last_id`.
 
-        Args:
-            after: Opaque cursor (the `last_id` from the previous response). When omitted on
-                the very first run, the API returns the oldest available logs.
-            limit: Number of results per page (capped at `Config.AUDIT_PAGE_SIZE`).
-            effective_at_gt: Optional initial-seed lower bound (Unix seconds) - used only on
-                the first run to constrain how far back the cursor walk starts.
-
-        Returns:
-            The full JSON response dict, typically containing `data` (list), `has_more` (bool), `last_id` (str).
+        Returns the response envelope `{data, has_more, last_id}`.
         """
         if not self.admin_api_key:
             raise DemistoException("Admin API Key is required to fetch OpenAI Audit logs.")
@@ -386,19 +362,11 @@ class OpenAiClient(BaseClient):
         after: str,
         limit: int | None = None,
     ) -> dict[str, Any]:
-        """List available compliance log entries (step 1 of the two-step compliance flow).
+        """List compliance log entries (step 1 of the two-step compliance flow).
 
-        Args:
-            workspace_id: The compliance workspace identifier.
-            event_types: Upstream `event_type` values to include (e.g., ['APP_LOG', 'AUDIT_LOG']).
-            after: ISO 8601 timestamp; only entries newer than this are returned.
-            limit: Optional limit on the number of entries to request.
-
-        Returns:
-            A normalized response dict with two keys:
-              - `data`: list of log-entry descriptors (each contains at least `id`, `event_type`, `end_time`).
-              - `last_end_time`: ISO 8601 timestamp echoed by the API marking the upper bound of this page;
-                used as the `after=` value on the next run (and for per-id dedup at that timestamp).
+        Returns a normalized `{data, last_end_time, has_more}` dict where `last_end_time` is the
+        ISO 8601 upper bound for this page (used as `after=` on the next run) and `data` is a
+        list of entry descriptors carrying at least `id`, `event_type`, `end_time`.
         """
         if not self.compliance_api_key:
             raise DemistoException("Compliance API Key is required to fetch OpenAI Compliance logs.")
@@ -415,7 +383,7 @@ class OpenAiClient(BaseClient):
             effective_limit = min(limit, Config.COMPLIANCE_PAGE_SIZE)
             params.append(("limit", effective_limit))
 
-        full_url = self.compliance_base_url + ApiPaths.compliance_logs(workspace_id)
+        full_url = self.chatgpt_base_url + ApiPaths.compliance_logs(workspace_id)
         headers = {"Authorization": self.compliance_api_key, "Accept": "application/json"}
         demisto.debug(
             f"[API Compliance List] Listing logs | event_types_count={len(event_types)} | "
@@ -452,23 +420,15 @@ class OpenAiClient(BaseClient):
         return normalized
 
     def get_compliance_log_content(self, workspace_id: str, log_id: str) -> list[dict[str, Any]]:
-        """Fetch the content for a specific compliance log entry (step 2 of the two-step flow).
+        """Fetch the content for one compliance log entry (step 2 of the two-step flow).
 
-        IMPORTANT (per design doc): the response body is **NOT valid JSON** - it is a stream
-        of concatenated JSON objects (and/or a JSONL file). This method retrieves the raw
-        body and parses it into a list of dicts using `parse_concatenated_json`.
-
-        Args:
-            workspace_id: The compliance workspace identifier.
-            log_id: The unique identifier (a.k.a. `log_file_id`) of the log entry to fetch.
-
-        Returns:
-            A list of record dicts parsed from the concatenated-JSON / JSONL response body.
+        The response body is concatenated JSON / JSONL (not a single JSON document), so we
+        fetch raw text and parse it via `parse_concatenated_json`.
         """
         if not self.compliance_api_key:
             raise DemistoException("Compliance API Key is required to fetch OpenAI Compliance log content.")
 
-        full_url = self.compliance_base_url + ApiPaths.compliance_log_content(workspace_id, log_id)
+        full_url = self.chatgpt_base_url + ApiPaths.compliance_log_content(workspace_id, log_id)
         headers = {"Authorization": self.compliance_api_key, "Accept": "application/json"}
         demisto.debug("[API Compliance Content] Fetching content for one log entry.")
 
@@ -477,36 +437,6 @@ class OpenAiClient(BaseClient):
         records = parse_concatenated_json(raw_body)
         demisto.debug(f"[API Compliance Content] Parsed {len(records)} record(s) from response body.")
         return records
-
-    def list_compliance_users(self, workspace_id: str, limit: int = 200) -> list[dict[str, Any]]:
-        """List users in a compliance workspace.
-
-        Args:
-            workspace_id: The compliance workspace identifier.
-            limit: Maximum number of users to return per request.
-
-        Returns:
-            A list of user records.
-        """
-        if not self.compliance_api_key:
-            raise DemistoException("Compliance API Key is required to list OpenAI Compliance users.")
-        if not workspace_id:
-            raise DemistoException("Workspace ID is required to list OpenAI Compliance users.")
-
-        full_url = self.compliance_base_url + ApiPaths.compliance_users(workspace_id)
-        headers = {"Authorization": self.compliance_api_key, "Accept": "application/json"}
-        params = {"limit": limit}
-        demisto.debug(f"[API Compliance Users] Listing users | limit={limit}")
-
-        response = self._http_request(method="GET", full_url=full_url, params=params, headers=headers)
-        if isinstance(response, list):
-            users = response
-        elif isinstance(response, dict):
-            users = response.get("data", [])
-        else:
-            users = []
-        demisto.debug(f"[API Compliance Users] Returned {len(users)} user(s).")
-        return users
 
     # endregion
 
@@ -528,17 +458,11 @@ class OpenAiClient(BaseClient):
     # endregion
 
 
-""" HELPER FUNCTIONS """
-
-
 def setup_args(args: Dict[str, Any], params: Dict[str, Any]):
-    """Using instance params for model configuration, if command args were not provided."""
-    if not args.get(ArgAndParamNames.MAX_TOKENS, None) and params.get(ArgAndParamNames.MAX_TOKENS, None):
-        args[ArgAndParamNames.MAX_TOKENS] = params.get(ArgAndParamNames.MAX_TOKENS)
-    if not args.get(ArgAndParamNames.TEMPERATURE, None) and params.get(ArgAndParamNames.TEMPERATURE, None):
-        args[ArgAndParamNames.TEMPERATURE] = params.get(ArgAndParamNames.TEMPERATURE)
-    if not args.get(ArgAndParamNames.TOP_P, None) and params.get(ArgAndParamNames.TOP_P, False):
-        args[ArgAndParamNames.TOP_P] = params.get(ArgAndParamNames.TOP_P)
+    """Backfill model-configuration args from the instance params when not provided as command args."""
+    for key in (ArgAndParamNames.MAX_TOKENS, ArgAndParamNames.TEMPERATURE, ArgAndParamNames.TOP_P):
+        if not args.get(key) and params.get(key):
+            args[key] = params.get(key)
 
 
 def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dict[str, str]]:
@@ -1004,7 +928,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     api_key = _extract_credential(params.get("apikey"))
     admin_api_key = _extract_credential(params.get("admin_api_key"))
     compliance_api_key = _extract_credential(params.get("compliance_api_key"))
-    compliance_base_url = params.get("compliance_url") or Config.DEFAULT_COMPLIANCE_URL
+    chatgpt_base_url = params.get("chatgpt_api_url") or Config.DEFAULT_CHATGPT_URL
     workspace_id = params.get("workspace_id") or ""
     model = params.get("model-freetext") or params.get("model-select") or ""
     verify = not argToBoolean(params.get("insecure", False))
@@ -1017,7 +941,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         compliance_api_key=compliance_api_key,
     )
 
-    demisto.debug(f"[Config] URL: {base_url} | Compliance URL: {compliance_base_url}")
+    demisto.debug(f"[Config] URL: {base_url} | ChatGPT URL: {chatgpt_base_url}")
     demisto.debug(f"[Config] Model: {model or '<none>'} | verify={verify} | proxy={proxy}")
     demisto.debug(
         f"[Config] Credentials present: chat={bool(api_key)} | "
@@ -1033,7 +957,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "proxy": proxy,
         "admin_api_key": admin_api_key,
         "compliance_api_key": compliance_api_key,
-        "compliance_base_url": compliance_base_url,
+        "chatgpt_base_url": chatgpt_base_url,
         "workspace_id": workspace_id,
     }
 
@@ -1257,7 +1181,7 @@ def parse_collector_params(
         audit_max_fetch = arg_to_number(params.get("audit_max_fetch")) or Config.DEFAULT_AUDIT_MAX_FETCH
         compliance_max_fetch = arg_to_number(params.get("compliance_max_fetch")) or Config.DEFAULT_COMPLIANCE_MAX_FETCH
 
-    first_fetch = args.get("start_time") or params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
+    first_fetch = args.get("start_time") or Config.DEFAULT_FIRST_FETCH
     workspace_id = params.get("workspace_id") or ""
 
     return CollectorParams(
@@ -1557,6 +1481,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
 
     collector_params = parse_collector_params(params)
     last_run = demisto.getLastRun() or {}
+    demisto.debug(f"[Command fetch-events] getLastRun returned successfully | last_run={last_run}")
 
     demisto.debug(
         f"[Command fetch-events] event_types_count={len(collector_params.event_types_to_fetch)} | "
@@ -1603,20 +1528,21 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
             updated_last_run.update(result.last_run_updates)
             demisto.debug(
                 f"[Command fetch-events] {stream_name} stream produced {len(result.events)} events | "
-                f"last_run_updates={list(result.last_run_updates.keys())}"
+                f"last_run_updates={result.last_run_updates}"
             )
 
     demisto.debug(f"[Command fetch-events] All streams done. Pushing results for {len(results)} stream(s)...")
     for result in results:
         _push_result(client, result, log_prefix="[Command fetch-events]")
 
-    demisto.debug(f"[Command fetch-events] Persisting merged last_run | keys={list(updated_last_run.keys())}")
+    demisto.debug(f"[Command fetch-events] Persisting merged last_run | last_run={updated_last_run}")
     demisto.setLastRun(updated_last_run)
+    demisto.debug(f"[Command fetch-events] setLastRun persisted successfully | last_run={updated_last_run}")
     demisto.debug(
         f"[Command fetch-events] done | "
         f"streams={[r.stream for r in results]} | "
         f"events_per_stream={[len(r.events) for r in results]} | "
-        f"last_run_keys={list(updated_last_run.keys())}"
+        f"last_run={updated_last_run}"
     )
 
 
@@ -1625,7 +1551,7 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
     demisto.debug("[Command openai-get-events] triggered")
 
     collector_params = parse_collector_params(params, args=args)
-    should_push_events = argToBoolean(args.get("should_push_events", False))
+    should_push_events = argToBoolean(args.get("should_push_events", False))  # noqa: F405
 
     demisto.debug(
         f"[Command openai-get-events] event_type_count={len(collector_params.event_types_to_fetch)} | "
@@ -1642,8 +1568,14 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
     results: list[FetchResult] = []
     for stream in streams_to_run:
         demisto.debug(f"[Command openai-get-events] Fetching {stream} stream...")
-        results.append(fetch_stream(client=client, stream=stream, last_run={}, collector_params=collector_params))
-        demisto.debug(f"[Command openai-get-events] {stream} stream returned {len(results[-1].events)} event(s).")
+        try:
+            result = fetch_stream(client=client, stream=stream, last_run={}, collector_params=collector_params)
+        except Exception as exc:
+            # Isolate per-stream failures so one stream's exception does not abort the entire command.
+            demisto.error(f"[Command openai-get-events] {stream} stream failed: {exc}")
+            continue
+        results.append(result)
+        demisto.debug(f"[Command openai-get-events] {stream} stream returned {len(result.events)} event(s).")
 
     all_events: list[dict[str, Any]] = [event for result in results for event in result.events]
     demisto.debug(
@@ -1699,7 +1631,7 @@ def main() -> None:  # pragma: no cover
     """
     # Make `demisto.*` runtime-bridge calls thread-safe for `fetch_events_command`'s
     # ThreadPoolExecutor workers. Official CommonServerPython helper, idempotent.
-    support_multithreading()
+    support_multithreading()  # noqa: F405
     demisto.debug(f"{INTEGRATION_NAME} integration started")
 
     try:
@@ -1728,7 +1660,7 @@ def main() -> None:  # pragma: no cover
             proxy=config["proxy"],
             admin_api_key=config["admin_api_key"],
             compliance_api_key=config["compliance_api_key"],
-            compliance_base_url=config["compliance_base_url"],
+            chatgpt_base_url=config["chatgpt_base_url"],
         )
         demisto.debug("[Main] Client built. Dispatching command...")
 

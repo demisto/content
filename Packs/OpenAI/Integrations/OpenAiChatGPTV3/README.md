@@ -62,9 +62,8 @@
     |-------------------------------------------------|---------------------------|--------------------------------------------------------------------------|
     | Maximum number of OpenAI Audit events per fetch | 1000                      | Cap on Audit events ingested per fetch cycle.                            |
     | Maximum number of Compliance events per fetch   | 900                       | Cap on Compliance events ingested per fetch cycle.                       |
-    | First fetch time                                | `1 day`                   | Lookback window on the very first fetch (e.g., `12 hours`, `2 days`).    |
     | Events Fetch Interval                           | 1 minute                  | How often the scheduled fetch runs.                                      |
-    | Compliance Server URL                           | `https://api.chatgpt.com` | Base URL of the Compliance API. Override only for non-default tenants.   |
+    | ChatGPT Server URL                              | `https://api.chatgpt.com` | Base URL of the ChatGPT Compliance API. Override only for non-default tenants. |
 
 - #### Click 'Test'
 
