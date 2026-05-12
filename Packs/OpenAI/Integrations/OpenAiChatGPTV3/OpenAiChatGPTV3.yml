@@ -281,10 +281,7 @@ script:
       type: Dictionary
 
   - name: openai-get-events
-    description: Manually retrieves events from OpenAI for development/debugging. Use with caution - it can ingest events when 'should_push_events' is true, leading to event duplication.
-    marketplaces:
-    - marketplacev2
-    - platform
+    description: Manually retrieves events from OpenAI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: event_type
       description: 'A comma-separated list of event types to retrieve. If not specified, uses the value configured in the integration parameters.'
