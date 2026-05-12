@@ -35,3 +35,7 @@ If you have a dedicated server URL, enter it in the *Server Url* parameter.
 ## Get the Additional Instance Parameters
 
 To get the *Subscription ID*, *Workspace Name*, and *Resource Group* parameters, in the Azure Portal navigate to **Azure Sentinel** > your workspace > **Settings** and click the **Workspace Settings** tab.
+
+## Lookback Parameter Notes
+* In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing the look-back to a number that is greater than the previous value, then in the initial incident fetching there will be incident duplications. If the integration was already set with look-back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
+* Using a look-back value that is very large can lead to an increase in the memory usage of the system and additional API calls. It is recommended to use a small value (e.g., 1-5 minutes).
