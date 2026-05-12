@@ -11,7 +11,7 @@ This is the format used inside the `config` field of the **Auth Detail** JSON
 (it is not a separate CSV column). It is a human-readable string with two parts
 separated by ` — `:
 
-**Part 1**: Auth types grouped by type with param names (pipe-separated between types)
+**Part 1**: Auth types grouped by type with names (pipe-separated between types)
 **Part 2**: Requirement expression using `REQUIRED()`, `OPTIONAL()`, `CHOICE()`, combined with `+`
 
 Special case: `NoneRequired` (no auth params)
@@ -25,7 +25,7 @@ Special case: `NoneRequired` (no auth params)
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
 | `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
-| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow). The `notes` field MUST explain the specific auth mechanism. | Azure WAF, Azure Kubernetes Services |
+| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow, Managed Identity, ROPC). | Azure WAF, Azure Kubernetes Services |
 | `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
 
 #### Requirement Expression
@@ -59,13 +59,67 @@ Special case: `NoneRequired` (no auth params)
 | 1 | `Integration ID` | ID of the integration |
 | 2 | `Integration File Path` | Path to the integration's source files |
 | 3 | `Connector ID` | The ID of the Connector |
-| 4 | `special cases` | Frontend/Backend special hardcoded cases |
 
 #### JSON Column Schemas
 
 The JSON shapes for `Auth Details`, `Params to Commands`,
 `Params for test with default in code`, and `Params same in other handlers`
 live in [`connectus/column-schemas.md`](column-schemas.md).
+
+### Per-command parameter analysis
+
+The `Params to Commands` column (step #3) is populated by the analyzer at
+[`connectus/check_command_params.py`](check_command_params.py:1). It runs the
+integration end-to-end via [`connectus/capture_proxy.py`](capture_proxy.py:1)
+and combines static AST analysis with dynamic HTTP-proxy capture to determine
+which YML configuration params each command actually consumes.
+
+Standard invocation:
+
+```bash
+python3 connectus/check_command_params.py <integration_dir> \
+    --ignore-params-file connectus/default_ignore_params.txt \
+    --integration-id "<Integration ID>"
+```
+
+`--integration-id` is **optional but strongly recommended inside the
+migration workflow**. When set, the analyzer additionally pulls the
+auth-derived ignore set from
+[`workflow_state.py auth-params <id>`](workflow_state.py:1) and unions it
+into its own ignore set, guaranteeing that any param already declared in
+`Auth Details` (auth secrets + `other_connection`) cannot leak into the
+per-command output. Standalone runs outside the migration workflow can
+omit it.
+
+Requirements:
+
+- **Docker on the host** (default mode). The analyzer runs the integration's
+  child process inside `demisto/py3-native:8.9.0.114862`. The integration's
+  YML `script.dockerimage` is intentionally ignored — one pinned image keeps
+  the analyzer reproducible. Pass `--docker never` to fall back to host
+  Python (works only for integrations with no third-party deps); pass
+  `--static-only` to skip the dynamic phase entirely.
+- The default ignore list at
+  [`connectus/default_ignore_params.txt`](default_ignore_params.txt:1) strips
+  ~154 auth/connection/framework params (`url`, `credentials`, `proxy`,
+  `insecure`, `longRunning`, the feed framework, …) so only **behavioral**,
+  per-command-meaningful params remain.
+
+The analyzer's stdout JSON has two top-level keys: `commands` (the polished
+result that is persisted into the `Params to Commands` column, sorted lists
+of param names per command) and `diagnostics` (internal AI metadata for the
+migration skill — per-command status enum, failure excerpts, Scope-1
+narrowing trace, etc.). **`diagnostics` is NOT to be persisted into pipeline
+data** — it is consumed by the calling AI and discarded; the
+`set-params-to-commands` payload contains only the `integration` and
+`commands` keys.
+
+See [`connectus/check_command_params_design.md`](check_command_params_design.md:1)
+for the full design + current implementation status (the 7 layered fixes,
+output schema, status enum, and known JS/PowerShell asymmetry), and
+[`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
+§"Analyzing per-command parameters" for how the migration AI invokes the
+analyzer and processes its output.
 
 ---
 
@@ -80,7 +134,7 @@ State is **purely derived from row contents** — there is no separate "current 
 | # | Step (== CSV column) | Kind | Set via |
 |---|---|---|---|
 | 1 | `assignee` | data | `set-assignee` |
-| 2 | `Auth Details` | data (JSON) | `set-auth` |
+| 2 | `Auth Details` | data (JSON; includes `auth_types`, `config`, **and `other_connection`** — see [`column-schemas.md`](column-schemas.md)) | `set-auth` |
 | 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
 | 4 | `Params for test with default in code` | data (JSON) | `set-params-for-test` |
 | 5 | `Params same in other handlers` | data (JSON) | `set-shared-params` (or `skip`) |
@@ -106,7 +160,7 @@ State is **purely derived from row contents** — there is no separate "current 
 6. **Flag step #12 → step #13 auto-N/A.** Setting `requires auth parity test` to `NO` or `N/A` automatically writes `"N/A"` into `auth parity test passes`. Setting it to `YES` leaves #13 empty so the user must `markpass` it.
 7. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
 8. **`fail` and `reset-to`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behavior; `reset-to` is the explicit name, `fail` reads as "this step failed, redo it".
-9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`, `special cases`) are preserved.
+9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved.
 
 ### CLI Commands
 
@@ -141,10 +195,21 @@ python3 connectus/workflow_state.py show-step "Cisco Spark" "Auth Details"
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
 # Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
-python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+# Each auth_types[] entry is one full UCP connection type. xsoar_params lists
+# the XSOAR field paths that supply its secrets (credentials params expand to
+# `<paramid>.identifier` + `<paramid>.password`). The `other_connection` field
+# is a flat sorted list of YML param ids that are connection-adjacent but not
+# auth secrets (url, proxy, insecure, port, host, region, ...). It lives
+# INSIDE the Auth Details JSON, not as a separate CSV column. See
+# column-schemas.md.
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)","other_connection":["insecure","proxy","url"]}'
 
-# Set Params to Commands (validates JSON; cascade-resets steps #4-#16)
-python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
+# Set Params to Commands (validates JSON; cascade-resets steps #4-#16).
+# REJECTED if any param in the payload also appears in Auth Details
+# (auth secrets or other_connection). Run `auth-params <id>` first to
+# see what to exclude, or pass `--integration-id <id>` to the analyzer
+# so it pulls the exclusion set automatically.
+python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["fetch_query"]}}'
 
 # Set Params for test with default in code (validates JSON; cascade-resets #5-#16)
 python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '["bot_token"]'
@@ -178,7 +243,44 @@ python3 connectus/workflow_state.py list
 
 # List integrations assigned to a specific person
 python3 connectus/workflow_state.py list-by-assignee "John Doe"
+
+# Print every YML param id declared in the integration's Auth Details
+# (auth_types[].xsoar_params projected to bare YML ids + other_connection).
+# This is the exclusion set that 'set-params-to-commands' enforces — any
+# param appearing here MUST NOT appear in the per-command lists.
+# Default output is one id per line; --format=json emits a JSON object.
+python3 connectus/workflow_state.py auth-params "Cisco Spark"
+python3 connectus/workflow_state.py auth-params "Cisco Spark" --format=json
 ```
+
+#### CLI subcommand reference
+
+| Subcommand | Purpose |
+|---|---|
+| `status <id>` | Show full per-step status of one integration |
+| `status-all` | Show full status for every integration with progress |
+| `dashboard` | Compact 16-cell progress bar for every in-progress integration |
+| `next` / `next <id>` / `next --all` / `next --connector <c>` / `next --mine` | Print the literal next action |
+| `show-step <id> <col>` | Pretty-print one column's value (JSON-aware) |
+| `set-assignee <id> <name>` | Set the owner (admin; never cascades) |
+| `set-auth <id> '<json>'` | Set Auth Details (validates schema; cascade-resets #3-#16) |
+| `set-params-to-commands <id> '<json>'` | Set per-command param map. **Rejected** if any param overlaps with `Auth Details` (auth-secret or `other_connection`); use `auth-params` to inspect the exclusion set. |
+| `set-params-for-test <id> '<json>'` | Set in-code-default params (cascade-resets #5-#16) |
+| `set-shared-params <id> '<json>'` | Set shared-handler params (cascade-resets #6-#16) |
+| `skip <id> "Params same in other handlers"` | Skip the optional step #5 |
+| `set-auth-flag <id> YES\|NO\|N/A` | Set the auth-parity flag (#12) |
+| `markpass <id> <step>` | Mark a checkpoint as passed |
+| `fail <id> <step>` / `reset-to <id> <step>` | Clear a step + every step after |
+| `reset <id>` | Clear all 16 workflow columns |
+| `at-step <step>` | List integrations currently at a specific step |
+| `list` | List every Integration ID |
+| `list-by-assignee <name>` | List integrations for one assignee |
+| `list-connectors` | List every distinct Connector ID |
+| `list-by-connector <id>` | List integrations in one connector |
+| `set-assignee-by-connector <id> <name>` | Assign every integration in a connector |
+| `files <id> [--format=text\|paths\|json]` | Print all known source-file paths for an integration |
+| `auth-params <id> [--format=text\|json]` | Print the auth-derived YML param ignore set (auth_types[].xsoar_params projected to bare YML ids + other_connection). Used by `set-params-to-commands` to enforce disjointness; the analyzer can pull this list automatically via `--integration-id`. |
+| `help` | Print module docstring |
 
 ### Programmatic API (for AI agents / other scripts)
 
@@ -311,7 +413,7 @@ $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}},"notes":null}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_params":["credentials.identifier","credentials.password"]}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 
@@ -336,7 +438,7 @@ $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest
 #### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NoneRequired","other_connection":[]}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Cleared 4 subsequent step(s): ['Params to Commands', 'Params for test with default in code', 'Params same in other handlers', 'generated manifest']
   Current step: #3 Params to Commands
