@@ -1,4 +1,4 @@
-## OpenAI GPT
+## OpenAI
 
 ### Generate an API Key
 
@@ -25,6 +25,8 @@ The more elementary models (e.g. gpt-3.5) often provide shallower answers with a
 <~XSIAM>
 
 ---
+
+## ChatGPT
 
 ### Event Collector Setup
 
