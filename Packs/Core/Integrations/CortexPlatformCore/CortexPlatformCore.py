@@ -3534,6 +3534,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         f["CUSTOM_FIELD_CLI_NAME"]: {
             "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+            "select_values": (f.get("CUSTOM_FIELD_FIELD_DATA") or {}).get("selectValues") or [],
         }
         for f in fields_data
         if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
@@ -3552,6 +3553,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             )
         elif field_name in custom_fields:
             field_type = custom_fields[field_name]["field_type"]
+            select_values = custom_fields[field_name]["select_values"]
             if field_type == "multiSelect" and not isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
@@ -3562,6 +3564,15 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                     f"Field '{field_name}' is of type shortText and does not accept a list value."
                     f" Provide a single value instead."
                 )
+            elif field_type == "multiSelect" and select_values:
+                invalid_values = [v for v in field_value if v not in select_values]
+                if invalid_values:
+                    error_messages.append(
+                        f"Field '{field_name}' contains invalid value(s): {invalid_values}."
+                        f" Allowed values are: {select_values}"
+                    )
+                else:
+                    valid_fields[field_name] = field_value
             else:
                 valid_fields[field_name] = field_value
         else:
