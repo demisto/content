@@ -134,6 +134,7 @@ configuration:
   - WARN
   - BAD
   - NEUTRAL
+  - NA
   type: 16
   required: false
   section: Collect
@@ -408,7 +409,7 @@ script:
       - moderate
       - material
       - severe
-    - description: 'Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral.'
+    - description: 'Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad, neutral and na.'
       isArray: true
       name: grade
       auto: PREDEFINED
@@ -418,6 +419,7 @@ script:
       - 'warn'
       - 'bad'
       - 'neutral'
+      - 'na'
     - auto: PREDEFINED
       description: |-
         Minimum Asset Category of the findings.
@@ -664,7 +666,7 @@ script:
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: ''
