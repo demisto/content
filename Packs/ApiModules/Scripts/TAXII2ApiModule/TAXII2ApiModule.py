@@ -2320,6 +2320,7 @@ class STIX2XSOARParser(BaseClient):
                 tags.append(field_tag)
 
         fields["tags"] = list(set(tags))
+        ioc_obj_copy["tags"] = fields["tags"]
 
         indicator["fields"] = fields
         fields["publications"] = self.get_indicator_publication(indicator_obj)
