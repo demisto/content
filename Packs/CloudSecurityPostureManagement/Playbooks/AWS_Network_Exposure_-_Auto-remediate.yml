@@ -272,6 +272,7 @@ tasks:
       id: b8053843-bc81-4fbc-8b93-5d25276f1240
       version: -1
       name: Done
+      description: "Section header to mark the end of the playbook"
       type: title
       iscommand: false
       brand: ""
