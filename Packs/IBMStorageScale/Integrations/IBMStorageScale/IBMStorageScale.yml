@@ -129,10 +129,10 @@ script:
       description: Error details if connection failed.
       type: String
   - name: ibm-storage-scale-acl-list
-    description: Gets the list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
+    description: Returns a list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
     arguments:
     - name: user_group
-      description: Optional user group name. When provided, calls GET /scalemgmt/v2/access/acls/{userGroup} and returns only the ACLs for that user group. When omitted, lists all ACLs.
+      description: The name of the user group by which to filter results. When provided, returns the ACLs for that user group. When omitted, lists all ACLs.
       required: false
       isArray: false
     outputs:
@@ -146,7 +146,7 @@ script:
       description: The access control entries for the user group.
       type: Unknown
     - contextPath: IBMStorageScale.ACL.acls.entries.entryId
-      description: The REST API access control list entry ID.
+      description: The ID of the REST API access control list entry.
       type: Number
     - contextPath: IBMStorageScale.ACL.acls.entries.type
       description: The type of access provided (ALLOW or DENY).
@@ -158,50 +158,50 @@ script:
       description: The resource URL the access control entry applies to.
       type: String
   - name: ibm-storage-scale-filesystem-acl-get
-    description: Gets information about the access control list (ACL) set for a file or directory in a filesystem.
+    description: Returns information about the access control list (ACL) for a file or directory in a file system.
     arguments:
     - name: file_system_name
-      description: The name of the filesystem (e.g., gpfs0).
+      description: The name of the file system (for example, gpfs0).
       required: true
       isArray: false
     - name: path
-      description: 'The file path relative to the filesystem mount point, using forward slashes (e.g., mnt/gpfs0/rest01). The forward slashes are URL-encoded to %2F automatically when the request is built.'
+      description: 'The file path relative to the file system mount point. Use forward slashes (for example, mnt/gpfs0/rest01).'
       required: true
       isArray: false
     - name: fields
-      description: "Optional comma-separated list of fields to include in the response. Pass ':all:' to explicitly request all available fields. When omitted, the query parameter is not sent and the API applies its own default behavior (the API docs do not document what that default is)."
+      description: "A comma-separated list of fields to include in the response. To include all available fields, use ":all:". When omitted, the API applies its own default behavior."
       required: false
       isArray: true
     outputs:
     - contextPath: IBMStorageScale.FileSystemACL.acl.type
-      description: Type of the ACL (e.g., NFSv4).
+      description: The type of the ACL (for example, NFSv4).
       type: String
     - contextPath: IBMStorageScale.FileSystemACL.acl.entries
       description: The access control entries for the file or directory.
       type: Unknown
     - contextPath: IBMStorageScale.FileSystemACL.acl.entries.type
-      description: Type of the entry (allow, deny, alarm, or audit).
+      description: The entry type. Can be 'allow', 'deny', 'alarm', or 'audit'.
       type: String
     - contextPath: IBMStorageScale.FileSystemACL.acl.entries.who
-      description: "The name of the user or group for which the ACL is applicable (e.g., 'special:owner@', 'special:group@', 'special:everyone@', 'user:{name}', 'group:{name}')."
+      description: "The name of the user or group to which the ACL applies (for example, 'special:owner@', 'special:group@', 'special:everyone@', 'user:{name}', 'group:{name}')."
       type: String
     - contextPath: IBMStorageScale.FileSystemACL.acl.entries.permissions
-      description: The access permissions string (e.g., 'rxancs').
+      description: The access permissions string (for example, 'rxancs').
       type: String
     - contextPath: IBMStorageScale.FileSystemACL.acl.entries.flags
-      description: Special flags and inheritance definition string (e.g., 'fd').
+      description: The special flags and inheritance definition string (for example, 'fd').
       type: String
   - name: ibm-storage-scale-acl-delete
-    description: Deletes all the REST API access control lists (ACL) defined for a user group. This is a potentially destructive operation.
+    description: Deletes all REST API access control lists (ACL) defined for a user group. This is a potentially destructive operation.
     execution: true
     arguments:
     - name: user_group
-      description: The user group name from which the ACLs are to be deleted.
+      description: The name of the user group from which to delete the ACLs.
       required: true
       isArray: false
     outputs: []
   - name: ibm-storage-scale-acl-entry-delete
-    description: Deletes a specified REST API access control list (ACL) entry defined for a user group. This is a potentially destructive operation.
+    description: Deletes a specific REST API access control list (ACL) entry for a user group. This is a potentially destructive operation.
     execution: true
     arguments:
     - name: user_group
@@ -209,7 +209,7 @@ script:
       required: true
       isArray: false
     - name: entry_id
-      description: The ID of the ACL entry that is to be deleted.
+      description: The ID of the ACL entry to delete.
       required: true
       isArray: false
     outputs: []
