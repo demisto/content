@@ -1,7 +1,8 @@
 category: Messaging and Conferencing
 provider: OpenAI
 sectionorder:
-- Connect
+- Connect - OpenAI
+- Connect - ChatGPT
 - Collect
 name: OpenAi ChatGPT v3
 display: OpenAI GPT
@@ -14,13 +15,13 @@ configuration:
   name: url
   required: true
   defaultvalue: https://api.openai.com/
-  section: Connect
+  section: Connect - OpenAI
   type: 0
-- displaypassword: API Key
+- displaypassword: OpenAI API Key
   name: apikey
   type: 9
   required: false
-  section: Connect
+  section: Connect - OpenAI
   hiddenusername: true
   additionalinfo: 'The OpenAI Platform API key used by the chat-completion commands. Required only when running those commands or when running test-module without the event-collector keys.'
 - display: Model
@@ -28,7 +29,7 @@ configuration:
   name: model-select
   type: 15
   required: false
-  section: Connect
+  section: Connect - OpenAI
   defaultvalue: gpt-3.5-turbo
   options:
   - gpt-5
@@ -57,7 +58,7 @@ configuration:
   name: model-freetext
   type: 0
   required: false
-  section: Connect
+  section: Connect - OpenAI
 - display: Max tokens
   name: max_tokens
   additionalinfo: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption).
@@ -84,7 +85,7 @@ configuration:
   type: 0
   required: false
   defaultvalue: https://api.chatgpt.com
-  section: Connect
+  section: Connect - ChatGPT
   additionalinfo: 'The base URL for the ChatGPT Platform Compliance APIs.'
   hidden:
   - xsoar
@@ -94,7 +95,7 @@ configuration:
   name: admin_api_key
   type: 14
   required: false
-  section: Connect
+  section: Connect - ChatGPT
   additionalinfo: 'The Admin API key for the OpenAI Platform. Required only when fetching the "OpenAI Audit logs" event type.'
   hidden:
   - xsoar
@@ -104,7 +105,7 @@ configuration:
   name: compliance_api_key
   type: 14
   required: false
-  section: Connect
+  section: Connect - ChatGPT
   additionalinfo: 'The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types.'
   hidden:
   - xsoar
@@ -114,12 +115,12 @@ configuration:
   name: insecure
   type: 8
   required: false
-  section: Connect
+  section: Connect - OpenAI
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
+  section: Connect - OpenAI
 - display: Workspace ID
   name: workspace_id
   type: 0
