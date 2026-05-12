@@ -163,7 +163,7 @@ _resolved_issue_response = {
 
 @patch("Wiz.checkAPIerrors", return_value=_resolved_issue_response)
 def test_get_issue_surfaces_resolution_reason(checkAPIerrors):
-    """WZ-111555: wiz-get-issue must surface resolutionReason for resolved/rejected issues."""
+    """wiz-get-issue must surface resolutionReason for resolved/rejected issues."""
     from Wiz import get_issue
 
     res = get_issue("11111111-2222-3333-4444-555555555555")
