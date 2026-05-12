@@ -93,6 +93,9 @@ MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
+# Spotlight vulnerability severity levels for parallel fetching
+SPOTLIGHT_SEVERITIES = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "NONE", "UNKNOWN"]
+
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
 # Headers to be sent in requests
@@ -186,11 +189,13 @@ IOC_KEY_MAP = {
     "action": "Action",
     "severity": "Severity",
     "tags": "Tags",
+    "mobile_action": "MobileAction",
 }
 
 IOC_HEADERS = [
     "ID",
     "Action",
+    "MobileAction",
     "Severity",
     "Type",
     "Value",
@@ -344,6 +349,8 @@ CS_FALCON_RECON_INCOMING_ARGS = ["notification.status"]
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
 HOST_STATUS_DICT = {"online": "Online", "offline": "Offline", "unknown": "Unknown"}
+
+NO_QUARANTINED_FILES_MSG = "The arguments/filters you provided did not match any files."
 
 QUARANTINE_FILES_OUTPUT_HEADERS = [
     "id",
@@ -723,23 +730,52 @@ def create_publications(cve: dict) -> list:
 
 
 def build_query_params(query_params: dict) -> str:
-    """
-    Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
-    For example: {'name': 'test', 'os_name': 'WINDOWS'} => '?name=test+os_name=WINDOWS'
+    r"""
+    Gets a dict of {property: value} and returns a string to use as an FQL ``q`` parameter.
+
+    For example::
+
+        {}                                     => ""
+        {'name': 'test', 'os_name': 'WINDOWS'} => "name:'test'+os_name:'WINDOWS'"
+        {'filename': ['a.txt']}                => "filename:'a.txt'"
+        {'filename': ['a.txt', 'b.txt']}       => "filename:['a.txt','b.txt']"
+        {'filename': []}                       => ""        # empty list is skipped
+
+    List values are unwrapped (single element) or rendered in FQL multi-value bracket
+    notation (multiple elements). Without this, a list value would be interpolated as a
+    Python ``repr`` (e.g. ``filename:'['a.txt']'``), which CrowdStrike's FQL parser does
+    not match against. Single quotes inside values are escaped with a backslash so values
+    like ``O'Brien.txt`` do not break the FQL syntax.
 
     Args:
-        query_params: dict of exclusion property: value.
+        query_params: dict of property: value (value may be scalar or list).
+            ``None`` values and empty lists are ignored.
     Returns:
-        String to use as a query param in the requests of exclusion.
+        String to use as the FQL ``q`` query param (``""`` if no usable values).
     """
-    query = ""
+
+    def _fql_quote(v: Any) -> str:
+        # Escape single quotes inside the value so they don't terminate the FQL string.
+        return "'" + str(v).replace("'", "\\'") + "'"
+
+    parts: list[str] = []
 
     for key, value in query_params.items():
-        if query:
-            query += "+"
-        query += f"{key}:'{value}'"
+        if value is None:
+            continue
+        if isinstance(value, list):
+            if not value:
+                # Empty list: nothing to filter on for this key.
+                continue
+            if len(value) == 1:
+                parts.append(f"{key}:{_fql_quote(value[0])}")
+            else:
+                joined = ",".join(_fql_quote(v) for v in value)
+                parts.append(f"{key}:[{joined}]")
+        else:
+            parts.append(f"{key}:{_fql_quote(value)}")
 
-    return query
+    return "+".join(parts)
 
 
 def modify_detection_summaries_outputs(detection: dict):
@@ -1082,6 +1118,7 @@ def create_json_iocs_list(
     host_groups: list[str] | None = None,
     tags: list[str] | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
@@ -1098,6 +1135,7 @@ def create_json_iocs_list(
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
     :param file_name: Name of the file for file indicators.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
     """
     iocs_list = []
     for ioc_value in iocs_value:
@@ -1114,11 +1152,115 @@ def create_json_iocs_list(
                 applied_globally=applied_globally,
                 host_groups=host_groups,
                 tags=tags,
+                mobile_action=mobile_action,
                 metadata=assign_params(filename=file_name) if ioc_type in {"sha256", "md5"} else None,
             )
         )
 
     return iocs_list
+
+
+def list_workflow_definitions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow definitions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., name.desc).
+
+    Returns:
+        Response JSON containing workflow definitions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_definitions: calling API with {params=}")
+    return http_request("GET", "/workflows/combined/definitions/v1", params=params)
+
+
+def execute_workflow(
+    definition_id: list[str] | None = None,
+    name: str | None = None,
+    execution_cid: list[str] | None = None,
+    key: str | None = None,
+    source_event_url: str | None = None,
+    body: str = "{}",
+) -> dict:
+    """
+    Execute an on-demand workflow.
+
+    Args:
+        definition_id: Workflow definition ID(s).
+        name: Workflow name.
+        execution_cid: CID(s) to execute the workflow on.
+        key: Deduplication key.
+        source_event_url: URL reference to the source that triggered the workflow.
+        body: JSON body to pass to the workflow execution.
+
+    Returns:
+        Response JSON from the workflow execution.
+    """
+    params = assign_params(
+        definition_id=definition_id,
+        name=name,
+        execution_cid=execution_cid,
+        key=key,
+        source_event_url=source_event_url,
+    )
+    try:
+        json_body = json.loads(body)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON in 'body' argument: {e}")
+    demisto.debug(f"[Workflow] execute_workflow: calling API with {params=}, body_keys={list(json_body.keys())}")
+    return http_request("POST", "/workflows/entities/execute/v1", params=params, json=json_body)
+
+
+def list_workflow_executions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow executions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., created_at.desc).
+
+    Returns:
+        Response JSON containing workflow executions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_executions: calling API with {params=}")
+    return http_request("GET", "/workflows/combined/executions/v1", params=params)
+
+
+def get_workflow_execution_results(ids: list[str]) -> dict:
+    """
+    Get detailed results for specific workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+
+    Returns:
+        Response JSON containing execution results.
+    """
+    params = {"ids": ids}
+    return http_request("GET", "/workflows/entities/execution-results/v1", params=params, status_code=404)
+
+
+def perform_workflow_execution_action(ids: list[str], action_name: str) -> dict:
+    """
+    Perform an action (cancel or resume) on workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+        action_name: The action to perform ('cancel' or 'resume').
+
+    Returns:
+        Response JSON from the action.
+    """
+    params = {"action_name": action_name}
+    body = {"ids": ids}
+    return http_request("POST", "/workflows/entities/execution-actions/v1", params=params, json=body, status_code=404)
 
 
 """ COMMAND SPECIFIC FUNCTIONS """
@@ -2097,6 +2239,7 @@ def update_custom_ioc(
     description: str | None = None,
     expiration: str | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -2113,6 +2256,7 @@ def update_custom_ioc(
                 source=source,
                 description=description,
                 expiration=expiration,
+                mobile_action=mobile_action,
                 metadata=assign_params(filename=file_name),
             )
         ]
@@ -2270,15 +2414,16 @@ def contain_host(ids):
     return http_request("POST", "/devices/entities/devices-actions/v2", data=data, params=params)
 
 
-def lift_host_containment(ids):
+def lift_host_containment(ids, action_name: str = "lift_containment"):
     """
-    Lifts off containment from host(s) with matchind ids
+    Lifts off containment from host(s) with matching ids
     :param ids: IDs of host to lift off containment from
+    :param action_name: The action to perform. Either 'lift_containment' or 'lift_filesystem_containment_all'.
     :return: Lift off containment response json
     """
     payload = {"ids": ids}
     data = json.dumps(payload)
-    params = {"action_name": "lift_containment"}
+    params = {"action_name": action_name}
     return http_request("POST", "/devices/entities/devices-actions/v2", data=data, params=params)
 
 
@@ -4284,7 +4429,9 @@ def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> Non
     log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_unique_aids)}")
 
 
-def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, str, int, set, set]:
+def load_spotlight_state(
+    context_store: ContentClientContextStore,
+) -> tuple[ContentClientState, str, int, set, set, list[str]]:
     """
     Load Spotlight state from integration context.
 
@@ -4292,7 +4439,7 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
         context_store: Context store for reading integration context
 
     Returns:
-        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids)
+        Tuple of (state_object, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities)
     """
     # Read entire integration context (preserves all existing keys)
     integration_context = context_store.read()
@@ -4307,14 +4454,16 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
     unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
     processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+    completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
         f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"completed_severities={completed_severities}, "
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
+    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities
 
 
 def update_spotlight_state_and_metadata(
@@ -4324,6 +4473,7 @@ def update_spotlight_state_and_metadata(
     total_fetched: int,
     unique_aids: set,
     processed_aids: set,
+    completed_severities: list[str] | None = None,
 ) -> None:
     """
     Update Spotlight state with cursor and metadata.
@@ -4336,85 +4486,48 @@ def update_spotlight_state_and_metadata(
         total_fetched: Total vulnerabilities fetched
         unique_aids: Set of unique AIDs
         processed_aids: Set of processed AIDs
+        completed_severities: List of severities that have completed successfully (optional)
     """
     spotlight_state.cursor = cursor
+
+    # Preserve existing completed_severities if not explicitly provided
+    if completed_severities is None and isinstance(spotlight_state.metadata, dict):
+        completed_severities = spotlight_state.metadata.get("completed_severities", [])
+    elif completed_severities is None:
+        completed_severities = []
+
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
         "unique_aids": list(unique_aids),
         "processed_aids": list(processed_aids),
+        "completed_severities": completed_severities,
     }
 
 
-def handle_spotlight_fetch_error(
-    error: Exception,
-    client: ContentClient,
-    spotlight_state: ContentClientState,
-    context_store: ContentClientContextStore,
-    after_token: str | None,
-    snapshot_id: str,
-    total_fetched: int,
-    unique_aids: set,
-    processed_aids: set,
-) -> None:
+async def fetch_spotlight_vulnerabilities_page(
+    client: ContentClient, after_token: str | None, filter_query: str
+) -> tuple[list, dict]:
     """
-    Handle errors during Spotlight fetch by logging, saving state, and re-raising.
-    Consolidates error handling logic for both ContentClientError and general exceptions.
-
-    Args:
-        error: The exception that occurred
-        client: ContentClient instance for diagnostics
-        spotlight_state: State object to update
-        context_store: Context store for saving state
-        after_token: Current pagination token
-        snapshot_id: Snapshot ID for tracking
-        total_fetched: Total vulnerabilities fetched so far
-        unique_aids: Set of unique AIDs
-        processed_aids: Set of processed AIDs
-    """
-    # Log error with diagnostics if ContentClientError
-    if isinstance(error, ContentClientError):
-        log_falcon_assets(f"ContentClient error during Spotlight fetch: {str(error)}", "error")
-        diagnosis = client.diagnose_error(error)
-        log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
-    else:
-        log_falcon_assets(f"Unexpected error during Spotlight fetch: {str(error)}", "error")
-
-    # Save current state for retry (including processed_aids from handler)
-    update_spotlight_state_and_metadata(
-        spotlight_state=spotlight_state,
-        cursor=after_token,
-        snapshot_id=snapshot_id,
-        total_fetched=total_fetched,
-        unique_aids=unique_aids,
-        processed_aids=processed_aids,
-    )
-    save_spotlight_state(context_store, spotlight_state)
-
-    # Re-raise the exception
-    raise error
-
-
-async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_token: str | None) -> tuple[list, dict]:
-    """
-    Fetch a single batch of Spotlight vulnerabilities.
+    Fetch a single page of Spotlight vulnerabilities with custom filter.
 
     Args:
         client: ContentClient instance
         after_token: Pagination token (None for first request)
+        filter_query: FQL filter query (e.g., "status:['open','reopen']" or "status:['open','reopen']+cve.severity:['CRITICAL']")
 
     Returns:
         Tuple of (vulnerabilities_list, response_data)
     """
     # Build request parameters
-    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": "status:['open','reopen']", "facet": ["host_info", "cve"]}
+    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": filter_query, "facet": ["host_info", "cve"]}
 
     # Add pagination token if provided
     if after_token:
         params["after"] = after_token
 
     log_falcon_assets(
-        f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
+        f"Fetching Spotlight page with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
     )
 
     # Make ASYNC API request
@@ -4424,114 +4537,9 @@ async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_tok
     response_data = response.json()
     vulnerabilities = response_data.get("resources", [])
 
-    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
+    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this page")
 
     return vulnerabilities, response_data
-
-
-async def process_vulnerability_batches(
-    client: ContentClient,
-    context_store: ContentClientContextStore,
-    spotlight_state: ContentClientState,
-    snapshot_id: str,
-    asset_handler: AssetsDeviceHandler,
-    unique_aids: set,
-    after_token: str | None,
-    total_fetched: int,
-) -> tuple[int, set, set[asyncio.Task]]:
-    """Paginate through all Spotlight vulnerability pages, dispatching each batch for async send.
-
-    Fetches vulnerability pages sequentially (pagination token required), extracts unique AIDs
-    for asset enrichment, and creates async tasks to send each batch to XSIAM.
-
-    Args:
-        client: The ContentClient used to fetch vulnerability data.
-        context_store: Context store for state persistence.
-        spotlight_state: Current Spotlight state object.
-        snapshot_id: Snapshot ID for asset collection tracking.
-        asset_handler: AssetsDeviceHandler for AID enrichment.
-        unique_aids: Set of unique AIDs accumulated across batches.
-        after_token: Pagination cursor for the next page.
-        total_fetched: Running total of fetched vulnerabilities.
-
-    Returns:
-        A tuple of (total_fetched, unique_aids, pending_tasks).
-    """
-    pending_tasks: set[asyncio.Task] = set()
-    batch_counter = 0
-    last_saved_batch_number = 0
-
-    while True:
-        # Fetch one batch (SEQUENTIAL - must wait for pagination token)
-        vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
-
-        # Extract unique AIDs from this batch
-        extract_unique_aids(vulnerabilities, unique_aids)
-
-        # Send AIDs to asset handler for enrichment (async fire-and-forget)
-        batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
-        await asset_handler.receive_new_aids(batch_aids)
-
-        # Update counters
-        total_fetched += len(vulnerabilities)
-
-        # Get next pagination token
-        new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
-
-        # Update state
-        batch_counter += 1
-        update_spotlight_state_and_metadata(
-            spotlight_state=spotlight_state,
-            cursor=new_after_token,
-            snapshot_id=snapshot_id,
-            total_fetched=total_fetched,
-            unique_aids=unique_aids,
-            processed_aids=asset_handler.processed_aids,
-        )
-
-        # Determine if this is the last batch
-        is_last_batch = not new_after_token
-        items_count = total_fetched if is_last_batch else 1
-
-        task = create_task_send_batch_to_xsiam_and_save_context(
-            data=vulnerabilities,
-            product=SPOTLIGHT_VULN_PRODUCT,
-            snapshot_id=snapshot_id,
-            items_count=items_count,
-            batch_number=batch_counter,
-            last_saved_batch_number=last_saved_batch_number,
-            context_store=context_store,
-            state=spotlight_state,
-            save_state_callback=save_spotlight_state,
-            data_type="assets",
-        )
-
-        # Track task and update last_saved_batch_number when task completes
-        def update_last_saved(future):
-            nonlocal last_saved_batch_number
-            try:
-                last_saved_batch_number = future.result()
-            except Exception as e:
-                log_falcon_assets(f"Background vulnerability task failed: {e}", "error")
-            finally:
-                pending_tasks.discard(future)
-
-        pending_tasks.add(task)
-        task.add_done_callback(update_last_saved)
-        log_falcon_assets(f"Created background task for vulnerability batch {batch_counter}")
-
-        # Check if more pages exist
-        if is_last_batch:
-            log_falcon_assets(
-                f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}", "info"
-            )
-            break
-
-        # More pages exist - continue to next batch
-        log_falcon_assets(f"More pages available. Fetched so far: {total_fetched}")
-        after_token = new_after_token
-
-    return total_fetched, unique_aids, pending_tasks
 
 
 async def wait_for_background_tasks(pending_tasks: set[asyncio.Task], task_description: str = "background") -> None:
@@ -4558,111 +4566,435 @@ async def wait_for_background_tasks(pending_tasks: set[asyncio.Task], task_descr
     log_falcon_assets(f"All {task_description} tasks completed successfully", "info")
 
 
-async def finalize_spotlight_fetch(
-    asset_handler: AssetsDeviceHandler,
+async def fetch_vulnerabilities_by_severity(
+    client: ContentClient,
+    severity: str,
     context_store: ContentClientContextStore,
     spotlight_state: ContentClientState,
-    total_fetched: int,
-    unique_aids: set,
-) -> None:
-    """Flush remaining asset enrichment tasks and reset Spotlight state after a successful fetch.
+    snapshot_id: str,
+    asset_handler: AssetsDeviceHandler,
+) -> tuple[int, set, set[asyncio.Task]]:
+    """Fetch all vulnerabilities for a single severity level with pagination.
+
+    This function handles continuous pagination for one severity, avoiding cursor
+    expiration by fetching all pages sequentially without delays.
 
     Args:
-        asset_handler: AssetsDeviceHandler managing AID enrichment.
-        context_store: Context store for state persistence.
-        spotlight_state: Current Spotlight state object.
-        total_fetched: Total number of vulnerabilities fetched.
-        unique_aids: Set of unique AIDs discovered during the fetch.
+        client: ContentClient instance for API calls
+        severity: Severity level to filter (CRITICAL, HIGH, MEDIUM, LOW, NONE, UNKNOWN)
+        context_store: Context store for state persistence
+        spotlight_state: Current Spotlight state object
+        snapshot_id: Snapshot ID for asset collection tracking
+        asset_handler: AssetsDeviceHandler for AID enrichment
+
+    Returns:
+        Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks)
     """
-    # Flush remaining AIDs and wait for all asset enrichment tasks
-    total_assets_count = len(unique_aids)
+    log_falcon_assets(f"[{severity}] Starting vulnerability fetch for severity: {severity}", "info")
+
+    total_fetched = 0
+    unique_aids: set = set()
+    pending_tasks: set[asyncio.Task] = set()
+    after_token: str | None = None
+    batch_counter = 0
+    last_saved_batch_number = 0
+
+    try:
+        while True:
+            # Build filter query with severity
+            filter_query = f"status:['open','reopen']+cve.severity:['{severity}']"
+
+            log_falcon_assets(
+                f"[{severity}] Fetching batch {batch_counter + 1} with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, "
+                f"after_token={'present' if after_token else 'none'}"
+            )
+
+            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_page(
+                client=client, after_token=after_token, filter_query=filter_query
+            )
+
+            log_falcon_assets(f"[{severity}] Fetched {len(vulnerabilities)} vulnerabilities in batch {batch_counter + 1}")
+
+            # Extract unique AIDs from this batch
+            extract_unique_aids(vulnerabilities, unique_aids)
+
+            # Send AIDs to asset handler for enrichment (async fire-and-forget)
+            batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+            await asset_handler.receive_new_aids(batch_aids)
+
+            # Update counters
+            total_fetched += len(vulnerabilities)
+            batch_counter += 1
+
+            # Get next pagination token
+            new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
+
+            # Determine if this is the last batch for this severity
+            is_last_batch = not new_after_token
+
+            # For severity-based fetching, we use items_count=1 for all batches
+            # The final sealing happens in the orchestrator after all severities complete
+            items_count = 1
+
+            # Create task to send batch to XSIAM
+            task = create_task_send_batch_to_xsiam_and_save_context(
+                data=vulnerabilities,
+                product=SPOTLIGHT_VULN_PRODUCT,
+                snapshot_id=snapshot_id,
+                items_count=items_count,
+                batch_number=batch_counter,
+                last_saved_batch_number=last_saved_batch_number,
+                context_store=context_store,
+                state=spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+
+            # Track task and update last_saved_batch_number when task completes
+            def update_last_saved(future):
+                nonlocal last_saved_batch_number
+                try:
+                    last_saved_batch_number = future.result()
+                except Exception as e:
+                    log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
+                finally:
+                    pending_tasks.discard(future)
+
+            pending_tasks.add(task)
+            task.add_done_callback(update_last_saved)
+            log_falcon_assets(f"[{severity}] Created background task for batch {batch_counter}")
+
+            # Check if more pages exist
+            if is_last_batch:
+                log_falcon_assets(
+                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}",
+                    "info",
+                )
+                break
+
+            # More pages exist - continue to next batch
+            log_falcon_assets(f"[{severity}] More pages available. Fetched so far: {total_fetched}")
+            after_token = new_after_token
+
+    except ContentClientError as e:
+        # Check if this is an expired cursor error
+        error_str = str(e)
+        if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
+            log_falcon_assets(
+                f"[{severity}] Pagination cursor expired. This should not happen with continuous fetching. "
+                f"Progress ({total_fetched} vulnerabilities) will be lost.",
+                "error",
+            )
+        log_falcon_assets(f"[{severity}] Error during fetch: {e}", "error")
+        raise
+    except Exception as e:
+        log_falcon_assets(f"[{severity}] Unexpected error during fetch: {e}", "error")
+        raise
+
+    return total_fetched, unique_aids, pending_tasks
+
+
+async def await_and_aggregate_severity_results(
+    severity_tasks: list[tuple[str, asyncio.Task]],
+    current_completed_severities: list[str],
+    context_store: ContentClientContextStore,
+    spotlight_state: ContentClientState,
+    snapshot_id: str,
+) -> tuple[int, set, set[asyncio.Task], list[str]]:
+    """Wait for all severity tasks and aggregate their results.
+
+    Args:
+        severity_tasks: List of (severity, task) tuples to await
+        current_completed_severities: List of severities already completed
+        context_store: Context store for state persistence
+        spotlight_state: Current Spotlight state object
+        snapshot_id: Snapshot ID for asset collection tracking
+
+    Returns:
+        Tuple of (total_vulnerabilities, all_unique_aids, all_pending_tasks, updated_completed_severities)
+    """
+    total_vulnerabilities = 0
+    all_unique_aids: set = set()
+    all_pending_tasks: set[asyncio.Task] = set()
+
+    for severity, task in severity_tasks:
+        try:
+            log_falcon_assets(f"Waiting for {severity} severity task to complete...", "info")
+            severity_total, severity_aids, severity_tasks_result = await task
+            total_vulnerabilities += severity_total
+            all_unique_aids.update(severity_aids)
+            all_pending_tasks.update(severity_tasks_result)
+            log_falcon_assets(
+                f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info"
+            )
+
+            # Mark this severity as completed
+            if severity not in current_completed_severities:
+                current_completed_severities.append(severity)
+                log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
+
+                # Save state with updated completed severities after each severity completes
+                update_spotlight_state_and_metadata(
+                    spotlight_state=spotlight_state,
+                    cursor=None,  # No cursor needed for severity-based fetching
+                    snapshot_id=snapshot_id,
+                    total_fetched=0,  # Reset for next cycle
+                    unique_aids=set(),  # Reset for next cycle
+                    processed_aids=set(),  # Reset for next cycle
+                    completed_severities=current_completed_severities,
+                )
+                save_spotlight_state(context_store, spotlight_state)
+                log_falcon_assets(f"[{severity}] Saved completion state to context", "info")
+
+        except Exception as e:
+            log_falcon_assets(f"[{severity}] Failed with error: {e}", "error")
+            # Don't mark as completed if it failed - will retry next cycle
+            continue
+
     log_falcon_assets(
-        f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info"
-    )
-    await asset_handler.flush_remaining(total_items_count=total_assets_count)
-
-    # Fetch completed successfully - reset state for next run
-    log_falcon_assets("Resetting Spotlight state after successful complete fetch")
-    update_spotlight_state_and_metadata(
-        spotlight_state=spotlight_state, cursor=None, snapshot_id="", total_fetched=0, unique_aids=set(), processed_aids=set()
-    )
-
-    # Save reset state to integration context
-    save_spotlight_state(context_store, spotlight_state)
-
-    log_falcon_assets(
-        f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
-        f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}",
+        f"All severity queries completed. Total vulnerabilities: {total_vulnerabilities}, "
+        f"Total unique hosts: {len(all_unique_aids)}",
         "info",
     )
 
+    return total_vulnerabilities, all_unique_aids, all_pending_tasks, current_completed_severities
 
-async def fetch_spotlight_assets():
-    """Fetch Spotlight vulnerabilities using ContentClient with async capabilities.
 
-    Orchestrates the full Spotlight asset fetch lifecycle:
-    1. Loads persisted state and initializes the client and asset handler.
-    2. Paginates through all vulnerability batches via ``process_vulnerability_batches``.
-    3. Waits for all background send tasks via ``wait_for_background_tasks``.
-    4. Flushes remaining asset enrichment and resets state via ``finalize_spotlight_fetch``.
+async def finalize_severity_fetch(
+    all_pending_tasks: set[asyncio.Task],
+    current_completed_severities: list[str],
+    total_vulnerabilities: int,
+    all_unique_aids: set,
+    asset_handler: AssetsDeviceHandler,
+    context_store: ContentClientContextStore,
+    spotlight_state: ContentClientState,
+    snapshot_id: str,
+) -> None:
+    """Finalize the severity fetch by waiting for background tasks and sealing snapshot if complete.
+
+    Args:
+        all_pending_tasks: Set of background tasks to wait for
+        current_completed_severities: List of severities completed in this cycle
+        total_vulnerabilities: Total number of vulnerabilities fetched
+        all_unique_aids: Set of all unique asset IDs
+        asset_handler: Asset handler for enrichment
+        context_store: Context store for state persistence
+        spotlight_state: Current Spotlight state object
+        snapshot_id: Snapshot ID for asset collection tracking
     """
-    log_falcon_assets("Starting Spotlight assets fetch execution.", "info")
+    # Wait for all background vulnerability send tasks to complete
+    log_falcon_assets(f"Waiting for {len(all_pending_tasks)} background vulnerability send tasks...", "info")
+    await wait_for_background_tasks(all_pending_tasks, "vulnerability send")
 
-    context_store = ContentClientContextStore(namespace="SpotlightAssets")
+    # Check if ALL severities have completed (including previously completed ones)
+    all_severities_completed = set(current_completed_severities) == set(SPOTLIGHT_SEVERITIES)
 
-    spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
+    if all_severities_completed:
+        log_falcon_assets("All severities completed successfully. Sending final sealing batch.", "info")
 
-    client = create_spotlight_client(context_store)
+        # Send final sealing batch with actual total count ONLY when all severities complete
+        log_falcon_assets(f"Sending final sealing batch with total count: {total_vulnerabilities}", "info")
+        final_task = create_task_send_batch_to_xsiam_and_save_context(
+            data=[],  # Empty batch for sealing
+            product=SPOTLIGHT_VULN_PRODUCT,
+            snapshot_id=snapshot_id,
+            items_count=total_vulnerabilities,  # Final total count
+            batch_number=999999,  # High number to ensure it's processed last
+            last_saved_batch_number=0,
+            context_store=context_store,
+            state=spotlight_state,
+            save_state_callback=save_spotlight_state,
+            data_type="assets",
+        )
+        await final_task
+        log_falcon_assets("Final sealing batch sent successfully", "info")
 
+        # Flush remaining AIDs and wait for all asset enrichment tasks
+        total_assets_count = len(all_unique_aids)
+        log_falcon_assets(
+            f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info"
+        )
+        await asset_handler.flush_remaining(total_items_count=total_assets_count)
+
+        log_falcon_assets(
+            f"Parallel severity fetch completed. Total vulnerabilities: {total_vulnerabilities}, "
+            f"Total unique hosts: {len(all_unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}",
+            "info",
+        )
+
+        # State will be cleared by fetch_spotlight_assets() after this function returns
+        log_falcon_assets("All severities completed successfully.", "info")
+    else:
+        log_falcon_assets(
+            f"Not all severities completed yet. Snapshot NOT sealed. Completed: {current_completed_severities}, "
+            f"Remaining: {[s for s in SPOTLIGHT_SEVERITIES if s not in current_completed_severities]}",
+            "warning",
+        )
+        log_falcon_assets(
+            f"Partial fetch completed. Total vulnerabilities in this cycle: {total_vulnerabilities}, "
+            f"Total unique hosts: {len(all_unique_aids)}. Will retry incomplete severities in next fetch.",
+            "info",
+        )
+
+
+async def fetch_spotlight_by_severity_parallel(
+    client: ContentClient,
+    context_store: ContentClientContextStore,
+    spotlight_state: ContentClientState,
+    snapshot_id: str,
+    completed_severities: list[str],
+) -> tuple[int, set]:
+    """Orchestrate parallel vulnerability fetching across all severity levels.
+
+    Runs 6 parallel queries (one per severity) to avoid cursor expiration issues.
+    Each severity query maintains its own cursor and fetches continuously.
+    Skips severities that have already completed in previous fetch cycles.
+
+    Args:
+        client: ContentClient instance for API calls
+        context_store: Context store for state persistence
+        spotlight_state: Current Spotlight state object
+        snapshot_id: Snapshot ID for asset collection tracking
+        completed_severities: List of severities already completed in previous cycles
+
+    Returns:
+        Tuple of (total_vulnerabilities, unique_aids)
+    """
+    log_falcon_assets("Starting parallel vulnerability fetch by severity", "info")
+    log_falcon_assets(f"All severities: {SPOTLIGHT_SEVERITIES}", "info")
+    log_falcon_assets(f"Previously completed severities: {completed_severities}", "info")
+
+    # Filter out already completed severities
+    severities_to_fetch = [s for s in SPOTLIGHT_SEVERITIES if s not in completed_severities]
+
+    if not severities_to_fetch:
+        log_falcon_assets("All severities already completed. Nothing to fetch.", "info")
+        return 0, set()
+
+    log_falcon_assets(f"Severities to fetch in this cycle: {severities_to_fetch}", "info")
+
+    # Track completed severities in this cycle (start with previously completed)
+    current_completed_severities = completed_severities.copy()
+
+    # Create asset handler for enrichment
     asset_handler = AssetsDeviceHandler(
         client=client,
         context_store=context_store,
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
-        processed_aids=processed_aids,
+        processed_aids=set(),  # Start fresh for this fetch
         batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
     )
 
+    # Create parallel tasks for each severity that needs fetching
+    severity_tasks = []
+    for severity in severities_to_fetch:
+        task = asyncio.create_task(
+            fetch_vulnerabilities_by_severity(
+                client=client,
+                severity=severity,
+                context_store=context_store,
+                spotlight_state=spotlight_state,
+                snapshot_id=snapshot_id,
+                asset_handler=asset_handler,
+            )
+        )
+        severity_tasks.append((severity, task))
+
+    log_falcon_assets(f"Created {len(severity_tasks)} parallel severity fetch tasks", "info")
+
+    # Wait for all severity tasks and aggregate results
+    (
+        total_vulnerabilities,
+        all_unique_aids,
+        all_pending_tasks,
+        current_completed_severities,
+    ) = await await_and_aggregate_severity_results(
+        severity_tasks=severity_tasks,
+        current_completed_severities=current_completed_severities,
+        context_store=context_store,
+        spotlight_state=spotlight_state,
+        snapshot_id=snapshot_id,
+    )
+
+    # Finalize: wait for background tasks, seal snapshot if all complete, flush assets
+    await finalize_severity_fetch(
+        all_pending_tasks=all_pending_tasks,
+        current_completed_severities=current_completed_severities,
+        total_vulnerabilities=total_vulnerabilities,
+        all_unique_aids=all_unique_aids,
+        asset_handler=asset_handler,
+        context_store=context_store,
+        spotlight_state=spotlight_state,
+        snapshot_id=snapshot_id,
+    )
+
+    return total_vulnerabilities, all_unique_aids
+
+
+async def fetch_spotlight_assets():
+    """Fetch Spotlight vulnerabilities using severity-based parallel approach.
+
+    IMPLEMENTATION (Severity-Based Parallel):
+    1. Split vulnerability fetching by severity: CRITICAL, HIGH, MEDIUM, LOW, NONE, UNKNOWN
+    2. Run 6 parallel queries, each with independent cursor
+    3. Each query fetches continuously (no cursor expiration within query)
+    4. Aggregate results from all severities
+    5. Extract unique AIDs and enrich assets
+    6. Send vulnerabilities and assets to XSIAM with proper snapshot sealing
+
+    This approach solves the pagination cursor TTL issue for customers with 6M+ vulnerabilities
+    by parallelizing across severity levels. Largest query (LOW, ~2.4M vulns) completes in ~136 minutes.
+    Total time = max(all queries) = ~2.3 hours. No cursor expiration, no duplication.
+    """
+    log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
+
+    context_store = ContentClientContextStore(namespace="SpotlightAssets")
+    spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
+        context_store
+    )
+    # Note: total_fetched, unique_aids, processed_aids not used in severity-based approach
+    # Each severity starts fresh. Only completed_severities used to skip already-completed severities.
+
+    client = create_spotlight_client(context_store)
+
     try:
-        total_fetched, unique_aids, pending_tasks = await process_vulnerability_batches(
+        # Fetch vulnerabilities in parallel by severity
+        total_vulnerabilities, all_unique_aids = await fetch_spotlight_by_severity_parallel(
             client=client,
             context_store=context_store,
             spotlight_state=spotlight_state,
             snapshot_id=snapshot_id,
-            asset_handler=asset_handler,
-            unique_aids=unique_aids,
-            after_token=spotlight_state.cursor,
-            total_fetched=total_fetched,
+            completed_severities=completed_severities,
         )
 
-        await wait_for_background_tasks(pending_tasks, "vulnerability send")
-
-        await finalize_spotlight_fetch(
-            asset_handler=asset_handler,
-            context_store=context_store,
+        # Reset state after successful fetch (completed_severities already cleared in parallel function if all done)
+        log_falcon_assets("Resetting Spotlight state after successful complete fetch")
+        update_spotlight_state_and_metadata(
             spotlight_state=spotlight_state,
-            total_fetched=total_fetched,
-            unique_aids=unique_aids,
+            cursor=None,
+            snapshot_id="",
+            total_fetched=0,
+            unique_aids=set(),
+            processed_aids=set(),
+            completed_severities=[],  # Ensure it's cleared
+        )
+        save_spotlight_state(context_store, spotlight_state)
+
+        log_falcon_assets(
+            f"Finished Spotlight assets fetch. Total vulnerabilities: {total_vulnerabilities}, "
+            f"Total unique hosts: {len(all_unique_aids)}",
+            "info",
         )
 
     except (ContentClientError, Exception) as e:
-        # Read latest values from spotlight_state which is updated in-place by
-        # even if the function raised before returning.
-        metadata = spotlight_state.metadata
-        if isinstance(metadata, dict):
-            total_fetched = metadata.get("total_fetched_until_now", total_fetched)
-            unique_aids = set(metadata.get("unique_aids", unique_aids))
-        handle_spotlight_fetch_error(
-            error=e,
-            client=client,
-            spotlight_state=spotlight_state,
-            context_store=context_store,
-            after_token=spotlight_state.cursor,
-            snapshot_id=snapshot_id,
-            total_fetched=total_fetched,
-            unique_aids=unique_aids,
-            processed_aids=asset_handler.processed_aids,
-        )
+        log_falcon_assets(f"Error during Spotlight fetch: {e}", "error")
+
+        if isinstance(e, ContentClientError):
+            diagnosis = client.diagnose_error(e)
+            log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
+
+        raise
 
     finally:
         await client.aclose()
@@ -5795,6 +6127,7 @@ def upload_custom_ioc_command(
     host_groups: list[str] | None = None,
     tags: list[str] | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -5808,6 +6141,7 @@ def upload_custom_ioc_command(
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
 
     """
     if action in {"prevent", "detect"} and not severity:
@@ -5817,6 +6151,8 @@ def upload_custom_ioc_command(
     host_groups: list[str] = argToList(host_groups)
     tags = argToList(tags)
     platforms_list = argToList(platforms)
+    if mobile_action and ("android" not in platforms_list and "ios" not in platforms_list):
+        raise ValueError("mobile_action requires a mobile platform (android or ios) in the platforms argument.")
 
     iocs_json_batch = create_json_iocs_list(
         ioc_type,
@@ -5831,6 +6167,7 @@ def upload_custom_ioc_command(
         host_groups,
         tags,
         file_name,
+        mobile_action,
     )
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
@@ -5859,6 +6196,7 @@ def update_custom_ioc_command(
     description: str | None = None,
     expiration: str | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -5869,6 +6207,7 @@ def update_custom_ioc_command(
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
     :param file_name: The file name associated with the indicator.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
     """
 
     raw_res = update_custom_ioc(
@@ -5880,6 +6219,7 @@ def update_custom_ioc_command(
         description,
         expiration,
         file_name,
+        mobile_action,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get("resources", [])
@@ -6247,8 +6587,13 @@ def lift_host_containment_command():
     :return: EntryObject of lift host containment
     """
     ids = argToList(demisto.args().get("ids"))
-    raw_res = lift_host_containment(ids)
-    hr = f"Containment has been lift off host {str(ids)[1:-1]}"
+    lift_filesystem = argToBoolean(demisto.args().get("lift_filesystem_containment_all", "false"))
+    action_name = "lift_filesystem_containment_all" if lift_filesystem else "lift_containment"
+    raw_res = lift_host_containment(ids, action_name=action_name)
+    if lift_filesystem:
+        hr = f"Filesystem containment has been lifted off host {str(ids)[1:-1]}"
+    else:
+        hr = f"Containment has been lifted off host {str(ids)[1:-1]}"
     return create_entry_object(contents=raw_res, hr=hr)
 
 
@@ -8388,7 +8733,7 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
         ids = list_quarantined_files_id(args.get("filter"), search_args, pagination_args).get("resources")
 
     if not ids:
-        return CommandResults(readable_output="The arguments/filters you provided did not match any files.")
+        return CommandResults(readable_output=NO_QUARANTINED_FILES_MSG)
 
     files = list_quarantined_files(ids).get("resources")
     if isinstance(files, list):
@@ -8440,6 +8785,12 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
             )
 
         ids = list_quarantined_files_id(args.get("filter"), search_args, pagination_args).get("resources")
+
+    if not ids:
+        # No matching quarantined files were found for the given search arguments/filter.
+        # Returning a friendly message instead of letting the PATCH go out without ids,
+        # which CrowdStrike rejects with HTTP 400 Validation error.
+        return CommandResults(readable_output=NO_QUARANTINED_FILES_MSG)
 
     update_args = assign_params(
         ids=ids,
@@ -9451,6 +9802,304 @@ def get_ioarules_command(args: dict) -> CommandResults:
     )
 
 
+def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow definitions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    if raw_filter := args.get("filter"):
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"id:'{definition_id}'")
+        if activity_id := args.get("activity_id"):
+            filter_parts.append(f"activity_id:'{activity_id}'")
+        if name := args.get("name"):
+            filter_parts.append(f"name:~'{name}'")
+        if description := args.get("description"):
+            filter_parts.append(f"description:~'{description}'")
+        filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: built {filter_query=}")
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_definitions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    definitions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: found {len(definitions)} definitions")
+
+    # Build human-readable table
+    hr_data = []
+    for definition in definitions:
+        trigger = definition.get("trigger", {})
+        hr_data.append(
+            {
+                "Definition ID": definition.get("id"),
+                "Name": definition.get("name"),
+                "Description": definition.get("description"),
+                "Trigger Event": trigger.get("event"),
+                "Trigger Name": trigger.get("name"),
+                "Trigger Schedule": trigger.get("schedule"),
+                "Trigger Type": trigger.get("type"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        name="Workflow Definitions",
+        t=hr_data,
+        headers=["Definition ID", "Name", "Description", "Trigger Event", "Trigger Name", "Trigger Schedule", "Trigger Type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.WorkflowDefinition",
+        outputs_key_field="id",
+        outputs=definitions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Executes an on-demand workflow in CrowdStrike Falcon.
+    Either definition_id or name must be provided.
+    """
+    definition_id = argToList(args.get("definition_id"))
+    name = args.get("name")
+
+    if not definition_id and not name:
+        raise DemistoException("Either 'definition_id' or 'name' must be provided.")
+
+    execution_cid = argToList(args.get("execution_cid"))
+    key = args.get("key")
+    source_event_url = args.get("source_event_url")
+    # body is mendatory in the http request - if not provided, we set to empty dict
+    body = args.get("body", "{}")
+
+    response = execute_workflow(
+        definition_id=definition_id or None,
+        name=name,
+        execution_cid=execution_cid or None,
+        key=key,
+        source_event_url=source_event_url,
+        body=body,
+    )
+
+    resources = response.get("resources", [])
+    demisto.debug(f"[Workflow] workflow_execute_command: got {len(resources)} resources")
+
+    # Build human-readable output
+    # The API returns resources as a list of execution ID strings, not dicts.
+    hr_data = [{"Execution ID": resource} for resource in resources]
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution",
+        t=hr_data,
+        headers=["Execution ID"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflow",
+        outputs=resources,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow executions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    if raw_filter := args.get("filter"):
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"definition_id:'{definition_id}'")
+        if definition_name := args.get("definition_name"):
+            filter_parts.append(f"definition_name:~'{definition_name}'")
+        if execution_id := args.get("execution_id"):
+            filter_parts.append(f"id:'{execution_id}'")
+        filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_executions_command: built {filter_query=}")
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_executions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    executions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_executions_command: found {len(executions)} executions")
+
+    # Build human-readable table from activities
+    hr_data = []
+    for execution in executions:
+        execution_id_val = execution.get("execution_id", execution.get("id"))
+        activities = execution.get("activities", [])
+        if activities:
+            for activity in activities:
+                hr_data.append(
+                    {
+                        "Execution ID": execution_id_val,
+                        "Activity Node ID": activity.get("node_id"),
+                        "Activity Start Timestamp": activity.get("start_timestamp"),
+                        "Activity End Timestamp": activity.get("end_timestamp"),
+                        "Activity Status": activity.get("status"),
+                        "Activity Name": activity.get("name"),
+                        "Activity Type": activity.get("type"),
+                    }
+                )
+        else:
+            hr_data.append({"Execution ID": execution_id_val})
+
+    readable_output = tableToMarkdown(
+        name="Workflow Executions",
+        t=hr_data,
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity Name",
+            "Activity Type",
+        ],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.Execution",
+        outputs_key_field="execution_id",
+        outputs=executions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Gets detailed results for specific workflow executions.
+    """
+    ids = argToList(args.get("ids"))
+
+    response = get_workflow_execution_results(ids=ids)
+    results = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_execution_results_command: got {len(results)} results")
+
+    # Build human-readable table from nested activities
+    hr_data = []
+    for result in results:
+        execution_id = result.get("execution_id")
+        activities = result.get("activities", [])
+        for activity in activities:
+            hr_data.append(
+                {
+                    "Execution ID": execution_id,
+                    "Activity Node ID": activity.get("node_id"),
+                    "Activity Start Timestamp": activity.get("start_timestamp"),
+                    "Activity End Timestamp": activity.get("end_timestamp"),
+                    "Activity Status": activity.get("status"),
+                    "Activity ID": activity.get("id"),
+                    "Activity Name": activity.get("name"),
+                    "Activity Type": activity.get("type"),
+                }
+            )
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution Results",
+        t=hr_data,
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity ID",
+            "Activity Name",
+            "Activity Type",
+        ],
+        removeNull=True,
+    )
+
+    # Append errors if any (e.g., some IDs not found)
+    errors = response.get("errors", [])
+    if errors:
+        error_lines = ["\n**Errors:**"]
+        for error in errors:
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            error_lines.append(f"- Code: {error_code}, Message: {error_message}")
+        readable_output += "\n".join(error_lines)
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.ExecutionResult",
+        outputs_key_field="execution_id",
+        outputs=results,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Performs an action (cancel or resume) on one or more workflow executions.
+    Handles partial success where some IDs are affected and others return errors.
+    """
+    ids = argToList(args.get("ids"))
+    action_name = args.get("action_name", "")
+
+    if action_name not in ("cancel", "resume"):
+        raise DemistoException(f"Invalid action_name '{action_name}'. Must be 'cancel' or 'resume'.")
+
+    response = perform_workflow_execution_action(ids=ids, action_name=action_name)
+
+    action_past_tense = "cancelled" if action_name == "cancel" else "resumed"
+
+    # Extract resources_affected from meta.writes
+    resources_affected = response.get("meta", {}).get("writes", {}).get("resources_affected", 0)
+
+    # Extract errors if any
+    errors = response.get("errors", [])
+
+    # Calculate succeeded IDs
+    error_ids = {error.get("id") for error in errors if error.get("id")}
+    succeeded_ids = [id_ for id_ in ids if id_ not in error_ids]
+
+    # Build readable output
+    hr_parts: list[str] = []
+    if succeeded_ids:
+        hr_parts.append(f"{len(succeeded_ids)} workflow execution(s) {action_past_tense}: {', '.join(succeeded_ids)}")
+    else:
+        hr_parts.append(f"0 workflow execution(s) {action_past_tense}.")
+
+    if errors:
+        hr_parts.append("\n**Errors:**")
+        for error in errors:
+            error_id = error.get("id", "Unknown")
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            hr_parts.append(f"- ID: {error_id} — Code: {error_code}, Message: {error_message}")
+
+    readable_output = "\n".join(hr_parts)
+
+    demisto.debug(
+        f"[Workflow] workflow_execution_action_command: {action_name} completed, "
+        f"{resources_affected} affected, {len(errors)} errors for {len(ids)} ids"
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
@@ -9699,6 +10348,16 @@ def main():  # pragma: no cover
             return_results(resolve_case_command(args))
         elif command == "cs-falcon-search-ngsiem-events":
             return_results(cs_falcon_search_ngsiem_events_command(args))
+        elif command == "cs-falcon-list-workflow-definitions":
+            return_results(list_workflow_definitions_command(args))
+        elif command == "cs-falcon-workflow-execute":
+            return_results(workflow_execute_command(args))
+        elif command == "cs-falcon-list-workflow-executions":
+            return_results(list_workflow_executions_command(args))
+        elif command == "cs-falcon-list-workflow-execution-results":
+            return_results(list_workflow_execution_results_command(args))
+        elif command == "cs-falcon-workflow-execution-action":
+            return_results(workflow_execution_action_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
