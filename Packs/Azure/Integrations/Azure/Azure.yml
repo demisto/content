@@ -960,6 +960,7 @@ script:
     name: azure-postgres-config-set
     description: Updates a configuration of a server.
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: resource_group_name
       type: string
@@ -1806,6 +1807,7 @@ script:
     name: azure-postgres-server-update
     description: Updates an existing server.
     outputs: [] # No outputs are returned in the response.
+    deprecated: true
   - arguments:
     - description: Key Vault name.
       name: vault_name
@@ -5992,6 +5994,7 @@ script:
     quickaction: true
     description: Enables logging of client disconnections on the PostgreSQL server.
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: subscription_id
       type: string
@@ -6037,6 +6040,7 @@ script:
     quickaction: true
     description: Enables checkpoint logging on the PostgreSQL server.
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: subscription_id
       type: string
@@ -6082,6 +6086,7 @@ script:
     quickaction: true
     description: Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: subscription_id
       type: string
@@ -6127,6 +6132,7 @@ script:
     quickaction: true
     description: Enables logging of client connections on the PostgreSQL.
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: subscription_id
       type: string
@@ -6172,6 +6178,7 @@ script:
     quickaction: true
     description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: The recommended log retention period can be any value from 4 to 7 days.'
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: subscription_id
       type: string
@@ -6217,6 +6224,7 @@ script:
     quickaction: true
     description: Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis.
     outputs: [] # have no outputs for these command by response
+    deprecated: true
   - arguments:
     - name: subscription_id
       type: string
@@ -6253,6 +6261,7 @@ script:
     hidden: true
     quickaction: true
     prettyname: Enable SSL on Postgres Server
+    deprecated: true
   isfetch: false
   runonce: false
   script: '-'
