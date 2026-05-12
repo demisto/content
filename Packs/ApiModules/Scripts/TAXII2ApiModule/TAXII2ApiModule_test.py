@@ -549,7 +549,7 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_17_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[]
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[], update_custom_fields=True
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS, -1)
@@ -574,7 +574,7 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[]
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[], update_custom_fields=True
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
@@ -599,7 +599,7 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, skip_complex_mode=True, objects_to_fetch=[]
+            url="", collection_to_fetch="", proxies=[], verify=False, skip_complex_mode=True, objects_to_fetch=[], update_custom_fields=True
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
@@ -623,7 +623,7 @@ class TestFetchingStixObjects:
 
         """
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], enrichment_excluded=enrichment_excluded
+            url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], enrichment_excluded=enrichment_excluded, update_custom_fields=True
         )
         objects_envelopes = envelopes_v21
 
@@ -658,7 +658,7 @@ class TestFetchingStixObjects:
         extension-definition objects.
 
         """
-        mock_client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], update_custom_fields=True)
 
         result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
         assert mock_client.id_to_object == id_to_object
@@ -1318,6 +1318,7 @@ class TestParsingIndicators:
             "pattern_type": "stix",
             "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
             "labels": ["medium"],
+            "tags": [],
             "indicator_types": ["anomalous-activity"],
             "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
             "pattern_version": "2.1",
@@ -1326,7 +1327,6 @@ class TestParsingIndicators:
 
         indicator_obj["value"] = "test.org"
         indicator_obj["type"] = "Domain"
-        indicator_obj["tags"] = ["medium"]
         xsoar_expected_response = [
             {
                 "fields": {
@@ -1337,7 +1337,7 @@ class TestParsingIndicators:
                     "modified": "2020-05-14T00:14:05.401Z",
                     "publications": [],
                     "stixid": "indicator--1234",
-                    "tags": ["medium"],
+                    "tags": [],
                     "trafficlightprotocol": "GREEN",
                 },
                 "rawJSON": indicator_obj,
@@ -1367,7 +1367,50 @@ class TestParsingIndicators:
         taxii_2_client.tlp_color = None
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
+        indicator_obj["tags"] = ["medium"]
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response_with_update_custom_fields
+
+    def test_parse_indicator_blocklist_label_not_promoted_to_tag(self, taxii_2_client):
+        """
+        Given:
+         - An IP indicator from a TAXII 2 feed whose STIX object has labels: ["blocklist"].
+           This is the real-world scenario from XSUP-68198 where ~10k IPs were unexpectedly
+           tagged "blocklist" and added to an EDL without user action.
+
+        When:
+         - Parsing the indicator WITHOUT update_custom_fields enabled (default).
+
+        Then:
+         - The "blocklist" STIX label must NOT appear in the XSOAR indicator's tags field.
+         - The indicator's rawJSON still contains the original labels for reference.
+        """
+        indicator_obj = {
+            "id": "indicator--abcd-1234",
+            "pattern": "[ipv4-addr:value = '1.2.3.4']",
+            "type": "indicator",
+            "created": "2024-01-15T10:00:00.000Z",
+            "modified": "2024-01-15T10:00:00.000Z",
+            "name": "Malicious IP: 1.2.3.4",
+            "valid_from": "2024-01-15T10:00:00.000Z",
+            "pattern_type": "stix",
+            "labels": ["blocklist"],
+            "indicator_types": ["malicious-activity"],
+            "spec_version": "2.1",
+        }
+
+        taxii_2_client.tlp_color = None
+        taxii_2_client.update_custom_fields = False
+        result = taxii_2_client.parse_indicator(indicator_obj)
+
+        assert len(result) == 1
+        tags = result[0]["fields"].get("tags", [])
+        assert "blocklist" not in tags, (
+            "STIX label 'blocklist' must not be automatically promoted to an XSOAR tag. "
+            "This causes unintended EDL membership without user approval."
+        )
+        # rawJSON must still contain the original labels for auditability
+        assert result[0]["rawJSON"].get("labels") == ["blocklist"]
+
 
     # Parsing SDO Indicators
 
@@ -3353,6 +3396,7 @@ class TestTagsInRawJSON:
             tlp_color=None,
             objects_to_fetch=[],
             tags=["custom-tag"],
+            update_custom_fields=True
         )
         indicator_obj = {
             "id": "indicator--abc123",
