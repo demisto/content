@@ -82,6 +82,7 @@ WEBAPP_COMMANDS = [
     "core-list-brokers",
     "core-create-endpoint-policy",
     "core-delete-endpoint-policy",
+    "core-search-assets",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -2224,7 +2225,7 @@ def search_assets_command(client: Client, args):
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
-    client._base_url = "/api/webapp"
+    print(f"{asset_group_ids=}")
     software_package_versions = args.get("software_package_versions", "")
     kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
