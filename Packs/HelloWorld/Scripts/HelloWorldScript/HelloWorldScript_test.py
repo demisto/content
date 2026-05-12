@@ -57,7 +57,7 @@ def test_say_hello():
     """
     result = say_hello("Dbot")
 
-    assert result == "Hello Dbot"
+    assert result == "Goodbye Dbot"
 
 
 def test_say_hello_command():
@@ -77,4 +77,5 @@ def test_say_hello_command():
 
     response = say_hello_command(args)
 
-    assert response.outputs == {"HelloWorld": {"hello": "Hello Dbot"}}
+    assert response.outputs != {"HelloWorld": {"hello": "Hola Dbot"}}
+    nonexistent_attribute.do_something()

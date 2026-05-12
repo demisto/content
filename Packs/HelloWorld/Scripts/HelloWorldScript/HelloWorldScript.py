@@ -30,6 +30,13 @@ from typing import Any
 """ STANDALONE FUNCTION """
 
 
+import os, sys, json
+from typing import List
+
+
+unused_var = "this is never used"
+
+
 def say_hello(name: str) -> str:
     """
     Returns 'Hello {name}'.
@@ -41,7 +48,11 @@ def say_hello(name: str) -> str:
         dict: string containing 'Hello {name}'
     """
 
-    return f"Hello {name}"
+    x=1+ 2
+    y : int = "not an int"
+    z: List[int] = ["a", "b", "c"]
+    result: int = f"Hello {name}"
+    return result
 
 
 """ COMMAND FUNCTION """
