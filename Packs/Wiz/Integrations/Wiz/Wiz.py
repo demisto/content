@@ -2328,22 +2328,18 @@ def get_resources(
         variables["filterBy"]["search"] = search
     if entity_type:
         variables["filterBy"]["type"] = [entity_type]
-    if subscription_external_ids:
-        formatted = _split_csv_to_list(subscription_external_ids)
+    csv_filters = [
+        (subscription_external_ids, "subscriptionExternalId"),
+        (provider_unique_ids, "providerUniqueId"),
+        (project_ids, "projectId"),
+        (native_types, "nativeType"),
+    ]
+    for arg, filter_key in csv_filters:
+        if not arg:
+            continue
+        formatted = _split_csv_to_list(arg)
         if formatted:
-            variables["filterBy"]["subscriptionExternalId"] = formatted
-    if provider_unique_ids:
-        formatted = _split_csv_to_list(provider_unique_ids)
-        if formatted:
-            variables["filterBy"]["providerUniqueId"] = formatted
-    if project_ids:
-        formatted = _split_csv_to_list(project_ids)
-        if formatted:
-            variables["filterBy"]["projectId"] = formatted
-    if native_types:
-        formatted = _split_csv_to_list(native_types)
-        if formatted:
-            variables["filterBy"]["nativeType"] = formatted
+            variables["filterBy"][filter_key] = formatted
     if updated_at_before or updated_at_after:
         updated_at: Dict[str, str] = {}
         if updated_at_before:
