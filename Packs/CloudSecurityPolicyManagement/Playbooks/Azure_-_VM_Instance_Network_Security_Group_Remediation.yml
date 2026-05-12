@@ -221,7 +221,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ${inputs.RemotePort}
+                  simple: inputs.RemotePort
                 iscontext: true
           - - operator: containsGeneral
               left:
@@ -230,7 +230,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ${inputs.RemoteProtocol}
+                  simple: inputs.RemoteProtocol
                 iscontext: true
           - - operator: notContainsGeneral
               left:
@@ -366,7 +366,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemotePort}
+                        simple: inputs.RemotePort
                       iscontext: true
                 - - operator: containsGeneral
                     left:
@@ -375,7 +375,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemoteProtocol}
+                        simple: inputs.RemoteProtocol
                       iscontext: true
                 - - operator: containsGeneral
                     left:
@@ -435,7 +435,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemotePort}
+                        simple: inputs.RemotePort
                       iscontext: true
                 - - operator: containsGeneral
                     left:
@@ -444,7 +444,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemoteProtocol}
+                        simple: inputs.RemoteProtocol
                       iscontext: true
                 - - operator: notContainsGeneral
                     left:
@@ -698,7 +698,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemotePort}
+                        simple: inputs.RemotePort
                       iscontext: true
                 - - operator: containsGeneral
                     left:
@@ -707,7 +707,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemoteProtocol}
+                        simple: inputs.RemoteProtocol
                       iscontext: true
                 - - operator: containsGeneral
                     left:
@@ -767,7 +767,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemotePort}
+                        simple: inputs.RemotePort
                       iscontext: true
                 - - operator: containsGeneral
                     left:
@@ -776,7 +776,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.RemoteProtocol}
+                        simple: inputs.RemoteProtocol
                       iscontext: true
                 - - operator: notContainsGeneral
                     left:
@@ -1842,7 +1842,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ${inputs.RemotePort}
+                  simple: inputs.RemotePort
                 iscontext: true
           - - operator: containsGeneral
               left:
@@ -1851,7 +1851,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ${inputs.RemoteProtocol}
+                  simple: inputs.RemoteProtocol
                 iscontext: true
           - - operator: notContainsGeneral
               left:
