@@ -1,0 +1,44 @@
+{
+    "batch_details": {
+        "b_init_username": "admin",
+        "mor_action": "Delete",
+        "b_init_time": 1590646987,
+        "batch_name": "Re7",
+        "batch_desc": "N/A",
+        "b_init_source": "ESA 117"
+    },
+    "message_details": [
+        {
+            "delivered_at": 1584574165,
+            "mid": "3",
+            "from_email": "test@test.com",
+            "recipient_email": "test@test.com",
+            "mor_status": "Success",
+            "msg_read": "0"
+        },
+        {
+            "delivered_at": 1584574165,
+            "mid": "3",
+            "from_email": "test@test.com",
+            "recipient_email": "test@test.com",
+            "mor_status": "Success",
+            "msg_read": "0"
+        },
+        {
+            "delivered_at": 1584574165,
+            "mid": "3",
+            "from_email": "test@test.com",
+            "recipient_email": "test@test.com",
+            "mor_status": "Success",
+            "msg_read": "0"
+        },
+        {
+            "delivered_at": 1584574165,
+            "mid": "3",
+            "from_email": "test@test.com",
+            "recipient_email": "test@test.com",
+            "mor_status": "Failed",
+            "msg_read": "N/A"
+        }
+    ]
+}

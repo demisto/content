@@ -4,6 +4,7 @@ commonfields:
 name: AWS - ACM
 display: AWS - ACM
 category: IT Services
+provider: Amazon
 description: Amazon Web Services Certificate Manager Service (ACM).
 configuration:
 - display: Role Arn

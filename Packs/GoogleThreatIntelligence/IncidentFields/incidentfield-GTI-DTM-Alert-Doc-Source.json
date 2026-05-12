@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtidtmalertdocsource",
+    "version": -1,
+    "modified": "2025-09-01T20:40:05.542206769+05:30",
+    "name": "GTI DTM Alert Doc Source",
+    "ownerOnly": false,
+    "description": "Source of the generated document for alert.",
+    "cliName": "gtidtmalertdocsource",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Threat Intelligence DTM Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

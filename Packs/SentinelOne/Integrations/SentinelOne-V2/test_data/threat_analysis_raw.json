@@ -1,0 +1,202 @@
+{
+    "data": {
+        "agentDetectionInfo": {
+            "accountId": "12345",
+            "accountName": "Test",
+            "agentDetectionState": "full_mode",
+            "agentDomain": "WORKGROUP",
+            "agentIpV4": "",
+            "agentIpV6": "",
+            "agentLastLoggedInUpn": null,
+            "agentLastLoggedInUserMail": null,
+            "agentLastLoggedInUserName": "djones",
+            "agentMitigationMode": "protect",
+            "agentOsName": "Windows 10 Enterprise Evaluation",
+            "agentOsRevision": "17763",
+            "agentRegisteredAt": "2025-11-05T08:06:54.168012Z",
+            "agentUuid": "1234",
+            "agentVersion": "25.1.3.334",
+            "assetVersion": "0",
+            "cloudProviders": {},
+            "externalIp": "",
+            "groupId": "2158710089253391752",
+            "groupName": "Default",
+            "siteId": "1234",
+            "siteName": "Default site"
+        },
+        "agentRealtimeInfo": {
+            "accountId": "12345",
+            "accountName": "test",
+            "activeThreats": 1,
+            "agentComputerName": "TEST",
+            "agentDecommissionedAt": null,
+            "agentDomain": "MISSING DOMAIN",
+            "agentId": "12345",
+            "agentInfected": true,
+            "agentIsActive": false,
+            "agentIsDecommissioned": false,
+            "agentMachineType": "laptop",
+            "agentMitigationMode": "protect",
+            "agentNetworkStatus": "connected",
+            "agentOsName": "Windows 10 Enterprise Evaluation",
+            "agentOsRevision": "17763",
+            "agentOsType": "windows",
+            "agentUuid": "1234567a",
+            "agentVersion": "25.1.3.334",
+            "groupId": "2158710089253391752",
+            "groupName": "Default group",
+            "networkInterfaces": [
+                {
+                    "id": "2341270678098073403",
+                    "inet": [
+                        ""
+                    ],
+                    "inet6": [
+                        ""
+                    ],
+                    "name": "Ethernet",
+                    "physical": ""
+                }
+            ],
+            "operationalState": "na",
+            "rebootRequired": false,
+            "scanAbortedAt": null,
+            "scanFinishedAt": "2025-11-07T05:38:48.772603Z",
+            "scanStartedAt": "2025-11-05T08:21:41.673453Z",
+            "scanStatus": "finished",
+            "siteId": "12234",
+            "siteName": "Default site",
+            "storageName": null,
+            "storageType": null,
+            "userActionsNeeded": []
+        },
+        "containerInfo": {
+            "id": null,
+            "image": null,
+            "isContainerQuarantine": null,
+            "labels": null,
+            "name": null
+        },
+        "customDetectionRules": [],
+        "ecsInfo": {
+            "clusterName": null,
+            "serviceArn": null,
+            "serviceName": null,
+            "taskArn": null,
+            "taskAvailabilityZone": null,
+            "taskDefinitionArn": null,
+            "taskDefinitionFamily": null,
+            "taskDefinitionRevision": null,
+            "type": null,
+            "version": null
+        },
+        "indicators": [],
+        "kubernetesInfo": {
+            "cluster": null,
+            "controllerKind": null,
+            "controllerLabels": null,
+            "controllerName": null,
+            "isContainerQuarantine": null,
+            "namespace": null,
+            "namespaceLabels": null,
+            "node": null,
+            "nodeLabels": null,
+            "pod": null,
+            "podLabels": null
+        },
+        "mitigationStatus": [
+            {
+                "action": "quarantine",
+                "actionsCounters": {
+                    "failed": 0,
+                    "notFound": 0,
+                    "pendingReboot": 0,
+                    "success": 1,
+                    "total": 1
+                },
+                "agentSupportsReport": true,
+                "groupNotFound": false,
+                "lastUpdate": "2025-11-05T12:20:27.999366Z",
+                "latestReport": "/threats/mitigation-report/1234",
+                "mitigationEndedAt": "2025-11-05T12:20:28.527000Z",
+                "mitigationStartedAt": "2025-11-05T12:20:28.527000Z",
+                "reportId": "12234",
+                "status": "success"
+            },
+            {
+                "action": "kill",
+                "actionsCounters": null,
+                "agentSupportsReport": true,
+                "groupNotFound": false,
+                "lastUpdate": "2025-11-05T12:20:27.728072Z",
+                "latestReport": null,
+                "mitigationEndedAt": "2025-11-05T12:20:27.720835Z",
+                "mitigationStartedAt": "2025-11-05T12:20:27.720834Z",
+                "reportId": "12345",
+                "status": "success"
+            }
+        ],
+        "threatInfo": {
+            "analystVerdict": "true_positive",
+            "analystVerdictDescription": "True positive",
+            "automaticallyResolved": false,
+            "browserType": null,
+            "certificateId": "",
+            "classification": "test",
+            "classificationSource": "Static",
+            "cloudFilesHashVerdict": "black",
+            "collectionId": "12345",
+            "confidenceLevel": "test",
+            "createdAt": "2025-11-05T12:20:27.439131Z",
+            "detectionEngines": [
+                {
+                    "key": "user_blacklist",
+                    "title": "User-Defined Blocklist"
+                }
+            ],
+            "detectionType": "static",
+            "engines": [
+                "User-Defined Blocklist"
+            ],
+            "externalTicketExists": false,
+            "externalTicketId": null,
+            "failedActions": false,
+            "fileExtension": "TXT",
+            "fileExtensionType": "Document",
+            "filePath": "\\PATH\\TO\\Users\\djones\\Desktop\\djones7.txt",
+            "fileSize": 68,
+            "fileVerificationType": "SignatureNotChecked",
+            "identifiedAt": "2025-11-05T12:20:27.431454Z",
+            "incidentStatus": "in_progress",
+            "incidentStatusDescription": "In progress",
+            "initiatedBy": "agent_policy",
+            "initiatedByDescription": "Agent Policy",
+            "initiatingUserId": null,
+            "initiatingUsername": null,
+            "isFileless": false,
+            "isValidCertificate": false,
+            "macroModules": null,
+            "maliciousProcessArguments": null,
+            "md5": null,
+            "mitigatedPreemptively": false,
+            "mitigationStatus": "mitigated",
+            "mitigationStatusDescription": "Mitigated",
+            "originatorProcess": "notepad.exe",
+            "pendingActions": false,
+            "processUser": "TEST\\djones",
+            "publisherName": "",
+            "reachedEventsLimit": false,
+            "rebootRequired": false,
+            "rootProcessUpn": null,
+            "sha1": "12334",
+            "sha256": "12345",
+            "storyline": "12345",
+            "threatId": "12345",
+            "threatName": "djones7.txt",
+            "updatedAt": "2025-11-06T06:10:29.521389Z"
+        },
+        "whiteningOptions": [
+            "hash"
+        ]
+    }
+}

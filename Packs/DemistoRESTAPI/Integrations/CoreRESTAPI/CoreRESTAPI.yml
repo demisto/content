@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: Core REST API
@@ -6,6 +6,7 @@ commonfields:
 name: Core REST API
 display: Core REST API
 category: Utilities
+provider: Palo Alto Networks
 description: Use Core REST APIs.
 configuration:
 - display: Core Server URL
@@ -169,6 +170,8 @@ script:
       description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
+    - name: timeout
+      description: Request timeout in minutes. Default is 3 minutes.
     description: send HTTP POST request.
     execution: true
   - name: core-api-get
@@ -248,6 +251,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: timeout_in_seconds
+      description: The request timeout in seconds.
+      defaultValue: '180'
     description: Upload packs to the core server from the URL or marketplace.
   - name: core-api-file-upload
     arguments:

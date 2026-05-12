@@ -14,13 +14,13 @@ args:
 - name: input
   required: true
   default: true
-  description: CVE ID
+  description: CVE ID.
 scripttarget: 0
 dependson:
   must:
   - cve
 timeout: 2.4µs
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 runonce: false
 fromversion: 6.5.0
 tests:

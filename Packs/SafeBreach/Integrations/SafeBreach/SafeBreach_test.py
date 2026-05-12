@@ -56,7 +56,7 @@ def util_load_json(path):
 
 @pytest.fixture()
 def client():
-    return Client(api_key="test", account_id=None, base_url=SERVER_URL, verify=True)
+    return Client(api_key="test", account_id=None, base_url=SERVER_URL, verify=True, proxy=True)
 
 
 def deployment_transformer(header):

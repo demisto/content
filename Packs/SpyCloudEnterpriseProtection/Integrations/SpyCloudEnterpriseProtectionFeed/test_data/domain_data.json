@@ -1,0 +1,20 @@
+{
+  "cursor": "",
+  "hits": 1,
+  "results": [
+    {
+      "password": "temp_pass",
+      "email": "Dummy Email",
+      "source_id": 68691,
+      "spycloud_publish_date": "2025-06-26T00:00:00Z",
+      "email_domain": "dummy.com",
+      "email_username": "dummy",
+      "domain": "dummy.com",
+      "password_type": "plaintext",
+      "password_plaintext": "temp_pass",
+      "severity": 20,
+      "document_id": "3b6ff04b-bcea-4c2b-81a5-2678b9446e40",
+      "sighting": 10
+    }
+  ]
+}

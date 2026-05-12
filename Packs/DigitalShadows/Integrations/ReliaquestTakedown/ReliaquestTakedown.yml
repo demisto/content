@@ -1,8 +1,9 @@
 category: Vulnerability Management
+provider: ReliaQuest
 commonfields:
   id: ReliaquestTakedown
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

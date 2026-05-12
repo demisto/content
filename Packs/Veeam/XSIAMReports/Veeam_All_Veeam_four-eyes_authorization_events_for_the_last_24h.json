@@ -37,7 +37,9 @@
                   }
                 ],
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-                "time_frame": { "relativeTime": 86400000 },
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
                 "viewOptions": {
                   "type": "single",
                   "commands": [
@@ -67,7 +69,9 @@
                 "width": 50,
                 "height": 349,
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in ( \"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n        _operation=arrayindex(regextract(_raw_log, \"Operation\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| comp count(_instanceId ) as _count by _operation\r\n| view graph type = pie subtype = full xaxis = _operation yaxis = _count ",
-                "time_frame": { "relativeTime": 86400000 },
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
                 "viewOptions": {
                   "type": "pie",
                   "commands": [
@@ -110,7 +114,9 @@
                 "height": 844,
                 "params": [],
                 "phrase": " dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in ( \"42402\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=\"Critical\",\r\n    _user=arrayindex(regextract(_raw_log, \"fullName\\=\\\"([^\\\"]*)\\\"\"), 0)\r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`\r\n",
-                "time_frame": { "relativeTime": 86400000 },
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
                 "viewOptions": {
                   "type": "table",
                   "commands": []
@@ -121,7 +127,9 @@
         }
       ],
       "default_template_id": 1,
-      "time_frame": { "relativeTime": 86400000 },
+      "time_frame": {
+        "relativeTime": 86400000
+      },
       "global_id": "96bfe2191cd64b818682ecbf6c94b55b",
       "time_offset": 10800,
       "metadata": "{\"params\": []}"
@@ -142,7 +150,9 @@
           }
         ],
         "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
-        "time_frame": { "relativeTime": 86400000 },
+        "time_frame": {
+          "relativeTime": 86400000
+        },
         "viewOptions": {
           "type": "single",
           "commands": [
@@ -165,9 +175,14 @@
       },
       "support_time_range": true,
       "additional_info": {
-        "query_tables": [ "veeam_*" ],
+        "query_tables": [
+          "veeam_*"
+        ],
         "query_uses_library": false
       }
     }
+  ],
+  "supportedModules": [
+    "xsiam"
   ]
 }

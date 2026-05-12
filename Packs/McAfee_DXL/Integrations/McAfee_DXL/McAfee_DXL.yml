@@ -1,8 +1,9 @@
 category: Messaging and Conferencing
+provider: Trellix
 commonfields:
   id: McAfee DXL
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:

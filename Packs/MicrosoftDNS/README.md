@@ -22,7 +22,7 @@ You will need to configure the vendor and product for this specific collector.
 
 ### XDRC (XDR Collector)
 
-Use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+Use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/XDR-Collectors).
 
 You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_dns_raw*.
 
@@ -42,9 +42,8 @@ When configuring the instance, you should use a yml file that configures the ven
 
 Follow these steps in order to configure the XDR Collector:
 
-1. The implementation of the Collector for both of the methods requires to create a [Profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Add-an-XDR-Collector-Profile-for-Windows) for each integration.
-   - For **XSIAM version 1.2** only, in the relevant profile under the *XDR Collectors Profiles*, copy and paste the information from the [Filebeat Configuration File](#filebeat-configuration-file) section.
-2. Create a [Policy](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Apply-Profiles-to-Collection-Machine-Policies) and allocate the profiles you created to it.
+1. The implementation of the Collector for both of the methods requires to create a [Profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Add-an-XDR-Collector-Profile-for-Windows) for each integration.
+2. Create a [Policy](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Apply-profiles-to-collection-machine-policies) and allocate the profiles you created to it.
 
 #### Filebeat Configuration File
 
@@ -75,5 +74,3 @@ winlogbeat.event_logs:
             product: dns
     id: dns-audit-logs
 ```
-
-For **XSIAM version 1.3** and above, use the built-in YAML template provided within the XDR collector configuration.

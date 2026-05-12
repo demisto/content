@@ -1,0 +1,8 @@
+id: Huawei_FW_ParsingRule
+name: Huawei FW Parsing Rule
+fromversion: 8.5.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

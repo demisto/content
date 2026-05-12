@@ -14,6 +14,32 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 | Max number of events per fetch |  | False |
 | Fetch Events |  | False |
 
+## Authentication Methods
+
+### Basic Authentication (Email + API Token)
+
+1. Provide your **Email** address
+2. Provide your **API Token** (generate from [Atlassian API Token management](https://id.atlassian.com/manage/api-tokens))
+
+### OAuth 2.0 Authentication
+
+OAuth 2.0 provides a more secure authentication method using the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/).
+
+**Required OAuth Scopes** (must be configured in the Atlassian Developer Console for your OAuth app):
+
+| Scope | Description |
+| --- | --- |
+| `read:audit-log:confluence` | **Required for event fetching** — Read Confluence audit log records |
+| `read:confluence-content.all` | Read all Confluence content |
+| `read:confluence-space.summary` | Read space summaries |
+| `read:confluence-user` | Read user information |
+| `read:confluence-groups` | Read group information |
+| `write:confluence-content` | Write content |
+| `write:confluence-space` | Write space data |
+| `offline_access` | Enables refresh token for unattended access |
+
+> **Note**: The `read:audit-log:confluence` scope is specifically required for the event fetching functionality (`fetch-events` and `confluence-cloud-get-events` commands). Without this scope, event collection will fail.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -4352,4 +4378,156 @@ Retrieves a list of events from the Atlassian Confluence Cloud instance.
         ]
     }
 }
+```
+
+### confluence-cloud-content-get
+
+***
+Retrieves a piece of content (e.g., page, blogpost) from Confluence Cloud by its ID.
+
+#### Base Command
+
+`confluence-cloud-content-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| content_id | The ID of the content to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ConfluenceCloud.Content.id | String | The content ID. |
+| ConfluenceCloud.Content.type | String | The type of the content (e.g., page, blogpost). |
+| ConfluenceCloud.Content.ari | String | The Atlassian Resource Identifier (ARI) for the content. |
+| ConfluenceCloud.Content.base64EncodedAri | String | The Base64 encoded ARI of the content. |
+| ConfluenceCloud.Content.status | String | The status of the content (e.g., current, archived, draft). |
+| ConfluenceCloud.Content.title | String | The title of the content. |
+| ConfluenceCloud.Content.body | Unknown | The body of the content. |
+| ConfluenceCloud.Content.body.storage.value | String | The raw storage-format value of the content body (may contain HTML/XML). |
+| ConfluenceCloud.Content.body.storage.representation | String | The representation format of the body (e.g., storage, view). |
+| ConfluenceCloud.Content.body.storage.embeddedContent | Unknown | A list of embedded content objects in the body. |
+| ConfluenceCloud.Content.body.storage._expandable | String | Link to the content resource for the body. |
+| ConfluenceCloud.Content.extensions.position | Number | Position of the content in the page tree or order. |
+| ConfluenceCloud.Content._links.editui | String | Link to edit the content in the UI. |
+| ConfluenceCloud.Content._links.webui | String | Web UI link to the content. |
+| ConfluenceCloud.Content._links.edituiv2 | String | Link to edit the content in the new UI. |
+| ConfluenceCloud.Content._links.context | String | Context path of the Confluence instance. |
+| ConfluenceCloud.Content._links.self | String | REST API self link for the content. |
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link to the content. |
+| ConfluenceCloud.Content._links.collection | String | Link to the collection of content resources. |
+| ConfluenceCloud.Content._links.base | String | Base URL of the Confluence site. |
+
+#### Command Example
+
+```!confluence-cloud-content-get content_id="123456"```
+
+#### Context Example
+
+```json
+{
+  "ConfluenceCloud": {
+    "Content": {
+      "id": "123456",
+      "type": "page",
+      "ari": "ari:cloud:confluence::content/123456",
+      "base64EncodedAri": "YXJpOmNsb3VkOmNvbmZsdWVuY2U6OmNvbnRlbnQvMTIzNDU2",
+      "status": "current",
+      "title": "Demo Page",
+      "body": {
+        "storage": {
+          "value": "<p>This is a demo body.</p>",
+          "representation": "storage",
+          "embeddedContent": []
+        }
+      },
+      "extensions": {
+        "position": 42
+      },
+      "_links": {
+        "editui": "/pages/editpage.action?pageId=123456",
+        "edituiv2": "/wiki/edit-v2/123456",
+        "webui": "/spaces/ABC/pages/123456/Demo+Page",
+        "context": "/wiki",
+        "self": "https://example.atlassian.net/wiki/rest/api/content/123456",
+        "tinyui": "/x/abc123",
+        "collection": "/rest/api/content",
+        "base": "https://example.atlassian.net/wiki"
+      }
+    }
+  }
+}
+```
+
+### confluence-cloud-oauth-start
+
+***
+Starts the OAuth 2.0 authentication flow. Returns an authorization URL that the user must visit to authorize the integration.
+
+#### Base Command
+
+`confluence-cloud-oauth-start`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```bash
+!confluence-cloud-oauth-start
+```
+
+### confluence-cloud-oauth-complete
+
+***
+Completes the OAuth 2.0 authentication flow by exchanging the authorization code for access and refresh tokens.
+
+#### Base Command
+
+`confluence-cloud-oauth-complete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| code | The authorization code received from the OAuth callback URL after user authorization. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```bash
+!confluence-cloud-oauth-complete code=<authorization_code>
+```
+
+### confluence-cloud-oauth-test
+
+***
+Tests the OAuth 2.0 authentication by verifying the current access token is valid.
+
+#### Base Command
+
+`confluence-cloud-oauth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```bash
+!confluence-cloud-oauth-test
 ```

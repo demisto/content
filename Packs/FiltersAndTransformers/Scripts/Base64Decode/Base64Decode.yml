@@ -24,9 +24,10 @@ outputs:
   description: The passed value that was decoded.
   type: string
 scripttarget: 0
+isllm: false
 subtype: python3
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 tests:
 - Base64Decode - Test

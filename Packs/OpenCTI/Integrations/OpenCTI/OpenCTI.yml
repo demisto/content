@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Filigran
+sectionorder:
 - Connect
 commonfields:
   id: OpenCTI

@@ -12,6 +12,7 @@
         "username": "nathan.good@sampleme.local",
         "password": null,
         "brand": "RiskAssess Demo",
+        "external_link": "https://platform.ctm360.com/cbs/leaks/breached_credentials?filters=[]&searchQuery=BC-7FPF679C6&selectedSearchField=leak_id",
         "id": "BC-7FPF679C6",
         "status": "new"
     },
@@ -26,6 +27,7 @@
         "remarks": "PHP Freaks Breach - acid@hackthisexample.local",
         "email": "acid@hackthisexample.local",
         "brand": "RiskAssess Demo",
+        "external_link": "https://platform.ctm360.com/cbs/leaks/breached_credentials?filters=[]&searchQuery=BC-2EL85279F&selectedSearchField=leak_id",
         "id": "BC-2EL85279F",
         "status": "new"
     },
@@ -40,6 +42,7 @@
         "remarks": "Nulled.io Breach - sam@hackthisexample.local",
         "email": "sam@hackthisexample.local",
         "brand": "RiskAssess Demo",
+        "external_link": "https://platform.ctm360.com/cbs/leaks/breached_credentials?filters=[]&searchQuery=BC-1EF22EW64&selectedSearchField=leak_id",
         "id": "BC-1EF22EW64",
         "status": "new"
     }

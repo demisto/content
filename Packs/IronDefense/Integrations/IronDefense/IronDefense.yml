@@ -1,4 +1,5 @@
 category: Network Security
+provider: IronNet Cybersecurity
 commonfields:
   id: IronDefense
   version: -1
@@ -789,7 +790,7 @@ script:
     - contextPath: IronDefense.Query.GetEvents.total
       description: The total number of results possible from the query.
       type: Number
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

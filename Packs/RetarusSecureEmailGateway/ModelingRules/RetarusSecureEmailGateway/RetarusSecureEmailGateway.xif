@@ -1,0 +1,143 @@
+[RULE: retarus_secure_email_gw_common_fields]
+alter
+        tmp_description = if(direction = "INBOUND", "Inbound Email", "Outbound Email"),
+        source_ipv4 = arrayindex(regextract(sourceIp , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        source_ipv6 = arrayindex(regextract(sourceIp, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        tmp_description_2 = if(
+        status = "ACCEPTED", ", Email Accepted", 
+        status = "REJECTED", ", Email Rejected",
+        status = "INFECTED" ,", Email Is Infected", 
+        status = "DETECTED", ", Malicious File/ URL Detected", 
+        status = "SUSPICIOUS",", Suspicious File/ URL Found" )
+
+| alter
+        xdm.email.origination_timestamp = parse_timestamp("%F %X %z",to_string(ts)),
+        xdm.observer.version = version,
+        xdm.observer.name = host, 
+        xdm.event.original_event_type = type,
+        xdm.source.ipv4 = source_ipv4,
+        xdm.source.ipv6 = source_ipv6,
+        xdm.email.recipients = arraycreate(recipient),
+        xdm.session_context_id = rmxId,
+        xdm.observer.action = status,
+        xdm.event.description = concat(tmp_description , tmp_description_2 ),
+        xdm.event.type = class,
+        xdm.email.message_id = mimeId;
+
+
+[RULE: pzd_fields]
+alter 
+        extract_threatType = metaData -> threatType,
+        extract_url = metaData -> uniformResourceLocator,
+        extract_hash = metaData -> hashFunction,
+        extract_checksum = metaData -> checksum,
+        extract_mimeType = metaData -> mimeType,
+        extract_details = metaData -> details
+
+| alter
+        xdm.email.attachment.file_type	= extract_mimeType,	
+        xdm.alert.original_threat_name = extract_details,
+        xdm.target.url = if(extract_threatType = "URL", extract_url),
+        xdm.email.attachment.sha256	= if(extract_hash = "SHA-256" or extract_hash = "sha256", extract_checksum ,null),
+        xdm.email.attachment.md5 = if(extract_hash != "SHA-256" and extract_hash = "sha256" and len(extract_hash) = 32, extract_checksum, null);
+
+
+[RULE: mta_inbound_fields]
+alter 
+        extract_protocol = metaData -> transportEncryption.protocol,
+        extract_cipher = metaData -> transportEncryption.cipherSuite,
+        extract_auth_dkim_status = metaData -> authentication.dkim.status,
+        extract_auth_dkim_details = arrayindex(regextract(metaData -> authentication.dkim.details ,"reason\s*=\s*([\S\s]+)\""),0),
+        extract_subject = metaData -> header.subject
+
+| alter 
+        extract_details_reason = replace(extract_auth_dkim_details, "\"","")
+| alter
+        xdm.email.subject = extract_subject,
+        xdm.event.outcome = if(extract_auth_dkim_status = "pass", XDM_CONST.OUTCOME_SUCCESS, 
+        extract_auth_dkim_status = "fail", XDM_CONST.OUTCOME_FAILED, 
+        extract_auth_dkim_status = "none", XDM_CONST.OUTCOME_UNKNOWN),
+        xdm.event.outcome_reason = extract_details_reason,
+        xdm.network.tls.protocol_version = extract_protocol,
+        xdm.network.tls.cipher = extract_cipher;
+
+
+[RULE: mta_outbound_fields]
+alter 
+        extract_protocol = metaData -> transportEncryption.protocol,
+        extract_cipher = metaData -> transportEncryption.cipherSuite,
+        extract_subject = metaData -> header.subject
+
+| alter
+        xdm.email.subject = extract_subject,
+        xdm.network.tls.protocol_version = extract_protocol,
+        xdm.network.tls.cipher = extract_cipher;
+
+
+[RULE: multiscan_fields]
+alter 
+        extract_details = metaData -> details
+
+| alter
+        xdm.alert.original_threat_name = extract_details,
+        xdm.alert.description = extract_details;
+
+
+[RULE: sandboxing_fields]
+alter 
+        extract_hash = metaData -> hashFunction,
+        extract_checksum = metaData -> checksum
+
+| alter
+        xdm.email.attachment.sha256	= if(extract_hash = "SHA-256" or extract_hash = "sha256", extract_checksum ,null),
+        xdm.email.attachment.md5 = if(extract_hash != "SHA-256" and extract_hash = "sha256" and len(extract_hash) = 32, extract_checksum, null);
+
+
+[RULE: mapping_sender_field]
+alter
+        xdm.email.sender = sender;
+
+
+[RULE: mapping_sender_field_for_mta_events]
+alter
+        extract_header_from = metaData -> header.from
+|alter 
+        extract_from = arrayindex(regextract(extract_header_from ,"<(\S*)>"), 0)
+|alter
+        xdm.email.sender = coalesce(extract_from, sender);
+
+
+[MODEL: dataset=retarus_secure_email_gateway_raw]
+filter type = "CxO"
+|call retarus_secure_email_gw_common_fields
+|call mapping_sender_field;
+
+
+filter type = "PZD"
+|call retarus_secure_email_gw_common_fields
+|call pzd_fields
+|call mapping_sender_field;
+
+
+filter type = "Sandboxing"
+|call retarus_secure_email_gw_common_fields
+|call sandboxing_fields
+|call mapping_sender_field;
+
+
+filter type = "MultiScan"
+|call retarus_secure_email_gw_common_fields
+|call multiscan_fields
+|call mapping_sender_field;
+
+
+filter type = "MTA" and direction ="INBOUND"
+|call retarus_secure_email_gw_common_fields
+|call mta_inbound_fields
+|call mapping_sender_field_for_mta_events;
+
+
+filter type = "MTA" and direction ="OUTBOUND"
+|call retarus_secure_email_gw_common_fields
+|call mta_outbound_fields
+|call mapping_sender_field_for_mta_events;

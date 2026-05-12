@@ -1,5 +1,19 @@
-from ArmisEventCollector import Client, datetime, timedelta, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
+import threading
+from unittest.mock import patch
+
 import pytest
+from ArmisEventCollector import (
+    EVENT_TYPE,
+    EVENT_TYPES,
+    Any,
+    Client,
+    DemistoException,
+    IntegrationContextManager,
+    arg_to_datetime,
+    datetime,
+    fetch_events,
+    timedelta,
+)
 from freezegun import freeze_time
 
 
@@ -110,6 +124,53 @@ class TestClientFunctions:
         assert dummy_client.fetch_by_aql_query("example_query", 3, from_arg) == (expected_result, 0)
 
         mocked_http_request.assert_called_with(**expected_args)
+
+    def test_fetch_by_aql_query_pagination_timeout(self, mocker, dummy_client):
+        """
+        Test fetch_by_aql_query function behavior when pagination duration exceeds the limit.
+
+        Given:
+            - A fetch operation with multiple pages of results.
+            - The time taken to fetch pages exceeds MAX_PAGINATION_DURATION_SECONDS.
+        When:
+            - Fetching events using fetch_by_aql_query.
+        Then:
+            - The fetch operation should break early.
+            - It should return the results fetched so far.
+            - It should return the 'next' pointer for the subsequent fetch.
+        """
+        with freeze_time("2023-01-01T01:00:00") as frozen_time:
+            first_response = {
+                "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
+            }
+
+            second_response = {
+                "data": {"next": 2, "results": [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}], "total": "Many"}
+            }
+
+            third_response = {
+                "data": {"next": 3, "results": [{"unique_id": "3", "time": "2023-01-01T01:00:30.123456+00:00"}], "total": "Many"}
+            }
+
+            call_count = 0
+            responses = [first_response, second_response, third_response]
+
+            def advance_time_and_return_response(*args, **kwargs):
+                nonlocal call_count
+                response = responses[call_count]
+                call_count += 1
+                frozen_time.tick(delta=timedelta(seconds=200))
+                return response
+
+            mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=advance_time_and_return_response)
+
+            results, next_page = dummy_client.fetch_by_aql_query(
+                aql_query="example_query", max_fetch=10, after=(datetime.now() - timedelta(minutes=1))
+            )
+
+            assert mocked_http_request.call_count == 2
+            assert len(results) == 2
+            assert next_page == 2
 
 
 class TestHelperFunction:
@@ -361,7 +422,7 @@ class TestHelperFunction:
         Then:
             - A command result with readable output will be printed to the war-room.
         """
-        from ArmisEventCollector import CommandResults, VENDOR, PRODUCT, events_to_command_results, tableToMarkdown
+        from ArmisEventCollector import PRODUCT, VENDOR, CommandResults, events_to_command_results, tableToMarkdown
 
         events_fetched = {
             "events": [
@@ -625,21 +686,26 @@ class TestFetchFlow:
             }
         }
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
+
+        # Mock the token refresh to return a new token
+        mocker.patch.object(Client, "get_access_token", return_value="new_test_token")
+
+        # First call fails with invalid token, second succeeds
         mocker.patch.object(
             Client, "_http_request", side_effect=[DemistoException(message="Invalid access token"), events_with_different_time]
         )
         mocker.patch.dict(EVENT_TYPES, {"Events": EVENT_TYPE("unique_id", "events_query", "events", "time", "events")})
-        mocker.patch.object(Client, "update_access_token")
+
         if fetch_start_time:
-            last_run = {
+            expected_next_run = {
                 "events_last_fetch_ids": ["3"],
                 "events_last_fetch_next_field": 4,
                 "events_last_fetch_time": "2023-01-01T01:00:00",
-                "access_token": "test_access_token",
+                "access_token": "new_test_token",  # Token was refreshed
             }
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, ["Events"], None) == (
                 {"events": events_with_different_time["data"]["results"]},
-                last_run,
+                expected_next_run,
             )
 
     def test_fetch_alert_flow(self, mocker, dummy_client):
@@ -695,3 +761,224 @@ class TestFetchFlow:
                 {"alerts": [expected_result]},
                 last_run,
             )
+
+
+class TestMultithreading:
+    """Tests for multithreading functionality."""
+
+    def test_integration_context_manager_thread_safety(self):
+        """Test that IntegrationContextManager provides thread-safe access.
+
+        Given:
+            - An IntegrationContextManager instance.
+            - A test access token to be saved and retrieved.
+        When:
+            - Saving an access token to the context.
+            - Retrieving the access token from the context.
+        Then:
+            - The retrieved token should match the saved token.
+            - Operations should be thread-safe.
+        """
+        context_manager = IntegrationContextManager()
+
+        # Test get and save access token
+        test_token = "test_token_123"
+        context_manager.save_access_token_to_context(test_token)
+
+        with patch("demistomock.getLastRun", return_value={"access_token": test_token}):
+            retrieved_token = context_manager.get_access_token()
+            assert retrieved_token == test_token
+
+    def test_integration_context_manager_concurrent_updates(self):
+        """Test that concurrent updates to context are handled safely.
+
+        Given:
+            - An IntegrationContextManager instance.
+            - Multiple threads attempting to update the access token concurrently.
+        When:
+            - 5 threads simultaneously save different access tokens to the context.
+        Then:
+            - All 5 updates should complete successfully without race conditions.
+            - The context manager's locking mechanism should prevent data corruption.
+        """
+        context_manager = IntegrationContextManager()
+        results = []
+
+        def update_token(token_value):
+            with patch("demistomock.getLastRun", return_value={}), patch("demistomock.setLastRun"):
+                context_manager.save_access_token_to_context(token_value)
+                results.append(token_value)
+
+        # Simulate concurrent updates
+        threads = []
+        for i in range(5):
+            t = threading.Thread(target=update_token, args=(f"token_{i}",))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
+
+        # All updates should have completed
+        assert len(results) == 5
+
+    def test_client_with_context_manager(self, mocker):
+        """Test Client initialization with context manager.
+
+        Given:
+            - An IntegrationContextManager instance.
+            - Valid client initialization parameters.
+        When:
+            - Initializing a Client with the context manager.
+        Then:
+            - The client should store the context manager reference.
+            - The client should be initialized with the provided access token.
+        """
+        context_manager = IntegrationContextManager()
+        mocker.patch.object(Client, "is_valid_access_token", return_value=True)
+
+        client = Client(base_url="test_url", api_key="test_key", access_token="test_token", context_manager=context_manager)
+
+        assert client._context_manager == context_manager
+        assert client._access_token == "test_token"
+
+    def test_client_refresh_token_coordination(self, mocker):
+        """Test that token refresh is coordinated across threads.
+
+        Given:
+            - A Client instance with a context manager.
+            - An expired access token that needs refreshing.
+        When:
+            - Calling refresh_access_token() to get a new token.
+        Then:
+            - A new token should be generated via the API.
+            - The new token should be saved to the integration context.
+            - The token refresh should be coordinated to prevent multiple simultaneous refreshes.
+        """
+        context_manager = IntegrationContextManager()
+        mocker.patch.object(Client, "is_valid_access_token", return_value=True)
+        mocker.patch.object(Client, "get_access_token", return_value="new_token")
+
+        client = Client(base_url="test_url", api_key="test_key", access_token="old_token", context_manager=context_manager)
+
+        # Mock context manager methods
+        mocker.patch.object(context_manager, "get_access_token", return_value="old_token")
+        mock_save = mocker.patch.object(context_manager, "save_access_token_to_context")
+
+        new_token = client.refresh_access_token()
+
+        assert new_token == "new_token"
+        mock_save.assert_called_once_with("new_token")
+
+    def test_fetch_events_with_multithreading_disabled(self, mocker, dummy_client):
+        """Test that fetch_events works correctly with multithreading disabled.
+
+        Given:
+            - Multithreading is disabled (use_multithreading=False).
+            - A single event type (Activities) to fetch.
+            - Mock API response with one activity event.
+        When:
+            - Calling fetch_events() with multithreading disabled.
+        Then:
+            - Events should be fetched sequentially.
+            - The activities should be returned in the events dictionary.
+            - One activity event should be fetched successfully.
+        """
+        fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
+        response = [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]
+
+        mocker.patch.object(Client, "fetch_by_aql_query", return_value=(response, 0))
+        mocker.patch.dict(EVENT_TYPES, {"Activities": EVENT_TYPE("unique_id", "query", "activity", "time", "activities")})
+
+        events, next_run = fetch_events(
+            client=dummy_client,
+            max_fetch=100,
+            devices_max_fetch=100,
+            last_run={},
+            fetch_start_time=fetch_start_time,
+            event_types_to_fetch=["Activities"],
+            device_fetch_interval=None,
+            use_multithreading=False,
+            context_manager=None,
+        )
+
+        assert "activities" in events
+        assert len(events["activities"]) == 1
+
+    def test_fetch_events_with_multithreading_enabled(self, mocker, dummy_client):
+        """Test that fetch_events works correctly with multithreading enabled.
+
+        Given:
+            - Multithreading is enabled (use_multithreading=True).
+            - Multiple event types to fetch (Activities and Devices).
+            - A context manager for thread-safe operations.
+            - Mock API responses for both event types.
+        When:
+            - Calling fetch_events() with multithreading enabled.
+        Then:
+            - Events should be fetched in parallel using ThreadPoolExecutor.
+            - Both Activities and Devices should be fetched successfully.
+            - The access token should be included in next_run.
+            - Context updates should be thread-safe.
+        """
+        context_manager = IntegrationContextManager()
+        fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
+
+        activities_response = [{"activityUUID": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]
+        devices_response = [{"id": "1", "lastSeen": "2023-01-01T01:00:10.123456+00:00"}]
+
+        def mock_fetch_by_aql(*args, **kwargs):
+            event_type = kwargs.get("event_type", "")
+            if event_type == "activity":
+                return activities_response, 0
+            elif event_type == "devices":
+                return devices_response, 0
+            return [], 0
+
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=mock_fetch_by_aql)
+        mocker.patch.object(context_manager, "update_event_type_state")
+
+        events, next_run = fetch_events(
+            client=dummy_client,
+            max_fetch=100,
+            devices_max_fetch=100,
+            last_run={},
+            fetch_start_time=fetch_start_time,
+            event_types_to_fetch=["Activities", "Devices"],
+            device_fetch_interval=timedelta(hours=1),
+            use_multithreading=True,
+            context_manager=context_manager,
+        )
+
+        # Both event types should be fetched
+        assert "activities" in events or "devices" in events
+        assert "access_token" in next_run
+
+    def test_perform_fetch_with_token_refresh_coordination(self, mocker, dummy_client):
+        """Test that perform_fetch coordinates token refresh properly.
+
+        Given:
+            - A Client with a context manager.
+            - An expired access token that causes the first API call to fail.
+            - A fresh token available in the context.
+        When:
+            - Calling perform_fetch() which encounters an authentication error.
+        Then:
+            - The client should detect the invalid token error.
+            - The client should coordinate token refresh using the context manager.
+            - The request should be retried with the refreshed token.
+            - The second request should succeed and return results.
+        """
+        context_manager = IntegrationContextManager()
+        dummy_client._context_manager = context_manager
+
+        # First call fails with invalid token, second succeeds
+        mocker.patch.object(
+            Client, "_http_request", side_effect=[DemistoException("Invalid access token"), {"data": {"results": []}}]
+        )
+        mocker.patch.object(context_manager, "get_access_token", return_value="fresh_token")
+        mocker.patch.object(Client, "refresh_access_token", return_value="new_token")
+
+        result = dummy_client.perform_fetch({"aql": "test"})
+
+        assert result == {"data": {"results": []}}

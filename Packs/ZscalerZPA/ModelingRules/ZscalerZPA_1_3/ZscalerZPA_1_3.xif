@@ -16,7 +16,7 @@ filter
     xdm.session_context_id = SessionID,
     xdm.event.outcome_reason = InternalReason,
     xdm.event.outcome = ConnectionStatus,
-    xdm.network.tls.cipher = DoubleEncryption,
+    xdm.network.tls.cipher = to_string(DoubleEncryption),
     xdm.source.location.country = ClientCountryCode,
     xdm.source.host.hostname = identHostName,
     xdm.source.agent.identifier = ConnectionID,

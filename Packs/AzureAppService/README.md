@@ -6,7 +6,7 @@
 
 Data normalization capabilities:
 
-* Rules for parsing and modeling [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/monitor-app-service-reference#resource-logs) that are ingested via the [Azure Event Hub data source](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub) on Cortex XSIAM.
+* Rules for parsing and modeling [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/monitor-app-service-reference#resource-logs) that are ingested via the [Azure Event Hub data source](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub) on Cortex XSIAM.
   * When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section:
     * **`Use audit logs in analytics`**
   * The ingested Azure app service resource logs can be queried in XQL Search using the *`msft_azure_app_service_raw`* dataset.

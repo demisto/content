@@ -43,15 +43,15 @@ This playbook does not use any integrations.
 
 * CommandLineAnalysis
 * SearchIncidentsV2
+* get-endpoint-data
+* ip-enrichment
+* isolate-endpoint
 
 ### Commands
 
 * closeInvestigation
 * core-get-cloud-original-alerts
-* core-get-endpoints
-* core-isolate-endpoint
 * core-terminate-causality
-* ip
 
 ## Playbook Inputs
 

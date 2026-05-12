@@ -6,20 +6,17 @@ script: ''
 type: javascript
 tags:
 - jira
-comment: Pretty print JIRA issue into the incident war room
+comment: Pretty print JIRA issue into the incident war room.
 enabled: true
 args:
 - name: issueId
   required: true
   default: true
-  description: JIRA issue ID (e.g. SOC-24)
+  description: JIRA issue ID (e.g. SOC-24).
 scripttarget: 0
 dependson:
   must:
   - jira-get-issue
 fromversion: 5.0.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+tests:
+- No tests

@@ -41,7 +41,8 @@ def test_get_content_files_from_repo(mocker):
     When:
      - Calling get_content_files_from_repo to fetch the content of the relevant files.
     Then:
-     - Returns the content of the relevant files matching the expected results.
+     - Assert one HTTP request is made to get the contents of the file with the relevant extension.
+     - Assert the returned content of the relevant files matches the expected results.
     """
     from FeedGitHub import get_content_files_from_repo
 
@@ -62,8 +63,11 @@ def test_get_content_files_from_repo(mocker):
             b"- 167.172.154[.]189 port 80 - GET /36.ps1\n"
         ).decode("utf-8")
     }
-    mocker.patch.object(client, "_http_request", return_value=return_data)
+    mock_http_request = mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
+
+    assert mock_http_request.call_count == 1  # One .txt file in all relevant committed files
+    assert mock_http_request.call_args.kwargs == {"method": "GET", "full_url": relevant_files[1]["contents_url"]}
     assert content_files == util_load_json("test_data/get_content-files-from-repo-result.json")
 
 
@@ -114,9 +118,9 @@ def test_filter_out_files_by_status():
     ]
 
     expected_output = [
-        "http://example.com/file1",
-        "http://example.com/file2",
-        "http://example.com/file5",
+        {"status": "added", "filename": "http://example.com/file1"},
+        {"status": "modified", "filename": "http://example.com/file2"},
+        {"status": "added", "filename": "http://example.com/file5"},
     ]
     actual_output = filter_out_files_by_status(commits_files)
     assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
@@ -155,6 +159,29 @@ def test_parse_and_map_yara_content(mocker):
     assert list_parsed_rules == util_load_json("test_data/list-parsed-rules-res.json")
 
 
+def test_parse_and_map_yara_content_invalid_rule(mocker):
+    """
+    Given:
+     - An invalid YARA rule file as input.
+    When:
+     - Parsing and mapping the YARA content using the parse_and_map_yara_content function.
+    Then:
+     - Ensure that an empty list is returned and an error is logged.
+    """
+    from FeedGitHub import parse_and_map_yara_content
+
+    demisto_error_mock = mocker.patch.object(demisto, "error")
+
+    yara_rule_file = {"invalid-yara-rule.yar": "invalid yara rule"}
+
+    parsed_rules = parse_and_map_yara_content(yara_rule_file)
+
+    assert parsed_rules == []
+    assert demisto_error_mock.call_args[0][0] == (
+        "File: 'invalid-yara-rule.yar' cannot be processed. Error Message: Unknown text invalid for token of type ID on line 1"
+    )
+
+
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_extract_text_indicators():
     """
@@ -185,8 +212,9 @@ def test_get_stix_indicators():
     """
     from FeedGitHub import get_stix_indicators
 
-    stix_indicators_input = util_load_json("test_data/taxii_test.json")
-    res_indicators = get_stix_indicators(stix_indicators_input)
+    with open("test_data/taxii_test.json", encoding="utf-8") as f:
+        file_name_contents = [{"taxii_test.json": f.read()}]
+        res_indicators = get_stix_indicators(file_name_contents)
     assert res_indicators == util_load_json("test_data/taxii_test_res.json")
 
 
@@ -448,17 +476,18 @@ def test_filtering_stix_files():
     """
     from FeedGitHub import filtering_stix_files
 
-    content_files = [
-        [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}],  # STIX format
-        [{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}],  # STIX format
-        [{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}],  # Non-STIX format
+    file_names = ["fileA.json", "fileB.json", "fileC.json"]
+    file_contents = [
+        '{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}',  # STIX format
+        '{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}',  # STIX format
+        '{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}',  # Non-STIX format
     ]
     expected_result = [
         {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"},
         {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}},
         {"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"},
     ]
-    assert filtering_stix_files(content_files) == expected_result
+    assert filtering_stix_files(file_names=file_names, file_contents=file_contents) == expected_result
 
 
 def test_fetch_indicators_command_with_tlp_color_red(mocker):

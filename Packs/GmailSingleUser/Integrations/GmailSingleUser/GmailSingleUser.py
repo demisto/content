@@ -214,11 +214,11 @@ class Client:
         refresh_prefix = "refresh_token:"
         if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
             demisto.debug("Using refresh token set as auth_code")
-            return AUTH_CODE[len(refresh_prefix):]
+            return AUTH_CODE[len(refresh_prefix) :]
         demisto.info(f"Going to obtain refresh token from google's oauth service. For client id: {CLIENT_ID}")
         code = AUTH_CODE
         if AUTH_CODE.lower().startswith(AUTH_CODE_UNQUOTE_PREFIX):
-            code = urllib.parse.unquote(AUTH_CODE[len(AUTH_CODE_UNQUOTE_PREFIX):])
+            code = urllib.parse.unquote(AUTH_CODE[len(AUTH_CODE_UNQUOTE_PREFIX) :])
         body = {
             "client_id": CLIENT_ID,
             "grant_type": "authorization_code",
@@ -493,13 +493,11 @@ class Client:
             context_gmail["Body"], context_gmail["Html"], context_gmail["Attachments"] = self.parse_mail_parts(
                 email_data.get("payload", {}).get("parts", [])
             )
-            context_gmail["Attachment Names"] = ", ".join([attachment["Name"]
-                                                          for attachment in context_gmail["Attachments"]])  # type: ignore
+            context_gmail["Attachment Names"] = ", ".join([attachment["Name"] for attachment in context_gmail["Attachments"]])  # type: ignore
             context_email["Body/Text"], context_email["Body/HTML"], context_email["Attachments"] = self.parse_mail_parts(
                 email_data.get("payload", {}).get("parts", [])
             )
-            context_email["Attachment Names"] = ", ".join([attachment["Name"]
-                                                          for attachment in context_email["Attachments"]])  # type: ignore
+            context_email["Attachment Names"] = ", ".join([attachment["Name"] for attachment in context_email["Attachments"]])  # type: ignore
 
         return context_gmail, headers, context_email, occurred, occurred_is_valid
 
@@ -791,7 +789,7 @@ class Client:
                 "ID": cid,
             }
             attachments.append(attachment)
-            cleanBody += htmlBody[lastIndex: m.start(1)] + "cid:" + attachment["cid"]
+            cleanBody += htmlBody[lastIndex : m.start(1)] + "cid:" + attachment["cid"]
             lastIndex = m.end() - 1
 
         cleanBody += htmlBody[lastIndex:]
@@ -1175,6 +1173,7 @@ def get_attachments_command(client: Client):
 
 """FETCH INCIDENTS"""
 
+
 def fetch_incidents(client: Client):
     user_key = "me"
     query = "" if params.get("query") is None else params.get("query")
@@ -1232,7 +1231,7 @@ def fetch_incidents(client: Client):
             ignore_list_used = True
             ignore_ids.append(msg_id)
         else:
-            #save new msg date for lookback
+            # save new msg date for lookback
             emails_ids_and_dates.append((msg_id, occurred))
         # update last run only if we trust the occurred timestamp
         if is_valid_date and occurred > next_last_fetch:
@@ -1262,8 +1261,7 @@ def fetch_incidents(client: Client):
         last_fetch = next_last_fetch
     if emails_ids_and_dates:
         # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
-        latest_msg = max([parse_date(client, msg_date, "date")
-                            for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
+        latest_msg = max([parse_date(client, msg_date, "date") for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
         lookback_date = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
         msg_to_exclude_in_next_fetch = [
             (msg_id, parse_date(client, msg_date))
@@ -1283,7 +1281,7 @@ def fetch_incidents(client: Client):
     return incidents
 
 
-def parse_date(client: Client, date: str|datetime, return_type:str = "str") -> datetime | str:
+def parse_date(client: Client, date: str | datetime, return_type: str = "str") -> datetime | str:
     """
     Parses a date value using the client's server format utilities.
 
@@ -1373,9 +1371,7 @@ def get_incidents_command(client: Client):
     _in = args.get("in", "")
     has_attachments = argToBoolean(args.get("has_attachments", "false"))
     before, after = get_unix_date(args)
-    demisto.debug(
-        f"Fetching emails with filters - subject: {subject}, from: {_from}, to: {to}, before: {before}, after: {after}"
-    )
+    demisto.debug(f"Fetching emails with filters - subject: {subject}, from: {_from}, to: {to}, before: {before}, after: {after}")
     emails = []
     try:
         emails, final_query = client.search(
@@ -1408,12 +1404,10 @@ def get_incidents_command(client: Client):
                 "snippet": email.get("snippet"),
                 "labelIds": email.get("labelIds"),
                 "from": next(
-                    (
-                        h.get("value")
-                        for h in email.get("payload", {}).get("headers", [])
-                        if h.get("name", "").lower() == "from"
-                    ), None),
-                "internalDatetime": timestamp_to_datestring(email.get("internalDate", 0), is_utc=True)
+                    (h.get("value") for h in email.get("payload", {}).get("headers", []) if h.get("name", "").lower() == "from"),
+                    None,
+                ),
+                "internalDatetime": timestamp_to_datestring(email.get("internalDate", 0), is_utc=True),
             }
         )
 
@@ -1421,9 +1415,7 @@ def get_incidents_command(client: Client):
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Retrieved Gmail Incidents",
-            hr_emails,
-            headers=["from", "snippet", "internalDatetime", "labelIds", "id"]
+            "Retrieved Gmail Incidents", hr_emails, headers=["from", "snippet", "internalDatetime", "labelIds", "id"]
         ),
         raw_response=emails,
     )

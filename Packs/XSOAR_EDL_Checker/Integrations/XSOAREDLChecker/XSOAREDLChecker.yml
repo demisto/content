@@ -1,4 +1,5 @@
 category: Utilities
+provider: Palo Alto Networks
 commonfields:
   id: XSOAR EDL Checker
   version: -1
@@ -43,7 +44,7 @@ script:
       description: The Response or Error from the check.
     - contextPath: EDLChecker.ItemsOnList
       description: The number of indicators on the list, assuming a successful response!
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
   subtype: python3

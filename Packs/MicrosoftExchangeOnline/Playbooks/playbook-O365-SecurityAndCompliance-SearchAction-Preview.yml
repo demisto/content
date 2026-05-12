@@ -9,38 +9,35 @@ inputs:
   value: {}
   required: true
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: polling_interval
   value:
     simple: "1"
   required: false
   description: Search action polling interval.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: polling_timeout
   value:
     simple: "10"
   required: false
   description: Search action polling timeout.
-  playbookInputQuery: null
+  playbookInputQuery:
 name: O365 - Security And Compliance - Search Action - Preview
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
   description: Security and compliance search action type. Either "Purge" or "Preview".
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
-  description: Whether to include mailboxes other than regular user mailboxes in the
-    compliance search.
+  description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
   type: Boolean
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
   description: Whether the Azure Batch Framework is enabled for job processing.
   type: Boolean
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
-  description: Identity of a Core eDiscovery case which is associated with the compliance
-    search.
+  description: Identity of a Core eDiscovery case which is associated with the compliance search.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
-  description: Name of a Core eDiscovery case which is associated with the compliance
-    search.
+  description: Name of a Core eDiscovery case which is associated with the compliance search.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
   description: Security and compliance search action creator.
@@ -123,7 +120,6 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
   description: Security and compliance search action Tenant ID.
   type: String
-sourceplaybookid: O365 - Security And Compliance - Search Action
 starttaskid: "0"
 tasks:
   "0":
@@ -136,7 +132,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -155,6 +151,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 3465b210-3e8c-4e68-82d8-a71d09b64106
@@ -188,8 +185,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=val.SearchStatus!=="NotFound" ? val.Name : val.Name +
-                    "_Preview"'
+                  simple: '.=val.SearchStatus!=="NotFound" ? val.Name : val.Name + "_Preview"'
       Interval:
         simple: ${inputs.polling_interval}
       PollingCommandArgName:
@@ -199,9 +195,7 @@ tasks:
       Timeout:
         simple: ${inputs.polling_timeout}
       dt:
-        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&
-          val.Status == "InProgress" || val.Status == "Starting" || val.Status ==
-          "Purging").Name
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status && val.Status == "InProgress" || val.Status == "Starting" || val.Status == "Purging").Name
     separatecontext: true
     loop:
       iscommand: false
@@ -222,6 +216,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: a3b5cc33-9b80-4aa9-8413-a5ad3567168c
@@ -233,7 +228,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -249,17 +244,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: b749493b-3053-4139-841a-b6cd08faea72
+    taskid: 1a18141a-1cfd-4843-8fc4-2f1db333e66d
     type: regular
     task:
-      id: b749493b-3053-4139-841a-b6cd08faea72
+      id: 1a18141a-1cfd-4843-8fc4-2f1db333e66d
       version: -1
       name: Search action - Preview
-      description: After you create a content search using the !o365-sc-new-search
-        command and run it using the !o365-sc-start-search command, you assign a search
-        action to the search using the !o365-sc-new-search-action command.
+      description: After you create a content search using the !o365-sc-new-search command and run it using the !o365-sc-start-search command, you assign a search action to the search using the !o365-sc-new-search-action command.
       script: '|||o365-sc-new-search-action'
       type: regular
       iscommand: true
@@ -267,6 +261,8 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      '#error#':
+      - "8"
     scriptarguments:
       action:
         simple: Preview
@@ -290,6 +286,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
+    continueonerrortype: errorPath
   "7":
     id: "7"
     taskid: 84d44b24-58e7-49aa-8747-b9f0cbf9bb5f
@@ -298,8 +296,7 @@ tasks:
       id: 84d44b24-58e7-49aa-8747-b9f0cbf9bb5f
       version: -1
       name: Get preview results
-      description: Get the compliance search action from the Security & Compliance
-        Center.
+      description: Get the compliance search action from the Security & Compliance Center.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
@@ -333,13 +330,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "8":
+    id: "8"
+    taskid: 4c31505d-360d-4069-af68-09ad2c63e5b3
+    type: regular
+    task:
+      id: 4c31505d-360d-4069-af68-09ad2c63e5b3
+      version: -1
+      name: Search preview is not supported
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        simple: Email search preview could not be completed. This parameter is functional only in on-premises Exchange.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
+        "height": 730,
+        "width": 870,
         "x": 50,
         "y": 50
       }
@@ -351,7 +384,8 @@ tests:
 - O365-SecurityAndCompliance-Test
 - O365-SecurityAndCompliance-ContextResults-Test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+- agentix
+- cloud
+- xsiam
+contentitemexportablefields:
+  contentitemfields: {}

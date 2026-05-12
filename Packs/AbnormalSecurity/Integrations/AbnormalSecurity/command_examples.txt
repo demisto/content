@@ -23,4 +23,14 @@
 !abnormal-security-list-vendor-cases
 !abnormal-security-get-vendor-case-details case_id=1234
 !abnormal-security-list-unanalyzed-abuse-mailbox-campaigns
+!abnormal-security-search-messages source=abnormal tenant_ids="1,2,3" start_time="2024-01-01T00:00:00Z" end_time="2024-01-31T23:59:59Z" subject="Invoice" judgement=attack
+!abnormal-security-search-messages source=abnormal start_time="2024-01-01T00:00:00Z" end_time="2024-01-31T23:59:59Z"
+!abnormal-security-remediate-messages action=delete tenant_ids="1" source=abnormal remediation_reason=false_negative messages='[{"tenant_id":1,"raw_message_id":"msg-123","abnormal_message_id":"abnormal-uuid-123","mailbox_name":"user@company.com","subject":"Phishing Email","sender":"attacker@example.com","received_time":"2024-01-15T10:30:00Z"}]'
+!abnormal-security-remediate-messages action=delete source=abnormal remediation_reason=false_negative remediate_all=true start_time="2025-10-14T00:00:00Z" end_time="2025-10-15T00:00:00Z"
+!abnormal-security-list-activities tenant_ids="1,2,3" action=remediation page_number=1 page_size=100
+!abnormal-security-list-activities action=search
+!abnormal-security-get-activity-status activity_log_id=12345
+!abnormal-security-download-message-attachment message_id="abnormal-uuid-123" attachment_name="invoice.pdf" tenant_id=1 raw_message_id="msg-123" native_user_id="user-456" recipient_mailbox="user@company.com"
+!abnormal-security-download-message-eml cloud_message_id="abx:CloudMessage:12345:67890"
+!abnormal-security-download-message-eml cloud_message_id="abx:CloudMessage:12345:67890" quarantine_identity="quarantine-id-123" recipient_mailbox="user@company.com"
 

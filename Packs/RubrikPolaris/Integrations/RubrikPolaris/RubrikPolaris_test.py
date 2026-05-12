@@ -8,16 +8,21 @@ from unittest.mock import patch
 import pytest
 from CommonServerPython import remove_empty_elements
 from RubrikPolaris import (
+    ANOMALY_TYPE_ENUM,
+    DEFAULT_EVENT_TYPES,
     ERROR_MESSAGES,
+    FALSE_POSITIVE_TYPE_ENUM,
+    HUNT_STATUSES,
+    IOC_MATCHES,
     IOC_TYPE_ENUM,
+    MAX_INT_VALUE,
+    MAX_LONG_VALUE,
     MAXIMUM_PAGINATION_LIMIT,
     MESSAGES,
     OUTPUT_PREFIX,
+    QUERANTINE_STATUS,
     TOKEN_EXPIRY_BUFFER_TIME,
     TOKEN_EXPIRY_TIME_SPAN,
-    DEFAULT_EVENT_TYPES,
-    ANOMALY_TYPE_ENUM,
-    FALSE_POSITIVE_TYPE_ENUM,
 )
 
 BASE_URL = "https://demo.my.rubrik.com/api"
@@ -143,7 +148,7 @@ def test_test_module_for_correct_params(client, monkeypatch, requests_mock):
     """Test test_module function when correct parameters are passed."""
     from RubrikPolaris import test_module
 
-    params = {"isFetch": True, "max_fetch": "30", "first_fetch": "3 days"}
+    params = {"isFetch": True, "max_fetch": "30", "first_fetch": "3 days", "rsc_fetch_types": "Event"}
     list_policies_response = {"data": {}}
     fetch_data_response = {"data": {}}
 
@@ -160,11 +165,13 @@ def test_test_module_for_correct_params(client, monkeypatch, requests_mock):
     assert test_module(client, params) == "ok"
 
 
-@pytest.mark.parametrize("max_fetch, first_fetch, event_types, radar_critical_severity_mapping",
-                         [("-1", "3 days", [], None), ("20", "abc", [], None),
-                          ("10", "3 days", ["abc"], None), ("10", "3 days", [], '')])
-def test_test_module_for_incorrect_params(client, requests_mock, max_fetch, first_fetch,
-                                          event_types, radar_critical_severity_mapping):
+@pytest.mark.parametrize(
+    "max_fetch, first_fetch, event_types, radar_critical_severity_mapping",
+    [("-1", "3 days", [], None), ("20", "abc", [], None), ("10", "3 days", ["abc"], None), ("10", "3 days", [], "")],
+)
+def test_test_module_for_incorrect_params(
+    client, requests_mock, max_fetch, first_fetch, event_types, radar_critical_severity_mapping
+):
     """Test test_module function to raise ValueError with appropriate message when incorrect parameters are passed."""
     from RubrikPolaris import test_module
 
@@ -173,7 +180,7 @@ def test_test_module_for_incorrect_params(client, requests_mock, max_fetch, firs
         "max_fetch": max_fetch,
         "first_fetch": first_fetch,
         "event_types": event_types,
-        "radar_critical_severity_mapping": radar_critical_severity_mapping
+        "radar_critical_severity_mapping": radar_critical_severity_mapping,
     }
     list_policies_response = {"data": {}}
     requests_mock.post(BASE_URL_GRAPHQL, json=list_policies_response)
@@ -226,7 +233,10 @@ def test_fetch_incidents_success_without_last_run(client, requests_mock):
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
     fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
-        client, {}, {"first_fetch": f"{first_fetch}", "max_fetch": 2, "event_types": [DEFAULT_EVENT_TYPES[0]]})
+        client,
+        {},
+        {"first_fetch": f"{first_fetch}", "max_fetch": 2, "event_types": [DEFAULT_EVENT_TYPES[0]], "rsc_fetch_types": "Event"},
+    )
     last_run = {
         "last_fetch": f"{last_fetch}",
         "next_page_token": fetch_response["data"]["activitySeriesConnection"]["pageInfo"]["endCursor"],
@@ -257,7 +267,7 @@ def test_fetch_incidents_success_with_last_run(client, requests_mock):
     fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
         client,
         {"last_fetch": f"{last_fetch}", "next_page_token": "dummy-token"},
-        {"first_fetch": f"{first_fetch}", "max_fetch": 2},
+        {"first_fetch": f"{first_fetch}", "max_fetch": 2, "rsc_fetch_types": "Event"},
     )
 
     last_run = {
@@ -286,7 +296,7 @@ def test_fetch_incidents_empty_response_without_last_run(client, requests_mock):
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
     fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
-        client, {}, {"first_fetch": f"{first_fetch}", "max_fetch": 2}
+        client, {}, {"first_fetch": f"{first_fetch}", "max_fetch": 2, "rsc_fetch_types": "Event"}
     )
     last_run = {"last_fetch": f"{last_fetch}"}
     assert fetch_incidents_last_run == last_run
@@ -312,7 +322,7 @@ def test_fetch_incidents_empty_response_with_last_run(client, requests_mock):
     fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
         client,
         {"last_fetch": f"{last_fetch}", "next_page_token": "dummy-token"},
-        {"first_fetch": f"{first_fetch}", "max_fetch": 2},
+        {"first_fetch": f"{first_fetch}", "max_fetch": 2, "rsc_fetch_types": "Event"},
     )
 
     last_run = {"last_fetch": f"{last_fetch}", "next_page_token": "dummy-token"}
@@ -343,10 +353,10 @@ def test_object_search_success(client, requests_mock):
     response = rubrik_polaris_object_search_command(client, args)
 
     assert response.raw_response == object_search_response.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["GLOBAL_SEARCH"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['GLOBAL_SEARCH']}(val.id == obj.id)") == remove_empty_elements(
         object_search_response.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_GLOBAL_SEARCH"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_GLOBAL_SEARCH']}(val.name == obj.name)") == remove_empty_elements(
         object_search_response.get("page_token")
     )
     assert response.readable_output == object_search_response_hr
@@ -376,10 +386,10 @@ def test_object_search_with_token_hr_success(client, requests_mock):
     response = rubrik_polaris_object_search_command(client, args)
 
     assert response.raw_response == object_search_response.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["GLOBAL_SEARCH"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['GLOBAL_SEARCH']}(val.id == obj.id)") == remove_empty_elements(
         object_search_response.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_GLOBAL_SEARCH"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_GLOBAL_SEARCH']}(val.name == obj.name)") == remove_empty_elements(
         object_search_response.get("page_token")
     )
     assert response.readable_output == object_search_response_hr
@@ -546,10 +556,10 @@ def test_vm_objects_list_success(client, requests_mock):
     response = rubrik_polaris_vm_objects_list_command(client, args={"limit": 2})
 
     assert response.raw_response == objects_list_response.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["VM_OBJECT"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['VM_OBJECT']}(val.id == obj.id)") == remove_empty_elements(
         objects_list_response.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_VM_OBJECT"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_VM_OBJECT']}(val.name == obj.name)") == remove_empty_elements(
         objects_list_response.get("page_token")
     )
     assert response.readable_output == objects_list_response_hr
@@ -1534,7 +1544,7 @@ def test_gps_vm_host_list_success(client, requests_mock, empty_response):
         response = rubrik_gps_vm_host_list_command(client, args={})
 
         assert response.raw_response == vm_host_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_VM_HOSTS"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['GPS_VM_HOSTS']}(val.id == obj.id)") == remove_empty_elements(
             vm_host_list_response.get("outputs")
         )
         assert response.readable_output == vm_host_list_response_hr
@@ -1576,10 +1586,10 @@ def test_gps_vm_datastore_list_success(client, requests_mock, empty_response):
         response = rubrik_gps_vm_datastore_list_command(client, args=args)
 
         assert response.raw_response == vm_datastore_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_VM_HOSTS"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['GPS_VM_HOSTS']}(val.id == obj.id)") == remove_empty_elements(
             vm_datastore_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_VM_HOSTS"]}(val.name == obj.name)') == {
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_VM_HOSTS']}(val.name == obj.name)") == {
             "Datastore": remove_empty_elements(vm_datastore_list_response.get("page_token"))
         }
         assert response.readable_output == vm_datastore_list_response_hr
@@ -1755,10 +1765,10 @@ def test_event_list_success(client, requests_mock, empty_response):
         response = rubrik_event_list_command(client, args=args)
 
         assert response.raw_response == event_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["EVENT"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['EVENT']}(val.id == obj.id)") == remove_empty_elements(
             event_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_EVENT"]}(val.name == obj.name)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_EVENT']}(val.name == obj.name)") == remove_empty_elements(
             event_list_response.get("page_token")
         )
         assert response.readable_output == event_list_response_hr
@@ -1893,10 +1903,10 @@ def test_object_list_success(client, requests_mock, empty_response):
         response = rubrik_polaris_object_list_command(client, args=args)
 
         assert response.raw_response == object_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["OBJECT"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['OBJECT']}(val.id == obj.id)") == remove_empty_elements(
             object_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_OBJECT"]}(val.name == obj.name)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_OBJECT']}(val.name == obj.name)") == remove_empty_elements(
             object_list_response.get("page_token")
         )
         assert response.readable_output == object_list_response_hr
@@ -1962,10 +1972,10 @@ def test_polaris_object_snapshot_list_success(client, requests_mock, empty_respo
         response = rubrik_polaris_object_snapshot_list_command(client, args=args)
 
         assert response.raw_response == object_snapshot_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["OBJECT"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['OBJECT']}(val.id == obj.id)") == remove_empty_elements(
             object_snapshot_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_OBJECT"]}(val.name == obj.name)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_OBJECT']}(val.name == obj.name)") == remove_empty_elements(
             object_snapshot_list_response.get("page_token")
         )
         assert response.readable_output == object_snapshot_list_response_hr
@@ -2573,10 +2583,10 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, li
     page_token = response_data.get(f"page_token_{limit}_{page_number}")
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         outputs
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)") == remove_empty_elements(
         page_token
     )
     assert response.readable_output == hr_data
@@ -2608,7 +2618,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_invalid_user_email(c
         response.readable_output
         == MESSAGES["NO_RECORDS_FOUND"].format("user accesses") + f"\n\n{MESSAGES['NEXT_PAGE_TOKEN'].format('cursor_2')}"
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)', {}) == page_token
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)", {}) == page_token
 
 
 def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(client, requests_mock):
@@ -2637,10 +2647,10 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     response = rubrik_sonar_user_access_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_when_not_whitelisted")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         response_data.get("outputs_when_not_whitelisted")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)") == remove_empty_elements(
         response_data.get("page_token_2_1")
     )
     assert response.readable_output == hr_data
@@ -2719,7 +2729,7 @@ def test_rubrik_sonar_user_access_get_command_success(client, requests_mock):
     response = rubrik_sonar_user_access_get_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         response_data.get("outputs")
     )
     assert response.readable_output == hr_data
@@ -2749,7 +2759,7 @@ def test_rubrik_sonar_user_access_get_command_success_when_not_whitelisted(clien
     response = rubrik_sonar_user_access_get_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_when_not_whitelisted")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         response_data.get("outputs_when_not_whitelisted")
     )
     assert response.readable_output == hr_data
@@ -2821,10 +2831,10 @@ def test_rubrik_sonar_file_context_list_command_success(client, requests_mock):
     response = rubrik_sonar_file_context_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['FILE_CONTEXT']}(val.stdPath == obj.stdPath)") == remove_empty_elements(
         response_data.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_FILE_CONTEXT']}(val.name == obj.name)") == remove_empty_elements(
         response_data.get("page_token")
     )
     assert response.readable_output == hr_data
@@ -2862,10 +2872,10 @@ def test_rubrik_sonar_file_context_list_command_success_when_not_whitelisted(cli
     response = rubrik_sonar_file_context_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_when_not_whitelisted")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['FILE_CONTEXT']}(val.stdPath == obj.stdPath)") == remove_empty_elements(
         response_data.get("outputs_when_not_whitelisted")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_FILE_CONTEXT']}(val.name == obj.name)") == remove_empty_elements(
         response_data.get("page_token")
     )
     assert response.readable_output == hr_data
@@ -2960,7 +2970,7 @@ def test_rubrik_radar_suspicious_file_list_command_success(client, requests_mock
     response = rubrik_radar_suspicious_file_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['SUSPICIOUS_FILE']}(val.id == obj.id)") == remove_empty_elements(
         response_data.get("outputs")
     )
     assert response.readable_output == hr_data
@@ -2992,7 +3002,7 @@ def test_rubrik_radar_suspicious_file_list_command_success_when_no_anomalies(cli
     response = rubrik_radar_suspicious_file_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_no_anomalies")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['SUSPICIOUS_FILE']}(val.id == obj.id)") == remove_empty_elements(
         response_data.get("outputs_when_no_anomalies")
     )
     assert response.readable_output == hr_data
@@ -3128,23 +3138,26 @@ def test_rubrik_radar_anomaly_status_update_command_success(client, requests_moc
     from RubrikPolaris import rubrik_radar_anomaly_status_update_command
 
     # Load test data
-    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                "test_data/radar_anomaly_status_update_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_anomaly_status_update_hr.md")) as f:
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_status_update_response.json")
+    )
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_status_update_hr.md")) as f:
         hr_data = f.read()
 
-    args = {'workload_id': '00000000-0000-0000-0000-000000000001',
-            'anomaly_id': '00000000-0000-0000-0000-000000000001', 'anomaly_type': 'FILESYSTEM'}
+    args = {
+        "workload_id": "00000000-0000-0000-0000-000000000001",
+        "anomaly_id": "00000000-0000-0000-0000-000000000001",
+        "anomaly_type": "FILESYSTEM",
+    }
 
-    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("raw_response")}])
     response = rubrik_radar_anomaly_status_update_command(client, args=args)
 
-    assert response.raw_response == response_data.get('raw_response')
-    assert response.outputs == remove_empty_elements(response_data.get('outputs'))
+    assert response.raw_response == response_data.get("raw_response")
+    assert response.outputs == remove_empty_elements(response_data.get("outputs"))
     assert response.readable_output == hr_data
-    assert response.outputs_key_field == ['command_name', 'anomaly_id', 'workload_id']
-    assert response.outputs_prefix == OUTPUT_PREFIX['ANOMALY_UPDATE_STATUS']
+    assert response.outputs_key_field == ["command_name", "anomaly_id", "workload_id"]
+    assert response.outputs_prefix == OUTPUT_PREFIX["ANOMALY_UPDATE_STATUS"]
 
 
 def test_rubrik_radar_anomaly_status_update_command_false_positive_success(client, requests_mock):
@@ -3159,44 +3172,82 @@ def test_rubrik_radar_anomaly_status_update_command_false_positive_success(clien
     from RubrikPolaris import rubrik_radar_anomaly_status_update_command
 
     # Load test data
-    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                "test_data/radar_anomaly_status_update_false_positive_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_anomaly_status_update_false_positive_hr.md")) as f:
+    response_data = util_load_json(
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_status_update_false_positive_response.json"
+        )
+    )
+    with open(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_status_update_false_positive_hr.md")
+    ) as f:
         hr_data = f.read()
 
-    args = {'workload_id': '00000000-0000-0000-0000-000000000001', 'anomaly_id': '00000000-0000-0000-0000-000000000001',
-            'anomaly_type': 'FILESYSTEM', 'false_positive_type': 'other', 'false_positive_reason': 'test reason'}
+    args = {
+        "workload_id": "00000000-0000-0000-0000-000000000001",
+        "anomaly_id": "00000000-0000-0000-0000-000000000001",
+        "anomaly_type": "FILESYSTEM",
+        "false_positive_type": "other",
+        "false_positive_reason": "test reason",
+    }
 
-    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("raw_response")}])
     response = rubrik_radar_anomaly_status_update_command(client, args=args)
 
-    assert response.raw_response == response_data.get('raw_response')
-    assert response.outputs == remove_empty_elements(response_data.get('outputs'))
+    assert response.raw_response == response_data.get("raw_response")
+    assert response.outputs == remove_empty_elements(response_data.get("outputs"))
     assert response.readable_output == hr_data
-    assert response.outputs_key_field == ['command_name', 'anomaly_id', 'workload_id']
-    assert response.outputs_prefix == OUTPUT_PREFIX['ANOMALY_UPDATE_STATUS']
+    assert response.outputs_key_field == ["command_name", "anomaly_id", "workload_id"]
+    assert response.outputs_prefix == OUTPUT_PREFIX["ANOMALY_UPDATE_STATUS"]
 
 
-@pytest.mark.parametrize("args, error", [
-    ({}, ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('anomaly_type')),
-    ({'anomaly_type': 'filesystem'}, ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('workload_id')),
-    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001'},
-     ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('anomaly_id')),
-    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001',
-      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_type': 'other'},
-     ERROR_MESSAGES['FALSE_POSITIVE_TYPE_ERROR'].format('false_positive_reason', 'false_positive_type')),
-    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001',
-      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_reason': 'test reason'},
-     ERROR_MESSAGES['FALSE_POSITIVE_REASON_ERROR'].format('false_positive_type', 'false_positive_reason')),
-    ({'anomaly_type': 'anomaly', 'workload_id': '00000000-0000-0000-0000-000000000001',
-      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_type': 'other'},
-     ERROR_MESSAGES['INVALID_SELECT'].format('anomaly', 'anomaly_type', ANOMALY_TYPE_ENUM)),
-    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001',
-      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_reason': 'test reason',
-      'false_positive_type': 'other_type'},
-     ERROR_MESSAGES['INVALID_SELECT'].format('other_type', 'false_positive_type', FALSE_POSITIVE_TYPE_ENUM)),
-])
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        ({}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("anomaly_type")),
+        ({"anomaly_type": "filesystem"}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("workload_id")),
+        (
+            {"anomaly_type": "filesystem", "workload_id": "00000000-0000-0000-0000-000000000001"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("anomaly_id"),
+        ),
+        (
+            {
+                "anomaly_type": "filesystem",
+                "workload_id": "00000000-0000-0000-0000-000000000001",
+                "anomaly_id": "00000000-0000-0000-0000-000000000001",
+                "false_positive_type": "other",
+            },
+            ERROR_MESSAGES["FALSE_POSITIVE_TYPE_ERROR"].format("false_positive_reason", "false_positive_type"),
+        ),
+        (
+            {
+                "anomaly_type": "filesystem",
+                "workload_id": "00000000-0000-0000-0000-000000000001",
+                "anomaly_id": "00000000-0000-0000-0000-000000000001",
+                "false_positive_reason": "test reason",
+            },
+            ERROR_MESSAGES["FALSE_POSITIVE_REASON_ERROR"].format("false_positive_type", "false_positive_reason"),
+        ),
+        (
+            {
+                "anomaly_type": "anomaly",
+                "workload_id": "00000000-0000-0000-0000-000000000001",
+                "anomaly_id": "00000000-0000-0000-0000-000000000001",
+                "false_positive_type": "other",
+            },
+            ERROR_MESSAGES["INVALID_SELECT"].format("anomaly", "anomaly_type", ANOMALY_TYPE_ENUM),
+        ),
+        (
+            {
+                "anomaly_type": "filesystem",
+                "workload_id": "00000000-0000-0000-0000-000000000001",
+                "anomaly_id": "00000000-0000-0000-0000-000000000001",
+                "false_positive_reason": "test reason",
+                "false_positive_type": "other_type",
+            },
+            ERROR_MESSAGES["INVALID_SELECT"].format("other_type", "false_positive_type", FALSE_POSITIVE_TYPE_ENUM),
+        ),
+    ],
+)
 def test_rubrik_radar_anomaly_status_update_command_with_invalid_args(client, args, error):
     """
     Test case scenario for invalid arguments for rubrik_radar_anomaly_status_update_command.
@@ -3213,3 +3264,977 @@ def test_rubrik_radar_anomaly_status_update_command_with_invalid_args(client, ar
     with pytest.raises(ValueError) as e:
         rubrik_radar_anomaly_status_update_command(client, args=args)
     assert str(e.value) == error
+
+
+def test_threat_monitoring_matched_object_list_command_success_when_empty_response(client, requests_mock):
+    """Tests success when empty response is received for rubrik-threat-monitoring-matched-object-list command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_object_list_command
+
+    threat_monitoring_empty_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_list_empty_response.json")
+    )
+
+    args = {"start_time": "3 days"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_empty_response}])
+    response = rubrik_threat_monitoring_matched_object_list_command(client, args=args)
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("threat monitoring objects")
+
+
+def test_threat_monitoring_matched_object_list_command_success(client, requests_mock):
+    """Tests success for rubrik-threat-monitoring-matched-object-list command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_object_list_command
+
+    threat_monitoring_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_list_response.json")
+    )
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_list_response_hr.md")) as f:
+        threat_monitoring_response_hr = f.read()
+
+    args = {"start_time": "3 days"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_response.get("raw_response")}])
+    response = rubrik_threat_monitoring_matched_object_list_command(client, args=args)
+
+    assert response.raw_response == threat_monitoring_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(threat_monitoring_response.get("outputs"))
+    assert response.readable_output == threat_monitoring_response_hr
+
+
+@pytest.mark.parametrize(
+    "args, exception, error",
+    [
+        ({"start_time": " "}, ValueError, '" " is not a valid date'),
+        ({"start_time": "3 days", "limit": "-1"}, ValueError, ERROR_MESSAGES["INVALID_LIMIT"].format(-1)),
+        ({"start_time": "3 days", "limit": "1001"}, ValueError, ERROR_MESSAGES["INVALID_LIMIT"].format(1001)),
+    ],
+)
+def test_threat_monitoring_matched_object_list_command_when_arguments_failure(client, args, exception, error):
+    """Tests failure for rubrik-threat-monitoring-matched-object-list command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_object_list_command
+
+    with pytest.raises(exception) as e:
+        rubrik_threat_monitoring_matched_object_list_command(client, args)
+
+    assert str(e.value) == error
+
+
+def test_threat_monitoring_matched_object_get_command_success_when_empty_response(client, requests_mock):
+    """Tests success when empty response is received for rubrik-threat-monitoring-matched-object-get command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_object_get_command
+
+    threat_monitoring_get_empty_response = {"data": None}
+
+    args = {"object_id": "00000000-0000-0000-0000-000000000001"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_get_empty_response}])
+    response = rubrik_threat_monitoring_matched_object_get_command(client, args=args)
+    assert response.readable_output == MESSAGES["NO_RECORD_FOUND"].format("threat monitoring object")
+
+
+def test_threat_monitoring_matched_object_get_command_success(client, requests_mock):
+    """Tests success for rubrik-threat-monitoring-matched-object-get command."""
+    from RubrikPolaris import OUTPUT_PREFIX, rubrik_threat_monitoring_matched_object_get_command
+
+    threat_monitoring_get_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_get_response.json")
+    )
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_get_hr.md")) as f:
+        threat_monitoring_get_hr = f.read()
+
+    args = {"object_id": "00000000-0000-0000-0000-000000000001"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_get_response.get("raw_response")}])
+    response = rubrik_threat_monitoring_matched_object_get_command(client, args=args)
+
+    assert response.raw_response == threat_monitoring_get_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(threat_monitoring_get_response.get("outputs"))
+    assert response.readable_output == threat_monitoring_get_hr
+    assert response.outputs_prefix == OUTPUT_PREFIX["THREAT_MONITORING"]
+    assert response.outputs_key_field == "id"
+
+
+def test_threat_monitoring_matched_object_get_command_when_arguments_failure(client):
+    """Tests failure for rubrik-threat-monitoring-matched-object-get command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_object_get_command
+
+    args = {"object_id": " "}
+    with pytest.raises(ValueError) as e:
+        rubrik_threat_monitoring_matched_object_get_command(client, args)
+
+    assert str(e.value) == ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")
+
+
+def test_test_module_when_fetch_is_false(client, requests_mock):
+    """Tests failure for rubrik-threat-monitoring-matched-object-list command."""
+    from RubrikPolaris import test_module
+
+    response = {"data": {"deploymentVersion": "v000001-01"}}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response}])
+
+    response = test_module(client, {"isFetch": False})
+
+    assert response == "ok"
+
+
+def test_threat_monitoring_matched_file_list_command_success_when_empty_response(client, requests_mock):
+    """Tests success when empty response is received for rubrik-threat-monitoring-matched-file-list command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_file_list_command
+
+    file_list_empty_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_list_empty_response.json")
+    )
+
+    args = {"object_id": "dummy-object-id"}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": file_list_empty_response}])
+    response = rubrik_threat_monitoring_matched_file_list_command(client, args=args)
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("threat monitoring files")
+
+
+def test_threat_monitoring_matched_file_list_command_success(client, requests_mock):
+    """Tests success for rubrik-threat-monitoring-matched-file-list command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_file_list_command
+
+    file_list_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_list_response.json")
+    )
+
+    with open(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_list_response_hr.md")
+    ) as f:
+        file_list_response_hr = f.read()
+
+    args = {"object_id": "dummy-object-id"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": file_list_response.get("raw_response")}])
+    response = rubrik_threat_monitoring_matched_file_list_command(client, args=args)
+
+    assert response.raw_response == file_list_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(file_list_response.get("outputs"))
+    assert response.readable_output == file_list_response_hr
+
+
+@pytest.mark.parametrize(
+    "args, exception, error",
+    [
+        ({"object_id": " "}, ValueError, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")),
+        ({"object_id": "test-id", "limit": "-1"}, ValueError, ERROR_MESSAGES["INVALID_LIMIT"].format(-1)),
+        ({"object_id": "test-id", "limit": "1001"}, ValueError, ERROR_MESSAGES["INVALID_LIMIT"].format(1001)),
+    ],
+)
+def test_threat_monitoring_matched_file_list_command_when_arguments_failure(client, args, exception, error):
+    """Tests failure for rubrik-threat-monitoring-matched-file-list command."""
+    from RubrikPolaris import rubrik_threat_monitoring_matched_file_list_command
+
+    with pytest.raises(exception) as e:
+        rubrik_threat_monitoring_matched_file_list_command(client, args)
+
+    assert str(e.value) == error
+
+
+@pytest.mark.parametrize(
+    "args, exception, error",
+    [
+        (
+            {"matched_snapshot_id": "", "file_path": "test/path"},
+            ValueError,
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("matched_snapshot_id"),
+        ),
+        (
+            {"matched_snapshot_id": "test-id", "file_path": ""},
+            ValueError,
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("file_path"),
+        ),
+        (
+            {"matched_snapshot_id": " ", "file_path": "test/path"},
+            ValueError,
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("matched_snapshot_id"),
+        ),
+        (
+            {"matched_snapshot_id": "test-id", "file_path": " "},
+            ValueError,
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("file_path"),
+        ),
+        (
+            {"matched_snapshot_id": "", "file_path": ""},
+            ValueError,
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("matched_snapshot_id", "file_path"),
+        ),
+    ],
+)
+def test_threat_monitoring_matched_file_get_when_invalid_arguments(client, args, exception, error):
+    """
+    Tests invalid arguments for rubrik-threat-monitoring-matched-file-get.
+
+    Given:
+        -args: contains arguments for the command
+    When:
+        -Invalid value is passed in arguments
+    Then:
+        -Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_threat_monitoring_matched_file_get_command
+
+    with pytest.raises(exception) as e:
+        rubrik_threat_monitoring_matched_file_get_command(client, args)
+    assert str(e.value) == error
+
+
+def test_threat_monitoring_matched_file_get_when_empty_response(client, requests_mock):
+    """
+    Test case scenario for successful execution of rubrik-threat-monitoring-matched-file-get command with an empty response.
+
+    When:
+        -calling rubrik-threat-monitoring-matched-file-get command
+    Then:
+        -Verifies mock response with empty message obtained in HR
+    """
+    from RubrikPolaris import rubrik_threat_monitoring_matched_file_get_command
+
+    args = {"matched_snapshot_id": "test-id", "file_path": "/dummy/path/file1.txt"}
+    mock_response = {"data": None}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": mock_response}])
+
+    result = rubrik_threat_monitoring_matched_file_get_command(client, args)
+
+    assert result.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("matched file details")
+    assert result.raw_response == mock_response
+
+
+def test_threat_monitoring_matched_file_get_success(client, requests_mock):
+    """
+    Test case scenario for successful execution of rubrik-threat-monitoring-matched-file-get command with a valid response.
+
+    When:
+        -calling rubrik-threat-monitoring-matched-file-get command
+    Then:
+        -Verifies mock response with actual response
+    """
+    from RubrikPolaris import rubrik_threat_monitoring_matched_file_get_command
+
+    args = {"matched_snapshot_id": "test-id", "file_path": "/dummy/path/file1.txt"}
+
+    mock_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_get_response.json")
+    )
+
+    with open(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_get_response_hr.md")
+    ) as f:
+        hr = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": mock_response.get("raw_response")}])
+
+    result = rubrik_threat_monitoring_matched_file_get_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["THREAT_MONITORING_FILE"]
+    assert result.outputs_key_field == ["fileName", "filePath"]
+    assert result.raw_response == mock_response.get("raw_response")
+    assert result.readable_output == hr
+    assert result.outputs == remove_empty_elements(mock_response.get("outputs"))
+
+
+def test_fetch_incidents_with_threat_monitoring_only(client, requests_mock):
+    """
+    Test fetch_incidents function when rsc_fetch_types is set to "Threat Monitoring Object"
+    """
+    from RubrikPolaris import fetch_incidents
+
+    # Mock the threat monitoring response
+    threat_monitoring_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
+    )
+    threat_monitoring_incidents = util_load_json(
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_events_and_threat_monitoring_objects_incidents.json"
+        )
+    )
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_response}])
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"rsc_fetch_types": "Threat Monitoring Object", "first_fetch": first_fetch}
+
+    expected_next_run = {
+        "threat_monitoring": {
+            "last_fetch": first_fetch,
+            "already_fetched": ["dummy-fid-789012"],
+            "object_type_filter": [],
+            "match_type_filter": [],
+            "next_page_token": "dummy-end-cursor",
+        }
+    }
+
+    next_run, incidents = fetch_incidents(client, {}, params)
+
+    assert next_run == expected_next_run
+    assert incidents == [threat_monitoring_incidents[0]]
+
+
+def test_fetch_incidents_with_threat_monitoring_with_last_run(client, requests_mock):
+    """
+    Test fetch_incidents function when rsc_fetch_types is set to "Threat Monitoring Object"
+    """
+    from RubrikPolaris import fetch_incidents
+
+    # Mock the threat monitoring response
+    threat_monitoring_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
+    )
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_response}])
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"rsc_fetch_types": "Threat Monitoring Object", "first_fetch": first_fetch}
+
+    expected_next_run = {
+        "threat_monitoring": {
+            "last_fetch": first_fetch,
+            "already_fetched": ["dummy-fid-789012"],
+            "object_type_filter": [],
+            "match_type_filter": [],
+            "next_page_token": "dummy-end-cursor",
+        }
+    }
+
+    last_run = {
+        "threat_monitoring": {
+            "already_fetched": ["dummy-fid-789012"],
+        }
+    }
+
+    next_run, incidents = fetch_incidents(client, last_run, params)
+
+    assert next_run == expected_next_run
+    assert incidents == []
+
+
+def test_fetch_incidents_with_both_types(client, requests_mock):
+    """Test fetch_incidents function when rsc_fetch_types is set to ["Threat Monitoring Object", "Event"]"""
+    from RubrikPolaris import fetch_incidents
+
+    # Load test data
+    threat_monitoring_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
+    )
+    event_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
+    )
+    expected_incidents = util_load_json(
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_events_and_threat_monitoring_objects_incidents.json"
+        )
+    )
+
+    # Set up mock responses
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    responses = [
+        {"json": threat_monitoring_response},
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": event_response},
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"first_fetch": f"{first_fetch}", "max_fetch": 2, "rsc_fetch_types": ["Threat Monitoring Object", "Event"]}
+
+    last_run, incidents = fetch_incidents(client, {}, params)
+
+    expected_next_run = {
+        "last_fetch": first_fetch,
+        "next_page_token": "dummy-end-cursor-1",
+        "threat_monitoring": {
+            "last_fetch": first_fetch,
+            "already_fetched": ["dummy-fid-789012"],
+            "object_type_filter": [],
+            "match_type_filter": [],
+            "next_page_token": "dummy-end-cursor",
+        },
+    }
+
+    assert last_run == expected_next_run
+    assert incidents == expected_incidents
+
+
+@pytest.mark.parametrize(
+    "rsc_fetch_types, expected_error_message",
+    [
+        (["InvalidType"], MESSAGES["INVALID_FETCH_TYPE"]),
+        ([""], MESSAGES["INVALID_FETCH_TYPE"]),
+        (["   "], MESSAGES["INVALID_FETCH_TYPE"]),
+    ],
+)
+def test_fetch_incidents_with_invalid_fetch_types(client, rsc_fetch_types, expected_error_message):
+    """Test fetch_incidents function with various invalid rsc_fetch_types configurations."""
+    from RubrikPolaris import fetch_incidents
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"first_fetch": first_fetch, "max_fetch": 2, "rsc_fetch_types": rsc_fetch_types}
+
+    with pytest.raises(ValueError) as e:
+        fetch_incidents(client, {}, params)
+
+    assert str(e.value) == expected_error_message
+
+
+@pytest.mark.parametrize(
+    "max_fetch_value, expected_error_message",
+    [
+        (0, ERROR_MESSAGES["INVALID_MAX_FETCH"]),
+        ("not_an_integer", 'Invalid number: "Fetch Limit"="not_an_integer"'),
+        (None, ERROR_MESSAGES["INVALID_MAX_FETCH"]),
+        ("", ERROR_MESSAGES["INVALID_MAX_FETCH"]),
+        ("   ", 'Invalid number: "Fetch Limit"="   "'),
+        (-1, ERROR_MESSAGES["INVALID_MAX_FETCH"]),
+        (1001, ERROR_MESSAGES["INVALID_MAX_FETCH"]),
+    ],
+)
+def test_fetch_incidents_with_invalid_max_fetch(client, max_fetch_value, expected_error_message):
+    """Test fetch_incidents function with various invalid max_fetch values."""
+    from RubrikPolaris import fetch_incidents
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"first_fetch": first_fetch, "max_fetch": max_fetch_value, "rsc_fetch_types": ["threat monitoring object"]}
+
+    with pytest.raises(ValueError) as e:
+        fetch_incidents(client, {}, params)
+
+    assert str(e.value) == expected_error_message
+
+
+@pytest.mark.parametrize(
+    "first_fetch_value, expected_error_message",
+    [
+        ("invalid_date_format", 'Invalid date: "First fetch time"="invalid_date_format"'),
+        ("", 'Invalid date: "First fetch time"=""'),
+        ("   ", 'Invalid date: "First fetch time"="   "'),
+    ],
+)
+def test_fetch_incidents_with_invalid_first_fetch(client, first_fetch_value, expected_error_message):
+    """Test fetch_incidents function with invalid first_fetch values."""
+    from RubrikPolaris import fetch_incidents
+
+    params = {"first_fetch": first_fetch_value, "max_fetch": 2, "rsc_fetch_types": ["Threat Monitoring Object"]}
+
+    with pytest.raises(ValueError) as e:
+        fetch_incidents(client, {}, params)
+
+    assert str(e.value) == expected_error_message
+
+
+def test_rubrik_ioc_scan_list_v2_command_success_when_empty_response(client, requests_mock):
+    """Tests success when empty response is received for rubrik-ioc-scan-list-v2 command."""
+    from RubrikPolaris import rubrik_ioc_scan_list_v2_command
+
+    ioc_scan_empty_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_v2_empty_response.json")
+    )
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": ioc_scan_empty_response.get("raw_response")}])
+    response = rubrik_ioc_scan_list_v2_command(client, {})
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("ioc scans")
+    assert response.raw_response == ioc_scan_empty_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(ioc_scan_empty_response.get("outputs"))
+
+
+def test_rubrik_ioc_scan_list_v2_command_success(client, requests_mock):
+    """Tests success for rubrik-ioc-scan-list-v2 command."""
+    from RubrikPolaris import rubrik_ioc_scan_list_v2_command
+
+    ioc_scan_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_v2_response.json")
+    )
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_v2_response_hr.md")) as f:
+        ioc_scan_response_hr = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": ioc_scan_response.get("raw_response")}])
+    response = rubrik_ioc_scan_list_v2_command(client, {})
+
+    assert response.raw_response == ioc_scan_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(ioc_scan_response.get("outputs"))
+    assert response.readable_output == ioc_scan_response_hr
+
+
+@pytest.mark.parametrize(
+    "args, exception, error",
+    [
+        ({"start_time": " "}, ValueError, '" " is not a valid date'),
+        ({"start_time": "3 days", "limit": "-1"}, ValueError, ERROR_MESSAGES["INVALID_LIMIT"].format(-1)),
+        ({"start_time": "3 days", "limit": "1001"}, ValueError, ERROR_MESSAGES["INVALID_LIMIT"].format(1001)),
+        (
+            {"start_time": "3 days", "ioc_match": ["INVALID_MATCH"]},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_MATCH", "ioc_match", IOC_MATCHES),
+        ),
+        (
+            {"start_time": "3 days", "quarantine_status": ["INVALID_STATUS"]},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_STATUS", "quarantine_status", QUERANTINE_STATUS),
+        ),
+        (
+            {"start_time": "3 days", "hunt_status": ["INVALID_STATUS"]},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_STATUS", "hunt_status", HUNT_STATUSES),
+        ),
+    ],
+)
+def test_rubrik_ioc_scan_list_v2_command_when_arguments_failure(client, args, exception, error):
+    """Tests failure for rubrik-ioc-scan-list-v2 command."""
+    from RubrikPolaris import rubrik_ioc_scan_list_v2_command
+
+    with pytest.raises(exception) as e:
+        rubrik_ioc_scan_list_v2_command(client, args)
+
+    assert str(e.value) == error
+
+
+def test_rubrik_ioc_scan_results_v2_when_invalid_arguments(client):
+    """
+    Tests invalid arguments for rubrik-ioc-scan-results-v2.
+
+    Given:
+        -args: contains arguments for the command
+    When:
+        -Invalid value is passed in arguments
+    Then:
+        -Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_ioc_scan_results_v2_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_ioc_scan_results_v2_command(client, args={"hunt_id": ""})
+    assert str(e.value) == ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("hunt_id")
+
+
+def test_rubrik_ioc_scan_results_v2_when_empty_response(client, requests_mock):
+    """
+    Test case scenario for successful execution of rubrik-ioc-scan-results-v2 command with an empty response.
+
+    When:
+        -calling rubrik-ioc-scan-results-v2 command
+    Then:
+        -Verifies mock response with empty message obtained in HR
+    """
+    from RubrikPolaris import rubrik_ioc_scan_results_v2_command
+
+    args = {"hunt_id": "test-hunt-id"}
+    mock_response = {"data": None}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": mock_response}])
+
+    result = rubrik_ioc_scan_results_v2_command(client, args)
+
+    assert result.readable_output == MESSAGES["NO_RECORD_FOUND"].format("ioc scan result")
+    assert result.raw_response == mock_response
+
+
+def test_rubrik_ioc_scan_results_v2_success(client, requests_mock):
+    """
+    Test case scenario for successful execution of rubrik-ioc-scan-results-v2 command with a valid response.
+
+    When:
+        -calling rubrik-ioc-scan-results-v2 command
+    Then:
+        -Verifies mock response with actual response
+    """
+    from RubrikPolaris import rubrik_ioc_scan_results_v2_command
+
+    args = {"hunt_id": "test-hunt-id"}
+
+    mock_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_results_v2_response.json")
+    )
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_results_v2_response_hr.md")) as f:
+        hr = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": mock_response.get("raw_response")}])
+
+    result = rubrik_ioc_scan_results_v2_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["IOC_SCAN"]
+    assert result.outputs_key_field == "hunt_id"
+    assert result.raw_response == mock_response.get("raw_response")
+    assert result.readable_output == hr
+    assert result.outputs == mock_response.get("outputs")
+
+
+def test_turbo_ioc_scan_command_success(client, requests_mock):
+    """Tests success for rubrik-turbo-ioc-scan command."""
+    from RubrikPolaris import rubrik_turbo_ioc_scan_command
+
+    turbo_ioc_scan_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/turbo_ioc_scan_response.json")
+    )
+
+    args = {
+        "ioc": "hash123",
+        "cluster_id": ["cluster1", "cluster2"],
+        "start_time": "2025-07-24T10:48:41Z",
+        "end_time": "2025-07-24T11:48:41Z",
+        "max_snapshots_per_object": 10,
+    }
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": turbo_ioc_scan_response.get("raw_response")}])
+    response = rubrik_turbo_ioc_scan_command(client, args=args)
+
+    assert response.raw_response == turbo_ioc_scan_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(turbo_ioc_scan_response.get("outputs"))
+    assert response.readable_output == "#### The new Turbo Threat Hunt started with ID: 000000000-0000-0000-0000-000000001"
+
+
+def test_turbo_ioc_scan_command_when_missing_ioc(client):
+    """Tests failure for rubrik-turbo-ioc-scan command when IOC is missing."""
+    from RubrikPolaris import rubrik_turbo_ioc_scan_command
+
+    args = {"cluster_id": ["cluster1", "cluster2"]}
+
+    with pytest.raises(ValueError) as e:
+        rubrik_turbo_ioc_scan_command(client, args)
+
+    assert str(e.value) == ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("ioc")
+
+
+def test_turbo_ioc_scan_command_when_invalid_max_snapshots(client):
+    """Tests failure for rubrik-turbo-ioc-scan command when invalid max snapshots value is provided."""
+    from RubrikPolaris import rubrik_turbo_ioc_scan_command
+
+    args = {"ioc": "hash123", "max_snapshots_per_object": 0}
+
+    with pytest.raises(ValueError) as e:
+        rubrik_turbo_ioc_scan_command(client, args)
+
+    assert str(e.value) == ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(0, "max_snapshots_per_object")
+
+
+def test_rubrik_advance_ioc_scan_command_when_invalid_arguments(client):
+    """
+    Tests invalid arguments for rubrik-advance-ioc-scan.
+
+    Given:
+        - args: missing required object_id
+    When:
+        - Calling the command
+    Then:
+        - Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_advance_ioc_scan_command(client, args={"object_id": ""})
+    assert str(e.value) == ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")
+
+
+def test_rubrik_advance_ioc_scan_command_success(client, requests_mock):
+    """
+    Test case scenario for successful execution of rubrik-advance-ioc-scan command.
+
+    When:
+        - Calling command with valid response
+    Then:
+        - Verifies outputs and HR
+    """
+    args = {"object_id": "obj-123", "ioc_type": "INDICATOR_OF_COMPROMISE_TYPE_HASH", "ioc_value": "deadbeef"}
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    mock_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/advance_ioc_scan_response.json")
+    )
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": mock_response.get("raw_response")}])
+
+    result = rubrik_advance_ioc_scan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["ADVANCE_IOC_SCAN"]
+    assert result.outputs_key_field == "huntId"
+    assert result.raw_response == mock_response.get("raw_response")
+    assert result.outputs == mock_response.get("outputs")
+    assert result.readable_output == "#### The new advance Threat Hunt started with ID: hunt-abc."
+
+
+def test_rubrik_advance_ioc_scan_invalid_ioc_type(client):
+    """
+    Should raise ValueError if ioc_type is not valid.
+    """
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    args = {"object_id": "obj-123", "ioc_type": "INVALID_TYPE", "ioc_value": "deadbeef"}
+    with pytest.raises(ValueError) as e:
+        rubrik_advance_ioc_scan_command(client, args)
+    assert str(e.value) == ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_TYPE", "ioc_type", IOC_TYPE_ENUM)
+
+
+def test_rubrik_advance_ioc_scan_no_indicator_specified(client):
+    """
+    Should raise ValueError if neither ioc_type/ioc_value nor advance_ioc is provided.
+    """
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    args = {"object_id": "obj-123"}
+    with pytest.raises(ValueError) as e:
+        rubrik_advance_ioc_scan_command(client, args)
+    assert str(e.value) == ERROR_MESSAGES["NO_INDICATOR_SPECIFIED"]
+
+
+@pytest.mark.parametrize(
+    "arg_name,arg_value",
+    [
+        ("max_matches_per_snapshot", 0),
+        ("max_snapshots_per_object", 0),
+        ("min_file_size", 0),
+        ("max_file_size", 0),
+        ("max_matches_per_snapshot", -5),
+        ("max_snapshots_per_object", -3),
+        ("min_file_size", -1),
+        ("max_file_size", -10),
+    ],
+)
+def test_rubrik_advance_ioc_scan_negative_numeric_args(client, arg_name, arg_value):
+    """
+    Should raise ValueError if any numeric argument is less than 1.
+    """
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    args = {"object_id": "obj-123", "ioc_type": list(IOC_TYPE_ENUM)[0], "ioc_value": "deadbeef", arg_name: arg_value}
+    with pytest.raises(ValueError) as e:
+        rubrik_advance_ioc_scan_command(client, args)
+    assert str(e.value) == ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(arg_value, arg_name)
+
+
+@pytest.mark.parametrize(
+    "arg_name,arg_value,max_value",
+    [
+        ("max_matches_per_snapshot", 2**31, MAX_INT_VALUE),
+        ("max_snapshots_per_object", 2**31, MAX_INT_VALUE),
+        ("min_file_size", 2**63, MAX_LONG_VALUE),
+        ("max_file_size", 2**63, MAX_LONG_VALUE),
+    ],
+)
+def test_rubrik_advance_ioc_scan_invalid_numeric_args(client, arg_name, arg_value, max_value):
+    """
+    Should raise ValueError if any numeric argument is more than max value.
+    """
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    args = {"object_id": "obj-123", "ioc_type": list(IOC_TYPE_ENUM)[0], "ioc_value": "deadbeef", arg_name: arg_value}
+    with pytest.raises(ValueError) as e:
+        rubrik_advance_ioc_scan_command(client, args)
+    assert str(e.value) == ERROR_MESSAGES["INVALID_INT_VALUE"].format(arg_value, arg_name, max_value)
+
+
+def test_rubrik_advance_ioc_scan_invalid_advance_ioc_json(client):
+    """
+    Should raise ValueError if advance_ioc is not valid JSON.
+    """
+    from RubrikPolaris import rubrik_advance_ioc_scan_command
+
+    args = {"object_id": "obj-123", "advance_ioc": "{not: valid, json}"}
+    with pytest.raises(ValueError) as e:
+        rubrik_advance_ioc_scan_command(client, args)
+    assert str(e.value) == ERROR_MESSAGES["JSON_DECODE"].format("advance_ioc")
+
+
+def test_fetch_incidents_success_with_event_severity_filter_without_last_run(client, requests_mock):
+    """Test fetch_incidents function to return incidents and new last run with provided empty last run."""
+    from RubrikPolaris import fetch_incidents
+
+    fetch_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
+    )
+    fetch_response["data"]["activitySeriesConnection"]["edges"][0]["node"]["severity"] = "Info"
+    incidents = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_incidents.json")
+    )
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": fetch_response},
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
+        client,
+        {},
+        {
+            "first_fetch": f"{first_fetch}",
+            "max_fetch": 2,
+            "event_types": [DEFAULT_EVENT_TYPES[0]],
+            "rsc_fetch_types": "Event",
+            "event_severities": ["SEVERITY_INFO"],
+        },
+    )
+    last_run = {
+        "last_fetch": f"{last_fetch}",
+        "next_page_token": fetch_response["data"]["activitySeriesConnection"]["pageInfo"]["endCursor"],
+    }
+    assert fetch_incidents_last_run == last_run
+    assert fetch_incidents_incidents == incidents
+
+
+@pytest.mark.parametrize(
+    "event_severities, expected_error_message",
+    [
+        (["Invalid_Severity"], MESSAGES["INVALID_FETCH_EVENT_SEVERITIES"]),
+        (["SEVERITY_INFO", "  Invalid_Severity "], MESSAGES["INVALID_FETCH_EVENT_SEVERITIES"]),
+    ],
+)
+def test_fetch_incidents_with_invalid_event_severity_filter(client, event_severities, expected_error_message):
+    """Test fetch_incidents function with various invalid event_severities configurations."""
+    from RubrikPolaris import fetch_incidents
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"first_fetch": first_fetch, "max_fetch": 2, "rsc_fetch_types": "Event", "event_severities": event_severities}
+
+    with pytest.raises(ValueError) as e:
+        fetch_incidents(client, {}, params)
+
+    assert str(e.value) == expected_error_message
+
+
+@pytest.mark.parametrize("empty_response", [True, False])
+def test_rubrik_anomaly_csv_analysis_v2_initial_request_success(client, requests_mock, empty_response):
+    """Test initial CSV download request (non-polling) returns success status."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": False,
+    }
+
+    if empty_response:
+        response_data = radar_anomaly_v2_response.get("empty_response")
+        requests_mock.post(BASE_URL_GRAPHQL, json=response_data)
+        result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+        assert result[0].readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
+    else:
+        response_data = radar_anomaly_v2_response.get("initial_request_success", {}).get("raw_response")
+        requests_mock.post(BASE_URL_GRAPHQL, json=response_data)
+        result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+        assert len(result) == 1
+        assert result[0].raw_response == radar_anomaly_v2_response.get("initial_request_success", {}).get("raw_response")
+        assert result[0].outputs == remove_empty_elements(
+            radar_anomaly_v2_response.get("initial_request_success", {}).get("outputs")
+        )
+        assert result[0].readable_output == "#### Successfully analyzed the CSV file."
+
+
+def test_rubrik_anomaly_csv_analysis_v2_polling_file_ready(client, requests_mock):
+    """Test polling execution when CSV file is ready - should download and return file."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": True,
+    }
+
+    user_files_response = radar_anomaly_v2_response.get("polling_file_ready", {}).get("raw_response")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_csv_analysis_file.csv")) as f:
+        file_data = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+    requests_mock.get("https://demo.my.rubrik.com/file-downloads/external-123", text=file_data, status_code=200)
+
+    result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert len(result) == 2
+    assert result[0].raw_response == radar_anomaly_v2_response.get("polling_file_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(radar_anomaly_v2_response.get("polling_file_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Successfully downloaded the analyzed CSV file."
+    if isinstance(result[1], dict):
+        assert result[1].get("File") == "snapshot_snapshot-456.csv"
+
+
+def test_rubrik_anomaly_csv_analysis_v2_polling_file_not_ready(client, requests_mock):
+    """Test polling execution when CSV file is not ready yet - should return polling status."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": True,
+    }
+
+    user_files_response = radar_anomaly_v2_response.get("polling_file_not_ready", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == radar_anomaly_v2_response.get("polling_file_not_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(radar_anomaly_v2_response.get("polling_file_not_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Polling for CSV file availability. The command will automatically retry..."
+
+
+def test_rubrik_anomaly_csv_analysis_v2_polling_file_failed(client, requests_mock):
+    """Test polling execution when CSV file status is failed."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": True,
+    }
+
+    user_files_response = radar_anomaly_v2_response.get("polling_file_failed", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == radar_anomaly_v2_response.get("polling_file_failed", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(radar_anomaly_v2_response.get("polling_file_failed", {}).get("outputs"))
+    assert result[0].readable_output == "#### Failed to download the analyzed CSV file."
+
+
+@pytest.mark.parametrize(
+    "args, error_message",
+    [
+        (
+            {"snapshot_id": "snapshot-456", "object_id": "object-789"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("cluster_id"),
+        ),
+        (
+            {"cluster_id": "cluster-123", "object_id": "object-789"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id"),
+        ),
+        (
+            {"cluster_id": "cluster-123", "snapshot_id": "snapshot-456"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id"),
+        ),
+    ],
+)
+def test_rubrik_anomaly_csv_analysis_v2_invalid_arguments_are_provided(client, args, error_message):
+    """Test that missing required arguments raise ValueError."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert error_message in str(e.value)

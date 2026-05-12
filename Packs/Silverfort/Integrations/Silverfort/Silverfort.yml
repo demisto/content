@@ -1,5 +1,6 @@
 category: Authentication & Identity Management
-sectionOrder:
+provider: Silverfort
+sectionorder:
 - Connect
 commonfields:
   id: Silverfort
@@ -10,8 +11,8 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: Generate your unique API token from the tower
-  display: APIKEY
+- display: APIKEY
+  additionalinfo: Generate your unique API token from the tower
   name: apikey
   required: true
   type: 4
@@ -21,7 +22,18 @@ configuration:
   type: 8
   required: false
   section: Connect
-  advanced: true
+- display: Operational API Key
+  name: operationalApiKey
+  type: 4
+  required: false
+  section: Connect
+  additionalinfo: For Silverfort 5.3 and above, you must include the operational API Key for calls using sam_account/domain instead of UPN. (Format is "Operational User ID:Operational User Secret")
+- display: External API Key
+  name: externalApiKey
+  type: 4
+  required: false
+  section: Connect
+  additionalinfo: For Silverfort 5.3 and above, you must include the external API Key for external calls
 description: Use the Silverfort integration to get and update Silverfort risk severity.
 display: Silverfort
 name: Silverfort
@@ -123,7 +135,7 @@ script:
       required: true
     description: Update the resource entity risk.
     name: silverfort-update-resource-risk
-  dockerimage: demisto/auth-utils:1.0.0.2025089
+  dockerimage: demisto/auth-utils:1.0.0.3562326
   runonce: false
   script: '-'
   subtype: python3

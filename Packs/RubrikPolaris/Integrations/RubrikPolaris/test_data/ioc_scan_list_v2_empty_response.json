@@ -1,0 +1,28 @@
+{
+  "raw_response": {
+    "data": {
+      "threatHunts": {
+        "edges": [],
+        "count": 0,
+        "pageInfo": {
+          "endCursor": "dummy-end-cursor",
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "dummy-start-cursor",
+          "__typename": "PageInfo"
+        },
+        "__typename": "ThreatHuntConnection"
+      }
+    }
+  },
+  "outputs": {
+    "RubrikPolaris.PageToken.IOCScan(val.name == obj.name)": {
+      "endCursor": "dummy-end-cursor",
+      "hasNextPage": false,
+      "hasPreviousPage": false,
+      "startCursor": "dummy-start-cursor",
+      "name": "rubrik-ioc-scan-list-v2",
+      "total_matched_count": 0
+    }
+  }
+}

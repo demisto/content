@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Name of the Mapper (incoming) has been changed from 'abcd-5678' to 'CyberInt Incoming (mapper)'. Please, make sure to select it in the configuration again."
+}

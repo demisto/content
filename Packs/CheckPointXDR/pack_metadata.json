@@ -1,0 +1,36 @@
+{
+    "name": "Check Point XDR",
+    "description": "Fetch and manage incidents from Check Point XDR.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Check Point",
+    "url": "https://supportcenter.checkpoint.com/",
+    "email": "xdr@checkpoint.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Incident Response"
+    ],
+    "useCases": [
+        "Incident Response"
+    ],
+    "itemPrefix": "CheckPointXDR",
+    "keywords": [
+        "Check Point",
+        "CheckPoint",
+        "XDR",
+        "Extended Detection and Response"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "devEmail": [
+        "xdr@checkpoint.com"
+    ],
+    "githubUser": [
+        "chkp-eliyahum"
+    ],
+    "dependencies": {},
+    "displayedImages": []
+}

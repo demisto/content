@@ -1,0 +1,533 @@
+id: IsolateEndpoint - Testplaybook
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: IsolateEndpoint - Testplaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c640851b-32f9-4e92-8bd4-bbe5d083f426
+    type: start
+    task:
+      id: c640851b-32f9-4e92-8bd4-bbe5d083f426
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: addc1b85-9571-4733-ac45-0c91dc86544e
+    type: regular
+    task:
+      id: addc1b85-9571-4733-ac45-0c91dc86544e
+      version: -1
+      name: get endpoints from CS Falcon
+      description: Gets the list of host group members.
+      script: CrowdstrikeFalcon|||cs-falcon-list-host-group-members
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: dfc10a52-e9e3-4daa-9fc2-cbda4ad5c708
+    type: regular
+    task:
+      id: dfc10a52-e9e3-4daa-9fc2-cbda4ad5c708
+      version: -1
+      name: run isolate-endpoint on first endpoint
+      description: This script isolates endpoints using multiple integrations and
+        returns a success or failure message.
+      scriptName: isolate-endpoint
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fc69d9f8-953c-45f8-880e-77737c704cb7
+    type: regular
+    task:
+      id: fc69d9f8-953c-45f8-880e-77737c704cb7
+      version: -1
+      name: unisolate first endpoint
+      description: Lifts containment on the host, which returns its network communications
+        to normal.
+      script: CrowdstrikeFalcon|||cs-falcon-lift-host-containment
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ids:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: add505c1-12f4-4c19-af94-b6fff97db0fe
+    type: title
+    task:
+      id: add505c1-12f4-4c19-af94-b6fff97db0fe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 13d14bfd-ea1e-4dee-9c99-37d5d7e32bfe
+    type: title
+    task:
+      id: 13d14bfd-ea1e-4dee-9c99-37d5d7e32bfe
+      version: -1
+      name: 'Case 1: Run on all brands'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 47db2422-d943-4272-9664-e7b5ad86466a
+    type: condition
+    task:
+      id: 47db2422-d943-4272-9664-e7b5ad86466a
+      version: -1
+      name: check if isolated success
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Source
+            iscontext: true
+          right:
+            value:
+              simple: CrowdstrikeFalcon
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.Device
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: acf54ea1-1bb3-42d9-a321-d5aacf215742
+    type: title
+    task:
+      id: acf54ea1-1bb3-42d9-a321-d5aacf215742
+      version: -1
+      name: 'Case 2: Given a different brand'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 39579b4e-c568-430f-82ef-1b50c1e6712d
+    type: regular
+    task:
+      id: 39579b4e-c568-430f-82ef-1b50c1e6712d
+      version: -1
+      name: unisolate first endpoint
+      description: Lifts containment on the host, which returns its network communications
+        to normal.
+      script: CrowdstrikeFalcon|||cs-falcon-lift-host-containment
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ids:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 872543fc-e97c-4177-a75d-2e3967f94ec7
+    type: regular
+    task:
+      id: 872543fc-e97c-4177-a75d-2e3967f94ec7
+      version: -1
+      name: run isolate-endpoint on first endpoint
+      description: This script isolates endpoints using multiple integrations and
+        returns a success or failure message.
+      scriptName: isolate-endpoint
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      brands:
+        simple: FireEyeHX v2
+      endpoint_id:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 23765744-425b-454b-93ff-272223d4ab6a
+    type: condition
+    task:
+      id: 23765744-425b-454b-93ff-272223d4ab6a
+      version: -1
+      name: check if isolated fail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Result
+            iscontext: true
+          right:
+            value:
+              simple: Fail
+      - - operator: isEmpty
+          left:
+            value:
+              simple: IsolateEndpoint.Source
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.Device
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Isolated
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 38fa5ce2-40ba-4fe7-8e08-46f3ab86503b
+    type: title
+    task:
+      id: 38fa5ce2-40ba-4fe7-8e08-46f3ab86503b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fabcae70-aac8-4c05-817d-588f874e149e
+    type: regular
+    task:
+      id: fabcae70-aac8-4c05-817d-588f874e149e
+      version: -1
+      name: unisolate first endpoint
+      description: Lifts containment on the host, which returns its network communications
+        to normal.
+      script: CrowdstrikeFalcon|||cs-falcon-lift-host-containment
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ids:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2060,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0

@@ -11,20 +11,47 @@ urllib3.disable_warnings()
 UPDATE_REQ_RESPONSE = {"result": "updated successfully!"}
 
 
-def get_jwt_token(app_user_id: str, app_user_secret: str, current_time: float = time.time(), expire_time_sec: int = 60):
+def get_jwt_token(app_user_id: str, app_user_secret: str, current_time=None, expire_time_sec: int = 60):
+    if current_time is None:
+        current_time = int(time.time())
     payload = {
-        "issuer": app_user_id,  # REQUIRED - Generated in the UI
-        "iat": current_time,  # REQUIRED - Issued time - current epoch timestamp
-        "exp": current_time + expire_time_sec,  # OPTIONAL - Expire time - token expiry (default 30 seconds from iat)
+        "iss": app_user_id,
+        "iat": current_time,
+        "exp": current_time + expire_time_sec,
     }
-    return jwt.encode(payload, app_user_secret, algorithm="HS256")
+    token = jwt.encode(payload, app_user_secret, algorithm="HS256")
+    if isinstance(token, bytes):
+        token = token.decode("utf-8")
+    return token
 
 
 class Client(BaseClient):
-    def __init__(self, app_user_id, app_user_secret, *args, **kwargs):
+    def __init__(
+        self, app_user_id, app_user_secret, operational_user_id, operational_user_secret, external_api_key, *args, **kwargs
+    ):
         self.app_user_id = app_user_id
         self.app_user_secret = app_user_secret
+        self.operational_user_id = operational_user_id
+        self.operational_user_secret = operational_user_secret
+        self.external_api_key = external_api_key
         super().__init__(*args, **kwargs)
+
+    def build_headers(self):
+        headers = {"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"}
+        if self.external_api_key:
+            headers["X-Console-API-Key"] = self.external_api_key
+        return headers
+
+    def build_operational_headers(self):
+        """Build headers using operational API key for getUPN endpoint"""
+        if self.operational_user_id and self.operational_user_secret:
+            headers = {"Authorization": f"Bearer {get_jwt_token(self.operational_user_id, self.operational_user_secret)}"}
+        else:
+            # Fall back to main credentials if operational key not provided
+            headers = {"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"}
+        if self.external_api_key:
+            headers["X-Console-API-Key"] = self.external_api_key
+        return headers
 
     def get_status_http_request(self):
         """
@@ -33,7 +60,7 @@ class Client(BaseClient):
         response = self._http_request(
             method="GET",
             url_suffix="getBootStatus",
-            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
+            headers=self.build_headers(),
         )
         return response
 
@@ -51,7 +78,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="getUPN",
             params=params,
-            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
+            headers=self.build_operational_headers(),
         )
         return response["user_principal_name"]
 
@@ -63,7 +90,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="getEntityRisk",
             params={"user_principal_name": upn},
-            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
+            headers=self.build_headers(),
         )
         return response
 
@@ -75,7 +102,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="getEntityRisk",
             params={"resource_name": resource_name, "domain_name": domain_name},
-            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
+            headers=self.build_headers(),
         )
         return response
 
@@ -86,7 +113,7 @@ class Client(BaseClient):
         response = self._http_request(
             method="POST",
             url_suffix="updateEntityRisk",
-            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
+            headers=self.build_headers(),
             json_data={"user_principal_name": upn, "risks": risks},
         )
         return response
@@ -99,7 +126,7 @@ class Client(BaseClient):
             method="POST",
             url_suffix="updateEntityRisk",
             json_data={"resource_name": resource_name, "domain_name": domain_name, "risks": risks},
-            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
+            headers=self.build_headers(),
         )
         return response
 
@@ -125,16 +152,40 @@ def get_upn(client, args):
 
 def test_module(client):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
+    Use getEntityRisk to validate credentials.
+    Return 'ok' on 200, 400 or 404 (endpoint reached + auth ok).
+    Fail on 401/403 and any unexpected error.
     """
-    result = client.get_status_http_request()
-    if result["status"] == "Active" or result["status"] == "Standby":
+    test_upn = "sfuser"  # any UPN is fine; 400/404 is acceptable for a creds-only test
+    try:
+        client._http_request(
+            method="GET",
+            url_suffix="getEntityRisk",
+            params={"user_principal_name": test_upn},
+            headers=client.build_headers(),
+            ok_codes=(200, 400, 404),
+        )
         return "ok"
-    else:
-        return "Something went wrong with the risk api checking"
+
+    except Exception as e:
+        # Try to extract an HTTP status (when available)
+        status = None
+        try:
+            # DemistoException often carries the original Response in e.res
+            status = getattr(getattr(e, "res", None), "status_code", None)
+        except Exception:
+            pass
+
+        if status in (401, 403):
+            return_error(
+                f"Authentication failed (HTTP {status}). "
+                "Check the App User ID:Secret, server URL, JWT clock skew, and permissions."
+            )
+        elif status:
+            return_error(f"Unexpected response from getEntityRisk (HTTP {status}): {str(e)}")
+        else:
+            # No HTTP status available; surface the error
+            return_error(f"Failed to call getEntityRisk: {str(e)}")
 
 
 def get_user_entity_risk_command(client, args):
@@ -204,14 +255,31 @@ def main():  # pragma: no cover
     # get the service API url
     base_url = urljoin(demisto.params().get("url"), "/v1/public")
     verify_certificate = not demisto.params().get("insecure", False)
+
     api_key = demisto.params().get("apikey")
     app_user_id, app_user_secret = api_key.split(":")
+
+    operational_api_key = demisto.params().get("operationalApiKey")
+    operational_user_id = None
+    operational_user_secret = None
+    if operational_api_key:
+        operational_user_id, operational_user_secret = operational_api_key.split(":")
+
+    external_api_key = demisto.params().get("externalApiKey")
     if not app_user_id or not app_user_secret:
         return_error("Verify the API KEY parameter is correct")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(app_user_id=app_user_id, app_user_secret=app_user_secret, base_url=base_url, verify=verify_certificate)
+        client = Client(
+            app_user_id=app_user_id,
+            app_user_secret=app_user_secret,
+            operational_user_id=operational_user_id,
+            operational_user_secret=operational_user_secret,
+            base_url=base_url,
+            verify=verify_certificate,
+            external_api_key=external_api_key,
+        )
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.

@@ -21,9 +21,10 @@ to get the __Authentication Token__  __Registration ID__ __Encryption Key__
 6. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 7. Search for Palo Alto Networks Cortex v2.
 8. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
+    * __Name__: A textual name for the integration instance.
     * __Authentication Token__: From the authentication process
     * __Registration ID__: From the authentication process
+       * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the __Registration ID__ parameter in the format `REGISTRATION_ID@URL`.
     * __Encryption Key__: From the authentication process
     * __proxy__: Use system proxy settings
     * __insecure__: Trust any certificate (not secure)

@@ -25,7 +25,8 @@
         "Domain",
         "Email",
         "File",
-        "URL"
+        "URL",
+        "Ignite Indicator"
     ],
     "unmapped": false,
     "unsearchable": false,

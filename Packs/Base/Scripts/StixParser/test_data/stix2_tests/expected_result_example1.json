@@ -10,21 +10,13 @@
             "created": "2016-08-08T15:50:10.983Z",
             "modified": "2016-08-08T15:50:10.983Z",
             "name": "Fake BPP (Branistan Peoples Party)",
-            "threat_actor_types": [
-                "nation-state"
-            ],
-            "roles": [
-                "director"
-            ],
-            "goals": [
-                "Influence the election in Branistan"
-            ],
+            "threat_actor_types": ["nation-state"],
+            "roles": ["director"],
+            "goals": ["Influence the election in Branistan"],
             "sophistication": "strategic",
             "resource_level": "government",
             "primary_motivation": "ideology",
-            "secondary_motivations": [
-                "dominance"
-            ]
+            "secondary_motivations": ["dominance"]
         },
         "customFields": {
             "stixid": "threat-actor--56f3f0db-b5d5-431c-ae56-c18f02caf500",
@@ -32,21 +24,13 @@
             "modified": "2016-08-08T15:50:10.983Z",
             "description": "",
             "aliases": [],
-            "threat_actor_types": [
-                "nation-state"
-            ],
-            "roles": [
-                "director"
-            ],
-            "goals": [
-                "Influence the election in Branistan"
-            ],
+            "threat_actor_types": ["nation-state"],
+            "roles": ["director"],
+            "goals": ["Influence the election in Branistan"],
             "sophistication": "strategic",
             "resource_level": "government",
             "primary_motivation": "ideology",
-            "secondary_motivations": [
-                "dominance"
-            ],
+            "secondary_motivations": ["dominance"],
             "tags": []
         },
         "relationships": [
@@ -93,6 +77,7 @@
             "created": "2016-08-08T15:50:10.983Z",
             "modified": "2017-01-30T21:15:04.127Z",
             "name": "Content Spoofing",
+            "labels": ["test-label", "attack-pattern-label"],
             "external_references": [
                 {
                     "source_name": "capec",
@@ -102,6 +87,7 @@
             ]
         },
         "customFields": {
+            "mitreid": "",
             "stixid": "attack-pattern--19da6e1c-71ab-4c2f-886d-d620d09d3b5a",
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2017-01-30T21:15:04.127Z",
@@ -114,7 +100,8 @@
                 }
             ],
             "stixkillchainphases": [],
-            "stixdescription": ""
+            "stixdescription": "",
+            "tags": ["attack-pattern-label", "test-label"]
         }
     },
     {
@@ -128,6 +115,7 @@
             "created": "2016-08-08T15:50:10.983Z",
             "modified": "2017-01-30T21:15:04.127Z",
             "name": "HTTP Flood",
+            "labels": ["ddos", "attack-pattern-label"],
             "external_references": [
                 {
                     "source_name": "capec",
@@ -137,6 +125,7 @@
             ]
         },
         "customFields": {
+            "mitreid": "",
             "stixid": "attack-pattern--f6050ea6-a9a3-4524-93ed-c27858d6cb3c",
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2017-01-30T21:15:04.127Z",
@@ -149,7 +138,8 @@
                 }
             ],
             "stixkillchainphases": [],
-            "stixdescription": ""
+            "stixdescription": "",
+            "tags": ["attack-pattern-label", "ddos"]
         }
     },
     {
@@ -164,9 +154,7 @@
             "modified": "2016-08-08T15:50:10.983Z",
             "name": "Operation Bran Flakes",
             "description": "A concerted effort to insert false information into the BPP's web pages.",
-            "aliases": [
-                "OBF"
-            ],
+            "aliases": ["OBF"],
             "first_seen": "2016-01-08T12:50:40.123Z",
             "objective": "Hack www.bpp.bn"
         },
@@ -175,10 +163,9 @@
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2016-08-08T15:50:10.983Z",
             "description": "A concerted effort to insert false information into the BPP's web pages.",
-            "aliases": [
-                "OBF"
-            ],
-            "objective": "Hack www.bpp.bn"
+            "aliases": ["OBF"],
+            "objective": "Hack www.bpp.bn",
+            "tags": []
         },
         "relationships": [
             {
@@ -240,9 +227,7 @@
             "modified": "2016-08-08T15:50:10.983Z",
             "name": "Operation Raisin Bran",
             "description": "A DDOS campaign to flood BPP web servers.",
-            "aliases": [
-                "ORB"
-            ],
+            "aliases": ["ORB"],
             "first_seen": "2016-02-07T19:45:32.126Z",
             "objective": "Flood www.bpp.bn"
         },
@@ -251,10 +236,9 @@
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2016-08-08T15:50:10.983Z",
             "description": "A DDOS campaign to flood BPP web servers.",
-            "aliases": [
-                "ORB"
-            ],
-            "objective": "Flood www.bpp.bn"
+            "aliases": ["ORB"],
+            "objective": "Flood www.bpp.bn",
+            "tags": []
         },
         "relationships": [
             {
@@ -316,38 +300,26 @@
             "modified": "2016-08-08T15:50:10.983Z",
             "name": "APT BPP",
             "description": "An advanced persistent threat that seeks to disrupt Branistan's election with multiple attacks.",
-            "aliases": [
-                "Bran-teaser"
-            ],
+            "labels": ["apt", "intrusion-set-label"],
+            "aliases": ["Bran-teaser"],
             "first_seen": "2016-01-08T12:50:40.123Z",
-            "goals": [
-                "Influence the Branistan election",
-                "Disrupt the BPP"
-            ],
+            "goals": ["Influence the Branistan election", "Disrupt the BPP"],
             "resource_level": "government",
             "primary_motivation": "ideology",
-            "secondary_motivations": [
-                "dominance"
-            ]
+            "secondary_motivations": ["dominance"]
         },
         "customFields": {
             "stixid": "intrusion-set--ed69450a-f067-4b51-9ba2-c4616b9a6713",
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2016-08-08T15:50:10.983Z",
             "description": "An advanced persistent threat that seeks to disrupt Branistan's election with multiple attacks.",
-            "aliases": [
-                "Bran-teaser"
-            ],
-            "goals": [
-                "Influence the Branistan election",
-                "Disrupt the BPP"
-            ],
+            "aliases": ["Bran-teaser"],
+            "goals": ["Influence the Branistan election", "Disrupt the BPP"],
             "resource_level": "government",
             "primary_motivation": "ideology",
-            "secondary_motivations": [
-                "dominance"
-            ],
-            "publications": []
+            "secondary_motivations": ["dominance"],
+            "publications": [],
+            "tags": ["apt", "intrusion-set-label"]
         },
         "relationships": [
             {

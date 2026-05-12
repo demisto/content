@@ -1,3 +1,4 @@
+import base64
 from urllib.parse import quote
 
 import demistomock as demisto
@@ -311,6 +312,23 @@ def test_list_mails_with_page_limit(mocker, client):
             'increase "pages_to_pull" argument' in hr
         )
         assert "top=1" in mock_request.call_args_list[0].args[1]
+
+
+def test_list_mails_with_body():
+    """
+    Given
+    - list_mails command
+    When
+    - The mail has a body
+    Then
+    - Return the body.
+    """
+    mail = [{"value": [{"body": {"content": "This is an email body"}}]}]
+    client = type("MockClient", (), {"list_mails": lambda *x, **y: mail})()
+
+    result_entry = list_mails_command(client, {})
+
+    assert result_entry["EntryContext"]["MSGraphMail(val.ID && val.ID == obj.ID)"][0]["Body"] == "This is an email body"
 
 
 @pytest.fixture()
@@ -1576,3 +1594,439 @@ def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_
     else:
         result = GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         assert result["File"] == expected_name
+
+
+def test_add_attachment_with_upload_session__404_once_then_success_and_final_201(mocker):
+    """
+    Given:
+      - MsGraphMail client with MAX_ATTACHMENT_SIZE=4.
+      - get_upload_session() succeeds and returns a valid uploadUrl.
+      - upload_attachment() behavior per chunk:
+          * Chunk (0,4): first attempt 404, retry succeeds with 200 (mid-chunk).
+          * Chunk (4,8): 200 (mid-chunk).
+          * Chunk (8,10): 201 (final).
+      - A 10-byte attachment ("abcdefghij") producing three chunks: [0,4), [4,8), [8,10).
+
+    When:
+      - add_attachment_with_upload_session() is invoked to upload the attachment via an upload session.
+
+    Then:
+      - The first chunk is retried exactly once due to a 404, then proceeds.
+      - The second chunk uploads once with 200 (mid-chunk).
+      - The final chunk returns 201, ending the loop successfully.
+      - Calls per chunk: (0,4) == 2, (4,8) == 1, (8,10) == 1.
+    """
+    client = self_deployed_client()
+
+    # Make chunking deterministic: 10 bytes => [0,4), [4,8), [8,10)
+    client.MAX_ATTACHMENT_SIZE = 4
+
+    # Upload session: succeed immediately with an upload URL
+    client.get_upload_session = lambda **kw: {"uploadUrl": "https://example/upload"}
+
+    # Track call counts per (start, endExclusive)
+    calls = {}
+
+    def upload_attachment(self, upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size):
+        key = (start_chunk_idx, end_chunk_idx)
+        calls[key] = calls.get(key, 0) + 1
+        # First chunk: first attempt 404, then 200
+        if key == (0, 4):
+            return MockedResponse(404) if calls[key] == 1 else MockedResponse(200)
+        # Second chunk: mid-chunk OK
+        if key == (4, 8):
+            return MockedResponse(200)
+        # Final chunk: done
+        if key == (8, 10):
+            return MockedResponse(201)
+        raise AssertionError(f"Unexpected chunk {key}")
+
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+
+    # Act
+    client.add_attachment_with_upload_session(
+        email="x@y",
+        draft_id="d1",
+        attachment_data=b"abcdefghij",  # len=10
+        attachment_name="f.txt",
+        is_inline=False,
+    )
+
+    # Assert: first chunk retried exactly once; others once
+    assert calls[(0, 4)] == 2
+    assert calls[(4, 8)] == 1
+    assert calls[(8, 10)] == 1
+
+
+def test_upload_chunk_404_twice_raises(mocker):
+    """
+    Given:
+      - MsGraphMail client with MAX_ATTACHMENT_SIZE=4 and a valid uploadUrl.
+      - upload_attachment() for the first chunk (0,4) returns 404 twice.
+
+    When:
+      - add_attachment_with_upload_session() is called for a 10-byte attachment (three chunks total).
+
+    Then:
+      - The function retries the failing chunk once.
+      - On the second 404 for the same chunk, it raises DemistoException.
+      - The exception message contains '404' and mentions the failing 'range'.
+    """
+    client = self_deployed_client()
+    client.MAX_ATTACHMENT_SIZE = 4
+    mocker.patch.object(client, "get_upload_session", lambda **kw: {"uploadUrl": "https://example/upload"})
+
+    attempts = {"n": 0}
+
+    def upload_attachment(self, upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size):
+        # Always fail on the first chunk to trigger the double-404 path
+        assert (start_chunk_idx, end_chunk_idx) == (0, 4)
+        attempts["n"] += 1
+        # Provide .text on the second response so error formatting can include details if json() is absent
+        if attempts["n"] == 2:
+            r = MockedResponse(404)
+            r.text = '{"error":{"code":"ErrorItemNotFound"}}'
+            return r
+        return MockedResponse(404)
+
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
+
+    with pytest.raises(DemistoException) as ei:
+        client.add_attachment_with_upload_session(
+            email="x@y",
+            draft_id="d1",
+            attachment_data=b"abcdefghij",  # len=10
+            attachment_name="f.txt",
+            is_inline=False,
+        )
+
+    msg = str(ei.value)
+    # We at least surface it's a 404 failure; range text may be inclusive in your log/exception formatting.
+    assert "404" in msg
+    assert "range" in msg
+
+
+def test_get_upload_session_retried_on_notfound(mocker):
+    """
+    Given:
+      - MsGraphMail client with MAX_ATTACHMENT_SIZE=4.
+      - get_upload_session() raises NotFoundError on the first call and succeeds on the second.
+      - upload_attachment() for the single-chunk file returns 201 (final).
+
+    When:
+      - add_attachment_with_upload_session() is called for a 4-byte attachment (exactly one chunk).
+
+    Then:
+      - get_upload_session() is attempted at least twice (one failure + one success).
+      - The upload proceeds and completes successfully with a 201 final response.
+    """
+    client = self_deployed_client()
+    client.MAX_ATTACHMENT_SIZE = 4
+
+    attempts = {"n": 0}
+
+    def get_upload_session(**kw):
+        attempts["n"] += 1
+        if attempts["n"] == 1:
+            raise NotFoundError("transient not found")
+        return {"uploadUrl": "https://example/upload"}
+
+    # One-chunk upload that ends with 201
+    def upload_attachment(self, **kw):
+        return MockedResponse(201)
+
+    mocker.patch.object(client, "get_upload_session", get_upload_session)
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
+
+    client.add_attachment_with_upload_session(
+        email="x@y",
+        draft_id="d1",
+        attachment_data=b"abcd",  # exactly one chunk
+        attachment_name="f.txt",
+        is_inline=False,
+    )
+
+    assert attempts["n"] == 2
+
+
+def test_build_inline_layout_attachments_small_file(mocker):
+    """
+    Given:
+      - An inline layout attachment whose data is under 3MB (100 bytes).
+
+    When:
+      - _build_inline_layout_attachments_input is called.
+
+    Then:
+      - The result dict contains @odata.type, contentBytes (base64), isInline, name, contentId, size.
+      - The result dict does NOT contain requires_upload or data keys.
+    """
+    small_data = b"x" * 100
+    attachment_input = {
+        "data": small_data,
+        "maintype": "image",
+        "subtype": "png",
+        "name": "image0.png",
+        "cid": "image0.png@abc_def",
+    }
+
+    result = MsGraphMailBaseClient._build_inline_layout_attachments_input([attachment_input])
+
+    assert len(result) == 1
+    att = result[0]
+    assert att["@odata.type"] == "#microsoft.graph.fileAttachment"
+    assert att["contentBytes"] == base64.b64encode(small_data).decode("utf-8")
+    assert att["isInline"] is True
+    assert att["name"] == "image0.png"
+    assert att["contentId"] == "image0.png@abc_def"
+    assert att["size"] == 100
+    assert "requires_upload" not in att
+    assert "data" not in att
+
+
+def test_build_inline_layout_attachments_large_file(mocker):
+    """
+    Given:
+      - An inline layout attachment whose data is over 3MB (3 * 1024 * 1024 + 1 bytes).
+
+    When:
+      - _build_inline_layout_attachments_input is called.
+
+    Then:
+      - The result dict contains data (raw bytes), isInline, name, contentId, requires_upload, size.
+      - The result dict does NOT contain @odata.type or contentBytes keys.
+    """
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    attachment_input = {
+        "data": large_data,
+        "maintype": "image",
+        "subtype": "png",
+        "name": "image0.png",
+        "cid": "image0.png@abc_def",
+    }
+
+    result = MsGraphMailBaseClient._build_inline_layout_attachments_input([attachment_input])
+
+    assert len(result) == 1
+    att = result[0]
+    assert att["data"] == large_data
+    assert att["isInline"] is True
+    assert att["name"] == "image0.png"
+    assert att["contentId"] == "image0.png@abc_def"
+    assert att["requires_upload"] is True
+    assert att["size"] == len(large_data)
+    assert "@odata.type" not in att
+    assert "contentBytes" not in att
+
+
+def test_build_inline_layout_attachments_mixed_sizes(mocker):
+    """
+    Given:
+      - Two inline layout attachments: one small (under 3MB) and one large (over 3MB).
+
+    When:
+      - _build_inline_layout_attachments_input is called with both.
+
+    Then:
+      - Both attachments are returned in the result list.
+      - The small attachment uses the contentBytes format (no requires_upload).
+      - The large attachment uses the requires_upload format (no contentBytes).
+    """
+    small_data = b"x" * 100
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    attachments_input = [
+        {
+            "data": small_data,
+            "maintype": "image",
+            "subtype": "png",
+            "name": "small.png",
+            "cid": "small.png@abc_def",
+        },
+        {
+            "data": large_data,
+            "maintype": "image",
+            "subtype": "png",
+            "name": "large.png",
+            "cid": "large.png@abc_def",
+        },
+    ]
+
+    result = MsGraphMailBaseClient._build_inline_layout_attachments_input(attachments_input)
+
+    assert len(result) == 2
+
+    # First attachment: small — should have contentBytes format
+    small_att = result[0]
+    assert small_att["@odata.type"] == "#microsoft.graph.fileAttachment"
+    assert small_att["contentBytes"] == base64.b64encode(small_data).decode("utf-8")
+    assert small_att["isInline"] is True
+    assert small_att["name"] == "small.png"
+    assert small_att["size"] == 100
+    assert "requires_upload" not in small_att
+    assert "data" not in small_att
+
+    # Second attachment: large — should have requires_upload format
+    large_att = result[1]
+    assert large_att["data"] == large_data
+    assert large_att["isInline"] is True
+    assert large_att["name"] == "large.png"
+    assert large_att["requires_upload"] is True
+    assert large_att["size"] == len(large_data)
+    assert "@odata.type" not in large_att
+    assert "contentBytes" not in large_att
+
+
+def test_send_mail_with_small_inline_uses_direct_send(mocker):
+    """
+    Given:
+      - send_email_command is called with an htmlBody containing a small embedded base64 image (under 3MB).
+
+    When:
+      - The command processes the inline attachment through handle_html and build_message.
+
+    Then:
+      - The code uses the direct send_mail() path, NOT send_mail_with_upload_session_flow().
+    """
+    client = self_deployed_client()
+
+    # Build a small base64 image (100 bytes of data, well under 3MB)
+    small_image_data = b"x" * 100
+    b64_image = base64.b64encode(small_image_data).decode("utf-8")
+    html_body = f'<html><body><img src="data:image/png;base64,{b64_image}"></body></html>'
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": html_body,
+        "subject": "test inline image",
+        "from": "sender@example.com",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_called_once()
+    upload_flow_mock.assert_not_called()
+
+
+def test_send_mail_with_small_attachment_uses_direct_send(mocker):
+    """
+    Given:
+      - send_email_command is called with a small file attachment (under 3MB) via attachIDs.
+
+    When:
+      - The command processes the attachment through build_message.
+
+    Then:
+      - The code uses the direct send_mail() path, NOT send_mail_with_upload_session_flow().
+    """
+    client = self_deployed_client()
+
+    small_file_data = b"x" * 100
+    mocker.patch.object(
+        GraphMailUtils,
+        "read_file",
+        return_value=(small_file_data, len(small_file_data), "small_file.txt"),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "body": "test body",
+        "subject": "test small attachment",
+        "from": "sender@example.com",
+        "attachIDs": "attach1",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_called_once()
+    upload_flow_mock.assert_not_called()
+
+
+def test_send_mail_with_large_attachment_uses_upload_session(mocker):
+    """
+    Given:
+      - send_email_command is called with a large file attachment (>= 3MB) via attachIDs.
+
+    When:
+      - The command processes the attachment through build_message.
+
+    Then:
+      - The code uses send_mail_with_upload_session_flow(), NOT the direct send_mail().
+    """
+    client = self_deployed_client()
+
+    large_file_data = b"x" * (3 * 1024 * 1024 + 1)
+    mocker.patch.object(
+        GraphMailUtils,
+        "read_file",
+        return_value=(large_file_data, len(large_file_data), "large_file.bin"),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "body": "test body",
+        "subject": "test large attachment",
+        "from": "sender@example.com",
+        "attachIDs": "attach1",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_not_called()
+    upload_flow_mock.assert_called_once()
+
+
+def test_send_mail_with_large_inline_image_uses_upload_session(mocker):
+    """
+    Given:
+      - send_email_command is called with an htmlBody containing a large embedded base64 image (>= 3MB).
+
+    When:
+      - The command processes the inline attachment through handle_html and build_message.
+
+    Then:
+      - The code uses send_mail_with_upload_session_flow(), NOT the direct send_mail().
+    """
+    client = self_deployed_client()
+
+    # Mock handle_html to return a large inline attachment (> 3MB) without needing a huge base64 string
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    fake_inline_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": large_data,
+            "name": "image0.png",
+            "cid": "image0.png@abc_def",
+        }
+    ]
+    mocker.patch.object(
+        GraphMailUtils,
+        "handle_html",
+        return_value=("<html><body><img src='cid:image0.png@abc_def'></body></html>", fake_inline_attachments),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": "<html><body><img src='data:image/png;base64,AAAA'></body></html>",
+        "subject": "test large inline image",
+        "from": "sender@example.com",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_not_called()
+    upload_flow_mock.assert_called_once()

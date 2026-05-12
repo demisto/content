@@ -2,7 +2,13 @@
 # VMware vCenter
 
 <~XSIAM>
-This pack includes Cortex XSIAM content.
+
+## This pack includes
+
+### Data normalization capabilities
+
+* Rules for VMware vCenter logs ingested via the Broker VM into Cortex XSIAM.
+* Normalization to Virtualization Stories, available for usage from v1.0.15.
   
 ## Configuration on Server Side
 
@@ -26,7 +32,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 You can configure the specific vendor and product for this instance.
 
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.

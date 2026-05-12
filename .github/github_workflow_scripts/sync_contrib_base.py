@@ -5,7 +5,7 @@ import sys
 import urllib3
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
-
+from utils import ORGANIZATION_NAME, REPO_NAME
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -68,9 +68,7 @@ def main():
     if debug_mode:
         enable_console_debug_logging()
     gh = Github(os.getenv("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
-    organization = "demisto"
-    repo = "content"
-    content_repo = gh.get_repo(f"{organization}/{repo}")
+    content_repo = gh.get_repo(f"{ORGANIZATION_NAME}/{REPO_NAME}")
 
     master_sha = get_master_commit_sha(content_repo)
     if ref_branch:

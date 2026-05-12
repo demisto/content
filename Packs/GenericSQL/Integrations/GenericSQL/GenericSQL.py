@@ -6,6 +6,7 @@ from urllib.parse import parse_qsl
 
 import dateparser
 import demistomock as demisto
+import oracledb
 import pymysql
 import sqlalchemy
 from CommonServerPython import *
@@ -28,6 +29,9 @@ try:
     from expiringdict import ExpiringDict  # pylint: disable=E0401
 except Exception:  # noqa: S110
     pass
+
+# Enable thick mode to use Oracle Instant Client libraries
+oracledb.init_oracle_client()
 
 # In order to use and convert from pymysql to MySQL this line is necessary
 pymysql.install_as_MySQLdb()
@@ -116,7 +120,7 @@ class Client:
         elif dialect == POSTGRES_SQL:
             module = "postgresql"
         elif dialect == ORACLE:
-            module = "oracle"
+            module = "oracle+oracledb"
         elif dialect == TRINO:
             module = "trino"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
@@ -341,6 +345,18 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     params = demisto.params()
 
     if params.get("isFetch"):
+        dialect = params.get("dialect")
+        if params.get("dialect") not in {MY_SQL, MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
+            return (
+                (
+                    f"Fetch Incidents is supported only for the following SQL databases: "
+                    f"'{MICROSOFT_SQL_SERVER}', '{MS_ODBC_DRIVER}', and '{MY_SQL}'. "
+                    f"Current dialect '{dialect}' is not supported."
+                ),
+                {},
+                [],
+            )
+
         if not params.get("query"):
             msg += "Missing parameter Fetch events query. "
 

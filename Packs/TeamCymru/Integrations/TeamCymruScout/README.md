@@ -34,6 +34,10 @@ Note:
 
 ## Configure Team Cymru Scout in Cortex
 
+1. Navigate to **Settings** > **Integrations**
+2. Search for Team Cymru Scout.
+3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Authentication Type | The authentication type used for secure communication with the Team Cymru Scout platform. | True |
@@ -124,6 +128,7 @@ Return all the detailed information available for the given IP address.
 | end_date | The end date for detailed information.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is now. | Optional |
 | days | Relative offset in days from the current time. It cannot exceed the maximum range of 30 days.<br/><br/>Note: This will take priority over start_date and end_date if all three are passed. | Optional |
 | size | The maximum number of records to return.<br/><br/>Note: The maximum allowed size is 1000. | Optional |
+| force_use_scout_details_api | If set to yes, it will forcefully use the Scout Details API endpoint, overriding the "Use Foundation API for IP enrichment" parameter in the integration configuration. Possible values are: Yes, No. Default is No. | Optional |
 
 #### Context Output
 
@@ -435,6 +440,17 @@ Return all the detailed information available for the given IP address.
 | TeamCymruScout.IP.summary.fingerprints.top_fingerprints.first_seen | Date | The first date the fingerprint was seen. |
 | TeamCymruScout.IP.summary.fingerprints.top_fingerprints.last_seen | Date | The last date the fingerprint was seen. |
 | TeamCymruScout.IP.summary.fingerprints.top_fingerprints.count | Number | The count of the fingerprint. |
+| TeamCymruScout.IP.country_code | String | The country code. |
+| TeamCymruScout.IP.as_info.asn | Number | The autonomous system number. |
+| TeamCymruScout.IP.as_info.as_name | String | The autonomous system name. |
+| TeamCymruScout.IP.insights.overall_rating | String | The overall rating for the IP address. |
+| TeamCymruScout.IP.insights.insights.rating | String | The individual insight rating for the IP address. |
+| TeamCymruScout.IP.insights.insights.message | String | The individual insight message for the IP address. |
+| TeamCymruScout.IP.tags.id | Number | The ID of the tag. |
+| TeamCymruScout.IP.tags.name | String | The name of the tag. |
+| TeamCymruScout.IP.tags.children.id | Number | The ID of the child tag. |
+| TeamCymruScout.IP.tags.children.name | String | The name of the child tag. |
+| TeamCymruScout.IP.tags.children.children | Unknown | The children of the child tag. |
 
 #### Command example
 

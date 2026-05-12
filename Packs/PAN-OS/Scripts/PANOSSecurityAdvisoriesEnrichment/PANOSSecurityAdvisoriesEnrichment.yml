@@ -1,0 +1,94 @@
+args:
+- default: true
+  isArray: true
+  name: cve_id
+  required: true
+  description: A comma separated list of the CVE IDs to enrich as listed in the [Palo Alto Networks Security Advisories](https://security.paloaltonetworks.com/) page.
+comment: This script enriches CVEs published by Palo Alto Networks with detailed vulnerability information from the official Palo Alto Networks Security Advisories website https://security.paloaltonetworks.com.
+commonfields:
+  id: PAN-OS_Security_Advisories_Enrichment
+  version: -1
+dockerimage: demisto/python3:3.12.11.3982393
+enabled: true
+engineinfo: {}
+name: PAN-OS_Security_Advisories_Enrichment
+outputs:
+- contextPath: PANOSSecurityAdvisories.Advisory.cve_id
+  description: CVE ID.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.cve_url
+  description: Link to the [Palo Alto Networks Security Advisories](https://security.paloaltonetworks.com/) page for that CVE.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.affected_list
+  description: List of affected products, their versions, and changes introduced with fixes.
+  type: Unknown
+- contextPath: PANOSSecurityAdvisories.Advisory.configurations
+  description: Required configurations for the exploit to be successful.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.cpes
+  description: Affected products defined by CPE.
+  type: Unknown
+- contextPath: PANOSSecurityAdvisories.Advisory.cveproductstatus
+  description: List of affected products with platform information and fixed versions.
+  type: Unknown
+- contextPath: PANOSSecurityAdvisories.Advisory.cvethreatscore
+  description: Threat Score of the CVE.
+  type: Number
+- contextPath: PANOSSecurityAdvisories.Advisory.cvethreatseverity
+  description: Threat Severity of CVE - LOW, MEDIUM, HIGH or CRITICAL.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_score
+  description: Base score of the CVE.
+  type: Number
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_severity
+  description: Base severity of CVE - LOW, MEDIUM, HIGH or CRITICAL.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_table
+  description: Metrics of the vulnerability.
+  type: Unknown
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_vector_string
+  description: CVSS Vector indicating the metrics of the attack.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.description
+  description: Vulnerability description.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.exploits
+  description: Known exploits of this vulnerability in the field.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.external_cve_list
+  description: If the specified CVE is a PAN-SA advisory, an array of related external CVEs.
+  type: Unknown
+- contextPath: PANOSSecurityAdvisories.Advisory.impact
+  description: Impact of the CVE.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.last_updated_date
+  description: Date when the CVE was last updated on the [Palo Alto Networks Security Advisories](https://security.paloaltonetworks.com/) page.
+  type: Date
+- contextPath: PANOSSecurityAdvisories.Advisory.published_date
+  description: Date when the CVE was published to the [Palo Alto Networks Security Advisories](https://security.paloaltonetworks.com/) page.
+  type: Date
+- contextPath: PANOSSecurityAdvisories.Advisory.solution
+  description: Solution provided for the CVE.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.title
+  description: CVE title.
+  type: String
+- contextPath: PANOSSecurityAdvisories.Advisory.workaround
+  description: Workaround for the CVE.
+  type: String
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+marketplaces:
+- platform

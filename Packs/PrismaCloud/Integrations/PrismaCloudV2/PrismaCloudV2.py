@@ -868,7 +868,10 @@ class Client(BaseClient):
         sort_direction: Optional[str] = None,
         sort_field: Optional[str] = None,
         include_resource_json: Optional[str] = "true",
+        heuristic_search: Optional[str] = "true",
     ):
+        total_items = []
+        page_count = 1
         data = remove_empty_values(
             {
                 "id": search_id,
@@ -877,11 +880,34 @@ class Client(BaseClient):
                 "sort": [{"direction": sort_direction, "field": sort_field}],
                 "timeRange": time_range,
                 "withResourceJson": include_resource_json,
-                "heuristicSearch": "true",
+                "heuristicSearch": heuristic_search,
             }
         )
 
-        return self._http_request("POST", "search/config", json_data=data)
+        first_page_response = self._http_request("POST", "search/config", json_data=data)
+        first_page_data = first_page_response.get("data", {})
+
+        items = first_page_data.get("items", [])
+        total_items.extend(items)
+        demisto.debug(f"POST search/config - {len(items)} items were fetched from page {page_count}")
+
+        page_limit = limit - len(items) if limit is not None else 0
+        next_page_token = first_page_data.get("nextPageToken")
+
+        while next_page_token and page_limit:
+            data["pageToken"] = next_page_token
+            data["limit"] = page_limit
+            page_count += 1
+
+            response = self._http_request("POST", "search/config/page", json_data=data)
+            items = response.get("items", [])
+            demisto.debug(f"POST search/config/page - {len(items)} items were fetched from page {page_count}")
+            page_limit -= len(items)
+            total_items.extend(items)
+
+            next_page_token = response.get("nextPageToken", "")
+
+        return total_items
 
     def event_search_request(
         self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None, sort_by: Optional[List[Dict[str, str]]] = None
@@ -1259,8 +1285,7 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
                 break
 
 
-def remove_additional_resource_fields(input_dict):
-    items = demisto.get(input_dict, "data.items")
+def remove_additional_resource_fields(items):
     if items:
         for current_item in list(items):
             data = current_item.get("data", {})
@@ -2219,6 +2244,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get("query")
+    heuristic_search = args.get("heuristic_search", "true")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
     time_filter = handle_time_filter(
         base_case=TIME_FILTER_BASE_CASE,
@@ -2239,21 +2265,14 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     demisto.debug(
         f"Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},"
-        f" {include_additional_resource_fields=}"
+        f" {include_additional_resource_fields=}, {heuristic_search=}"
     )
-    response = client.config_search_request(
-        time_filter,
-        str(query),
-        limit,
-        search_id,
-        sort_direction,
-        sort_field,
-        include_resource_json,
+    response_items = client.config_search_request(
+        time_filter, str(query), limit, search_id, sort_direction, sort_field, include_resource_json, heuristic_search
     )
     if not include_additional_resource_fields:
-        remove_additional_resource_fields(response)
+        remove_additional_resource_fields(response_items)
 
-    response_items = response.get("data", {}).get("items", [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
@@ -2276,7 +2295,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     command_results = CommandResults(
         outputs_prefix="PrismaCloud.Config",
         outputs_key_field="assetId",
-        readable_output=f'Showing {len(response_items)} of {response.get("data", {}).get("totalRows", 0)} results:\n'
+        readable_output=f"Showing {len(response_items)} results:\n"
         + tableToMarkdown(
             "Configuration Details:", response_items, headers=headers, removeNull=True, headerTransform=pascalToSpace
         ),

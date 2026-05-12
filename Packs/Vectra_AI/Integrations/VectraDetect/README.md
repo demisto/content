@@ -25,14 +25,16 @@ This integration was integrated and tested with version 7.1 of Vectra Detect
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Vectra Detect FQDN or IP | Enter the FQDN or IP to reach the Vectra Detect API. \(e.g. "my-vectra-box.local" or "192.168.1.1"\) | True |
-    | API Token | Enter the API token that can be retrieved from the Vectra UI &amp;gt; My Profile &amp;gt; General \(tab\) &amp;gt; API Token. You can also use the XSOAR credentials wallet to store it. In that case, the token should be the password. | True |
-    | API Token |  | True |
+    | Authentication Type | Select the authentication type \(Default - API Token\). | False |
+    | API Token | Enter the API token that can be retrieved from the Vectra UI &amp;gt; My Profile &amp;gt; General \(tab\) &amp;gt; API Token. You can also use the XSOAR credentials wallet to store it. In that case, the token should be the password. | False |
+    | Client ID and Client Secret Key | Enter the Client ID and Client Secret Key that can be retrieved from the Vectra UI &amp;gt; Manage &amp;gt; API Clients. You can also use the XSOAR credentials wallet to store it. | False |
     | Trust any certificate (not secure) | When checked, no SSL certificates check will be done when interacting with the Vectra Detect API. It's insecure. \(Default - unchecked\) | False |
     | Use system proxy settings | Use the system proxy settings to reach with the Vectra Detect API. | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | First fetch timestamp | The date or relative timestamp from which to begin fetching entities.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2024, 01 Aug 2024 04:45:33, 2024-07-17T14:05:44Z. \(default - 7 days\) | False |
     | Mirroring Direction | The mirroring direction in which to mirror the account and host. You can mirror "Incoming" \(from Vectra to Cortex XSOAR\), "Outgoing" \(from Cortex XSOAR to Vectra\), or in both directions. | False |
+    | Re-Fetch closed incidents via mirroring | If selected, new incidents will be created (via Outgoing Mirroring). If not selected, it reopens previously closed incidents (via Incoming Mirroring).<br/><br/>Note: This flow is triggered only when the relevant account or host is still active and the previously fetched incident is closed. | False |
     | Mirror tag for notes | The tag value should be used to mirror the account and host note by adding the same tag in the notes. | False |
     | Entity types to fetch | Choose what to fetch - Accounts and/or Hosts and/or Detections. \(Default - Accounts,Hosts\) | False |
     | Tags | Only Accounts or Hosts that contain any of the tags specified will be fetched.<br/><br/>Note: For the partial match of the tag, use '\*' at the start and end of word \(Only a single word is allowed\). Ex. \*MDR\*. | False |
@@ -43,6 +45,7 @@ This integration was integrated and tested with version 7.1 of Vectra Detect
     | Detections fetch query | Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". \(default - detection.threat:&gt;=50 AND detection.certainty:&gt;=50\) | False |
     | Max created incidents per fetch | The maximum number of new incidents to create per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. \(Default - 50\) | False |
     | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Advanced: Fetch escalated Accounts and Hosts | Use this parameter to fetch escalated Accounts and Hosts.<br/><br/>Note: If this parameter is set to True, it will fetch Accounts and Hosts that have been updated based on the provided filter parameters, even if their detection timestamps are older than the first fetch time. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -54,17 +57,21 @@ To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 2. Under Classifier, select "Vectra Detect".
 3. Under Incident type, select "N/A".
 4. Under Mapper (incoming), select "Vectra Detect - Incoming Mapper" for default mapping.
-5. Enter connection parameters. (Vectra Detect FQDN or IP, API Token)
-6. Select SSL certificate validation and Proxy if required.
-7. Update "Max created incidents per fetch" & "First fetch timestamp" based on your requirements.
-8. Select the Incident Mirroring Direction:
+5. Select the "Authentication Type" (Default - API Token).
+6. Enter connection parameters. (Vectra Detect FQDN or IP, API Token or Client ID and Client Secret Key)
+7. Select SSL certificate validation and Proxy if required.
+8. Update "Max created incidents per fetch" & "First fetch timestamp" based on your requirements.
+9. Select the Incident Mirroring Direction:
     1. Incoming - Mirrors changes from the Vectra into the Cortex XSOAR incident.
     2. Outgoing - Mirrors changes from the Cortex XSOAR incident to the Vectra.
     3. Incoming And Outgoing - Mirrors changes both Incoming and Outgoing directions on incidents.
-9. Enter the relevant tag name for mirror notes.
+10. Check the "Re-Fetch closed incidents via mirroring" option if you want to prevent reopening of closed incidents and refetch them via mirroring on modification of the Vectra Account or Vectra Host.
+11. Enter the relevant tag name for mirror notes.
     **Note:** This value is mapped to the dbotMirrorTags incident field in Cortex XSOAR, which defines how Cortex XSOAR handles notes when you tag them in the War Room. This is required for mirroring notes from Cortex XSOAR to Vectra.
-10. Provide the filter parameter "Tags”, to filter entities by specific tag/s for fetch type account and host.
-11. Provide the filter parameter "Detection Category” and "Detection Type", to filter detections by the specified category and type for fetch type account and host.
+12. Provide the filter parameter "Tags”, to filter entities by specific tag/s for fetch type account and host.
+13. Provide the filter parameter "Detection Category” and "Detection Type", to filter detections by the specified category and type for fetch type account and host.
+14. Provide the "Minutes to look back when fetching" parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+15. Check the "Fetch escalated Accounts and Hosts" option to fetch escalated Accounts and Hosts that have been updated based on the provided filter parameters, even if their detection timestamps are older than the first fetch time.
 
 **Notes for mirroring:**
 
@@ -73,8 +80,12 @@ To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 - Any tags removed from the Vectra Account or Vectra Host will not be removed in the Cortex XSOAR incident, as Cortex XSOAR doesn't allow the removal of the tags field via the backend. However, tags removed from the Cortex XSOAR incident UI will be removed from the Vectra Account or Vectra Host.
 - New notes from the Cortex XSOAR incident will be created as notes in the Vectra Account or Vectra Host. Updates to existing notes in the Cortex XSOAR incident will not be reflected in the Vectra Account or Vectra Host.
 - New notes from the Vectra Account or Vectra Host will be created as notes in the Cortex XSOAR incident. Updates to existing notes in the Vectra Account or Vectra Host will create new notes in the Cortex XSOAR incident.
-- If a closed Cortex XSOAR incident is tied to a specific Account or Vectra Host and new detections for that Account or Vectra Host arise or existing detections become active again, the incident will be automatically reopened.
-- When a Cortex XSOAR incident is closed but there are still active detections on the Vectra side, and the Account or Vectra Host is subsequently updated, the corresponding Cortex XSOAR incident for that entity will be reopened.
+- If a closed Cortex XSOAR incident is tied to a specific Vectra Account or Vectra Host and new detections for that Vectra Account or Vectra Host arise or existing detections become active again:
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected and "Incoming Mirroring" is enabled, the incident will be automatically reopened.
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is selected and "Outgoing Mirroring" is enabled, a new incident will be created for the Vectra Account or Vectra Host.
+- When a Cortex XSOAR incident is closed but there are still active detections on the Vectra side, and the Vectra Account or Vectra Host is subsequently updated:
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected and "Incoming Mirroring" is enabled, the corresponding XSOAR incident for that Vectra Account or Vectra Host will be reopened.
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is selected and "Outgoing Mirroring" is enabled, a new incident will be created for the Vectra Account or Vectra Host.
 - If a Cortex XSOAR incident is reopened and the corresponding entity has an assignment in Vectra, the assignment will be removed from Vectra.
 - If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
 - To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Vectra Detect - Incoming Mapper" section for more information.)
@@ -671,6 +682,34 @@ There is no context output for this command.
 >
 >The active detections of the provided account have been successfully marked as fixed.
 
+### vectra-account-markall-detections-asclosed
+
+***
+Mark active detections as closed by providing the ID of the account in the argument.
+
+#### Base Command
+
+`vectra-account-markall-detections-asclosed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | Provide an account ID. | Required |
+| close_reason | Provide the close reason. Possible values are: benign, remediated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-account-markall-detections-asclosed account_id=108 close_reason=benign```
+
+#### Human Readable Output
+
+>##### The active detections of the provided account have been successfully closed as benign
+
 ### vectra-host-describe
 
 ***
@@ -1018,6 +1057,34 @@ There is no context output for this command.
 #### Human Readable Output
 >
 >The active detections of the provided host have been successfully marked as fixed.
+
+### vectra-host-markall-detections-asclosed
+
+***
+Mark active detections as closed by providing the ID of the host in the argument.
+
+#### Base Command
+
+`vectra-host-markall-detections-asclosed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | Provide a host ID. | Required |
+| close_reason | Provide the close reason. Possible values are: benign, remediated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-host-markall-detections-asclosed host_id=23176 close_reason=remediated```
+
+#### Human Readable Output
+
+>##### The active detections of the provided host have been successfully closed as remediated
 
 ### vectra-detection-describe
 
@@ -1384,6 +1451,61 @@ List all notes of the specific detection.
 >|---|---|---|---|---|---|
 >| 1961 | updated note 2nd | xsoar | 2024-07-12T04:52:20Z | xsoar | 2024-07-12T10:21:03Z |
 >| 1937 | your first test note | xsoar | 2024-07-11T07:32:20Z |  |  |
+
+### vectra-detections-mark-asclosed
+
+***
+Mark detections as closed with provided detection IDs in the argument.
+
+#### Base Command
+
+`vectra-detections-mark-asclosed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required |
+| close_reason | Provide the close reason. Possible values are: benign, remediated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-detections-mark-asclosed detection_ids=123,345 close_reason=remediated```
+
+#### Human Readable Output
+
+>##### The provided detection IDs have been successfully closed as remediated
+
+### vectra-detections-mark-asopen
+
+***
+Open detections with provided detection IDs in the argument.
+
+#### Base Command
+
+`vectra-detections-mark-asopen`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-detections-mark-asopen detection_ids=123,345```
+
+#### Human Readable Output
+
+>##### The provided detection IDs have been successfully re-opened
 
 ### vectra-outcome-describe
 

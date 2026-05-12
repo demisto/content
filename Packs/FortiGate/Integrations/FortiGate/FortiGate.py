@@ -177,23 +177,8 @@ class Client(BaseClient):
         Raises:
             DemistoException: Incase the credentials are wrong or too many attempts were made.
         """
-        response: requests.Response = self._http_request(
-            method="POST",
-            full_url=urljoin(self.server, "logincheck"),
-            data={
-                "username": self.username,
-                "secretkey": self.password,
-                "ajax": "1",
-            },
-            resp_type="response",
-            error_handler=Client._error_handler,
-        )
-
-        if response.text == "0":
-            raise DemistoException(AUTHORIZATION_ERROR)
-
-        if response.text == "2":
-            raise DemistoException("Too many login attempts. Please wait and try again.")
+        demisto.debug("Starting login")
+        response = self.login_request()
 
         # Extract the cookie and inject it into the headers, without the header only GET requests available.
         # The X-CSRFTOKEN header is required for POST/PUT/DELETE requests.
@@ -216,6 +201,46 @@ class Client(BaseClient):
             )
 
         Client.IS_ONLINE = True
+
+    def login_request(self) -> requests.Response:
+        """
+        Sends the login request, and retries once if the initial login fails.
+
+        Returns:
+            requests.Response: The final HTTP response from the login attempt.
+
+        Raises:
+            DemistoException: If login fails or too many login attempts were made.
+        """
+
+        def send_login_request() -> requests.Response:
+            return self._http_request(
+                method="POST",
+                full_url=urljoin(self.server, "logincheck"),
+                data={
+                    "username": self.username,
+                    "secretkey": self.password,
+                    "ajax": "1",
+                },
+                resp_type="response",
+                error_handler=Client._error_handler,
+            )
+
+        response = send_login_request()
+        demisto.debug(f"Initial login response: status_code={response.status_code}, text={response.text}")
+
+        if response.text == "0":
+            demisto.debug("Login failed, retrying")
+            response = send_login_request()
+            demisto.debug(f"Retry login response: status_code={response.status_code}, text={response.text}")
+
+            if response.text == "0":
+                raise DemistoException(AUTHORIZATION_ERROR)
+
+        if response.text == "2":
+            raise DemistoException("Too many login attempts. Please wait and try again.")
+
+        return response
 
     def logout(self) -> None:
         """Due to limited amount of simultaneous connections we log out."""
@@ -2833,9 +2858,11 @@ def test_module(client: Client) -> str:
         str: : 'ok' if test passed, or an error message if the credentials are incorrect.
     """
     try:
+        demisto.debug("Starting test module")
         client.list_system_vdoms()
 
     except DemistoException as exc:
+        demisto.debug(f"Got error: {str(exc)}")
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.FORBIDDEN:
                 return AUTHORIZATION_ERROR

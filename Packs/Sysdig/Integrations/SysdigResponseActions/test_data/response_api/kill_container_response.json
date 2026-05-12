@@ -1,0 +1,18 @@
+
+{
+  "actionType": "KILL_CONTAINER",
+  "callerId": "test_kill_container_07",
+  "executionContext": {
+    "agent.tag.cluster": "test-cluster",
+    "container.id": "123456789012",
+    "container.image": "docker.io/library/ubuntu:latest"
+  },
+  "id": "00000-1111-2222-3333-444444444",
+  "outputs": null,
+  "parameters": {
+    "container.id": "123456789012",
+    "host.id": "abc123456789"
+  },
+  "status": "created",
+  "userId": 98765432
+}

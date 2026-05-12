@@ -1,0 +1,21 @@
+{
+    "list": [
+        {
+            "id": "test_1",
+            "timestamp": "2025-01-15T10:30:00Z",
+            "details": {
+                "server": "srv_123",
+                "project": "proj_456"
+            }
+        }
+    ],
+    "related_objects": {
+        "srv_123": {
+            "type": "server",
+            "object": {"name": "web-server-01"}
+        },
+        "proj_456": {
+            "object": {"name": "my-project"}
+        }
+    }
+}

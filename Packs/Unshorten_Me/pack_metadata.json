@@ -1,0 +1,23 @@
+{
+    "name": "UnshortenMe",
+    "description": "Unshortens shortened URLs like bit.ly, t.co, and others using the unshorten.me API.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Rich Fontaine",
+    "url": "",
+    "email": "",
+    "created": "2025-07-30T20:59:28Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "edibleShell"
+    ]
+}

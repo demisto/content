@@ -1,0 +1,42 @@
+[MODEL: dataset=citrix_cloud_raw]
+/* XDM fields mapping for system logs:
+https://docs.citrix.com/en-us/citrix-cloud/citrix-cloud-management/system-log/platform-events
+https://developer-docs.citrix.com/en-us/citrix-cloud/citrix-cloud-systemlog/apis/#/Records/GetRecords
+*/
+alter
+    extract_event_operation = arrayindex(regextract(eventType , "[^\/]\w+$"),0)
+| alter
+    xdm.event.type = eventType,
+    xdm.target.resource.id = targetId,
+    xdm.target.user.identifier = targetUserId,
+    xdm.target.user.upn = targetEmail,
+    xdm.target.user.username = targetDisplayName,
+    xdm.target.resource_before.value = to_json_string(beforeChanges),
+    xdm.target.resource.value = to_json_string(afterChanges),
+    xdm.source.user.identifier = actorId,
+    xdm.source.user.username = actorDisplayName,
+    xdm.event.description =  json_extract_scalar(message, "$['en-US']"),
+    xdm.observer.unique_identifier = customerId,
+    xdm.auth.privilege_level = if(actorType = "administrator", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, actorType = "system", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, actorType),
+    xdm.event.operation = if(extract_event_operation = "create", XDM_CONST.OPERATION_TYPE_CREATE, extract_event_operation = "delete", XDM_CONST.OPERATION_TYPE_DELETE, extract_event_operation = "update", XDM_CONST.OPERATION_TYPE_UPDATE, extract_event_operation);
+
+[MODEL: dataset="citrix_daas_raw"]
+alter
+    // Extract username and email from User field format: "Display Name (email@domain.com)"
+    tmp_user_display_name = arrayindex(regextract(User, "^([^(]+)"), 0),
+    tmp_user_email = arrayindex(regextract(User, "\(([^)]+)\)"), 0)
+| alter
+    tmp_user_display_name_trimmed = rtrim(tmp_user_display_name, " ")
+| alter
+    xdm.event.id = Id,
+    xdm.event.operation_sub_type = Text,
+    xdm.event.original_event_type = OperationType,
+    xdm.event.outcome = if(lowercase(to_string(IsSuccessful)) = "true", XDM_CONST.OUTCOME_SUCCESS, lowercase(to_string(IsSuccessful)) = "false", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.source.ipv4 = if(is_ipv4(AdminMachineIP),AdminMachineIP,null),
+    xdm.source.ipv6 = if(is_ipv6(AdminMachineIP),AdminMachineIP,null),
+    xdm.source.application.name = Source,
+    xdm.source.user.username = tmp_user_display_name_trimmed,
+    xdm.source.user.upn = tmp_user_email,
+    xdm.source.user.identifier = UserIdentity,
+    xdm.target.resource.type = TargetTypes,
+    xdm.event.description = Parameters;

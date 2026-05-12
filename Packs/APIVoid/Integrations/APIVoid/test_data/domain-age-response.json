@@ -1,0 +1,9 @@
+{
+    "host": "example.com",
+    "domain_age_found": true,
+    "domain_registered": "yes",
+    "domain_creation_date": "1995-08-14",
+    "domain_age_in_days": 10000,
+    "domain_age_in_months": 330,
+    "domain_age_in_years": 27
+}

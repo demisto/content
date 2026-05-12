@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+provider: Cimcor Inc
 commonfields:
   id: CimTrak
   version: -1
@@ -2302,7 +2303,7 @@ script:
     - contextPath: CimTrak.Object.agentObjectId
       description: Agent Object Id.
       type: number
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   longRunning: true
   script: ''

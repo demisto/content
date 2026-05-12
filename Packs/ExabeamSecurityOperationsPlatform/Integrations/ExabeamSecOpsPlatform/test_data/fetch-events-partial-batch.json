@@ -1,0 +1,38 @@
+{
+    "mock_responses": [
+        {
+            "rows": [
+                {
+                    "caseId": "A",
+                    "riskScore": 100,
+                    "caseCreationTimestamp": 1743728988934673
+                },
+                {
+                    "caseId": "B",
+                    "riskScore": 50,
+                    "caseCreationTimestamp": 1743728991877035
+                }
+            ]
+        }
+    ],
+    "prev_last_fetched_ids": [],
+    "max_fetch": 200,
+    "expected_events": [
+        {
+            "caseId": "A",
+            "riskScore": 100,
+            "caseCreationTimestamp": 1743728988934673,
+            "_time": "2025-04-04T01:09:48Z"
+        },
+        {
+            "caseId": "B",
+            "riskScore": 50,
+            "caseCreationTimestamp": 1743728991877035,
+            "_time": "2025-04-04T01:09:51Z"
+        }
+    ],
+    "expected_new_start_time": "2025-04-04T01:09:51Z",
+    "expected_new_last_fetched_ids": [
+        "B"
+    ]
+}

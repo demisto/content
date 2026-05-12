@@ -1,0 +1,16 @@
+{
+    "id": "indicatorfield_recordedfutureriskrules",
+    "description": "Rule score count from Recorded Future",
+    "version": -1,
+    "modified": "2025-06-04T08:40:49.53325006Z",
+    "name": "Recorded Future Risk Rule Count",
+    "cliName": "fieldrecordedfutureriskrules",
+    "type": "shortText",
+    "editForm": true,
+    "group": 2,
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

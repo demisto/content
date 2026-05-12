@@ -8,17 +8,18 @@ subtype: python3
 tags:
 - transformer
 - general
-comment: This automation allows the usage of DT scripts within playbooks transformers
+comment: This automation allows the usage of DT scripts within playbooks transformers.
 enabled: true
 args:
 - name: value
   required: true
-  description: Value to perform the transformation on.
+  description: The value to perform the transformation on.
 - name: dt
   required: true
   description: DT expression.
 scripttarget: 0
+isllm: false
 tests:
 - No tests - script used for testing
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.5490952

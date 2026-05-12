@@ -10,27 +10,27 @@ enabled: true
 args:
 - name: URL
   required: true
-  description: URL to check
+  description: URL to check.
 - name: Port
   default: true
-  description: Port to check
+  description: Port to check.
   defaultValue: '443'
 outputs:
 - contextPath: SSLVerifier.Certificate.Expiry
-  description: Time of expiration
+  description: Time of expiration.
   type: string
 - contextPath: SSLVerifier.Certificate.Issuer
-  description: Issuer information
+  description: Issuer information.
   type: string
 - contextPath: SSLVerifier.Certificate.Site
-  description: Site that was checked
+  description: Site that was checked.
   type: string
 - contextPath: SSLVerifier.Certificate.TimeToExpiration
-  description: Days to expiration
+  description: Days to expiration.
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

@@ -557,3 +557,325 @@ def test_tc_add_indicator_command_with_description(mocker):
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
     assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]["data"]
+
+
+def test_tc_add_cidr_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with CIDR indicator type
+    When:
+        - Adding a CIDR indicator
+    Then:
+        - The request contains the Block field with the CIDR value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"tags": [], "indicator": "192.168.0.0/24", "indicatorType": "CIDR"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["Block"] == "192.168.0.0/24"
+
+
+def test_tc_add_url_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with URL indicator type
+    When:
+        - Adding a URL indicator
+    Then:
+        - The request contains the text field with the URL value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "https://example.com", "indicatorType": "URL"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["text"] == "https://example.com"
+
+
+def test_tc_add_host_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with Host indicator type
+    When:
+        - Adding a Host indicator
+    Then:
+        - The request contains the hostName field with the domain value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "example.com", "indicatorType": "Host"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["hostName"] == "example.com"
+
+
+def test_tc_add_email_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with EmailAddress indicator type
+    When:
+        - Adding an EmailAddress indicator
+    Then:
+        - The request contains the address field with the email value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "user@example.com", "indicatorType": "EmailAddress"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["address"] == "user@example.com"
+
+
+def test_tc_add_file_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with File indicator type
+    When:
+        - Adding a File indicator with MD5 hash
+    Then:
+        - The request contains the md5 field with the hash value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "d41d8cd98f00b204e9800998ecf8427e", "indicatorType": "File"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["md5"] == "d41d8cd98f00b204e9800998ecf8427e"
+
+
+def test_tc_add_file_indicator_with_hash_type_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with File indicator type and SHA256 hash type
+    When:
+        - Adding a File indicator with SHA256 hash
+    Then:
+        - The request contains the sha256 field with the hash value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(
+        client,
+        {
+            "indicator": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "indicatorType": "File",
+            "hashType": "sha256",
+        },
+    )
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+
+@pytest.mark.parametrize(
+    "args, expected_owner_in_url",
+    [
+        # No owners arg and no defaultOrg — should query all owners (no ownerName filter in TQL)
+        ({}, False),
+        # Explicit owners arg — should filter by that owner
+        ({"owners": "MyOrg"}, True),
+    ],
+)
+def test_get_indicator_reputation_owner_filter(mocker, args, expected_owner_in_url):
+    """
+    Given:
+        - get_indicator_reputation is called with or without an explicit 'owners' argument
+        - The defaultOrg integration parameter is set to 'DefaultOrg'
+    When:
+        - Running a reputation command (e.g. !ip)
+    Then:
+        - When no 'owners' arg is provided, the TQL query must NOT contain an ownerName filter
+          (all accessible owners are queried, consistent with tc-get-indicator behavior)
+        - When an explicit 'owners' arg is provided, the TQL query must contain that ownerName filter
+    """
+    import urllib.parse
+
+    mocker.patch.object(demisto, "params", return_value={"defaultOrg": "DefaultOrg", "rating": "3", "confidence": "3"})
+    mock_request = mocker.patch.object(Client, "make_request", return_value={"data": []})
+    mocker.patch("ThreatConnectV3.return_results")
+
+    args = {**args, "ip": "1.2.3.4"}
+    get_indicator_reputation(client, "ip", "Address", args)
+
+    called_url = mock_request.call_args[0][1]
+    tql_encoded = called_url.split("tql=")[1].split("&")[0]
+    tql_decoded = urllib.parse.unquote(tql_encoded)
+
+    if expected_owner_in_url:
+        assert "ownerName" in tql_decoded
+        assert "MyOrg" in tql_decoded
+    else:
+        assert "ownerName" not in tql_decoded
+        assert "DefaultOrg" not in tql_decoded
+
+
+@pytest.mark.parametrize(
+    "args_type, type_name, indicator_value, expected_header_fragment",
+    [
+        ("ip", "Address", "1.2.3.4", "ThreatConnect Address Reputation for: 1.2.3.4"),
+        ("url", "URL", "http://example.com", "ThreatConnect URL Reputation for: http://example.com"),
+        ("domain", "Host", "example.com", "ThreatConnect Host Reputation for: example.com"),
+        (
+            "file",
+            "File",
+            "d41d8cd98f00b204e9800998ecf8427e",
+            "ThreatConnect File Reputation for: d41d8cd98f00b204e9800998ecf8427e",
+        ),
+    ],
+)
+def test_get_indicator_reputation_header(mocker, args_type, type_name, indicator_value, expected_header_fragment):
+    """
+    Given:
+        - get_indicator_reputation is called for different indicator types
+    When:
+        - Running !ip, !url, !domain, or !file reputation commands
+    Then:
+        - The human-readable table title must reflect the actual indicator type, not a hardcoded 'URL Reputation'
+    """
+    mocker.patch.object(demisto, "params", return_value={"defaultOrg": "DefaultOrg", "rating": "3", "confidence": "3"})
+    mocker.patch.object(Client, "make_request", return_value={"data": []})
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    args = {args_type: indicator_value}
+    get_indicator_reputation(client, args_type, type_name, args)
+
+    returned_entry = return_results_mock.call_args[0][0]
+    assert expected_header_fragment in returned_entry["HumanReadable"]
+
+
+def test_tc_get_indicator_command_not_found(mocker):
+    """
+    Given:
+        - An indicator value that does not exist in ThreatConnect
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - A 'Could not find indicator' note entry is returned
+    """
+    import ThreatConnectV3
+
+    mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=[])
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=({}, []))
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "1.2.3.4"})
+
+    returned_entry = return_results_mock.call_args[0][0]
+    assert returned_entry["ContentsFormat"] == formats["text"]
+    assert "Could not find indicator: 1.2.3.4" in returned_entry["Contents"]
+
+
+def test_tc_get_indicator_command_found(mocker):
+    """
+    Given:
+        - An indicator value that exists in ThreatConnect (by summary)
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - All results are aggregated into a single list passed to return_results
+        - The main entry contains the indicator table in HumanReadable
+    """
+    import ThreatConnectV3
+
+    indicator_response = [
+        {
+            "id": 12345,
+            "ownerName": "MyOrg",
+            "dateAdded": "2023-01-01T00:00:00Z",
+            "webLink": "https://app.threatconnect.com/auth/indicators/details/address.xhtml?address=1.2.3.4",
+            "type": "Address",
+            "lastModified": "2023-06-01T00:00:00Z",
+            "rating": 4.0,
+            "confidence": 75,
+            "summary": "1.2.3.4",
+            "tags": {"data": [{"name": "malicious"}]},
+            "attributes": {"data": [{"type": "Description", "value": "Bad IP"}]},
+            "associatedGroups": {"data": [{"id": 99, "name": "Threat Group"}]},
+            "associatedIndicators": {"data": [{"id": 88, "summary": "evil.com"}]},
+            "observations": [{"count": 5, "dateObserved": "2023-05-01T00:00:00Z"}],
+        }
+    ]
+    ec = {
+        "TC.Indicator(val.ID && val.ID === obj.ID)": [
+            {
+                "ID": 12345,
+                "Name": "1.2.3.4",
+                "Type": "Address",
+                "Owner": "MyOrg",
+                "Rating": 4,
+                "Confidence": 75,
+            }
+        ]
+    }
+    human_readable = [{"ID": 12345, "Name": "1.2.3.4", "Type": "Address"}]
+
+    mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=indicator_response)
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=(ec, human_readable))
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "1.2.3.4"})
+
+    # return_results should be called once with a list of all results
+    return_results_mock.assert_called_once()
+    results = return_results_mock.call_args[0][0]
+    assert isinstance(results, list)
+
+    # First entry is the main indicator table
+    main_entry = results[0]
+    assert "ThreatConnect indicator for: 1.2.3.4" in main_entry["HumanReadable"]
+    assert main_entry["EntryContext"] == ec
+
+    # Remaining entries are CommandResults for associated data
+    readable_outputs = [r.readable_output for r in results[1:]]
+    assert any("Associated Groups" in ro for ro in readable_outputs)
+    assert any("Associated Indicators" in ro for ro in readable_outputs)
+    assert any("Tags" in ro for ro in readable_outputs)
+    assert any("Attributes" in ro for ro in readable_outputs)
+    assert any("Observations" in ro for ro in readable_outputs)
+
+
+def test_tc_get_indicator_command_by_id(mocker):
+    """
+    Given:
+        - A numeric indicator ID
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - tc_get_indicators is called with indicator_id set (not summary)
+    """
+    import ThreatConnectV3
+
+    indicator_response = [
+        {
+            "id": 99999,
+            "ownerName": "MyOrg",
+            "dateAdded": "2023-01-01T00:00:00Z",
+            "type": "Address",
+            "summary": "5.6.7.8",
+        }
+    ]
+    ec = {"TC.Indicator(val.ID && val.ID === obj.ID)": [{"ID": 99999, "Name": "5.6.7.8"}]}
+    human_readable = [{"ID": 99999, "Name": "5.6.7.8"}]
+
+    get_indicators_mock = mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=indicator_response)
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=(ec, human_readable))
+    mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "99999"})
+
+    call_kwargs = get_indicators_mock.call_args[1]
+    assert call_kwargs.get("indicator_id") == "99999"
+    assert call_kwargs.get("summary") == ""

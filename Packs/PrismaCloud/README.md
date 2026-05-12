@@ -26,6 +26,6 @@ This pack includes Cortex XSIAM content.
 
 It supports Prisma Cloud alerts ingestion and modeling.
 
-For additional details regarding Prisma Cloud alerts ingestion & Prisma Cloud Collector configuration, see [Ingest Alerts from Prisma Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Alerts-from-Prisma-Cloud).
+For additional details regarding Prisma Cloud alerts ingestion & Prisma Cloud Collector configuration, see [Ingest Alerts from Prisma Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Ingest-Alerts-from-Prisma-Cloud).
 
 </~XSIAM>

@@ -6,7 +6,6 @@ from typing import Any
 import csv
 import io
 import requests
-import signal
 from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
@@ -795,7 +794,9 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     },
     "qualys-host-list-detection": {
         # show detection score `QDS` and score contributing factors `QDS_FACTORS`
-        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1",
+        "api_route": API_SUFFIX
+        + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1&\
+            host_metadata=all&show_cloud_tags=1",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -1601,54 +1602,6 @@ args_values: dict[str, Any] = {}
 # Dictionary for arguments used internally by this integration
 inner_args_values: dict[str, Any] = {}
 
-""" TIMEOUT HANDLING """
-
-
-class SignalTimeoutError(Exception):
-    """Custom exception raised when the execution timeout is reached."""
-
-
-class ExecutionTimeout:
-    """Context manager to limit the execution time of a code block.
-
-    Example:
-        >>> with ExecutionTimeout(5):
-        ...     time.sleep(10)
-    """
-
-    def __init__(self, seconds: int | float):
-        """Initializes the ExecutionTimeout context manager.
-
-        Args:
-            seconds: The maximum execution time in seconds.
-        """
-        self.seconds = int(seconds)
-
-    def _timeout_handler(self, signum, frame):
-        """Signal handler that raises a `SignalTimeoutError`."""
-        raise SignalTimeoutError
-
-    def __enter__(self) -> None:
-        """Enters the context manager by setting up the signal handler for SIGALRM and starts the timer."""
-        demisto.debug(f"Running with execution timeout: {self.seconds}")
-        signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
-        signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
-        """Exits the context manager by cancelling the SIGALARM and suppressing the `SignalTimeoutError`.
-
-        Args:
-            exc_type: The type of the exception that occurred, if any.
-            exc_val: The instance of the exception that occurred, if any.
-            exc_tb: A traceback object showing where the exception occurred, if any.
-
-        Returns:
-            True if the `SignalTimeoutError` was raised and suppressed, False otherwise.
-        """
-        demisto.debug("Resetting timed signal")
-        signal.alarm(0)  # Cancel SIGALRM if it's scheduled
-        return exc_type is SignalTimeoutError  # Suppress SignalTimeoutError
-
 
 """ CLIENT CLASS """
 
@@ -1668,7 +1621,7 @@ class Client(BaseClient):
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
-            err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
+            err_msg = f"{err_msg}\nError Code: {simple_response.get('CODE')}\nError Message: {simple_response.get('TEXT')}"
         except Exception:
             try:
                 # Try to parse json error response
@@ -1771,7 +1724,7 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
+                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
@@ -2585,7 +2538,7 @@ def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     limit_msg = ""
 
     if "STATUS" in handled_result:
-        readable_output += f'### Current Status: {handled_result["STATUS"]}\n'
+        readable_output += f"### Current Status: {handled_result['STATUS']}\n"
 
     if command_parse_and_output_data["collection_name"] in handled_result:
         asset_collection = handled_result[command_parse_and_output_data["collection_name"]]
@@ -2986,6 +2939,37 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def close_snapshot_if_empty(
+    data: list,
+    items_count: int,
+    snapshot_id: str,
+    product: str,
+) -> tuple[list, int]:
+    """Ensures a snapshot can be closed even when the last page returned 0 items.
+
+    `send_data_to_xsiam` skips the API call when `data` is an empty list, which prevents the snapshot
+    from being finalized with the correct `items_count`. When this happens, we send an empty JSON (`[{}]`)
+    to trigger the API call and increment `items_count` by 1 to account for the extra row in the dataset.
+
+    Args:
+        data (list): The data to send. If empty and snapshot needs closing, will be replaced with [{}].
+        items_count (int): The total items count to report for the snapshot.
+        snapshot_id (str): The snapshot ID.
+        product (str): The product name (for logging).
+
+    Returns:
+        tuple[list, int]: The (possibly modified) data and items_count.
+    """
+    if not data and items_count > 0:
+        items_count += 1  # Account for the empty JSON row added to the dataset
+        demisto.debug(
+            f"Last page returned 0 {product}. "
+            f"Sending snapshot closing signal with items_count={items_count} for snapshot {snapshot_id}."
+        )
+        data = [{}]
+    return data, items_count
+
+
 def send_assets_and_vulnerabilities_to_xsiam(
     assets: list,
     vulnerabilities: list,
@@ -3008,12 +2992,16 @@ def send_assets_and_vulnerabilities_to_xsiam(
     # Set to 1 if not done pulling to signal to the server that the dataset snapshot is not yet complete
     total_assets_to_report = 1 if has_next_page else cumulative_assets_count
     total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
+    is_closing_snapshot = not has_next_page
 
     demisto.debug(
         f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
         f"Total assets collected so far: {cumulative_assets_count}. "
-        f"Reported items count: {total_assets_to_report}."
+        f"Reported items count: {total_assets_to_report}. Is closing snapshot: {is_closing_snapshot}."
     )
+
+    if is_closing_snapshot:
+        assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
     send_data_to_xsiam(
         data=assets,
@@ -3030,6 +3018,12 @@ def send_assets_and_vulnerabilities_to_xsiam(
         f"Total vulnerabilities collected so far: {cumulative_vulns_count}. "
         f"Reported items count: {total_vulns_to_report}."
     )
+
+    if is_closing_snapshot:
+        vulnerabilities, total_vulns_to_report = close_snapshot_if_empty(
+            vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
+        )
+
     send_data_to_xsiam(
         data=vulnerabilities,
         vendor=VENDOR,
@@ -3464,11 +3458,16 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
+            is_last_page = not new_last_run.get("next_page")
             demisto.debug(
                 f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
                 f"Total assets collected so far: {cumulative_assets_count}. "
-                f"Reported items count: {total_assets_to_report}."
+                f"Reported items count: {total_assets_to_report}. Is last page: {is_last_page}."
             )
+
+            if is_last_page:
+                assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
+
             send_data_to_xsiam(
                 data=assets,
                 vendor=VENDOR,
@@ -3507,9 +3506,11 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     set_new_limit = True
     with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
         # Exits code block below if it takes longer to execute than the specified timeout
-        assets, new_last_run, _, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+        assets, new_last_run, _, snapshot_id, _ = fetch_assets(client, last_run)
         detection_qids: list = list({asset.get("DETECTION", {}).get("QID") for asset in assets})
         vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
+        demisto.debug("Finished fetch for assets and vulnerabilities.")
+        set_new_limit = False
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit:

@@ -1,0 +1,8 @@
+{
+    "error": true,
+    "error_code": -1,
+    "message": "You are not allowed to use this api",
+    "response": {},
+    "status": 403,
+    "error_details": {}
+}

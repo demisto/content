@@ -215,13 +215,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "host": "123.123.123.123",
             "status": "SUCCESS",
             "stdout": [
-                "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2018 by Cisco Systems, Inc.\nCompiled Wed 01-Aug-18 16:45 by prod_rel_team\n\n\nROM: Bootstrap program is IOSv\n\nIOSv01 uptime is 1 hour, 33 minutes\nSystem returned to ROM by reload\nSystem image file is \"flash0:/vios-adventerprisek9-m\"\nLast reload reason: Unknown reason\n\n\n\nThis product contains cryptographic features and is subject to United\nStates and local country laws governing import, export, transfer and\nuse. Delivery of Cisco cryptographic products does not imply\nthird-party authority to import, export, distribute or use encryption.\nImporters, exporters, distributors and users are responsible for\ncompliance with U.S. and local country laws. By using this product you\nagree to comply with applicable laws and regulations. If you are unable\nto comply with U.S. and local laws, return this product immediately.\n\nA summary of U.S. laws governing Cisco cryptographic products may be found at:\nhttp://www.cisco.com/wwl/export/crypto/tool/stqrg.html\n\nIf you require further assistance please contact us by sending email to\nexport@cisco.com.\n\nCisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.\nProcessor board ID XXXX\n4 Gigabit Ethernet interfaces\nDRAM configuration is 72 bits wide with parity disabled.\n256K bytes of non-volatile configuration memory.\n2097152K bytes of ATA System CompactFlash 0 (Read/Write)\n0K bytes of ATA CompactFlash 1 (Read/Write)\n1024K bytes of ATA CompactFlash 2 (Read/Write)\n0K bytes of ATA CompactFlash 3 (Read/Write)\n\n\n\nConfiguration register is 0x0"
+                "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2018 by TestNet Systems, Inc.\nCompiled Wed 01-Aug-18 16:45 by prod_rel_team\n\n\nROM: Bootstrap program is IOSv\n\nIOSv01 uptime is 1 hour, 33 minutes\nSystem returned to ROM by reload\nSystem image file is \"flash0:/vios-adventerprisek9-m\"\nLast reload reason: Unknown reason\n\n\n\nThis product contains cryptographic features and is subject to United\nStates and local country laws governing import, export, transfer and\nuse. Delivery of Cisco cryptographic products does not imply\nthird-party authority to import, export, distribute or use encryption.\nImporters, exporters, distributors and users are responsible for\ncompliance with U.S. and local country laws. By using this product you\nagree to comply with applicable laws and regulations. If you are unable\nto comply with U.S. and local laws, return this product immediately.\n\nA summary of U.S. laws governing Cisco cryptographic products may be found at:\nhttp://www.cisco.com/wwl/export/crypto/tool/stqrg.html\n\nIf you require further assistance please contact us by sending email to\nexport@cisco.com.\n\nCisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.\nProcessor board ID XXXX\n4 Gigabit Ethernet interfaces\nDRAM configuration is 72 bits wide with parity disabled.\n256K bytes of non-volatile configuration memory.\n2097152K bytes of ATA System CompactFlash 0 (Read/Write)\n0K bytes of ATA CompactFlash 1 (Read/Write)\n1024K bytes of ATA CompactFlash 2 (Read/Write)\n0K bytes of ATA CompactFlash 3 (Read/Write)\n\n\n\nConfiguration register is 0x0"
             ],
             "stdout_lines": [
                 [
                     "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)",
                     "Technical Support: http://www.cisco.com/techsupport",
-                    "Copyright (c) 1986-2018 by Cisco Systems, Inc.",
+                    "Copyright (c) 1986-2018 by TestNet Systems, Inc.",
                     "Compiled Wed 01-Aug-18 16:45 by prod_rel_team",
                     "",
                     "",
@@ -279,7 +279,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >
 >   * 0: Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)
 >Technical Support: http://www.cisco.com/techsupport
->Copyright (c) 1986-2018 by Cisco Systems, Inc.
+>Copyright (c) 1986-2018 by TestNet Systems, Inc.
 >Compiled Wed 01-Aug-18 16:45 by prod_rel_team
 >
 >
@@ -327,7 +327,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >
 >   * 0: Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)
 >   * 1: Technical Support: http://www.cisco.com/techsupport
->   * 2: Copyright (c) 1986-2018 by Cisco Systems, Inc.
+>   * 2: Copyright (c) 1986-2018 by TestNet Systems, Inc.
 >   * 3: Compiled Wed 01-Aug-18 16:45 by prod_rel_team
 >   * 4:
 >   * 4:

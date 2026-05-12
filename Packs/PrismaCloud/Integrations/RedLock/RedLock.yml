@@ -1,6 +1,7 @@
 category: Network Security
+provider: Palo Alto Networks
 deprecated: true
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:

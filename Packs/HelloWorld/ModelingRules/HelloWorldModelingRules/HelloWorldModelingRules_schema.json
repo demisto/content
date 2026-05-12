@@ -19,6 +19,10 @@
         "custom_details": {
             "type": "string",
             "is_array": false
+        },
+        "created_time": {
+            "type": "datetime",
+            "is_array": false
         }
     }
 }

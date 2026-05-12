@@ -1,0 +1,1896 @@
+id: Create Ticket and Notify
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Create Ticket and Notify
+description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
+starttaskid: "0"
+fromversion: 6.10.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 2b461cb5-8e96-496f-88d5-a2905095b04a
+    type: start
+    task:
+      id: 2b461cb5-8e96-496f-88d5-a2905095b04a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1eafc38f-10af-48cf-8a90-8e945b315215
+    type: title
+    task:
+      id: 1eafc38f-10af-48cf-8a90-8e945b315215
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c6c33e76-3b8a-4f4b-868d-50307bf4fe63
+    type: condition
+    task:
+      id: c6c33e76-3b8a-4f4b-868d-50307bf4fe63
+      version: -1
+      name: Check State Input
+      description: Checks if State Input is Create / Update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Create:
+      - "42"
+      Update:
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: Create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Create
+    - label: Update
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Update
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 6e3a2182-521c-4e48-8dae-d9276534a5f9
+    type: regular
+    task:
+      id: 6e3a2182-521c-4e48-8dae-d9276534a5f9
+      version: -1
+      name: Create Issue ServiceNow ticket
+      description: Creates new ServiceNow ticket.
+      script: ServiceNow v2|||servicenow-create-ticket-quick-action
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      description:
+        simple: |-
+          Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}
+
+          Issue Details
+
+          Issue Name: ${issue.name}
+          Severity Level: ${issue.severity}
+          Category: ${issue.alert_category}
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
+      severity:
+        simple: ${issue.severity}
+      short_description:
+        simple: Detected Issue - ${issue.name}
+      ticket_type:
+        simple: alert
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": -1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5b6925af-5d44-4310-8c3c-154728f40e8a
+    type: regular
+    task:
+      id: 5b6925af-5d44-4310-8c3c-154728f40e8a
+      version: -1
+      name: Create Issue Jira ticket
+      description: Creates a new issue in Jira.
+      script: Jira V3|||jira-create-issue-quick-action
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      description:
+        simple: |-
+          Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}
+
+          Issue Details
+
+          Issue Name: ${issue.name}
+          Severity Level: ${issue.severity}
+          Category: ${issue.alert_category}
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
+      issue_type_name:
+        simple: Task
+      project_key:
+        simple: ${inputs.Jira Project Key}${Please Provide Jira Project Key.Answers.0}
+      summary:
+        simple: Detected Issue - ${issue.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cf8d4bd1-8d19-4bb7-ac70-897a9a1222ad
+    type: title
+    task:
+      id: cf8d4bd1-8d19-4bb7-ac70-897a9a1222ad
+      version: -1
+      name: Create or Update Issue ticket
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4d5e8368-f1c4-47ad-8427-b9ff49403ee3
+    type: title
+    task:
+      id: 4d5e8368-f1c4-47ad-8427-b9ff49403ee3
+      version: -1
+      name: Notification via Teams / Slack
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": -810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6f16754b-99b4-4d89-82e2-7ea9c366dd40
+    type: condition
+    task:
+      id: 6f16754b-99b4-4d89-82e2-7ea9c366dd40
+      version: -1
+      name: Is Jira Project Key Input Provided?
+      description: Checks if Jira Project Key exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "51"
+      "Yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Jira Project Key
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Please Provide Jira Project Key.Answers.0
+            iscontext: true
+    - label: "No"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.Jira Project Key
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Please Provide Jira Project Key.Answers.0
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1137.5,
+          "y": -1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 72f0ef5b-b41b-4042-8764-5f82c7f8aeeb
+    type: title
+    task:
+      id: 72f0ef5b-b41b-4042-8764-5f82c7f8aeeb
+      version: -1
+      name: Email Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 7c345a1c-f3a5-4b6c-8a14-2455f0112463
+    type: regular
+    task:
+      id: 7c345a1c-f3a5-4b6c-8a14-2455f0112463
+      version: -1
+      name: Send Slack Notification
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||slack-send-notification-quick-action
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      channel:
+        simple: ${inputs.Slack Channel Name}${Please Provide Slack Channel Name.Answers.0}
+      message:
+        simple: |-
+          Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}
+
+          Issue Details
+
+          Issue Name: ${issue.name}
+          Severity Level: ${issue.severity}
+          Category: ${issue.alert_category}
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 757.5,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: b59727e8-cb9f-495f-8a58-5aeacbf0aa51
+    type: regular
+    task:
+      id: b59727e8-cb9f-495f-8a58-5aeacbf0aa51
+      version: -1
+      name: Update Microsoft Teams Notification
+      description: Send a message to Microsoft Teams via Incoming Webhook.
+      script: Microsoft Teams via Webhook|||ms-teams-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Teams via Webhook
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      message:
+        simple: |-
+          Issue Resolved for Asset: ${Core.CoreAsset.xdm__asset__name}\n\n
+
+          Issue - ${issue.name}\n
+          Category: ${issue.alert_category}\n
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}\n
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}\n
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}\n
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}\n
+          Remediation: Success\n
+          Issue Status: Resolved\n
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 28c811c7-6843-4b64-8029-1062a3821dec
+    type: regular
+    task:
+      id: 28c811c7-6843-4b64-8029-1062a3821dec
+      version: -1
+      name: Update Slack Notification
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||slack-send-notification-quick-action
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      channel:
+        simple: ${inputs.Slack Channel Name}${Please Provide Slack Channel Name.Answers.0}
+      message:
+        simple: |-
+          Issue Resolved for Asset: ${Core.CoreAsset.xdm__asset__name}
+
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 03f32461-22e3-4300-833f-a74109c4659e
+    type: regular
+    task:
+      id: 03f32461-22e3-4300-833f-a74109c4659e
+      version: -1
+      name: Send Microsoft Teams Notification
+      description: Send a message to Microsoft Teams via Incoming Webhook.
+      script: Microsoft Teams via Webhook|||ms-teams-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Teams via Webhook
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      message:
+        simple: |-
+          Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}\n\n
+
+          Issue Details\n\n
+
+          Issue Name: ${issue.name}\n
+          Severity Level: ${issue.severity}\n
+          Category: ${issue.alert_category}\n
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}\n
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}\n
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}\n
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}\n
+          Issue Created: ${issue.created}\n
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}\n
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -762.5,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: daf1f803-7cc3-4f6d-8458-213be6b8058c
+    type: regular
+    task:
+      id: daf1f803-7cc3-4f6d-8458-213be6b8058c
+      version: -1
+      name: Update Issue ServiceNow ticket
+      description: Updates the specified ticket.
+      script: ServiceNow v2|||servicenow-update-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      comments:
+        simple: |-
+          Issue Resolved for Asset: ${Core.CoreAsset.xdm__asset__name}
+
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 880cd952-f12f-4b37-8718-4a44efecb672
+    type: regular
+    task:
+      id: 880cd952-f12f-4b37-8718-4a44efecb672
+      version: -1
+      name: Update Issue Jira ticket
+      description: Adds a new comment to an existing Jira issue.
+      script: Jira V3|||jira-issue-add-comment
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      comment:
+        simple: |-
+          Issue Resolved for Asset: ${Core.CoreAsset.xdm__asset__name}
+
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${Core.CoreAsset.xdm__asset__name}
+          Asset Type: ${Core.CoreAsset.xdm__asset__type__name}
+          Cloud Region: ${Core.CoreAsset.xdm__asset__cloud__region}
+          Cloud Account ID: ${Core.CoreAsset.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
+      issue_id:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1517.5,
+          "y": -960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 935d84a6-b25a-44d4-8926-17e85dc80368
+    type: condition
+    task:
+      id: 935d84a6-b25a-44d4-8926-17e85dc80368
+      version: -1
+      name: Is there an existing ServiceNow Ticket?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      Create:
+      - "21"
+      Update:
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: Create
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ServiceNow.Ticket.ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Create
+          ignorecase: true
+    - label: Update
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ServiceNow.Ticket.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Update
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": -1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 743e01d2-0228-46e1-8845-b4ea6a1e807b
+    type: regular
+    task:
+      id: 743e01d2-0228-46e1-8845-b4ea6a1e807b
+      version: -1
+      name: Notify Microsoft Teams and Slack Integration status to War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      value:
+        simple: No MS Teams or Slack integration connected to your Cortex tenant. Please configure either one of these to send a message notification.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6fc1ba7d-d5b5-44a9-83e4-e18f75cf104c
+    type: collection
+    task:
+      id: 6fc1ba7d-d5b5-44a9-83e4-e18f75cf104c
+      version: -1
+      name: Get Jira Project Key
+      description: Gets Jira Project Key Input from User
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1517.5,
+          "y": -1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Jira Project Key
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please Provide Jira Project Key
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: d74ab51b-6c7f-4c51-8450-be96ab263a71
+    type: condition
+    task:
+      id: d74ab51b-6c7f-4c51-8450-be96ab263a71
+      version: -1
+      name: Is there an existing Jira Ticket?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      Create:
+      - "24"
+      Update:
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: Create
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Ticket.Id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Create
+    - label: Update
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Ticket.Id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Update
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 8936dc58-b5b5-4589-82ec-cc049a3fb497
+    type: collection
+    task:
+      id: 8936dc58-b5b5-4589-82ec-cc049a3fb497
+      version: -1
+      name: Get Slack Channel Name
+      description: Gets Slack Channel Name from User
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Slack Channel Name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please Provide Slack Channel Name
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 8dc95a8d-d379-4779-8d0d-ef60a197cc6b
+    type: condition
+    task:
+      id: 8dc95a8d-d379-4779-8d0d-ef60a197cc6b
+      version: -1
+      name: Check Notification Email Recipients Inputs
+      description: Cheks if Notification Email Recipients is set to Yes and email address is provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Input:
+      - "58"
+      "No":
+      - "15"
+      "Yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send an email notification?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${inputs.Notification Email Recipients}
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Please Provide Notification Email Recipients.Answers.0
+            iscontext: true
+    - label: Input
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send an email notification?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.Notification Email Recipients
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Please Provide Notification Email Recipients.Answers.0
+            iscontext: true
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send an email notification?
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 03900e70-e63e-476b-88b5-841fae3a8b61
+    type: collection
+    task:
+      id: 03900e70-e63e-476b-88b5-841fae3a8b61
+      version: -1
+      name: Get Notification Email Recipients
+      description: Gets Notification Email Recipients input from user
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1137.5,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Notification Email Recipients
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please Provide Notification Email Recipients
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 119f7658-95cd-4aa9-b401-1bbf09e67c53
+    type: condition
+    task:
+      id: 119f7658-95cd-4aa9-b401-1bbf09e67c53
+      version: -1
+      name: Check ServiceNow and Jira Integration
+      description: Check if ticketing input is set to Yes and the configured module
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Jira:
+      - "32"
+      "No":
+      - "31"
+      Notify:
+      - "71"
+      ServiceNow:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: Jira
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to create a ticket?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Jira V3
+                    ignorecase: true
+            iscontext: true
+    - label: ServiceNow
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to create a ticket?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          ignorecase: true
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to create a ticket?
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    - label: Notify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to create a ticket?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Jira V3
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow V2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 2f1e7740-c46b-4f58-8d1f-f07a2d442954
+    type: condition
+    task:
+      id: 2f1e7740-c46b-4f58-8d1f-f07a2d442954
+      version: -1
+      name: Is Asset Details Exists?
+      description: Checks if Asset details exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "62"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.CoreAsset.xdm__asset__name
+            iscontext: true
+          right:
+            value: {}
+    - label: "No"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Core.CoreAsset.xdm__asset__name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 8f019ce3-97f1-4789-8945-efa40f546efc
+    type: regular
+    task:
+      id: 8f019ce3-97f1-4789-8945-efa40f546efc
+      version: -1
+      name: Get Asset Details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      iscommand: true
+      brand: Cortex Core - Platform
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      asset_id:
+        simple: ${issue.asset_ids}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 375ef0e6-5b90-4de8-865a-5a76ce57296a
+    type: condition
+    task:
+      id: 375ef0e6-5b90-4de8-865a-5a76ce57296a
+      version: -1
+      name: Check Microsoft Teams and Slack Integration
+      description: Checks if message notification is set to Yes and the integrated module.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Microsoft Teams:
+      - "16"
+      "No":
+      - "34"
+      Notify:
+      - "49"
+      Slack:
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: Microsoft Teams
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send a message notification?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Teams via Webhook
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          ignorecase: true
+    - label: Slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send a message notification?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SlackV3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          ignorecase: true
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send a message notification?
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    - label: Notify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send a message notification?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: SlackV3
+          ignorecase: true
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Teams via Webhook
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: c62d3bbb-cf0e-4e05-8e17-39c7f0106eff
+    type: condition
+    task:
+      id: c62d3bbb-cf0e-4e05-8e17-39c7f0106eff
+      version: -1
+      name: Is Slack Channel Name Input Provided?
+      description: Checks if Slack Channel Name Input is provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "56"
+      "Yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "No"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.Slack Channel Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Please Provide Slack Channel Name.Answers.0
+            iscontext: true
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Slack Channel Name
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Please Provide Slack Channel Name.Answers.0
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 32641dcc-3cb2-4f80-8c9d-786b67946adc
+    type: condition
+    task:
+      id: 32641dcc-3cb2-4f80-8c9d-786b67946adc
+      version: -1
+      name: Check State Input
+      description: Checks if State Input is Create / Update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Create:
+      - "36"
+      Update:
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: Create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Create
+    - label: Update
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Update
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 7763c0fe-d348-4fd7-8bb9-09d77137243f
+    type: regular
+    task:
+      id: 7763c0fe-d348-4fd7-8bb9-09d77137243f
+      version: -1
+      name: Send Email Notification
+      description: commands.server.mail.sendmail
+      script: mail-sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: mail-sender
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      htmlBody:
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color: #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align: center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom: 25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size: 14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected.\n    </p>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n      </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size: 14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color: #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color: #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\", \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\" \n         target=\"_blank\"\n         style=\"display: inline-block; padding: 10px 24px; background-color: #0067b8; color: white !important; text-decoration: none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n         View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+      subject:
+        simple: 'Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}'
+      to:
+        simple: ${inputs.Notification Email Recipients},${Please Provide Notification Email Recipients.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 757.5,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 3528e7be-bb4b-4c6d-8cb5-938e5fb60566
+    type: regular
+    task:
+      id: 3528e7be-bb4b-4c6d-8cb5-938e5fb60566
+      version: -1
+      name: Update Email Notification
+      description: commands.server.mail.sendmail
+      script: mail-sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: mail-sender
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      htmlBody:
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color: #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align: center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom: 25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">Success</td>\n      </tr>\n    </table>\n    <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\" \n         target=\"_blank\"\n         style=\"display: inline-block; padding: 10px 24px; background-color: #0067b8; color: white !important; text-decoration: none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n         View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+      subject:
+        simple: Issue Resolved for Asset - ${Core.CoreAsset.xdm__asset__name}
+      to:
+        simple: ${inputs.Notification Email Recipients},${Please Provide Notification Email Recipients.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1517.5,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 1a4cc8c6-333c-4ffc-8c2b-0b82d934a232
+    type: condition
+    task:
+      id: 1a4cc8c6-333c-4ffc-8c2b-0b82d934a232
+      version: -1
+      name: Check State Input
+      description: Checks if State Input is Create / Update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Create:
+      - "67"
+      Update:
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: Create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Create
+    - label: Update
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Issue State
+            iscontext: true
+          right:
+            value:
+              simple: Update
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1137.5,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 89fd36a8-3c94-4352-9e64-a6d832fae875
+    type: regular
+    task:
+      id: 89fd36a8-3c94-4352-9e64-a6d832fae875
+      version: -1
+      name: Notify ServiceNow and Jira status to War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      value:
+        simple: No ServiceNow or Jira integration connected to your Cortex tenant. Please configure either one of these to send a ticket
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_38_Update": 0.46,
+      "16_42_Create": 0.46,
+      "32_51_No": 0.36,
+      "32_52_Yes": 0.59,
+      "46_21_Create": 0.42,
+      "46_31_#default#": 0.1,
+      "46_44_Update": 0.45,
+      "52_24_Create": 0.53,
+      "52_31_#default#": 0.11,
+      "52_45_Update": 0.4,
+      "57_15_No": 0.34,
+      "57_58_Input": 0.46,
+      "57_69_Yes": 0.5,
+      "60_31_No": 0.28,
+      "60_32_Jira": 0.38,
+      "60_46_ServiceNow": 0.39,
+      "60_71_Notify": 0.28,
+      "61_30_yes": 0.49,
+      "61_62_No": 0.34,
+      "63_16_Microsoft Teams": 0.39,
+      "63_34_No": 0.23,
+      "63_49_Notify": 0.45,
+      "63_64_Slack": 0.32,
+      "64_56_No": 0.5,
+      "64_65_Yes": 0.56,
+      "65_36_Create": 0.48,
+      "65_41_Update": 0.52,
+      "69_67_Create": 0.42,
+      "69_68_Update": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3270,
+        "width": 2672.5,
+        "x": -762.5,
+        "y": -2220
+      }
+    }
+  }
+inputs:
+- key: Do you want to create a ticket?
+  value: {}
+  required: true
+  description: "Possible values:\n- Yes\n- No\n\nNote: If set to 'Yes', a configured ServiceNow and/or Jira integration is required.  \nIf using Jira, the Jira Project Key input must also be provided."
+  playbookInputQuery:
+- key: Do you want to send a message notification?
+  value: {}
+  required: true
+  description: |-
+    Possible values:
+    - Yes
+    - No
+
+    Note: If set to 'Yes', Microsoft Teams and/or Slack integration must be configured.
+    If using Slack, the Slack Channel Name input must also be provided.
+  playbookInputQuery:
+- key: Do you want to send an email notification?
+  value: {}
+  required: true
+  description: |-
+    Possible values:
+    - Yes
+    - No
+
+    Note: To send email notifications, specify the Notification Email Recipients input.
+  playbookInputQuery:
+- key: Jira Project Key
+  value: {}
+  required: false
+  description: Provide Jira project key where the issue will be created.
+  playbookInputQuery:
+- key: Slack Channel Name
+  value: {}
+  required: false
+  description: Provide Slack channel name to which to send messages.
+  playbookInputQuery:
+- key: Notification Email Recipients
+  value: {}
+  required: false
+  description: Provide the email address to send email notifications.
+  playbookInputQuery:
+- key: Issue State
+  value: {}
+  required: false
+  description: |-
+    Possible values:
+    - Create
+    - Update
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - Do you want to create a ticket?
+  - Do you want to send a message notification?
+  - Do you want to send an email notification?
+  - Jira Project Key
+  - Slack Channel Name
+  - Notification Email Recipients
+  - Issue State
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)

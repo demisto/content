@@ -1,4 +1,4 @@
-Use this integration to collect audit and syslog transactions logs automatically from ServiceNow.
+Use this integration to collect audit, case, and syslog transactions logs automatically from ServiceNow.
 
 To use ServiceNow on Cortex XSIAM, ensure your user account has the rest_api_explorer and web_service_admin roles.
 These roles are required to make API calls.
@@ -12,9 +12,8 @@ The integration supports two types of authorization:
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization:
-1. Log in to your ServiceNow instance and create an endpoint for Cortex XSIAM to access your instance. For more information, see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) . 
+1. Log in to your ServiceNow instance and create an endpoint for Cortex XSIAM to access your instance. For more information, see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html).
 2. Click the lock next to the Client Secret to reveal it.
 3. Copy the `Client Id` and `Client Secret` into the `ClientID` and `Client Secret` fields of the instance configuration. The `Client Id` and `Client Secret` were automatically generated when you created the endpoint.
-4. Select the `Use OAuth Login` checkbox and click `Done`.
-
-Note: If you encounter access_denied or access token errors while using OAuth 2.0, run the !service-now-oauth-login command to generate a new refresh token, as it may have expired.
+4. Enter the ServiceNow account **Username** and **Password** in the integration instance configuration. The integration will automatically perform the initial OAuth login on first use and automatically renew the refresh token when it expires.
+5. Select the Use **OAuth Login** checkbox and click **Done**.

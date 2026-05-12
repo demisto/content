@@ -530,9 +530,7 @@
     "type": "mapping-outgoing",
     "version": -1,
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
+        "agentix",
+        "xsiam"
     ]
 }

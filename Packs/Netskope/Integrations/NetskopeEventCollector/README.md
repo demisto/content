@@ -32,7 +32,7 @@ Returns events extracted from SaaS traffic and or logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts to return (maximum value - 10000). | Optional |
+| limit | The maximum number of alerts to return (default: 10, maximum value - 10000). | Optional |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional |
 
 #### Context Output

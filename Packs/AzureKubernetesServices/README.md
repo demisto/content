@@ -6,7 +6,7 @@
 
 Data normalization capabilities:
 
-* Rules for parsing and modeling [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs) that are ingested via the [Azure Event Hub data source](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub) on Cortex XSIAM.
+* Rules for parsing and modeling [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs) that are ingested via the [Azure Event Hub data source](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub) on Cortex XSIAM.
   * When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section:
     * **`Use audit logs in analytics`**
   * The ingested Azure AKS resource logs can be queried in XQL Search using the *`msft_azure_aks_raw`* dataset.
@@ -34,6 +34,7 @@ For *msft_azure_aks_raw*, timestamp ingestion is according to one of the followi
 * requestreceivedtime
 * TimeGenerated
 * properties.log.requestReceivedTimestamp
+* time
 
 In UTC time zone YYYY-mm-ddTHH:MM:SS.ssssZ format. E.g; 2025-02-04T11:23:29.0324070Z
 

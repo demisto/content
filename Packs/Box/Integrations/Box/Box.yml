@@ -5,6 +5,7 @@ name: Box
 deprecated: true
 display: Box (Deprecated)
 category: IT Services
+provider: Box
 description: Deprecated. Use the Box v2 integration instead.
 configuration:
 - display: Trust any certificate (not secure)

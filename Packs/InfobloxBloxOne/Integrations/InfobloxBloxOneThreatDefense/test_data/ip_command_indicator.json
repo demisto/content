@@ -1,0 +1,32 @@
+{
+    "IP(val.Address && val.Address == obj.Address)": {
+        "Address": "0.0.0.1",
+        "Description": "Malware Download associated with the APT group",
+        "ThreatTypes": [
+            {
+                "threatcategory": "IP",
+                "threatcategoryconfidence": "100"
+            }
+        ],
+        "Hostname": "name",
+        "DetectionEngines": 1,
+        "Tags": [
+            "cyberint_guid: simple_cyberint_guid",
+            "notes: Malware Download associated with the APT group",
+            "Protocol: ip4",
+            "State: used",
+            "temp: true"
+        ],
+        "MalwareFamily": "APT",
+        "Malicious": {
+            "Vendor": "InfobloxThreatDefense",
+            "Description": "Malware Download associated with the APT group"
+        }
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "0.0.0.1",
+        "Type": "ip",
+        "Vendor": "InfobloxThreatDefense",
+        "Score": 3
+    }
+}

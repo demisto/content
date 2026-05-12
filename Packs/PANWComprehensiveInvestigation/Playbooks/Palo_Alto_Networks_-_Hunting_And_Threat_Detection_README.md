@@ -1,5 +1,5 @@
 This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. 
-The playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
+The playbook leverages data received by PANW products including, Strata Logging Service and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
 The output provided by the playbook enables you to find possibly affected IP addresses, users, and endpoints.
 
 ## Dependencies
@@ -8,7 +8,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Autofocus Query Samples, Sessions and Tags
 * Convert file hash to corresponding hashes
 * PAN-OS Query Logs For Indicators
 

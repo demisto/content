@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The get-endpoint-data script's inputs and output structure have both changed"
+}

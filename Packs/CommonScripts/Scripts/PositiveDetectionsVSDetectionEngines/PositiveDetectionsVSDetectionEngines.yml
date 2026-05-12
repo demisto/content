@@ -1,7 +1,7 @@
-comment: Shows a bar chart of the number of Positive Detections out of overall detections
+comment: Shows a bar chart of the number of Positive Detections out of overall detections.
 fromversion: 5.0.0
 args:
-- description: Indicator with detections custom fields
+- description: Indicator with detections custom fields.
   name: indicator
   required: true
 commonfields:
@@ -14,7 +14,7 @@ tags:
 - dynamic-indicator-section
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 runas: DBotWeakRole
 tests:
 - No test

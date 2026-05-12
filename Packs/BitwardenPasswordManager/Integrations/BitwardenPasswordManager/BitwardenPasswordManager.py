@@ -21,8 +21,9 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, self_hosted: bool = False):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.self_hosted = self_hosted
         self.token = self.login(client_id, client_secret)
 
     def login(self, client_id: str, client_secret: str) -> str:
@@ -46,9 +47,16 @@ class Client(BaseClient):
         return utc_now > expires_datetime
 
     def create_new_token(self, json_data: dict) -> str:
+        if self.self_hosted:
+            # For self-hosted instances, construct URL from base_url
+            full_url = urljoin(self._base_url, "/identity/connect/token")
+        else:
+            # For cloud-hosted instances, use existing logic (supports EU region)
+            full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
+        demisto.debug(f"Authenticating to {'self-hosted' if self.self_hosted else 'cloud'} Bitwarden instance at {full_url}")
         access_token_obj = self._http_request(
             method="POST",
-            full_url=AUTHENTICATION_FULL_URL,
+            full_url=full_url,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data=json_data,
         )
@@ -64,6 +72,7 @@ class Client(BaseClient):
         set_integration_context(context={"token": token, "expires": str(expire_date)})
 
     def get_events(self, start_date: str = "", end_date: str = "", continuation_token: str = "") -> dict:
+        demisto.debug(f"Bitwarden - get-events from {start_date=} to {end_date=}")
         params = {"start": start_date, "end": end_date}
 
         if continuation_token:
@@ -71,7 +80,11 @@ class Client(BaseClient):
 
         headers = {"Authorization": f"Bearer {self.token}"}
 
-        res = self._http_request(method="GET", url_suffix="/public/events", headers=headers, params=params)
+        url_suffix = "/public/events"
+        if self.self_hosted:
+            url_suffix = f"/api{url_suffix}"
+
+        res = self._http_request(method="GET", url_suffix=url_suffix, headers=headers, params=params)
 
         return res
 
@@ -82,7 +95,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
-    limit = args.get("limit", DEFAULT_MAX_FETCH)
+    limit = arg_to_number(args.get("limit", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     start = args.get("start", DEFAULT_FIRST_FETCH)
     end = args.get("end", DEFAULT_END_DATE)
     events, _ = fetch_events(client=client, max_fetch=limit, dates={"start": start, "end": end})
@@ -116,8 +129,10 @@ def fetch_events(
             results.
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f"Bitwarden - fetch-events {last_run=}")
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
+        demisto.debug("Bitwarden - No events were found.")
         return [], last_run
     unique_events = get_unique_events(events, last_run)
     recent_events = filter_events(events=events, oldest=False)
@@ -222,12 +237,18 @@ def main() -> None:  # pragma: no cover
     max_events_per_fetch = arg_to_number(demisto_params.get("max_fetch_events")) or DEFAULT_MAX_FETCH
     verify_certificate = not demisto_params.get("insecure", False)
     proxy = demisto_params.get("proxy", False)
+    self_hosted = demisto_params.get("self_hosted", False)
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
+            base_url=base_url,
+            verify=verify_certificate,
+            client_id=client_id,
+            client_secret=client_secret,
+            proxy=proxy,
+            self_hosted=self_hosted,
         )
         args = demisto.args()
         if command == "test-module":

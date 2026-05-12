@@ -319,3 +319,116 @@ def get_proxydome_token() -> str:
 
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
     return response.text
+
+
+def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
+    """
+    Handles permission errors responses and exits the script execution.
+
+    This function logs permission errors, formats them as Demisto error entries,
+    and terminates script execution. It's used when cloud operations fail due to
+    insufficient permissions or authentication issues.
+
+    Args:
+        error_entries (list): List of dictionaries containing error details with the following structure:
+            - account_id (str): The cloud account identifier where the error occurred
+            - message (str): The permission error message (including the name of the permission)
+            - name (str): The RAW name of the permission itself that is missing, for example containers.list"
+
+    Returns:
+        None: This function does not return as it calls sys.exit(0)
+    """
+    # Input validation
+    entries = []
+    for entry in error_entries:
+        error_entry = create_permissions_error_entry(entry.get("account_id"), entry.get("message"), entry.get("name"))
+        entries.append(error_entry)
+        # Log the permission error for security audit purposes
+        demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
+
+    # Return formatted error response
+    demisto.results(
+        {
+            "Type": entryTypes["error"],
+            "ContentsFormat": formats["json"],
+            "Contents": entries,
+            "EntryContext": None,
+        }
+    )
+    # Exit the script execution
+    sys.exit(0)
+
+
+def create_permissions_error_entry(account_id: Optional[str], message: Optional[str], name: Optional[str]) -> dict:
+    """
+    Creates a standardized error entry dictionary for permission-related errors.
+
+    This function constructs a formatted error entry containing permission error details
+    that can be used for logging and error handling in cloud operations. It validates
+    input parameters and creates a consistent error structure.
+
+    Args:
+        account_id (Optional[str]): The cloud account identifier where the error occurred
+        message (Optional[str]): The permission error message (including the name of the permission)
+        name (Optional[str]): The RAW name of the permission itself that is missing, for example containers.list
+
+    Returns:
+        dict: A dictionary containing structured error information with keys:
+            - account_id: The provided account identifier
+            - message: The error message
+            - name: The permission name
+            - classification: Set to "WARNING"
+            - error: Set to "Permission Error"
+    """
+    # Input validation
+    error_entry = {"account_id": account_id, "message": message, "name": name}
+    for var_name, var_value in error_entry.items():
+        if not var_value or (isinstance(var_value, str) and not var_value.strip()):
+            error_entry.update({var_name: "N/A"})
+            demisto.info(f"[COOC API] Invalid entry was given to the permissions entry {var_name=}:{var_value=}.")
+
+    error_entry.update({"classification": "WARNING", "error": "Permission Error"})
+    # Log the permission error for security audit purposes
+    demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
+
+    # Return formatted error response
+    return error_entry
+
+
+def is_gov_account(connector_id: str, account_id: str = "") -> bool:
+    """
+    Return whether the account connected to the connector_id is a gov account or not.
+
+    Args:
+        connector_id (str): The connector id of the cloud provider.
+        account_id (str): The relevant account id
+
+    Returns:
+        A boolean representing whether the account is a gov account or not.
+    """
+    accounts_info = get_accounts_by_connector_id(connector_id, None)  # return all accounts with max_results = None
+
+    relevant_account = {}
+    if account_id:
+        demisto.debug(f"[COOC API]The found {account_id=}")
+        for account in accounts_info:
+            if account.get("account_id") == account_id:
+                relevant_account = account
+                demisto.debug("[COOC API] found the account")
+                break
+    elif accounts_info:
+        demisto.debug(f"[COOC API] {account_id=}. Getting the first account for the health check from the existing accounts.")
+        relevant_account = accounts_info[0]
+    else:
+        demisto.debug(f"[COOC API] There are no {account_id=} or {accounts_info=} for the {connector_id=}.")
+        return False
+
+    if account_cloud_partition := relevant_account.get("cloud_partition", ""):
+        demisto.debug(f"[COOC API] The found {account_cloud_partition=}")
+        return account_cloud_partition.upper() == "GOV"
+    else:
+        demisto.debug(f"[COOC API] The information found for account_id: {account_id}, {relevant_account=}.")
+        demisto.debug(
+            f"[COOC API] The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}"
+        )
+        return False

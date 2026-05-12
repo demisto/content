@@ -9,6 +9,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 os.environ["OMP_NUM_THREADS"] = str(multiprocessing.cpu_count())  # noqa
+demisto.debug(f"Set OMP_NUM_THREADS to {os.environ['OMP_NUM_THREADS']}")
 
 import re
 from email.utils import parseaddr
@@ -58,6 +59,7 @@ IGNORE_INCIDENT_TYPE_VALUE = "None"
 
 def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
+    demisto.debug("Entering get_existing_incidents")
     get_incidents_args = {}
     get_incidents_args["limit"] = input_args.get("limit", DEFAULT_ARGS["limit"])
     if "existingIncidentsLookback" in input_args:
@@ -115,10 +117,12 @@ def get_existing_incidents(input_args, current_incident_type):
         if res["Contents"]:
             incidents_query_contents = res["Contents"]
     incidents = json.loads(incidents_query_contents)
+    demisto.info(f"Retrieved {len(incidents)} existing incidents for comparison.")
     return incidents
 
 
 def generate_incident_type_query_component(type_field_arg, type_values_arg):
+    demisto.debug(f"Generating incident type query for field '{type_field_arg}' with values '{type_values_arg}'")
     type_field = type_field_arg.strip()
     type_values = [x.strip() for x in type_values_arg.split(",")]
     types_unions = " ".join(f'"{t}"' for t in type_values)
@@ -136,6 +140,7 @@ def extract_domain(address):
 
 
 def get_text_from_html(html):
+    demisto.debug("Entering get_text_from_html")
     soup = BeautifulSoup(html, features="html.parser")
     # kill all script and style elements
     for script in soup(["script", "style"]):
@@ -148,13 +153,17 @@ def get_text_from_html(html):
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     # drop blank lines
     text = "\n".join(chunk for chunk in chunks if chunk)
+    demisto.debug("Successfully extracted text from HTML.")
     return text
 
 
 def eliminate_urls_extensions(text):
+    demisto.debug("Entering eliminate_urls_extensions")
     urls_list = re.findall(URL_REGEX, text)
     if len(urls_list) == 0:
+        demisto.debug("No URLs found to eliminate.")
         return text
+    demisto.debug(f"Found {len(urls_list)} URLs to neutralize.")
     formatted_urls_list = format_urls(urls_list)
     for url, formatted_url in zip(urls_list, formatted_urls_list):
         parsed_uri = urlparse(formatted_url)
@@ -164,6 +173,7 @@ def eliminate_urls_extensions(text):
 
 
 def preprocess_email_body(incident):
+    demisto.debug(f"Entering preprocess_email_body for incident {incident.get('id')}")
     email_body = email_html = ""
     if EMAIL_BODY_FIELD in incident:
         email_body = incident[EMAIL_BODY_FIELD]
@@ -172,11 +182,13 @@ def preprocess_email_body(incident):
     if isinstance(email_html, float):
         email_html = ""
     if email_body is None or isinstance(email_body, float) or email_body.strip() == "":
+        demisto.debug("Email body is empty or None, falling back to HTML extraction.")
         email_body = get_text_from_html(email_html)
     return eliminate_urls_extensions(email_body)
 
 
 def preprocess_email_subject(incident):
+    demisto.debug(f"Entering preprocess_email_subject for incident {incident.get('id')}")
     email_subject = ""
     if EMAIL_SUBJECT_FIELD in incident:
         email_subject = incident[EMAIL_SUBJECT_FIELD]
@@ -191,8 +203,10 @@ def concatenate_subject_body(row):
 
 def preprocess_incidents_df(existing_incidents):
     global MERGED_TEXT_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD
+    demisto.debug(f"Entering preprocess_incidents_df for {len(existing_incidents)} incidents.")
     incidents_df = pd.DataFrame(existing_incidents)
     if "CustomFields" in incidents_df.columns:
+        demisto.debug("Found 'CustomFields', expanding them into DataFrame columns.")
         incidents_df["CustomFields"] = incidents_df["CustomFields"].fillna(value={})
         custom_fields_df = incidents_df["CustomFields"].apply(pd.Series)
         unique_keys = [k for k in custom_fields_df if k not in incidents_df]
@@ -202,6 +216,7 @@ def preprocess_incidents_df(existing_incidents):
     incidents_df[PREPROCESSED_EMAIL_BODY] = incidents_df.apply(lambda x: preprocess_email_body(x), axis=1)
     incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(concatenate_subject_body, axis=1)
     incidents_df = incidents_df[incidents_df[MERGED_TEXT_FIELD].str.len() >= MIN_TEXT_LENGTH]
+    demisto.debug(f"Preprocessing complete. {len(incidents_df)} incidents remain after filtering by text length.")
     incidents_df = incidents_df.reset_index()
     if FROM_FIELD in incidents_df:
         incidents_df[FROM_FIELD] = incidents_df[FROM_FIELD].fillna(value="")
@@ -214,6 +229,7 @@ def preprocess_incidents_df(existing_incidents):
 
 
 def incident_has_text_fields(incident):
+    demisto.debug(f"Checking for text fields in incident {incident.get('id')}")
     text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
     custom_fields = incident.get("CustomFields", []) or []
     if any(field in incident for field in text_fields):
@@ -224,15 +240,19 @@ def incident_has_text_fields(incident):
 
 
 def filter_out_same_incident(existing_incidents_df, new_incident):
+    demisto.debug(f"Filtering out current incident {new_incident['id']} from DataFrame.")
     same_id_mask = existing_incidents_df["id"] == new_incident["id"]
     existing_incidents_df = existing_incidents_df[~same_id_mask]
     return existing_incidents_df
 
 
 def filter_newer_incidents(existing_incidents_df, new_incident):
+    demisto.debug("Filtering out incidents newer than the current incident.")
     new_incident_datetime = dateutil.parser.parse(new_incident["created"])  # type: ignore
     earlier_incidents_mask = existing_incidents_df["created"] < new_incident_datetime
-    return existing_incidents_df[earlier_incidents_mask]
+    filtered_df = existing_incidents_df[earlier_incidents_mask]
+    demisto.debug(f"{len(filtered_df)} incidents remain after filtering newer incidents.")
+    return filtered_df
 
 
 def vectorize(text, vectorizer):
@@ -245,20 +265,26 @@ def cosine_sim(a, b):
 
 def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_to_return):
     global MERGED_TEXT_FIELD, FROM_POLICY
+    demisto.debug(f"Entering find_duplicate_incidents. Comparing 1 new incident against {len(existing_incidents_df)} existing.")
     new_incident_text = new_incident[MERGED_TEXT_FIELD]
     text = [new_incident_text] + existing_incidents_df[MERGED_TEXT_FIELD].tolist()
+    demisto.debug("Vectorizing text corpus...")
     vectorizer = CountVectorizer(token_pattern=r"(?u)\b\w\w+\b|!|\?|\"|\'").fit(text)
     new_incident_vector = vectorize(new_incident_text, vectorizer)
     existing_incidents_df["vector"] = existing_incidents_df[MERGED_TEXT_FIELD].apply(lambda x: vectorize(x, vectorizer))
     existing_incidents_df["similarity"] = existing_incidents_df["vector"].apply(lambda x: cosine_sim(x, new_incident_vector))
     if FROM_POLICY == FROM_POLICY_DOMAIN:
+        demisto.debug(f"Applying FROM_POLICY_DOMAIN. Filtering by domain: {new_incident[FROM_DOMAIN_FIELD]}")
         mask = (existing_incidents_df[FROM_DOMAIN_FIELD] != "") & (
             existing_incidents_df[FROM_DOMAIN_FIELD] == new_incident[FROM_DOMAIN_FIELD]
         )
         existing_incidents_df = existing_incidents_df[mask]
     elif FROM_POLICY == FROM_POLICY_EXACT:
+        demisto.debug(f"Applying FROM_POLICY_EXACT. Filtering by sender: {new_incident[FROM_FIELD]}")
         mask = (existing_incidents_df[FROM_FIELD] != "") & (existing_incidents_df[FROM_FIELD] == new_incident[FROM_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
+    else:
+        demisto.debug("Applying FROM_POLICY_TEXT_ONLY. No sender/domain filtering.")
     existing_incidents_df["distance"] = existing_incidents_df["similarity"].apply(lambda x: 1 - x)
     tie_breaker_col = "id"
     try:
@@ -267,15 +293,19 @@ def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_
     except Exception:
         pass
     existing_incidents_df = existing_incidents_df.sort_values(by=["distance", "created", tie_breaker_col])
+    demisto.debug(f"Found {len(existing_incidents_df)} potential duplicates after filtering and sorting.")
     return existing_incidents_df.head(max_incidents_to_return)
 
 
 def return_entry(message, duplicate_incidents_df=None, new_incident=None):
+    demisto.debug("Entering return_entry to format and return results.")
     if duplicate_incidents_df is None:
+        demisto.debug("No duplicate incidents DataFrame provided.")
         duplicate_incident = {}
         all_duplicate_incidents = []
         full_incidents = []
     else:
+        demisto.debug(f"Formatting {len(duplicate_incidents_df)} duplicate incidents for output.")
         most_similar_incident = duplicate_incidents_df.iloc[0]
         duplicate_incident = format_incident_context(most_similar_incident)
         all_duplicate_incidents = [format_incident_context(row) for _, row in duplicate_incidents_df.iterrows()]
@@ -288,6 +318,7 @@ def return_entry(message, duplicate_incidents_df=None, new_incident=None):
         "isDuplicateIncidentFound": duplicate_incidents_df is not None,
         "allDuplicateIncidents": all_duplicate_incidents,
     }
+    demisto.info(f"Setting isDuplicateIncidentFound: {duplicate_incidents_df is not None}")
     return_outputs(message, outputs, raw_response=json.dumps(full_incidents))
 
 
@@ -302,6 +333,7 @@ def format_incident_context(df_row):
 
 
 def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df):
+    demisto.info(f"Found {len(duplicate_incidents_df)} duplicates above threshold. Closing and linking.")
     mask = duplicate_incidents_df["similarity"] >= SIMILARITY_THRESHOLD
     duplicate_incidents_df = duplicate_incidents_df[mask]
     most_similar_incident = duplicate_incidents_df.iloc[0]
@@ -316,20 +348,25 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
         title = f"Duplicate {incident} found with similarity {max_similarity * 100:.1f}%"
     message = tableToMarkdown(title, formatted_incident, headers)
     if demisto.args().get("closeAsDuplicate", "true") == "true":
+        demisto.debug("closeAsDuplicate is 'true'. Executing CloseInvestigationAsDuplicate.")
         res = demisto.executeCommand("CloseInvestigationAsDuplicate", {"duplicateId": most_similar_incident["id"]})
         if is_error(res):
             return_error(res)
         message += "This incident (#{}) will be closed and linked to #{}.".format(
             new_incident.iloc[0]["id"], most_similar_incident["id"]
         )
+    else:
+        demisto.debug("closeAsDuplicate is 'false'. Will not close incident, just linking.")
     return_entry(message, duplicate_incidents_df, new_incident)
 
 
 def create_new_incident():
+    demisto.info("No duplicates found. This is a new incident.")
     return_entry("This incident is not a duplicate of an existing incident.")
 
 
 def format_incident_hr(duplicate_incidents_df):
+    demisto.debug(f"Entering format_incident_hr for {len(duplicate_incidents_df)} incidents.")
     incidents_list = duplicate_incidents_df.to_dict("records")
     json_lists = []
     status_map = {"0": "Pending", "1": "Active", "2": "Closed", "3": "Archive"}
@@ -349,9 +386,11 @@ def format_incident_hr(duplicate_incidents_df):
 
 
 def create_new_incident_low_similarity(duplicate_incidents_df):
+    demisto.info("No duplicates found above similarity threshold.")
     message = "## This incident is not a duplicate of an existing incident.\n"
     similarity = duplicate_incidents_df.iloc[0]["similarity"]
     if similarity > SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE:
+        demisto.debug(f"Found {len(duplicate_incidents_df)} incidents with similarity close to threshold. Will report them.")
         mask = duplicate_incidents_df["similarity"] >= SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE
         duplicate_incidents_df = duplicate_incidents_df[mask]
         formatted_incident, headers = format_incident_hr(duplicate_incidents_df)
@@ -362,10 +401,13 @@ def create_new_incident_low_similarity(duplicate_incidents_df):
         message += (
             "Therefore these 2 incidents will not be considered as duplicate and the current incident will remain active.\n"
         )
+    else:
+        demisto.debug("No incidents were close to the similarity threshold.")
     return_entry(message)
 
 
 def create_new_incident_no_text_fields():
+    demisto.info("Incident has no text fields to compare. Treating as new.")
     text_fields = [EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, EMAIL_SUBJECT_FIELD]
     message = "No text fields were found within this incident: {}.\n".format(",".join(text_fields))
     message += "Incident will remain active."
@@ -373,51 +415,68 @@ def create_new_incident_no_text_fields():
 
 
 def create_new_incident_too_short():
+    demisto.info(f"Incident text is too short (less than {MIN_TEXT_LENGTH} chars) after preprocessing. Treating as new.")
     return_entry("Incident text after preprocessing is too short for deduplication. Incident will remain active.")
 
 
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, MIN_TEXT_LENGTH, FROM_POLICY
+    demisto.debug("Starting FindDuplicateEmailIncidents script.")
     input_args = demisto.args()
+    demisto.debug(f"Script arguments: {input_args}")
     EMAIL_BODY_FIELD = input_args.get("emailBody", EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get("emailSubject", EMAIL_SUBJECT_FIELD)
     EMAIL_HTML_FIELD = input_args.get("emailBodyHTML", EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get("emailFrom", FROM_FIELD)
     FROM_POLICY = input_args.get("fromPolicy", FROM_POLICY)
     max_incidents_to_return = input_args.get("maxIncidentsToReturn", "20")
+
     try:
         max_incidents_to_return = int(max_incidents_to_return)
     except Exception:
         return_error(f'Illegal value of arguement "maxIncidentsToReturn": {max_incidents_to_return}. Value should be an integer')
     new_incident = demisto.incidents()[0]
+    demisto.debug(f"Current incident ID: {new_incident.get('id')}")
     type_field = input_args.get("incidentTypeFieldName", "type")
     existing_incidents = get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug(f"found {len(existing_incidents)} incidents by query")
     if len(existing_incidents) == 0:
+        demisto.debug("No existing incidents found matching query. Calling create_new_incident.")
         create_new_incident()
         return None
     if not incident_has_text_fields(new_incident):
+        demisto.debug("Current incident has no text fields. Calling create_new_incident_no_text_fields.")
         create_new_incident_no_text_fields()
         return None
+    demisto.debug("Preprocessing new incident.")
     new_incident_df = preprocess_incidents_df([new_incident])
     if len(new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
+        demisto.debug("New incident is too short after preprocessing. Calling create_new_incident_too_short.")
         create_new_incident_too_short()
         return None
+    demisto.debug("Preprocessing existing incidents.")
     existing_incidents_df = preprocess_incidents_df(existing_incidents)
+    demisto.debug("Filtering same incident ID.")
     existing_incidents_df = filter_out_same_incident(existing_incidents_df, new_incident)
+    demisto.debug("Filtering newer incidents.")
     existing_incidents_df = filter_newer_incidents(existing_incidents_df, new_incident)
     if len(existing_incidents_df) == 0:
+        demisto.debug("No existing incidents left after filtering. Calling create_new_incident.")
         create_new_incident()
         return None
     new_incident_preprocessed = new_incident_df.iloc[0].to_dict()
+    demisto.debug("Finding duplicate incidents...")
     duplicate_incidents_df = find_duplicate_incidents(new_incident_preprocessed, existing_incidents_df, max_incidents_to_return)
     if len(duplicate_incidents_df) == 0:
+        demisto.debug("No duplicates found by find_duplicate_incidents. Calling create_new_incident.")
         create_new_incident()
         return None
     if duplicate_incidents_df.iloc[0]["similarity"] < SIMILARITY_THRESHOLD:
+        demisto.debug("Highest similarity is below threshold. Calling create_new_incident_low_similarity.")
         create_new_incident_low_similarity(duplicate_incidents_df)
         return None
     else:
+        demisto.debug("Duplicates found above threshold. Calling close_new_incident_and_link_to_existing.")
         return close_new_incident_and_link_to_existing(new_incident_df, duplicate_incidents_df)
 
 

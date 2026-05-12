@@ -333,6 +333,7 @@ def test_ip_command(mocker, requests_mock):
     mocker.patch.object(demisto, "args", return_value={"ip": "192.168.0.1", "extended_data": "false"})
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -379,6 +380,7 @@ def test_ip_command_private_ip_lookup(mocker):
     mocker.patch.object(demisto, "args", return_value={"ip": "192.168.0.1", "extended_data": "false"})
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -422,6 +424,7 @@ def test_ip_command_override_private_lookup(mocker, requests_mock):
     )
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -468,6 +471,7 @@ def test_not_found_ip_command(mocker, requests_mock):
     mocker.patch.object(demisto, "args", return_value={"ip": "192.168.0.1", "extended_data": "false"})
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()

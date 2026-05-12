@@ -4,6 +4,7 @@ commonfields:
 name: carbonblackliveresponse
 display: VMware Carbon Black EDR (Live Response API)
 category: Endpoint
+provider: Broadcom
 description: Collect information and take action on remote endpoints in real time with VMware Carbon Black EDR (Live Response API) (formerly known as Carbon Black Enterprise Live Response).
 configuration:
 - display: Server URL
@@ -55,81 +56,81 @@ script:
     - name: session
       required: true
       default: true
-      description: Session ID to return the archive of
+      description: Session ID to return the archive of.
     description: Archive the given session (If the session has no content it will fail)
   - name: cb-command-cancel
     deprecated: true
     arguments:
     - name: session
       required: true
-      description: Session ID of command to cancel
+      description: Session ID of command to cancel.
     - name: command
       required: true
-      description: Command ID to cancel
+      description: Command ID to cancel.
     outputs:
     - contextPath: CbLiveResponse.Commands.Status
-      description: The Command Status
+      description: The Command Status.
     - contextPath: CbLiveResponse.Commands.Hostname
-      description: The Hostname running the command
+      description: The Hostname running the command.
     - contextPath: CbLiveResponse.Commands.CbSensorID
-      description: The Sensor ID
+      description: The Sensor ID.
     - contextPath: CbLiveResponse.Commands.CommandName
-      description: The Command name
+      description: The Command name.
     - contextPath: CbLiveResponse.Commands.CbSessionID
-      description: The Session ID
+      description: The Session ID.
     - contextPath: CbLiveResponse.Commands.CbCommandID
-      description: The Command ID
+      description: The Command ID.
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: 'Object argument for the CbLive command - e.g. for ''directory list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
     - contextPath: CbLiveResponse.Commands.CreateTime
-      description: Command create time
+      description: Command create time.
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The time the command completed or 0 if still in progres.
     - contextPath: CbLiveResponse.Commands.Result.Desc
-      description: Result description
+      description: Result description.
     - contextPath: CbLiveResponse.Commands.esult.Type
-      description: Result type
+      description: Result type.
     - contextPath: CbLiveResponse.Commands.Result.Code
-      description: Result code
+      description: Result code.
     description: Cancel the given command. Only pending commands can be canceled.
   - name: cb-command-info
     arguments:
     - name: session
       required: true
-      description: Session ID of the command
+      description: Session ID of the command.
     - name: command
       required: true
-      description: Command ID
+      description: Command ID.
     description: Display information on command
   - name: cb-file-delete
     arguments:
     - name: session
       required: true
       default: true
-      description: Session ID
+      description: Session ID.
     - name: file-id
       required: true
-      description: File ID
+      description: File ID.
     outputs:
     - contextPath: CbLiveResponse.Files.Filename
-      description: The Filename
+      description: The Filename.
     - contextPath: CbLiveResponse.Files.Size
-      description: The File size
+      description: The File size.
     - contextPath: CbLiveResponse.Files.CbFileID
       description: ID of the file within the Cb Session Storage.
     - contextPath: CbLiveResponse.Files.Status
-      description: File status (0 if no error, another number otherwise)
+      description: File status (0 if no error, another number otherwise).
     - contextPath: CbLiveResponse.Files.Delete
-      description: Whether the file was deleted or not
+      description: Whether the file was deleted or not.
     description: Delete a given file in the session from Cb server.
   - name: cb-file-get
     arguments:
     - name: session
       required: true
-      description: Session ID
+      description: Session ID.
     - name: file-id
       required: true
-      description: File ID
+      description: File ID.
     description: Download a file from Cb server in a given session.
     outputs:
     - contextPath: File.Size
@@ -157,78 +158,78 @@ script:
     - name: session
       required: true
       default: true
-      description: Session ID
+      description: Session ID.
     - name: file-id
-      description: File ID
+      description: File ID.
     outputs:
     - contextPath: CbLiveResponse.Files.Filename
-      description: The Filename
+      description: The Filename.
     - contextPath: CbLiveResponse.Files.Size
-      description: The File size
+      description: The File size.
     - contextPath: CbLiveResponse.Files.CbFileID
       description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
     - contextPath: CbLiveResponse.Files.Status
-      description: File status (0 if no error, another number otherwise)
+      description: File status (0 if no error, another number otherwise).
     - contextPath: CbLiveResponse.Files.Delete
-      description: Whether the file was deleted or not
+      description: Whether the file was deleted or not.
     description: Get file info for a given file in a session
   - name: cb-file-upload
     deprecated: true
     arguments:
     - name: session
       required: true
-      description: Session ID to upload the file through
+      description: Session ID to upload the file through.
     - name: file-id
       required: true
       description: File entry id of an attachment to upload.
     outputs:
     - contextPath: CbLiveResponse.Files.Filename
-      description: The Filename
+      description: The Filename.
     - contextPath: CbLiveResponse.Files.Size
-      description: The File size
+      description: The File size.
     - contextPath: CbLiveResponse.Files.CbFileID
       description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
     - contextPath: CbLiveResponse.Files.Status
-      description: File status (0 if no error, another number otherwise)
+      description: File status (0 if no error, another number otherwise).
     - contextPath: CbLiveResponse.Files.Delete
-      description: Whether the file was deleted or not
+      description: Whether the file was deleted or not.
     description: Uploads the file to the Cb server. Use cb-push-file-to-endpoint instead.
   - name: cb-keepalive
     arguments:
     - name: session
       required: true
       default: true
-      description: The session ID to keepalive
+      description: The session ID to keepalive.
     description: Keep the session alive to avoid closing due to timeout
   - name: cb-list-commands
     arguments:
     - name: session
       required: true
       default: true
-      description: Session ID
+      description: Session ID.
     description: List the CarbonBlack existing commands for a given session
   - name: cb-list-files
     arguments:
     - name: session
       required: true
       default: true
-      description: Session ID
+      description: Session ID.
     outputs:
     - contextPath: CbLiveResponse.Files.Filename
-      description: The Filename
+      description: The Filename.
     - contextPath: CbLiveResponse.Files.Size
-      description: The File size
+      description: The File size.
     - contextPath: CbLiveResponse.Files.CbFileID
       description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
     - contextPath: CbLiveResponse.Files.Status
-      description: File status (0 if no error, another number otherwise)
+      description: File status (0 if no error, another number otherwise).
     - contextPath: CbLiveResponse.Files.Delete
-      description: Whether the file was deleted or not
+      description: Whether the file was deleted or not.
     description: List files in a given session
   - name: cb-list-sessions
     arguments:
     - name: sensor
-      description: Sensor ID to filter sessions by
+      description: Sensor ID to filter sessions by.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -237,111 +238,111 @@ script:
       - timeout
       - inactive
       - close
-      description: 'Status to filter by (One of: active, pending, timeout, inactive, close)'
+      description: 'Status to filter by (One of: active, pending, timeout, inactive, close).'
       isArray: true
     outputs:
     - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
+      description: Sensor ID.
     - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
+      description: Session ID.
     - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
+      description: Hostname.
     - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
+      description: Session Status.
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
+      description: Sensor wait timeout.
     - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
+      description: Session Timeout.
     description: List the CarbonBlack sessions
   - name: cb-session-close
     arguments:
     - name: session
       required: true
-      description: The session ID to close
+      description: The session ID to close.
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
+      description: Session Status.
     - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
+      description: Hostname.
     - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
+      description: Sensor ID.
     - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
+      description: Session ID.
     - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
+      description: Session Timeout.
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
+      description: Sensor wait timeout.
     description: Close the given session
   - name: cb-session-create
     arguments:
     - name: sensor
       required: true
       default: true
-      description: Sensor ID to create session for
+      description: Sensor ID to create session for.
     - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time the session will be closed)
+      description: Session timeout (If a command will not be issued after this time the session will be closed).
     - name: keepalive-timeout
       description: ' the timeout (in seconds) that a device should wait between commands. If no command is issued over this timeout the device will quit.'
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
+      description: Session Status.
     - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
+      description: Hostname.
     - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
+      description: Sensor ID.
     - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
+      description: Session ID.
     - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
+      description: Session Timeout.
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
+      description: Sensor wait timeout.
     description: Create a new CarbonBlack session for a given sensor
   - name: cb-session-create-and-wait
     arguments:
     - name: sensor
       required: true
       default: true
-      description: Sensor ID to create session for
+      description: Sensor ID to create session for.
     - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time the session will be closed)
+      description: Session timeout (If a command will not be issued after this time the session will be closed).
     - name: keepalive-timeout
-      description: Session keepalive timeout (If a keepalive is not issued after this time, the session will close)
+      description: Session keepalive timeout (If a keepalive is not issued after this time, the session will close).
     - name: wait-timeout
-      description: Time in seconds to wait for session to be active
+      description: Time in seconds to wait for session to be active.
       defaultValue: "20"
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
+      description: Session Status.
     - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
+      description: Hostname.
     - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
+      description: Sensor ID.
     - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
+      description: Session ID.
     - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
+      description: Session Timeout.
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
+      description: Sensor wait timeout.
     description: Create a new CarbonBlack session for a given sensor and wait for it to be active
   - name: cb-session-info
     arguments:
     - name: session
       required: true
       default: true
-      description: Session ID to get info for
+      description: Session ID to get info for.
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
+      description: Session Status.
     - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
+      description: Hostname.
     - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
+      description: Sensor ID.
     - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
+      description: Session ID.
     - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
+      description: Session Timeout.
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
+      description: Sensor wait timeout.
     description: Display session info
   - name: cb-process-kill
     arguments:
@@ -349,7 +350,7 @@ script:
       description: 'Session ID. Provide the session ID to run the command with an existing session. '
     - name: pid
       required: true
-      description: Process ID to terminate
+      description: Process ID to terminate.
     - name: wait-timeout
       description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in progress'/'complete').
       defaultValue: "20"
@@ -422,7 +423,7 @@ script:
       description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: the path and command line of the executable
+      description: the path and command line of the executable.
     - name: wait
       auto: PREDEFINED
       predefined:
@@ -495,7 +496,7 @@ script:
     - contextPath: CbLiveResponse.Commands.Complete
       description: Boolean flag indicating if memory dump is completed.
     - contextPath: CbLiveResponse.Commands.PercentDone
-      description: Percent of the process completed
+      description: Percent of the process completed.
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
     description: Deprecated - use cb-memdump instead.
@@ -521,55 +522,55 @@ script:
       - kill
       - create-process
       - memdump
-      description: Command name
+      description: Command name.
     - name: timeout
-      description: Command timeout
+      description: Command timeout.
     - name: object
-      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes
+      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes.
     - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to compress resulting memory dump'
+      description: An optional parameter to specify whether to compress resulting memory dump ("true" or "false").
     - name: working-dir
-      description: An optional parameter to specify the working directory of the executable
+      description: An optional parameter to specify the working directory of the executable.
     - name: output-file
       description: An option file that STDERR and STDOUT will be redirected to.
     - name: value-data
-      description: the data associated with the registry value
+      description: the data associated with the registry value.
     - name: value-type
       description: the string representation of the registry value type (ie REG_DWORD, REG_QWORD, ….)
     - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to overwrite the value if it already exists (default value is “false”)
+      description: An optional parameter to specify whether to overwrite the value if it already exists (default value is "false"). Can be "true" or "false".
     - name: offset
       description: a byte offset to start getting the file. Supports a partial get.
     - name: get-count
-      description: the number of bytes to grab
+      description: the number of bytes to grab.
     - name: session
       required: true
-      description: Session ID to create command for
+      description: Session ID to create command for.
     outputs:
     - contextPath: CbLiveResponse.Commands.Status
-      description: The Command Status
+      description: The Command Status.
     - contextPath: CbLiveResponse.Commands.Hostname
-      description: The Hostname running the command
+      description: The Hostname running the command.
     - contextPath: CbLiveResponse.Commands.CbLiveResponse.Commands.CbSensorID
-      description: The Sensor ID
+      description: The Sensor ID.
     - contextPath: CbLiveResponse.Commands.CommandName
-      description: The Command name
+      description: The Command name.
     - contextPath: CbLiveResponse.Commands.CbSessionID
-      description: The Session ID
+      description: The Session ID.
     - contextPath: CbLiveResponse.Commands.CbCommandID
-      description: The Command ID
+      description: The Command ID.
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: 'Object argument for the CbLive command - e.g. for ''directory list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
     - contextPath: CbLiveResponse.Commands.CreateTime
-      description: Command create time
+      description: Command create time.
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The time the command completed or 0 if still in progres.
     - contextPath: CbLiveResponse.Commands.Result.Desc
-      description: Result description
+      description: Result description.
     - contextPath: CbLiveResponse.Commands.Result.Type
-      description: Result type
+      description: Result type.
     - contextPath: CbLiveResponse.Commands.Result.Code
-      description: Result code
+      description: Result code.
     description: Create a live response command. Use cb-session-create instead.
   - name: cb-command-create-and-wait
     deprecated: true
@@ -593,32 +594,32 @@ script:
       - kill
       - create-process
       - memdump
-      description: Command name
+      description: Command name.
     - name: timeout
-      description: Command timeout
+      description: Command timeout.
     - name: object
-      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes
+      description: the object the command operates on. This is specific to the command but has meaning in a generic way for logging, and display purposes.
     - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to compress resulting memory dump'
+      description: An optional parameter to specify whether to compress resulting memory dump ("true" or "false").
     - name: working-dir
-      description: An optional parameter to specify the working directory of the executable
+      description: An optional parameter to specify the working directory of the executable.
     - name: output-file
       description: An option file that STDERR and STDOUT will be redirected to.
     - name: value-data
-      description: the data associated with the registry value
+      description: the data associated with the registry value.
     - name: value-type
       description: the string representation of the registry value type (ie REG_DWORD, REG_QWORD, ….)
     - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to overwrite the value if it already exists (default value is “false”)
+      description: An optional parameter to specify whether to overwrite the value if it already exists (default value is "false"). Can be "true" or "false".
     - name: offset
       description: a byte offset to start getting the file. Supports a partial get.
     - name: get-count
-      description: the number of bytes to grab
+      description: the number of bytes to grab.
     - name: session
       required: true
-      description: Session ID to create command for
+      description: Session ID to create command for.
     - name: wait-timeout
-      description: Time to wait in seconds to wait for command to finish executing
+      description: Time to wait in seconds to wait for command to finish executing.
       defaultValue: "20"
     description: Create a live response command and wait for it to finish executing
   - name: cb-terminate-process
@@ -626,12 +627,12 @@ script:
     arguments:
     - name: session
       required: true
-      description: Session ID
+      description: Session ID.
     - name: pid
       required: true
-      description: Process ID to terminate
+      description: Process ID to terminate.
     - name: wait-timeout
-      description: Time to wait in seconds for process to complete termination
+      description: Time to wait in seconds for process to complete termination.
       defaultValue: "20"
     description: Terminates a process at the sensor/endpoint
   - name: cb-file-delete-from-endpoint
@@ -672,7 +673,7 @@ script:
       description: The sensor ID.  Provided the sensor ID to run the command with a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: The path of the key to query
+      description: The path of the key to query.
     - name: wait-timeout
       description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"

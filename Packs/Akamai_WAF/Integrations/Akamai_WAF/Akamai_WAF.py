@@ -1,18 +1,19 @@
+from akamai.edgegrid import EdgeGridAuth
+import urllib3
+import requests
+from datetime import datetime
+import time
+import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 """ IMPORTS """
 # Std imports
-import re
-import time
-from datetime import datetime
 
 # 3-rd party imports
-import requests
-import urllib3
 
 # Local imports
-from akamai.edgegrid import EdgeGridAuth
 
 """
 
@@ -342,6 +343,263 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/identity-management/v2/user-admin/groups/{group_id}?actions=false", headers=headers
         )
 
+    def get_client_list(
+        self,
+        client_list_id: str = None,
+        name: str = None,
+        include_items: bool = False,
+        include_deprecated: bool = False,
+        search: str = None,
+        list_type: list = None,
+        include_network_list: bool = False,
+        page: int = 0,
+        page_size: int = 50,
+        limit: int = 50,
+    ) -> dict:
+        """
+        Get client list.
+        Args:
+            client_list_id: An optional URL parameter to get a specific client list.
+            name: Filters the output to lists matching a name.
+            include_items: include items
+            include_deprecated: include deprecated
+            search: search
+            list_type: filter by these types
+            include_network_list: include network list
+            page: page
+            page_size: page size
+            limit: limit
+        Returns:
+            Json response as dictionary
+        """
+        url_suffix = "/client-list/v1/lists"
+        if client_list_id:
+            url_suffix += f"/{client_list_id}"
+        params = {
+            "name": name,
+            "includeItems": include_items,
+            "includeDeprecated": include_deprecated,
+            "search": search,
+            "includeNetworkLists": include_network_list,
+            "page": page,
+            "pageSize": page_size,
+            "limit": limit,
+        }
+        if list_type:
+            if isinstance(list_type, str):
+                list_type = list_type.split(",")
+            for i, filter_type in enumerate(list_type):
+                if i == 0:
+                    url_suffix += "?"
+                else:
+                    url_suffix += "&"
+                url_suffix += f"type={filter_type}"
+        return self._http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    def create_client_list(
+        self,
+        name: str,
+        client_list_type: str,
+        contract_id: str,
+        group_id: int,
+        notes: str = None,
+        tags: str = None,
+        entry_value: str = None,
+        entry_description: str = None,
+        entry_expiration_date: str = None,
+        entry_tags: str = None,
+    ) -> dict:
+        """
+        Create a client list.
+        Args:
+            name: The name for the new client list.
+            client_list_type: The type of client list.
+            contract_id: The contract ID.
+            group_id: The group ID.
+            notes: A description for the client list.
+            tags: A list of tags to associate with the client list.
+            entry_value: The value for a single entry in the client list.
+            entry_description: A description for the entry.
+            entry_expiration_date: The expiration date for the entry.
+            entry_tags: A list of tags for the entry.
+        Returns:
+            Json response as dictionary
+        """
+        entry_tags = entry_tags.split(",") if entry_tags else []
+        body: dict = {
+            "name": name,
+            "type": client_list_type,
+            "contractId": contract_id,
+            "groupId": group_id,
+            "notes": notes,
+            "tags": tags,
+            "items": [],
+        }
+        if entry_value:
+            # Normalize expiration date to ISO 8601 UTC (YYYY-MM-DDTHH:MM:SSZ) when provided
+            exp_iso = normalize_to_iso8601(entry_expiration_date) if entry_expiration_date else None
+
+            entry = {
+                "value": entry_value,
+                "description": entry_description,
+                "expirationDate": exp_iso,
+                "tags": entry_tags,
+            }
+            body["items"].append(entry)
+
+        return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
+
+    def deprecate_client_list(self, client_list_id: str) -> requests.Response:
+        """
+        Deprecate a client list.
+        Args:
+            client_list_id: The ID of the client list to deprecate.
+        Returns:
+            Response object
+        """
+        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type="response")
+
+    def activate_client_list(
+        self,
+        list_id: str,
+        network_environment: str,
+        comments: str = None,
+        notification_recipients: list = None,
+        siebel_ticket_id: str = None,
+    ) -> dict:
+        """
+        Activate a client list.
+        Args:
+            list_id: The ID of the client list to activate.
+            network_environment: The network environment.
+            comments: Comments for the activation.
+            notification_recipients: List of email addresses for notification.
+            siebel_ticket_id: Siebel ticket ID.
+        Returns:
+            Json response as dictionary
+        """
+        body = {
+            "action": "ACTIVATE",
+            "network": network_environment,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticket_id,
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
+
+    def get_client_list_activation_status(self, list_id: str, network_environment: str) -> dict:
+        """
+        Get activation status for a client list.
+        Returns a list of activation items including activationStatus and activationId.
+        Args:
+            list_id: The client list ID
+            network_environment: The network environment.
+        Returns:
+            Json response as dictionary
+        """
+        return self._http_request(
+            method="GET", url_suffix=f"/client-list/v1/lists/{list_id}/environments/{network_environment}/status"
+        )
+
+    def add_client_list_entry(
+        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
+    ) -> dict:
+        """
+        Add an entry to a client list.
+        Args:
+            list_id: The ID of the client list.
+            value: The value for the new entry.
+            description: A description for the new entry.
+            expiration_date: The expiration date for the new entry.
+            tags: A list of tags for the new entry.
+        Returns:
+            Json response as dictionary
+        """
+        tags = tags.split(",") if tags else []
+        exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
+        entry = {"value": value, "description": description, "expirationDate": exp_iso, "tags": tags}
+        body = {"append": [entry]}
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+
+    def remove_client_list_entry(self, list_id: str, value: str) -> dict:
+        """
+        Remove an entry from a client list.
+        Args:
+            list_id: The ID of the client list.
+            value: A list of values to remove.
+        Returns:
+            Json response as dictionary
+        """
+        values = value.split(",") if value else []
+        delete = []
+        for value in values:
+            delete.append({"value": value})
+        body = {"delete": delete}
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+
+    def get_contract_group(self) -> dict:
+        """
+        Get contract groups.
+        Returns:
+            Json response as dictionary
+        """
+        return self._http_request(method="GET", url_suffix="/client-list/v1/contracts-groups")
+
+    def update_client_list(self, list_id: str, name: str, notes: str = None, tags: str = None) -> dict:
+        """
+        Update a client list.
+        Args:
+            list_id: The ID of the client list to update.
+            name: The new name for the client list.
+            notes: The new description for the client list.
+            tags: The new tags for the client list.
+        Returns:
+            Json response as dictionary
+        """
+        tags = tags.split(",") if tags else []
+        body = {"name": name, "notes": notes, "tags": tags}
+        return self._http_request(method="PUT", url_suffix=f"/client-list/v1/lists/{list_id}", json_data=body)
+
+    def deactivate_client_list(
+        self,
+        list_id: str,
+        network_environment: str,
+        comments: str = None,
+        notification_recipients: list = None,
+        siebel_ticket_id: str = None,
+    ) -> dict:
+        """
+        Deactivate a client list.
+        Args:
+            list_id: The ID of the client list to deactivate.
+            network_environment: The network environment.
+            comments: Comments for the deactivation.
+            notification_recipients: List of email addresses for notification.
+            siebel_ticket_id: Siebel ticket ID.
+        Returns:
+            Json response as dictionary
+        """
+        body = {
+            "action": "DEACTIVATE",
+            "network": network_environment,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticket_id,
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
+
+    def update_client_list_entry(self, list_id: str, items: list) -> dict:
+        """
+        Update an entry in a client list.
+        Args:
+            list_id: The ID of the client list.
+            items: The list of items to update.
+        Returns:
+            Json response as dictionary
+        """
+        body = {"update": items}
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+
     # Created by C.L.
 
     def create_group(self, group_id: int = 0, groupname: str = "") -> dict:
@@ -601,7 +859,7 @@ class Client(BaseClient):
         """
             Get network lists
         Args:
-            search: Only list items that match the specified substring in any network list’s name or list of items.
+            search: Only list items that match the specified substring in any network list's name or list of items.
             list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO
             extended: Whether to return extended details in the response
             include_elements: Whether to return all list items.
@@ -680,11 +938,11 @@ class Client(BaseClient):
             ]
         }
 
-        We have everything except syncPoint. To make sure different API clients don’t overwrite each other’s
+        We have everything except syncPoint. To make sure different API clients don't overwrite each other's
         data, their API supports optimistic concurrency control for any modifications to network lists.
-        Whenever you run the Get a network list GET operation, you need to retain the value of the response’s
+        Whenever you run the Get a network list GET operation, you need to retain the value of the response's
         syncPoint and pass it back in when you subsequently run the Update a network list PUT operation. The update
-        operation only succeeds if there haven’t been any interim updates by other API clients. If the update fails,
+        operation only succeeds if there haven't been any interim updates by other API clients. If the update fails,
         you get a 409 error response.
 
         """
@@ -707,7 +965,7 @@ class Client(BaseClient):
             SyncPoint = None
             Name = None
             Type = None
-            demisto.results("Could not get the Sync Point...")
+            return {"message": "Could not get the Sync Point..."}
 
         body = {"name": Name, "syncPoint": SyncPoint, "type": Type, "list": elements}
 
@@ -1337,7 +1595,7 @@ class Client(BaseClient):
         )
 
     # created by D.S.
-    def list_security_policy(self, config_id: str, config_version):
+    def list_security_policy(self, config_id: str, config_version: str):
         """
             List security policy
         Args:
@@ -1377,7 +1635,7 @@ class Client(BaseClient):
         )
 
     # created by D.S.
-    def get_papi_property_activation_status(self, activation_id: int, property_id):
+    def get_papi_property_activation_status(self, activation_id: int, property_id: int):
         """
             Get papi property activation Status
         Args:
@@ -1698,7 +1956,7 @@ class Client(BaseClient):
 
     def list_papi_property_by_hostname(
         self,
-        hostname: str,
+        hostname: str = None,
         network: str = None,
         contract_id: str = None,
         group_id: str = None,
@@ -1983,6 +2241,92 @@ class Client(BaseClient):
             params=params,
         )
 
+    def new_datastream(
+        self,
+        stream_name: str,
+        group_id: int,
+        contract_id: str,
+        properties: list,
+        dataset_fields: list,
+        interval_in_seconds: int = 30,
+        log_format: str = "JSON",
+        field_delimiter: str = None,
+        upload_file_prefix: str = None,
+        upload_file_suffix: str = None,
+        ca_cert: str = None,
+        client_cert: str = None,
+        client_key: str = None,
+        content_type: str = None,
+        custom_header_name: str = None,
+        custom_header_value: str = None,
+        compress_logs: bool = True,
+        destination_type: str = "SPLUNK",
+        display_name: str = None,
+        endpoint: str = None,
+        event_collector_token: str = None,
+        tls_hostname: str = None,
+        notification_emails: list = [],
+        collect_midgress: bool = False,
+        activate: bool = True,
+    ) -> dict:
+        """
+            Creates a stream configuration. Within a stream configuration,
+            you can select properties to monitor in the stream, data set fields to collect in logs,
+            and a destination to send these log files to. Get the streamId value from the response
+            to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+            Apart from the log and delivery frequency configurations, you can decide whether to activate
+            the stream on making the request or later using the activate parameter.
+            Note that only active streams collect and send logs to their destinations.
+
+        Args:
+            change_path: Change path on which to perform the desired operation.
+            account_switch_key: For customers who manage more than one account,
+                this runs the operation from another account. The Identity and
+                Access Management API provides a list of available account switch keys.
+
+        Returns:
+            The response confirms the stream has been created and returns its details.
+        """
+        method = "post"
+        url_suffix = "datastream-config-api/v2/log/streams"
+        headers = {"Content-Type": "application/json", "accept": "application/json"}
+        params = {"activate": activate}
+
+        body = {
+            "streamName": stream_name,
+            "groupId": group_id,
+            "contractId": contract_id,
+            "notificationEmails": notification_emails,
+            "properties": properties,
+            "datasetFields": dataset_fields,
+            "deliveryConfiguration": {
+                "frequency": {"intervalInSeconds": interval_in_seconds},
+                "format": log_format,
+                "fieldDelimiter": field_delimiter,
+            },
+            "destination": {
+                "destinationType": destination_type,
+                "compressLogs": compress_logs,
+                "displayName": display_name,
+                "endpoint": endpoint,
+                "eventCollectorToken": event_collector_token,
+                "caCert": ca_cert,
+                "clientCert": client_cert,
+                "clientKey": client_key,
+                "customHeaderName": custom_header_name,
+                "customHeaderValue": custom_header_value,
+                "tlsHostname": tls_hostname,
+            },
+        }
+        remove_nulls_from_dictionary(body)  # <==
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            json_data=body,
+            params=params,
+        )
+
     def get_cps_enrollment_by_id(self, enrollment_id: int) -> dict:
         """
             Returns the Enarollment by enrollment id
@@ -2031,6 +2375,346 @@ class Client(BaseClient):
         return self._http_request(
             method="Get",
             url_suffix=f"config-dns/v2/zones/{zone}/recordsets?showAll=true",
+        )
+
+    def list_idam_properties(self):
+        """
+        List properties or includes via Identify and Access Managment (IDAM) API
+
+        Returns:
+            A list of dictionaries that each dictionary includes an Ion property
+            <Response [200]>
+        """
+
+        all_properties = self._http_request(method="GET", url_suffix="/identity-management/v3/user-admin/properties")
+
+        return all_properties
+
+    def list_datastreams(self, group_id: int = 0):
+        """
+        Returns the latest versions of the stream configurations for all groups within the account.
+
+        Returns:
+            A list of dictionaries that each dictionary includes a datastream.
+            <Response [200]>
+        """
+        url_suffix = "/datastream-config-api/v2/log/streams"
+        if group_id != 0:
+            url_suffix = f"{url_suffix}?groupId={group_id}"
+
+        all_datastreams = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return all_datastreams
+
+    def get_datastream(self, stream_id: int, version: int):
+        """
+        Returns information about any version of a stream, including details about the monitored properties,
+        logged data set fields, and log delivery destination. If you omit the version query parameter,
+        this operation returns the last version of the stream.
+
+        Args:
+            stream_id: integer. Uniquely identifies the stream.
+            version: integer. Identifies the version of the stream. If omitted, the operation returns the latest version of the
+            stream.
+
+        Returns:
+            A dictionary that includes detailed information of a datastream.
+            <Response [200]>
+        """
+
+        url_suffix = f"/datastream-config-api/v2/log/streams/{stream_id}"
+        if version != 0:
+            url_suffix = f"{url_suffix}?version={version}"
+        datastream = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return datastream
+
+    def list_datastream_groups(self, contract_id: str = ""):
+        """
+        Returns access groups with contracts on your account. You can later use the groupId and contractId values
+        to create and view streams or list properties by group. Set the contractId query parameter to get groups
+        for a specific contract.
+
+        Args:
+            contract_id: Uniquely identifies the contract that belongs to a group.
+
+        Returns:
+            A dictionary that includes a list of dictionaries of groups.
+            <Response [200]>
+        """
+        url_suffix = "datastream-config-api/v2/log/groups"
+        if contract_id:
+            url_suffix = f"{url_suffix}?contractId={contract_id}"
+        groups = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return groups
+
+    def list_datastream_properties_bygroup(self, group_id: int):
+        """
+        Returns properties that are active on the production and staging network and available within a specific group.
+        Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+        Args:
+            group_id: integer,required. Uniquely identifies the group that can access the product.
+
+        Returns:
+            A dictionary includes a list of properties that are part of the group.
+            <Response [200]>
+        """
+
+        url_suffix = f"datastream-config-api/v2/log/groups/{group_id}/properties"
+        properties = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return properties
+
+    def delete_datastream(self, stream_id: int):
+        """
+        Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
+        that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
+        you need to deactivate it first.
+
+        Args:
+            stream_id: Unique identifer of a stream
+
+        Returns:
+            <Response [204]>
+        """
+
+        url_suffix = f"datastream-config-api/v2/log/streams/{stream_id}"
+        output = self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
+        return output
+
+    def patch_datastream(
+        self,
+        stream_id: int,
+        body: list,
+        activate: str,
+    ) -> dict:
+        """
+        Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
+        a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
+        operation. When updating configuration objects such as destination or deliveryConfiguration, pass a
+        complete object to avoid overwriting current details with default values for omitted members such as
+        tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
+        their destinations. You need to set the activate parameter to true while patching active streams, and
+        optionally for inactive streams if you want to activate them upon request.
+
+        Args:
+            stream_id: The unique identifier of the stream.
+            activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
+                      Patch a stream that is active, you need to set this member to true.
+            body: Json data used to patch the datastream.
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+
+        headers = {"accept": "application/json", "content-type": "application/json-patch+json"}
+
+        return self._http_request(
+            method="PATCH",
+            url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}?activate={activate}",
+            headers=headers,
+            json_data=body,
+        )
+
+    def toggle_datastream(
+        self,
+        stream_id: int,
+        option: str,
+    ) -> dict:
+        """
+        Activate/Deactivate the latest version of a DataStream.
+
+        Args:
+            stream_id: Uniquely identifies the stream.
+            action: "activate" or "deactivate"
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created datastream.
+        """
+
+        headers = {"accept": "application/json"}
+
+        return self._http_request(
+            method="POST", url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}/{option}", headers=headers
+        )
+
+    def get_client_lists(self):
+        """
+        Get accessible client lists.
+
+        Args:
+
+        Returns:
+            A dictionary that includes the list of the "client list".
+            <Response [200]>
+        """
+
+        url_suffix = "client-list/v1/lists"
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def list_edgehostname(self, contract_id: str, group_id: str):
+        """
+        Lists all edge hostnames available under a contract.
+
+        Args:
+            contract_id: Unique identifier of a contract.
+            group_id: Unique identifier of a group.
+
+        Args:
+
+        Returns:
+            <Response [200]>
+        """
+        headers = {"accept": "application/json", "PAPI-Use-Prefixes": "true"}
+        if group_id == "na":
+            url_suffix = f"papi/v1/edgehostnames?contractId={contract_id}&options=mapDetails"
+        else:
+            url_suffix = f"papi/v1/edgehostnames?contractId={contract_id}&groupId={group_id}&options=mapDetails"
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=headers)
+
+    def generic_api_call(
+        self,
+        method,
+        url_suffix="",
+        headers=None,
+        json_data=None,
+        params=None,
+        data=None,
+        files=None,
+        timeout=None,
+        resp_type="json",
+        ok_codes=None,
+        return_empty_response=False,
+        retries=0,
+        status_list_to_retry=None,
+        backoff_factor=5,
+        raise_on_redirect=False,
+        raise_on_status=False,
+        empty_valid_codes=None,
+        with_metrics=False,
+        **kwargs,
+    ):
+        """
+            Generic API Call command.
+
+        Args:
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+            :type json_data: ``dict``
+            :param json_data: The dictionary to send in a 'POST' request.
+
+            :type files: ``dict``
+            :param files: The file data to send in a 'POST' request.
+
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type ok_codes: ``tuple``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use self._ok_codes.
+
+            :type retries: ``int``
+            :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+            :type status_list_to_retry: ``iterable``
+            :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+
+            :type backoff_factor ``float``
+            :param backoff_factor:
+                A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            :type raise_on_redirect ``bool``
+            :param raise_on_redirect: Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            :type raise_on_status ``bool``
+            :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            :type with_metrics ``bool``
+            :param with_metrics: Whether or not to calculate execution metrics from the response
+
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
+
+        Returns:
+            Depends on the resp_type parameter.
+            rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
+
+        """
+        method = method
+        headers = headers
+        url_suffix = url_suffix
+        params = params
+        data = data
+        json_data = json_data
+
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            params=params,
+            data=data,
+            json_data=json_data,
+            files=files,
+            timeout=timeout,
+            resp_type=resp_type,
+            ok_codes=ok_codes,
+            return_empty_response=return_empty_response,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry,
+            backoff_factor=backoff_factor,
+            raise_on_redirect=raise_on_redirect,
+            raise_on_status=raise_on_status,
+            empty_valid_codes=empty_valid_codes,
+            with_metrics=with_metrics,
+            **kwargs,
         )
 
 
@@ -2098,7 +2782,7 @@ def get_list_from_file(entry_id: str = None) -> list:
         with open(list_path) as list_file:
             elements += list_file.read().split("\n")
     except Exception as ex:
-        return_error(f"Failed to open txt file: {ex}")
+        raise DemistoException(f"Failed to open txt file: {ex}")
     return elements
 
 
@@ -2117,7 +2801,7 @@ def new_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         propertylink = raw_response.get("propertyLink", "")
-        regex_match = re.search("prp_\d+", propertylink)
+        regex_match = re.search(r"prp_\d+", propertylink)
         entry_context.append(assign_params(PropertyLink=propertylink, PropertyId=regex_match.group(0) if regex_match else ""))
         human_readable.append(assign_params(PropertyLink=propertylink, PropertyId=regex_match.group(0) if regex_match else ""))
 
@@ -2169,7 +2853,7 @@ def clone_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         propertylink = raw_response.get("propertyLink", "")
         property_name = raw_response.get("propertyName")
-        regex_match = re.search("prp_\d+", propertylink)
+        regex_match = re.search(r"prp_\d+", propertylink)
         entry_context.append(
             assign_params(
                 PropertyLink=propertylink, PropertyName=property_name, PropertyId=regex_match.group(0) if regex_match else ""
@@ -2245,7 +2929,7 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         edgeHostnameLink = raw_response.get("edgeHostnameLink", "")
         domain_prefix = raw_response.get("domainPrefix")
-        regex_match = re.search("ehn_\d+", edgeHostnameLink)
+        regex_match = re.search(r"ehn_\d+", edgeHostnameLink)
         edge_hostname_id = regex_match.group(0) if regex_match else ""
         entry_context.append(
             assign_params(EdgeHostnameLink=edgeHostnameLink, DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id)
@@ -2335,7 +3019,7 @@ def new_papi_cpcode_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         cpcodeLink = raw_response.get("cpcodeLink", "")
         cpcode_name = raw_response.get("cpcodeName")
-        regex_match = re.search("cpc_\d+", cpcodeLink)
+        regex_match = re.search(r"cpc_\d+", cpcodeLink)
         cpcode_id = regex_match.group(0) if regex_match else ""
         entry_context.append(assign_params(CpcodeLink=cpcodeLink, CpcodeName=cpcode_name, CpcodeId=cpcode_id))
         human_readable.append(assign_params(CpcodeLink=cpcodeLink, CpcodeName=cpcode_name, CpcodeId=cpcode_id))
@@ -2379,7 +3063,7 @@ def activate_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         activationLink = raw_response.get("activationLink", "")
-        regex_match = re.search("atv_\d+", activationLink)
+        regex_match = re.search(r"atv_\d+", activationLink)
         entry_context.append(
             assign_params(ActivationLink=activationLink, ActivationId=regex_match.group(0) if regex_match else "")
         )
@@ -2822,6 +3506,34 @@ def try_parsing_date(date: str, arr_fmt: list):
     raise ValueError(f"The date you provided does not match the wanted format {arr_fmt}")
 
 
+def normalize_to_iso8601(date_str: str) -> str:
+    """
+    Normalize an input date string into ISO 8601 UTC string (YYYY-MM-DDTHH:MM:SSZ).
+    Tries common formats via try_parsing_date and falls back to datetime.fromisoformat
+    to handle timezone offsets like +00:00. If all parsing fails, returns the original string.
+
+    Args:
+        date_str: The input date string.
+
+    Returns:
+        Normalized ISO 8601 UTC string, or the original string when parsing fails.
+    """
+    if not date_str:
+        return date_str
+    try:
+        dt = try_parsing_date(date_str, ["%Y-%m-%d", "%m-%d-%Y", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ"])
+        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        demisto.error(f"Failed to parse date: {date_str}")
+    try:
+        iso_input = date_str.replace("Z", "+00:00")
+        dt2 = datetime.fromisoformat(iso_input)
+        return dt2.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        demisto.error(f"Failed to parse date: {date_str}. Returning original date string.")
+        return date_str
+
+
 """ COMMANDS """
 # Created by C.L.
 
@@ -2888,6 +3600,369 @@ def list_groups_command(client: Client) -> tuple[object, dict, Union[list, dict]
 
 
 # Created by C.L.
+
+
+@logger
+def get_client_list_command(
+    client: Client,
+    client_list_id: str = None,
+    name: str = None,
+    include_items: bool = False,
+    include_deprecated: bool = False,
+    search: str = None,
+    type_list: list = None,
+    include_network_list: bool = False,
+    page: int = 0,
+    page_size: int = 50,
+    limit: int = 50,
+) -> tuple[str, dict, dict]:
+    """
+    Gets the client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: client list id
+        name: name
+        include_items: include items
+        include_deprecated: include deprecated
+        search: search
+        type_list: list of types
+        include_network_list: include network list
+        page: page
+        page_size: page size
+        limit: limit
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.get_client_list(
+        client_list_id, name, include_items, include_deprecated, search, type_list, include_network_list, page, page_size, limit
+    )
+    hr = tableToMarkdown(
+        "Akamai WAF Client List",
+        {
+            "Name": raw_response.get("name", ""),
+            "List ID": raw_response.get("listId", ""),
+            "Type": raw_response.get("type", ""),
+            "Staging Activation Status": raw_response.get("stagingActivationStatus", ""),
+            "Production Activation Status": raw_response.get("productionActivationStatus", ""),
+            "Notes": raw_response.get("notes", ""),
+            "Tags": raw_response.get("tags", []),
+        },
+    )
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return hr, context_entry, raw_response
+
+
+@logger
+def create_client_list_command(
+    client: Client,
+    name: str,
+    type: str,
+    contract_id: str,
+    group_id: int,
+    notes: str = None,
+    tags: str = None,
+    entry_value: str = None,
+    entry_description: str = None,
+    entry_expiration_date: str = None,
+    entry_tags: str = None,
+) -> tuple[str, dict, dict]:
+    """
+    Creates a client list.
+    Args:
+        client: Akamai WAF client
+        name: The name for the new client list.
+        type: The type of client list.
+        contract_id: The contract ID.
+        group_id: The group ID.
+        notes: A description for the client list.
+        tags: A list of tags to associate with the client list.
+        entry_value: The value for a single entry in the client list.
+        entry_description: A description for the entry.
+        entry_expiration_date: The expiration date for the entry.
+        entry_tags: A comma-separated list of tags for the entry.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.create_client_list(
+        name, type, contract_id, group_id, notes, tags, entry_value, entry_description, entry_expiration_date, entry_tags
+    )
+    human_readable = tableToMarkdown(f"Akamai WAF Client List {name} created successfully", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def deprecate_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
+    """
+    Deprecates a client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: The ID of the client list to deprecate.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.deprecate_client_list(client_list_id)
+    if raw_response.status_code == 204:
+        human_readable = f"Akamai WAF Client List {client_list_id} marked as deprecated successfully."
+        return human_readable, {}, {}
+    return f"Akamai WAF Client List {client_list_id} was not marked as deprecated.", {}, {}
+
+
+def check_activation_status(
+    args: Dict[str, Any],
+    client: Client,
+) -> PollResult:
+    """
+    Args:
+        args: (Dict[str, Any]): The command arguments.
+        client (Client): The client class.
+    Returns:
+        PollResult
+    """
+    status_resp: dict = client.get_client_list_activation_status(args.get("list_id", ""), args.get("network_environment", ""))
+    demisto.debug(f'Activation status: {status_resp}, setting poll_status as: {status_resp.get("activationStatus")}')
+    args["poll_status"] = status_resp.get("activationStatus")
+    demisto.debug(f"After setting args: {args}")
+    if "PENDING" in args.get("poll_status", ""):
+        partial_res = CommandResults(readable_output="Waiting for activation / deactivation process to finish...")
+        return PollResult(
+            response=CommandResults(outputs=status_resp, outputs_prefix="Akamai.Activation"),
+            args_for_next_run={**args},
+            continue_to_poll=True,
+            partial_result=partial_res,
+        )
+    else:
+        partial_res = CommandResults(readable_output="Finished activation / deactivation process")
+        return PollResult(
+            response=CommandResults(outputs=status_resp, outputs_prefix="Akamai.Activation"),
+            args_for_next_run={**args},
+            continue_to_poll=False,
+            partial_result=partial_res,
+        )
+
+
+@polling_function(
+    name=demisto.command(),
+    timeout=arg_to_number(demisto.args().get("timeout", 180)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    requires_polling_arg=False,
+)
+def activate_client_list_command(
+    args: Dict[str, Any],
+    client: Client,
+) -> PollResult:
+    """
+     Args:
+        args: (Dict[str, Any]): The command arguments.
+        client: Akamai WAF client
+    Returns:
+        PollResult
+    Activates a client list, optionally polling until activation completes.
+    When include_polling is true, the command will keep polling the activation status until it changes from PENDING_ACTIVATION.
+    """
+    demisto.debug(f"Calling activate_client_list: args: {args}")
+    if str(args.get("include_polling")).lower() != "true":
+        demisto.debug("Not polling for activation status. Running activate.")
+        raw_response = client.activate_client_list(
+            args.get("list_id", ""),
+            args.get("network_environment", ""),
+            args.get("comments", None),
+            args.get("notification_recipients", None),
+            args.get("siebel_ticket_id", None),
+        )
+        human_readable = tableToMarkdown(
+            f"Akamai WAF Client List {args.get('list_id')} activation submitted successfully", raw_response
+        )
+        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
+        return PollResult(response=CommandResults(human_readable, context_entry, raw_response))
+    if not args.get("poll_status", ""):
+        demisto.debug("Initial activation and polling run.")
+        raw_response = client.activate_client_list(
+            args.get("list_id", ""),
+            args.get("network_environment", ""),
+            args.get("comments", None),
+            args.get("notification_recipients", None),
+            args.get("siebel_ticket_id", None),
+        )
+    return check_activation_status(args, client)
+
+
+@logger
+def add_client_list_entry_command(
+    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
+) -> tuple[str, dict, dict]:
+    """
+    Adds an entry to a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list.
+        value: The value for the new entry.
+        description: A description for the new entry.
+        expiration_date: The expiration date for the new entry.
+        tags: A list of tags for the new entry.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.add_client_list_entry(list_id, value, description, expiration_date, tags)
+    human_readable = f"Entry '{value}' added successfully to Akamai WAF Client List {list_id}."
+    return human_readable, {}, raw_response
+
+
+@logger
+def remove_client_list_entry_command(client: Client, list_id: str, value: str) -> tuple[str, dict, dict]:
+    """
+    Removes an entry from a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list.
+        value: A value to remove.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.remove_client_list_entry(list_id, value)
+    human_readable = f"Entries successfully removed from Akamai WAF Client List {list_id}."
+    return human_readable, {}, raw_response
+
+
+@logger
+def get_contract_group_command(client: Client) -> tuple[str, dict, dict]:
+    """
+    Gets the contract groups.
+    Args:
+        client: Akamai WAF client
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.get_contract_group()
+    human_readable = tableToMarkdown("Akamai WAF Contract Groups", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ContractGroup": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def update_client_list_command(
+    client: Client, list_id: str, name: str, notes: str = None, tags: str = None
+) -> tuple[str, dict, dict]:
+    """
+    Updates a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to update.
+        name: The new name for the client list.
+        notes: The new description for the client list.
+        tags: The new tags for the client list.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.update_client_list(list_id, name, notes, tags)
+    human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} updated successfully", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@polling_function(
+    name=demisto.command(),
+    timeout=arg_to_number(demisto.args().get("timeout", 180)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    requires_polling_arg=False,
+)
+def deactivate_client_list_command(
+    args: Dict[str, Any],
+    client: Client,
+) -> PollResult:
+    """
+    Args:
+        args: (Dict[str, Any]): The command arguments.
+        client: Akamai WAF client
+    Returns:
+        PollResult
+    Deactivates a client list, optionally polling until deactivation completes.
+    When include_polling is true, the command polls the activation status until it changes from PENDING_DEACTIVATION.
+    """
+    demisto.debug(f"Calling deactivate_client_list: args: {args}")
+    if str(args.get("include_polling")).lower() != "true":
+        demisto.debug("Not polling for deactivation status. Running deactivate.")
+        raw_response = client.deactivate_client_list(
+            args.get("list_id", ""),
+            args.get("network_environment", ""),
+            args.get("comments", None),
+            args.get("notification_recipients", None),
+            args.get("siebel_ticket_id", None),
+        )
+        human_readable = tableToMarkdown(
+            f"Akamai WAF Client List {args.get('list_id')} deactivation submitted successfully", raw_response
+        )
+        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
+        return PollResult(response=CommandResults(human_readable, context_entry, raw_response))
+    if not args.get("poll_status", ""):
+        demisto.debug("Initial deactivation and polling run.")
+        raw_response = client.deactivate_client_list(
+            args.get("list_id", ""),
+            args.get("network_environment", ""),
+            args.get("comments", None),
+            args.get("notification_recipients", None),
+            args.get("siebel_ticket_id", None),
+        )
+    return check_activation_status(args, client)
+
+
+@logger
+def update_client_list_entry_command(
+    client: Client,
+    list_id: str,
+    value: str,
+    description: str = None,
+    expiration_date: str = None,
+    tags: str = None,
+    is_override: bool = False,
+) -> tuple[str, dict, dict]:
+    """
+    Updates an entry in a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list.
+        value: The value of the entry to update.
+        description: The new description for the entry.
+        expiration_date: The new expiration date for the entry.
+        tags: The new tags for the entry.
+        is_override: Whether to override missing entries.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    updated_item = None
+    tags = tags.split(",") if tags else []
+    # Normalize expiration_date into ISO 8601 (UTC) if provided in a supported format
+    exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
+    if is_override:
+        demisto.debug("Update_client_list_entry: Override missing entry")
+        updated_item = {
+            "value": value,
+            "description": description,
+            "expirationDate": exp_iso,
+            "tags": tags,
+        }
+    else:
+        demisto.debug("Update_client_list_entry: Get the existing list to avoid overwriting values")
+        existing_list = client.get_client_list(client_list_id=list_id, include_items=True)
+        items = existing_list.get("items", [])
+        for item in items:
+            if item.get("value") == value:
+                if description:
+                    item["description"] = description
+                if exp_iso:
+                    item["expirationDate"] = exp_iso
+                if tags:
+                    item["tags"] = tags
+                updated_item = item
+                break
+
+    if not updated_item:
+        raise DemistoException(f"Entry with value '{value}' not found in client list '{list_id}'.")
+
+    raw_response = client.update_client_list_entry(list_id, [updated_item])
+    human_readable = tableToMarkdown(f"Entry '{value}' in Akamai WAF Client List {list_id} updated successfully", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
 
 
 @logger
@@ -3414,12 +4489,12 @@ def get_network_lists_command(
     list_type: str = None,
     extended: str = "true",
     include_elements: str = "true",
-) -> tuple[object, dict, Union[list, dict]]:
-    """Get network lists
+):
+    """Deprecated. Use akamai-get-client-list instead.
 
     Args:
         client: Client object with request
-        search: Only list items that match the specified substring in any network list’s name or list of items.
+        search: Only list items that match the specified substring in any network list's name or list of items.
         list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
         extended: Whether to return extended details in the response
         include_elements: Whether to return all list items.
@@ -3427,26 +4502,12 @@ def get_network_lists_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.get_network_lists(
-        search=search, list_type=list_type, extended=(extended == "true"), include_elements=(include_elements == "true")
-    )
-    if raw_response:
-        title = f"{INTEGRATION_NAME} - network lists"
-        entry_context, human_readable_ec = get_network_lists_ec(raw_response.get("networkLists"))
-        context_entry: dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
-            f" val.UpdateDate == obj.UpdateDate)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-get-client-list instead.", {}, {}
 
 
 @logger
-def get_network_list_by_id_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
-    """Get network list by ID
+def get_network_list_by_id_command(client: Client, network_list_id: str):
+    """Deprecated. Use akamai-get-client-list instead.
 
     Args:
         client: Client object with request
@@ -3455,19 +4516,7 @@ def get_network_list_by_id_command(client: Client, network_list_id: str) -> tupl
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.get_network_list_by_id(network_list_id=network_list_id)
-    if raw_response:
-        title = f"{INTEGRATION_NAME} - network list {network_list_id}"
-        entry_context, human_readable_ec = get_network_lists_ec([raw_response])
-        context_entry: dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID &&"
-            f" val.UpdateDate && val.UpdateDate == obj.UpdateDate)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-get-client-list instead.", {}, {}
 
 
 @logger
@@ -3478,10 +4527,9 @@ def create_network_list_command(
     description: str = None,
     entry_id: str = None,
     elements: Union[str, list] = None,
-) -> tuple[object, dict, Union[list, dict]]:
+):
     """
-        Create network list
-
+        Deprecated. Use akamai-create-client-list instead.
     Args:
         client: Client object with request
         list_name: Network list name
@@ -3493,30 +4541,12 @@ def create_network_list_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    if entry_id:
-        elements = get_list_from_file(entry_id)
-    else:
-        elements = argToList(elements)
-    raw_response: dict = client.create_network_list(
-        list_name=list_name, list_type=list_type, elements=elements, description=description
-    )
-    entry_context, human_readable_ec = get_network_lists_ec([raw_response])
-    if raw_response:
-        title = f"{INTEGRATION_NAME} - network list {list_name} created successfully"
-        context_entry: dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
-            f" val.UpdateDate == obj.UpdateDate)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-create-client-list instead.", {}, {}
 
 
 @logger
-def delete_network_list_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
-    """Delete network list by ID
+def delete_network_list_command(client: Client, network_list_id: str):
+    """Deprecated. Use akamai-deprecate-client-list instead.
 
     Args:
         client: Client object with request
@@ -3525,19 +4555,12 @@ def delete_network_list_command(client: Client, network_list_id: str) -> tuple[o
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response = client.delete_network_list(network_list_id=network_list_id)
-    if raw_response:
-        human_readable = f"**{INTEGRATION_NAME} - network list {network_list_id} deleted**"
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-deprecate-client-list instead.", {}, {}
 
 
 @logger
-def update_network_list_elements_command(
-    client: Client, network_list_id: str, elements: Union[str, list] = None
-) -> tuple[object, dict, Union[list, dict]]:
-    """Update network list by ID
+def update_network_list_elements_command(client: Client, network_list_id: str, elements: Union[str, list] = None):
+    """Deprecated. No longer supported by Akamai.
 
     Args:
         client: Client object with request
@@ -3546,24 +4569,12 @@ def update_network_list_elements_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-
-    elements = argToList(elements)
-    # demisto.results(elements)
-
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  # type: ignore # noqa
-
-    if raw_response:
-        human_readable = f"**{INTEGRATION_NAME} - network list {network_list_id} updated**"
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Deprecated.", {}, {}
 
 
 @logger
-def activate_network_list_command(
-    client: Client, network_list_ids: str, env: str, comment: str = None, notify: str = None
-) -> tuple[object, dict, Union[list, dict]]:
-    """Activate network list by ID
+def activate_network_list_command(client: Client, network_list_ids: str, env: str, comment: str = None, notify: str = None):
+    """Deprecated. Use akamai-activate-client-list instead.
 
     Args:
         client: Client object with request
@@ -3575,29 +4586,14 @@ def activate_network_list_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    network_list_ids = argToList(network_list_ids)
-    human_readable = ""
-    for network_list_id in network_list_ids:
-        try:
-            raw_response = client.activate_network_list(
-                network_list_id=network_list_id, env=env, comment=comment, notify=argToList(notify)
-            )
-            if raw_response:
-                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n"
-        except DemistoException as e:
-            if "This list version is already active" in e.args[0]:
-                human_readable += f"**{INTEGRATION_NAME} - network list {network_list_id} already active on {env}**\n"
-        except requests.exceptions.RequestException:
-            human_readable += f"{INTEGRATION_NAME} - Could not find any results for given query\n"
-
-    return human_readable, {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-activate-client-list instead.", {}, {}
 
 
 @logger
 def add_elements_to_network_list_command(
     client: Client, network_list_id: str, entry_id: str = None, elements: Union[str, list] = None
-) -> tuple[object, dict, Union[list, dict]]:
-    """Add elements to network list by ID
+):
+    """Deprecated. Use akamai-add-client-list-entry instead.
 
     Args:
         client: Client object with request
@@ -3608,24 +4604,12 @@ def add_elements_to_network_list_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    if entry_id:
-        elements = get_list_from_file(entry_id)
-    else:
-        elements = argToList(elements)
-    raw_response: dict = client.add_elements_to_network_list(network_list_id=network_list_id, elements=elements)
-    if raw_response:
-        title = f"**{INTEGRATION_NAME} - elements added to network list {network_list_id} successfully**"
-        human_readable = tableToMarkdown(name=title, t={"elements": elements}, removeNull=True)
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-add-client-list-entry instead.", {}, {}
 
 
 @logger
-def remove_element_from_network_list_command(
-    client: Client, network_list_id: str, element: str
-) -> tuple[object, dict, Union[list, dict]]:
-    """Remove element from network list by ID
+def remove_element_from_network_list_command(client: Client, network_list_id: str, element: str):
+    """Deprecated. Use akamai-remove-client-list-entry instead.
 
     Args:
         client: Client object with request
@@ -3635,19 +4619,12 @@ def remove_element_from_network_list_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.remove_element_from_network_list(network_list_id=network_list_id, element=element)
-    if raw_response:
-        human_readable = f"**{INTEGRATION_NAME} - element {element} removed from network list {network_list_id} successfully**"
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
+    return f"{INTEGRATION_NAME} - Use akamai-remove-client-list-entry instead.", {}, {}
 
 
 @logger
-def get_activation_status_command(
-    client: Client, network_list_ids: Union[str, list], env: str
-) -> tuple[str, dict, Union[list, dict]]:
-    """Get activation status
+def get_activation_status_command(client: Client, network_list_ids: Union[str, list], env: str):
+    """Deprecated. No longer supported by Akamai.
 
     Args:
         client: Client object with request
@@ -3657,36 +4634,7 @@ def get_activation_status_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    network_list_ids = argToList(network_list_ids)
-    raws = []
-    ecs = []
-    context_entry: dict = {}
-    human_readable = ""
-    for network_list_id in network_list_ids:
-        try:
-            raw_response: dict = client.get_activation_status(network_list_id=network_list_id, env=env)
-            if raw_response:
-                raws.append(raw_response)
-                if env == "PRODUCTION":
-                    ecs.append({"UniqueID": network_list_id, "ProductionStatus": raw_response.get("activationStatus")})
-                elif env == "STAGING":
-                    ecs.append({"UniqueID": network_list_id, "StagingStatus": raw_response.get("activationStatus")})
-                human_readable += (
-                    f"{INTEGRATION_NAME} - network list **{network_list_id}** is "
-                    f"**{raw_response.get('activationStatus')}** in **{env}**\n"
-                )
-        except DemistoException as e:
-            if "The Network List ID should be of the format" in e.args[0]:
-                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** canot be found\n"
-        except requests.exceptions.RequestException:
-            human_readable += f"{INTEGRATION_NAME} - Could not find any results for given query\n"
-
-    if env == "PRODUCTION":
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs}
-    elif env == "STAGING":
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs}
-
-    return human_readable, context_entry, raws
+    return f"{INTEGRATION_NAME} - No longer supported by Akamai.", {}, {}
 
 
 # Created by D.S.
@@ -3698,7 +4646,7 @@ def clone_papi_property_command(
     group_id: str,
     property_id: str,
     version: str,
-    check_existence_before_create="yes",
+    check_existence_before_create: str = "yes",
 ) -> tuple[str, dict, Union[list, dict]]:
     """
         Post clone property command
@@ -3716,6 +4664,7 @@ def clone_papi_property_command(
     """
     title = ""
     human_readable_ec: list = []
+    entry_context: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_property_bygroup(contract_id=contract_id, group_id=group_id)
@@ -3857,7 +4806,7 @@ def new_papi_edgehostname_command(
     secure: str,
     secure_network: str,
     cert_enrollment_id: str,
-    check_existence_before_create="yes",
+    check_existence_before_create: str = "yes",
 ) -> tuple[str, dict, Union[list, dict]]:
     """
         add papi edge hostname command
@@ -3881,6 +4830,7 @@ def new_papi_edgehostname_command(
     """
     title = ""
     human_readable_ec: list = []
+    entry_context: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_edgehostname_bygroup(
@@ -3962,7 +4912,7 @@ def get_cps_enrollmentid_by_cnname_command(
 # Created by D.S.
 @logger
 def new_papi_cpcode_command(
-    client: Client, product_id: str, contract_id: str, group_id: str, cpcode_name: str, check_existence_before_create="yes"
+    client: Client, product_id: str, contract_id: str, group_id: str, cpcode_name: str, check_existence_before_create: str = "yes"
 ) -> tuple[str, dict, Union[list, dict]]:
     """
         get papi property All Versions by group_id and property_id command
@@ -3978,6 +4928,7 @@ def new_papi_cpcode_command(
     """
     title = ""
     human_readable_ec: list = []
+    entry_context: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_cpcodeid_bygroup(contract_id=contract_id, group_id=group_id)
@@ -4293,7 +5244,7 @@ def clone_security_policy_command(
                 isErrored = True
                 if "You entered a Policy ID that already exists." not in str(e):
                     err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
-                    return_error(err_msg, error=e)
+                    raise DemistoException(f"{err_msg} error: {e}")
             if not isErrored:
                 isDuplicated = False
         if raw_response:
@@ -5822,7 +6773,7 @@ def list_cps_active_certificates_command(
 
     Args:
         client:
-        contract_id: Unique Identifier of the contract on which to operate or view.
+        contract_id: Unique Identifier of a contract on which to operate or view.
 
     Returns:
         human readable (markdown format), entry context and raw response
@@ -5840,6 +6791,611 @@ def list_cps_active_certificates_command(
         t=human_readable_ec.get("enrollments"),
         removeNull=True,
     )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def new_datastream_command(
+    client: Client,
+    stream_name: str,
+    group_id: int,
+    contract_id: str,
+    properties: str,
+    dataset_fields: str,
+    interval_in_seconds: int = 30,
+    log_format: str = "JSON",
+    field_delimiter: str = None,
+    upload_file_prefix: str = None,
+    upload_file_suffix: str = None,
+    ca_cert: str = None,
+    client_cert: str = None,
+    client_key: str = None,
+    content_type: str = None,
+    custom_header_name: str = None,
+    custom_header_value: str = None,
+    compress_logs: bool = True,
+    destination_type: str = "SPLUNK",
+    display_name: str = None,
+    endpoint: str = None,
+    event_collector_token: str = None,
+    tls_hostname: str = None,
+    notification_emails: str = None,
+    collect_midgress: bool = False,
+    activate: bool = True,
+) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Creates a stream configuration. Within a stream configuration,
+        you can select properties to monitor in the stream, data set fields to collect in logs,
+        and a destination to send these log files to. Get the streamId value from the response
+        to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+        Apart from the log and delivery frequency configurations, you can decide whether to activate
+        the stream on making the request or later using the activate parameter.
+        Note that only active streams collect and send logs to their destinations.
+        NOTE: "SPLUNK" and "HTTPS" are the only two types tested
+
+    Args:
+        client:
+        stream_name: The name of the stream.
+        group_id: The unique identifier of the group that has access to the product and this stream
+                  configuration.
+        contract_id: The unique identifier of the contract that has access to the product.
+        properties: The unique identifier of the properties that belong to the same product and to be monitored
+                    in the stream. Note that a stream can only log data for active properties.
+                    A property can be activated in Property Manager.
+        dataset_fields: The unique identifier of the data set fields to be included in stream logs.
+                        In case of STRUCTURED format, the order of the identifiers define how the value for
+                        these fields appear in the log lines.
+        interval_in_seconds: The interval in seconds (30 or 60) after which the system bundles log lines into
+                             a file and sends it to a destination.
+        log_format: The format in which you want to receive log files. STRUCTURED or JSON are the currently
+                    available formats. When the delimiter is present in the request, STRUCTURED format needs
+                    to be defined.
+        field_delimiter: A delimiter that separates data set fields in the log lines, either SPACE or TAB.
+                         Set this only for the STRUCTURED log file format.
+        upload_file_prefix: The prefix of the log file to be used when sending to a object-based destination.
+                            It's a string of at most 200 characters. If unspecified, it defaults to ak. This
+                            member supports Dynamic time variables, but doesn't support the . character.
+        upload_file_suffix: The suffix of the log file that you want to send to a object-based destination.
+                            It's a static string of at most 10 characters. If unspecified, it defaults to ds.
+                            This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
+        ca_cert: The certification authority (CA) certificate used to verify the origin server's certificate.
+                 If the certificate is not signed by a well-known certification authority, enter the CA certificate
+                 in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it
+                 in the response as true.
+        client_cert: The PEM-formatted digital certificate you want to authenticate requests to your destination
+                     with. If you want to use mutual authentication, you need to provide both the client certificate
+                     and the client key. If you pass this member, the mTlsEnabled member replaces it in the response
+                     as true.
+        client_key: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server.
+                    If you want to use mutual authentication, you need to provide both the client certificate and
+                    the client key.
+        content_type: The type of the resource passed in the request's custom header.
+        custom_header_name: A human-readable name for the request's custom header, containing only alphanumeric,
+                            dash, and underscore characters.
+        custom_header_value: The custom header's contents passed with the request that contains information about
+                             the client connection.
+        compress_logs: Enables gzip compression for a log file sent to a destination. True by default.
+        destination_type: The destination configuration in the stream to send logs.
+                          Note: "SPLUNK" and "HTTPS" are the only two types tested.
+        display_name: The name of the destination.
+        endpoint: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used
+                  as endpoint URLs.
+        event_collector_token: The Event Collector token for your Splunk account.
+        tls_hostname: The hostname that verifies the server's certificate and matches the Subject Alternative Names
+                      (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint
+                      URL.
+        notification_emails: A list of e-mail addresses where you want to send notifications about activations and
+                             deactivations of the stream. You can omit this member and activate or deactivate the
+                             stream without notifications.
+        collect_midgress: Indicates if you've opted to capture midgress traffic within the Akamai platform, such as
+                          between two edge servers.
+        activate: Activates the stream at the time of the request, false by default. When Edit a stream or Patch a
+                  stream that is active, set this value to true.
+
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    notification_emails_list: list = argToList(notification_emails)
+    properties_list: list = argToList(properties)
+    properties_list_dict: list = []
+    for item in properties_list:
+        properties_list_dict.append({"propertyId": int(item)})
+    dataset_fields_list: list = argToList(dataset_fields)
+    dataset_fields_list_dict: list = []
+    for item in dataset_fields_list:
+        dataset_fields_list_dict.append({"datasetFieldId": int(item)})
+    raw_response: dict = client.new_datastream(
+        stream_name=stream_name,
+        group_id=group_id,
+        contract_id=contract_id,
+        properties=properties_list_dict,
+        dataset_fields=dataset_fields_list_dict,
+        interval_in_seconds=interval_in_seconds,
+        log_format=log_format,
+        field_delimiter=field_delimiter,
+        upload_file_prefix=upload_file_prefix,
+        upload_file_suffix=upload_file_suffix,
+        ca_cert=ca_cert,
+        client_cert=client_cert,
+        client_key=client_key,
+        content_type=content_type,
+        custom_header_name=custom_header_name,
+        custom_header_value=custom_header_value,
+        compress_logs=compress_logs,
+        destination_type=destination_type,
+        display_name=display_name,
+        endpoint=endpoint,
+        event_collector_token=event_collector_token,
+        tls_hostname=tls_hostname,
+        notification_emails=notification_emails_list,
+        collect_midgress=collect_midgress,
+        activate=activate,
+    )
+
+    title = f"{INTEGRATION_NAME} - new datastream"
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": entry_context}
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastreams_command(client: Client, group_id: int = 0) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Get the latest versions of the stream configurations for all groups within the account.
+
+    Args:
+        client:
+        group_id: The unique identifier of the group that has access to the product and this stream configuration.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_datastreams(group_id=group_id)
+    title = f"{INTEGRATION_NAME} - list datastreams command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreams": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_datastream_command(client: Client, stream_id: int, version: int = 0) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns information about any version of a stream, including details about the monitored properties,
+        logged data set fields, and log delivery destination. If you omit the version query parameter,
+        this operation returns the last version of the stream.
+
+    Args:
+        client:
+        stream_id: The uniquely identifier of the stream.
+        version: The uniquely identifier of the version of the stream.
+                 If omitted, the operation returns the latest version of the stream.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_datastream(stream_id=stream_id, version=version)
+    title = f"{INTEGRATION_NAME} - get datastream command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreamDetails": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_idam_properties_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists the properties and includes for the current account via Identity Access Management Module
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_idam_properties()
+    title = f"{INTEGRATION_NAME} - list idam properties command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Idam.Properties": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastream_groups_command(client: Client, contract_id: str = "") -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns access groups with contracts on your account. You can later use the groupId and contractId values
+        to create and view streams or list properties by group. Set the contractId query parameter to get groups
+        for a specific contract.
+
+    Args:
+        client:
+        contract_id: Uniquely identifies the contract that belongs to a group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_datastream_groups(contract_id=contract_id)
+    title = f"{INTEGRATION_NAME} - list datastream groups command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreamGroups": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastream_properties_bygroup_command(client: Client, group_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+         Get properties that are active on the production and staging network and available within a specific group.
+         Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+    Args:
+        client:
+        group_id: The unique identifier of the group that has access to the product and this stream configuration.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: dict = client.list_datastream_properties_bygroup(group_id=group_id)
+    title = f"{INTEGRATION_NAME} - list datastream active properties command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream.Group": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
+        that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
+        you need to deactivate it first.
+
+    Args:
+        stream_id: Unique identifer of a stream
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.delete_datastream(stream_id=stream_id)
+
+    dict_response: dict = {"stream_id": stream_id}
+    dict_response["deletion"] = "completed" if "Response [204]" in str(raw_response) else f"failed - {str(raw_response)}"
+
+    title = f"{INTEGRATION_NAME} - delete datastream command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": dict_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=dict_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, dict_response
+
+
+@logger
+def patch_datastream_command(
+    client: Client,
+    stream_id: int,
+    path: str,
+    value: str,
+    value_to_json: str,
+    activate: str = "true",
+) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
+        a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
+        operation. When updating configuration objects such as destination or deliveryConfiguration, pass a
+        complete object to avoid overwriting current details with default values for omitted members such as
+        tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
+        their destinations. You need to set the activate parameter to true while patching active streams, and
+        optionally for inactive streams if you want to activate them upon request.
+
+    Args:
+        stream_id: The unique identifier of the stream.
+        activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
+                  Patch a stream that is active, you need to set this member to true.
+        path: A JSON Pointer that identifies the values you want to replace in the stream configuration. This
+              member's value is / followed by any of the configuration object's top-level member name.
+        value: Specifies the data to replace at the path location, any type of data including objects and arrays.
+               Pass complete objects to avoid overwriting current details with default values for omitted members.
+        value_to_json: Whether convert the value above into Json or not.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    import json
+
+    body = [{"op": "REPLACE", "path": path, "value": json.loads(value) if value_to_json.lower() == "yes" else value}]
+
+    raw_response: dict = client.patch_datastream(stream_id=stream_id, activate=activate, body=body)
+
+    title = f"{INTEGRATION_NAME} - Patch datastream command"
+
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Datastream": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def toggle_datastream_command(
+    client: Client,
+    stream_id: int,
+    option: str = "activate",
+) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Activate/Deactivate the latest version of a DataStream.
+
+    Args:
+        stream_id: Uniquely identifies the stream.
+        option: "activate" or "deactivate"
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.toggle_datastream(stream_id=stream_id, option=option)
+
+    title = f"{INTEGRATION_NAME} - Activate DataStream command"
+
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream.Activation": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_client_lists_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Get accessible client lists.
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_client_lists()
+    title = f"{INTEGRATION_NAME} - Get Client List command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_edgehostname_command(client: Client, contract_id: str, group_id: str = "na") -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists all edge hostnames available under a contract.
+
+    Args:
+        client:
+        contract_id: Unique identifier of a contract.
+        group_id: Unique identifier of a group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_edgehostname(contract_id=contract_id, group_id=group_id)
+    title = f"{INTEGRATION_NAME} - List Edgehostname command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Edgehostname": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def generic_api_call_command(
+    client: Client,
+    method,
+    url_suffix="",
+    headers=None,
+    json_data=None,
+    params=None,
+    data=None,
+    files=None,
+    timeout=None,
+    resp_type="json",
+    ok_codes=None,
+    return_empty_response=False,
+    retries=0,
+    status_list_to_retry=None,
+    backoff_factor=5,
+    raise_on_redirect=False,
+    raise_on_status=False,
+    empty_valid_codes=None,
+    with_metrics=False,
+    **kwargs,
+):
+    """
+        Generic API Call command.
+
+    Args:
+        client:
+        :type method: ``str``
+        :param method: The HTTP method, for example: GET, POST, and so on.
+
+        :type url_suffix: ``str``
+        :param url_suffix: The API endpoint.
+
+        :type headers: ``dict``
+        :param headers: Headers to send in the request. If None, will use self._headers.
+
+        :type params: ``dict``
+        :param params: URL parameters to specify the query.
+
+        :type data: ``dict``
+        :param data: The data to send in a 'POST' request.
+
+        :type json_data: ``dict``
+        :param json_data: The dictionary to send in a 'POST' request.
+
+        :type files: ``dict``
+        :param files: The file data to send in a 'POST' request.
+
+        :type timeout: ``float`` or ``comma separated two floats``
+        :param timeout:
+            The amount of time (in seconds) that a request will wait for a client to
+            establish a connection to a remote machine before a timeout occurs.
+            can be only float (Connection Timeout) or Comma Seperated two floats for
+            Connection Timeout and Read Timeout. (Samput Input: 60, 60)
+
+        :type resp_type: ``str``
+        :param resp_type:
+            Determines which data format to return from the HTTP request. The default
+            is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+             to return the full response object.
+
+        :type ok_codes: ``comma separated integars`` or None
+        :param ok_codes:
+            The request codes to accept as OK, for example: 200, 201, 204. If you specify
+            "None", will use self._ok_codes. Default is None.
+
+        :type retries: ``int``
+        :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+        :type status_list_to_retry: ``iterable``
+        :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+            A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+            and the response status code is in ``status_list_to_retry``.
+
+        :type backoff_factor ``float``
+        :param backoff_factor:
+            A backoff factor to apply between attempts after the second try
+            (most errors are resolved immediately by a second try without a
+            delay). urllib3 will sleep for::
+
+                {backoff factor} * (2 ** ({number of total retries} - 1))
+
+            seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+            for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+            than :attr:`Retry.BACKOFF_MAX`.
+
+            By default, backoff_factor set to 5
+
+        :type raise_on_redirect ``bool``
+        :param raise_on_redirect: Whether, if the number of redirects is
+            exhausted, to raise a MaxRetryError, or to return a response with a
+            response code in the 3xx range.
+
+        :type raise_on_status ``bool``
+        :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+            whether we should raise an exception, or return a response,
+            if status falls in ``status_forcelist`` range and retries have
+            been exhausted.
+
+        :type empty_valid_codes: sinlge integer or ``comma separated integers``
+        :param empty_valid_codes: A comma separated list of all valid status codes of empty responses (usually only 204, but
+            can vary)
+
+        :type with_metrics ``bool``
+        :param with_metrics: Whether or not to calculate execution metrics from the response
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    if headers is not None:
+        headers = safe_load_json(headers)
+    if params is not None:
+        params = safe_load_json(params)
+    if data is not None:
+        data = safe_load_json(data)
+    if json_data is not None:
+        json_data = safe_load_json(json_data)
+    if files is not None:
+        files = safe_load_json(files)
+    if timeout is not None:
+        if "," in timeout:
+            timeout = tuple([float(x) for x in timeout.split(",")])
+        else:
+            timeout = float(timeout)
+    if ok_codes is not None and "," in ok_codes:
+        ok_codes = tuple([int(x) for x in ok_codes.split(",")])
+    if retries is not None:
+        retries = int(retries)
+    if status_list_to_retry is not None:
+        status_list_to_retry = [int(x) for x in status_list_to_retry.split(",")]
+    if backoff_factor is not None:
+        backoff_factor = float(backoff_factor)
+    if raise_on_redirect is not None:
+        raise_on_redirect = argToBoolean(raise_on_redirect)
+    if raise_on_status is not None:
+        raise_on_status = argToBoolean(raise_on_status)
+    if empty_valid_codes is not None:
+        empty_valid_codes = [int(x) for x in empty_valid_codes.split(",")]
+    if with_metrics is not None:
+        with_metrics = argToBoolean(with_metrics)
+
+    raw_response = client.generic_api_call(
+        method=method,
+        url_suffix=url_suffix,
+        headers=headers,
+        params=params,
+        data=data,
+        json_data=json_data,
+        files=files,
+        timeout=timeout,
+        resp_type=resp_type,
+        ok_codes=ok_codes,
+        return_empty_response=return_empty_response,
+        retries=retries,
+        status_list_to_retry=status_list_to_retry,
+        backoff_factor=backoff_factor,
+        raise_on_redirect=raise_on_redirect,
+        raise_on_status=raise_on_status,
+        empty_valid_codes=empty_valid_codes,
+        with_metrics=with_metrics,
+        **kwargs,
+    )
+
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}": raw_response}
+    human_readable = "API call returned successfully"
     return human_readable, context_entry, raw_response
 
 
@@ -5888,6 +7444,14 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-check-group": check_group_command,
         f"{INTEGRATION_COMMAND_NAME}-create-group": create_group_command,
         f"{INTEGRATION_COMMAND_NAME}-get-group": get_group_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-client-list": get_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-create-client-list": create_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-deprecate-client-list": deprecate_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-add-client-list-entry": add_client_list_entry_command,
+        f"{INTEGRATION_COMMAND_NAME}-remove-client-list-entry": remove_client_list_entry_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-contract-group": get_contract_group_command,
+        f"{INTEGRATION_COMMAND_NAME}-update-client-list": update_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-update-client-list-entry": update_client_list_entry_command,
         f"{INTEGRATION_COMMAND_NAME}-clone-papi-property": clone_papi_property_command,
         f"{INTEGRATION_COMMAND_NAME}-add-papi-property-hostname": add_papi_property_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-edgehostname-bygroup": list_papi_edgehostname_bygroup_command,
@@ -5938,15 +7502,41 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-list-dns-zones": list_dns_zones_command,
         f"{INTEGRATION_COMMAND_NAME}-list-dns-zone-recordsets": list_dns_zone_recordsets_command,
         f"{INTEGRATION_COMMAND_NAME}-list-cps-active-certificates": list_cps_active_certificates_command,
+        f"{INTEGRATION_COMMAND_NAME}-new-datastream": new_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-idam-properties": list_idam_properties_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastreams": list_datastreams_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-datastream": get_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastream-groups": list_datastream_groups_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastream-properties-bygroup": list_datastream_properties_bygroup_command,
+        f"{INTEGRATION_COMMAND_NAME}-delete-datastream": delete_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-patch-datastream": patch_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-toggle-datastream": toggle_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-client_lists": get_client_lists_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-edgehostname": list_edgehostname_command,
+        f"{INTEGRATION_COMMAND_NAME}-generic-api-call-command": generic_api_call_command,
     }
     try:
-        readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
-        return_outputs(readable_output, outputs, raw_response)
+        if (
+            command == f"{INTEGRATION_COMMAND_NAME}-activate-client-list"
+            or command == f"{INTEGRATION_COMMAND_NAME}-deactivate-client-list"
+        ):
+            if command == f"{INTEGRATION_COMMAND_NAME}-activate-client-list":
+                return_results(
+                    activate_client_list_command(
+                        demisto.args(),
+                        client=client,
+                    )
+                )
+            else:
+                return_results(deactivate_client_list_command(demisto.args(), client=client))
+        else:
+            readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
+            return_outputs(readable_output, outputs, raw_response)
 
     except Exception as e:
         err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ == "builtins":
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

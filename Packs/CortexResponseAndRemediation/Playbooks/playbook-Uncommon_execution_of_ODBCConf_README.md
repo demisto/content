@@ -13,7 +13,7 @@ If the CGO process is not signed and not prevalent, or if either of these condit
 Investigation:
 During the alert investigation, the playbook will perform the following:
 
-Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
+Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :
 - Evasion Technique - 3048798454
 - Evasion Technique - 474958459
 - An uncommon LOLBIN added to startup-related Registry keys
@@ -26,7 +26,7 @@ Searches for related Cortex XSIAM alerts and insights on the same causalities ch
 The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
 
 
-Remediation:  
+Remediation:
 
 - Automatically terminate the causality process.
 - Automatically Close the alert.

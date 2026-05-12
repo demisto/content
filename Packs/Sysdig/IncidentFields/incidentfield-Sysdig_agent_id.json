@@ -1,0 +1,28 @@
+{
+    "id": "incident_sysdigagentid",
+    "version": -1,
+    "name": "Sysdig Agent ID",
+    "ownerOnly": false,
+    "description": "The Sysdig Agent ID",
+    "cliName": "sysdigagentid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Sysdig Runtime Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "fromVersion": "6.0.0"
+}

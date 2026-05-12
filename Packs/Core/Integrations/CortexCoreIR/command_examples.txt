@@ -42,3 +42,4 @@
 !core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
 !core-get-asset-details asset_id=123
 !core-execute-command command=dir endpoint_ids=5jhgu74i6bnh41mk45127413k4
+!core-block-ip duration=2 endpoint_list="AAA" ip_list="1.1.1.1"

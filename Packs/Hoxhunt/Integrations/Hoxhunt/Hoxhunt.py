@@ -249,7 +249,7 @@ def main():
             queryfilter = demisto.params().get('queryfilter')
             fetch_incidents(client, fetch_time, queryfilter)
         elif demisto.command() == 'hoxhunt-get-current-user':
-            # Get the current user’s emails, no arguments required
+            # Get the current user's emails, no arguments required
             query = '{currentUser {emails {address}}}'
             results = client.query(query)
             return_results(create_output(results.get('data', {}).get('currentUser', {}).get('emails'), 'CurrentUser'))
