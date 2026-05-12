@@ -1414,7 +1414,7 @@ class AssistantMessagingHandler:
         """
         return (
             "--- Source chat context ---\n"
-            "The following is automatically attached metadata about the chat session.\n"
+            "The following chat session metadata is automatically attached.\n"
             f"This chat was initiated from {self.PLATFORM_NAME}.\n"
             f"channel_id: {channel_id}\n"
             f"thread_id: {thread_id}\n"
