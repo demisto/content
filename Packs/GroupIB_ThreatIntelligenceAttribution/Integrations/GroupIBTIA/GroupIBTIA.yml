@@ -293,6 +293,9 @@ script:
     - contextPath: GIBTIA.CompromisedSPD.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1071,6 +1074,8 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - description: 'GIB event id.e.g.: 192.168.0.1.'
       name: id
@@ -1119,6 +1124,8 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
+    compliantpolicies:
+    - IP Blockage
   - name: domain
     description: Runs reputation on domains.
     arguments:
@@ -1145,6 +1152,8 @@ script:
     - contextPath: Domain.Name
       description: Domain name.
       type: String
+    compliantpolicies:
+    - User Soft Remediation
   - name: file
     description: Runs reputation on files.
     arguments:
@@ -1249,6 +1258,9 @@ script:
     - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1300,6 +1312,9 @@ script:
     - contextPath: GIBTIA.CompromisedSPD.threatActor
       description: Associated threat actor.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1357,6 +1372,9 @@ script:
     - contextPath: GIBTIA.CompromisedMule.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1384,6 +1402,9 @@ script:
     - contextPath: GIBTIA.DataBreach.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1426,6 +1447,9 @@ script:
     - contextPath: GIBTIA.GitLeak.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1471,6 +1495,9 @@ script:
     - contextPath: GIBTIA.PublicLeak.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1520,6 +1547,9 @@ script:
     - contextPath: GIBTIA.OSIVulnerability.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1580,6 +1610,9 @@ script:
     - contextPath: GIBTIA.AttacksDDoS.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1619,6 +1652,9 @@ script:
     - contextPath: GIBTIA.AttacksDeface.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1740,6 +1776,9 @@ script:
     - contextPath: GIBTIA.Threat.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB internal threatActor ID.
@@ -1813,6 +1852,9 @@ script:
     - contextPath: GIBTIA.ThreatActor.stat.sectors
       description: Sectors attacked by threat actor.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1840,6 +1882,9 @@ script:
     - contextPath: GIBTIA.SuspiciousIPTorNode.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1876,6 +1921,9 @@ script:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -1903,6 +1951,9 @@ script:
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.evaluation.severity
       description: Event severity.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments: []
     description: Returns list of available collections.
     name: gibti-get-available-collections
@@ -1958,6 +2009,9 @@ script:
     - contextPath: GIBTIA.MalwareCNC.id
       description: GIB event ID.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         Query you want to search.
@@ -2055,16 +2109,25 @@ script:
       name: id
     description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
     name: gibti-get-suspicious-ip-vpn-info
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
     name: gibti-get-suspicious-ip-scanner-info
     arguments:
     - name: id
       description: 'GIB event id.e.g.: 192.168.0.1.'
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
       name: id
     description: Command performs Group IB event lookup in malware/malware collection by provided ID.
     name: gibti-get-malware-malware-info
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -2072,6 +2135,9 @@ script:
       required: true
     description: Command performs Group IB event lookup in compromised/bank_card_group collection by provided ID.
     name: gibti-get-compromised-card-group-info
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: |-
         GIB event id.
@@ -2079,6 +2145,9 @@ script:
       required: true
     description: Command performs Group IB event lookup in compromised/masked_card collection by provided ID.
     name: gibti-get-compromised-masked-card-info
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: GIB event id.
       name: id
@@ -2094,6 +2163,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
 tests:
 - Group-IB Threat Intelligence -Test
 fromversion: 6.0.0
