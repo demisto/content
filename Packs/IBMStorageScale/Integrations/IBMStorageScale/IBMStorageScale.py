@@ -806,9 +806,6 @@ async def acl_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     user_group = args.get("user_group")
     raw = await client.list_acls(user_group=user_group)
 
-    # Per the API docs, BOTH `GET /access/acls` and `GET /access/acls/{userGroup}`
-    # return the same shape: {"acls": [...], "status": {...}}. The per-user_group
-    # endpoint returns the same array (typically with a single entry for that group).
     acls_for_table = raw.get("acls", []) if isinstance(raw, dict) else []
 
     title = f"IBM Storage Scale ACLs for '{user_group}'" if user_group else "IBM Storage Scale ACLs"
@@ -836,10 +833,6 @@ async def filesystem_acl_get_command(client: Client, args: dict[str, Any]) -> Co
     """
     file_system_name = args["file_system_name"]
     path = args["path"]
-    # The YAML declares `fields` with `isArray: true`, so XSOAR may pass either a
-    # CSV string or a list. `argToList` handles both and we re-CSV-join for the
-    # wire. When the user omits the argument we pass `fields=None` so the query
-    # parameter is not sent at all (the docs do not promise an API default).
     fields_list = argToList(args.get("fields"))
     fields = ",".join(fields_list) if fields_list else None
 
@@ -849,16 +842,11 @@ async def filesystem_acl_get_command(client: Client, args: dict[str, Any]) -> Co
         fields=fields,
     )
 
-    # Per the API docs the response shape is {"status": {...}, "acl": {"type": ...,
-    # "entries": [{"type":..., "who":..., "permissions":..., "flags":...}]}}.
-    # The body has NO `filesystemName`, `path`, `owner`, or `group` fields.
     acl_obj = raw.get("acl") if isinstance(raw, dict) else None
     entries = acl_obj.get("entries", []) if isinstance(acl_obj, dict) else []
 
     return CommandResults(
         outputs_prefix="IBMStorageScale.FileSystemACL",
-        # No documented natural primary key on this response. We omit
-        # `outputs_key_field` rather than invent one.
         outputs=raw,
         raw_response=raw,
         readable_output=tableToMarkdown(
