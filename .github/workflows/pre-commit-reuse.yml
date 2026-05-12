@@ -127,7 +127,7 @@ jobs:
         steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
         ! github.event.pull_request.head.repo.fork
-      uses: MishaKav/pytest-coverage-comment@ef975f05ff4ca5a053e7d42ceb31000a085d17e4 # main
+      uses: MishaKav/pytest-coverage-comment@a01708271d42c5703d489b13eb503ba47c01e82a # main
       continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
