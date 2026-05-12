@@ -2735,6 +2735,25 @@ def test_get_modified_remote_data_uses_slim_query(mock_check_api, _get_ctx, _set
 @patch("Wiz.demisto.setIntegrationContext")
 @patch("Wiz.demisto.getIntegrationContext", return_value={})
 @patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_empty_cursor_short_circuits(mock_check_api, _get_ctx, _set_ctx):
+    """First mirror cycle (no lastUpdate, no saved cursor) must short-circuit
+    to an empty response without calling checkAPIerrors.
+
+    The Wiz API rejects {"after": ""} as an invalid datetime, so issuing the
+    query with an empty cursor would crash the mirror cycle. The short-circuit
+    lets XSOAR retry on the next cycle once lastUpdate is populated."""
+    from Wiz import get_modified_remote_data_command
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        result = get_modified_remote_data_command({"lastUpdate": ""})
+
+    assert mock_check_api.call_count == 0
+    assert result.modified_incident_ids == []
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
 def test_get_modified_remote_data_single_page_only(mock_check_api, _get_ctx, _set_ctx):
     """Mirror must do exactly ONE GraphQL call per cycle, even when hasNextPage=True.
     The unbounded pagination loop in _fetch_all_issue_nodes is what blew the timeout —
