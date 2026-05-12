@@ -169,7 +169,7 @@ script:
       required: true
       isArray: false
     - name: fields
-      description: "A comma-separated list of fields to include in the response. To include all available fields, use ":all:". When omitted, the API applies its own default behavior."
+      description: 'A comma-separated list of fields to include in the response. To include all available fields, use ":all:". When omitted, the API applies its own default behavior.'
       required: false
       isArray: true
     outputs:

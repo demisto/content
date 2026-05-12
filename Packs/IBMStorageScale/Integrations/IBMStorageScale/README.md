@@ -170,7 +170,7 @@ This command has no arguments.
 ### ibm-storage-scale-acl-delete
 
 ***
-Deletes all the REST API access control lists (ACL) defined for a user group. This is a potentially destructive operation.
+Deletes all REST API access control lists (ACL) defined for a user group. This is a potentially destructive operation.
 
 #### Base Command
 
@@ -180,7 +180,7 @@ Deletes all the REST API access control lists (ACL) defined for a user group. Th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_group | The user group name from which the ACLs are to be deleted. | Required |
+| user_group | The name of the user group from which to delete the ACLs. | Required |
 
 #### Context Output
 
@@ -189,7 +189,7 @@ There is no context output for this command.
 ### ibm-storage-scale-filesystem-acl-get
 
 ***
-Gets information about the access control list (ACL) set for a file or directory in a filesystem.
+Returns information about the access control list (ACL) for a file or directory in a file system.
 
 #### Base Command
 
@@ -199,25 +199,25 @@ Gets information about the access control list (ACL) set for a file or directory
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_system_name | The name of the filesystem (e.g., gpfs0). | Required |
-| path | The file path relative to the filesystem mount point, using forward slashes (e.g., mnt/gpfs0/rest01). The forward slashes are URL-encoded to %2F automatically when the request is built. | Required |
-| fields | Optional comma-separated list of fields to include in the response. Pass ':all:' to explicitly request all available fields. When omitted, the query parameter is not sent and the API applies its own default behavior (the API docs do not document what that default is). | Optional |
+| file_system_name | The name of the file system (for example, gpfs0). | Required |
+| path | The file path relative to the file system mount point. Use forward slashes (for example, mnt/gpfs0/rest01). | Required |
+| fields | A comma-separated list of fields to include in the response. To include all available fields, use ":all:". When omitted, the API applies its own default behavior. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IBMStorageScale.FileSystemACL.acl.type | String | Type of the ACL \(e.g., NFSv4\). |
+| IBMStorageScale.FileSystemACL.acl.type | String | The type of the ACL \(for example, NFSv4\). |
 | IBMStorageScale.FileSystemACL.acl.entries | Unknown | The access control entries for the file or directory. |
-| IBMStorageScale.FileSystemACL.acl.entries.type | String | Type of the entry \(allow, deny, alarm, or audit\). |
-| IBMStorageScale.FileSystemACL.acl.entries.who | String | The name of the user or group for which the ACL is applicable \(e.g., 'special:owner@', 'special:group@', 'special:everyone@', 'user:\{name\}', 'group:\{name\}'\). |
-| IBMStorageScale.FileSystemACL.acl.entries.permissions | String | The access permissions string \(e.g., 'rxancs'\). |
-| IBMStorageScale.FileSystemACL.acl.entries.flags | String | Special flags and inheritance definition string \(e.g., 'fd'\). |
+| IBMStorageScale.FileSystemACL.acl.entries.type | String | The entry type. Can be 'allow', 'deny', 'alarm', or 'audit'. |
+| IBMStorageScale.FileSystemACL.acl.entries.who | String | The name of the user or group to which the ACL applies \(for example, 'special:owner@', 'special:group@', 'special:everyone@', 'user:\{name\}', 'group:\{name\}'\). |
+| IBMStorageScale.FileSystemACL.acl.entries.permissions | String | The access permissions string \(for example, 'rxancs'\). |
+| IBMStorageScale.FileSystemACL.acl.entries.flags | String | The special flags and inheritance definition string \(for example, 'fd'\). |
 
 ### ibm-storage-scale-acl-list
 
 ***
-Gets the list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
+Returns a list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
 
 #### Base Command
 
@@ -227,7 +227,7 @@ Gets the list of all REST API access control lists (ACLs). If a user group is pr
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_group | Optional user group name. When provided, calls GET /scalemgmt/v2/access/acls/{userGroup} and returns only the ACLs for that user group. When omitted, lists all ACLs. | Optional |
+| user_group | The name of the user group by which to filter results. When provided, returns the ACLs for that user group. When omitted, lists all ACLs. | Optional |
 
 #### Context Output
 
@@ -236,7 +236,7 @@ Gets the list of all REST API access control lists (ACLs). If a user group is pr
 | IBMStorageScale.ACL.acls | Unknown | The list of ACL objects returned by the API. |
 | IBMStorageScale.ACL.acls.userGroup | String | The user group for which the access control list is defined. |
 | IBMStorageScale.ACL.acls.entries | Unknown | The access control entries for the user group. |
-| IBMStorageScale.ACL.acls.entries.entryId | Number | The REST API access control list entry ID. |
+| IBMStorageScale.ACL.acls.entries.entryId | Number | The ID of the REST API access control list entry. |
 | IBMStorageScale.ACL.acls.entries.type | String | The type of access provided \(ALLOW or DENY\). |
 | IBMStorageScale.ACL.acls.entries.method | String | The REST API request method \(GET, PUT, POST, or DELETE\). |
 | IBMStorageScale.ACL.acls.entries.uri | String | The resource URL the access control entry applies to. |
@@ -244,7 +244,7 @@ Gets the list of all REST API access control lists (ACLs). If a user group is pr
 ### ibm-storage-scale-acl-entry-delete
 
 ***
-Deletes a specified REST API access control list (ACL) entry defined for a user group. This is a potentially destructive operation.
+Deletes a specific REST API access control list (ACL) entry for a user group. This is a potentially destructive operation.
 
 #### Base Command
 
@@ -255,7 +255,7 @@ Deletes a specified REST API access control list (ACL) entry defined for a user 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_group | The user group name the ACL entry belongs to. | Required |
-| entry_id | The ID of the ACL entry that is to be deleted. | Required |
+| entry_id | The ID of the ACL entry to delete. | Required |
 
 #### Context Output
 
