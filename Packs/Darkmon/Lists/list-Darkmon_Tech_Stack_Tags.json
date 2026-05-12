@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Tech Stack Tags",
+    "version": -1,
+    "name": "Darkmon - Tech Stack Tags",
+    "description": "Customer technology tags, one per line (e.g. nginx, openssl, apache). The Critical CVE Pipeline filters CVEs to those whose tags intersect this list.",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

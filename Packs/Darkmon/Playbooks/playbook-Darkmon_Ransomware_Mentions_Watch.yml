@@ -1,0 +1,188 @@
+id: Darkmon - Ransomware Mentions Watch
+version: -1
+name: Darkmon - Ransomware Mentions Watch
+description: Every 6 hours, polls ransomware mentions for the customer organisation. New entries open a critical 'Darkmon Ransomware Mention' incident and notify the CISO via Generic Notify.
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - monitoring
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eff80257-5aa8-4ceb-b61a-3b3248bfcd4c
+    type: start
+    task:
+      id: eff80257-5aa8-4ceb-b61a-3b3248bfcd4c
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ea07a276-36b2-485d-a212-90e060284889
+    type: regular
+    task:
+      id: ea07a276-36b2-485d-a212-90e060284889
+      version: -1
+      name: "Fetch ransomware mentions"
+      script: "Darkmon|||dmontip-get-ransomware"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      type:
+        simple: "mentions"
+      size:
+        simple: "50"
+      sort:
+        simple: "publishedAt,desc"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: aa4e0d9f-3d6d-4c4e-a083-8624a4576214
+    type: regular
+    task:
+      id: aa4e0d9f-3d6d-4c4e-a083-8624a4576214
+      version: -1
+      name: "Filter new mentions"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonFilterUnseen
+    scriptarguments:
+      items:
+        simple: "${{Darkmon.Ransomware}}"
+      id_field:
+        simple: "id"
+      seen_list:
+        simple: "Darkmon - Seen Ransomware Mentions"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 568ce999-4e54-46c7-9a0d-cb412ca28b8c
+    type: regular
+    task:
+      id: 568ce999-4e54-46c7-9a0d-cb412ca28b8c
+      version: -1
+      name: "Open critical incidents"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonCreateIncidents
+    scriptarguments:
+      items:
+        simple: "${{NewAccounts}}"
+      incident_type:
+        simple: "Darkmon Ransomware Mention"
+      severity:
+        simple: "4"
+      name_template:
+        simple: "Darkmon: ${{victimName}} listed by ${{threatActor}}"
+      field_map:
+        simple: "darkmonvictimname=victimName,darkmonthreatactor=threatActor,darkmonpublishedat=publishedAt,darkmonscreenshoturl=screenShotUrl"
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d23b8918-25ef-4325-9412-eb83170bff09
+    type: playbook
+    task:
+      id: d23b8918-25ef-4325-9412-eb83170bff09
+      version: -1
+      name: "Page CISO"
+      type: playbook
+      iscommand: false
+      brand: ""
+      scriptName: Darkmon - Generic Notify
+    scriptarguments:
+      Subject:
+        simple: "CRITICAL: Darkmon ransomware mention"
+      Body:
+        simple: "${{NewAccounts.length}} new ransomware mentions of the company."
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: db745e82-1ae8-4f2e-9f2d-978ca7dd8a7a
+    type: title
+    task:
+      id: db745e82-1ae8-4f2e-9f2d-978ca7dd8a7a
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 380, "x": 50, "y": 50}}}
+inputs: []
+outputs: []
+tests:
+  - No tests

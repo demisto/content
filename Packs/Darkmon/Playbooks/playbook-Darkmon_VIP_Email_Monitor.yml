@@ -1,0 +1,125 @@
+id: Darkmon - VIP Email Monitor
+version: -1
+name: Darkmon - VIP Email Monitor
+description: Hourly poll of board-protected emails. For each protected email, checks accounts/combo-lists/public-breaches and opens a 'Darkmon VIP Email Leak' incident per new entry.
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - monitoring
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ef4aa57f-333c-4fc4-acb0-15078c6b9a92
+    type: start
+    task:
+      id: ef4aa57f-333c-4fc4-acb0-15078c6b9a92
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 999c507e-0303-4c2c-8462-81e5f5e41438
+    type: regular
+    task:
+      id: 999c507e-0303-4c2c-8462-81e5f5e41438
+      version: -1
+      name: "List protected emails"
+      description: "Pulls all currently board-protected emails."
+      script: "Darkmon|||dmontip-get-boardprotection"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      size:
+        simple: "100"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e0fdc6ca-d56e-4da3-8d9d-5985267cb38f
+    type: regular
+    task:
+      id: e0fdc6ca-d56e-4da3-8d9d-5985267cb38f
+      version: -1
+      name: "Per-email leak fan-out"
+      description: "Helper script: for each email, runs dmontip-get-boardemails three times (accounts, combo-lists, public-breaches), filters new entries via the seen list, creates incidents."
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonVIPFanOut
+    scriptarguments:
+      emails:
+        simple: "${{Darkmon.BoardProtection.value}}"
+      seen_list:
+        simple: "Darkmon - Seen VIP Leaks"
+      incident_type:
+        simple: "Darkmon VIP Email Leak"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1c286565-f885-4638-9cc4-76e73ae868d3
+    type: title
+    task:
+      id: 1c286565-f885-4638-9cc4-76e73ae868d3
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 560, "width": 380, "x": 50, "y": 50}}}
+inputs: []
+outputs:
+  - contextPath: Darkmon.BoardProtection
+    description: List of currently board-protected emails.
+    type: unknown
+tests:
+  - No tests

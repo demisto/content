@@ -1,0 +1,16 @@
+{
+    "id": "Darkmon - Critical CVE Pipeline",
+    "version": -1,
+    "name": "Darkmon - Critical CVE Pipeline",
+    "details": "Scheduled trigger for the 'Darkmon - Critical CVE Pipeline' playbook.",
+    "type": "Darkmon Critical CVE",
+    "scheduled": true,
+    "cronView": true,
+    "cron": "45 6 * * *",
+    "playbookId": "Darkmon - Critical CVE Pipeline",
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

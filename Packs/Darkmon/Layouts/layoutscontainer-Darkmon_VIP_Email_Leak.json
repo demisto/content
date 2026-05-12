@@ -1,0 +1,93 @@
+{
+    "TypeName": "Darkmon VIP Email Leak",
+    "definitionId": "",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "name": "Darkmon VIP Email Leak",
+    "id": "Darkmon VIP Email Leak",
+    "group": "incident",
+    "description": "Layout for Darkmon VIP Email Leak incidents.",
+    "detached": false,
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Summary",
+                "type": "summary"
+            },
+            {
+                "id": "darkmon",
+                "name": "Darkmon",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "darkmon-overview",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonprotectedemail",
+                                "height": 22,
+                                "id": "field-incident_darkmonprotectedemail",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonleaktype",
+                                "height": 22,
+                                "id": "field-incident_darkmonleaktype",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonsourcename",
+                                "height": 22,
+                                "id": "field-incident_darkmonsourcename",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonleakid",
+                                "height": 22,
+                                "id": "field-incident_darkmonleakid",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Darkmon Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
+            },
+            {
+                "id": "investigation",
+                "name": "Investigation",
+                "type": "investigation"
+            },
+            {
+                "id": "war_room",
+                "name": "War Room",
+                "type": "warRoom"
+            }
+        ]
+    }
+}

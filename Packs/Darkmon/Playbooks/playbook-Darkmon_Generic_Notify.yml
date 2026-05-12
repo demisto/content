@@ -1,0 +1,345 @@
+id: Darkmon - Generic Notify
+version: -1
+name: Darkmon - Generic Notify
+description: Provider-agnostic notification dispatcher. Reads "Darkmon - Notification
+  Provider" List for the configured target (slack | teams | email | servicenow |
+  jira) and routes to the matching command.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3d7deead-057c-4a78-a75a-00ec3fb67659
+    type: start
+    task:
+      id: 3d7deead-057c-4a78-a75a-00ec3fb67659
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0b8c69c3-6dbf-47d5-9b50-90cc0805bbb5
+    type: condition
+    task:
+      id: 0b8c69c3-6dbf-47d5-9b50-90cc0805bbb5
+      version: -1
+      name: Provider switch
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+    - label: slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: lists.Darkmon - Notification Provider
+            iscontext: true
+          ignorecase: true
+          right:
+            value:
+              simple: slack
+    - label: teams
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: lists.Darkmon - Notification Provider
+            iscontext: true
+          ignorecase: true
+          right:
+            value:
+              simple: teams
+    - label: email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: lists.Darkmon - Notification Provider
+            iscontext: true
+          ignorecase: true
+          right:
+            value:
+              simple: email
+    - label: servicenow
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: lists.Darkmon - Notification Provider
+            iscontext: true
+          ignorecase: true
+          right:
+            value:
+              simple: servicenow
+    - label: jira
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: lists.Darkmon - Notification Provider
+            iscontext: true
+          ignorecase: true
+          right:
+            value:
+              simple: jira
+    nexttasks:
+      '#default#':
+      - "7"
+      slack:
+      - "2"
+      teams:
+      - "3"
+      email:
+      - "4"
+      servicenow:
+      - "5"
+      jira:
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b02d32ea-eed6-46af-849d-a16b72e74287
+    type: regular
+    task:
+      id: b02d32ea-eed6-46af-849d-a16b72e74287
+      version: -1
+      name: Send Slack message
+      script: send-notification
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      message: {"complex": {"root": "inputs.Body"}}
+      to: {"complex": {"root": "inputs.SlackChannel"}}
+      using: {"simple": "Slack"}
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": -300, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6bfe95d5-7782-418d-88e4-0c486d2c9f30
+    type: regular
+    task:
+      id: 6bfe95d5-7782-418d-88e4-0c486d2c9f30
+      version: -1
+      name: Send Teams message
+      script: send-notification
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      message: {"complex": {"root": "inputs.Body"}}
+      to: {"complex": {"root": "inputs.TeamsChannel"}}
+      using: {"simple": "Microsoft Teams"}
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": -150, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: aaf0f6c8-7ab7-4294-bbba-cc512cde7573
+    type: regular
+    task:
+      id: aaf0f6c8-7ab7-4294-bbba-cc512cde7573
+      version: -1
+      name: Send email
+      script: send-mail
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      to: {"complex": {"root": "inputs.EmailTo"}}
+      subject: {"complex": {"root": "inputs.Subject"}}
+      body: {"complex": {"root": "inputs.Body"}}
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 0, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 801ab1aa-6d9d-4743-b81b-f59a3e9a4240
+    type: regular
+    task:
+      id: 801ab1aa-6d9d-4743-b81b-f59a3e9a4240
+      version: -1
+      name: Create ServiceNow ticket
+      script: servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      short_description: {"complex": {"root": "inputs.Subject"}}
+      description: {"complex": {"root": "inputs.Body"}}
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 150, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 370d0f85-b465-4e47-839c-1f0b61262716
+    type: regular
+    task:
+      id: 370d0f85-b465-4e47-839c-1f0b61262716
+      version: -1
+      name: Create Jira issue
+      script: jira-create-issue
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      summary: {"complex": {"root": "inputs.Subject"}}
+      description: {"complex": {"root": "inputs.Body"}}
+      issueTypeName: {"simple": "Task"}
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 300, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d5a56ee0-004f-4a05-8aee-684819ccafbd
+    type: regular
+    task:
+      id: cf3ba0ec-3a59-47d4-9038-f833e0f900a4
+      version: -1
+      name: 'Fallback: log to War Room'
+      description: No notification provider configured. The Subject and Body are
+        left in the War Room for the analyst.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message: {"complex": {"root": "inputs.Subject", "transformers":
+                  [{"operator": "concat", "args": {"prefix":
+                  {"value": {"simple": "[Darkmon] "}}, "suffix":
+                  {"value": {"simple": " - configure 'Darkmon - Notification Provider' to route alerts."}}}}]}}
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 450, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 2b1883fa-edd0-4e3b-9b7c-9c0abcc24128
+    type: title
+    task:
+      id: 2b1883fa-edd0-4e3b-9b7c-9c0abcc24128
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 540}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 555, "width": 1000, "x": -300, "y": 50}}}
+inputs:
+- key: Subject
+  value: {}
+  required: true
+  description: Short subject of the notification.
+- key: Body
+  value: {}
+  required: true
+  description: Body of the notification (markdown supported by most providers).
+- key: SlackChannel
+  value:
+    simple: '#soc-alerts'
+  required: false
+  description: Slack channel (used only when provider=slack).
+- key: TeamsChannel
+  value: {}
+  required: false
+  description: Teams channel (used only when provider=teams).
+- key: EmailTo
+  value: {}
+  required: false
+  description: Email recipients (used only when provider=email).
+outputs: []
+tests:
+- No tests

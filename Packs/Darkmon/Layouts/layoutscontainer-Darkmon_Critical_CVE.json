@@ -1,0 +1,93 @@
+{
+    "TypeName": "Darkmon Critical CVE",
+    "definitionId": "",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "name": "Darkmon Critical CVE",
+    "id": "Darkmon Critical CVE",
+    "group": "incident",
+    "description": "Layout for Darkmon Critical CVE incidents.",
+    "detached": false,
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Summary",
+                "type": "summary"
+            },
+            {
+                "id": "darkmon",
+                "name": "Darkmon",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "darkmon-overview",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmoncveid",
+                                "height": 22,
+                                "id": "field-incident_darkmoncveid",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmoncvssscore",
+                                "height": 22,
+                                "id": "field-incident_darkmoncvssscore",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmoncveseverity",
+                                "height": 22,
+                                "id": "field-incident_darkmoncveseverity",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonaffectedcomponents",
+                                "height": 22,
+                                "id": "field-incident_darkmonaffectedcomponents",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Darkmon Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
+            },
+            {
+                "id": "investigation",
+                "name": "Investigation",
+                "type": "investigation"
+            },
+            {
+                "id": "war_room",
+                "name": "War Room",
+                "type": "warRoom"
+            }
+        ]
+    }
+}

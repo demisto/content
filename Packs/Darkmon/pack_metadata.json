@@ -1,0 +1,62 @@
+{
+    "id": "Darkmon",
+    "name": "Darkmon",
+    "description": "Stay ahead of cyber threats with Darkmon TIP - real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets. The pack provides indicator enrichment, compromised-credentials monitoring, board-level VIP email protection, ransomware mention tracking, brand-targeting NRD detection, and critical CVE pipelines, plus provider-agnostic incident response playbooks ready to plug into any SOC stack.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Darkmon",
+    "url": "https://darkmon.com",
+    "email": "support@darkmon.com",
+    "devEmail": ["support@darkmon.com"],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "TIP",
+        "Threat Intelligence",
+        "Compromised Credentials",
+        "Ransomware",
+        "Brand Protection",
+        "Vulnerability"
+    ],
+    "useCases": [
+        "Threat Intelligence Platform",
+        "Phishing",
+        "Ransomware",
+        "Account Takeover",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "darkmon",
+        "tip",
+        "threat intelligence",
+        "dark web",
+        "deep web",
+        "compromised credentials",
+        "stealer logs",
+        "ransomware",
+        "typosquatting",
+        "nrd",
+        "cve"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "created": "2026-05-04T00:00:00Z",
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "githubUser": ["dakmon-cybersecurity"]
+}

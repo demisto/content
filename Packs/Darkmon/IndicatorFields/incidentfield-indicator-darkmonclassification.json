@@ -1,0 +1,39 @@
+{
+    "id": "indicator_darkmonclassification",
+    "version": -1,
+    "modified": "2026-05-04T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon Classification",
+    "ownerOnly": false,
+    "cliName": "darkmonclassification",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "IP",
+        "Domain",
+        "URL",
+        "File"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "description": "Darkmon's classification of the indicator (e.g. malicious, phishing, suspicious, clean).",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

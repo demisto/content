@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Seen Ransomware Mentions",
+    "version": -1,
+    "name": "Darkmon - Seen Ransomware Mentions",
+    "description": "State store: ransomware mention IDs already actioned.",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

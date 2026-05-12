@@ -1,0 +1,189 @@
+id: Darkmon - EDR Alert Enrichment
+version: -1
+name: Darkmon - EDR Alert Enrichment
+description: "Designed to be invoked from CrowdStrike / SentinelOne / Defender alert playbooks. Takes the alert's IOCs, enriches each via Darkmon, and if any are scored Bad, escalates incident severity and notifies the SOC. Endpoint containment is left to the EDR-specific playbook."
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - edr
+  - ir
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 34f83352-a2f5-4e17-bd3c-39b00fdf618e
+    type: start
+    task:
+      id: 34f83352-a2f5-4e17-bd3c-39b00fdf618e
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: aea160ea-f963-41aa-b1ce-0cecbbd805a0
+    type: playbook
+    task:
+      id: aea160ea-f963-41aa-b1ce-0cecbbd805a0
+      version: -1
+      name: "Enrich IOCs via Darkmon (URL pass)"
+      description: "Replicate this task for IP/Domain/File/Email if the EDR alert exposes those IOCs."
+      playbookName: "Darkmon - Enrich URL"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      URL:
+        simple: "${incident.alerturls}"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1ca794ff-eb92-4ac2-9906-0df8602f5e00
+    type: condition
+    task:
+      id: 1ca794ff-eb92-4ac2-9906-0df8602f5e00
+      version: -1
+      name: "Any malicious?"
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "DBotScore.Score"}
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value:
+                    simple: 3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    nexttasks:
+      "yes":
+        - "3"
+      "#default#":
+        - "4"
+
+  "3":
+    id: "3"
+    taskid: a5e653c6-3a7c-43dd-bb14-e5eaaddfb968
+    type: regular
+    task:
+      id: a5e653c6-3a7c-43dd-bb14-e5eaaddfb968
+      version: -1
+      name: "Escalate severity to Critical"
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: "incident.severity"
+      value:
+        simple: "4"
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 300, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 97d350cd-746d-4727-8dc9-4397bc312f97
+    type: playbook
+    task:
+      id: 97d350cd-746d-4727-8dc9-4397bc312f97
+      version: -1
+      name: "Notify SOC"
+      playbookName: "Darkmon - Generic Notify"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Subject:
+        simple: "EDR alert enriched - ${DBotScore.length:0} IOCs evaluated"
+      Body:
+        simple: "${DBotScore(val.Score === 3).Indicator}"
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a66ce7e8-9b66-4993-abe1-beda29d76245
+    type: title
+    task:
+      id: a66ce7e8-9b66-4993-abe1-beda29d76245
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 520, "x": 50, "y": 50}}}
+inputs: []
+outputs:
+  - contextPath: DBotScore
+    description: Per-IOC reputation scores from Darkmon.
+    type: unknown
+tests:
+  - No tests

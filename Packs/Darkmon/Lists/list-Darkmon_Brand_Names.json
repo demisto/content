@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Brand Names",
+    "version": -1,
+    "name": "Darkmon - Brand Names",
+    "description": "One brand per line (e.g. acme, acmeproducts). The NRD Brand Watch flags any newly-registered domain whose Levenshtein distance to a brand is at most the configured threshold (default 2).",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

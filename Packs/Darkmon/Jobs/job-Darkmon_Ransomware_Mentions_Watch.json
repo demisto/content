@@ -1,0 +1,16 @@
+{
+    "id": "Darkmon - Ransomware Mentions Watch",
+    "version": -1,
+    "name": "Darkmon - Ransomware Mentions Watch",
+    "details": "Scheduled trigger for the 'Darkmon - Ransomware Mentions Watch' playbook.",
+    "type": "Darkmon Ransomware Mention",
+    "scheduled": true,
+    "cronView": true,
+    "cron": "0 */6 * * *",
+    "playbookId": "Darkmon - Ransomware Mentions Watch",
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

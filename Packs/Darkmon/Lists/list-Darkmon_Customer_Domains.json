@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Customer Domains",
+    "version": -1,
+    "name": "Darkmon - Customer Domains",
+    "description": "Comma-separated customer email/web domains (e.g. acme.com,acme.co.uk). The Compromised Credentials Sweep filters Darkmon results to usernames matching any of these domains.",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

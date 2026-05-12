@@ -1,0 +1,37 @@
+{
+    "id": "indicator_darkmonfirstcompromise",
+    "version": -1,
+    "modified": "2026-05-04T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon First Compromise",
+    "ownerOnly": false,
+    "cliName": "darkmonfirstcompromise",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Email",
+        "Account"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "description": "Earliest date Darkmon observed this indicator in compromise data.",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

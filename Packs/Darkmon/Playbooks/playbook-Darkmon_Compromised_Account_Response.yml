@@ -1,0 +1,182 @@
+id: Darkmon - Compromised Account Response
+version: -1
+name: Darkmon - Compromised Account Response
+description: "Incident-type playbook for 'Darkmon Compromised Credential' (and similar). Identifies the user via the configured directory, suspends, forces a password reset, revokes active sessions, and notifies SOC + the user."
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - ir
+  - account-takeover
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 68996222-a5f9-4d1b-beb3-a6a005afad3e
+    type: start
+    task:
+      id: 68996222-a5f9-4d1b-beb3-a6a005afad3e
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 661e384e-b84a-47aa-9545-2767bc2b27f9
+    type: playbook
+    task:
+      id: 661e384e-b84a-47aa-9545-2767bc2b27f9
+      version: -1
+      name: "Disable account"
+      description: "Routes to AD/Okta/AzureAD per identity provider list."
+      playbookName: "Darkmon - Generic User Action"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Username:
+        simple: "${incident.darkmonusername}"
+      Action:
+        simple: "disable"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1f6fb4ed-7978-45d4-aa99-88584a6aa191
+    type: playbook
+    task:
+      id: 1f6fb4ed-7978-45d4-aa99-88584a6aa191
+      version: -1
+      name: "Force password reset"
+      playbookName: "Darkmon - Generic User Action"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Username:
+        simple: "${incident.darkmonusername}"
+      Action:
+        simple: "reset-password"
+      NewPassword:
+        simple: "${random_password}"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 68e42c77-12d0-42f6-a48f-9a704db515e7
+    type: playbook
+    task:
+      id: 68e42c77-12d0-42f6-a48f-9a704db515e7
+      version: -1
+      name: "Revoke active sessions"
+      playbookName: "Darkmon - Generic User Action"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Username:
+        simple: "${incident.darkmonusername}"
+      Action:
+        simple: "revoke-sessions"
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 32a3806b-a38f-4ecc-ab91-237b23df2090
+    type: playbook
+    task:
+      id: 32a3806b-a38f-4ecc-ab91-237b23df2090
+      version: -1
+      name: "Notify SOC + user"
+      playbookName: "Darkmon - Generic Notify"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Subject:
+        simple: "Account ${incident.darkmonusername} has been suspended"
+      Body:
+        simple: "Account suspended after Darkmon flagged it as compromised. Reset/revoke completed. Verify in Audit log."
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 56c90d3d-d139-4bcb-99a8-fd74efffe22f
+    type: title
+    task:
+      id: 56c90d3d-d139-4bcb-99a8-fd74efffe22f
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 400, "x": 50, "y": 50}}}
+inputs: []
+outputs: []
+tests:
+  - No tests

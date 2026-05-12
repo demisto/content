@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Identity Provider",
+    "version": -1,
+    "name": "Darkmon - Identity Provider",
+    "description": "Single-value list with the configured directory provider. One of: ad, okta, azuread. Read by the Generic User Action sub-playbook.",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

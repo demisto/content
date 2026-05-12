@@ -1,0 +1,253 @@
+id: Darkmon - Phishing Email Triage
+version: -1
+name: Darkmon - Phishing Email Triage
+description: "Extracts URLs/IPs/file-hashes from a reported phishing email, enriches each via the Darkmon - Enrich * sub-playbooks, and if any indicator is scored Bad (DBotScore=3) calls Generic Block Indicator on it. Notifies the reporter and the SOC at the end."
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - phishing
+  - ir
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f19c1a2-93f8-4063-958a-159340d40505
+    type: start
+    task:
+      id: 9f19c1a2-93f8-4063-958a-159340d40505
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7b4810de-b9b5-4457-9d44-c61c34053b4b
+    type: regular
+    task:
+      id: 7b4810de-b9b5-4457-9d44-c61c34053b4b
+      version: -1
+      name: "Extract IOCs from email"
+      description: "Uses the platform ExtractIndicatorsFromTextFile script to harvest IOCs from the incoming email body."
+      scriptName: ExtractIndicatorsFromTextFile
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      text:
+        simple: "${incident.emailbody}"
+      indicator_types:
+        simple: "URL,IP,Hash,Domain"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b840b601-7ec7-4090-8a84-1a0fa2a8fd95
+    type: playbook
+    task:
+      id: b840b601-7ec7-4090-8a84-1a0fa2a8fd95
+      version: -1
+      name: "Enrich each IOC via Darkmon"
+      description: "One pass of Darkmon URL enrichment over the extracted URLs. Domain/IP/Hash equivalents can be added per-customer by extending this playbook with parallel branches."
+      playbookName: "Darkmon - Enrich URL"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      URL:
+        simple: "${ExtractedIndicators.URL}"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5b8eeb26-11e4-4268-ad11-08510cc0967c
+    type: condition
+    task:
+      id: 5b8eeb26-11e4-4268-ad11-08510cc0967c
+      version: -1
+      name: "Any indicator scored Bad?"
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "DBotScore.Score"}
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value:
+                    simple: 3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    nexttasks:
+      "yes":
+        - "4"
+      "#default#":
+        - "5"
+
+  "4":
+    id: "4"
+    taskid: c07b16cd-622d-4a35-834f-4952aa8d1894
+    type: playbook
+    task:
+      id: c07b16cd-622d-4a35-834f-4952aa8d1894
+      version: -1
+      name: "Block malicious indicators"
+      playbookName: "Darkmon - Generic Block Indicator"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Indicator:
+        simple: "${DBotScore(val.Score === 3).Indicator}"
+      Type:
+        simple: "url"
+      Reason:
+        simple: "Darkmon scored 3/Bad in phishing triage"
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 300, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 361b9161-619e-4a94-a629-4590a974c293
+    type: playbook
+    task:
+      id: 361b9161-619e-4a94-a629-4590a974c293
+      version: -1
+      name: "Notify reporter"
+      playbookName: "Darkmon - Generic Notify"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Subject:
+        simple: "Your phishing report has been triaged"
+      Body:
+        simple: "Thanks - we triaged your report. ${DBotScore.length:0} indicators evaluated."
+    nexttasks:
+      '#none#':
+        - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a1dfdd29-aa80-4c30-b0c8-c335e0f8a65c
+    type: playbook
+    task:
+      id: a1dfdd29-aa80-4c30-b0c8-c335e0f8a65c
+      version: -1
+      name: "Notify SOC"
+      playbookName: "Darkmon - Generic Notify"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Subject:
+        simple: "Phishing triage complete"
+      Body:
+        simple: "Incident ${incident.id} - see Darkmon enrichment context for results."
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1070}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3304e1ac-dc11-462d-8b9e-937a20e13723
+    type: title
+    task:
+      id: 3304e1ac-dc11-462d-8b9e-937a20e13723
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1245}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1260, "width": 520, "x": 50, "y": 50}}}
+inputs: []
+outputs:
+  - contextPath: ExtractedIndicators
+    description: IOCs extracted from the phishing email body.
+    type: unknown
+  - contextPath: DBotScore
+    description: Reputation scores from Darkmon enrichment per IOC.
+    type: unknown
+tests:
+  - No tests

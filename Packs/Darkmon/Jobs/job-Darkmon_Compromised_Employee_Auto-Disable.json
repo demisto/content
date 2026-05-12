@@ -1,0 +1,16 @@
+{
+    "id": "Darkmon - Compromised Employee Auto-Disable",
+    "version": -1,
+    "name": "Darkmon - Compromised Employee Auto-Disable",
+    "details": "Scheduled trigger for the 'Darkmon - Compromised Employee Auto-Disable' playbook.",
+    "type": "Darkmon Compromised Employee",
+    "scheduled": true,
+    "cronView": true,
+    "cron": "15 * * * *",
+    "playbookId": "Darkmon - Compromised Employee Auto-Disable",
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

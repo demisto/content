@@ -1,0 +1,16 @@
+{
+    "id": "Darkmon - VIP Email Monitor",
+    "version": -1,
+    "name": "Darkmon - VIP Email Monitor",
+    "details": "Scheduled trigger for the 'Darkmon - VIP Email Monitor' playbook.",
+    "type": "Darkmon VIP Email Leak",
+    "scheduled": true,
+    "cronView": true,
+    "cron": "0 * * * *",
+    "playbookId": "Darkmon - VIP Email Monitor",
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

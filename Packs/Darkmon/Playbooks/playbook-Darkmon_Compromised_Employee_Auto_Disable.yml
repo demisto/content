@@ -1,0 +1,288 @@
+id: Darkmon - Compromised Employee Auto-Disable
+version: -1
+name: Darkmon - Compromised Employee Auto-Disable
+description: |-
+  Hourly poll of compromised employees. For each new entry, looks up the user
+  in the configured directory and acts per the integration's
+  employee_disable_mode parameter:
+    - notify-only       : creates incident and notifies; no AD action.   [DEFAULT]
+    - approval-required : creates incident, blocks on a manual approval task,
+                          then disables on approve.
+    - auto-disable      : disables the account immediately, then notifies.
+  Accounts in the 'Darkmon - Auto-Disable Allowlist' list are NEVER auto-disabled.
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - monitoring
+  - response
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4c7a8f1e-5964-451f-bcb3-f8ec1584c701
+    type: start
+    task:
+      id: 4c7a8f1e-5964-451f-bcb3-f8ec1584c701
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 37859f85-9ec5-42c5-a1e7-423e6af4da8d
+    type: regular
+    task:
+      id: 37859f85-9ec5-42c5-a1e7-423e6af4da8d
+      version: -1
+      name: "Fetch compromised employee accounts"
+      description: "Pulls compromised employee accounts sorted newest first."
+      script: "Darkmon|||dmontip-get-compromised"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      type:
+        simple: "employees"
+      size:
+        simple: "100"
+      sort:
+        simple: "firstSeen,desc"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c7e37494-89f6-4097-977c-c0a9292b6fe2
+    type: regular
+    task:
+      id: c7e37494-89f6-4097-977c-c0a9292b6fe2
+      version: -1
+      name: "Filter new + non-allowlisted"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonFilterUnseen
+    scriptarguments:
+      items:
+        simple: "${{Darkmon.Compromised.Employee}}"
+      id_field:
+        simple: "id"
+      seen_list:
+        simple: "Darkmon - Seen Compromised Employees"
+      allowlist:
+        simple: "Darkmon - Auto-Disable Allowlist"
+      allowlist_match_field:
+        simple: "username"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 76b775d5-1f30-4470-8f06-f65e864fe9ee
+    type: condition
+    task:
+      id: 76b775d5-1f30-4470-8f06-f65e864fe9ee
+      version: -1
+      name: "Branch on employee_disable_mode integration param"
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0fe490b7-d3a9-48cb-a0ee-4c5f11c15d5b
+    type: regular
+    task:
+      id: 0fe490b7-d3a9-48cb-a0ee-4c5f11c15d5b
+      version: -1
+      name: "notify-only: create incident + notify"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonCreateIncidents
+    scriptarguments:
+      items:
+        simple: "${{NewAccounts}}"
+      incident_type:
+        simple: "Darkmon Compromised Employee"
+      name_template:
+        simple: "Darkmon: employee ${{username}} compromised (notify-only)"
+      field_map:
+        simple: "darkmonusername=username,darkmonpasswordredacted=password,darkmonsourcename=sources,darkmonstealer=stealers,darkmonactiontaken=notify-only"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": -300, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2a6593c8-595f-4196-907d-435a747e3184
+    type: regular
+    task:
+      id: 2a6593c8-595f-4196-907d-435a747e3184
+      version: -1
+      name: "approval-required: create incident, manual approval task"
+      description: "Incident layout includes a Manual Task task that calls Generic User Action on approval."
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonCreateIncidents
+    scriptarguments:
+      items:
+        simple: "${{NewAccounts}}"
+      incident_type:
+        simple: "Darkmon Compromised Employee"
+      name_template:
+        simple: "Darkmon: employee ${{username}} - PENDING APPROVAL"
+      field_map:
+        simple: "darkmonusername=username,darkmonsourcename=sources,darkmonstealer=stealers,darkmonactiontaken=approval-required"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 328eaa12-a611-4224-b1fb-21a568463b83
+    type: playbook
+    task:
+      id: 328eaa12-a611-4224-b1fb-21a568463b83
+      version: -1
+      name: "auto-disable: call Generic User Action(disable) per username"
+      description: "Invokes Generic User Action sub-playbook in 'disable' mode for each compromised employee. Sub-playbook routes to AD/Okta/AzureAD per Identity Provider list."
+      type: playbook
+      iscommand: false
+      brand: ""
+      scriptName: Darkmon - Generic User Action
+    scriptarguments:
+      Username:
+        simple: "${{NewAccounts.username}}"
+      Action:
+        simple: "disable"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 400, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bb1b8406-7dd9-4392-a1f3-a12aa338a58e
+    type: playbook
+    task:
+      id: bb1b8406-7dd9-4392-a1f3-a12aa338a58e
+      version: -1
+      name: "Notify SOC + IT"
+      type: playbook
+      iscommand: false
+      brand: ""
+      scriptName: Darkmon - Generic Notify
+    scriptarguments:
+      Subject:
+        simple: "Darkmon: ${{NewAccounts.length}} new compromised employees"
+      Body:
+        simple: "Mode: ${{params.employee_disable_mode}}. Affected usernames: ${{NewAccounts.username}}"
+    nexttasks:
+      '#none#':
+        - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 06e1c49c-8434-41eb-9026-e8c3427cc01c
+    type: title
+    task:
+      id: 06e1c49c-8434-41eb-9026-e8c3427cc01c
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1070}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+# Manual wiring of the condition branches in task "3":
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1085, "width": 800, "x": -300, "y": 50}}}
+inputs: []
+outputs:
+  - contextPath: NewAccounts
+    description: Compromised employee accounts that triggered action this run.
+    type: unknown
+tests:
+  - No tests

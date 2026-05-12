@@ -1,0 +1,220 @@
+id: Darkmon - Brand-Targeted NRD Watch
+version: -1
+name: Darkmon - Brand-Targeted NRD Watch
+description: Daily sweep of newly-registered domains. Each candidate's root label is compared against the brand list via DarkmonLevenshtein; matches with distance <= 2 (configurable) open a 'Darkmon Typosquatting Threat' incident.
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - monitoring
+  - brand-protection
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f693a6e5-6455-417e-889c-78b3b4551f14
+    type: start
+    task:
+      id: f693a6e5-6455-417e-889c-78b3b4551f14
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bc24ded0-f848-4b88-8f87-dbb5be4e678c
+    type: regular
+    task:
+      id: bc24ded0-f848-4b88-8f87-dbb5be4e678c
+      version: -1
+      name: "Fetch newly registered domains"
+      script: "Darkmon|||dmontip-get-nrd"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      size:
+        simple: "200"
+      sort:
+        simple: "timestamp,desc"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2814ff2c-9986-4dd8-90d3-4da9877075ee
+    type: regular
+    task:
+      id: 2814ff2c-9986-4dd8-90d3-4da9877075ee
+      version: -1
+      name: "Score each NRD against the brand list"
+      description: "Helper script that loops over NRDs and calls DarkmonLevenshtein per (domain, brands) pair. Returns ${{Typosquats}} for entries with distance <= max_distance."
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonScoreNRDs
+    scriptarguments:
+      domains:
+        simple: "${{Darkmon.NRD}}"
+      brands_list:
+        simple: "Darkmon - Brand Names"
+      max_distance:
+        simple: "2"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 723722dd-6c55-4a63-8ad7-793b89dc2dd7
+    type: regular
+    task:
+      id: 723722dd-6c55-4a63-8ad7-793b89dc2dd7
+      version: -1
+      name: "Filter unseen typosquats"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonFilterUnseen
+    scriptarguments:
+      items:
+        simple: "${{Typosquats}}"
+      id_field:
+        simple: "id"
+      seen_list:
+        simple: "Darkmon - Seen NRDs"
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b0f55cfe-1bb2-4d0f-b6f5-34a617c0626c
+    type: regular
+    task:
+      id: b0f55cfe-1bb2-4d0f-b6f5-34a617c0626c
+      version: -1
+      name: "Open typosquatting incidents"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonCreateIncidents
+    scriptarguments:
+      items:
+        simple: "${{NewAccounts}}"
+      incident_type:
+        simple: "Darkmon Typosquatting Threat"
+      name_template:
+        simple: "Darkmon: ${{value}} resembles ${{brand}} (d=${{distance}})"
+      field_map:
+        simple: "darkmonobserveddomain=value,darkmonbrand=brand,darkmondistance=distance,darkmonregisteredat=timestamp"
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 39a521cc-5290-4e1e-9ad1-547bd592023c
+    type: playbook
+    task:
+      id: 39a521cc-5290-4e1e-9ad1-547bd592023c
+      version: -1
+      name: "Notify brand-protection team"
+      type: playbook
+      iscommand: false
+      brand: ""
+      scriptName: Darkmon - Generic Notify
+    scriptarguments:
+      Subject:
+        simple: "Darkmon: typosquatting candidates"
+      Body:
+        simple: "Created ${{NewAccounts.length}} typosquatting incidents."
+    nexttasks:
+      '#none#':
+        - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3c52853d-c538-4a4c-9b37-5af3bf40393e
+    type: title
+    task:
+      id: 3c52853d-c538-4a4c-9b37-5af3bf40393e
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1070}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1085, "width": 380, "x": 50, "y": 50}}}
+inputs: []
+outputs:
+  - contextPath: Typosquats
+    description: NRD entries flagged as typosquats with their best-match brand and distance.
+    type: unknown
+tests:
+  - No tests

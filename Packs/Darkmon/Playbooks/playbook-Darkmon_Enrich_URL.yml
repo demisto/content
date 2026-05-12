@@ -1,0 +1,128 @@
+id: Darkmon - Enrich URL
+version: -1
+name: Darkmon - Enrich URL
+description: Sub-playbook that calls the Darkmon !url command and returns DBotScore + Common.URL for the input URL indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 678d4998-690b-4849-ab6b-67f906082fd4
+    type: start
+    task:
+      id: 678d4998-690b-4849-ab6b-67f906082fd4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dfec3681-47da-4638-8c9a-569d295a2862
+    type: regular
+    task:
+      id: dfec3681-47da-4638-8c9a-569d295a2862
+      version: -1
+      name: Run Darkmon url lookup
+      description: Calls the Darkmon !url reputation command to enrich the URL.
+      script: Darkmon|||url
+      type: regular
+      iscommand: true
+      brand: Darkmon
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a4ebb03f-12cb-4177-8f91-ac69c4694406
+    type: title
+    task:
+      id: a4ebb03f-12cb-4177-8f91-ac69c4694406
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: true
+  description: The URL indicator value to enrich. Defaults to ${URL.Data}.
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor reporting the score (Darkmon).
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+  type: number
+- contextPath: DBotScore.Reliability
+  description: Source reliability per the Admiralty code.
+  type: string
+- contextPath: URL.Data
+  description: The URL value.
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: The vendor that flagged this URL as malicious (Darkmon).
+  type: string
+- contextPath: URL.Malicious.Description
+  description: Reason this URL was flagged as malicious.
+  type: string
+- contextPath: Darkmon.SearchResult
+  description: Full search result records returned by Darkmon for this indicator.
+  type: unknown
+tests:
+- No tests

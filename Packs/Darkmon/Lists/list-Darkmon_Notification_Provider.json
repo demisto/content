@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Notification Provider",
+    "version": -1,
+    "name": "Darkmon - Notification Provider",
+    "description": "Single-value list with the configured notification target. One of: slack, teams, email, servicenow, jira. Read by the Generic Notify sub-playbook.",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
