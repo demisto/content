@@ -10,8 +10,14 @@ This section explains how to fully configure the instance of Wiz Defend Integrat
   - On the New Integration page
       - For **Name** —Enter a meaningful name.
       - For **Scope** —Set the Project's scope.
-  - Click **Add Integration**. A new service account is created.
+  - Click **Add Integration**. A new service account is created with the scopes this integration needs.
   - Copy and save the **client ID**, **client secret**, **API Endpoint URL** and **Authenticate API URL** for the next steps.
+- **Alternative: manual Service Account creation.** If you prefer to create the Service Account directly from [Settings > Service Accounts ↗](https://app.wiz.io/settings/service-accounts) instead of through the Integrations page, scope the permissions as follows:
+    - **Detections** > `read:detections`
+    - **Cloud Events** > `read:cloud_events_cloud`, `read:cloud_events_sensor`
+    - **Issues** > `read:threat_issues`
+    - **Issues** > `write:threat_issue_status`
+    - **Issues** > `write:threat_issue_comments`
 - In the Cortex XSOAR Integration instance configuration window:
     - Check **Fetches incidents** radio button
     - Choose **Wiz Classifier** as your classifier

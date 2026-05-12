@@ -12,7 +12,7 @@ WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.5.0"
+WIZ_VERSION = "1.5.1"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -1810,7 +1810,7 @@ def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_B
     started = time.monotonic()
 
     response_json = checkAPIerrors(query, variables)
-    nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes", []))
+    nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes") or [])
 
     while response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage"):
         if time.monotonic() - started > deadline_seconds:
@@ -1821,7 +1821,7 @@ def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_B
             break
         variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
         response_json = checkAPIerrors(query, variables)
-        page_nodes = response_json.get("data", {}).get("issues", {}).get("nodes", [])
+        page_nodes = response_json.get("data", {}).get("issues", {}).get("nodes") or []
         if page_nodes:
             nodes += page_nodes
 
@@ -2323,17 +2323,21 @@ def get_resources(
     if entity_type:
         variables["filterBy"]["type"] = [entity_type]
     if subscription_external_ids:
-        subscription_external_ids_formatted = [str(x) for x in re.split(r"[,\s]+", subscription_external_ids.strip())]
-        variables["filterBy"]["subscriptionExternalId"] = subscription_external_ids_formatted
+        subscription_external_ids_formatted = [str(x) for x in re.split(r"[,\s]+", subscription_external_ids.strip()) if x]
+        if subscription_external_ids_formatted:
+            variables["filterBy"]["subscriptionExternalId"] = subscription_external_ids_formatted
     if provider_unique_ids:
-        provider_unique_ids_formatted = [str(x) for x in re.split(r"[,\s]+", provider_unique_ids.strip())]
-        variables["filterBy"]["providerUniqueId"] = provider_unique_ids_formatted
+        provider_unique_ids_formatted = [str(x) for x in re.split(r"[,\s]+", provider_unique_ids.strip()) if x]
+        if provider_unique_ids_formatted:
+            variables["filterBy"]["providerUniqueId"] = provider_unique_ids_formatted
     if project_ids:
-        project_ids_formatted = [str(x) for x in re.split(r"[,\s]+", project_ids.strip())]
-        variables["filterBy"]["projectId"] = project_ids_formatted
+        project_ids_formatted = [str(x) for x in re.split(r"[,\s]+", project_ids.strip()) if x]
+        if project_ids_formatted:
+            variables["filterBy"]["projectId"] = project_ids_formatted
     if native_types:
-        native_types_formatted = [str(x) for x in re.split(r"[,\s]+", native_types.strip())]
-        variables["filterBy"]["nativeType"] = native_types_formatted
+        native_types_formatted = [str(x) for x in re.split(r"[,\s]+", native_types.strip()) if x]
+        if native_types_formatted:
+            variables["filterBy"]["nativeType"] = native_types_formatted
     if updated_at_before or updated_at_after:
         updated_at: Dict[str, str] = {}
         if updated_at_before:
@@ -2826,6 +2830,13 @@ def get_modified_remote_data_command(args):
         f"(last_update={last_update}, saved_cursor={saved_cursor}, limit={mirror_limit})"
     )
 
+    # Empty cursor would send {"after": ""} to GraphQL, which the Wiz API
+    # rejects as an invalid datetime. Short-circuit to an empty result so
+    # XSOAR will retry on the next mirror cycle once lastUpdate is populated.
+    if not cursor:
+        demisto.debug("get_modified_remote_data: empty cursor (no last_update and no saved_cursor); returning []")
+        return GetModifiedRemoteDataResponse([])
+
     variables = {
         "first": mirror_limit,
         "filterBy": {"statusChangedAt": {"after": cursor}},
@@ -3026,8 +3037,8 @@ def _handle_outgoing_entries(remote_id, entries):
     """
     comment_tag = demisto.params().get(WizMirrorParam.COMMENT_TAG, "comments")
     for entry in entries:
-        contents = entry.get("contents", "")
-        if not contents:
+        contents = entry.get("contents") or ""
+        if not contents.strip():
             continue
         entry_tags = entry.get("tags") or []
         if comment_tag not in entry_tags:
