@@ -19,8 +19,11 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     arg_to_datetime,
     compute_next_run,
     get_start_end_time_intervals,
+    _migrate_last_run,
     START_TIMESTAMP_KEY,
     LAST_IDS_KEY,
+    LAST_IDS_TIMESTAMPS_KEY,
+    END_TIME_BUFFER,
 )
 
 
@@ -86,6 +89,31 @@ REPORT_DATA = {
             "features": None,
         },
     },
+    "data_profiles": [
+        {
+            "name": "Test Profile",
+            "id": 12345,
+            "version": 1,
+            "is_triggered": True,
+            "data_patterns": [
+                {
+                    "id": "pattern_id_1",
+                    "is_matched": True,
+                    "confidence_level": "high",
+                    "occurrence_count": 5,
+                    "occurrence_operator_type": "more_than_equal_to",
+                    "occurrence_low": 1,
+                },
+                {
+                    "id": "pattern_id_2",
+                    "confidence_level": "low",
+                    "occurrence_operator_type": "between",
+                    "occurrence_low": 1,
+                    "occurrence_high": 10,
+                },
+            ],
+        }
+    ],
 }
 
 INCIDENT_JSON = {
@@ -197,6 +225,27 @@ def test_parse_dlp_report(mocker):
     results = parse_dlp_report(REPORT_DATA).to_context()
     pattern_results = demisto.get(results["Contents"], "scanContentRawReport.data_pattern_rule_1_results", None)
     assert pattern_results is not None
+
+    # Verify MatchedConfidenceLevel is present in DataPatternMatches
+    contents = results["EntryContext"]["DLP.Report(val.DataPatternName && val.DataPatternName == obj.DataPatternName)"]
+    data_pattern_matches = contents["DataPatternMatches"]
+    assert len(data_pattern_matches) > 0
+    assert data_pattern_matches[0]["MatchedConfidenceLevel"] == "low"
+
+    # Verify DataProfiles is present and correctly parsed
+    data_profiles = contents["DataProfiles"]
+    assert len(data_profiles) == 1
+    assert data_profiles[0]["Name"] == "Test Profile"
+    assert data_profiles[0]["Id"] == 12345
+    assert data_profiles[0]["Version"] == 1
+    assert data_profiles[0]["IsTriggered"] is True
+    assert len(data_profiles[0]["DataPatterns"]) == 2
+    assert data_profiles[0]["DataPatterns"][0]["Id"] == "pattern_id_1"
+    assert data_profiles[0]["DataPatterns"][0]["IsMatched"] is True
+    assert data_profiles[0]["DataPatterns"][0]["ConfidenceLevel"] == "high"
+    assert data_profiles[0]["DataPatterns"][0]["OccurrenceCount"] == 5
+    assert data_profiles[0]["DataPatterns"][1]["OccurrenceOperatorType"] == "between"
+    assert data_profiles[0]["DataPatterns"][1]["OccurrenceHigh"] == 10
 
 
 def test_get_dlp_incidents(requests_mock):
@@ -407,24 +456,38 @@ def test_create_incident(incident_type_input, expected_type):
     [
         pytest.param(
             {"id1": 1000, "id2": 2000, "id3": 2000, "id4": 1500},
-            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: ["old_id"]},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {"old_id": 500}},
             2000,
-            {"id2", "id3"},
+            {"id2", "id3"},  # Both have timestamp 2000, within buffer (look_back=0 → cutoff = 2000-30 = 1970)
             id="multiple_incidents_different_timestamps",
         ),
         pytest.param(
             {},
-            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1"]},
+            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_TIMESTAMPS_KEY: {"id1": 1234567890}},
             1234567890,
             {"id1"},
             id="empty_incidents_returns_previous",
         ),
         pytest.param(
             {"id1": 1000},
-            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {}},
             1000,
             {"id1"},
             id="single_incident",
+        ),
+        pytest.param(
+            {"id1": 2000, "id2": 2000 - END_TIME_BUFFER, "id3": 2000 - END_TIME_BUFFER - 1, "id4": 2000 - 15},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {}},
+            2000,
+            {"id1", "id2", "id4"},  # id3 excluded (outside buffer: 2000-30-1=1969 < 1970)
+            id="buffer_window_filtering",
+        ),
+        pytest.param(
+            {"id1": 2000, "id2": 1999, "id3": 1998, "id4": 1971, "id5": 1970, "id6": 1969},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {}},
+            2000,
+            {"id1", "id2", "id3", "id4", "id5"},  # id6 excluded (1969 < 1970 which is 2000-30)
+            id="exact_buffer_boundary",
         ),
     ],
 )
@@ -435,12 +498,13 @@ def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp,
     When:
         - Calling compute_next_run.
     Then:
-        - Ensure it returns the correct timestamp and IDs.
+        - Ensure it returns the correct timestamp and IDs within the buffer window,
+          stored as a dict in last_ids_timestamps.
     """
     result = compute_next_run(incident_ids_timestamps, last_run)
 
     assert result[START_TIMESTAMP_KEY] == expected_timestamp
-    assert set(result[LAST_IDS_KEY]) == expected_ids
+    assert set(result[LAST_IDS_TIMESTAMPS_KEY].keys()) == expected_ids
 
 
 @pytest.mark.parametrize(
@@ -522,6 +586,7 @@ def test_fetch_notifications_basic(requests_mock, mocker):
     requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={"us": [mock_notification]})
 
     mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "createIncidents")
     mocker.patch.object(demisto, "setIntegrationContext")
 
@@ -534,4 +599,80 @@ def test_fetch_notifications_basic(requests_mock, mocker):
     assert len(incidents) == 1
     assert "test-id-1" in incidents[0]["name"]
 
-    assert next_run == {"start_timestamp": 1648844510, "last_ids": ["test-id-1"]}
+    assert next_run == {"start_timestamp": 1648844510, LAST_IDS_TIMESTAMPS_KEY: {"test-id-1": 1648844510}}
+
+
+@freeze_time("2026-04-01 20:25:00 UTC")
+def test_fetch_notifications_lookback(requests_mock, mocker):
+    """
+    Given:
+        - A last run with start_timestamp T and look_back_minutes=5.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - The first API interval starts at T - 5*60 (i.e. lookback is applied).
+    """
+    import re
+    from datetime import datetime
+
+    start_timestamp = int(datetime(2026, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())  # T
+    look_back_seconds = 5 * 60
+    expected_effective_start = start_timestamp - look_back_seconds
+
+    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={})
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={START_TIMESTAMP_KEY: start_timestamp})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    fetch_notifications(client, "us", first_fetch_timestamp=start_timestamp, look_back_minutes=5)
+
+    # The very first request must use start_timestamp=expected_effective_start
+    first_request_url = requests_mock.request_history[0].url
+    assert f"start_timestamp={expected_effective_start}" in first_request_url
+
+
+@pytest.mark.parametrize(
+    "last_run, start_timestamp, expected",
+    [
+        pytest.param(
+            {LAST_IDS_TIMESTAMPS_KEY: {"id1": 1000, "id2": 2000}},
+            500,
+            {"id1": 1000, "id2": 2000},
+            id="new_schema_returned_as_is",
+        ),
+        pytest.param(
+            {LAST_IDS_KEY: ["id1", "id2"]},
+            500,
+            {"id1": 500, "id2": 500},
+            id="legacy_ids_seeded_with_start_timestamp",
+        ),
+        pytest.param(
+            {},
+            500,
+            {},
+            id="empty_last_run_returns_empty_dict",
+        ),
+        pytest.param(
+            {LAST_IDS_KEY: []},
+            500,
+            {},
+            id="legacy_empty_list_returns_empty_dict",
+        ),
+    ],
+)
+def test_migrate_last_run(last_run: dict, start_timestamp: int, expected: dict):
+    """
+    Given:
+        - A last run dict in either the new (last_ids_timestamps) or legacy (last_ids) schema,
+          or an empty dict.
+    When:
+        - Calling _migrate_last_run with a start_timestamp.
+    Then:
+        - New schema is returned unchanged as a plain dict copy.
+        - Legacy IDs are migrated and each ID is seeded with start_timestamp.
+        - Empty / missing keys produce an empty dict.
+    """
+    result = _migrate_last_run(last_run, start_timestamp)
+    assert result == expected

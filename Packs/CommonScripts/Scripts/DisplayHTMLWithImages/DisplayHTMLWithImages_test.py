@@ -324,3 +324,205 @@ def test_xsoar_saas(mocker, is_xsoar_saas, expected_prefix):
 
     expected = f"<img src={expected_prefix}/entry/download/38@119>"
     assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]["Contents"]
+
+
+class TestSanitizeHtml:
+    """Tests for HTML sanitization in _sanitize_html."""
+
+    def test_strips_script_tags(self, mocker):
+        """
+        Given
+        - An HTML body containing script tags
+        When
+        - _sanitize_html is called with bleach available
+        Then
+        - Script tags and their content are removed while safe content is preserved
+        """
+        import types
+        import DisplayHTMLWithImages
+
+        # Create a mock bleach module that simulates real bleach.clean behavior
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False, attributes=None):
+            """Simulate bleach: strip disallowed tags, keep allowed ones."""
+            import re
+
+            # Remove script tags and their content (not in allowed tags)
+            result = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script[^>]*>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            return result
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        # Re-import to pick up the mock
+        result = DisplayHTMLWithImages._sanitize_html('<p>Hello</p><script>alert("test")</script><p>World</p>')
+        assert "<script>" not in result
+        assert "alert" not in result
+        assert "Hello" in result
+        assert "World" in result
+
+    def test_preserves_allowed_tags(self, mocker):
+        """
+        Given
+        - An HTML body containing only allowed tags (p, br, div, table, etc.)
+        When
+        - _sanitize_html is called with bleach available
+        Then
+        - All allowed tags are preserved in the output
+        """
+        import types
+        import DisplayHTMLWithImages
+
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False, attributes=None):
+            # Allowed tags pass through unchanged
+            return html
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        html_input = "<div><p>Text</p><br><table><tr><td>Cell</td></tr></table></div>"
+        result = DisplayHTMLWithImages._sanitize_html(html_input)
+        assert "<div>" in result
+        assert "<p>" in result
+        assert "<table>" in result
+        assert "<td>" in result
+
+    def test_preserves_formatting_tags(self, mocker):
+        """
+        Given
+        - An HTML body with formatting tags like b, i, u, strong, em
+        When
+        - _sanitize_html is called with bleach available
+        Then
+        - Formatting tags are preserved
+        """
+        import types
+        import DisplayHTMLWithImages
+
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False, attributes=None):
+            return html
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        html_input = "<b>bold</b> <i>italic</i> <u>underline</u> <strong>strong</strong> <em>emphasis</em>"
+        result = DisplayHTMLWithImages._sanitize_html(html_input)
+        assert "<b>" in result
+        assert "<i>" in result
+        assert "<u>" in result
+        assert "<strong>" in result
+        assert "<em>" in result
+
+    def test_calls_bleach_with_allowed_tags(self, mocker):
+        """
+        Given
+        - An HTML body
+        When
+        - _sanitize_html is called with bleach available
+        Then
+        - bleach.clean is called with the ALLOWED_EMAIL_TAGS set and strip=True
+        """
+        import types
+        import DisplayHTMLWithImages
+        from unittest.mock import MagicMock
+
+        mock_bleach = types.ModuleType("bleach")
+        mock_clean = MagicMock(return_value="<p>safe</p>")
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        DisplayHTMLWithImages._sanitize_html("<p>test</p>")
+        mock_clean.assert_called_once()
+        call_kwargs = mock_clean.call_args
+        assert call_kwargs[1].get("strip") is True or call_kwargs[1].get("strip")
+        assert "p" in call_kwargs[1].get("tags", set())
+        assert "div" in call_kwargs[1].get("tags", set())
+        assert "table" in call_kwargs[1].get("tags", set())
+
+    def test_fallback_strips_dangerous_tags_when_bleach_unavailable(self, mocker):
+        """
+        Given
+        - An HTML body with dangerous tags and bleach is not installed
+        When
+        - _sanitize_html is called
+        Then
+        - Dangerous tags (script, iframe, etc.) are stripped via regex fallback
+        """
+        import sys
+        import DisplayHTMLWithImages
+
+        # Force bleach to be unavailable by setting it to None in sys.modules
+        # This makes 'import bleach' raise ImportError deterministically
+        mocker.patch.dict(sys.modules, {"bleach": None})
+
+        html_input = '<p>Hello</p><script>alert("test")</script><p>World</p>'
+        result = DisplayHTMLWithImages._sanitize_html(html_input)
+        # Without bleach, the fallback regex strips script tags
+        assert "<script>" not in result
+        assert "alert" not in result
+        assert "Hello" in result
+        assert "World" in result
+
+
+class TestCreateHtmlWithImagesInputSanitization:
+    """Tests for safe regex handling in create_html_with_images."""
+
+    def test_attachment_name_with_regex_special_chars(self, mocker):
+        """
+        Given
+        - An attachment name containing regex special characters like (, ), .
+        When
+        - create_html_with_images is called
+        Then
+        - No regex error occurs and the function completes successfully
+        """
+        from DisplayHTMLWithImages import create_html_with_images
+
+        mocker.patch("DisplayHTMLWithImages.get_tenant_account_name", return_value="")
+        mocker.patch("DisplayHTMLWithImages.is_xsiam_or_xsoar_saas", return_value=False)
+
+        email_html = '<img src="cid:content_id_123">'
+        entry_id_list = [("file (1).png", "content_id_123", "42@100")]
+        # Should not raise a regex error
+        result = create_html_with_images(email_html, entry_id_list)
+        assert isinstance(result, str)
+
+    def test_content_id_with_regex_special_chars(self, mocker):
+        """
+        Given
+        - A content ID containing regex special characters like +, .
+        When
+        - create_html_with_images is called
+        Then
+        - No regex error occurs and replacement works correctly
+        """
+        from DisplayHTMLWithImages import create_html_with_images
+
+        mocker.patch("DisplayHTMLWithImages.get_tenant_account_name", return_value="")
+        mocker.patch("DisplayHTMLWithImages.is_xsiam_or_xsoar_saas", return_value=False)
+
+        email_html = '<img src="cid:id+special.chars(1)">'
+        entry_id_list = [("image.png", "id+special.chars(1)", "50@200")]
+        # Should not raise a regex error
+        result = create_html_with_images(email_html, entry_id_list)
+        assert isinstance(result, str)
+
+    def test_empty_entry_id_list_returns_original(self, mocker):
+        """
+        Given
+        - An empty entry_id_list
+        When
+        - create_html_with_images is called
+        Then
+        - The original email_html is returned unchanged
+        """
+        from DisplayHTMLWithImages import create_html_with_images
+
+        email_html = "<p>No images here</p>"
+        result = create_html_with_images(email_html, [])
+        assert result == email_html

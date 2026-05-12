@@ -1033,8 +1033,9 @@ class Client(CoreClient):
         Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
 
         Returns comprehensive metadata for all custom fields including:
-        - CUSTOM_FIELD_NAME: Internal field identifier
+        - CUSTOM_FIELD_NAME: Internal field identifier (display name)
         - CUSTOM_FIELD_PRETTY_NAME: User-friendly display name
+        - CUSTOM_FIELD_CLI_NAME: Machine/CLI name used in commands and search
         - CUSTOM_FIELD_IS_SYSTEM: Boolean flag (true = system field, false = custom field)
         - CUSTOM_FIELD_TYPE: Field data type
 
@@ -1053,6 +1054,7 @@ class Client(CoreClient):
                 "paging": {"from": 0, "to": 1000},
             },
             "jsons": [],
+            "on_demand_fields": ["CUSTOM_FIELD_CLI_NAME"],
         }
 
         return self.get_webapp_data(request_data)
@@ -3504,8 +3506,12 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     """
     Validates custom fields against system metadata.
 
+    Users must pass the CLI/machine name (e.g., ``servicenowticketid``) which
+    is the identifier shown in Object Setup and used in XQL queries.  The
+    metadata API returns this value in ``CUSTOM_FIELD_CLI_NAME``.
+
     Args:
-        fields_to_validate: Dict of field names and values to validate.
+        fields_to_validate: Dict of field CLI names and values to validate.
         client: Client instance for API calls.
 
     Returns:
@@ -3520,17 +3526,17 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         return {}, "No Fields are defined in the system."
 
     system_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_CLI_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"])
         for f in fields_data
-        if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
+        if f.get("CUSTOM_FIELD_CLI_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: {
-            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+        f["CUSTOM_FIELD_CLI_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
         }
         for f in fields_data
-        if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
+        if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
 
     if not custom_fields:
@@ -3559,41 +3565,106 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             else:
                 valid_fields[field_name] = field_value
         else:
-            error_messages.append(f"Field '{field_name}' does not exist.")
+            error_messages.append(f"Field '{field_name}' does not exist. Use the CLI/machine name as shown in Object Setup.")
 
     return valid_fields, "\n".join(f"- {e}" for e in error_messages)
+
+
+def resolve_playbook_id(client: Client, playbook: str) -> str:
+    """
+    Resolves a playbook name or ID to a playbook ID.
+
+    Fetches all playbooks metadata and builds a name→id mapping.
+    If the provided value matches a known playbook name, the corresponding ID is returned.
+    If no name match is found, the value is checked against known IDs.
+    If it matches a known ID, it is returned as-is.
+    If it matches neither a name nor a known ID, a DemistoException is raised.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        playbook (str): A playbook name or playbook ID.
+
+    Returns:
+        str: The resolved playbook ID.
+
+    Raises:
+        DemistoException: If the value does not match any known playbook name or ID.
+    """
+    pbs_metadata: list = client.get_playbooks_metadata() or []
+    name_to_id: dict[str, str] = {}
+    known_ids: set[str] = set()
+    for pb in pbs_metadata:
+        pb_name = pb.get("name", "")
+        pb_id = pb.get("id", "")
+        known_ids.add(pb_id)
+        name_to_id[pb_name] = pb_id
+
+    if playbook in known_ids:
+        demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
+        return playbook
+
+    if playbook in name_to_id:
+        resolved_id = name_to_id[playbook]
+        demisto.debug(f"Resolved playbook name '{playbook}' to ID '{resolved_id}'.")
+        return resolved_id
+
+    raise DemistoException(
+        f"Playbook '{playbook}' was not found. "
+        f"Verify that the playbook name or ID is correct and that the playbook exists in the system."
+    )
 
 
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
 
+    Reads the ``playbook`` argument, which can be either a playbook name or a playbook ID,
+    and resolves it to a playbook ID via :func:`resolve_playbook_id`.
+
+    All outcomes — success, resolution errors (unknown name/ID), and API-level per-issue
+    failures — are reported via the ``result`` output field rather than raising exceptions.
+    The ``result`` field contains the full status message string in all cases.
+
     Args:
         client (Client): The client instance for making API requests.
-        args (dict): Arguments for running the playbook.
+        args (dict): Arguments for running the playbook. Supported keys:
+            - ``playbook`` (str): Playbook name or ID to execute.
+            - ``issue_ids`` (str | list): Issue IDs to run the playbook against.
 
     Returns:
-        CommandResults: Results of the playbook execution.
+        CommandResults: Results of the playbook execution with the following output fields:
+            - ``playbook``: The playbook name or ID as provided by the caller.
+            - ``result``: A status message string. On success:
+              ``"Playbook '<name>' executed successfully for all issue IDs: <ids>"``.
+              On resolution failure or per-issue API errors: a descriptive error string.
     """
-    playbook_id = args.get("playbook_id", "")
+    playbook_input = args.get("playbook", "")
     issue_ids = argToList(args.get("issue_ids", ""))
+
+    try:
+        playbook_id = resolve_playbook_id(client, playbook_input)
+    except DemistoException as e:
+        demisto.debug(f"Playbook resolution error: {str(e)}")
+        return CommandResults(
+            outputs_prefix="Core.RunPlaybook",
+            outputs_key_field="playbook",
+            outputs={"playbook": playbook_input, "result": str(e)},
+        )
 
     response = client.run_playbook(issue_ids, playbook_id)
 
-    # Process the response to determine success or failure
-    if not response:
-        # Empty response indicates success for all issues
-        return CommandResults(
-            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
-        )
+    if response:
+        pb_failed_on_issue = [f"Issue ID {issue_id}: {msg.replace('alert', 'issue')}" for issue_id, msg in response.items()]
+        result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(pb_failed_on_issue)
+        demisto.debug(f"Playbook run errors: {pb_failed_on_issue}")
+    else:
+        result = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
 
-    error_messages = []
-
-    for issue_id, error_message in response.items():
-        error_messages.append(f"Issue ID {issue_id}: {error_message}")
-
-    demisto.debug(f"Playbook run errors: {error_messages}")
-    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+    return CommandResults(
+        outputs_prefix="Core.RunPlaybook",
+        outputs_key_field="playbook",
+        outputs={"playbook": playbook_input, "result": result},
+    )
 
 
 def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
