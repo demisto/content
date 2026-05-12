@@ -7964,7 +7964,7 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            readable_output=f"Tags successfully added to SSM resource '{resource_id}'.",
+            readable_output=f"Tags were successfully added to the SSM resource '{resource_id}'.",
         )
 
     @staticmethod
@@ -7991,7 +7991,7 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            readable_output=f"Tags successfully removed from SSM resource '{args.get('resource_id')}'.",
+            readable_output=f"Tags were successfully removed from the SSM resource '{args.get('resource_id')}'.",
         )
 
     @staticmethod
@@ -8024,7 +8024,7 @@ class SSM:
         outputs = {"ResourceId": resource_id, "TagList": tag_list}
 
         return CommandResults(
-            outputs_prefix="AWS.SSM.Tag",
+            outputs_prefix="AWS.SSM.Tags",
             outputs_key_field="ResourceId",
             outputs=outputs,
             readable_output=tableToMarkdown(
@@ -8058,13 +8058,13 @@ class SSM:
 
         if aggregator_groups_raw and inventory_aggregator:
             raise ValueError(
-                "aggregator_groups and inventory_aggregator cannot be used together. "
+                "The arguments aggregator_groups and inventory_aggregator cannot be used together. "
                 "Use aggregator_groups to define groups within the aggregator, "
                 "or inventory_aggregator to define a nested sub-aggregator expression."
             )
         if aggregator_groups_raw and not aggregator_expression:
             raise ValueError(
-                "aggregator_expression is required when using aggregator_groups. "
+                "The argument aggregator_expression is required when using aggregator_groups. "
                 "Groups must be nested inside a parent aggregator that has an Expression."
             )
 
@@ -8097,7 +8097,7 @@ class SSM:
         kwargs: Dict[str, Any] = remove_empty_elements(
             {
                 "Filters": inventory_filters,
-                "ResultAttributes": [{"TypeName": t} for t in result_attributes] if result_attributes else None,
+                "ResultAttributes": [{"TypeName": t} for t in result_attributes],
                 "Aggregators": [aggregator] if aggregator else None,
             }
         )
@@ -8313,7 +8313,7 @@ class SSM:
                 "AssociationId": association_id,
                 "Versions": association_versions,
             },
-            "AWS.SSM(true)": {"AssociationVersionNextToken": response.get("NextToken")},
+            "AWS.SSM.Associations(true)": {"AssociationVersionNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -8351,7 +8351,7 @@ class SSM:
         raw_filters = parse_filter_field(args.get("filters"))
         kwargs = remove_empty_elements(
             {
-                "Filters": [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None,
+                "Filters": [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters],
             }
         )
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
@@ -8461,7 +8461,7 @@ class SSM:
         """
         # remap Name→Key
         raw_filters = parse_filter_field(args.get("filters"))
-        automation_filters = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
+        automation_filters = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters]
 
         kwargs = remove_empty_elements({"Filters": automation_filters})
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
@@ -8480,9 +8480,9 @@ class SSM:
             return CommandResults(readable_output="No SSM automation executions found.")
 
         outputs = {
-            "AWS.SSM.AutomationExecution("
+            "AWS.SSM.AutomationExecutions("
             "val.AutomationExecutionId && val.AutomationExecutionId == obj.AutomationExecutionId)": executions,
-            "AWS.SSM(true)": {"AutomationExecutionNextToken": response.get("NextToken")},
+            "AWS.SSM(true)": {"AutomationExecutionsNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -8539,8 +8539,6 @@ class SSM:
                     "Alarms": [{"Name": name} for name in alarm_names],
                     "IgnorePollAlarmFailure": argToBoolean(args.get("alarm_ignore_poll_failure")),
                 }
-                if alarm_names
-                else None
             )
 
             # Build TargetLocations from tag-style flat arg
@@ -8642,7 +8640,7 @@ class SSM:
             automation_response = client.get_automation_execution(AutomationExecutionId=automation_execution_id)
             status = automation_response.get("AutomationExecution", {}).get("AutomationExecutionStatus", "")
             demisto.debug(
-                f"[ssm] aws-ssm-automation-execution-cancel: automation_execution_id={automation_execution_id} status={status}"
+                f"[ssm] aws-ssm-automation-execution-cancel: {automation_execution_id=} {status=}"
             )
 
             if status in TERMINAL_COMMAND_STATUSES:
@@ -8979,7 +8977,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-fleets-describe": EC2.describe_fleets_command,
     "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
     "aws-ec2-fleet-modify": EC2.modify_fleet_command,
-    "aws-ssm-association-version-list": SSM.association_versions_list_command,
+    "aws-ssm-association-versions-list": SSM.association_versions_list_command,
     "aws-ssm-association-get": SSM.association_get_command,
     "aws-ssm-associations-list": SSM.associations_list_command,
     "aws-ssm-inventory-list": SSM.inventory_list_command,
@@ -8989,12 +8987,12 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
     "aws-ssm-documents-list": SSM.documents_list_command,
     "aws-ssm-document-get": SSM.document_get_command,
-    "aws-ssm-automation-execution-list": SSM.automation_execution_list_command,
+    "aws-ssm-automation-executions-list": SSM.automation_execution_list_command,
     "aws-ssm-automation-execution-run": SSM.automation_execution_run_command,
     "aws-ssm-automation-execution-cancel": SSM.automation_execution_cancel_command,
-    "aws-ssm-command-list": SSM.command_list_command,
+    "aws-ssm-commands-list": SSM.command_list_command,
     "aws-ssm-command-cancel": SSM.command_cancel_command,
-    "aws-ssm-tag-list": SSM.list_tags_for_resource_command,
+    "aws-ssm-tags-list": SSM.list_tags_for_resource_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
     "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,

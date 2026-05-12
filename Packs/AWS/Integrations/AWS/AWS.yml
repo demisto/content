@@ -10128,7 +10128,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount
         description: The number of targets for the association status.
-        type: Number
+        type: Unknown
       - contextPath: AWS.SSM.Associations.Targets.Key
         description: The user-defined criteria for sending commands that target managed nodes.
         type: String
@@ -10292,7 +10292,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount
         description: The number of targets for the association status.
-        type: String
+        type: Unknown
       - contextPath: AWS.SSM.Associations.ScheduleExpression
         description: A cron expression that specifies a schedule when the association runs.
         type: String
