@@ -2,6 +2,7 @@ import json
 
 import dateparser
 import demistomock as demisto
+import freezegun
 import pytest
 import requests
 from AzureSentinel import (
@@ -1304,7 +1305,7 @@ class TestHappyPath:
         latest_created_time = dateparser.parse("2020-02-02T14:05:01.5348545Z")
 
         # run
-        next_run, _ = process_incidents(raw_incidents, latest_created_time, last_incident_number)
+        next_run, _ = process_incidents(raw_incidents, latest_created_time, last_incident_number, {})
 
         # validate
         assert next_run.get("last_fetch_ids") == expected_result.get("last_fetch_ids")
@@ -1393,7 +1394,10 @@ class TestHappyPath:
 
         # run
         next_run, incidents = process_incidents(
-            raw_incidents=raw_incidents, latest_created_time=latest_created_time, last_incident_number=1
+            raw_incidents=raw_incidents,
+            latest_created_time=latest_created_time,
+            last_incident_number=1,
+            lookback_fetch_ids={},
         )
 
         # validate
@@ -2534,3 +2538,130 @@ def test_main_falls_back_to_legacy_client_id_when_new_param_absent(mocker):
 
     call_kwargs = mock_client_cls.call_args[1]
     assert call_kwargs["client_id"] == "legacy-client-id"
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_dedup_lookback_incident_in_both_fetch_and_lookback():
+    """
+    Given:
+        - An incident that appears in both the regular fetch and the lookback query.
+    When:
+        - Calling dedup_lookback_incidents.
+    Then:
+        - The incident is not returned in deduped_incidents (already fetched by regular fetch).
+        - The incident ID is added to the updated lookback dict (to prevent re-ingestion in future cycles).
+    """
+    from AzureSentinel import dedup_lookback_incidents
+
+    lookback_incidents = [{"ID": "inc-1", "LastModifiedTimeUTC": "2026-05-11T12:00:00Z"}]
+    previous_lookback_ids = {}
+    incidents_ids_from_fetch = ["inc-1"]
+    look_back = 60
+
+    deduped, updated_ids = dedup_lookback_incidents(
+        lookback_incidents=lookback_incidents,
+        previous_lookback_ids=previous_lookback_ids,
+        incidents_ids_from_fetch=incidents_ids_from_fetch,
+        look_back=look_back,
+    )
+
+    assert deduped == [], "Incident should not be in deduped list since it was already in regular fetch"
+    assert "inc-1" in updated_ids, "Incident should be tracked in lookback dict for future dedup"
+    assert updated_ids["inc-1"] == "2026-05-11T12:00:00Z"
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_dedup_lookback_incident_already_in_previous_lookback():
+    """
+    Given:
+        - An incident that was already ingested in a previous lookback cycle
+          and still appears in the current lookback query.
+    When:
+        - Calling dedup_lookback_incidents.
+    Then:
+        - The incident is not returned in deduped_incidents (already ingested).
+        - The incident ID remains in the updated lookback dict.
+    """
+    from AzureSentinel import dedup_lookback_incidents
+
+    lookback_incidents = [{"ID": "inc-1", "LastModifiedTimeUTC": "2026-05-11T12:00:00Z"}]
+    previous_lookback_ids = {"inc-1": "2026-05-11T11:50:00Z"}
+    incidents_ids_from_fetch = []
+    look_back = 60
+
+    deduped, updated_ids = dedup_lookback_incidents(
+        lookback_incidents=lookback_incidents,
+        previous_lookback_ids=previous_lookback_ids,
+        incidents_ids_from_fetch=incidents_ids_from_fetch,
+        look_back=look_back,
+    )
+
+    assert deduped == [], "Incident should not be re-ingested since it was already in previous lookback"
+    assert "inc-1" in updated_ids, "Incident should remain in the lookback dict"
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_dedup_lookback_new_incident_fetched_and_added_to_dict():
+    """
+    Given:
+        - A new incident found by the lookback query that was not in previous lookback cycles
+          and not in the regular fetch.
+    When:
+        - Calling dedup_lookback_incidents.
+    Then:
+        - The incident is returned in deduped_incidents.
+        - The incident ID is added to the updated lookback dict.
+    """
+    from AzureSentinel import dedup_lookback_incidents
+
+    lookback_incidents = [{"ID": "inc-new", "LastModifiedTimeUTC": "2026-05-11T12:30:00Z"}]
+    previous_lookback_ids = {"inc-old": "2026-05-11T11:00:00Z"}
+    incidents_ids_from_fetch = []
+    look_back = 60
+
+    deduped, updated_ids = dedup_lookback_incidents(
+        lookback_incidents=lookback_incidents,
+        previous_lookback_ids=previous_lookback_ids,
+        incidents_ids_from_fetch=incidents_ids_from_fetch,
+        look_back=look_back,
+    )
+
+    assert len(deduped) == 1, "New incident should be returned"
+    assert deduped[0]["ID"] == "inc-new"
+    assert "inc-new" in updated_ids, "New incident should be added to the lookback dict"
+    assert updated_ids["inc-new"] == "2026-05-11T12:30:00Z"
+    assert "inc-old" in updated_ids, "Previous active IDs should be preserved"
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_dedup_lookback_expired_ids_removed_from_dict():
+    """
+    Given:
+        - Previous lookback dict contains an incident with a lastModifiedTimeUtc
+          that is older than 2x the lookback window (expired).
+    When:
+        - Calling dedup_lookback_incidents.
+    Then:
+        - The expired incident ID is removed from the updated lookback dict.
+        - Active (non-expired) IDs are preserved.
+    """
+    from AzureSentinel import dedup_lookback_incidents
+
+    lookback_incidents = []
+    previous_lookback_ids = {
+        "inc-expired": "2020-01-01T00:00:00Z",
+        "inc-active": "2026-05-11T12:00:00Z",
+    }
+    incidents_ids_from_fetch = []
+    look_back = 60
+
+    deduped, updated_ids = dedup_lookback_incidents(
+        lookback_incidents=lookback_incidents,
+        previous_lookback_ids=previous_lookback_ids,
+        incidents_ids_from_fetch=incidents_ids_from_fetch,
+        look_back=look_back,
+    )
+
+    assert deduped == []
+    assert "inc-expired" not in updated_ids, "Expired ID should be removed from the dict"
+    assert "inc-active" in updated_ids, "Active ID should be preserved in the dict"
