@@ -188,15 +188,20 @@ def _apply_manual_mapping(
         for cap in capability_list:
             if cap not in result:
                 result[cap] = []
+            else:
+                result[cap].append(cmd_name)
         # Route this command's params to each listed capability.
-        params = commands_section.get(cmd_name) or []
-        for cap in capability_list:
-            cap_set = placed_per_cap.setdefault(cap, set(result[cap]))
-            for param in params:
-                if param not in cap_set:
-                    result[cap].append(param)
-                    cap_set.add(param)
-        handled_commands.add(cmd_name)
+        for cmd in commands_section:
+            if cmd_name in cmd:
+                cmd.remove(cmd_name)
+        # params = commands_section.get(cmd_name) or []
+        # for cap in capability_list:
+        #     cap_set = placed_per_cap.setdefault(cap, set(result[cap]))
+        #     for param in params:
+        #         if param not in cap_set:
+        #             result[cap].append(param)
+        #             cap_set.add(param)
+        # handled_commands.add(cmd_name)
     return handled_commands
 
 
