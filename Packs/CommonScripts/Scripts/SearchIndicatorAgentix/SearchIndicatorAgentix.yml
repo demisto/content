@@ -31,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: SearchIndicatorAgentix
 outputs:
@@ -60,6 +60,9 @@ isInternal: true
 tags:
 - Utility
 type: python
+dependson:
+  must:
+  - findIndicators
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
