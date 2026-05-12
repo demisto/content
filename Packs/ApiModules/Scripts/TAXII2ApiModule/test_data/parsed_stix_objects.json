@@ -13,7 +13,10 @@
             "pattern": "[domain-name:value = 'windows-updates.com']",
             "type": "Domain",
             "valid_from": "2018-04-23T17:01:01.248Z",
-            "value": "windows-updates.com"
+            "value": "windows-updates.com",
+            "tags": [
+                "malicious-activity"
+            ]
         },
         "fields": {
             "stixid": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
@@ -21,7 +24,9 @@
             "modified": "2018-04-23T17:01:01.248Z",
             "description": "",
             "trafficlightprotocol": null,
-            "tags": [],
+            "tags": [
+                "malicious-activity"
+            ],
             "publications": []
         }
     },
@@ -67,7 +72,8 @@
                 "Android",
                 "iOS"
             ],
-            "x_mitre_version": "1.0"
+            "x_mitre_version": "1.0",
+            "tags": []
         },
         "fields": {
             "stixid": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
@@ -164,7 +170,8 @@
             ],
             "x_mitre_version": "1.0",
             "x_panw_parent_technique": "Obfuscated Files or Information",
-            "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing"
+            "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing",
+            "tags": []
         },
         "fields": {
             "stixid": "attack-pattern--deb98323-e13f-4b0c-8d94-175379069062",
@@ -507,7 +514,7 @@
             "x_panw_coa_bp_rationale_statement": "Antivirus signatures produce low false positives. By blocking any detected malware through the specified decoders, the threat of malware propagation through the firewall is greatly reduced. It is recommended to mitigate malware found in pop3 and imap through a dedicated antivirus gateway. Due to the nature of the pop3 and imap protocols, the firewall is not able to block only a single email message containing malware. Instead, the entire session would be terminated, potentially affecting benign email messages.",
             "x_panw_coa_bp_recommendation_number": "6.1",
             "x_panw_coa_bp_references": [
-                "\u201cThreat Prevention Deployment Tech Note\u201d - https://live.paloaltonetworks.com/docs/DOC-3094:\u201cPAN-OS Administrator's Guide 9.0 (English) - Security Profiles\u201d - https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/policy/security-profiles.html"
+                "“Threat Prevention Deployment Tech Note” - https://live.paloaltonetworks.com/docs/DOC-3094:“PAN-OS Administrator's Guide 9.0 (English) - Security Profiles” - https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/policy/security-profiles.html"
             ],
             "x_panw_coa_bp_remediation_procedure": "Navigate to `Objects > Security Profiles > Antivirus.`\n\nSet antivirus profiles to have all decoders set to `block` for both `Action` and `Wildfire Action`. If `imap` and `pop3` are required in the organization, set the `imap` and `pop3` decoders to `alert` for both `Action` and `Wildfire Action`.",
             "x_panw_coa_bp_scoring_status": "full",

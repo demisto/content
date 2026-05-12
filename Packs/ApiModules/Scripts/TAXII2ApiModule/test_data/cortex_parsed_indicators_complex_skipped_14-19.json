@@ -26,7 +26,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "23.129.64.217",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--8e19a19c-cd66-4278-8bfb-c05c64977d12",
@@ -35,7 +38,9 @@
             "description": "TS ID: 55682983514; iType: bot_ip; Date First: 2020-06-02T07:26:46.206Z; State: active; Org: Emerald Onion; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -67,7 +72,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "45.142.213.11",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--90a4f95d-1e35-4f47-b303-5651c93457f4",
@@ -76,7 +84,9 @@
             "description": "TS ID: 55694549856; iType: bot_ip; Date First: 2020-06-05T08:45:37.178Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 85,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -108,7 +118,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "157.245.250.190",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--94f109aa-3ef2-4a8c-a847-dfb4c64f4f29",
@@ -117,7 +130,9 @@
             "description": "TS ID: 55697907923; iType: bot_ip; Date First: 2020-06-06T09:32:01.051Z; State: active; Org: Datalogic ADC; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -149,7 +164,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "144.91.106.47",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--96d1737a-5565-49ac-8a91-52c2c7b38903",
@@ -158,7 +176,9 @@
             "description": "TS ID: 55694549829; iType: bot_ip; Date First: 2020-06-05T08:44:22.790Z; State: active; Org: Mills College; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -190,7 +210,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "141.98.81.208",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--9c98d81b-b4a5-4b8d-8fd6-4b9beec0f1be",
@@ -199,7 +222,9 @@
             "description": "TS ID: 55691320102; iType: bot_ip; Date First: 2020-06-04T10:33:13.398Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -231,7 +256,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "51.81.53.159",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--9cbf82af-8a54-478a-af76-b88a73a33d37",
@@ -240,7 +268,9 @@
             "description": "TS ID: 55694549861; iType: bot_ip; Date First: 2020-06-05T08:42:44.478Z; State: active; Org: OVH SAS; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 85,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -272,7 +302,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "104.168.173.252",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--9ee9aecd-89e6-4dd6-9a24-4c610b33ebbb",
@@ -281,7 +314,9 @@
             "description": "TS ID: 55691320097; iType: bot_ip; Date First: 2020-06-04T10:32:46.612Z; State: active; Org: Hostwinds LLC.; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -313,7 +348,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "173.212.206.89",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--9febf107-dd82-4727-bcb7-199291ec474c",
@@ -322,7 +360,9 @@
             "description": "TS ID: 55697907953; iType: bot_ip; Date First: 2020-06-06T09:31:54.190Z; State: active; Org: Contabo GmbH; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -354,7 +394,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "67.207.94.201",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--a25904c8-0270-4d57-add5-64f5ed1485b5",
@@ -363,7 +406,9 @@
             "description": "TS ID: 55697908164; iType: bot_ip; Date First: 2020-06-06T09:32:30.450Z; State: active; Org: Digital Ocean; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 15,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -395,7 +440,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "89.163.242.76",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--a5a1408d-ff8b-41b2-8c57-6678aa0c8688",
@@ -404,7 +452,9 @@
             "description": "TS ID: 55694549874; iType: bot_ip; Date First: 2020-06-05T08:45:20.346Z; State: active; Org: myLoc managed IT AG; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -436,7 +486,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "51.75.71.205",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--a8cc5b11-3bbb-4fb2-970c-31a6f58e1374",
@@ -445,7 +498,9 @@
             "description": "TS ID: 55686993979; iType: bot_ip; Date First: 2020-06-03T07:29:11.148Z; State: active; Org: OVH SAS; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 85,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -477,7 +532,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "140.224.183.58",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--a8ee1e5f-8c08-4135-878c-4973179cbac5",
@@ -486,7 +544,9 @@
             "description": "TS ID: 55694549823; iType: bot_ip; Date First: 2020-06-05T08:45:24.055Z; State: active; Org: China Telecom FUJIAN NETWORK; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 85,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -518,7 +578,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "161.35.22.86",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--aa4ec99f-3c54-4e60-ab47-83ff78d76570",
@@ -527,7 +590,9 @@
             "description": "TS ID: 55697907934; iType: bot_ip; Date First: 2020-06-06T09:32:22.615Z; State: active; Org: Racal-Redac; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 85,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
@@ -559,7 +624,10 @@
             "pattern_version": "2.1",
             "spec_version": "2.1",
             "value": "45.143.220.246",
-            "trafficlightprotocol": "GREEN"
+            "trafficlightprotocol": "GREEN",
+            "tags": [
+                "low"
+            ]
         },
         "fields": {
             "stixid": "indicator--ac4a9ca5-9f6e-4072-b568-46dbb03a3ace",
@@ -568,7 +636,9 @@
             "description": "TS ID: 55691320117; iType: bot_ip; Date First: 2020-06-04T10:32:46.584Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
             "confidence": 50,
             "languages": "en",
-            "tags": [],
+            "tags": [
+                "low"
+            ],
             "publications": [],
             "trafficlightprotocol": "GREEN"
         }
