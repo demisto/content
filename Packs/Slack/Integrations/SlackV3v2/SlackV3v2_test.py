@@ -5826,11 +5826,11 @@ def test_send_agent_response_adds_user_mention_for_model_type(mocker):
 def test_create_script_notice_ui():
     """
     Given:
-    	A SlackAssistantHandler instance.
+        A SlackAssistantHandler instance.
     When:
-    	Creating a script availability notice UI block.
+        Creating a script availability notice UI block.
     Then:
-    	Returns a rich_text block with a quoted notice containing the expected text.
+        Returns a rich_text block with a quoted notice containing the expected text.
     """
     from SlackV3v2 import slack_assistant_handler
     from CortexAssistantApiModule import AssistantMessages

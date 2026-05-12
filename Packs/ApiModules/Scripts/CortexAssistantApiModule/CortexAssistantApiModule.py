@@ -1414,6 +1414,7 @@ class AssistantMessagingHandler:
         """
         return (
             "--- Source chat context ---\n"
+            "The following is automatically attached metadata about the chat session.\n"
             f"This chat was initiated from {self.PLATFORM_NAME}.\n"
             f"channel_id: {channel_id}\n"
             f"thread_id: {thread_id}\n"
@@ -1825,7 +1826,7 @@ class AssistantMessagingHandler:
 
                     # Skip user-type messages (echoed user messages should not be sent to the platform)
                     if msg_type == AssistantMessageType.USER.value:
-                        demisto.debug(f"Skipping user-type message (not sent to user)")
+                        demisto.debug("Skipping user-type message (not sent to user)")
                         continue
 
                     # Skip messages with empty content unless they carry UI elements (e.g., approval buttons)
