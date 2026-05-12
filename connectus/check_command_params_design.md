@@ -1,12 +1,16 @@
-What if theres a default in the yml for testmodule
-if theres a default in yml it doesnt need to be elevated
-
-
-> **⚠️ STATUS: Design Proposal — Not Yet Implemented**
+> **✅ STATUS: Implemented and Shipping**
 >
-> This document describes a planned tool. The referenced files
-> (`connectus/check_command_params.py` and `connectus/capture_proxy.py`)
-> do not exist yet. This is a design proposal only.
+> [`connectus/check_command_params.py`](check_command_params.py:1) and
+> [`connectus/capture_proxy.py`](capture_proxy.py:1) are both in the repo
+> and used in production by the migration pipeline. **The implemented
+> behavior diverges in important ways from the original design captured
+> in this document** — most notably, the dynamic phase is sentinel-driven
+> single-run (Strategy 8), runs inside Docker by default, and reports
+> per-command structured `diagnostics`. Read the
+> ["Implementation Status & Divergences from Original Design"](#implementation-status--divergences-from-original-design)
+> section at the bottom of this file FIRST for the authoritative current
+> behavior; the rest of the document is preserved as the original design
+> rationale.
 
 # Design: Integration Command Parameter Usage Analyzer
 
@@ -95,29 +99,32 @@ JSON to stdout. Output is keyed by command:
 {
   "integration": "QRadar v3",
   "commands": {
-    "test-module": {
-      "url": true,
-      "credentials": true,
-      "longRunning": true,
-      "max_fetch": false
-    },
-    "fetch-incidents": {
-      "url": true,
-      "credentials": true,
-      "max_fetch": true,
-      "longRunning": false
-    },
-    "qradar-offenses-list": {
-      "url": true,
-      "credentials": true,
-      "max_fetch": false,
-      "longRunning": false
-    }
+    "test-module": ["adv_params", "fetch_query"],
+    "fetch-incidents": ["fetch_query", "first_fetch", "max_fetch"],
+    "qradar-offenses-list": ["fetch_query", "filter"]
+  },
+  "diagnostics": {
+    "test-module":          {"status": "param_caused_failure", "captured_requests": 0, "failing_params": ["adv_params"], "failure_excerpt": "..."},
+    "fetch-incidents":      {"status": "ok", "captured_requests": 3, "scope_1_narrowed": true, "scope_1_dropped": ["adv_params"]},
+    "qradar-offenses-list": {"status": "ok", "captured_requests": 1}
   }
 }
 ```
 
-Each param is `true` (relevant to the command) or `false` (not relevant). The tool merges results from both static and dynamic analysis internally — if either method detects usage, the param is `true`. Params passed via `--ignore-params` / `--ignore-params-file` are omitted from the output entirely.
+Each command maps to a sorted list of param names that are relevant. Params not in the list (and params in `--ignore-params` / `--ignore-params-file`) are not relevant or were excluded. The tool merges results from both static and dynamic analysis internally — if either method detects usage, the param appears in the list. Lists are sorted alphabetically (case-sensitive) so output is deterministic; an empty list (`[]`) is the correct value for a command with no relevant params.
+
+> **Note (post-implementation).** In the current shipping output the
+> standard invocation passes
+> [`connectus/default_ignore_params.txt`](default_ignore_params.txt:1)
+> via `--ignore-params-file`, which strips ~154 framework /
+> auth / connection params (`url`, `credentials`, `proxy`, `insecure`,
+> `longRunning`, the feed framework, …) before the analyzer ever runs.
+> The example above reflects that post-ignore-list reality — only
+> behavioral, per-command-meaningful params remain. The `diagnostics`
+> object is **internal AI metadata** and MUST be stripped before any
+> persisted artifact (CSV, manifest, `set-params-to-commands` payload).
+> See the [Implementation Status](#implementation-status--divergences-from-original-design)
+> section for the full schema and the `diagnostics` status enum.
 
 ---
 
@@ -638,4 +645,231 @@ The performance section above lays out the full menu. Initial implementation sho
 - Dynamic result: `{param: bool}` per command
 - Final: `param = static_result OR dynamic_result` (union — if either says relevant, it's relevant)
 - Params in the ignore list are excluded from both phases and omitted from the output
-- Output: `{commands: {command: {param: true/false}}}` JSON to stdout
+- Output: `{commands: {command: [param, ...]}}` JSON to stdout (sorted list of relevant param names per command)
+
+---
+
+## Implementation Status & Divergences from Original Design
+
+This section is the **authoritative description of the shipped behavior**.
+The sections above describe the original design; where they conflict
+with the bullets below, the bullets below win.
+
+### What's actually implemented
+
+The shipping analyzer ([`connectus/check_command_params.py`](check_command_params.py:1))
+implements the original design's **sentinel-driven differential
+strategy** (Strategy 8) plus seven additional fixes layered on top:
+
+1. **Per-command exception isolation.** A failure in one command's
+   dynamic phase no longer aborts the rest of the integration. Each
+   command produces its own row in `diagnostics` and contributes
+   independently to `commands`.
+2. **`return_error` patch.** The injected `demistomock` overrides
+   `return_error` so the child exits with a distinct non-zero code
+   (`RC_RETURN_ERROR_PATCHED = 7`) instead of silently swallowing the
+   error. The analyzer treats `rc=7 + captures>0` as a partial success.
+3. **Pre-import param seeding.** `demistomock.demisto.params/command/args`
+   are patched on disk via a tmp mock dir + `sys.path` injection
+   **before** the unified module is imported. This is critical for
+   integrations whose `Client(...)` is constructed at import time and
+   reads params during construction.
+4. **YML-type-aware coercion.** Sentinels are coerced to the type
+   declared in the YML so they survive runtime validation:
+   booleans → `True`, ints → `1`, credentials (`type: 9`) →
+   `{"identifier": "SENTINEL_PARAM_<name>_id", "password": "SENTINEL_PARAM_<name>"}`,
+   multi-select → CSV string, single-select → first option, etc.
+   Strings get the `SENTINEL_PARAM_<name>` value used for grep matching.
+5. **Docker child execution.** The per-command child runs inside
+   `demisto/py3-native:8.9.0.114862` (pinned via `DEFAULT_DOCKER_IMAGE`)
+   by default. `--docker auto` (default) uses Docker when the daemon
+   is reachable and falls back to host Python otherwise; `--docker
+   always` requires Docker; `--docker never` runs in host Python only
+   (will fail on integrations needing third-party deps). The
+   `--docker-image <ref>` flag overrides the pinned image for testing.
+
+   **`--use-integration-docker` (opt-in)** changes the policy for one
+   run: instead of the pinned image, the analyzer reads
+   `script.dockerimage` from the integration YML and uses that. This
+   recovers dynamic-phase signal for integrations that need a
+   third-party Python package not present in `py3-native` (the package
+   is reported via `module_not_found` under the default policy). The
+   flag is opt-in for two reasons:
+   (a) reproducibility — the pinned image gives every integration the
+   same baseline runtime so a missing package can be triaged once and
+   reported uniformly; (b) footprint — per-integration images are
+   often 600MB+ and pulling N of them during a batch run is expensive
+   on bandwidth and disk. When the flag is set but the YML doesn't
+   declare a `dockerimage`, the analyzer silently falls back to
+   `--docker-image` and logs a one-line note on stderr.
+6. **Structured `diagnostics` field.** A second top-level JSON key
+   alongside `commands`, with one entry per command. The status enum
+   is one of:
+   - `ok` — completed, ≥1 HTTP request captured.
+   - `ok_no_capture` — completed cleanly (rc=0) but proxy saw zero
+     requests. Param list comes from static analysis only.
+   - `param_caused_failure` — failed, and one or more
+     `SENTINEL_PARAM_<name>` substrings appeared in the failure
+     message. Matching params are listed in `failing_params` and
+     pre-elevated into `commands[cmd]`.
+   - `no_data` — failed without specific param attribution.
+     `failure_excerpt` is still informative.
+   - `timeout` — child hit the per-command wall-clock timeout.
+   - `docker_error` — Docker invocation itself failed (rc=125/126/127).
+   - `module_not_found` — child crashed with `ModuleNotFoundError`.
+     Integration needs a third-party package not in the pinned image.
+     The missing package name is in `missing_module`. The calling AI
+     must read the source manually (analogous to JS / PowerShell).
+
+   Optional fields per command: `failure_excerpt` (truncated to 500
+   chars), `failing_params`, `missing_module`, `captured_requests`,
+   `scope_1_narrowed`, `scope_1_dropped`. Under `--static-only` the
+   `diagnostics` key is **omitted entirely**.
+
+   ⚠️ **`diagnostics` is internal AI signal. It MUST NEVER be
+   persisted into pipeline data (CSV, manifest, etc.).**
+
+7. **Hybrid Scope-1 narrowing.** When a command's dynamic phase
+   captured `≥1` HTTP request **and** ≥1 sentinel hit was detected on
+   the wire, the analyzer treats the captured-set as an authoritative
+   bound on which params reached the wire for that command. It then
+   narrows the static Scope-1 set (pre-dispatch params shared across
+   all commands — the `Client(api_key=…, max_fetch=…, …)` fan-out
+   pattern in `main()`) to the intersection with the captured params.
+   Scope-2 (per-command handler-traced params) is preserved unchanged.
+   This kills the dominant false-positive class where every command
+   appears to use every Client-init param. Narrowed commands carry
+   `diagnostics[cmd].scope_1_narrowed: true` and a `scope_1_dropped`
+   list of the params that were removed. When dynamic did not capture
+   (`ok_no_capture`, `module_not_found`, etc.) or hit zero sentinels,
+   the analyzer falls back to the full `scope_1 | scope_2` static
+   union and adds no extra diagnostic field. Narrowing is silent in
+   `commands` and visible in `diagnostics` only.
+
+### Output schema (current, authoritative)
+
+```text
+{
+  "integration": "<display name>",
+  "commands": {
+    "<cmd>": ["<param>", ...]            # sorted, case-sensitive
+  },
+  "diagnostics": {                        # omitted under --static-only
+    "<cmd>": {
+      "status": "ok" | "ok_no_capture" | "param_caused_failure"
+              | "no_data" | "timeout" | "docker_error" | "module_not_found",
+      "captured_requests": <int>,
+      "failure_excerpt": "<str, max 500 chars, optional>",
+      "failing_params": ["<param>", ...],   # only if param_caused_failure
+      "missing_module": "<str>",            # only if module_not_found
+      "scope_1_narrowed": true,             # only if Fix-7 narrowing fired
+      "scope_1_dropped": ["<param>", ...]   # only if Fix-7 narrowing fired
+    }
+  }
+}
+```
+
+The per-command value is a **sorted list of param names** — NOT the
+original `{param: bool}` map described in the
+["Merging Results"](#5-merging-results) section above. The list shape
+is the only shape the migration pipeline accepts.
+
+### Default ignore list
+
+There is now a curated default ignore list at
+[`connectus/default_ignore_params.txt`](default_ignore_params.txt:1)
+(154 entries: 23 framework + 108 auth/connection + 21 from validation
+pass + assorted). The standard invocation always passes it via
+`--ignore-params-file`:
+
+```bash
+python3 connectus/check_command_params.py <integration_dir> \
+    --ignore-params-file connectus/default_ignore_params.txt
+```
+
+This means production output will never contain `url`,
+`credentials`, `proxy`, `insecure`, `longRunning`, the feed-framework
+params, etc. The analyzer itself still ships **without** a built-in
+default — the file is the convention, not a hard-coded list.
+
+### CLI surface (current)
+
+The shipped CLI adds two flags beyond the original design:
+
+```text
+--timeout SECONDS                Per-command wall-clock timeout (default 30)
+--docker {auto,always,never}     Run child in Docker (default: auto)
+--docker-image <ref>             Override the pinned demisto/py3-native image
+                                 (testing/debug only — production runs with
+                                 the pinned image)
+```
+
+Exit codes:
+
+- `0` — success.
+- `2` — bad CLI args / path.
+- `3` — unhandled analyzer error (also emitted with empty stdout for
+  non-Python integrations in dynamic mode — see Asymmetry below).
+
+### Sentinel implementation (single-pass)
+
+Per the original Strategy 8 recommendation, the dynamic phase runs
+each command **exactly once** with all params seeded to unique
+sentinels. There is no per-param removal loop, no pairwise dependency
+detection, no `--all-pairs` flag. The analyzer greps each captured
+HTTP request (URL + headers + body) against the sentinel table in a
+single pass. This is the only dynamic mode that ships.
+
+### Static analysis: what's in vs out
+
+In: scope-1 + scope-2 trace, Pydantic alias resolution, three
+handler-resolution patterns (if/elif, dict dispatch, match/case),
+3-level call depth.
+
+Out: nothing was cut from the original static design — all of it is
+implemented.
+
+### Language asymmetry (known limitation)
+
+| Language     | Static analysis | Dynamic analysis (current) |
+|--------------|-----------------|----------------------------|
+| Python       | Full            | Full                       |
+| JavaScript   | Graceful skip — empty static set, clear stderr log, rc=0 | **rc=3 with empty stdout** |
+| PowerShell   | Graceful skip — empty static set, clear stderr log, rc=0 | **rc=3 with empty stdout** |
+
+Static analysis on JS/PowerShell is a clean no-op (returns an empty
+set). Dynamic analysis on JS/PowerShell currently exits non-zero with
+empty stdout — which is louder than the static path but inconsistent
+with it. This asymmetry is **known and tracked as a future
+improvement**; for now the calling AI treats `module_not_found` and
+non-Python rc=3 outcomes the same way (read the source manually).
+
+### Performance — actual vs. predicted
+
+| Mode                                         | Per integration  |
+|----------------------------------------------|------------------|
+| `--static-only`                              | 1–3 seconds      |
+| Default (Docker + sentinel single-run)       | 5–60 seconds     |
+| First-time Docker image pull                 | +20–60 seconds (one-time) |
+
+The original `Performance & Scaling` section above was costed against
+single-pass / pairwise re-run strategies that **do not ship**.
+Strategy 8 (sentinel single-run) collapsed the dynamic phase to
+`O(C)` not `O(N·C)`, and Docker startup is now the dominant cost
+driver per command, not param re-runs.
+
+### What was deferred / never built
+
+From the original optimization stack:
+
+- **Result caching by integration hash** (Strategy 6) — not
+  implemented. Re-runs are still full re-runs.
+- **Process-level parallelism** (Strategy 5) — not implemented in
+  the analyzer itself. The batch runner
+  ([`connectus/run_check_command_params_batch.py`](run_check_command_params_batch.py:1))
+  handles parallelism above the per-integration level.
+- **Pairwise dependency detection** (Strategy 2) — not implemented
+  and intentionally skipped per the original "opt-in only" guidance.
+- **Behavior-only param fallback** (the per-param removal Strategy 8
+  caveat) — not implemented. Behavior-only params are caught only if
+  static analysis sees them.

@@ -39,6 +39,8 @@ from workflow_state import (
     WorkflowError,
     apply_step_action,
     assign_connector,
+    auth_param_ids,
+    cmd_auth_params,
     cmd_list_by_connector,
     cmd_list_connectors,
     cmd_markpass,
@@ -46,6 +48,7 @@ from workflow_state import (
     cmd_set_assignee,
     cmd_set_assignee_by_connector,
     cmd_set_auth_flag,
+    cmd_set_params_to_commands,
     cmd_files,
     cmd_show_step,
     cmd_skip,
@@ -75,15 +78,27 @@ from workflow_state import (
     set_integration_auth,
     skip_integration_step,
     validate_auth_detail,
+    validate_params_to_commands,
 )
 
 
 VALID_AUTH_JSON = (
     '{"auth_types":[{"type":"APIKey","name":"api_key",'
     '"xsoar_params":["api_key"]}],'
+    '"config":"REQUIRED(api_key)",'
+    '"other_connection":["insecure","proxy","url"]}'
+)
+VALID_AUTH_JSON_NONE = (
+    '{"auth_types":[],"config":"NoneRequired","other_connection":[]}'
+)
+# Legacy-shape Auth Details JSON missing the `other_connection` key — used to
+# verify read-path tolerance for rows that predate the field. Do NOT pass
+# this through `validate_auth_detail`; it is for read/display tests only.
+LEGACY_AUTH_JSON_NO_OTHER_CONNECTION = (
+    '{"auth_types":[{"type":"APIKey","name":"api_key",'
+    '"xsoar_params":["api_key"]}],'
     '"config":"REQUIRED(api_key)"}'
 )
-VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NoneRequired"}'
 
 
 # ---------------------------------------------------------------------------
@@ -1013,6 +1028,44 @@ class TestFormatStatus:
         out = format_status(row)
         assert "[2/16]" in out
 
+    def test_format_status_shows_other_connection_inline(self) -> None:
+        row = _blank_row()
+        row["assignee"] = "A"
+        row["Auth Details"] = VALID_AUTH_JSON
+        out = format_status(row)
+        # The inline `other_connection` label should be present, with
+        # the actual list rendered.
+        assert "other_connection" in out
+        assert "insecure" in out and "proxy" in out and "url" in out
+
+    def test_format_status_legacy_row_missing_other_connection(self) -> None:
+        # Legacy CSV rows that predate the new field must NOT crash status,
+        # and should surface a clear "(not set — re-run set-auth)" hint.
+        row = _blank_row()
+        row["assignee"] = "A"
+        row["Auth Details"] = LEGACY_AUTH_JSON_NO_OTHER_CONNECTION
+        out = format_status(row)
+        assert "other_connection" in out
+        assert "(not set — re-run set-auth)" in out
+
+    def test_format_step_value_legacy_row_appends_hint(self) -> None:
+        # `show-step Auth Details` for a legacy row should pretty-print
+        # the JSON AND append the "(not set — re-run set-auth)" hint.
+        row = _blank_row()
+        row["Auth Details"] = LEGACY_AUTH_JSON_NO_OTHER_CONNECTION
+        out = format_step_value(row, "Auth Details")
+        assert "auth_types" in out  # JSON pretty-print rendered
+        assert "other_connection: (not set — re-run set-auth)" in out
+
+    def test_format_step_value_modern_row_no_hint(self) -> None:
+        # A modern row with `other_connection` set should NOT get the hint
+        # (the JSON pretty-print already contains the key).
+        row = _blank_row()
+        row["Auth Details"] = VALID_AUTH_JSON
+        out = format_step_value(row, "Auth Details")
+        assert "other_connection" in out
+        assert "(not set — re-run set-auth)" not in out
+
 
 class TestFormatDashboard:
     def test_no_progress_returns_none(self) -> None:
@@ -1089,7 +1142,8 @@ class TestValidateAuthDetail:
 
     def test_invalid_auth_type(self) -> None:
         bad = ('{"auth_types":[{"type":"INVALID","name":"x",'
-               '"xsoar_params":["p"]}],"config":"REQUIRED(x)"}')
+               '"xsoar_params":["p"]}],"config":"REQUIRED(x)",'
+               '"other_connection":[]}')
         errors = validate_auth_detail(bad)
         assert any("invalid type 'INVALID'" in e for e in errors)
 
@@ -1097,7 +1151,7 @@ class TestValidateAuthDetail:
         for at in VALID_AUTH_TYPES:
             detail = (f'{{"auth_types":[{{"type":"{at}","name":"x",'
                       '"xsoar_params":["p"]}],'
-                      '"config":"REQUIRED(x)"}')
+                      '"config":"REQUIRED(x)","other_connection":[]}')
             assert validate_auth_detail(detail) == [], f"Type '{at}' should be valid"
 
     # ------------------------------------------------------------------
@@ -1105,13 +1159,14 @@ class TestValidateAuthDetail:
     # ------------------------------------------------------------------
 
     def test_valid_none_required_explicit(self) -> None:
-        detail = '{"auth_types":[],"config":"NoneRequired"}'
+        detail = ('{"auth_types":[],"config":"NoneRequired",'
+                  '"other_connection":[]}')
         assert validate_auth_detail(detail) == []
 
     def test_valid_simple_required(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"REQUIRED(api_key)"}')
+                  '"config":"REQUIRED(api_key)","other_connection":[]}')
         assert validate_auth_detail(detail) == []
 
     def test_valid_two_clause_required_plus_optional(self) -> None:
@@ -1123,7 +1178,8 @@ class TestValidateAuthDetail:
             '{"type":"Plain","name":"credentials",'
             '"xsoar_params":["credentials.identifier","credentials.password"]}'
             '],'
-            '"config":"REQUIRED(credentials) + OPTIONAL(credentials_consumer)"}'
+            '"config":"REQUIRED(credentials) + OPTIONAL(credentials_consumer)",'
+            '"other_connection":[]}'
         )
         assert validate_auth_detail(detail) == []
 
@@ -1136,14 +1192,15 @@ class TestValidateAuthDetail:
             '"xsoar_params":["hunting_credentials.identifier",'
             '"hunting_credentials.password"]}'
             '],'
-            '"config":"CHOICE(credentials, hunting_credentials)"}'
+            '"config":"CHOICE(credentials, hunting_credentials)",'
+            '"other_connection":[]}'
         )
         assert validate_auth_detail(detail) == []
 
     def test_config_unknown_name(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"REQUIRED(missing_name)"}')
+                  '"config":"REQUIRED(missing_name)","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any(
             "unknown connection-type name 'missing_name'" in e for e in errors
@@ -1152,35 +1209,35 @@ class TestValidateAuthDetail:
     def test_config_malformed_empty_required(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"REQUIRED()"}')
+                  '"config":"REQUIRED()","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any("'config'" in e and "no operands" in e for e in errors), errors
 
     def test_config_malformed_trailing_plus(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"REQUIRED(api_key) +"}')
+                  '"config":"REQUIRED(api_key) +","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any("'config'" in e and "ends with '+'" in e for e in errors), errors
 
     def test_config_malformed_unknown_keyword(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"FOO(api_key)"}')
+                  '"config":"FOO(api_key)","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any("'config'" in e and "malformed clause" in e for e in errors), errors
 
     def test_config_malformed_missing_parens(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"REQUIRED api_key"}')
+                  '"config":"REQUIRED api_key","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any("'config'" in e and "malformed clause" in e for e in errors), errors
 
     def test_none_required_with_non_empty_auth_types(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":["api_key"]}],'
-                  '"config":"NoneRequired"}')
+                  '"config":"NoneRequired","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any(
             "'config' is 'NoneRequired' but 'auth_types' contains entries" in e
@@ -1188,7 +1245,8 @@ class TestValidateAuthDetail:
         ), errors
 
     def test_non_none_required_with_empty_auth_types(self) -> None:
-        detail = '{"auth_types":[],"config":"REQUIRED(api_key)"}'
+        detail = ('{"auth_types":[],"config":"REQUIRED(api_key)",'
+                  '"other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any(
             "'config' is not 'NoneRequired' but 'auth_types' is empty" in e
@@ -1208,7 +1266,8 @@ class TestValidateAuthDetail:
             '{"type":"APIKey","name":"api_key",'
             '"xsoar_params":["api_key"]}'
             '],'
-            '"config":"REQUIRED(api_key) + REQUIRED(credentials)"}'
+            '"config":"REQUIRED(api_key) + REQUIRED(credentials)",'
+            '"other_connection":[]}'
         )
         errors = validate_auth_detail(detail)
         assert any("must be sorted by (type, name)" in e for e in errors), errors
@@ -1225,7 +1284,7 @@ class TestValidateAuthDetail:
             '{"type":"APIKey","name":"b","xsoar_params":["p"]},'
             '{"type":"APIKey","name":"a","xsoar_params":["p"]}'
             '],'
-            '"config":"REQUIRED(a) + REQUIRED(b)"}'
+            '"config":"REQUIRED(a) + REQUIRED(b)","other_connection":[]}'
         )
         errors = validate_auth_detail(detail)
         assert any("must be sorted by (type, name)" in e for e in errors), errors
@@ -1233,10 +1292,89 @@ class TestValidateAuthDetail:
     def test_empty_xsoar_params_rejected(self) -> None:
         detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
                   '"xsoar_params":[]}],'
-                  '"config":"REQUIRED(api_key)"}')
+                  '"config":"REQUIRED(api_key)","other_connection":[]}')
         errors = validate_auth_detail(detail)
         assert any(
             "auth_types[0]" in e and "must contain at least one entry" in e
+            for e in errors
+        ), errors
+
+    # ------------------------------------------------------------------
+    # `other_connection` validation (required key on write)
+    # ------------------------------------------------------------------
+
+    def test_other_connection_valid_with_entries(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)",'
+                  '"other_connection":["insecure","proxy","url"]}')
+        assert validate_auth_detail(detail) == []
+
+    def test_other_connection_valid_empty_list(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)","other_connection":[]}')
+        assert validate_auth_detail(detail) == []
+
+    def test_other_connection_missing_key_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "Missing required keys" in e and "other_connection" in e
+            for e in errors
+        ), errors
+
+    def test_other_connection_not_a_list_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)","other_connection":"url"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'other_connection' must be a list" in e for e in errors
+        ), errors
+
+    def test_other_connection_non_string_element_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)","other_connection":["url",42]}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'other_connection'[1]" in e and "must be a string" in e
+            for e in errors
+        ), errors
+
+    def test_other_connection_empty_string_element_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)",'
+                  '"other_connection":["url",""]}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'other_connection'[1]" in e and "non-empty string" in e
+            for e in errors
+        ), errors
+
+    def test_other_connection_duplicate_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)",'
+                  '"other_connection":["proxy","url","url"]}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "duplicate" in e and "url" in e for e in errors
+        ), errors
+
+    def test_other_connection_unsorted_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)",'
+                  '"other_connection":["url","proxy"]}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "must be sorted ascending" in e
+            and "['proxy', 'url']" in e
             for e in errors
         ), errors
 
@@ -1260,6 +1398,20 @@ class TestProgrammaticAPI:
         with patch("workflow_state.load_csv") as mock_load:
             result = set_integration_auth("X", '{"bad":"json"}')
         assert "error" in result
+        mock_load.assert_not_called()
+
+    def test_set_integration_auth_rejects_missing_other_connection(self) -> None:
+        # Payload is otherwise valid but lacks the new `other_connection`
+        # key — set-auth must reject it (Option B: required on write).
+        legacy_payload = (
+            '{"auth_types":[{"type":"APIKey","name":"api_key",'
+            '"xsoar_params":["api_key"]}],'
+            '"config":"REQUIRED(api_key)"}'
+        )
+        with patch("workflow_state.load_csv") as mock_load:
+            result = set_integration_auth("X", legacy_payload)
+        assert "error" in result
+        assert "other_connection" in result["error"]
         mock_load.assert_not_called()
 
     def test_set_integration_auth_not_found(self) -> None:
@@ -1942,3 +2094,525 @@ class TestCmdFiles:
         err = capsys.readouterr().err
         assert "ERROR:" in err
         assert "not found" in err
+
+
+# ---------------------------------------------------------------------------
+# `auth-params` helper + CLI + set-params-to-commands overlap rejection
+# ---------------------------------------------------------------------------
+
+# Reusable Auth Details JSON: a credentials param (dotted xsoar_params)
+# AND an APIKey param (bare xsoar_params), AND an other_connection list.
+# This exercises every branch of `auth_param_ids` projection rules.
+MIXED_AUTH_JSON = (
+    '{"auth_types":['
+    '{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]},'
+    '{"type":"Plain","name":"credentials",'
+    '"xsoar_params":["credentials.identifier","credentials.password"]}'
+    '],'
+    '"config":"REQUIRED(api_key) + REQUIRED(credentials)",'
+    '"other_connection":["insecure","proxy","url"]}'
+)
+
+
+def _row_with_auth(name: str, auth_json: str) -> dict[str, str]:
+    """Build a row whose Auth Details is set (current step is #3 P-to-C)."""
+    row = _blank_row(name)
+    row["assignee"] = "Alice"
+    row["Auth Details"] = auth_json
+    return row
+
+
+class TestAuthParamIds:
+    def test_returns_union_deduped_and_sorted(self, monkeypatch) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        result = auth_param_ids("MixedAuth")
+        # api_key (auth_types bare), credentials (collapsed dotted),
+        # insecure / proxy / url (other_connection).
+        assert result == ["api_key", "credentials", "insecure", "proxy", "url"]
+        # Sorted ascending — defensive re-check.
+        assert result == sorted(result)
+        # Deduped — no repeats.
+        assert len(result) == len(set(result))
+
+    def test_projects_dotted_forms(self, monkeypatch) -> None:
+        # credentials.identifier + credentials.password BOTH collapse to
+        # "credentials"; the result must contain "credentials" once and
+        # MUST NOT contain the dotted forms.
+        auth = (
+            '{"auth_types":[{"type":"Plain","name":"creds_only",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]}],'
+            '"config":"REQUIRED(creds_only)",'
+            '"other_connection":[]}'
+        )
+        rows = [_row_with_auth("CredsOnly", auth)]
+        _patch_csv(monkeypatch, rows)
+        result = auth_param_ids("CredsOnly")
+        assert result == ["credentials"]
+        assert "credentials.identifier" not in result
+        assert "credentials.password" not in result
+
+    def test_legacy_row_no_other_connection_returns_auth_types_only(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Bypass validate_auth_detail and write a legacy-shape JSON
+        # directly into the row. The validator now requires
+        # ``other_connection`` so this can only happen on rows that
+        # predate the field.
+        legacy_auth = (
+            '{"auth_types":[{"type":"APIKey","name":"api_key",'
+            '"xsoar_params":["api_key"]}],'
+            '"config":"REQUIRED(api_key)"}'
+        )
+        rows = [_row_with_auth("LegacyRow", legacy_auth)]
+        _patch_csv(monkeypatch, rows)
+        result = auth_param_ids("LegacyRow")
+        # auth_types-derived ids only; no crash.
+        assert result == ["api_key"]
+        # Stderr hint about missing other_connection.
+        err = capsys.readouterr().err
+        assert "other_connection" in err
+        assert "legacy shape" in err
+
+    def test_unset_auth_details_raises_workflow_error(self, monkeypatch) -> None:
+        # Auth Details cell is empty.
+        row = _blank_row("NoAuthYet")
+        row["assignee"] = "Alice"
+        # Don't set Auth Details — current step is #2.
+        rows = [row]
+        _patch_csv(monkeypatch, rows)
+        with pytest.raises(WorkflowError) as exc:
+            auth_param_ids("NoAuthYet")
+        msg = exc.value.message
+        assert "Auth Details" in msg
+        assert "set-auth" in msg
+
+    def test_unknown_integration_raises_workflow_error(self, monkeypatch) -> None:
+        _patch_csv(monkeypatch, [_row_with_auth("Known", MIXED_AUTH_JSON)])
+        with pytest.raises(WorkflowError) as exc:
+            auth_param_ids("Unknown")
+        assert "not found" in exc.value.message
+
+    def test_invalid_json_raises_workflow_error(self, monkeypatch) -> None:
+        row = _blank_row("BadJSON")
+        row["assignee"] = "Alice"
+        row["Auth Details"] = "not json"
+        _patch_csv(monkeypatch, [row])
+        with pytest.raises(WorkflowError) as exc:
+            auth_param_ids("BadJSON")
+        assert "valid JSON" in exc.value.message
+
+    def test_none_required_with_only_other_connection(self, monkeypatch) -> None:
+        # NoneRequired auth + non-empty other_connection (unusual but legal).
+        auth = (
+            '{"auth_types":[],"config":"NoneRequired",'
+            '"other_connection":["host","port"]}'
+        )
+        rows = [_row_with_auth("NoAuthOnlyConn", auth)]
+        _patch_csv(monkeypatch, rows)
+        result = auth_param_ids("NoAuthOnlyConn")
+        assert result == ["host", "port"]
+
+
+class TestCmdAuthParamsCli:
+    def test_text_format_default(self, monkeypatch, capsys) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        cmd_auth_params(["MixedAuth"])
+        out = capsys.readouterr().out
+        # One param per line, ascending — easy to pipe into grep -vFf.
+        assert out.strip().splitlines() == [
+            "api_key", "credentials", "insecure", "proxy", "url",
+        ]
+
+    def test_json_format(self, monkeypatch, capsys) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        cmd_auth_params(["MixedAuth", "--format=json"])
+        out = capsys.readouterr().out
+        parsed = json.loads(out)
+        assert parsed == {
+            "integration_id": "MixedAuth",
+            "params": ["api_key", "credentials", "insecure", "proxy", "url"],
+        }
+
+    def test_unset_auth_exits_nonzero_with_clear_error(
+        self, monkeypatch, capsys
+    ) -> None:
+        row = _blank_row("NoAuthYet")
+        row["assignee"] = "Alice"
+        _patch_csv(monkeypatch, [row])
+        with pytest.raises(SystemExit) as exc:
+            cmd_auth_params(["NoAuthYet"])
+        assert exc.value.code == 1
+        err = capsys.readouterr().err
+        assert "ERROR" in err
+        assert "Auth Details" in err
+
+    def test_unknown_format_value_rejected(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        with pytest.raises(SystemExit) as exc:
+            cmd_auth_params(["MixedAuth", "--format=xml"])
+        assert exc.value.code == 1
+        err = capsys.readouterr().err
+        assert "Unknown --format" in err
+
+    def test_no_args_prints_usage_and_exits(
+        self, monkeypatch, capsys
+    ) -> None:
+        _patch_csv(monkeypatch, [])
+        with pytest.raises(SystemExit):
+            cmd_auth_params([])
+        out = capsys.readouterr().out
+        assert "Usage:" in out
+        assert "auth-params" in out
+
+
+class TestSetParamsToCommandsOverlapRejection:
+    def test_rejects_when_payload_includes_auth_param(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        # 'credentials' overlaps with the dotted xsoar_params projection;
+        # 'proxy' overlaps with other_connection.
+        bad_payload = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {
+                "test-module": ["credentials", "behavioral_param"],
+                "real-cmd": ["proxy", "limit"],
+            },
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["MixedAuth", bad_payload])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        # Both offending pairs named.
+        assert "'test-module'" in out
+        assert "'credentials'" in out
+        assert "'real-cmd'" in out
+        assert "'proxy'" in out
+        # Source attribution: credentials → auth_types entry; proxy → other_connection.
+        assert "auth_types[].name='credentials'" in out
+        assert "other_connection" in out
+        # Fix guidance present.
+        assert "auth-params" in out
+        assert "set-auth" in out
+        # Row must NOT have been mutated.
+        assert rows[0]["Params to Commands"] == ""
+
+    def test_passes_when_no_overlap(self, monkeypatch, capsys) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        good_payload = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {
+                "test-module": ["behavioral_param"],
+                "real-cmd": ["limit", "page_size"],
+            },
+        })
+        # Should not raise; row gets the value written.
+        cmd_set_params_to_commands(["MixedAuth", good_payload])
+        assert rows[0]["Params to Commands"] == good_payload
+
+    def test_unset_auth_propagates_clear_error(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Auth Details unset — overlap check raises the
+        # "set auth first" WorkflowError before the cascade dispatch
+        # even sees the call.
+        row = _blank_row("NoAuthYet")
+        row["assignee"] = "Alice"
+        _patch_csv(monkeypatch, [row])
+        payload = json.dumps({
+            "integration": "NoAuthYet",
+            "commands": {"test-module": ["anything"]},
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["NoAuthYet", payload])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "Auth Details" in out
+        assert "set-auth" in out
+
+    def test_legacy_row_overlap_still_caught_for_auth_types(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Legacy Auth Details (no other_connection) — overlap check
+        # must still catch overlaps with auth_types-derived ids.
+        legacy_auth = (
+            '{"auth_types":[{"type":"APIKey","name":"api_key",'
+            '"xsoar_params":["api_key"]}],'
+            '"config":"REQUIRED(api_key)"}'
+        )
+        rows = [_row_with_auth("LegacyRow", legacy_auth)]
+        _patch_csv(monkeypatch, rows)
+        bad = json.dumps({
+            "integration": "LegacyRow",
+            "commands": {"some-cmd": ["api_key"]},
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["LegacyRow", bad])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "'api_key'" in out
+        assert "auth_types[].name='api_key'" in out
+
+
+# ---------------------------------------------------------------------------
+# validate_params_to_commands (Fix A: strict schema validator)
+# ---------------------------------------------------------------------------
+
+
+class TestValidateParamsToCommands:
+    """Strict-schema validator for the 'Params to Commands' JSON cell.
+
+    Mirrors the structure of :class:`TestValidateAuthDetail`. The
+    canonical good payload is the minimal two-key shape; every other
+    test mutates it to exercise one specific rule.
+    """
+
+    GOOD_PAYLOAD = '{"integration": "X", "commands": {"foo": ["a", "b"]}}'
+
+    def test_valid_simple(self) -> None:
+        assert validate_params_to_commands(self.GOOD_PAYLOAD) == []
+
+    def test_valid_empty_commands_dict(self) -> None:
+        # An integration with zero commands is structurally valid; the
+        # schema rule is "commands must be a dict", not "non-empty".
+        assert validate_params_to_commands(
+            '{"integration": "X", "commands": {}}'
+        ) == []
+
+    def test_valid_command_with_empty_param_list(self) -> None:
+        # A command may legitimately have zero params (the analyzer's
+        # static union came up empty after the ignore set was applied).
+        assert validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": []}}'
+        ) == []
+
+    def test_invalid_json(self) -> None:
+        errors = validate_params_to_commands("not json")
+        assert "Invalid JSON" in errors[0]
+
+    def test_non_dict_top_level(self) -> None:
+        errors = validate_params_to_commands('["integration", "commands"]')
+        assert any("Expected a JSON object" in e for e in errors)
+
+    def test_non_dict_string_top_level(self) -> None:
+        errors = validate_params_to_commands('"hello"')
+        assert any("Expected a JSON object" in e for e in errors)
+
+    def test_diagnostics_extra_key_rejected_with_strip_recipe(self) -> None:
+        # The historical leak: analyzer used to emit "diagnostics" by
+        # default and the agent piped it verbatim. Validator must (a)
+        # name the key explicitly and (b) embed the actionable
+        # one-liner strip recipe.
+        bad = (
+            '{"integration": "X", "commands": {}, '
+            '"diagnostics": {"foo": {"status": "ok"}}}'
+        )
+        errors = validate_params_to_commands(bad)
+        # Diagnostics must be called out by name.
+        assert any("'diagnostics'" in e for e in errors), errors
+        # And the strip recipe must appear in some error string.
+        assert any(
+            "o.pop('diagnostics', None)" in e
+            and "json.load" in e
+            and "json.dumps" in e
+            for e in errors
+        ), errors
+
+    def test_arbitrary_other_extra_keys_rejected(self) -> None:
+        # Other forbidden top-level keys mentioned in column-schemas.md.
+        for extra in ("status", "failure_excerpt", "random_key"):
+            bad = (
+                '{"integration": "X", "commands": {}, "'
+                + extra + '": "anything"}'
+            )
+            errors = validate_params_to_commands(bad)
+            assert any(extra in e for e in errors), (
+                f"key {extra!r} should be rejected and named in error: {errors}"
+            )
+            # Strip recipe still embedded so the operator gets one path
+            # to the fix regardless of which extra key tripped them.
+            assert any(
+                "o.pop('diagnostics', None)" in e for e in errors
+            ), errors
+
+    def test_multiple_extras_all_named_in_one_pass(self) -> None:
+        bad = (
+            '{"integration": "X", "commands": {}, '
+            '"diagnostics": {}, "status": "ok", "stderr": ""}'
+        )
+        errors = validate_params_to_commands(bad)
+        joined = "\n".join(errors)
+        # Every extra key surfaces somewhere in the error output.
+        for extra in ("diagnostics", "status", "stderr"):
+            assert extra in joined, (
+                f"{extra!r} missing from collected errors: {errors}"
+            )
+
+    def test_missing_integration_rejected(self) -> None:
+        errors = validate_params_to_commands('{"commands": {}}')
+        assert any(
+            "Missing required" in e and "integration" in e
+            for e in errors
+        ), errors
+
+    def test_missing_commands_rejected(self) -> None:
+        errors = validate_params_to_commands('{"integration": "X"}')
+        assert any(
+            "Missing required" in e and "commands" in e
+            for e in errors
+        ), errors
+
+    def test_missing_both_required_keys_rejected(self) -> None:
+        errors = validate_params_to_commands('{}')
+        # Single missing-keys error names BOTH.
+        assert any(
+            "Missing required" in e
+            and "integration" in e
+            and "commands" in e
+            for e in errors
+        ), errors
+
+    def test_non_string_integration_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": 42, "commands": {}}'
+        )
+        assert any(
+            "'integration' must be a string" in e for e in errors
+        ), errors
+
+    def test_empty_string_integration_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "", "commands": {}}'
+        )
+        assert any(
+            "'integration' must be a non-empty string" in e for e in errors
+        ), errors
+
+    def test_non_dict_commands_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": ["foo", "bar"]}'
+        )
+        assert any(
+            "'commands' must be a JSON object" in e for e in errors
+        ), errors
+
+    def test_non_list_command_value_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": "a"}}'
+        )
+        assert any(
+            "expected a list of param ids" in e for e in errors
+        ), errors
+
+    def test_non_string_param_id_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": ["a", 7]}}'
+        )
+        assert any(
+            "param id must be a string" in e for e in errors
+        ), errors
+
+    def test_empty_string_param_id_rejected(self) -> None:
+        errors = validate_params_to_commands(
+            '{"integration": "X", "commands": {"foo": ["a", ""]}}'
+        )
+        assert any(
+            "param id must be a non-empty string" in e for e in errors
+        ), errors
+
+
+class TestSetParamsToCommandsStrictSchemaCli:
+    """End-to-end CLI checks: strict-schema rejection at the entrypoint.
+
+    The validator must short-circuit BEFORE the existing overlap check
+    so that shape errors surface on their own (more common operator
+    mistake) and the row is never partially mutated.
+    """
+
+    def test_diagnostics_polluted_payload_exits_nonzero_with_strip_recipe(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Auth Details is set so we don't trip the upstream "set auth
+        # first" prerequisite — the schema validator should fire first.
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        polluted = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {"test-module": ["behavioral_param"]},
+            "diagnostics": {"test-module": {"status": "ok"}},
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["MixedAuth", polluted])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        # Header from the strict-schema branch (NOT the overlap branch).
+        assert "Params to Commands does not match the required schema" in out
+        # The leak key is named explicitly and the strip recipe is shown.
+        assert "'diagnostics'" in out
+        assert "o.pop('diagnostics', None)" in out
+        # Row remains untouched by the rejection.
+        assert rows[0]["Params to Commands"] == ""
+
+    def test_random_extra_key_exits_nonzero(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        bad = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {"test-module": ["behavioral_param"]},
+            "random_key": True,
+        })
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_params_to_commands(["MixedAuth", bad])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "random_key" in out
+        assert rows[0]["Params to Commands"] == ""
+
+    def test_clean_payload_is_accepted(self, monkeypatch) -> None:
+        # Sanity check that the strict-schema gate doesn't reject the
+        # canonical good shape (would regress the existing overlap-only
+        # acceptance test).
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        good = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {"test-module": ["behavioral_param"]},
+        })
+        cmd_set_params_to_commands(["MixedAuth", good])
+        assert rows[0]["Params to Commands"] == good
+
+    def test_set_json_data_step_defense_in_depth(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Direct call into the shared lower-level handler must also
+        # reject a polluted payload — guards future callers that
+        # bypass cmd_set_params_to_commands.
+        from workflow_state import _set_json_data_step
+
+        rows = [_row_with_auth("MixedAuth", MIXED_AUTH_JSON)]
+        _patch_csv(monkeypatch, rows)
+        polluted = json.dumps({
+            "integration": "MixedAuth",
+            "commands": {},
+            "diagnostics": {},
+        })
+        with pytest.raises(SystemExit) as exc:
+            _set_json_data_step(
+                ["MixedAuth", polluted],
+                "Params to Commands",
+                "set-params-to-commands",
+            )
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "Params to Commands does not match the required schema" in out
+        assert "'diagnostics'" in out
