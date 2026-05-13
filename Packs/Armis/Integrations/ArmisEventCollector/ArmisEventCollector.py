@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 120
+MAX_PAGINATION_DURATION_SECONDS = 90
 MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
