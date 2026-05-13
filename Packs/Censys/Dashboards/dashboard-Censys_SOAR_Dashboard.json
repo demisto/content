@@ -37,11 +37,7 @@
                     "all"
                 ],
                 "definitionId": "",
-                "isOverridable": false,
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "Cache": null,
                 "name": "TOTAL COMMAND RUNS",
                 "prevName": "Count of Commands used",
@@ -96,9 +92,6 @@
                 "primaryTerm": 5,
                 "modified": "2021-06-03T10:41:50.602231569Z",
                 "sizeInBytes": 0,
-                "sortValues": [
-                    "598774"
-                ],
                 "packID": "",
                 "packName": "",
                 "itemVersion": "",
@@ -108,11 +101,7 @@
                     "all"
                 ],
                 "definitionId": "",
-                "isOverridable": false,
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "Cache": null,
                 "name": "COMMAND RUNS BY EXECUTION TYPE",
                 "prevName": "Command execution type",
@@ -226,9 +215,6 @@
                 "primaryTerm": 3,
                 "modified": "2026-02-18T09:20:51.675903692Z",
                 "sizeInBytes": 1309,
-                "sortValues": [
-                    "6071"
-                ],
                 "packID": "CommonWidgets",
                 "packName": "Common Widgets",
                 "itemVersion": "1.2.60",
@@ -239,11 +225,7 @@
                     "all"
                 ],
                 "definitionId": "",
-                "isOverridable": false,
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "size": 5,
                 "Cache": null,
                 "name": "TOTAL PLAYBOOK RUNS",
@@ -332,9 +314,6 @@
                 "primaryTerm": 3,
                 "modified": "2026-02-18T09:20:51.674502401Z",
                 "sizeInBytes": 933,
-                "sortValues": [
-                    "6034"
-                ],
                 "packID": "CommonWidgets",
                 "packName": "Common Widgets",
                 "itemVersion": "1.2.60",
@@ -345,11 +324,7 @@
                     "all"
                 ],
                 "definitionId": "",
-                "isOverridable": false,
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "size": 20,
                 "Cache": null,
                 "name": "COMMAND DISTRIBUTION",
@@ -406,9 +381,6 @@
                 "primaryTerm": 3,
                 "modified": "2026-02-18T09:20:51.674502401Z",
                 "sizeInBytes": 933,
-                "sortValues": [
-                    "6034"
-                ],
                 "packID": "CommonWidgets",
                 "packName": "Common Widgets",
                 "itemVersion": "1.2.60",
@@ -419,11 +391,7 @@
                     "all"
                 ],
                 "definitionId": "",
-                "isOverridable": false,
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "size": 20,
                 "Cache": null,
                 "name": "EXECUTION DISTRIBUTION BY COMMAND",
