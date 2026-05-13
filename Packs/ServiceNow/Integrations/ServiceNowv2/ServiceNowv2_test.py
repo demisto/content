@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 import demistomock as demisto
 import pytest
 import requests
+import os
 
 import ServiceNowv2
 
@@ -68,6 +69,7 @@ from ServiceNowv2 import (
     split_notes,
     update_record_command,
     update_remote_system_command,
+    update_remote_system_with_entries,
     update_ticket_command,
     upload_file_command,
 )
@@ -502,6 +504,34 @@ def test_get_timezone_offset():
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("mmm-dd-yyyy"))
     assert offset == timedelta(minutes=-300)
 
+    full_response = {"sys_created_on": {"display_value": "07-Dec-2022 00:38:52", "value": "2022-12-06 19:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {"sys_created_on": {"display_value": "07-Dec-2022 00:38:52 AM", "value": "2022-12-06 19:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {"sys_created_on": {"display_value": "12-Mar-2026 11:40:52", "value": "2026-03-12 06:10:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-330)
+
+    full_response = {"sys_created_on": {"display_value": "08/19/26 15:38:52", "value": "2026-08-19 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("MM/dd/yy"))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {"sys_created_on": {"display_value": "19/08/26 15:38:52", "value": "2026-08-19 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd/MM/yy"))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {"sys_created_on": {"display_value": "2022/12/07 05:38:52", "value": "2022-12-07 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("yyyy/MM/dd"))
+    assert offset == timedelta(minutes=480)
+
+    full_response = {"sys_created_on": {"display_value": "2022.12.07 05:38:52", "value": "2022-12-07 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("yyyy.MM.dd"))
+    assert offset == timedelta(minutes=480)
+
 
 def test_get_ticket_notes_command_success(mocker):
     """
@@ -645,7 +675,9 @@ def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
                 {
                     "Type": 1,
                     "Category": None,
+                    "HumanReadable": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
                     "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                    "created": "2022-11-21 20:45:37",
                     "ContentsFormat": None,
                     "Tags": ["CommentFromServiceNow"],
                     "Note": True,
@@ -2527,6 +2559,45 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     )
 
 
+def test_get_modified_remote_data_unparseable_last_update(requests_mock, mocker):
+    """
+    Given:
+        - lastUpdate is "0" (uninitialized dbotMirrorLastSync sent by XSOAR)
+
+    When:
+        - Running get-modified-remote-data
+
+    Then:
+        - The command does not raise an error and falls back to epoch time (1970-01-01 00:00:00)
+    """
+    mocker.patch.object(demisto, "debug")
+    url = "https://test.service-now.com/api/now/v2/"
+    client = Client(
+        url,
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+    params = {
+        "sysparm_limit": "100",
+        "sysparm_offset": "0",
+        "sysparm_query": "sys_updated_on>1970-01-01 00:00:00",
+        "sysparm_fields": "sys_id",
+    }
+    requests_mock.request("GET", f"{url}table/ticket_type?{urlencode(params)}", json={"result": []})
+    result = get_modified_remote_data_command(client, {"lastUpdate": "0"})
+    assert result.modified_incident_ids == []
+
+
 @pytest.mark.parametrize(
     "sys_created_on, expected",
     [
@@ -4296,3 +4367,74 @@ class TestCreateItemOrderFixes:
         call_kwargs = mock_send.call_args
         body = call_kwargs[1].get("body") or call_kwargs[0][2]
         assert body.get("sysparm_no_validation") == "true"
+
+
+def test_upload_file_command_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components and no explicit file_name arg.
+    When:
+        - Calling upload_file_command.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+
+    mock_client = MagicMock()
+    mock_client.get_table_name.return_value = "incident"
+    mock_client.upload_file.return_value = {
+        "result": {
+            "file_name": "passwd",
+            "download_link": "https://test.com/download",
+            "sys_id": "abc123",
+        }
+    }
+
+    # No file_name arg provided, so it should use basename from getFilePath
+    args = {"id": "sys_id", "file_id": "entry_id", "ticket_type": "incident"}
+    upload_file_command(mock_client, args)
+
+    # Verify upload_file was called with the sanitized basename
+    call_args = mock_client.upload_file.call_args[0]
+    file_name_used = call_args[2]
+    assert file_name_used == "passwd"
+    assert os.path.basename(file_name_used) == file_name_used
+
+
+def test_update_remote_system_with_entries_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components.
+    When:
+        - Calling update_remote_system_with_entries.
+    Then:
+        - Verify that only the basename of the file name is used when uploading.
+    """
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+    mocker.patch.object(demisto, "debug")
+
+    mock_client = MagicMock()
+
+    entries = [{"id": "entry_id", "type": 3, "tags": []}]
+    params = {
+        "file_tag_from_service_now": "FileFromServiceNow",
+        "file_tag": "file",
+    }
+    update_remote_system_with_entries(mock_client, entries, params, "ticket_id", "incident")
+
+    call_args = mock_client.upload_file.call_args[0]
+    # The filename is basename (no path traversal) + "_mirrored_from_xsoar" suffix
+    file_name_used = call_args[2]
+    assert "passwd" in file_name_used
+    assert "/" not in file_name_used
+    assert ".." not in file_name_used
+    assert os.path.basename(file_name_used) == file_name_used

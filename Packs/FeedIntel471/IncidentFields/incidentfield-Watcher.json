@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Intel 471 Watcher Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "watcher",
+    "closeForm": false,
+    "content": true,
+    "description": "Name of the watcher that triggered the alert",
+    "editForm": true,
+    "fromVersion": "6.10.0",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_watcher",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Watcher",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1
+}

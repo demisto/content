@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The integration now uses OAuth2 authentication via CyberArk Identity instead of local EPM authentication. You must reconfigure the integration with the new authentication parameters: <em>Identity URL</em>, <em>Client ID</em>, <em>Web App ID</em>, and <em>Client Secret</em>.</li><li>The <em>Application ID</em> parameter has been deprecated and is no longer used.</li><li>In the <strong>cyberarkepm-activate-risk-plan</strong> and <strong>cyberarkepm-deactivate-risk-plan</strong> commands, the <em>external_ip</em> argument has been deprecated and replaced with <em>logged_in_user</em>. Update any playbooks or scripts that use these commands.</li></ul>"
+}
