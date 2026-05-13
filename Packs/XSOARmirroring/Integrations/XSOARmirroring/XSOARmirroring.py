@@ -1056,9 +1056,6 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
 
-        elif demisto.command() == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(client, demisto.args()))
-
         else:
             raise NotImplementedError("Command not implemented")
 
