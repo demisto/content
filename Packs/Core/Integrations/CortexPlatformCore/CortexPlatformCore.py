@@ -2201,10 +2201,10 @@ def normalize_key(key: str) -> str:
         str: The normalized key without XDM prefixes.
     """
     if key.startswith("xdm__asset__"):
-        return key.replace("xdm__asset__", "")
+        return key.removeprefix("xdm__asset__")
 
     if key.startswith("xdm__"):
-        return key.replace("xdm__", "")
+        return key.removeprefix("xdm__")
 
     return key
 
@@ -2262,8 +2262,8 @@ def search_assets_command(client: Client, args):
     asset_types = argToList(args.get("asset_types", ""))
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT)) or SEARCH_ASSETS_DEFAULT_LIMIT
-    page_number = arg_to_number(args.get("page_number", 0)) or 0
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
         ("xdm__software_package__version", software_package_versions),
