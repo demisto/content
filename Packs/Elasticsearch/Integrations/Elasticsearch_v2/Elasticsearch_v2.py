@@ -1,5 +1,7 @@
 import re
 
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *
 
 """IMPORTS"""
 import json
@@ -86,12 +88,11 @@ INSECURE = not PARAMS.get("insecure", False)
 TIME_METHOD = PARAMS.get("time_method", "Simple-Date")
 TIMEOUT = int(PARAMS.get("timeout") or 60)
 MAP_LABELS = PARAMS.get("map_labels", True)
+FIELDS_LIST = argToList(PARAMS.get("fetch_fields", ""))
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
-#Adding for the FIELDS integration
-FIELDS = PARAMS.get("fetch_fields", "")
-FIELDS_LIST = [f.strip() for f in FIELDS.split(",") if f.strip()] if FIELDS else []
+
 
 
 def get_value_by_dot_notation(dictionary, key):
@@ -856,6 +857,14 @@ def integration_health_check(proxies):
         test_general_query(es)
     return "Testing was successful."
 
+def normalize_es_value(value):
+    if isinstance(value, list):
+        value = value[0] if len(value) == 1 else value
+
+    if isinstance(value, (dict, list)):
+        return json.dumps(value)
+
+    return str(value)
 
 def incident_label_maker(source, fields=None):
     """Creates labels for the created incident.
@@ -868,23 +877,19 @@ def incident_label_maker(source, fields=None):
         (list).The labels.
     """
     labels = []
-    # Add _source fields as labels
-    for field, value in source.items():
-        encoded_value = value if isinstance(value, str) else json.dumps(value)
-        labels.append({"type": str(field), "value": encoded_value})
 
-    # Add normalized Elasticsearch fields as labels
-    # Fields are prefixed with "fields." to distinguish them from _source values
+    for field, value in source.items():
+        labels.append({
+            "type": str(field),
+            "value": normalize_es_value(value)
+        })
+
     if fields:
         for field, value in fields.items():
-            # Elasticsearch always returns field values as lists,
-            # even for single values. We unwrap single-element lists.
-            if isinstance(value, list):
-                encoded_value = value[0] if len(value) == 1 else json.dumps(value)
-            else:
-                encoded_value = value if isinstance(value, str) else json.dumps(value)
-            # Prefix with "fields." to avoid collision with _source fields
-            labels.append({"type": f"fields.{str(field)}", "value": str(encoded_value)})
+            labels.append({
+                "type": f"fields.{field}",
+                "value": normalize_es_value(value)
+            })
 
     return labels
 
@@ -919,9 +924,12 @@ def results_to_incidents_timestamp(response, last_fetch):
             # This handles cases where TIME_FIELD is a runtime field.
             if time_field_value is None and fields:
                 field_value = fields.get(TIME_FIELD)
-                if isinstance(field_value, list) and field_value:
-                    # Unwrap single-element list returned by Elasticsearch fields API
-                    time_field_value = field_value[0]
+
+                if isinstance(field_value, list):
+                    field_value = field_value[0] if field_value else None
+
+                if field_value is not None:
+                    time_field_value = field_value
 
             if time_field_value is not None:
                 # if timestamp convert to iso format date and save the timestamp
@@ -982,9 +990,12 @@ def results_to_incidents_datetime(response, last_fetch):
             # This handles cases where TIME_FIELD is a runtime field.
             if time_field_value is None and fields:
                 field_value = fields.get(TIME_FIELD)
-                if isinstance(field_value, list) and field_value:
-                    # Unwrap single-element list returned by Elasticsearch fields API
-                    time_field_value = field_value[0]
+
+                if isinstance(field_value, list):
+                    field_value = field_value[0] if field_value else None
+
+                if field_value is not None:
+                    time_field_value = field_value
 
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
@@ -994,7 +1005,6 @@ def results_to_incidents_datetime(response, last_fetch):
                     last_fetch = hit_date
                     last_fetch_timestamp = hit_timestamp
 
-                # avoid duplication due to weak time query
                 if hit_timestamp > current_fetch:
                     inc = {
                         "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit.get("_id")),
@@ -1143,12 +1153,6 @@ def fetch_incidents(proxies):
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
-
-        # Request all normalized fields alongside _source.
-        # fields=["*"] tells Elasticsearch to return all fields in their
-        # normalized form (e.g., dates formatted, runtime fields computed).
-        # _source=True ensures the original _source is also returned.
-        #search = search.extra(fields=["*"], _source=True)
         search = search.extra(fields=FIELDS_LIST, _source=True)
 
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
@@ -1348,7 +1352,7 @@ def index_document(args, proxies):
     demisto.debug(f"Indexing document in index {index} with ID {doc_id}")
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         if doc_id:
-            response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120,E1125
+            response = es.index(index=index, id=doc_id, document=doc)
         else:
             response = es.index(index=index, document=doc)  # pylint: disable=E1123,E1120,E1125
 
