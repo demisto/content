@@ -7,7 +7,7 @@ commonfields:
   id: Cyjax Feed
   version: -1
 configuration:
-- defaultvalue: https://api.cyberportal.co
+- defaultvalue: https://api.cymon.co/v2
   additionalinfo: Url to Cyjax API.
   display: Cyjax API URL
   name: url

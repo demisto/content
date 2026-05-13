@@ -349,10 +349,10 @@ def fetch_indicators_command(
     # Add one second from last_fetch_timestamp to avoid fetching the same indicators
     since = last_fetch_date + timedelta(seconds=1)
 
-    indicators = []  # type:List
-    cyjax_indicators = client.fetch_indicators(since=since.isoformat())  # type:List
+    indicators: list[dict[str, Any]] = []
+    cyjax_indicators: list[Any] = client.fetch_indicators(since=since.isoformat())
 
-    indicators_score = map_reputation_to_score(reputation)  # type: int
+    indicators_score: int = map_reputation_to_score(reputation)
 
     for cyjax_indicator in cyjax_indicators:
         indicator_date = dateparser.parse(cyjax_indicator.get("discovered_at"))
@@ -402,7 +402,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> dict[str, An
         since=since, until=until, indicator_type=indicator_type, source_type=source_type, source_id=source_id, limit=limit
     )
 
-    indicators = [convert_cyjax_indicator(indicator) for indicator in cyjax_indicators]  # type:List
+    indicators: list[dict[str, Any]] = [convert_cyjax_indicator(indicator) for indicator in cyjax_indicators]
 
     # Format indicators for human readable table output
     human_readable_indicators = []
@@ -523,7 +523,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif demisto.command() == "fetch-indicators":
-            last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
+            last_fetch_date: datetime = get_indicators_last_fetch_date()
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 
             if indicators:
