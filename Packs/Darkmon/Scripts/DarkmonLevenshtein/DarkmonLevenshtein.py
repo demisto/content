@@ -1,4 +1,5 @@
-register_module_line('DarkmonLevenshtein', 'start', __line__())
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def levenshtein(a: str, b: str) -> int:
@@ -14,8 +15,8 @@ def levenshtein(a: str, b: str) -> int:
         curr = [i] + [0] * len(b)
         for j, cb in enumerate(b, 1):
             curr[j] = min(
-                prev[j] + 1,        # deletion
-                curr[j - 1] + 1,    # insertion
+                prev[j] + 1,  # deletion
+                curr[j - 1] + 1,  # insertion
                 prev[j - 1] + (0 if ca == cb else 1),  # substitution
             )
         prev = curr
@@ -41,18 +42,21 @@ def main():
         if d < best_distance:
             best_distance, best_brand = d, b_clean
 
-    return_results({
-        "Type": entryTypes["note"],
-        "ContentsFormat": formats["json"],
-        "Contents": {"domain": domain, "brand": best_brand, "distance": best_distance},
-        "EntryContext": {"Darkmon.Levenshtein": {
-            "domain": domain, "brand": best_brand, "distance": best_distance,
-        }},
-    })
+    return_results(
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": {"domain": domain, "brand": best_brand, "distance": best_distance},
+            "EntryContext": {
+                "Darkmon.Levenshtein": {
+                    "domain": domain,
+                    "brand": best_brand,
+                    "distance": best_distance,
+                }
+            },
+        }
+    )
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-
-register_module_line('DarkmonLevenshtein', 'end', __line__())

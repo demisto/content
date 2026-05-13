@@ -1,4 +1,5 @@
-register_module_line('DarkmonFilterUnseen', 'start', __line__())
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def main():
@@ -50,6 +51,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-
-register_module_line('DarkmonFilterUnseen', 'end', __line__())

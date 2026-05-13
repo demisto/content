@@ -1,4 +1,5 @@
-register_module_line('DarkmonScoreNRDs', 'start', __line__())
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def main():
@@ -22,21 +23,22 @@ def main():
             timestamp = d.get("timestamp")
         else:
             value, entry_id, timestamp = str(d), "", ""
-        out = demisto.executeCommand("DarkmonLevenshtein",
-                                     {"domain": value, "brands": ",".join(brands)})
+        out = demisto.executeCommand("DarkmonLevenshtein", {"domain": value, "brands": ",".join(brands)})
         ctx = out[0].get("EntryContext", {}).get("Darkmon.Levenshtein", {}) if out else {}
         distance = int(ctx.get("distance", 999))
         if distance <= max_distance:
-            typosquats.append({
-                "id": entry_id, "value": value, "timestamp": timestamp,
-                "brand": ctx.get("brand"), "distance": distance,
-            })
+            typosquats.append(
+                {
+                    "id": entry_id,
+                    "value": value,
+                    "timestamp": timestamp,
+                    "brand": ctx.get("brand"),
+                    "distance": distance,
+                }
+            )
 
     return_results({"Typosquats": typosquats})
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-
-register_module_line('DarkmonScoreNRDs', 'end', __line__())

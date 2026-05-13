@@ -1,4 +1,5 @@
-register_module_line('DarkmonVIPFanOut', 'start', __line__())
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def _get_seen(seen_list_name):
@@ -27,11 +28,9 @@ def main():
     for email in emails:
         for leak_type in ("accounts", "combo-lists", "public-breaches"):
             try:
-                res = demisto.executeCommand("dmontip-get-boardemails",
-                    {"type": leak_type, "email": email, "size": "100"})
+                res = demisto.executeCommand("dmontip-get-boardemails", {"type": leak_type, "email": email, "size": "100"})
                 ctx = res[0].get("EntryContext", {}) if res else {}
-                singular = {"accounts": "Account", "combo-lists": "ComboList",
-                            "public-breaches": "PublicBreach"}[leak_type]
+                singular = {"accounts": "Account", "combo-lists": "ComboList", "public-breaches": "PublicBreach"}[leak_type]
                 items = ctx.get(f"Darkmon.BoardLeak.{singular}") or []
             except Exception as e:
                 demisto.error(f"VIP fetch failed for {email}/{leak_type}: {e}")
@@ -41,16 +40,19 @@ def main():
                 if composite in new_seen:
                     continue
                 new_seen.add(composite)
-                demisto.executeCommand("createNewIncident", {
-                    "name": f"Darkmon VIP leak: {email} ({leak_type})",
-                    "type": incident_type,
-                    "customFields": {
-                        "darkmonprotectedemail": email,
-                        "darkmonleaktype": leak_type,
-                        "darkmonleakid": str(it.get("id", "")),
-                        "darkmonsourcename": str(it.get("source", "")),
+                demisto.executeCommand(
+                    "createNewIncident",
+                    {
+                        "name": f"Darkmon VIP leak: {email} ({leak_type})",
+                        "type": incident_type,
+                        "customFields": {
+                            "darkmonprotectedemail": email,
+                            "darkmonleaktype": leak_type,
+                            "darkmonleakid": str(it.get("id", "")),
+                            "darkmonsourcename": str(it.get("source", "")),
+                        },
                     },
-                })
+                )
                 created += 1
 
     if seen_list_name and new_seen != seen:
@@ -61,6 +63,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-
-register_module_line('DarkmonVIPFanOut', 'end', __line__())

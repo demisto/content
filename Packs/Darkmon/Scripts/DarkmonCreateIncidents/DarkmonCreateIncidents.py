@@ -1,5 +1,7 @@
-register_module_line('DarkmonCreateIncidents', 'start', __line__())
 import re
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def _render(template, item):
@@ -44,6 +46,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-
-register_module_line('DarkmonCreateIncidents', 'end', __line__())
