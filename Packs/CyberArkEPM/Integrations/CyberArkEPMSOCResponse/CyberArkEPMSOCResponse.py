@@ -199,48 +199,39 @@ def get_sets(client: Client) -> list:
     return sets_response.get("Sets", [])
 
 
-def search_endpoints(endpoint_name: str, logged_in_user: str, client: Client) -> list:
-    """Searches for endpoints by name and IP address.
+def search_endpoints(endpoint_name: str, logged_in_user: str, set_id: str, client: Client) -> list[str]:
+    """Searches for endpoints by name within a single set.
 
     Args:
         endpoint_name (str): The name of the endpoint to search for.
         logged_in_user (str): The logged-in username of the endpoint.
+        set_id (str): The ID of the set to search within.
         client (Client): The CyberArk EPM client.
 
     Returns:
-        list: A list of endpoint IDs that match the search criteria.
+        list[str]: A list of endpoint IDs that match the search criteria.
     """
     search_filter = f"name CONTAINS {endpoint_name}{f' and loggedInUser CONTAINS {logged_in_user}' if logged_in_user else ''}"
     demisto.info(f"Endpoint Search filter: {search_filter}")
     data = {"filter": search_filter}
-    sets = get_sets(client=client)
-    set_ids = [set["Id"] for set in sets]
-    for set_id in set_ids:
-        url_suffix = f"Sets/{set_id}/Endpoints/Search"
-        result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
-        if result.get("endpoints"):
-            endpoint_ids = [endpoint.get("id") for endpoint in result.get("endpoints")]
-            cached_context = get_integration_context() or {}
-            cached_context["set_id"] = set_id
-            set_integration_context(cached_context)
-            return endpoint_ids
-    return []
+    url_suffix = f"Sets/{set_id}/Endpoints/Search"
+    result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
+    return [endpoint.get("id") for endpoint in result.get("endpoints", [])]
 
 
-def search_endpoint_group_id(group_name: str, client: Client) -> str:
-    """Searches for an endpoint group ID by its name.
+def search_endpoint_group_id(group_name: str, set_id: str, client: Client) -> str:
+    """Searches for an endpoint group ID by its name within a specific set.
 
     Args:
         group_name (str): The name of the endpoint group.
+        set_id (str): The ID of the set to search within.
         client (Client): The CyberArk EPM client.
 
     Returns:
-        str: The ID of the endpoint group, or None if not found.
+        str: The ID of the endpoint group, or empty string if not found.
     """
     group_id = ""
     data = {"filter": f"name CONTAINS {group_name}"}
-    context = get_integration_context() or {}
-    set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/Search"
     result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
     if result and len(result) > 0:
@@ -249,32 +240,30 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     return group_id
 
 
-def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> dict:
+def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, set_id: str, client: Client) -> dict:
     """Adds an endpoint to a specified group.
 
     Args:
         endpoint_ids (list): The IDs of the endpoints to add.
         endpoint_group_id (str): The ID of the group to add the endpoint to.
+        set_id (str): The ID of the set the group belongs to.
         client (Client): The CyberArk EPM client.
     """
     data = {"membersIds": endpoint_ids}
-    context = get_integration_context() or {}
-    set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids"
     return client.http_request("POST", url_suffix=url_suffix, json_data=data)
 
 
-def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> dict:
+def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, set_id: str, client: Client) -> dict:
     """Removes an endpoint from a specified group.
 
     Args:
         endpoint_ids (list): The IDs of the endpoints to remove.
         endpoint_group_id (str): The ID of the group to remove the endpoint from.
+        set_id (str): The ID of the set the group belongs to.
         client (Client): The CyberArk EPM client.
     """
     data = {"membersIds": endpoint_ids}
-    context = get_integration_context() or {}
-    set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
     return client.http_request("POST", url_suffix=url_suffix, json_data=data)
 
@@ -288,33 +277,51 @@ def change_risk_plan_command(client: Client, args: dict[str, Any]) -> CommandRes
     logged_in_user = args.get("logged_in_user", "")
     action = args.get("action", RISK_PLAN_ACTION_ADD)
 
-    # Search for endpoints
-    endpoint_ids = search_endpoints(endpoint_name=endpoint_name, logged_in_user=logged_in_user, client=client)
+    if action not in (RISK_PLAN_ACTION_ADD, RISK_PLAN_ACTION_REMOVE):
+        raise DemistoException(f"Invalid action: {action}")
 
-    if not endpoint_ids:
+    sets = get_sets(client=client)
+    result_rows: list[dict] = []
+
+    for epm_set in sets:
+        set_id: str = epm_set["Id"]
+
+        endpoint_ids = search_endpoints(endpoint_name, logged_in_user, set_id, client)
+        if not endpoint_ids:
+            continue
+
+        endpoint_group_id = search_endpoint_group_id(risk_plan, set_id, client)
+        group_action_performed = False
+        if endpoint_group_id:
+            if action == RISK_PLAN_ACTION_ADD:
+                add_endpoint_to_group(endpoint_ids, endpoint_group_id, set_id, client)
+            else:
+                remove_endpoint_from_group(endpoint_ids, endpoint_group_id, set_id, client)
+            group_action_performed = True
+
+        result_rows.append(
+            {
+                "SetID": set_id,
+                "EndpointIDs": ",".join(endpoint_ids),
+                "RiskPlan": risk_plan,
+                "Action": action,
+                "GroupActionPerformed": group_action_performed,
+            }
+        )
+
+    if not result_rows:
         raise DemistoException(f"No Endpoints found matching the name: {endpoint_name} and Logged-in username: {logged_in_user}")
 
-    # Search for endpoint group by risk plan name
-    endpoint_group_id = search_endpoint_group_id(risk_plan, client)
-    if not endpoint_group_id:
-        raise DemistoException(f"No Endpoint Group found matching the name: {risk_plan}")
-
-    if action == RISK_PLAN_ACTION_ADD:
-        raw_result = add_endpoint_to_group(endpoint_ids, endpoint_group_id, client)
-    elif action == RISK_PLAN_ACTION_REMOVE:
-        raw_result = remove_endpoint_from_group(endpoint_ids, endpoint_group_id, client)
-    else:
-        raise DemistoException(f"Invalid action: {action}")
-    result_context = {"EndpointIDs": ",".join(endpoint_ids), "RiskPlan": risk_plan, "Action": action}
     human_readable = tableToMarkdown(
-        name="Risk Plan changed successfully", t=result_context, headers=["EndpointIDs", "RiskPlan", "Action"]
+        name="Risk Plan Change Results",
+        t=result_rows,
+        headers=["SetID", "EndpointIDs", "RiskPlan", "Action", "GroupActionPerformed"],
     )
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix="CyberArkEPMSOCResponse",
         outputs_key_field="EndpointIDs",
-        outputs=result_context,
-        raw_response=raw_result,
+        outputs=result_rows,
     )
 
 
