@@ -547,7 +547,7 @@ There is no context output for this command.
 ### splunk-update-investigation
 
 ***
-Updates existing investigations in Splunk ES.
+Updates existing investigations in Splunk ES. Supports updating fields such as owner, status, urgency, disposition, name, and description, adding a note, and appending finding IDs to the investigation.
 
 #### Base Command
 
@@ -561,8 +561,12 @@ Updates existing investigations in Splunk ES.
 | owner | A Splunk user to assign to the investigations. | Optional |
 | note | Note to add to the investigation. | Optional |
 | disposition | Disposition of the investigation. If more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list. Possible values are: Unassigned, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. | Optional |
-| status | Investigation status. Possible values are: Open, In Progress, Pending, Resolved, Closed. | Optional |
+| status | Investigation status. Possible values are: New, Unassigned, In progress, Pending, Resolved, Closed. | Optional |
 | urgency | Investigation urgency. Possible values are: critical, high, medium, low, informational. | Optional |
+| name | Updated name for the investigation. | Optional |
+| description | Updated description for the investigation. | Optional |
+| findings | Comma-separated list of finding IDs to add (append) to the investigation. Only allowed when exactly one investigation ID is provided in `event_ids`. | Optional |
+| finding_times | The list of times for findings added to the investigation. Value can be in relative, ISO, or epoch time. Ignored when `findings` is not provided. Only allowed when exactly one investigation ID is provided in `event_ids`. | Optional |
 
 #### Context Output
 
@@ -574,7 +578,17 @@ There is no context output for this command.
 
 #### Human Readable Output
 >
-> Successfully updated Splunk ES event ES-00019.
+> Splunk ES events updated successfully:
+> Successfully updated Splunk ES event ES-00019
+
+#### Command example (update name, description and append findings)
+
+`!splunk-update-investigation event_ids="ES00019" name="New investigation name" description="Updated description" findings="FND-1,FND-2" finding_times="1700000001,1700000002"`
+
+#### Human Readable Output
+>
+> Splunk ES events updated successfully:
+> Successfully updated Splunk ES event ES-00019
 
 ### splunk-job-create
 

@@ -4023,6 +4023,8 @@ def update_investigation_or_finding(
     status: str | None = None,
     disposition: str | None = None,
     finding_time: str | None = None,
+    name: str | None = None,
+    description: str | None = None,
 ):
     """
     Update a Splunk investigation or finding via the v2 investigations API endpoint.
@@ -4040,6 +4042,8 @@ def update_investigation_or_finding(
         finding_time (str | None): The time associated with the finding event. When provided,
             used as the notable_time parameter on the first API call. If not provided, the first
             call is made without notable_time and falls back to notable_time="now" on failure.
+        name (str | None): New name for the investigation (investigations only).
+        description (str | None): New description for the investigation (investigations only).
 
     Returns:
         dict: The JSON response from the API
@@ -4057,6 +4061,10 @@ def update_investigation_or_finding(
         body["status"] = status
     if disposition is not None:
         body["disposition"] = disposition
+    if name is not None:
+        body["name"] = name
+    if description is not None:
+        body["description"] = description
 
     # If no fields to update, return early
     if not body:
@@ -4729,6 +4737,159 @@ def splunk_submit_event_hec_command(params: dict[str, Any], service: client.Serv
             return_results("The events were sent successfully to Splunk.")
 
 
+def add_findings_to_investigation(
+    service: client.Service,
+    investigation_id: str,
+    finding_ids: list[str],
+    finding_times: list[str] | None = None,
+):
+    """Append (link) one or more findings to an existing Splunk investigation in a single request.
+
+
+    The operation is append-only and does not replace existing findings on the investigation.
+
+    Args:
+        service: Splunk service connection (already connected, namespace pre-set to ``missioncontrol/nobody``).
+        investigation_id: The ID of the investigation to add the finding(s) to.
+        finding_ids: A list of finding IDs to append to the investigation.
+        finding_times: Optional list of times for findings added to the investigation.
+            Value can be in relative, ISO, or epoch time.
+
+    Returns:
+        dict: The JSON response from the API (empty dict if the response body is empty).
+
+    Raises:
+        DemistoException: If ``finding_times`` is provided with a different length than ``finding_ids``.
+        Exception: Propagates any underlying HTTP error so the caller can decide how to surface it.
+    """
+    if not finding_ids:
+        return {}
+    if finding_times is not None and len(finding_times) != len(finding_ids):
+        raise DemistoException("'finding_times' must have the same length as 'finding_ids' when provided.")
+
+    endpoint = f"public/v2/investigations/{investigation_id}/findings"
+    body: dict[str, Any] = {"finding_ids": finding_ids}
+    if finding_times:
+        body["finding_times"] = finding_times
+
+    demisto.debug(f"Adding {len(finding_ids)} finding(s) to investigation {investigation_id} via endpoint {endpoint}")
+
+    response = service.post(endpoint, body=json.dumps(body))
+    response_data = response.body.read()
+    result = json.loads(response_data) if response_data else {}
+    demisto.debug(f"Findings added to investigation {investigation_id}: {result}")
+    return result
+
+
+def _resolve_update_investigation_args(args: dict) -> dict[str, Any]:
+    """Pull and normalize the updatable fields from ``args`` for ``splunk-update-investigation``.
+
+    Maps the human-readable ``status`` / ``disposition`` labels to their Splunk IDs (when known)
+    so the rest of the command handler can stay agnostic of label-vs-id concerns.
+    """
+    status = args.get("status")
+    if status and status in DEFAULT_STATUSES:
+        status = DEFAULT_STATUSES[status]
+
+    disposition = args.get("disposition")
+    if disposition and disposition in DEFAULT_DISPOSITIONS:
+        disposition = DEFAULT_DISPOSITIONS[disposition]
+
+    return {
+        "owner": args.get("owner"),
+        "urgency": args.get("urgency"),
+        "status": status,
+        "disposition": disposition,
+        "name": args.get("name"),
+        "description": args.get("description"),
+        "note": args.get("note"),
+        "findings": argToList(args.get("findings")),
+        "finding_times": argToList(args.get("finding_times")),
+    }
+
+
+def splunk_update_investigation_command(service: client.Service, args: dict) -> CommandResults:
+    """Update one or more Splunk ES investigations.
+
+    Supports updating ``owner``, ``urgency``, ``status``, ``disposition``, ``name``, ``description``,
+    adding a ``note``, and appending ``findings`` (finding IDs) to the investigation. At least one
+    of these updatable fields must be supplied; otherwise a :class:`DemistoException` is raised.
+
+    Args:
+        service: Splunk service connection (namespace pre-set to ``missioncontrol/nobody`` by the caller).
+        args: Command arguments. Must contain ``event_ids`` (CSV of investigation IDs).
+
+    Returns:
+        CommandResults: A plain-text summary mirroring the ``splunk-finding-event-edit`` output style.
+    """
+    investigation_ids = argToList(args.get("event_ids"))
+    if not investigation_ids:
+        raise DemistoException("event_ids parameter is required")
+
+    resolved = _resolve_update_investigation_args(args)
+    update_field_keys = ("owner", "urgency", "status", "disposition", "name", "description")
+    updated_fields = {k: v for k, v in resolved.items() if k in update_field_keys and v is not None}
+    note = resolved["note"]
+    findings = resolved["findings"]
+    finding_times = resolved["finding_times"]
+
+    if finding_times and not findings:
+        raise DemistoException("'finding_times' was provided without 'findings'. Provide 'findings' alongside 'finding_times'.")
+
+    # The Splunk add-findings API targets a single investigation per call. Guard against attempting to
+    # add the same findings to multiple investigations in one command, which would be unsafe and
+    # is not what the caller intends. This must run BEFORE any HTTP call so we never partially apply.
+    if (findings or finding_times) and len(investigation_ids) != 1:
+        raise DemistoException(
+            "'findings' (and 'finding_times') can only be used when updating a single investigation. "
+            "Provide exactly one investigation ID in 'event_ids'."
+        )
+
+    if not updated_fields and not note and not findings:
+        raise DemistoException(
+            "At least one of 'owner', 'urgency', 'status', 'disposition', 'name', 'description', "
+            "'note' or 'findings' must be provided to update an investigation."
+        )
+
+    successes: list[str] = []
+    errors: list[str] = []
+
+    for raw_investigation_id in investigation_ids:
+        investigation_id = raw_investigation_id.strip()
+        try:
+            if updated_fields:
+                update_investigation_or_finding(service=service, investigation_or_finding_id=investigation_id, **updated_fields)
+            if note:
+                add_investigation_note(service=service, investigation_or_finding_id=investigation_id, content=note)
+            if findings:
+                cleaned = [fid.strip() for fid in findings if fid and fid.strip()]
+                if cleaned:
+                    add_findings_kwargs: dict[str, Any] = {
+                        "service": service,
+                        "investigation_id": investigation_id,
+                        "finding_ids": cleaned,
+                    }
+                    if finding_times:
+                        add_findings_kwargs["finding_times"] = finding_times
+                    add_findings_to_investigation(**add_findings_kwargs)
+            successes.append(f"Successfully updated Splunk ES event {investigation_id}")
+        except Exception as e:
+            err = f"Failed to update Splunk ES event {investigation_id}: {e!s}"
+            demisto.error(err)
+            errors.append(err)
+
+    if successes and not errors:
+        readable = "Splunk ES events updated successfully:\n" + "\n".join(successes)
+    elif successes and errors:
+        readable = (
+            "Splunk ES events partially updated:\n" "Successes:\n" + "\n".join(successes) + "\n" "Errors:\n" + "\n".join(errors)
+        )
+    else:
+        raise DemistoException("Failed to update all Splunk ES events:\n" + "\n".join(errors))
+
+    return CommandResults(readable_output=readable)
+
+
 def splunk_edit_event_command(service: client.Service, args: dict) -> None:
     """Edit finding or investigations events in Splunk ES using the v2 investigations API.
 
@@ -5345,9 +5506,12 @@ def main() -> None:  # pragma: no cover
         extensive_log("[SplunkPy] Fetch Incidents was successfully executed.")
     elif command == "splunk-submit-event":
         splunk_submit_event_command(service, args)
-    elif command in ["splunk-finding-event-edit", "splunk-update-investigation"] and service is not None:
+    elif command == "splunk-finding-event-edit" and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         splunk_edit_event_command(service, args)
+    elif command == "splunk-update-investigation" and service is not None:
+        service.namespace = namespace(app="missioncontrol", owner="nobody")
+        return_results(splunk_update_investigation_command(service, args))
     elif command == "splunk-submit-event-hec":
         splunk_submit_event_hec_command(params, service, args)
     elif command == "splunk-job-status":

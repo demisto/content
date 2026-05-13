@@ -7446,3 +7446,364 @@ def test_given_close_incident_true_when_command_runs_then_handle_closed_entities
         if "g-99" in (call.args[0] if call.args else call.kwargs.get("modified_entities_map", {}))
     ]
     assert len(investigation_calls) == 1
+
+
+# ===================== Tests for splunk_update_investigation_command =====================
+
+
+def _make_update_investigation_args(**overrides):
+    """Helper that builds a baseline args dict for splunk-update-investigation tests."""
+    base = {"event_ids": "INV-1"}
+    base.update(overrides)
+    return base
+
+
+def test_splunk_update_investigation_command_name_only(mocker):
+    """
+    Given:
+        - args containing event_ids and only the new `name` field.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called once with name=<value>.
+        - add_findings_to_investigation and add_investigation_note are NOT called.
+        - The readable_output mirrors the splunk-finding-event-edit success format
+          ("Splunk ES events updated successfully:" + per-id success line).
+    """
+    args = _make_update_investigation_args(name="My new investigation name")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_note = mocker.patch.object(splunk, "add_investigation_note")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        name="My new investigation name",
+    )
+    mock_add_note.assert_not_called()
+    mock_add_findings.assert_not_called()
+    assert result.readable_output == ("Splunk ES events updated successfully:\nSuccessfully updated Splunk ES event INV-1")
+
+
+def test_splunk_update_investigation_command_description_only(mocker):
+    """
+    Given:
+        - args containing event_ids and only the new `description` field.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called once with description=<value>.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(description="Updated description text")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+    mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        description="Updated description text",
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_name_and_description(mocker):
+    """
+    Given:
+        - args containing event_ids and both `name` and `description`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called once with both fields together.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(name="New Name", description="New Description")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+    mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        name="New Name",
+        description="New Description",
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_single_finding(mocker):
+    """
+    Given:
+        - args containing event_ids and a single `findings` value.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - add_findings_to_investigation is called with a 1-element list.
+        - update_investigation_or_finding is NOT called (no other update fields).
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(findings="FND-1")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_not_called()
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_multiple_findings_csv(mocker):
+    """
+    Given:
+        - args containing event_ids and a CSV `findings` value (multiple ids).
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - add_findings_to_investigation is called once with a list of all parsed finding ids
+          (single batch call, matching the Splunk API contract).
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(findings="FND-1,FND-2,FND-3")
+    mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1", "FND-2", "FND-3"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_combined_name_description_findings(mocker):
+    """
+    Given:
+        - args containing event_ids, name, description and findings together.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called with name + description.
+        - add_findings_to_investigation is called once with both finding ids.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(
+        name="Combined name",
+        description="Combined description",
+        findings="FND-1,FND-2",
+    )
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        name="Combined name",
+        description="Combined description",
+    )
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1", "FND-2"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_no_updatable_args_raises(mocker):
+    """
+    Given:
+        - args containing only event_ids and no updatable fields.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised with a clear message naming the supported fields.
+        - No HTTP-related helper is called.
+    """
+    args = {"event_ids": "INV-1"}
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_note = mocker.patch.object(splunk, "add_investigation_note")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    with pytest.raises(DemistoException, match="At least one of"):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_not_called()
+    mock_add_note.assert_not_called()
+    mock_add_findings.assert_not_called()
+
+
+def test_add_findings_to_investigation_posts_batch():
+    """
+    Given:
+        - A list of two finding ids to append to an investigation.
+    When:
+        - add_findings_to_investigation is called.
+    Then:
+        - service.post is invoked once against the /findings endpoint with the JSON body
+          containing the `finding_ids` array (single batch, matching the Splunk API).
+    """
+    mock_service = MagicMock()
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = b"{}"
+    mock_service.post.return_value = mock_response
+
+    splunk.add_findings_to_investigation(
+        service=mock_service,
+        investigation_id="INV-9",
+        finding_ids=["FND-A", "FND-B"],
+    )
+
+    assert mock_service.post.call_count == 1
+    args, kwargs = mock_service.post.call_args
+    assert args[0] == "public/v2/investigations/INV-9/findings"
+    body = json.loads(kwargs["body"])
+    assert body == {"finding_ids": ["FND-A", "FND-B"]}
+
+
+def test_splunk_update_investigation_command_findings_with_finding_times(mocker):
+    """
+    Given:
+        - args containing event_ids, multiple `findings` and a matching number of `finding_times`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - add_findings_to_investigation is called once with finding_ids and finding_times in the same order.
+        - The underlying request body (via the helper) carries both arrays in parallel.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(
+        findings="FND-1,FND-2,FND-3",
+        finding_times="1700000001,1700000002,1700000003",
+    )
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1", "FND-2", "FND-3"],
+        finding_times=["1700000001", "1700000002", "1700000003"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_finding_times_without_findings_raises(mocker):
+    """
+    Given:
+        - args containing event_ids and `finding_times` but no `findings`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised with a clear message stating finding_times requires findings.
+        - add_findings_to_investigation is NOT called.
+    """
+    args = _make_update_investigation_args(finding_times="1700000001,1700000002")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    with pytest.raises(DemistoException, match="'finding_times' was provided without 'findings'"):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_not_called()
+
+
+def test_splunk_update_investigation_command_findings_with_multiple_event_ids_raises(mocker):
+    """
+    Given:
+        - args containing multiple event_ids (CSV) together with a `findings` value.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised stating findings can only be used with a single investigation.
+        - add_findings_to_investigation is NOT called (guard fires before any HTTP call).
+    """
+    args = _make_update_investigation_args(event_ids="ES-1,ES-2", findings="FND-1")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+    mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+
+    with pytest.raises(
+        DemistoException,
+        match="'findings' \\(and 'finding_times'\\) can only be used when updating a single investigation",
+    ):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_not_called()
+
+
+def test_splunk_update_investigation_command_finding_times_with_multiple_event_ids_raises(mocker):
+    """
+    Given:
+        - args containing multiple event_ids (CSV) together with `findings` and `finding_times`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised stating findings/finding_times require a single investigation.
+        - add_findings_to_investigation is NOT called (guard fires before any HTTP call).
+    """
+    args = _make_update_investigation_args(
+        event_ids="ES-1,ES-2",
+        findings="FND-1",
+        finding_times="1700000001",
+    )
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+    mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+
+    with pytest.raises(
+        DemistoException,
+        match="'findings' \\(and 'finding_times'\\) can only be used when updating a single investigation",
+    ):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_not_called()
+
+
+def test_splunk_update_investigation_command_multiple_event_ids_without_findings_still_works(mocker):
+    """
+    Given:
+        - args containing multiple event_ids (CSV) and `name` but NO findings/finding_times.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - No exception is raised; the existing multi-investigation update path is preserved.
+        - update_investigation_or_finding is called once per investigation id with name=<value>.
+        - add_findings_to_investigation is NOT called.
+    """
+    args = _make_update_investigation_args(event_ids="ES-1,ES-2", name="updated")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_note = mocker.patch.object(splunk, "add_investigation_note")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    assert mock_update.call_count == 2
+    mock_update.assert_any_call(
+        service=mocker.ANY,
+        investigation_or_finding_id="ES-1",
+        name="updated",
+    )
+    mock_update.assert_any_call(
+        service=mocker.ANY,
+        investigation_or_finding_id="ES-2",
+        name="updated",
+    )
+    mock_add_note.assert_not_called()
+    mock_add_findings.assert_not_called()
+    assert "Successfully updated Splunk ES event ES-1" in result.readable_output
+    assert "Successfully updated Splunk ES event ES-2" in result.readable_output

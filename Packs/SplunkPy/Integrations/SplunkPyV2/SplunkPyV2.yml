@@ -491,8 +491,9 @@ script:
       description: The investigation status.
       name: status
       predefined:
-      - Open
-      - In Progress
+      - New
+      - Unassigned
+      - In progress
       - Pending
       - Resolved
       - Closed
@@ -505,7 +506,17 @@ script:
       - medium
       - low
       - informational
-    description: Updates existing investigations in Splunk ES.
+    - description: Updated name for the investigation.
+      name: name
+    - description: Updated description for the investigation.
+      name: description
+    - description: Comma-separated list of finding IDs to add (append) to the investigation. Only allowed when exactly one investigation ID is provided in `event_ids`.
+      name: findings
+      isArray: true
+    - description: The list of times for findings added to the investigation. Value can be in relative, ISO, or epoch time. Ignored when `findings` is not provided. Only allowed when exactly one investigation ID is provided in `event_ids`.
+      name: finding_times
+      isArray: true
+    description: Updates existing investigations in Splunk ES. Supports updating fields such as owner, status, urgency, disposition, name, and description, adding a note, and appending finding IDs to the investigation. Note that `findings` (and `finding_times`) can only be used when exactly one investigation ID is provided in `event_ids`.
     execution: true
     name: splunk-update-investigation
   - arguments:
