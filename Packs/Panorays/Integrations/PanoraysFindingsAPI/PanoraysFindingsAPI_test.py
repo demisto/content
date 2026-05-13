@@ -56,12 +56,11 @@ def test_fetch_incidents_no_new_data(mocker):
 
 def test_main_test_module_branch(mocker):
     """Tests the 'test-module' branch inside main() to boost coverage."""
-    mocker.patch.object(PanoraysFindingsAPI.demisto, "params", return_value={
-        "apikey": "123",
-        "url": "https://test.com",
-        "insecure": False,
-        "proxy": False
-    })
+    mocker.patch.object(
+        PanoraysFindingsAPI.demisto,
+        "params",
+        return_value={"apikey": "123", "url": "https://test.com", "insecure": False, "proxy": False},
+    )
     mocker.patch.object(PanoraysFindingsAPI.demisto, "command", return_value="test-module")
     mocker.patch.object(PanoraysFindingsAPI, "verify_module", return_value="ok")
     mock_results = mocker.patch.object(PanoraysFindingsAPI, "return_results")
@@ -77,4 +76,3 @@ def test_main_failure(mocker):
 
     PanoraysFindingsAPI.main()
     assert mock_error.called
-    
