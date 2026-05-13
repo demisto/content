@@ -25,7 +25,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- defaultvalue: 3 days
+- defaultvalue: 1 week
   display: First fetch time
   name: first_fetch
   type: 0
