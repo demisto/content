@@ -1,0 +1,499 @@
+{
+    "id": "Censys SOAR Dashboard",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": null,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Censys SOAR Dashboard",
+    "layout": [
+        {
+            "id": "ff588500-ac29-11eb-98fe-2706b6bd2bbe",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "ff588500-ac29-11eb-98fe-2706b6bd2bbe",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "number-of-used-commands",
+                "version": 2,
+                "cacheVersn": 0,
+                "modified": "2021-05-03T14:18:36.23324452Z",
+                "sizeInBytes": 0,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "TOTAL COMMAND RUNS",
+                "prevName": "Count of Commands used",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration and name:CensysV2",
+                "isPredefined": false,
+                "description": "Total number of executions of the Censys commands.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {},
+                        "type": "above"
+                    },
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": false,
+                    "tableColumns": [],
+                    "valuesFormat": "regular"
+                },
+                "category": ""
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "112579f3-3fd2-4277-8a3f-bb5a0fc8c376",
+            "forceRange": false,
+            "x": 6,
+            "y": 2,
+            "i": "112579f3-3fd2-4277-8a3f-bb5a0fc8c376",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "command-count-auto-vs-manual",
+                "version": 3,
+                "cacheVersn": 0,
+                "sequenceNumber": 29457222,
+                "primaryTerm": 5,
+                "modified": "2021-06-03T10:41:50.602231569Z",
+                "sizeInBytes": 0,
+                "sortValues": [
+                    "598774"
+                ],
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "COMMAND RUNS BY EXECUTION TYPE",
+                "prevName": "Command execution type",
+                "dataType": "metrics",
+                "widgetType": "pie",
+                "query": "type:integration and name:CensysV2",
+                "isPredefined": false,
+                "description": "Total number of commands executed, categorized by automated enrichment and manual execution.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Auto Enrichment": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "isEnrichment",
+                                            "operator": "isTrue",
+                                            "right": "",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Auto Enrichment"
+                            },
+                            "Manual Execution": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "isEnrichment",
+                                            "operator": "isFalse",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Manual Execution"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "isEnrichment"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "regular"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "dc5d2db8-ad11-4f71-b2a2-66f8416f9167",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "dc5d2db8-ad11-4f71-b2a2-66f8416f9167",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "sequenceNumber": 4283337,
+                "primaryTerm": 3,
+                "modified": "2026-02-18T09:20:51.675903692Z",
+                "sizeInBytes": 1309,
+                "sortValues": [
+                    "6071"
+                ],
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.60",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 5,
+                "Cache": null,
+                "name": "TOTAL PLAYBOOK RUNS",
+                "prevName": "Playbook runs",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:playbook and name: \"Indicator Enrichment - Censys\"",
+                "isPredefined": false,
+                "description": "Total number of executions of the Censys indicator enrichment playbook.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "limitType": "top",
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "regular"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "af089543-d4a7-45a4-92a2-2322f439f398",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "af089543-d4a7-45a4-92a2-2322f439f398",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "sequenceNumber": 4283300,
+                "primaryTerm": 3,
+                "modified": "2026-02-18T09:20:51.674502401Z",
+                "sizeInBytes": 933,
+                "sortValues": [
+                    "6034"
+                ],
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.60",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 20,
+                "Cache": null,
+                "name": "COMMAND DISTRIBUTION",
+                "prevName": "Commands executed",
+                "dataType": "metrics",
+                "widgetType": "pie",
+                "query": "type:integration and name:CensysV2",
+                "isPredefined": false,
+                "description": "Top Censys commands executed with their count.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null
+                    ],
+                    "groupBy": [
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": true,
+                    "tableColumns": [],
+                    "valuesFormat": "regular"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "6af96bd9-e712-43e0-b839-87fab6604fc0",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "6af96bd9-e712-43e0-b839-87fab6604fc0",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "sequenceNumber": 4283300,
+                "primaryTerm": 3,
+                "modified": "2026-02-18T09:20:51.674502401Z",
+                "sizeInBytes": 933,
+                "sortValues": [
+                    "6034"
+                ],
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.60",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 20,
+                "Cache": null,
+                "name": "EXECUTION DISTRIBUTION BY COMMAND",
+                "prevName": "Commands executed",
+                "dataType": "metrics",
+                "widgetType": "column",
+                "query": "type:integration and name:CensysV2",
+                "isPredefined": false,
+                "description": "Execution distribution by command",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "Auto Enrichment": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "isEnrichment",
+                                            "operator": "isTrue",
+                                            "right": "",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Auto Enrichment"
+                            },
+                            "Manual Execution": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "isEnrichment",
+                                            "operator": "isFalse",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Manual Execution"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "command",
+                        "isEnrichment"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": true,
+                    "tableColumns": [],
+                    "valuesFormat": "regular"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.10.0",
+    "description": "This dashboard displays the total number of times the Censys playbook and Censys commands have been executed, including breakdown by execution type.",
+    "isPredefined": true
+}
