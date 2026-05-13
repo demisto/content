@@ -1,12 +1,7 @@
 id: Notify Stakeholders
 version: -1
 name: Notify Stakeholders
-description: This playbook automates notifying stakeholders via Slack v3, Microsoft
-  Teams, or email. You have the flexibility to notify other teams via Slack, Microsoft
-  Teams or Email by configuring the necessary integration. This playbook requires
-  existing integrations with Slack, Microsoft Teams, Mail Sender or Gmail to perform
-  these actions. If none of these integrations are found in your account, the playbook
-  will exit with no action.
+description: This playbook automates stakeholder notifications via Slack v3, Microsoft Teams, or email. It requires active Slack, Microsoft Teams, Mail Sender, or Gmail integrations. If no supported integration is configured, the playbook exits without taking action.
 starttaskid: "0"
 tasks:
   "0":
@@ -75,7 +70,7 @@ tasks:
       id: 01847aaf-e9c8-4ea0-a9f3-c2283313d0fc
       version: -1
       name: Is Microsoft Teams enabled and channel name provided?
-      description: Checks if MS Teams is enabled and a channel is specified.
+      description: Checks whether MS Teams is enabled and a channel is specified.
       type: condition
       iscommand: false
       brand: ""
@@ -414,8 +409,7 @@ tasks:
       id: 0877f2e6-18fc-4813-bb58-43d5f958a5e1
       version: -1
       name: Is an Email integration enabled and address provided?
-      description: Checks if the mail sender or Gmail integration is enabled and an
-        email address is provided.
+      description: Checks whether the mail sender or Gmail integration is enabled and an email address is provided.
       type: condition
       iscommand: false
       brand: ""
@@ -479,8 +473,7 @@ tasks:
       id: ed7488d3-91ba-4835-8df2-510f68f3d10f
       version: -1
       name: Is Slack enabled and channel name provided?
-      description: Checks if the SlackV3 integration is enabled and a channel name
-        is provided.
+      description: Checks whether the SlackV3 integration is enabled and a channel name is provided.
       type: condition
       iscommand: false
       brand: ""
@@ -547,7 +540,7 @@ tasks:
       id: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
       version: -1
       name: Is at least one notification recipient provided?
-      description: Checks if at least one notification recipient is provided.
+      description: Checks whether at least one notification recipient is provided.
       type: condition
       iscommand: false
       brand: ""
@@ -698,7 +691,7 @@ tasks:
       id: 0efa90f7-f71d-4644-8e63-bcd3934cf750
       version: -1
       name: Is at least one notification recipient provided?
-      description: Checks if at least one notification recipient is provided.
+      description: Checks whether at least one notification recipient is provided.
       type: condition
       iscommand: false
       brand: ""
@@ -751,7 +744,7 @@ tasks:
       id: a9e1f60e-fb8a-4f50-844d-1d46d3554c73
       version: -1
       name: Update war room - no message sent
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -787,7 +780,7 @@ tasks:
       id: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
       version: -1
       name: Format details
-      description: Format data for notification message
+      description: Formats the issue details for the notification message
       type: title
       iscommand: false
       brand: ""
@@ -924,8 +917,7 @@ tasks:
       id: ec2f0a37-de94-43c5-8228-cab36c42d669
       version: -1
       name: Set Issue Severity Text
-      description: Sets the value of issue severity transformed from an integer value
-        to its corresponding text value. 1 - Low, 2 - Medium, 3 - High, 4 - Critical
+      description: Sets the issue severity value, transformed from an integer value to its corresponding text value. 1 - Low, 2 - Medium, 3 - High, 4 - Critical
       scriptName: Set
       type: regular
       iscommand: false
@@ -1006,8 +998,7 @@ tasks:
       id: faa0efb1-5b16-488c-8aee-3cd177163906
       version: -1
       name: Set Issue Category
-      description: Sets the value of issue category to a context key depending on
-        the field name in the current platform.
+      description: Sets the issue category value to a context key depending on the field name in the current platform.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1158,7 +1149,7 @@ tasks:
       id: 211d9489-ef3b-4810-bfb7-185c6a23c672
       version: -1
       name: Html formatting for new lines
-      description: "Set a value in context under the key you entered. If no value
+      description: "Sets a value in context under the key you entered. If no value
         is entered, the script doesn't do anything.\n\nThis automation runs using
         the default Limited User role, unless you explicitly change the permissions.\nFor
         more information, see the section about permissions here:\n- For Cortex XSOAR
@@ -1352,28 +1343,27 @@ view: |-
 inputs:
 - key: Teams Channel
   value:
-    simple: General
+    simple: ""
   required: false
-  description: Provide the Microsoft Teams channel to send messages to.
+  description: The Microsoft Teams channel to send messages to. 
   playbookInputQuery: null
 - key: Slack Channel
   value:
-    simple: general
+    simple: ""
   required: false
-  description: Provide the Slack channel to send messages to.
+  description: The Slack channel to send messages to.
   playbookInputQuery: null
 - key: Email Address
   value:
-    simple: amore@paloaltonetworks.com
+    simple: ""
   required: false
-  description: Provide an email address for notifications. Use comma separated values
-    to provide multiple addresses
+  description: A comma-separated list of email address for notifications.
   playbookInputQuery: null
 - key: Subject
   value:
     simple: You have a new message for - ${issue.name}
   required: false
-  description: For email
+  description: The email subject.
   playbookInputQuery: null
 - key: AssetName
   value:
@@ -1383,7 +1373,7 @@ inputs:
       transformers:
       - operator: FirstArrayElement
   required: false
-  description: "Name of the asset related to the issue."
+  description: "The name of the asset related to the issue."
   playbookInputQuery: null
 - key: AssetType
   value:
@@ -1393,7 +1383,7 @@ inputs:
       transformers:
       - operator: FirstArrayElement
   required: false
-  description: "Type of the asset related to the issue, for example, EC2, Azure VM, Google Cloud Storage, etc."
+  description: "The asset type related to the issue, for example, EC2, Azure VM, and Google Cloud Storage."
   playbookInputQuery: null
 - key: CloudRegion
   value:
@@ -1403,7 +1393,7 @@ inputs:
       transformers:
       - operator: FirstArrayElement
   required: false
-  description: "Region of the asset related to the issue, for example, us-east-1, westus, etc."
+  description: "The region of the asset related to the issue, for example, us-east-1, westus, etc."
   playbookInputQuery: null
 - key: CloudAccountID
   value:
@@ -1413,13 +1403,13 @@ inputs:
       transformers:
       - operator: FirstArrayElement
   required: false
-  description: "Account ID of the asset related to the issue. For AWS, it is the 12-digit account number. For Azure, it is the Subscription ID."
+  description: "The account ID of the asset related to the issue. For AWS, it is a 12-digit account number. For Azure, it is the Subscription ID."
   playbookInputQuery: null
 - key: remediation_action
   value:
     simple: ${remediation_action}
   required: false
-  description: "Description of the remediation action that was taken to resolve this issue, if any."
+  description: "The description of the remediation action that was taken to resolve this issue, if any."
   playbookInputQuery: null
 - key: AssetID
   value:
@@ -1429,7 +1419,7 @@ inputs:
       transformers:
       - operator: FirstArrayElement
   required: false
-  description: "Internal ID of the asset related to the issue."
+  description: "The internal ID of the asset related to the issue."
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -1444,7 +1434,7 @@ inputSections:
   - remediation_action
   - AssetID
   name: General Inputs
-  description: Default inputs defined at sub-playbook level
+  description: The default inputs defined at sub-playbook level.
 outputSections:
 - outputs: []
   name: General (Outputs group)

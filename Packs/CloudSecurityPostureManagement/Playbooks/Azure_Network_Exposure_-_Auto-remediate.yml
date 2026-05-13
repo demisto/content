@@ -2,9 +2,7 @@ id: Azure Network Exposure - Auto-remediate
 version: -1
 name: Azure Network Exposure - Auto-remediate
 description: |-
-  This playbook remediates the following Azure Network Exposure detections:
-  1. Azure virtual machine with management ports exposed to the public internet
-  It does so by updating the network security group of the vm instance, adding a Deny rule on top of the one that causes public exposure to block access to that specific VM instance. It also adds an Allow rule to permit access to the instance from internal IPs.
+  This playbook remediates Azure Network Exposure detections where virtual machines have management ports exposed to the public internet. It updates the Network Security Group (NSG) by adding a high-priority Deny rule to block public access and an Allow rule to permit internal traffic.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +43,7 @@ tasks:
       id: b43e00dd-6156-442e-859d-48e926816dd6
       version: -1
       name: Get Issue Extended Fields
-      description: Get comprehensive recommendations for an issue, including remediation
-        steps, playbook suggestions, and recommended actions.
+      description: Retrieves comprehensive recommendations for an issue, including remediation.
       script: '|||core-get-issue-recommendations'
       type: regular
       iscommand: true
@@ -81,7 +78,7 @@ tasks:
       id: e1746aab-ac1d-42dc-bf03-6132015c239f
       version: -1
       name: Check remediation flag
-      description: Checks if the issue was remediated successfully by the sub-playbook.
+      description: Checks whether the issue was remediated successfully by the sub-playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -188,7 +185,7 @@ tasks:
       id: 72dd6506-d81c-4b30-ad18-12aa61838e7b
       version: -1
       name: Issue Not Resolved
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -223,7 +220,7 @@ tasks:
       id: a9a21ac6-7426-42d0-a898-cf9391b98c66
       version: -1
       name: Done
-      description: This is the end of the playbook. The issue was either resolved or pending review.   
+      description: This is the end of the playbook. The issue was either resolved or is pending review.   
       type: title
       iscommand: false
       brand: ""
@@ -305,12 +302,7 @@ tasks:
       id: 54ba7dcf-41c5-488a-ab5e-d007de810892
       version: -1
       name: Notify Stakeholders
-      description: This playbook automates notifying stakeholders via Slack v3, Microsoft
-        Teams, or email. You have the flexibility to notify other teams via Slack,
-        Microsoft Teams or Email by configuring the necessary integration. This playbook
-        requires existing integrations with Slack, Microsoft Teams, Mail Sender or
-        Gmail to perform these actions. If none of these integrations are found in
-        your account, the playbook will exit with no action.
+      description: This playbook automates stakeholder notifications via Slack v3, Microsoft Teams, or email. It requires active Slack, Microsoft Teams, Mail Sender, or Gmail integrations. If no supported integration is configured, the playbook exits without taking action.
       playbookName: Notify Stakeholders
       type: playbook
       iscommand: false
@@ -382,7 +374,7 @@ tasks:
       id: 8f6e68fa-0c01-4b24-ac48-bbc5cd07c86f
       version: -1
       name: Is playbook applicable?
-      description: Checks if the playbook is applicable to resolve the selected issue.
+      description: Checks whether the playbook is applicable to resolve the selected issue.
       type: condition
       iscommand: false
       brand: ""
@@ -434,8 +426,7 @@ tasks:
       id: 66832f7a-f3d0-4919-8299-e5bc03802a03
       version: -1
       name: Print - playbook not applicable
-      description: Prints message to war room that this playbook does not handle remediation
-        for the selected issue.
+      description: Prints a message to the War Room that this playbook does not handle remediation for the selected issue.
       scriptName: Print
       type: regular
       iscommand: false
@@ -482,11 +473,11 @@ view: |-
 inputs:
 - key: enableNotifications
   value:
-    simple: "yes"
+    simple: "no"
   required: true
   description: |-
     Options: yes/no
-        Choose if you wish to notify stakeholders about the remediation actions taken. The recipients need to be configured in the Playbook Triggered header of the "Notify Stakeholders" sub-playbook. If no recipients are provided, the playbook will pause to ask for an input.
+    Whether to notify stakeholders about remediation actions. Recipients must be configured in the Notify Stakeholders sub-playbook header. If no recipients are provided, the playbook pauses to request input.  Default is "no".
   playbookInputQuery: null
 inputSections:
 - inputs:

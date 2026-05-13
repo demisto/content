@@ -2,9 +2,7 @@ id: GCP Network Exposure - Auto-remediate
 version: -1
 name: GCP Network Exposure - Auto-remediate
 description: |-
-  Automatically remediates the following Network Exposure detection:
-  1. Google Compute Engine instance with management ports exposed to the public internet
-  It does so by adding a GCP Firewall rule to deny internet access on the specified port from the internet and an allow rule to allow access from specific internal IPs. It uses network tags to specify the GCP resources that can use these rules. If a rule already exists, the appropriate network tag is added to the asset in question.
+  This playbook automatically remediates Google Compute Engine instances with management ports exposed  to the internet. It adds GCP firewall rules to deny public access on specified ports while allowing internal IP traffic. It also uses network tags to apply rules to resources or adds the required tag to assets if the rule already exists.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +43,7 @@ tasks:
       id: a16efb64-f213-44a5-8780-76252a4b342c
       version: -1
       name: Get Issue Extended Fields
-      description: Get comprehensive recommendations for an issue, including remediation
+      description: Retrieves comprehensive recommendations for an issue, including remediation.
         steps, playbook suggestions, and recommended actions.
       script: '|||core-get-issue-recommendations'
       type: regular
@@ -81,7 +79,7 @@ tasks:
       id: a512fe76-9637-4568-98df-f916a011934b
       version: -1
       name: Check remediation flag and notification preference
-      description: Checks if the issue was remediated successfully and the notification preference to determine the next steps.
+      description: Checks remediation status and notification preferences to determine the next steps.
       type: condition
       iscommand: false
       brand: ""
@@ -188,7 +186,7 @@ tasks:
       id: 361a425d-4bc3-4411-8b79-a7791a53f7c5
       version: -1
       name: Issue Not Resolved
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -251,12 +249,7 @@ tasks:
       id: e094478b-fbf2-4b68-9662-e0531bf95507
       version: -1
       name: GCP - VM Instance Firewall Rule Remediation
-      description: This playbook adds new VPC Firewall rules with access only from
-        private IP address range and blocks traffic that’s exposed to public internet.
-        For example, if RDP is exposed this playbook adds new firewall rules that
-        only allows traffic from private IP address and blocks rest of the RDP traffic.
-        New Allow and Block rules created by this playbook target only the exposed
-        asset.
+      description: This playbook adds VPC firewall rules to restrict access to private IP address ranges and blocks public internet exposure. It targets only the exposed asset by creating specific Allow and Deny rules to remediate the exposure (for example, for RDP).
       playbookName: GCP - VM Instance Firewall Rule Remediation
       type: playbook
       iscommand: false
@@ -302,12 +295,7 @@ tasks:
       id: e46b93ef-d96e-4dcd-9304-2a658cff4b83
       version: -1
       name: Notify Stakeholders
-      description: This playbook automates notifying stakeholders via Slack v3, Microsoft
-        Teams, or email. You have the flexibility to notify other teams via Slack,
-        Microsoft Teams or Email by configuring the necessary integration. This playbook
-        requires existing integrations with Slack, Microsoft Teams, Mail Sender or
-        Gmail to perform these actions. If none of these integrations are found in
-        your account, the playbook will exit with no action.
+      description: This playbook automates stakeholder notifications via Slack v3, Microsoft Teams, or email. It requires active Slack, Microsoft Teams, Mail Sender, or Gmail integrations. If no supported integration is configured, the playbook exits without taking action.
       playbookName: Notify Stakeholders
       type: playbook
       iscommand: false
@@ -347,11 +335,10 @@ tasks:
       id: 1715ad14-a731-4821-b291-c7848ba96f15
       version: -1
       name: Is playbook applicable?
-      description: Checks if the playbook is applicable to resolve the selected issue.
+      description: Checks whether the playbook is relevant for the selected issue.
       type: condition
       iscommand: false
-      brand: ""
-      
+      brand: ""   
     nexttasks:
       '#default#':
       - "13"
@@ -400,8 +387,7 @@ tasks:
       id: 073fb6bf-d2b3-44cf-8e10-b13c47f4b5c1
       version: -1
       name: Print - playbook not applicable
-      description: Prints message to war room that this playbook does not handle remediation
-        for the selected issue.
+      description: Prints a message to the War Room that this playbook does not handle remediation for the selected issue.
       scriptName: Print
       type: regular
       iscommand: false
@@ -448,11 +434,11 @@ view: |-
 inputs:
 - key: enableNotifications
   value:
-    simple: "yes"
+    simple: "no"
   required: false
   description: |-
     Options: yes/no
-    Choose if you wish to notify stakeholders about the remediation actions taken. The recipients need to be configured in the Playbook Triggered header of the "Notify Stakeholders" sub-playbook. If no recipients are provided, the playbook will pause to ask for an input.
+    Whether to notify stakeholders about remediation actions. Recipients must be configured in the Notify Stakeholders sub-playbook header. If no recipients are provided, the playbook pauses to request input.  Default is "no".
   playbookInputQuery: null
 inputSections:
 - inputs:

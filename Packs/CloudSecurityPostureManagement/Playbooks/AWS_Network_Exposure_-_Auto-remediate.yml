@@ -2,9 +2,7 @@ id: AWS Network Exposure - Auto-remediate
 version: -1
 name: AWS Network Exposure - Auto-remediate
 description: |-
-  This playbook remediates the following AWS Network Exposure detections:
-  1. Amazon EC2 instance with management ports exposed to the public internet
-  It does so by updating the AWS asset with a new security group which is a copy of the original but without the offending security rule that causes public exposure.
+  This playbook remediates AWS Network Exposure detections, specifically Amazon EC2 instances with management ports exposed to the public internet. It updates the AWS asset with a new security group that mirrors the original but excludes the security rule causing public exposure.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +43,7 @@ tasks:
       id: ee216f4e-489c-4ed4-b818-c99f2b3e3534
       version: -1
       name: Get Issue Extended Fields
-      description: Get comprehensive recommendations for an issue, including remediation
+      description: Retrieves comprehensive recommendations for an issue, including remediation.
         steps, playbook suggestions, and recommended actions.
       script: '|||core-get-issue-recommendations'
       type: regular
@@ -81,7 +79,7 @@ tasks:
       id: 1b1d1815-54ee-471f-86d1-c5584eadbaf9
       version: -1
       name: Check type of asset exposed
-      description: Checks if the playbook is applicable to resolve the selected issue.
+      description: Checks whether the playbook is relevant for the selected issue.
       type: condition
       iscommand: false
       brand: ""
@@ -126,7 +124,7 @@ tasks:
       id: 14554aa0-66e4-4fc5-8ed8-1a79308e39f9
       version: -1
       name: Check remediation flag and notification preference
-      description: Checks if the remediation was successful and if notifications should be sent.
+      description: Checks whether the remediation was successful and if notifications should be sent.
       type: condition
       iscommand: false
       brand: ""
@@ -237,7 +235,7 @@ tasks:
       id: eb2bcbcd-e02a-4898-940a-a60a96fd729e
       version: -1
       name: Issue Not Resolved
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -272,7 +270,7 @@ tasks:
       id: b8053843-bc81-4fbc-8b93-5d25276f1240
       version: -1
       name: Done
-      description: "Section header to mark the end of the playbook"
+      description: "Section header to mark the end of the playbook."
       type: title
       iscommand: false
       brand: ""
@@ -300,12 +298,7 @@ tasks:
       id: 23fffe70-e0b8-4e34-8ecb-0ced30d05206
       version: -1
       name: Notify Stakeholders
-      description: This playbook automates notifying stakeholders via Slack v3, Microsoft
-        Teams, or email. You have the flexibility to notify other teams via Slack,
-        Microsoft Teams or Email by configuring the necessary integration. This playbook
-        requires existing integrations with Slack, Microsoft Teams, Mail Sender or
-        Gmail to perform these actions. If none of these integrations are found in
-        your account, the playbook will exit with no action.
+      description: This playbook automates stakeholder notifications via Slack v3, Microsoft Teams, or email. It requires active Slack, Microsoft Teams, Mail Sender, or Gmail integrations. If no supported integration is configured, the playbook exits without taking action.
       playbookName: Notify Stakeholders
       type: playbook
       iscommand: false
@@ -394,7 +387,7 @@ tasks:
       id: 2c8ec829-6fa9-4fbf-8ace-e56f789d24c1
       version: -1
       name: Is playbook applicable?
-      description: Checks if the playbook is applicable to resolve the selected issue.
+      description: Checks whether the playbook is relevant for the selected issue.
       type: condition
       iscommand: false
       brand: ""
@@ -446,8 +439,7 @@ tasks:
       id: 458011cd-051c-4927-86c1-258f359c93e6
       version: -1
       name: Print - playbook not applicable
-      description: Prints message to war room that this playbook does not handle remediation
-        for the selected issue.
+      description: Prints a message to the War Room that this playbook does not handle remediation for the selected issue.
       scriptName: Print
       type: regular
       iscommand: false
@@ -475,7 +467,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 system: true
 view: |-
   {
@@ -495,11 +486,11 @@ view: |-
 inputs:
 - key: enableNotifications
   value:
-    simple: "yes"
+    simple: "no"
   required: false
   description: |-
     Options: yes/no
-    Choose if you wish to notify stakeholders about the remediation actions taken. The recipients need to be configured in the Playbook Triggered header of the "Notify Stakeholders" sub-playbook. If no recipients are provided, the playbook will pause to ask for an input.
+    Whether to notify stakeholders about remediation actions. Recipients must be configured in the Notify Stakeholders sub-playbook header. If no recipients are provided, the playbook pauses to request input.  Default is "no".
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -513,7 +504,7 @@ outputSections:
   description: Generic group for outputs
 outputs:
 - contextPath: remediatedFlag
-  description: Output key to determine if remediation was successfully done.
+  description: Whether remediation was successfully done.
   type: boolean
 sourceplaybookid: AWS - EC2 Instance Security Group Remediation
 adopted: true
