@@ -68,7 +68,7 @@ configuration:
   required: false
   section: Collect
 - display: Maximum number of events per fetch per log type
-  name: max_events_per_fetch
+  name: max_events_per_fetch_per_type
   type: 0
   defaultvalue: "5000"
   required: false

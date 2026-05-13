@@ -298,7 +298,7 @@ class TestFetchEvents:
         mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         next_run, events = fetch_events(
-            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 day", max_events_per_fetch=5000
+            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 day", max_events_per_fetch_per_type=5000
         )
 
         assert events == []
@@ -326,7 +326,7 @@ class TestFetchEvents:
             last_run={"web": {"last_fetch_time": last_fetch_time}},
             log_types=["web"],
             first_fetch_time="3 days",
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         assert mock_fetch.call_args.kwargs["start"] == expected_start
@@ -348,7 +348,7 @@ class TestFetchEvents:
             last_run={},
             log_types=["web", "audit", "dlp"],
             first_fetch_time="1 hour",
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         assert "web" in next_run
@@ -370,7 +370,7 @@ class TestFetchEvents:
         mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         next_run, _ = fetch_events(
-            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch_per_type=5000
         )
 
         assert "last_fetch_time" in next_run["web"]
@@ -393,7 +393,11 @@ class TestFetchEvents:
         last_run = {"web": prev_state}
 
         next_run, events = fetch_events(
-            client=mock_client, last_run=last_run, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client,
+            last_run=last_run,
+            log_types=["web"],
+            first_fetch_time="1 hour",
+            max_events_per_fetch_per_type=5000,
         )
 
         assert events == []
@@ -412,7 +416,7 @@ class TestFetchEvents:
         mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         next_run, events = fetch_events(
-            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch_per_type=5000
         )
 
         assert len(events) == 1
@@ -433,7 +437,7 @@ class TestFetchEvents:
 
         # First cycle: get the event and its hash
         _, events_cycle1 = fetch_events(
-            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch_per_type=5000
         )
         assert len(events_cycle1) == 1
         boundary_hash = hash_event(events_cycle1[0])
@@ -442,7 +446,11 @@ class TestFetchEvents:
         mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
         last_run = {"web": {"last_fetch_time": "2024-01-15T10:00:40.548000", "boundary_hashes": [boundary_hash]}}
         _, events_cycle2 = fetch_events(
-            client=mock_client, last_run=last_run, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client,
+            last_run=last_run,
+            log_types=["web"],
+            first_fetch_time="1 hour",
+            max_events_per_fetch_per_type=5000,
         )
 
         assert len(events_cycle2) == 0
@@ -460,7 +468,11 @@ class TestFetchEvents:
 
         last_run = {"web": {"last_fetch_time": "2024-01-15T10:00:40.548000", "boundary_hashes": ["deadbeef00000000"]}}
         _, events = fetch_events(
-            client=mock_client, last_run=last_run, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client,
+            last_run=last_run,
+            log_types=["web"],
+            first_fetch_time="1 hour",
+            max_events_per_fetch_per_type=5000,
         )
 
         assert len(events) == 1
@@ -477,7 +489,7 @@ class TestFetchEvents:
         mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         _, events = fetch_events(
-            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
+            client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch_per_type=5000
         )
 
         assert len(events) == 1
@@ -510,7 +522,7 @@ class TestFetchEvents:
             last_run=last_run,
             log_types=["web", "audit"],
             first_fetch_time="1 hour",
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         # web state preserved from last_run
@@ -618,7 +630,7 @@ class TestGetEventsCommand:
             client=mock_client,
             args={"start_time": "1 hour", "end_time": "now", "log_types": "web", "limit": "5000"},
             log_types=["web"],
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         assert results.readable_output is not None
@@ -639,7 +651,7 @@ class TestGetEventsCommand:
             client=mock_client,
             args={"start_time": "1 hour", "end_time": "now", "log_types": "web", "should_push_events": "False"},
             log_types=["web"],
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         raw = results.raw_response
@@ -664,7 +676,7 @@ class TestGetEventsCommand:
             client=mock_client,
             args={"start_time": "1 hour", "end_time": "now", "log_types": "web", "should_push_events": "True"},
             log_types=["web"],
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         raw = results.raw_response
@@ -688,7 +700,7 @@ class TestGetEventsCommand:
             client=mock_client,
             args={"start_time": "1 hour", "end_time": "now"},
             log_types=["web", "audit"],
-            max_events_per_fetch=5000,
+            max_events_per_fetch_per_type=5000,
         )
 
         log_types_called = {call.kwargs["log_type"] for call in mock_fetch.call_args_list}
@@ -709,7 +721,7 @@ class TestGetEventsCommand:
                 client=mock_client,
                 args={"start_time": "1 hour", "end_time": "now", "log_types": "invalid_type"},
                 log_types=["web"],
-                max_events_per_fetch=100,
+                max_events_per_fetch_per_type=100,
             )
 
 
