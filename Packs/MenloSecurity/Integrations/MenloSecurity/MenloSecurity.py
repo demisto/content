@@ -1,6 +1,7 @@
 import hashlib
 import json
 import threading
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import UTC
@@ -225,7 +226,7 @@ def get_events_for_log_type(
                 paging_identifiers=paging_identifiers,
             )
         except Exception as e:
-            demisto.error(f"[{thread_name}] Error fetching: {e}")
+            demisto.error(f"[{thread_name}] Error fetching: {e}\n{traceback.format_exc()}")
             break
 
         # The API may return an empty 200 response (Content-Length: 0) when there is no data.
@@ -415,7 +416,7 @@ def _fetch_log_type_task(
 
     except Exception as e:
         result.error = str(e)
-        demisto.error(f"[{thread_name}] fetch failed: {e}")
+        demisto.error(f"[{thread_name}] fetch failed: {e}\n{traceback.format_exc()}")
 
     return result
 
@@ -468,7 +469,7 @@ def fetch_events(
             try:
                 fetch_results.append(future.result())
             except Exception as e:
-                demisto.error(f"[fetch-events] Thread for {log_type_ui} raised: {e}")
+                demisto.error(f"[fetch-events] Thread for {log_type_ui} raised: {e}\n{traceback.format_exc()}")
 
     # Merge: start from last_run so failed types keep their previous state.
     all_events: list[dict] = []
@@ -600,6 +601,7 @@ def main() -> None:
             raise NotImplementedError(f"Command {command!r} is not implemented.")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{e}")
 
 

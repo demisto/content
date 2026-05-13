@@ -6,7 +6,7 @@ This integration collects logs from the MSIP Logging API and sends them to Corte
 
 ## Configure Menlo Security on Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+1. Navigate to **Settings** &gt; **Configurations** &gt; **Data Collection** &gt; **Automations &amp; Feed Integrations**.
 2. Search for **Menlo Security**.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -17,7 +17,7 @@ This integration collects logs from the MSIP Logging API and sends them to Corte
 | Token type | Select `Admin token` (default) for tokens generated from the Admin UI (uses the v2 API). Select `token` for legacy tokens (uses the v1 API). | True |
 | Log types | The log types to collect. Select one or more from: `web`, `safemail`, `audit`, `auth_flows`, `smtp`, `attachment`, `bandwidth`, `heat`, `firewall`, `dlp`, `ms_client_logs`. Default selection: `web, safemail, audit, smtp, attachment, dlp`. Note: `heat` replaces the deprecated `isoc` log type. | True |
 | Fetch events | Enable event fetching. | False |
-| Maximum number of events per fetch | Maximum events to collect per log type per fetch cycle. Default: 5000. | False |
+| Maximum number of events per fetch per log type | Maximum events to collect per log type per fetch cycle. Default: 5000. | False |
 | Trust any certificate (not secure) | Disable SSL certificate verification. | False |
 | Use system proxy settings | Use the system proxy for API requests. | False |
 
@@ -40,7 +40,7 @@ Manually fetch events from the Menlo Security Isolation Platform.
 | start_time | Start time for the event query (e.g., `1 hour`, `2024-01-01T00:00:00Z`). Default: `1 hour`. | Optional |
 | end_time | End time for the event query (e.g., `now`, `2024-01-02T00:00:00Z`). Default: `now`. | Optional |
 | log_types | Comma-separated list of log types to fetch (e.g., `web,audit`). Defaults to all configured log types. | Optional |
-| limit | Maximum number of events to return per log type. Default: `5000`. | Optional |
+| limit | Maximum number of events to return per log type. Default: `100`. | Optional |
 | should_push_events | Set to `True` to push the fetched events to XSIAM. Set to `False` to only display them. | Required |
 
 #### Context Output

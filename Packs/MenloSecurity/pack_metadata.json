@@ -1,5 +1,6 @@
 {
     "name": "Menlo Security",
+    "created": "2026-05-01T00:00:00Z",
     "description": "The cloud-based Menlo Security Isolation Platform (MSIP) eliminates the possibility of malware reaching user devices via compromised or malicious Web sites, Email or documents.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

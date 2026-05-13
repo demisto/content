@@ -16,8 +16,7 @@ configuration:
   defaultvalue: https://logs.menlosecurity.com
   required: true
   section: Connect
-- display: ""
-  displaypassword: Auth Token
+- displaypassword: Auth Token
   name: credentials
   type: 9
   required: true
