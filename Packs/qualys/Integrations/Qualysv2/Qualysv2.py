@@ -1740,7 +1740,7 @@ class Client(BaseClient):
         demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
         return response, set_new_limit
 
-    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> requests.Response:
+    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
@@ -1755,14 +1755,23 @@ class Client(BaseClient):
 
         params: dict[str, Any] = assign_params(ids=detection_qids, last_modified_after=since_datetime)
 
-        response = self._http_request(
-            method="POST",
-            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
-            resp_type="text",
-            params=params,
-            timeout=60,
-            error_handler=self.error_handler,
+        timeout = (
+            60,  # Connection Timeout: max seconds to wait for a connection to the server to be established
+            150,  # Read Timeout: max seconds to wait between streamed bytes of the response body from the server
         )
+
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+                resp_type="text",
+                params=params,
+                timeout=timeout,
+                error_handler=self.error_handler,
+            )
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
+            demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
+            raise
 
         return response
 
@@ -2822,11 +2831,11 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     return response_requested_value, str(response_next_url)
 
 
-def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
+def handle_vulnerabilities_result(raw_response: str) -> list:
     """
     Handles vulnerabilities response - parses xml to json and gets the list
     Args:
-        raw_response (requests.Response): the raw result received from Qualys API command
+        raw_response (str): the raw XML result received from Qualys API command
     Returns:
         List with data generated for the result given
     """
