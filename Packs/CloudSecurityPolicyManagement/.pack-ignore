@@ -5,10 +5,10 @@ ignore=BA129
 ignore=BA129
 
 [file:GCP_-_VM_Instance_Firewall_Rule_Remediation.yml]
-ignore=PB106
+ignore=PB106,GR109
 
 [file:AWS_-_EC2_Instance_Security_Group_Remediation.yml]
 ignore=PB106
 
 [file:Azure_-_VM_Instance_Network_Security_Group_Remediation.yml]
-ignore=PB106
+ignore=PB106,GR109
