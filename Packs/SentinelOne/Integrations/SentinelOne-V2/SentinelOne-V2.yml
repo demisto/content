@@ -1479,6 +1479,12 @@ script:
       - "Suspicious"
       - UNDEFINED
       description: The treatAsThreat type.
+    - name: query_lang
+      auto: PREDEFINED
+      predefined:
+      - "1.0"
+      - "2.0"
+      description: The query language version. Supported values are "1.0" and "2.0".
     description: Creates a custom STAR rule. Relevant for API version 2.1.
     name: sentinelone-create-star-rule
     outputs:
@@ -1646,6 +1652,12 @@ script:
       - Suspicious
       - UNDEFINED
       description: The treatAsThreat.
+    - name: query_lang
+      auto: PREDEFINED
+      predefined:
+      - "1.0"
+      - "2.0"
+      description: The query language version. Supported values are "1.0" and "2.0".
     description: Updates a custom STAR rule. Relevant for API version 2.1.
     name: sentinelone-update-star-rule
     outputs:

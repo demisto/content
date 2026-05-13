@@ -664,6 +664,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang: str = None,
     ):
         endpoint_url = "cloud-detection/rules"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -683,6 +684,8 @@ class Client(BaseClient):
             },
             "filter": {"tenant": "true", **filter_dict},
         }
+        if query_lang is not None:
+            payload["data"]["queryLang"] = query_lang
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -706,6 +709,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang: str = None,
     ):
         endpoint_url = f"cloud-detection/rules/{rule_id}"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -725,6 +729,8 @@ class Client(BaseClient):
             },
             "filter": {"tenant": "true", **filter_dict},
         }
+        if query_lang is not None:
+            payload["data"]["queryLang"] = query_lang
         response = self._http_request(method="PUT", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -2099,6 +2105,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
     expiration_date = args.get("expiration_date")
     network_quarantine = argToBoolean(args.get("network_quarantine"))
     treatAsThreat = args.get("treatAsThreat")
+    query_lang = args.get("query_lang")
     # if the expiration_mode is Temporary then expiration_date is required
     if expiration_mode == "Temporary" and expiration_date is None:
         raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
@@ -2117,6 +2124,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang,
     )
     if rule:
         context = {
@@ -2132,6 +2140,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
             "Scope Hierarchy": rule.get("scope"),
             "Created At": rule.get("createdAt"),
             "Updated At": rule.get("updatedAt"),
+            "Query Language": rule.get("queryLang", None),
         }
     return CommandResults(
         readable_output=tableToMarkdown("Sentinel One - Create star rule", context, removeNull=True),
@@ -2217,6 +2226,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
     expiration_date = args.get("expiration_date")
     network_quarantine = argToBoolean(args.get("network_quarantine"))
     treatAsThreat = args.get("treatAsThreat")
+    query_lang = args.get("query_lang")
     # if the expiration_mode is Temporary then expiration_date is required
     if expiration_mode == "Temporary" and expiration_date is None:
         raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
@@ -2236,6 +2246,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang,
     )
     if rule:
         context = {
@@ -2251,6 +2262,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
             "Scope Hierarchy": rule.get("scope"),
             "Created At": rule.get("createdAt"),
             "Updated At": rule.get("updatedAt"),
+            "Query Language": rule.get("queryLang", None),
         }
     return CommandResults(
         readable_output=tableToMarkdown("Sentinel One - Updated star rule", context, removeNull=True),
