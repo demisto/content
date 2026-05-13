@@ -68,6 +68,14 @@ configuration:
   required: false
   type: 0
   section: Collect
+- display: Fetch Lookback Window (minutes)
+  name: look_back
+  defaultvalue: '0'
+  type: 0
+  required: false
+  additionalinfo: The number of minutes to look back during each fetch to capture late-indexed incidents.
+  section: Collect
+  advanced: true
 - display: DLP Regions
   name: dlp_regions
   type: 16
