@@ -1507,7 +1507,7 @@ def fetch_incidents_lookback(
     }
     demisto.debug(f"Lookback filter query: {command_args['filter']}")
 
-    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs or []
     if isinstance(raw_incidents, dict):
         raw_incidents = [raw_incidents]
 
@@ -1647,7 +1647,7 @@ def fetch_incidents(
     demisto.debug(f"raw incidents id after dedup: {[incident['ID'] for incident in raw_incidents]}")
 
     # Lookback mechanism based on fetching incidents by their modified time within the lookback window
-    lookback_deduped_incidents = []
+    lookback_deduped_incidents: list = []
     current_lookback_ids: dict = {}
     if look_back > 0:
         demisto.debug(f"Lookback enabled with {look_back} minutes")
@@ -1686,7 +1686,7 @@ def fetch_incidents(
         raw_incidents,
         latest_created_time,
         last_incident_number,
-        current_lookback_ids,  # type: ignore[attr-defined]
+        current_lookback_ids,
     )
 
     # Fetch additional info for lookback incidents
