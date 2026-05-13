@@ -821,90 +821,91 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.25"
+version = "1.39.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.10,<3.15"
-files = []
-develop = false
+files = [
+    {file = "demisto_sdk-1.39.0-py3-none-any.whl", hash = "sha256:26a65d555e01149dfcca4a34d9740df28c62fd8fd25e27f0ceaedc6c0542ce99"},
+    {file = "demisto_sdk-1.39.0.tar.gz", hash = "sha256:7f1d1d5e363c3233291553ee37c3ba618d5e47a22f8a3e4df7634bec722798b3"},
+]
 
 [package.dependencies]
-autopep8 = "^2.0.4"
-bandit = "^1.7.4"
-beautifulsoup4 = "^4.11.1"
+autopep8 = ">=2.0.4,<3.0.0"
+bandit = ">=1.7.4,<2.0.0"
+beautifulsoup4 = ">=4.11.1,<5.0.0"
 chardet = ">=4,<6"
-click = "==8.1.8"
-coloredlogs = "^15.0.1"
-configparser = "^5.2.0"
-coverage = "^7.2.1,<7.4"
-dateparser = "^1.1.1"
-decorator = "^5.1.1"
+click = "8.1.8"
+coloredlogs = ">=15.0.1,<16.0.0"
+configparser = ">=5.2.0,<6.0.0"
+coverage = ">=7.2.1,<7.4"
+dateparser = ">=1.1.1,<2.0.0"
+decorator = ">=5.1.1,<6.0.0"
 demisto-py = ">=3.3.0"
-dictdiffer = "^0.9.0"
-dictor = "^0.1.9"
-docker = "^7.1.0"
-flatten-dict = "^0.4.2"
-gitdb = "^4.0.9"
-GitPython = "^3.1.37"
-giturlparse = "^0.10.0"
-google-cloud-secret-manager = "^2.18.3"
-google-cloud-storage = "^2.13.0"
-imagesize = "^1.3.0"
-importlib-resources = "^5.6.0"
-inflection = "^0.5.1"
-jira = "^3.8.0"
-json5 = "^0.9.14"
-jsonschema = "^4.4.0"
-junitparser = "^3.1.0"
-loguru = "^0.7.2"
-lxml = "^6.0.1"
-mergedeep = "^1.3.4"
-more-itertools = "^10.0.0"
-mypy = "^0.982"
-neo4j = "^5.14.0"
-networkx = "^2.7.1"
-nltk = "^3.9.4"
-ordered-set = "^4.1.0"
-orjson = "^3.8.3"
-packaging = "^24.0"
+dictdiffer = ">=0.9.0,<0.10.0"
+dictor = ">=0.1.9,<0.2.0"
+docker = ">=7.1.0,<8.0.0"
+flatten-dict = ">=0.4.2,<0.5.0"
+gitdb = ">=4.0.9,<5.0.0"
+GitPython = ">=3.1.37,<4.0.0"
+giturlparse = ">=0.10.0,<0.11.0"
+google-cloud-secret-manager = ">=2.18.3,<3.0.0"
+google-cloud-storage = ">=2.13.0,<3.0.0"
+imagesize = ">=1.3.0,<2.0.0"
+importlib-resources = ">=5.6.0,<6.0.0"
+inflection = ">=0.5.1,<0.6.0"
+jira = ">=3.8.0,<4.0.0"
+json5 = ">=0.9.14,<0.10.0"
+jsonschema = ">=4.4.0,<5.0.0"
+junitparser = ">=3.1.0,<4.0.0"
+loguru = ">=0.7.2,<0.8.0"
+lxml = ">=6.0.1,<7.0.0"
+mergedeep = ">=1.3.4,<2.0.0"
+more-itertools = ">=10.0.0,<11.0.0"
+mypy = ">=0.982,<0.983"
+neo4j = ">=5.14.0,<6.0.0"
+networkx = ">=2.7.1,<3.0.0"
+nltk = ">=3.9.4,<4.0.0"
+ordered-set = ">=4.1.0,<5.0.0"
+orjson = ">=3.8.3,<4.0.0"
+packaging = ">=24.0,<25.0"
 paramiko = ">=3.4.1,<4.0"
 Pebble = ">=4.6.3,<6.0.0"
-pre-commit = "^3.5.0"
-prettytable = "^3.2.0"
-pydantic = "^1.10"
-pygithub = "^2.2.0"
-pykwalify = "^1.8.0"
-pylint = "^3.3.2"
-PyPDF2 = "^1.28.6"
-pyspellchecker = "^0.6.3"
-pytest-freezegun = "^0.4.2"
-python-dotenv = "^0.20.0"
-python-gitlab = "^8.0.0"
-requests = "^2.27.1"
-"ruamel.yaml" = "^0.17.21"
+pre-commit = ">=3.5.0,<4.0.0"
+prettytable = ">=3.2.0,<4.0.0"
+pydantic = ">=1.10,<2.0"
+pygithub = ">=2.2.0,<3.0.0"
+pykwalify = ">=1.8.0,<2.0.0"
+pylint = ">=3.3.2,<4.0.0"
+PyPDF2 = ">=1.28.6,<2.0.0"
+pyspellchecker = ">=0.6.3,<0.7.0"
+pytest-freezegun = ">=0.4.2,<0.5.0"
+python-dotenv = ">=0.20.0,<0.21.0"
+python-gitlab = ">=8.0.0,<9.0.0"
+requests = ">=2.27.1,<3.0.0"
+"ruamel.yaml" = ">=0.17.21,<0.18.0"
 setuptools = ">=80.9.0"
-slack-sdk = "^3.17.0"
+slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
-tenacity = "^8.4.1"
-toml = "^0.10.2"
-typer = {version = "^0.16.0", extras = ["all"]}
-typing-extensions = "^4.1.1"
-ujson = "^5.1.0"
+tenacity = ">=8.4.1,<9.0.0"
+toml = ">=0.10.2,<0.11.0"
+typer = {version = ">=0.16.0,<0.17.0", extras = ["all"]}
+typing-extensions = ">=4.1.1,<5.0.0"
+ujson = ">=5.1.0,<6.0.0"
 urllib3 = ">=1.26,<3"
-uv = "^0.1.5"
-vulture = "^2.3"
-wcmatch = "^8.3"
-werkzeug = "^3.1.3"
-yamlordereddictloader = "^0.4.0"
+uv = ">=0.1.5,<0.2.0"
+vulture = ">=2.3,<3.0"
+wcmatch = ">=8.3,<9.0"
+werkzeug = ">=3.1.3,<4.0.0"
+yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/demisto/demisto-sdk.git"
-reference = "0d401b06e956404b4184f1a5224eab988c9914b7"
-resolved_reference = "0d401b06e956404b4184f1a5224eab988c9914b7"
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
 
 [[package]]
 name = "dictdiffer"
@@ -3486,13 +3487,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "requests"
-version = "2.34.0"
+version = "2.34.1"
 description = "Python HTTP for Humans."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "requests-2.34.0-py3-none-any.whl", hash = "sha256:917520a21b767485ce7c588f4ebb917c436b24a31231b44228715eaeb5a52c60"},
-    {file = "requests-2.34.0.tar.gz", hash = "sha256:7d62fe92f50eb82c529b0916bb445afa1531a566fc8f35ffdc64446e771b856a"},
+    {file = "requests-2.34.1-py3-none-any.whl", hash = "sha256:bf38a3ff993960d3dd819c08862c40b3c703306eb7c744fcd9f4ddbb95b548f0"},
+    {file = "requests-2.34.1.tar.gz", hash = "sha256:0fc5669f2b69704449fe1552360bd2a73a54512dfd03e65529157f1513322beb"},
 ]
 
 [package.dependencies]
@@ -4714,20 +4715,20 @@ reference = "pypi-public"
 
 [[package]]
 name = "virtualenv"
-version = "21.3.2"
+version = "21.3.3"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "virtualenv-21.3.2-py3-none-any.whl", hash = "sha256:c58ea748fa50bb2a4367da5ba3d30b02458ed40b4ea888faad94021f3309f764"},
-    {file = "virtualenv-21.3.2.tar.gz", hash = "sha256:3ecda97894a6fc1c53106356f488690e5c86278c1f693f3fc0805ac85a513686"},
+    {file = "virtualenv-21.3.3-py3-none-any.whl", hash = "sha256:7d5987d8369e098e41406efb780a3d4ca79280097293899e351a6407ee153ab3"},
+    {file = "virtualenv-21.3.3.tar.gz", hash = "sha256:f5bda277e553b1c2b3c1a8debfc30496e1288cc93ce6b7b71b3280047e317328"},
 ]
 
 [package.dependencies]
 distlib = ">=0.3.7,<1"
 filelock = {version = ">=3.24.2,<4", markers = "python_version >= \"3.10\""}
 platformdirs = ">=3.9.1,<5"
-python-discovery = ">=1.2.2"
+python-discovery = ">=1.3.1"
 typing-extensions = {version = ">=4.13.2", markers = "python_version < \"3.11\""}
 
 [package.source]
@@ -4852,4 +4853,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.15"
-content-hash = "a2f7464546550a62c0ad3977b557669f425aca9e497533b9cdaafc9d1938e177"
+content-hash = "47d89209b0369a1699e3f9cc70fa92b74ea9e54f25978152e10363c34c8f4ceb"
