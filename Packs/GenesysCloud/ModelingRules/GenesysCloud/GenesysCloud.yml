@@ -4,3 +4,5 @@ name: Genesys Cloud Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
