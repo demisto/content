@@ -507,7 +507,7 @@ script:
       - informational
     description: Updates existing investigations in Splunk ES.
     execution: true
-    name: splunk-investigation-edit
+    name: splunk-update-investigation
   - arguments:
     - description: The Splunk search language string to execute. For example :"index=* | head 3".
       name: query

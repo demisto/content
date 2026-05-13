@@ -544,14 +544,14 @@ There is no context output for this command.
 
 ![image](../../doc_files/edit_finding_command.png)
 
-### splunk-investigation-edit
+### splunk-update-investigation
 
 ***
 Updates existing investigations in Splunk ES.
 
 #### Base Command
 
-`splunk-investigation-edit`
+`splunk-update-investigation`
 
 #### Input
 
@@ -570,7 +570,7 @@ There is no context output for this command.
 
 #### Command example
 
-`!splunk-investigation-edit event_ids="ES00019"`
+`!splunk-update-investigation event_ids="ES00019"`
 
 #### Human Readable Output
 >

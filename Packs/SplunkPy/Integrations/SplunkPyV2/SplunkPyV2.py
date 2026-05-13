@@ -5345,7 +5345,7 @@ def main() -> None:  # pragma: no cover
         extensive_log("[SplunkPy] Fetch Incidents was successfully executed.")
     elif command == "splunk-submit-event":
         splunk_submit_event_command(service, args)
-    elif command in ["splunk-finding-event-edit", "splunk-investigation-edit"] and service is not None:
+    elif command in ["splunk-finding-event-edit", "splunk-update-investigation"] and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         splunk_edit_event_command(service, args)
     elif command == "splunk-submit-event-hec":
