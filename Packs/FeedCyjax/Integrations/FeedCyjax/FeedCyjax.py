@@ -89,7 +89,7 @@ class Client:
         :param indicator_type:  The indicator type. If not specified all indicators are returned
 
         :type source_type: ``str``
-        :param source_type:  The indicators source type. Allowed values are incidnet-report, my-report
+        :param source_type:  The indicators source type. Allowed values are incident-report, my-report
 
         :type source_id: ``int``
         :param source_id:  The indicators source ID

@@ -125,7 +125,7 @@ script:
     - name: type
       description: 'The indicator type. If not specified all indicators are returned. Allowed values are IPv4, IPv6, Domain, Hostname, Email, FileHash-SHA1, FileHash-SHA256, FileHash-MD5, FileHash-SSDEEP.'
     - name: source_type
-      description: The indicators source type. Allowed values are incidnet-report, my-report.
+      description: The indicators source type. Allowed values are incident-report, my-report.
     - name: source_id
       description: The indicators source ID.
     - name: limit
