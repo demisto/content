@@ -1352,28 +1352,10 @@ script:
       description: The time zone name to which the working hours apply.
       type: String
   - arguments:
-    - description: 'The ID or User Principal Name (UPN) of the mailbox whose token will execute the lookup. If omitted, /me is used (delegated auth only — app-only auth requires this argument).'
-      name: user_id
-    - description: One or more email addresses to retrieve Mail Tips for. Provide as a single address or a comma-separated list. Maximum 100 addresses per call.
-      isArray: true
-      name: email_addresses
-    - auto: PREDEFINED
-      defaultValue: automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,recipientScope,recipientSuggestions
-      description: 'A comma-separated list of Mail Tips types to retrieve. If omitted, all types are requested. Allowed values: automaticReplies, mailboxFullStatus, customMailTip, externalMemberCount, totalMemberCount, maxMessageSize, deliveryRestriction, moderationStatus, recipientScope, recipientSuggestions.'
-      isArray: true
-      name: mail_tips_options
-      predefined:
-      - automaticReplies
-      - mailboxFullStatus
-      - customMailTip
-      - externalMemberCount
-      - totalMemberCount
-      - maxMessageSize
-      - deliveryRestriction
-      - moderationStatus
-      - recipientScope
-      - recipientSuggestions
-    description: Retrieves Mail Tips for one or more email addresses, including out-of-office status, mailbox-full status, max message size, delivery restrictions, recipient scope, and more. If user_id is omitted, the call is made against /me (delegated auth only).
+    - description: The email address (User Principal Name / UPN) of the mailbox to retrieve Mail Tips for. The same value is used both as the executing mailbox and as the single recipient being queried (a self-lookup).
+      name: email_address
+      required: true
+    description: Retrieves Mail Tips for the specified email address, including out-of-office status, mailbox-full status, max message size, delivery restrictions, recipient scope, custom mail tip, and group membership counts. Performs a self-lookup using the same email_address for both the executing mailbox and the queried recipient. All available Mail Tips types are requested.
     name: msgraph-mail-get-mailtips
     outputs:
     - contextPath: MSGraphMail.MailTips.emailAddress.name

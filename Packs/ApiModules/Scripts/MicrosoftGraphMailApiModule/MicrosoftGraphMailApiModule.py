@@ -1096,23 +1096,23 @@ class MsGraphMailBaseClient(MicrosoftClient):
         suffix = f"/users/{user_id}/mailboxSettings"
         return self.http_request("GET", suffix)
 
-    def get_mail_tips(self, user_id: str | None, email_addresses: list, mail_tips_options: str) -> dict:
-        """Retrieves Mail Tips for one or more email addresses via Microsoft Graph.
+    def get_mail_tips(self, email_address: str) -> dict:
+        """Retrieves Mail Tips for the given email address via Microsoft Graph.
+
+        The same email_address is used both as the path mailbox (asker) and as the single
+        EmailAddresses entry (askee) — a self-lookup. The full mailTipsType option set
+        is always requested.
 
         Args:
-            user_id: ID or UPN of the mailbox whose token will execute the lookup.
-                     If None, falls back to /me (delegated-auth only).
-            email_addresses: List of email addresses to retrieve Mail Tips for.
-            mail_tips_options: Comma-separated mailTipsType flags string.
+            email_address: Email address (UPN) of the mailbox to query.
 
         Returns:
-            The Graph response containing a `value` list of mailTips objects.
+            The Graph response containing a `value` list with one mailTips object.
         """
-        base = f"/users/{user_id}" if user_id else "/me"
-        suffix = f"{base}/getMailTips"
+        suffix = f"/users/{email_address}/getMailTips"
         body = {
-            "EmailAddresses": email_addresses,
-            "MailTipsOptions": mail_tips_options,
+            "EmailAddresses": [email_address],
+            "MailTipsOptions": ALL_MAIL_TIPS_OPTIONS,
         }
         return self.http_request("POST", suffix, json_data=body)
 
@@ -2290,6 +2290,14 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     return results
 
 
+# All mailTipsType flag values (per Microsoft Graph mailTipsType enum docs).
+ALL_MAIL_TIPS_OPTIONS = (
+    "automaticReplies, mailboxFullStatus, customMailTip, externalMemberCount, "
+    "totalMemberCount, maxMessageSize, deliveryRestriction, moderationStatus, "
+    "recipientScope, recipientSuggestions"
+)
+
+
 def _parse_json_arg(value, arg_name: str, required: bool = False):
     """Parse a JSON-string CLI arg into a Python object, raising a clear error on failure."""
     if value is None or value == "":
@@ -2381,10 +2389,6 @@ def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
     rule_id = args.get("rule_id")
 
     sequence = args.get("sequence")
-    if sequence is not None:
-        sequence = arg_to_number(sequence)
-        if sequence is None or sequence < 1:
-            raise DemistoException("'sequence' must be a positive integer (>= 1).")
 
     actions = _parse_json_arg(args.get("actions"), "actions")
     conditions = _parse_json_arg(args.get("conditions"), "conditions")
@@ -2401,12 +2405,6 @@ def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
         conditions=conditions,
         exceptions=exceptions,
     )
-
-    if not body:
-        raise DemistoException(
-            "At least one updatable field must be provided "
-            "(display_name, sequence, is_enabled, is_read_only, actions, conditions, exceptions)."
-        )
 
     response = client.update_message_rule(user_id, rule_id, body)
 
@@ -2474,27 +2472,14 @@ def get_mailbox_settings_command(client: MsGraphMailBaseClient, args: dict) -> C
 
 def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
     """msgraph-mail-get-mailtips"""
-    user_id = args.get("user_id")  # optional — falls back to /me
+    email_address = args.get("email_address")
+    if not email_address:
+        raise DemistoException("'email_address' is required.")
 
-    email_addresses = argToList(args.get("email_addresses"))
-    if not email_addresses:
-        raise DemistoException(
-            "'email_addresses' is required (provide one address or a comma-separated list)."
-        )
+    response = client.get_mail_tips(email_address)
 
-    # Defaults (full list of mailTipsType flags) come from the YAML argument's defaultValue.
-    options_list = argToList(args.get("mail_tips_options"))
-    if not options_list:
-        raise DemistoException(
-            "'mail_tips_options' is required (provide one or more mailTipsType flags)."
-        )
-    mail_tips_options = ", ".join(options_list)
-
-    response = client.get_mail_tips(user_id, email_addresses, mail_tips_options)
-
-    # Graph returns {"@odata.context": "...", "value": [ {...mailTips...}, ... ]}
+    # Graph returns {"@odata.context": "...", "value": [ {...mailTips...} ]}
     raw_tips = response.get("value", []) if isinstance(response, dict) else []
-    # Strip @odata.* keys defensively (per item).
     outputs = [
         {k: v for k, v in tip.items() if not k.startswith("@odata")}
         for tip in raw_tips
@@ -2521,9 +2506,8 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
             "Error": err.get("message") if err else None,
         })
 
-    target_label = f"user {user_id}" if user_id else "/me"
     readable_output = tableToMarkdown(
-        f"Mail Tips for {len(outputs)} address(es) (queried via {target_label})",
+        f"Mail Tips for {email_address}",
         table_rows,
         removeNull=True,
     )
