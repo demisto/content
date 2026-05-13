@@ -1,4 +1,3 @@
-register_module_line("Kibana", "start", __line__())
 CONSTANT_PACK_VERSION = "1.4.1"
 demisto.debug("pack id = CommunityElasticsearch, pack version = 1.4.1")
 
