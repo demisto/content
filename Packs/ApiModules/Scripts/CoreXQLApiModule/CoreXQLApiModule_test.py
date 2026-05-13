@@ -653,6 +653,44 @@ def test_format_results_do_not_remove_empty_fields():
     assert expected == response
 
 
+def test_format_results_does_not_convert_non_timestamp_fields_containing_time():
+    """
+    Given:
+    - A list with fields containing 'time' substring but are not timestamp fields (e.g., reopenedbuffertime).
+
+    When:
+    - Calling format_results function.
+
+    Then:
+    - Ensure fields like 'reopenedbuffertime' are NOT converted to timestamps.
+    - Ensure actual timestamp fields like '_time', 'insert_timestamp' ARE converted.
+    """
+    list_to_format = [
+        {
+            "reopenedbuffertime": 7,  # Should NOT be converted (not a timestamp field)
+            "runtime": 100,  # Should NOT be converted
+            "lifetime": 500,  # Should NOT be converted
+            "_time": 1629619736000,  # Should be converted (ends with _time)
+            "insert_timestamp": 1629619736000,  # Should be converted (ends with timestamp)
+            "created_time": 1629619736000,  # Should be converted (ends with _time)
+            "time": 1629619736000,  # Should be converted (exactly 'time')
+        }
+    ]
+    expected = [
+        {
+            "reopenedbuffertime": 7,  # Unchanged
+            "runtime": 100,  # Unchanged
+            "lifetime": 500,  # Unchanged
+            "_time": "2021-08-22T08:08:56.000Z",  # Converted
+            "insert_timestamp": "2021-08-22T08:08:56.000Z",  # Converted
+            "created_time": "2021-08-22T08:08:56.000Z",  # Converted
+            "time": "2021-08-22T08:08:56.000Z",  # Converted
+        }
+    ]
+    response = CoreXQLApiModule.format_results(list_to_format, remove_empty_fields=False)
+    assert expected == response
+
+
 def test_start_xql_query_polling_not_supported(mocker):
     """
     Given:

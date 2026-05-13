@@ -791,6 +791,13 @@ DOMAINRISK_PARSED_INDICATOR_RESPONSE = [
             "value": "resmiguncelsite.com",
             "type": "Domain",
             "timestamp": "2025-09-06T21:18:06Z",
+            "risk_score_details": {
+                "phishing_risk": 99,
+                "malware_risk": 99,
+                "spam_risk": 99,
+                "proximity_risk": 100,
+                "overall_risk": 100,
+            },
         },
         "score": 3
     },
@@ -807,8 +814,15 @@ DOMAINRISK_PARSED_INDICATOR_RESPONSE = [
             "value": "bpi-cye.co",
             "type": "Domain",
             "timestamp": "2025-09-06T21:42:06Z",
+            "risk_score_details": {
+                "phishing_risk": 99,
+                "malware_risk": 99,
+                "spam_risk": 99,
+                "proximity_risk": 100,
+                "overall_risk": 45,
+            },
         },
-         "score": 1
+        "score": 1
     },
     {
         "value": "antthrobchannel.com",
@@ -823,8 +837,15 @@ DOMAINRISK_PARSED_INDICATOR_RESPONSE = [
             "value": "antthrobchannel.com",
             "type": "Domain",
             "timestamp": "2025-09-06T21:12:06Z",
+            "risk_score_details": {
+                "phishing_risk": 99,
+                "malware_risk": 99,
+                "spam_risk": 99,
+                "proximity_risk": 100,
+                "overall_risk": 63,
+            },
         },
-         "score": 2
+        "score": 2
     }
 ]
 
@@ -842,6 +863,14 @@ DOMAINHOTLIST_PARSED_INDICATOR_RESPONSE = [
             "value": "scmipgf.icu",
             "type": "Domain",
             "timestamp": "2025-09-06T22:27:06Z",
+            "risk_score_details": {
+                "phishing_risk": 99,
+                "malware_risk": 99,
+                "spam_risk": 99,
+                "proximity_risk": 100,
+                "overall_risk": 100,
+                "expires": "2025-09-07T11:34:51Z",
+            },
         },
         "score": 3
     },
@@ -858,8 +887,16 @@ DOMAINHOTLIST_PARSED_INDICATOR_RESPONSE = [
             "value": "growth-hacker-ppc.com",
             "type": "Domain",
             "timestamp": "2025-09-06T22:26:49Z",
+            "risk_score_details": {
+                "phishing_risk": 99,
+                "malware_risk": 99,
+                "spam_risk": 99,
+                "proximity_risk": 100,
+                "overall_risk": 100,
+                "expires": "2025-09-07T19:19:29Z",
+            },
         },
-         "score": 1
+        "score": 3
     },
     {
         "value": "gq5zn0u.top",
@@ -874,7 +911,15 @@ DOMAINHOTLIST_PARSED_INDICATOR_RESPONSE = [
             "value": "gq5zn0u.top",
             "type": "Domain",
             "timestamp": "2025-09-06T22:26:55Z",
+            "risk_score_details": {
+                "phishing_risk": 99,
+                "malware_risk": 99,
+                "spam_risk": 99,
+                "proximity_risk": 100,
+                "overall_risk": 100,
+                "expires": "2025-09-07T11:53:17Z",
+            },
         },
-         "score": 2
+        "score": 3
     }
 ]
