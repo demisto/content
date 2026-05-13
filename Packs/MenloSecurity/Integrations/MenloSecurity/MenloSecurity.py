@@ -152,9 +152,9 @@ def timestamp_to_epoch(timestamp: str) -> int:
 
 
 def hash_event(event: dict) -> str:
-    """Return a stable MD5 hex digest of an event dict (used for cross-cycle dedup)."""
+    """Return a stable SHA-256 hex digest of an event dict (used for cross-cycle dedup)."""
     serialized = json.dumps(event, sort_keys=True, default=str)
-    return hashlib.md5(serialized.encode()).hexdigest()  # noqa: S324
+    return hashlib.sha256(serialized.encode()).hexdigest()
 
 
 def get_boundary_hashes(events: list[dict], boundary_time: str) -> list[str]:
