@@ -9,6 +9,7 @@ description: CyberArk Identity Security Platform secures human and machine ident
 sectionorder:
 - Connect
 - Collect
+- Assets
 configuration:
 - name: url
   display: Audit Server URL
@@ -71,8 +72,136 @@ configuration:
   advanced: true
   defaultvalue: "10000"
   additionalinfo: Maximum number of events to fetch per cycle (default 10000, based on API paging definition).
+- name: isFetchAssets
+  display: Fetch Assets
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Assets
+  additionalinfo: When enabled, the integration periodically fetches CyberArk Cloud Directory snapshots (Users, Groups, Roles, Applications) selected in 'Directory Data Collection' below.
+- name: directory_data_collection
+  display: Directory Data Collection
+  required: false
+  type: 16
+  defaultvalue: "Users,Groups,Roles,Applications"
+  options:
+  - Users
+  - Groups
+  - Roles
+  - Applications
+  section: Assets
+  additionalinfo: Select which CyberArk Cloud Directory data sources to fetch as snapshots. Each selected source produces its own dataset (cyberark_users_raw, cyberark_groups_raw, cyberark_roles_raw, cyberark_applications_raw). Has no effect unless 'Fetch Assets' is enabled.
+- name: max_assets_per_source_per_page
+  display: Maximum number of records per Redrock page
+  required: false
+  type: 0
+  section: Assets
+  advanced: true
+  defaultvalue: "10000"
+  additionalinfo: Maximum number of records to request per page from the Redrock API (default 10000). Snapshots are paginated automatically across multiple invocations within a fetch cycle when needed.
 script:
   commands:
+  - name: cyberark-isp-get-users
+    description: |-
+      Manually fetches CyberArk Cloud Directory user snapshots via the Redrock Query API. For developing/debugging only. Use with caution if 'should_push_assets' is set to true, as it may interfere with the scheduled fetch cycle's snapshot sealing.
+    arguments:
+    - name: limit
+      description: >-
+        Maximum number of user records to retrieve.
+      defaultValue: "50"
+    - name: should_push_assets
+      description: >-
+        Set to true to push the retrieved users to XSIAM as a snapshot in the cyberark_users_raw dataset.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: CyberArkISP.User.ID
+      description: Unique identifier of the CyberArk Cloud Directory user.
+      type: String
+    - contextPath: CyberArkISP.User.Username
+      description: Username (login name) of the user.
+      type: String
+    - contextPath: CyberArkISP.User.DisplayName
+      description: Display name of the user.
+      type: String
+    - contextPath: CyberArkISP.User.Email
+      description: Email address of the user.
+      type: String
+    - contextPath: CyberArkISP.User.LastLogin
+      description: Timestamp of the user's last login.
+      type: Date
+  - name: cyberark-isp-get-groups
+    description: |-
+      Manually fetches CyberArk Cloud Directory group snapshots via the Redrock Query API. For developing/debugging only.
+    arguments:
+    - name: limit
+      description: Maximum number of group records to retrieve.
+      defaultValue: "50"
+    - name: should_push_assets
+      description: Set to true to push the retrieved groups to XSIAM as a snapshot in the cyberark_groups_raw dataset.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: CyberArkISP.Group.ID
+      description: Unique identifier of the group.
+      type: String
+    - contextPath: CyberArkISP.Group.Name
+      description: Name of the group.
+      type: String
+  - name: cyberark-isp-get-roles
+    description: |-
+      Manually fetches CyberArk Cloud Directory role snapshots via the Redrock Query API. For developing/debugging only.
+    arguments:
+    - name: limit
+      description: Maximum number of role records to retrieve.
+      defaultValue: "50"
+    - name: should_push_assets
+      description: Set to true to push the retrieved roles to XSIAM as a snapshot in the cyberark_roles_raw dataset.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: CyberArkISP.Role.ID
+      description: Unique identifier of the role.
+      type: String
+    - contextPath: CyberArkISP.Role.Name
+      description: Name of the role.
+      type: String
+    - contextPath: CyberArkISP.Role.Description
+      description: Description of the role.
+      type: String
+  - name: cyberark-isp-get-applications
+    description: |-
+      Manually fetches CyberArk Cloud Directory application snapshots via the Redrock Query API. For developing/debugging only.
+    arguments:
+    - name: limit
+      description: Maximum number of application records to retrieve.
+      defaultValue: "50"
+    - name: should_push_assets
+      description: Set to true to push the retrieved applications to XSIAM as a snapshot in the cyberark_applications_raw dataset.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: CyberArkISP.Application.ID
+      description: Unique identifier of the application.
+      type: String
+    - contextPath: CyberArkISP.Application.Name
+      description: Name of the application.
+      type: String
+    - contextPath: CyberArkISP.Application.AppType
+      description: Type of the application.
+      type: String
   - name: cyberark-isp-get-events
     description: |-
       Gets audit events from CyberArk Identity Security Platform. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
@@ -159,7 +288,8 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.8927230
+  isfetchassets: true
 fromversion: 8.11.0
 supportlevelheader: xsoar
 marketplaces:

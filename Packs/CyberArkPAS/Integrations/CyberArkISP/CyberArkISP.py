@@ -57,6 +57,86 @@ class ContextKeys(str, Enum):
     ACCESS_TOKEN = "access_token"
     EXPIRES_IN = "expires_in"
     VALID_UNTIL = "valid_until"
+    # Distinct cache keys for the directory-data (Redrock) auth flow so the
+    # audit-events token cache is never overwritten by a token with a different
+    # scope (siem vs isp.audit.events:read).
+    REDROCK_ACCESS_TOKEN = "redrock_access_token"
+    REDROCK_VALID_UNTIL = "redrock_valid_until"
+
+
+# region Directory-data (Redrock) constants
+# =================================
+# Constants for the new fetch-assets / Cloud Directory Snapshots feature
+# (CIAC-16176). These are intentionally separate from the audit-events
+# constants above to keep the two flows decoupled.
+# =================================
+
+
+class DirectorySource(str, Enum):
+    """The four CyberArk Cloud Directory sources we collect as snapshots.
+
+    Each value matches the customer-facing label in the integration's
+    `directory_data_collection` multi-select config parameter, and maps to a
+    distinct XSIAM dataset (see ``DATASET_BY_SOURCE``).
+    """
+
+    USERS = "Users"
+    GROUPS = "Groups"
+    ROLES = "Roles"
+    APPLICATIONS = "Applications"
+
+
+# Per the design doc (CIAC-16176). The Script values are passed verbatim to
+# CyberArk's Redrock /Redrock/Query endpoint. They MUST NOT be edited without
+# updating the design doc — these are the contract with CyberArk.
+REDROCK_QUERY_BY_SOURCE: dict[DirectorySource, str] = {
+    DirectorySource.USERS: "SELECT * FROM User",
+    DirectorySource.GROUPS: "SELECT * FROM ADGroup",
+    DirectorySource.ROLES: "SELECT ID, Name, Description FROM Role",
+    DirectorySource.APPLICATIONS: "SELECT ID, Name, AppType FROM Application",
+}
+
+# The XSIAM dataset name is `<vendor>_<product>_raw`. We use vendor="cyberark"
+# and one product per source so each source lands in its own snapshot dataset
+# (e.g. cyberark_users_raw). This is the proven multi-dataset pattern from
+# Tenable_io / Qualysv2.
+DIRECTORY_VENDOR = "cyberark"
+PRODUCT_BY_SOURCE: dict[DirectorySource, str] = {
+    DirectorySource.USERS: "users",
+    DirectorySource.GROUPS: "groups",
+    DirectorySource.ROLES: "roles",
+    DirectorySource.APPLICATIONS: "applications",
+}
+
+# Stable per-record identifier returned by Redrock in every Row. Used as the
+# snapshot dedup key. If a given source returns rows that don't have an "ID"
+# field we fall back to a hash of the row dict.
+REDROCK_ROW_ID_FIELD = "ID"
+
+# Output context-prefix per source for the manual debug commands.
+CONTEXT_PREFIX_BY_SOURCE: dict[DirectorySource, str] = {
+    DirectorySource.USERS: "CyberArkISP.User",
+    DirectorySource.GROUPS: "CyberArkISP.Group",
+    DirectorySource.ROLES: "CyberArkISP.Role",
+    DirectorySource.APPLICATIONS: "CyberArkISP.Application",
+}
+
+# Default page size for the Redrock query Args.PageSize.
+REDROCK_DEFAULT_PAGE_SIZE = 10000
+
+# nextTrigger value the platform recognises. "30" tells the platform to
+# re-invoke fetch-assets in ~30 seconds within the same fetch cycle. Matches
+# Tenable_io's choice (`Packs/Tenable_io/.../Tenable_io.py:1889`).
+NEXT_TRIGGER_VALUE = "30"
+
+# Last-run keys for the assets flow.
+ASSETS_LAST_RUN_SNAPSHOT_ID = "snapshot_id"
+ASSETS_LAST_RUN_PAGE_INDEX_BY_SOURCE = "page_index_by_source"
+ASSETS_LAST_RUN_TOTAL_BY_SOURCE = "total_by_source"
+ASSETS_LAST_RUN_PENDING_SOURCES = "pending_sources"
+
+
+# endregion
 
 
 class APIKeys(str, Enum):
@@ -200,7 +280,28 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     # Construct token URL
     token_url = f"{identity_url}/OAuth2/Token/{web_app_id}"
 
-    demisto.debug(f"[Config] Base URL: {base_url} | Token URL: {token_url}")
+    # Directory-data (Redrock) configuration. CIAC-16176.
+    # Working assumption: reuse the existing client_id / client_secret against
+    # /oauth2/platformtoken with scope=siem. If CyberArk requires a separate
+    # OAuth client for the 'siem' scope, swap in two new params
+    # `directory_client_id` + `directory_client_secret` here without changing
+    # the rest of the pipeline.
+    is_fetch_assets = argToBoolean(params.get("isFetchAssets", False))
+    directory_data_collection_raw = params.get("directory_data_collection") or []
+    directory_sources = parse_directory_sources(directory_data_collection_raw)
+    redrock_token_url = f"{identity_url}/oauth2/platformtoken"
+    redrock_query_base = f"{identity_url}/Redrock/Query"
+    try:
+        max_records_per_page = int(params.get("max_assets_per_source_per_page") or REDROCK_DEFAULT_PAGE_SIZE)
+    except (TypeError, ValueError):
+        max_records_per_page = REDROCK_DEFAULT_PAGE_SIZE
+        demisto.debug(f"[Config] max_assets_per_source_per_page invalid; defaulting to {max_records_per_page}")
+
+    demisto.debug(
+        f"[Config] Base URL: {base_url} | Token URL: {token_url} | "
+        f"is_fetch_assets={is_fetch_assets} | directory_sources={[s.value for s in directory_sources]} | "
+        f"redrock_token_url={redrock_token_url}"
+    )
 
     return {
         "base_url": base_url,
@@ -210,7 +311,39 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "client_id": client_id,
         "client_secret": client_secret,
         "api_key": api_key,
+        # Directory-data extras
+        "is_fetch_assets": is_fetch_assets,
+        "directory_sources": directory_sources,
+        "redrock_token_url": redrock_token_url,
+        "redrock_query_base": redrock_query_base,
+        "max_records_per_page": max_records_per_page,
     }
+
+
+def parse_directory_sources(raw: Any) -> list[DirectorySource]:
+    """Normalise the `directory_data_collection` config value into a list of
+    ``DirectorySource`` enum members.
+
+    The XSOAR multi-select widget can deliver either a list (`["Users", "Groups"]`)
+    or a comma-separated string (`"Users,Groups"`) depending on platform version.
+    Unknown labels are dropped with a debug log so a typo in the config doesn't
+    break the entire fetch cycle.
+    """
+    if isinstance(raw, str):
+        raw_items = [item.strip() for item in raw.split(",") if item.strip()]
+    elif isinstance(raw, list):
+        raw_items = [str(item).strip() for item in raw if str(item).strip()]
+    else:
+        raw_items = []
+
+    valid_labels = {member.value for member in DirectorySource}
+    sources: list[DirectorySource] = []
+    for label in raw_items:
+        if label in valid_labels:
+            sources.append(DirectorySource(label))
+        else:
+            demisto.debug(f"[Config] Ignoring unknown directory_data_collection value: {label!r}")
+    return sources
 
 
 def add_time_to_events(events: list[dict[str, Any]]) -> None:
@@ -465,6 +598,208 @@ class Client(BaseClient):
 
 # endregion
 
+# region Redrock client (Directory Data / fetch-assets)
+# =================================
+# Separate HTTP client for the new Cloud Directory Snapshots feature.
+# Lives alongside Client (audit-events) so the two flows can evolve
+# independently. See CIAC-16176 for the design discussion.
+# =================================
+
+
+class RedrockClient(BaseClient):
+    """HTTP client for the CyberArk Cloud Directory ``/Redrock/Query`` API.
+
+    Uses the ``/oauth2/platformtoken`` endpoint with Basic-auth
+    (``client_id:client_secret``) and ``scope=siem``. The bearer token is
+    cached in ``demisto.getIntegrationContext()`` under a separate key from
+    the audit-events token to avoid collisions when both flows are active.
+
+    Working assumption (CIAC-16176): the existing ``client_id`` /
+    ``client_secret`` from the audit-events config can also be used here.
+    If CyberArk requires a separate confidential client, swap the credentials
+    for two new params (`directory_client_id` / `directory_client_secret`)
+    in ``parse_integration_params``.
+    """
+
+    def __init__(
+        self,
+        identity_url: str,
+        client_id: str,
+        client_secret: str,
+        verify: bool,
+        proxy: bool,
+    ):
+        identity_url = identity_url.rstrip("/")
+        super().__init__(base_url=identity_url, verify=verify, proxy=proxy)
+        self.identity_url = identity_url
+        self.token_url = f"{identity_url}/oauth2/platformtoken"
+        self.query_url_suffix = "/Redrock/Query"
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+    def _get_access_token(self) -> str:
+        """Fetch and cache an OAuth2 token from ``/oauth2/platformtoken``.
+
+        Uses Basic auth (the curl example in the design doc shows
+        ``Authorization: Basic XXXXX``) and ``scope=siem``. The token is
+        cached for ``expires_in - CACHE_BUFFER_SECONDS`` seconds under
+        ``ContextKeys.REDROCK_*`` to avoid clobbering the audit-events token.
+        """
+        current_timestamp = int(time.time())
+        cached_context = get_integration_context() or {}
+        cached_token = cached_context.get(ContextKeys.REDROCK_ACCESS_TOKEN.value)
+        cached_valid_until = cached_context.get(ContextKeys.REDROCK_VALID_UNTIL.value)
+
+        if cached_token and cached_valid_until:
+            try:
+                valid_until_timestamp = int(float(cached_valid_until))
+                if current_timestamp < valid_until_timestamp:
+                    demisto.debug("[Redrock Token Cache] Hit. Reusing cached siem-scope token.")
+                    return cached_token
+                demisto.debug("[Redrock Token Cache] Miss. Token expired.")
+            except (ValueError, TypeError):
+                demisto.debug("[Redrock Token Cache] Error parsing cache. Ignoring.")
+
+        demisto.debug(f"[Redrock Token Request] Requesting new token from {self.token_url}")
+
+        basic_auth = base64.b64encode(f"{self.client_id}:{self.client_secret}".encode()).decode()
+        headers = {
+            APIKeys.HEADER_AUTH.value: f"Basic {basic_auth}",
+            APIKeys.HEADER_CONTENT_TYPE.value: APIValues.CONTENT_TYPE_FORM.value,
+        }
+        token_data = {
+            APIKeys.GRANT_TYPE.value: APIValues.GRANT_TYPE_CLIENT_CREDENTIALS.value,
+            APIKeys.SCOPE.value: "siem",
+        }
+
+        try:
+            token_response = self._http_request(
+                method="POST",
+                full_url=self.token_url,
+                data=token_data,
+                headers=headers,
+                resp_type="json",
+            )
+        except DemistoException as error:
+            demisto.error(f"[Redrock Token Request] Failed: {error}")
+            raise DemistoException(
+                "Failed to obtain Directory-data access token from /oauth2/platformtoken. "
+                "If this persists with valid credentials, CyberArk may require a separate "
+                "OAuth confidential client for the 'siem' scope. "
+                f"Underlying error: {error}"
+            )
+
+        access_token = token_response.get(ContextKeys.ACCESS_TOKEN.value)
+        if not access_token:
+            raise DemistoException("Redrock token response missing access_token field.")
+
+        token_expires_in = token_response.get(ContextKeys.EXPIRES_IN.value, Config.DEFAULT_TOKEN_TTL_SECONDS)
+        token_valid_until = current_timestamp + token_expires_in - Config.CACHE_BUFFER_SECONDS
+
+        demisto.debug(f"[Redrock Token Request] Success. Expires in {token_expires_in}s.")
+
+        # Preserve any existing audit-events keys when updating context.
+        new_context = dict(cached_context)
+        new_context[ContextKeys.REDROCK_ACCESS_TOKEN.value] = access_token
+        new_context[ContextKeys.REDROCK_VALID_UNTIL.value] = str(token_valid_until)
+        set_integration_context(new_context)
+
+        return access_token
+
+    def query(self, script: str, args: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Execute a single Redrock SQL-like query.
+
+        Args:
+            script: The SELECT statement (e.g. ``SELECT * FROM User``) — must
+                come unchanged from ``REDROCK_QUERY_BY_SOURCE``.
+            args:   Optional Args dict (typically ``{"PageNumber": 1, "PageSize": 10000}``).
+
+        Returns:
+            Parsed JSON response. Caller is responsible for extracting
+            ``Result.Results`` (the list of row dicts).
+        """
+        access_token = self._get_access_token()
+        headers = {
+            APIKeys.HEADER_AUTH.value: f"Bearer {access_token}",
+            APIKeys.HEADER_CONTENT_TYPE.value: APIValues.CONTENT_TYPE_JSON.value,
+            "X-IDAP-NATIVE-CLIENT": "true",
+        }
+        body: dict[str, Any] = {"Script": script}
+        if args:
+            body["Args"] = args
+
+        demisto.debug(f"[Redrock Query] POST {self.query_url_suffix} | Script: {script!r} | Args: {args}")
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix=self.query_url_suffix,
+                json_data=body,
+                headers=headers,
+                resp_type="json",
+                ok_codes=(200,),
+                retries=2,
+                backoff_factor=2,
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.error(f"[Redrock Query] Failed: {error_msg}")
+            if "401" in error_msg or "403" in error_msg:
+                raise DemistoException(f"Redrock authentication error: {error_msg}. Verify Client ID / Client Secret.")
+            raise
+
+        if not response.get("success", True):
+            message = response.get("Message") or response.get("MessageID") or "unknown Redrock error"
+            raise DemistoException(f"Redrock query failed: {message}")
+
+        return response
+
+
+def extract_rows_from_redrock_response(response: dict[str, Any]) -> tuple[list[dict[str, Any]], bool]:
+    """Extract the list of row dicts and a `has_more` flag from a Redrock response.
+
+    The Redrock response shape (per CyberArk docs) is approximately::
+
+        {
+            "success": true,
+            "Result": {
+                "Results": [
+                    {"Row": {"ID": "...", "Username": "..."}, "Entities": [...]},
+                    ...
+                ],
+                "FullCount": 12345,
+                "Count": 1000,
+                "ReturnID": "...",
+            }
+        }
+
+    We flatten ``Result.Results[*].Row`` into a plain list of row dicts so the
+    snapshot pipeline can use them directly.
+
+    ``has_more`` is True when ``FullCount`` is set and is greater than the
+    cumulative ``Count`` returned so far in this page; the caller tracks the
+    cumulative count across pages.
+    """
+    result_block = response.get("Result") or {}
+    raw_results = result_block.get("Results") or []
+    rows: list[dict[str, Any]] = []
+    for entry in raw_results:
+        row = entry.get("Row") if isinstance(entry, dict) else None
+        if isinstance(row, dict):
+            rows.append(row)
+        elif isinstance(entry, dict):
+            # Some sources may return rows directly without a Row wrapper.
+            rows.append(entry)
+
+    full_count = result_block.get("FullCount")
+    page_count = result_block.get("Count", len(rows))
+    has_more = bool(full_count and isinstance(full_count, int) and page_count and page_count >= 0 and full_count > page_count)
+
+    demisto.debug(f"[Redrock Extract] rows={len(rows)} | page_count={page_count} | full_count={full_count} | has_more={has_more}")
+    return rows, has_more
+
+
+# endregion
+
 # region Command implementations
 # =================================
 # Command implementations
@@ -639,6 +974,294 @@ def fetch_events_command(client: Client) -> None:
         demisto.debug("[Fetch] Warning: Last event missing timestamp. State not updated.")
 
 
+# region Directory-data (fetch-assets) command implementations
+# =================================
+# Snapshot-based collection of CyberArk Cloud Directory data (CIAC-16176).
+# =================================
+
+
+def fetch_redrock_page(
+    redrock_client: RedrockClient,
+    source: DirectorySource,
+    page_number: int,
+    page_size: int,
+) -> tuple[list[dict[str, Any]], bool]:
+    """Fetch a single Redrock page for ``source`` and return (rows, has_more).
+
+    Args:
+        redrock_client: The Redrock HTTP client.
+        source:         Which directory source to query.
+        page_number:    1-based page index (Redrock uses 1-based PageNumber).
+        page_size:      Args.PageSize value.
+
+    Returns:
+        Tuple (rows, has_more) where ``rows`` is the flat list of row dicts and
+        ``has_more`` indicates whether another page should be requested.
+    """
+    script = REDROCK_QUERY_BY_SOURCE[source]
+    args = {"PageNumber": page_number, "PageSize": page_size}
+    demisto.debug(f"[Fetch Assets] {source.value} page {page_number} (size {page_size}) script={script!r}")
+    response = redrock_client.query(script=script, args=args)
+    return extract_rows_from_redrock_response(response)
+
+
+def annotate_assets(rows: list[dict[str, Any]], source: DirectorySource) -> list[dict[str, Any]]:
+    """Add a `_source` field and ensure each row has a stable id under ``ID``.
+
+    The dataset will already be partitioned by source (different `product`),
+    but having `_source` on every row makes cross-dataset XQL convenient.
+    """
+    annotated: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        item = dict(row)
+        item.setdefault("_source", source.value)
+        annotated.append(item)
+    return annotated
+
+
+def push_snapshot(
+    rows: list[dict[str, Any]],
+    source: DirectorySource,
+    snapshot_id: str,
+    items_count: int,
+) -> None:
+    """Send one chunk of a snapshot to XSIAM.
+
+    Uses ``send_data_to_xsiam`` with ``data_type="assets"`` so the platform
+    treats the dataset as a snapshot (replace-by-id) rather than an
+    append-only event stream. The same ``snapshot_id`` is used across all
+    pages of the same source within a fetch cycle (so the platform appends
+    chunks to one snapshot); on the final page the caller passes
+    ``items_count = total_collected_so_far`` to seal the snapshot.
+
+    Sends regardless of whether ``rows`` is empty so an "empty snapshot"
+    intentionally seals an empty source (matches Tenable_io behaviour, see
+    CIAC-16176 design questions Q3).
+    """
+    product = PRODUCT_BY_SOURCE[source]
+    demisto.info(
+        f"[Fetch Assets] Pushing {len(rows)} {source.value} rows to "
+        f"{DIRECTORY_VENDOR}_{product}_raw (snapshot_id={snapshot_id}, items_count={items_count})"
+    )
+    send_data_to_xsiam(
+        data=rows,
+        vendor=DIRECTORY_VENDOR,
+        product=product,
+        data_type="assets",
+        snapshot_id=snapshot_id,
+        items_count=items_count,
+    )
+
+
+def fetch_assets_command(redrock_client: RedrockClient, config: dict[str, Any]) -> None:
+    """Snapshot fetch orchestrator. Called by the platform on the assets-fetch
+    schedule when ``isFetchAssets`` is enabled.
+
+    Within one customer-configured fetch cycle, this function may be invoked
+    multiple times via ``nextTrigger``. Each invocation processes the next
+    chunk of work for the next pending source. State is persisted in
+    ``demisto.getAssetsLastRun()`` between invocations:
+
+    * ``snapshot_id`` — generated once per cycle, reused across all pages
+      and across all sources within the cycle.
+    * ``page_index_by_source`` — 1-based next page number to request for
+      each source. ``0`` means "this source is done".
+    * ``total_by_source`` — cumulative row count per source so we can seal
+      with the correct ``items_count``.
+    * ``pending_sources`` — list of selected sources still to process this
+      cycle. Sources that complete are removed.
+
+    Behaviours intentionally chosen for V1:
+
+    * Zero-rows source still gets a sealed empty snapshot (mirrors Tenable_io;
+      ensures a CyberArk-side deletion of all rows in a source is reflected
+      in the dataset on the next fetch).
+    * Partial-failure: a transient error in one source aborts that source
+      for this cycle, but other sources continue. The failed source will
+      retry from page 1 on the next cycle.
+    """
+    sources: list[DirectorySource] = config["directory_sources"]
+    if not sources:
+        demisto.debug("[Fetch Assets] No directory sources selected; nothing to do.")
+        return
+
+    last_run = demisto.getAssetsLastRun() or {}
+    snapshot_id: str = last_run.get(ASSETS_LAST_RUN_SNAPSHOT_ID) or str(round(time.time() * 1000))
+    page_index_by_source: dict[str, int] = dict(last_run.get(ASSETS_LAST_RUN_PAGE_INDEX_BY_SOURCE) or {})
+    total_by_source: dict[str, int] = dict(last_run.get(ASSETS_LAST_RUN_TOTAL_BY_SOURCE) or {})
+    pending_sources_raw: list[str] = list(last_run.get(ASSETS_LAST_RUN_PENDING_SOURCES) or [src.value for src in sources])
+
+    # Initialise state for any selected source that doesn't have it yet (first
+    # invocation of a new cycle). A source enabled by the customer mid-cycle
+    # waits for the next cycle's fresh start to avoid clobbering the active
+    # snapshot_id with a partially-initialised source — that's the right
+    # semantics, not a bug.
+    for src in sources:
+        page_index_by_source.setdefault(src.value, 1)
+        total_by_source.setdefault(src.value, 0)
+
+    pending_sources = [DirectorySource(v) for v in pending_sources_raw if v in {s.value for s in sources}]
+    page_size = int(config.get("max_records_per_page") or REDROCK_DEFAULT_PAGE_SIZE)
+
+    demisto.debug(
+        f"[Fetch Assets] cycle snapshot_id={snapshot_id} | pending={[s.value for s in pending_sources]} | "
+        f"page_index_by_source={page_index_by_source} | total_by_source={total_by_source}"
+    )
+
+    if not pending_sources:
+        # All sources completed in a previous nextTrigger pass; clear state
+        # so the next scheduled cycle starts fresh.
+        demisto.debug("[Fetch Assets] No pending sources; cycle is complete. Clearing assets last-run state.")
+        demisto.setAssetsLastRun({})
+        return
+
+    # Process the FIRST pending source this invocation. Other pending sources
+    # are deferred to the next nextTrigger so each invocation does bounded work.
+    current_source = pending_sources[0]
+    current_page = page_index_by_source[current_source.value]
+
+    try:
+        rows, has_more = fetch_redrock_page(
+            redrock_client=redrock_client,
+            source=current_source,
+            page_number=current_page,
+            page_size=page_size,
+        )
+    except Exception as error:
+        # Q4 partial-failure: drop this source from the cycle so the others
+        # can still complete. State for the failed source is reset so it
+        # restarts cleanly on the next cycle.
+        demisto.error(
+            f"[Fetch Assets] Source {current_source.value} failed on page {current_page}: {error}. "
+            "Removing from this cycle; will retry next cycle."
+        )
+        pending_sources_raw = [v for v in pending_sources_raw if v != current_source.value]
+        page_index_by_source[current_source.value] = 1
+        total_by_source[current_source.value] = 0
+        _save_assets_state(snapshot_id, page_index_by_source, total_by_source, pending_sources_raw)
+        return
+
+    annotated = annotate_assets(rows, current_source)
+    new_total = total_by_source[current_source.value] + len(annotated)
+
+    if has_more:
+        # Mid-cycle chunk: send with items_count=1 so the platform knows more
+        # chunks are coming for this snapshot_id+product. Advance page index.
+        push_snapshot(annotated, current_source, snapshot_id=snapshot_id, items_count=1)
+        page_index_by_source[current_source.value] = current_page + 1
+        total_by_source[current_source.value] = new_total
+        next_run_payload = _build_next_run(
+            snapshot_id, page_index_by_source, total_by_source, pending_sources_raw, has_pending_work=True
+        )
+        demisto.setAssetsLastRun(next_run_payload)
+        demisto.debug(
+            f"[Fetch Assets] {current_source.value} page {current_page} pushed; "
+            f"more pages remain. Next page={current_page + 1}, cumulative={new_total}."
+        )
+        return
+
+    # Last page for this source: seal the snapshot with items_count=cumulative.
+    push_snapshot(annotated, current_source, snapshot_id=snapshot_id, items_count=new_total)
+    pending_sources_raw = [v for v in pending_sources_raw if v != current_source.value]
+    page_index_by_source[current_source.value] = 0  # done marker
+    total_by_source[current_source.value] = new_total
+
+    demisto.info(
+        f"[Fetch Assets] {current_source.value} sealed: {new_total} rows in snapshot {snapshot_id}. "
+        f"Remaining sources this cycle: {pending_sources_raw}"
+    )
+
+    next_run_payload = _build_next_run(
+        snapshot_id,
+        page_index_by_source,
+        total_by_source,
+        pending_sources_raw,
+        has_pending_work=bool(pending_sources_raw),
+    )
+    demisto.setAssetsLastRun(next_run_payload)
+
+
+def _build_next_run(
+    snapshot_id: str,
+    page_index_by_source: dict[str, int],
+    total_by_source: dict[str, int],
+    pending_sources_raw: list[str],
+    has_pending_work: bool,
+) -> dict[str, Any]:
+    """Build the dict to persist via ``demisto.setAssetsLastRun``.
+
+    When ``has_pending_work`` is True we include ``nextTrigger`` so the
+    platform re-invokes us within the same fetch cycle. When False we omit
+    it so the next invocation happens at the regular schedule and we drop
+    the in-flight cycle state.
+    """
+    payload: dict[str, Any] = {
+        ASSETS_LAST_RUN_SNAPSHOT_ID: snapshot_id,
+        ASSETS_LAST_RUN_PAGE_INDEX_BY_SOURCE: page_index_by_source,
+        ASSETS_LAST_RUN_TOTAL_BY_SOURCE: total_by_source,
+        ASSETS_LAST_RUN_PENDING_SOURCES: pending_sources_raw,
+    }
+    if has_pending_work:
+        payload["nextTrigger"] = NEXT_TRIGGER_VALUE
+    return payload
+
+
+def _save_assets_state(
+    snapshot_id: str,
+    page_index_by_source: dict[str, int],
+    total_by_source: dict[str, int],
+    pending_sources_raw: list[str],
+) -> None:
+    """Convenience wrapper that calls ``setAssetsLastRun`` based on whether
+    there is more pending work."""
+    payload = _build_next_run(
+        snapshot_id, page_index_by_source, total_by_source, pending_sources_raw, has_pending_work=bool(pending_sources_raw)
+    )
+    demisto.setAssetsLastRun(payload)
+
+
+def get_assets_command(
+    redrock_client: RedrockClient,
+    args: dict[str, Any],
+    source: DirectorySource,
+    config: dict[str, Any],
+) -> CommandResults | str:
+    """Generic implementation for the four ``cyberark-isp-get-<source>`` debug
+    commands. Fetches a single Redrock page for the requested source and
+    optionally pushes it to XSIAM.
+
+    Caution: pushing manually mid-cycle uses a fresh snapshot_id and may
+    interfere with the scheduled fetch cycle's snapshot sealing.
+    """
+    limit = int(args.get("limit", "50"))
+    should_push = argToBoolean(args.get("should_push_assets", False))
+    page_size = min(limit, int(config.get("max_records_per_page") or REDROCK_DEFAULT_PAGE_SIZE))
+
+    demisto.debug(f"[Manual Assets] source={source.value} limit={limit} push={should_push} page_size={page_size}")
+
+    rows, _ = fetch_redrock_page(redrock_client=redrock_client, source=source, page_number=1, page_size=page_size)
+    annotated = annotate_assets(rows[:limit], source)
+
+    if should_push and annotated:
+        snapshot_id = str(round(time.time() * 1000))
+        push_snapshot(annotated, source, snapshot_id=snapshot_id, items_count=len(annotated))
+        msg = (
+            f"Successfully retrieved and pushed {len(annotated)} {source.value} record(s) to "
+            f"{DIRECTORY_VENDOR}_{PRODUCT_BY_SOURCE[source]}_raw (snapshot_id={snapshot_id})."
+        )
+        return msg
+
+    readable = tableToMarkdown(f"{INTEGRATION_NAME} - {source.value}", annotated, removeNull=True)
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix=CONTEXT_PREFIX_BY_SOURCE[source],
+        outputs_key_field=REDROCK_ROW_ID_FIELD,
+        outputs=annotated,
+    )
+
+
 # endregion
 
 # region Main router
@@ -650,6 +1273,21 @@ COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
     "cyberark-isp-get-events": get_events_command,
     "fetch-events": fetch_events_command,
+    # New for CIAC-16176. fetch-assets is dispatched by the platform when
+    # isFetchAssets=true. The four cyberark-isp-get-* commands are manual
+    # debug commands the user can invoke from the playground / REST API.
+    "fetch-assets": fetch_assets_command,
+    "cyberark-isp-get-users": get_assets_command,
+    "cyberark-isp-get-groups": get_assets_command,
+    "cyberark-isp-get-roles": get_assets_command,
+    "cyberark-isp-get-applications": get_assets_command,
+}
+
+DIRECTORY_COMMAND_TO_SOURCE: dict[str, DirectorySource] = {
+    "cyberark-isp-get-users": DirectorySource.USERS,
+    "cyberark-isp-get-groups": DirectorySource.GROUPS,
+    "cyberark-isp-get-roles": DirectorySource.ROLES,
+    "cyberark-isp-get-applications": DirectorySource.APPLICATIONS,
 }
 
 
@@ -681,6 +1319,14 @@ def main() -> None:
             return_results(result)
         elif command == "fetch-events":
             command_func(client)  # pylint: disable=E1120
+        elif command == "fetch-assets":
+            redrock_client = _build_redrock_client(config)
+            command_func(redrock_client, config)  # pylint: disable=E1120
+        elif command in DIRECTORY_COMMAND_TO_SOURCE:
+            redrock_client = _build_redrock_client(config)
+            source = DIRECTORY_COMMAND_TO_SOURCE[command]
+            result = command_func(redrock_client, demisto.args(), source, config)
+            return_results(result)
         else:
             result = command_func(client, demisto.args())
             return_results(result)
@@ -691,6 +1337,24 @@ def main() -> None:
         return_error(error_msg)
 
     demisto.debug(f"{INTEGRATION_NAME} integration finished")
+
+
+def _build_redrock_client(config: dict[str, Any]) -> RedrockClient:
+    """Construct a RedrockClient from the parsed integration config.
+
+    Lives outside ``main()`` so unit tests can build one directly.
+    """
+    # The Redrock token URL is derived from identity_url. We pull the
+    # identity host out of redrock_token_url so we don't need an extra config
+    # key just for this.
+    identity_root = config["redrock_token_url"].rsplit("/oauth2/platformtoken", 1)[0]
+    return RedrockClient(
+        identity_url=identity_root,
+        client_id=config["client_id"],
+        client_secret=config["client_secret"],
+        verify=config["verify"],
+        proxy=config["proxy"],
+    )
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

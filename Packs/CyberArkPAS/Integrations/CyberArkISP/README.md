@@ -69,17 +69,22 @@ Before configuring the integration, you must complete the following prerequisite
 
 ## Integration Parameters
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Audit Server URL (Audit API Base URL) | The Audit API base URL from the SIEM integration.<br/>Example: `https://example-domain.audit.cyberark.cloud`<br/>**Note**: This is different from the Identity URL. | True |
-| Identity URL (CyberArk Identity FQDN) | The CyberArk Identity FQDN for OAuth2 authentication.<br/>Example: `https://abc1234.id.cyberark.cloud`<br/>**Important**: This is on a different domain than the Audit Server URL and is required. | True |
-| OAuth2 Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration.<br/>Example: `xsiamapp` | True |
-| Client ID (Service User) | Service username without domain (configured as OAuth confidential client).<br/>Example: `serviceuser` | True |
-| Client Secret (Service User Password) | Service user password for OAuth2 authentication. | True |
+| Audit Server URL | The Audit API base URL from the SIEM integration \(e.g., https://example-domain.audit.cyberark.cloud\). | True |
+| Identity URL | The CyberArk Identity FQDN for OAuth2 authentication \(e.g., https://abc1234.id.cyberark.cloud\). | True |
+| Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration. | True |
 | API Key | The API key from the SIEM integration created in the Administration space. | True |
-| Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
-| Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
-| Maximum number of audit events per fetch | Maximum number of events to fetch per collection cycle.<br/>Default: 10000<br/>Note: The API returns a maximum of 1000 events per page. | False |
+| Client ID | Service username without domain \(configured as OAuth confidential client\). | True |
+| Client Secret | Service user password for OAuth2 authentication. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Maximum number of audit events per fetch | Maximum number of events to fetch per cycle \(default 10000, based on API paging definition\). | False |
+| Fetch Assets | When enabled, the integration periodically fetches CyberArk Cloud Directory snapshots \(Users, Groups, Roles, Applications\) selected in 'Directory Data Collection' below. | False |
+| Directory Data Collection | Select which CyberArk Cloud Directory data sources to fetch as snapshots. Each selected source produces its own dataset \(cyberark_users_raw, cyberark_groups_raw, cyberark_roles_raw, cyberark_applications_raw\). Has no effect unless 'Fetch Assets' is enabled. | False |
+| Maximum number of records per Redrock page | Maximum number of records to request per page from the Redrock API \(default 10000\). Snapshots are paginated automatically across multiple invocations within a fetch cycle when needed. | False |
+
 
 ## Commands
 
@@ -150,3 +155,74 @@ For more information about CyberArk Identity Security Platform integration, refe
 - [Integrate Audit with third-party SIEM applications](https://docs.cyberark.com/identity/latest/en/Content/Integrations/SIEM/SIEM-intro.htm)
 - [SIEM Integration API](https://docs.cyberark.com/identity/latest/en/Content/Developer/SIEM-API.htm)
 - [Integrate the CyberArk Identity client credentials flow](https://docs.cyberark.com/identity/latest/en/Content/Developer/OAuth-client-creds.htm)
+### cyberark-isp-get-roles
+
+***
+Manually fetches CyberArk Cloud Directory role snapshots via the Redrock Query API. For developing/debugging only.
+
+#### Base Command
+
+`cyberark-isp-get-roles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of role records to retrieve. Default is 50. | Optional | 
+| should_push_assets | Set to true to push the retrieved roles to XSIAM as a snapshot in the cyberark_roles_raw dataset. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkISP.Role.ID | String | Unique identifier of the role. | 
+| CyberArkISP.Role.Name | String | Name of the role. | 
+| CyberArkISP.Role.Description | String | Description of the role. | 
+
+### cyberark-isp-get-applications
+
+***
+Manually fetches CyberArk Cloud Directory application snapshots via the Redrock Query API. For developing/debugging only.
+
+#### Base Command
+
+`cyberark-isp-get-applications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of application records to retrieve. Default is 50. | Optional | 
+| should_push_assets | Set to true to push the retrieved applications to XSIAM as a snapshot in the cyberark_applications_raw dataset. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkISP.Application.ID | String | Unique identifier of the application. | 
+| CyberArkISP.Application.Name | String | Name of the application. | 
+| CyberArkISP.Application.AppType | String | Type of the application. | 
+
+### cyberark-isp-get-groups
+
+***
+Manually fetches CyberArk Cloud Directory group snapshots via the Redrock Query API. For developing/debugging only.
+
+#### Base Command
+
+`cyberark-isp-get-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of group records to retrieve. Default is 50. | Optional | 
+| should_push_assets | Set to true to push the retrieved groups to XSIAM as a snapshot in the cyberark_groups_raw dataset. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkISP.Group.ID | String | Unique identifier of the group. | 
+| CyberArkISP.Group.Name | String | Name of the group. | 
+

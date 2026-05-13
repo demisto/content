@@ -1380,3 +1380,359 @@ def test_main_parse_params_error(mocker, capfd):
         mock_return_error.assert_called_once()
         error_message = mock_return_error.call_args[0][0]
         assert re.search(r"server url is required", error_message, re.IGNORECASE)
+
+
+# ===============================================================
+# Tests: Directory Data / fetch-assets (CIAC-16176)
+# ===============================================================
+
+from CyberArkISP import (  # noqa: E402
+    DirectorySource,
+    PRODUCT_BY_SOURCE,
+    DIRECTORY_VENDOR,
+    NEXT_TRIGGER_VALUE,
+    REDROCK_QUERY_BY_SOURCE,
+    RedrockClient,
+    annotate_assets,
+    extract_rows_from_redrock_response,
+    fetch_assets_command,
+    fetch_redrock_page,
+    get_assets_command,
+    parse_directory_sources,
+)
+
+
+@pytest.fixture()
+def redrock_client(mocker):
+    """A RedrockClient with the network calls mocked out."""
+    rc = RedrockClient(
+        identity_url=IDENTITY_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        verify=True,
+        proxy=False,
+    )
+    mocker.patch.object(rc, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    return rc
+
+
+def _redrock_response(rows: list[dict], full_count: int | None = None) -> dict:
+    """Build a Redrock-shaped response dict from a list of row dicts."""
+    return {
+        "success": True,
+        "Result": {
+            "Results": [{"Row": row} for row in rows],
+            "Count": len(rows),
+            "FullCount": full_count if full_count is not None else len(rows),
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    "raw_input,expected",
+    [
+        ("Users,Groups", [DirectorySource.USERS, DirectorySource.GROUPS]),
+        (["Users", "Roles"], [DirectorySource.USERS, DirectorySource.ROLES]),
+        ("", []),
+        (None, []),
+        # Unknowns are silently dropped, valid ones survive.
+        ("Users,Bogus,Roles", [DirectorySource.USERS, DirectorySource.ROLES]),
+        # All four selected explicitly.
+        (
+            "Users,Groups,Roles,Applications",
+            [DirectorySource.USERS, DirectorySource.GROUPS, DirectorySource.ROLES, DirectorySource.APPLICATIONS],
+        ),
+    ],
+)
+def test_parse_directory_sources(raw_input, expected):
+    """Tests the multi-select normaliser handles list/string/None and unknowns."""
+    assert parse_directory_sources(raw_input) == expected
+
+
+def test_extract_rows_from_redrock_response_with_row_wrapper():
+    """Standard Redrock shape (Result.Results[*].Row) is unwrapped correctly."""
+    response = _redrock_response([{"ID": "u1"}, {"ID": "u2"}], full_count=2)
+    rows, has_more = extract_rows_from_redrock_response(response)
+    assert rows == [{"ID": "u1"}, {"ID": "u2"}]
+    assert has_more is False
+
+
+def test_extract_rows_from_redrock_response_has_more_true():
+    """has_more flips True when FullCount exceeds the page Count."""
+    response = _redrock_response([{"ID": str(i)} for i in range(10)], full_count=25)
+    rows, has_more = extract_rows_from_redrock_response(response)
+    assert len(rows) == 10
+    assert has_more is True
+
+
+def test_extract_rows_from_redrock_response_empty():
+    """Empty Result block returns empty rows / has_more=False."""
+    rows, has_more = extract_rows_from_redrock_response({"success": True, "Result": {}})
+    assert rows == []
+    assert has_more is False
+
+
+def test_annotate_assets_adds_source_label():
+    """annotate_assets adds a `_source` field to every row, never mutates the input."""
+    src_rows = [{"ID": "u1", "Username": "alice"}]
+    annotated = annotate_assets(src_rows, DirectorySource.USERS)
+    assert annotated[0]["_source"] == "Users"
+    assert annotated[0]["ID"] == "u1"
+    # Input is not mutated.
+    assert "_source" not in src_rows[0]
+
+
+def test_fetch_redrock_page_uses_correct_script(mocker, redrock_client):
+    """fetch_redrock_page passes the per-source SELECT script verbatim and 1-based PageNumber."""
+    mock_query = mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "g1"}], full_count=1))
+    rows, has_more = fetch_redrock_page(redrock_client, DirectorySource.GROUPS, page_number=1, page_size=500)
+    assert rows == [{"ID": "g1"}]
+    assert has_more is False
+    mock_query.assert_called_once_with(
+        script=REDROCK_QUERY_BY_SOURCE[DirectorySource.GROUPS],
+        args={"PageNumber": 1, "PageSize": 500},
+    )
+
+
+# -----------------------------------------------------------------
+# fetch_assets orchestrator: state machine + nextTrigger continuation
+# -----------------------------------------------------------------
+
+
+def _build_fetch_assets_config(sources, page_size: int = 10000) -> dict:
+    return {
+        "directory_sources": sources,
+        "max_records_per_page": page_size,
+        "redrock_token_url": f"{IDENTITY_URL}/oauth2/platformtoken",
+        "redrock_query_base": f"{IDENTITY_URL}/Redrock/Query",
+        "client_id": MOCK_CLIENT_ID,
+        "client_secret": MOCK_CLIENT_SECRET,
+        "verify": True,
+        "proxy": False,
+    }
+
+
+def test_fetch_assets_first_run_single_source_single_page_seals_snapshot(mocker, redrock_client):
+    """Happy path: one source, one page, one cycle → one sealed snapshot push."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}, {"ID": "u2"}], full_count=2))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    # Single push, sealed (items_count = total = 2).
+    assert send_mock.call_count == 1
+    call_kwargs = send_mock.call_args.kwargs
+    assert call_kwargs["vendor"] == DIRECTORY_VENDOR
+    assert call_kwargs["product"] == PRODUCT_BY_SOURCE[DirectorySource.USERS]
+    assert call_kwargs["data_type"] == "assets"
+    assert call_kwargs["items_count"] == 2
+    assert len(call_kwargs["data"]) == 2
+    # Snapshot id is set, no nextTrigger because cycle is complete (no pending).
+    last_run_payload = set_last_run_mock.call_args[0][0]
+    assert last_run_payload["pending_sources"] == []
+    assert "nextTrigger" not in last_run_payload
+
+
+def test_fetch_assets_pagination_emits_nextTrigger(mocker, redrock_client):
+    """When Redrock signals more pages (FullCount > Count), we push items_count=1 and re-trigger."""
+    # 3 rows on this page, but FullCount=10 → has_more=True.
+    mocker.patch.object(
+        redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}, {"ID": "u2"}, {"ID": "u3"}], full_count=10)
+    )
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    assert send_mock.call_args.kwargs["items_count"] == 1  # mid-cycle marker
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["nextTrigger"] == NEXT_TRIGGER_VALUE
+    # Page index advanced from 1 → 2 for Users.
+    assert payload["page_index_by_source"]["Users"] == 2
+    assert payload["total_by_source"]["Users"] == 3
+    assert "Users" in payload["pending_sources"]
+
+
+def test_fetch_assets_continuation_uses_same_snapshot_id(mocker, redrock_client):
+    """The 2nd invocation within the cycle MUST reuse the snapshot_id from the 1st."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u4"}, {"ID": "u5"}], full_count=5))
+    # Simulate the platform's 2nd nextTrigger invocation.
+    last_run_in = {
+        "snapshot_id": "snap-abc-123",
+        "page_index_by_source": {"Users": 2},
+        "total_by_source": {"Users": 3},
+        "pending_sources": ["Users"],
+        "nextTrigger": NEXT_TRIGGER_VALUE,
+    }
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value=last_run_in)
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    # snapshot_id is reused on the send and persisted in last-run.
+    assert send_mock.call_args.kwargs["snapshot_id"] == "snap-abc-123"
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["snapshot_id"] == "snap-abc-123"
+    # cumulative total now 3+2 = 5; that's the seal because Count=2 == FullCount=5? no, FullCount=5 > Count=2 → still has_more
+    # In this test response Count=2, FullCount=5 → has_more True → items_count=1 marker
+    assert send_mock.call_args.kwargs["items_count"] == 1
+    assert payload["total_by_source"]["Users"] == 5
+    assert payload["page_index_by_source"]["Users"] == 3
+
+
+def test_fetch_assets_completes_cycle_clears_state(mocker, redrock_client):
+    """When all selected sources are sealed, last-run is cleared (no nextTrigger)."""
+    # Last sealed page returning single row, FullCount equals page Count → has_more=False
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u6"}], full_count=1))
+    last_run_in = {
+        "snapshot_id": "snap-final-1",
+        "page_index_by_source": {"Users": 3},
+        "total_by_source": {"Users": 5},
+        "pending_sources": ["Users"],
+    }
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value=last_run_in)
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    # Final seal: items_count = cumulative total = 5+1 = 6.
+    assert send_mock.call_args.kwargs["items_count"] == 6
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["pending_sources"] == []
+    assert "nextTrigger" not in payload
+
+
+def test_fetch_assets_processes_one_source_per_invocation(mocker, redrock_client):
+    """With 2 selected sources, the first invocation should only process the first
+    source (Users) and leave Groups for the next nextTrigger invocation."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}], full_count=1))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS, DirectorySource.GROUPS])
+    fetch_assets_command(redrock_client, config)
+
+    # Only Users was sent; Groups still pending.
+    assert send_mock.call_count == 1
+    assert send_mock.call_args.kwargs["product"] == PRODUCT_BY_SOURCE[DirectorySource.USERS]
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["pending_sources"] == ["Groups"]
+    # Cycle has more work, so nextTrigger is set.
+    assert payload["nextTrigger"] == NEXT_TRIGGER_VALUE
+
+
+def test_fetch_assets_partial_failure_skips_failed_source_keeps_others(mocker, redrock_client):
+    """If a source raises during query, drop that source from the cycle but
+    leave the other selected sources to be processed by subsequent
+    nextTriggers (partial-failure behaviour)."""
+    mocker.patch.object(redrock_client, "query", side_effect=DemistoException("Redrock 500"))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+    # Silence the deliberate demisto.error() call this test path triggers, so
+    # the project's check_std_out_err autouse fixture doesn't fail the test.
+    # We assert below that demisto.error was actually called.
+    error_mock = mocker.patch("CyberArkISP.demisto.error")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS, DirectorySource.GROUPS])
+    fetch_assets_command(redrock_client, config)
+
+    # Nothing pushed (Users failed; Groups deferred to next nextTrigger).
+    assert send_mock.call_count == 0
+    payload = set_last_run_mock.call_args[0][0]
+    # Failed source dropped from pending; Groups still pending.
+    assert "Users" not in payload["pending_sources"]
+    assert "Groups" in payload["pending_sources"]
+    # Failed source's page index was reset for next-cycle clean restart.
+    assert payload["page_index_by_source"]["Users"] == 1
+    assert payload["total_by_source"]["Users"] == 0
+    # The error path WAS exercised (test would silently pass otherwise if the
+    # exception were caught earlier).
+    assert error_mock.call_count == 1
+    assert "Source Users failed on page 1" in error_mock.call_args[0][0]
+
+
+def test_fetch_assets_no_sources_selected_is_noop(mocker, redrock_client):
+    """If the customer selected zero directory sources, fetch is a no-op (no API calls, no last-run mutation)."""
+    query_mock = mocker.patch.object(redrock_client, "query")
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+
+    config = _build_fetch_assets_config([])
+    fetch_assets_command(redrock_client, config)
+
+    query_mock.assert_not_called()
+    send_mock.assert_not_called()
+    set_last_run_mock.assert_not_called()
+
+
+def test_fetch_assets_empty_source_still_seals_snapshot(mocker, redrock_client):
+    """If an enabled source returns 0 rows, we send an empty snapshot to seal
+    the dataset (Q3 default behaviour: matches Tenable_io)."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([], full_count=0))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.ROLES])
+    fetch_assets_command(redrock_client, config)
+
+    # Empty seal: data=[], items_count=0.
+    assert send_mock.call_count == 1
+    assert send_mock.call_args.kwargs["data"] == []
+    assert send_mock.call_args.kwargs["items_count"] == 0
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["pending_sources"] == []
+
+
+# -----------------------------------------------------------------
+# Manual debug command (cyberark-isp-get-<source>)
+# -----------------------------------------------------------------
+
+
+def test_get_assets_command_no_push_returns_command_results(mocker, redrock_client):
+    """Manual debug command (default should_push_assets=false) returns
+    CommandResults with the rows under the per-source context prefix."""
+    mocker.patch.object(
+        redrock_client,
+        "query",
+        return_value=_redrock_response([{"ID": "app1", "Name": "Salesforce", "AppType": "SaaS"}], full_count=1),
+    )
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.APPLICATIONS])
+    result = get_assets_command(redrock_client, {"limit": "10"}, DirectorySource.APPLICATIONS, config)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CyberArkISP.Application"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs[0]["ID"] == "app1"
+    send_mock.assert_not_called()
+
+
+def test_get_assets_command_with_push_calls_send_data_to_xsiam(mocker, redrock_client):
+    """When should_push_assets=true, the manual command pushes to XSIAM with
+    the source-specific product and data_type=assets."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "r1", "Name": "Admin"}], full_count=1))
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.ROLES])
+    result = get_assets_command(redrock_client, {"limit": "10", "should_push_assets": "true"}, DirectorySource.ROLES, config)
+
+    assert isinstance(result, str)
+    assert "Successfully retrieved and pushed" in result
+    send_mock.assert_called_once()
+    assert send_mock.call_args.kwargs["product"] == PRODUCT_BY_SOURCE[DirectorySource.ROLES]
+    assert send_mock.call_args.kwargs["data_type"] == "assets"
+    assert send_mock.call_args.kwargs["items_count"] == 1
