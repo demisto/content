@@ -1,4 +1,4 @@
-Agentless, context-aware and full-stack security and compliance for AWS, Azure and GCP.
+Agentless, context-aware and full-stack security and compliance across AWS, Azure, GCP, OCI, Kubernetes, and other supported cloud platforms.
 This integration was integrated and tested with Wiz
 
 ## Configure Wiz in Cortex
@@ -13,6 +13,52 @@ This integration was integrated and tested with Wiz
 | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
 | max_fetch | Max Issues to fetch | False |
+| mirror_direction | Incident Mirror Direction. Choose the mirroring direction for Wiz issues: None, Incoming, Outgoing, or Incoming And Outgoing. Default is None (no mirroring). | False |
+| mirror_limit | Page size for mirror API calls (1-500). Controls how many remote issues are fetched per `get-modified-remote-data` call. Default: 50. | False |
+| comment_tag | Tag for comment mirroring. Add this tag to XSOAR war room entries to mirror them as Wiz issue notes. Default: `comments`. | False |
+
+## Mirroring
+
+The Wiz integration supports **bidirectional mirroring** between Wiz Issues and XSOAR incidents. Configure direction via the **Incident Mirror Direction** instance setting:
+
+| Direction | Behavior |
+| --- | --- |
+| `None` | Mirroring disabled. No `dbotMirror*` metadata is attached to fetched incidents. |
+| `Incoming` | Wiz → XSOAR only. Pulls remote status changes and notes into the XSOAR incident. |
+| `Outgoing` | XSOAR → Wiz only. Pushes XSOAR status changes, due-date changes, and tagged war room entries to the Wiz Issue. |
+| `Incoming And Outgoing` | Both directions active. |
+
+### Mirrored fields
+
+| Field | Direction | Notes |
+| --- | --- | --- |
+| Issue status | Both | XSOAR `closed`/`active` map to Wiz `RESOLVED`/`OPEN`. `in_progress` maps to `IN_PROGRESS`. Reopen restores `OPEN`. |
+| Resolution reason | Outgoing | When closing in XSOAR, set `resolutionReason` (e.g. `ISSUE_FIXED`, `WONT_FIX`). When omitted, defaults to `WONT_FIX`. |
+| Notes / comments | Both | Incoming: all Wiz issue notes are added as war room entries (formatted `**Author** (timestamp): text`). Service-account notes use `**[SA] <name>**`. Outgoing: only war room entries tagged with `comment_tag` (default `comments`) are pushed to Wiz. |
+| Due date (`dueAt`) | Outgoing | Setting/clearing the XSOAR `wizissueduedate` field updates the Wiz Issue. |
+
+### Loop prevention
+
+Outgoing notes are prefixed with `Mirrored from Cortex XSOAR` and the Wiz integration filters them out on incoming sync, so mirrored notes are not echoed back into the war room.
+
+### First-sync behavior
+
+On the first incoming sync after an incident is created in XSOAR, existing Wiz notes are **not back-filled** into the war room — only notes added after the first sync are mirrored. This avoids dumping the entire pre-existing note history into a fresh investigation.
+
+### Note truncation
+
+Notes longer than **1400 characters** are truncated and suffixed with `... [truncated]` before being sent to the Wiz API. This applies to all mirrored notes and to the `wiz-set-issue-note`, `wiz-resolve-issue`, `wiz-reject-issue`, and `wiz-defend-set-threat-comment` commands.
+
+### Mirror engine commands
+
+The following commands are invoked by the XSOAR mirroring engine and are **not intended for manual use**:
+
+| Command | Purpose |
+| --- | --- |
+| `get-remote-data` | Fetches updates for a single incident from Wiz. |
+| `get-modified-remote-data` | Returns the list of Wiz Issues modified since the last mirror cycle (paginated; page size = `mirror_limit`). |
+| `update-remote-system` | Pushes local XSOAR changes (status, notes, due date) back to Wiz. |
+| `get-mapping-fields` | Returns the schema of mappable fields. Used by the mapper UI. |
 
 ## Commands
 
@@ -121,6 +167,10 @@ Get details of multiple resources based on various filters.
 | entity_type | Filter cloud resources by specific entity types. Possible values are: ACCESS_ROLE, ACCESS_ROLE_BINDING, ACCESS_ROLE_PERMISSION, API_GATEWAY, APPLICATION, AUTHENTICATION_CONFIGURATION, BACKUP_SERVICE, BUCKET, CDN, CERTIFICATE, CICD_SERVICE, CLOUD_LOG_CONFIGURATION, CLOUD_ORGANIZATION, COMPUTE_INSTANCE_GROUP, CONFIG_MAP, CONTAINER, CONTAINER_GROUP, CONTAINER_IMAGE, CONTAINER_REGISTRY, CONTAINER_SERVICE, DAEMON_SET, DATABASE, DATA_WORKLOAD, DB_SERVER, DEPLOYMENT, DNS_RECORD, DNS_ZONE, DOMAIN, EMAIL_SERVICE, ENCRYPTION_KEY, ENDPOINT, FILE_SYSTEM_SERVICE, FIREWALL, GATEWAY, GOVERNANCE_POLICY, GOVERNANCE_POLICY_GROUP, HOSTED_APPLICATION, IAM_BINDING, IP_RANGE, KUBERNETES_CLUSTER, KUBERNETES_CRON_JOB, KUBERNETES_INGRESS, KUBERNETES_INGRESS_CONTROLLER, KUBERNETES_JOB, KUBERNETES_NETWORK_POLICY, KUBERNETES_NODE, KUBERNETES_PERSISTENT_VOLUME, KUBERNETES_PERSISTENT_VOLUME_CLAIM, KUBERNETES_POD_SECURITY_POLICY, KUBERNETES_SERVICE, KUBERNETES_STORAGE_CLASS, KUBERNETES_VOLUME, LOAD_BALANCER, MANAGED_CERTIFICATE, MANAGEMENT_SERVICE, NETWORK_ADDRESS, NETWORK_INTERFACE, NETWORK_ROUTING_RULE, NETWORK_SECURITY_RULE, PEERING, POD, PORT_RANGE, PRIVATE_ENDPOINT, PROXY, PROXY_RULE, RAW_ACCESS_POLICY, REGISTERED_DOMAIN, REPLICA_SET, RESOURCE_GROUP, SEARCH_INDEX, SECRET, SECRET_CONTAINER, SERVERLESS, SERVERLESS_PACKAGE, SERVICE_ACCOUNT, STORAGE_ACCOUNT, SUBNET, SUBSCRIPTION, SWITCH, USER_ACCOUNT, VIRTUAL_DESKTOP, VIRTUAL_MACHINE, VIRTUAL_MACHINE_IMAGE, VIRTUAL_NETWORK, VOLUME, WEB_SERVICE, DATA_WORKFLOW. | Optional |
 | subscription_external_ids | Filter cloud resources according to these external subscription IDs (AWS Account, Azure Subscription, GCP Project, and OCI Compartment). You can provide multiple IDs separated by commas. | Optional |
 | provider_unique_ids | Filter cloud resources according to these cloud service provider unique IDs. You can provide multiple IDs separated by commas. | Optional |
+| project_ids | Filter by Wiz project IDs (comma-separated). | Optional |
+| native_types | Filter by cloud-native resource types (comma-separated, e.g. aws_ec2_instance). | Optional |
+| updated_at_before | Filter resources updated before this date (ISO 8601, e.g. 2024-01-01T00:00:00Z). | Optional |
+| updated_at_after | Filter resources updated after this date (ISO 8601, e.g. 2024-01-01T00:00:00Z). | Optional |
 
 *At least one parameter must be provided.*
 
@@ -141,7 +191,7 @@ This command returns the raw response data from the Wiz API. The response includ
 ### wiz-issue-in-progress
 
 ***
-Re-open an Issue.
+Set a Wiz Issue to in progress.
 
 <h4> Base Command </h4>
 
@@ -190,13 +240,13 @@ Re-open an Issue.
 #### Command Example
 
 ```
-!wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen-note="still an issue"
+!wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen_note="still an issue"
 ```
 
 ### wiz-reject-issue
 
 ***
-Re-open an Issue.
+Reject a Wiz Issue. Not supported for THREAT_DETECTION issues.
 
 <h4> Base Command </h4>
 
@@ -207,8 +257,8 @@ Re-open an Issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Issue id | Required |
-| reject_reason | Note for re-opening Issue<br />Accepted values: `WONT_FIX`, `FALSE_POSITIVE` and `REJECTED`. | Required |
-| reject_note | Note for re-opening Issue | Required |
+| reject_reason | Rejection reason. Possible values are: FALSE_POSITIVE, EXCEPTION, WONT_FIX. | Required |
+| reject_note | Note for the rejection. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 <h4> Context Output </h4>
 
@@ -225,7 +275,7 @@ Re-open an Issue.
 ### wiz-resolve-issue
 
 ***
-Resolve a Threat Detection Issue.
+Resolve a Wiz Issue.
 
 <h4> Base Command </h4>
 
@@ -236,8 +286,8 @@ Resolve a Threat Detection Issue.
 | **Argument Name** | **Description**                                 | **Required** |
 |-------------------|-------------------------------------------------| --- |
 | issue_id          | Issue id                                        | Required |
-| resolution_reason | Issue resolution reason                         | Required |
-| resolution_note   | Note to explain why the Issue has been resolved | Required |
+| resolution_reason | Issue resolution reason. Possible values are: OBJECT_DELETED, ISSUE_FIXED, FALSE_POSITIVE, EXCEPTION, WONT_FIX. | Required |
+| resolution_note   | Note to explain why the Issue has been resolved. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 <h4> Context Output </h4>
 
@@ -265,7 +315,7 @@ Set (append) a note to an Issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Issue id | Required |
-| reject_note | Note for the Issue. Will be appeneded to existing one. | Required |
+| note | Note for the Issue. Will be appended to existing notes. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 #### Command Example
 
@@ -334,7 +384,7 @@ Set a due date for an Issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Issue id | Required |
-| due_at | Due At Date | Required |
+| due_at | Due At Date. Format must be `YYYY-MM-DD` (e.g. `2026-12-31`). | Required |
 
 #### Command Example
 
@@ -366,7 +416,7 @@ Clear a due date for an Issue.
 ### wiz-get-project-team
 
 ***
-Clear a due date for an Issue.
+Get the Project Owners and Security Champions details.
 
 <h4> Base Command </h4>
 
