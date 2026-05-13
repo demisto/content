@@ -23,7 +23,6 @@ def main():
 
     created = []
     for it in items:
-        labels = []
         cf = {}
         for cli, src in field_map.items():
             cf[cli] = it.get(src) if not src.startswith("=") else src[1:]

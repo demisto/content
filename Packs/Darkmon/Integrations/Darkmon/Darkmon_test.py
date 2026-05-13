@@ -1461,7 +1461,8 @@ def test_reputation_shortcut_handles_csv_string(monkeypatch, cmd, arg_key, type_
 
     monkeypatch.setattr(src.Client, "_http_request", fake)
     out = cmd(make_client(), {arg_key: "a,b,c"})
-    assert isinstance(out, list) and len(out) == 3
+    assert isinstance(out, list)
+    assert len(out) == 3
     assert queries == [f'{type_label}: "a"', f'{type_label}: "b"', f'{type_label}: "c"']
 
 
@@ -1627,7 +1628,8 @@ def test_ip_reputation_emits_dbot_score_and_common_ip(monkeypatch):
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "203.0.113.5"})
-    assert isinstance(out, list) and len(out) == 1
+    assert isinstance(out, list)
+    assert len(out) == 1
     o = out[0].outputs
 
     dbot = o["DBotScore"]
@@ -1649,7 +1651,7 @@ def test_ip_reputation_emits_dbot_score_and_common_ip(monkeypatch):
 
 
 def test_domain_reputation_score_2_no_malicious_block(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})
+    monkeypatch.setattr(builtins.demisto, "params", dict)
     patch_http(monkeypatch, _search_response_with_classification("suspicious"))
 
     out = src.dmontip_search_domain_command(make_client(), {"domain": "evil.example"})
@@ -1661,7 +1663,7 @@ def test_domain_reputation_score_2_no_malicious_block(monkeypatch):
 
 
 def test_url_reputation_score_0_when_no_classification(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})
+    monkeypatch.setattr(builtins.demisto, "params", dict)
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_url_command(make_client(), {"url": "https://x.example/a"})
@@ -1673,7 +1675,7 @@ def test_url_reputation_score_0_when_no_classification(monkeypatch):
 
 
 def test_email_reputation_uses_address_field(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})
+    monkeypatch.setattr(builtins.demisto, "params", dict)
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_email_command(make_client(), {"email": "bad@example.com"})
@@ -1694,7 +1696,7 @@ def test_email_reputation_uses_address_field(monkeypatch):
     ],
 )
 def test_file_reputation_detects_hash_type(monkeypatch, hash_value, expected_field):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})
+    monkeypatch.setattr(builtins.demisto, "params", dict)
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_file_command(make_client(), {"hash": hash_value})
@@ -1704,7 +1706,7 @@ def test_file_reputation_detects_hash_type(monkeypatch, hash_value, expected_fie
 
 
 def test_dbot_reliability_falls_back_to_F(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})  # no feedReliability
+    monkeypatch.setattr(builtins.demisto, "params", dict)  # no feedReliability
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "1.1.1.1"})
@@ -1712,7 +1714,7 @@ def test_dbot_reliability_falls_back_to_F(monkeypatch):
 
 
 def test_reputation_array_input_produces_dbot_per_value(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})
+    monkeypatch.setattr(builtins.demisto, "params", dict)
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "1.2.3.4,5.6.7.8"})
@@ -1747,7 +1749,7 @@ def test_redact_rows_skips_empty_secrets():
 
 
 def test_compromised_table_redacts_password_by_default(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})  # default True
+    monkeypatch.setattr(builtins.demisto, "params", dict)  # default True
     patch_http(monkeypatch, COMPROMISED_ACCOUNTS_RESPONSE)
     out = src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "page": "1", "size": "20"})
     assert "hunter2" not in out.readable_output
@@ -1764,7 +1766,7 @@ def test_compromised_table_keeps_password_when_redaction_off(monkeypatch):
 
 
 def test_boardemails_accounts_redacts_password_by_default(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {})
+    monkeypatch.setattr(builtins.demisto, "params", dict)
     patch_http(monkeypatch, BOARDLEAK_ACCOUNTS_RESPONSE)
     out = src.dmontip_get_boardemails_command(make_client(), {"type": "accounts", "email": "victim@example.com"})
     assert "hunter2" not in out.readable_output
@@ -1888,7 +1890,7 @@ def _list_yaml(subdir):
     d = os.path.join(_PACK_ROOT, subdir)
     if not os.path.isdir(d):
         return []
-    return sorted(os.path.join(d, f) for f in os.listdir(d) if f.endswith(".yml") or f.endswith(".yaml"))
+    return sorted(os.path.join(d, f) for f in os.listdir(d) if f.endswith((".yml", ".yaml")))
 
 
 # ---- Indicator fields ----
@@ -1925,7 +1927,8 @@ def test_indicator_field_schema(path):
     assert data["type"] in {"shortText", "longText", "multiSelect", "singleSelect", "date", "number", "boolean", "tagsSelect"}
     assert data["fromVersion"] == "6.5.0"
     assert set(data["marketplaces"]) == {"xsoar", "marketplacev2"}
-    assert isinstance(data["associatedTypes"], list) and data["associatedTypes"]
+    assert isinstance(data["associatedTypes"], list)
+    assert data["associatedTypes"]
 
 
 # ---- Indicator layouts ----
@@ -2081,13 +2084,16 @@ def test_enrichment_playbook_schema(path):
     assert data["name"] in EXPECTED_PLAYBOOK_NAMES
     assert data["id"] == data["name"]
     assert data["starttaskid"] == "0"
-    assert isinstance(data["tasks"], dict) and "0" in data["tasks"]
+    assert isinstance(data["tasks"], dict)
+    assert "0" in data["tasks"]
 
     # Exactly one input
-    assert isinstance(data["inputs"], list) and len(data["inputs"]) == 1
+    assert isinstance(data["inputs"], list)
+    assert len(data["inputs"]) == 1
     inp = data["inputs"][0]
     assert inp["required"] is True
-    assert "value" in inp and "complex" in inp["value"]
+    assert "value" in inp
+    assert "complex" in inp["value"]
 
     # Outputs declare DBotScore + the matching Common.<Type>
     outputs = {o["contextPath"] for o in data["outputs"]}
@@ -2120,7 +2126,7 @@ def test_playbook_commands_exist_in_integration_yaml(yml):
     for path in _list_yaml("Playbooks"):
         with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
-        for tid, t in data["tasks"].items():
+        for _tid, t in data["tasks"].items():
             if t["type"] != "regular" or not t["task"].get("iscommand"):
                 continue
             script = t["task"].get("script", "")

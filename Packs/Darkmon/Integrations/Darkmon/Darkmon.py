@@ -128,7 +128,11 @@ def build_dbot_outputs(value: str, indicator_type: str, search_results: list[dic
     }
 
     if indicator_type == "file":
-        common_key = "Common.File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)"
+        common_key = (
+            "Common.File(val.MD5 && val.MD5 == obj.MD5 || "
+            "val.SHA1 && val.SHA1 == obj.SHA1 || "
+            "val.SHA256 && val.SHA256 == obj.SHA256)"
+        )
         common_obj: dict[str, Any] = {_detect_file_hash_field(value): value}
     else:
         common_key, value_field = common_specs[indicator_type]
@@ -570,7 +574,7 @@ def generate_ioc_tables(ioc_objects: list) -> str:
         for row in rows:
             all_headers.update(row.keys())
 
-        headers = sorted(list(all_headers))
+        headers = sorted(all_headers)
 
         table_md = tableToMarkdown(f"{ioc_type.upper()} Indicators", rows, headers=headers, removeNull=True)
         tables_md.append(table_md)
@@ -635,7 +639,10 @@ def dmontip_global_search_command(client: Client, args: dict) -> CommandResults:
                 pagination_info += (
                     f'\n- Next page: `!dmontip-global-search query="{query}" type="{indicator_type}" page={page + 2}`'
                 )
-            pagination_info += f'\n\nTo change page size: `!dmontip-global-search query="{query}" type="{indicator_type}" page={page} size=<number>`'
+            pagination_info += (
+                f"\n\nTo change page size: "
+                f'`!dmontip-global-search query="{query}" type="{indicator_type}" page={page} size=<number>`'
+            )
 
         readable_output += pagination_info
 
@@ -763,7 +770,7 @@ def dmontip_get_compromised_command(client: Client, args: dict) -> CommandResult
                 if isinstance(v, dict):
                     continue
                 if isinstance(v, list):
-                    if all(not isinstance(x, (dict, list)) for x in v):
+                    if all(not isinstance(x, dict | list) for x in v):
                         display_val = ", ".join(str(x) for x in v)
                     else:
                         continue
@@ -823,7 +830,7 @@ def dmontip_get_vpn_command(client: Client, args: dict) -> CommandResults:
         row: dict[str, Any] = {}
         for k, v in item.items():
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -884,7 +891,7 @@ def dmontip_get_proxy_command(client: Client, args: dict) -> CommandResults:
         row: dict[str, Any] = {}
         for k, v in item.items():
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -943,7 +950,7 @@ def dmontip_get_cve_command(client: Client, args: dict) -> CommandResults:
         row: dict[str, Any] = {}
         for k, v in item.items():
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -1004,7 +1011,7 @@ def dmontip_get_nrd_command(client: Client, args: dict) -> CommandResults:
         row: dict[str, Any] = {}
         for k, v in item.items():
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -1067,7 +1074,7 @@ def dmontip_get_tbf_command(client: Client, args: dict) -> CommandResults:
         row: dict[str, Any] = {}
         for k, v in item.items():
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -1146,7 +1153,7 @@ def dmontip_get_ransomware_command(client: Client, args: dict) -> CommandResults
         row: dict[str, Any] = {}
         for k, v in item.items():
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -1226,7 +1233,7 @@ def dmontip_get_landscape_command(client: Client, args: dict) -> CommandResults:
             if k == "content":
                 continue
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     v = ", ".join(str(x) for x in v)
                 else:
                     continue
@@ -1303,7 +1310,7 @@ def dmontip_get_boardprotection_command(client: Client, args: dict) -> CommandRe
             if isinstance(v, dict):
                 continue
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     row[k] = ", ".join(str(x) for x in v)
                 continue
             row[k] = v
@@ -1432,7 +1439,7 @@ def dmontip_get_boardemails_command(client: Client, args: dict) -> CommandResult
                     row["ip"] = v.get("address")
                 continue
             if isinstance(v, list):
-                if all(not isinstance(x, (dict, list)) for x in v):
+                if all(not isinstance(x, dict | list) for x in v):
                     row[k] = ", ".join(str(x) for x in v)
                 continue
             row[k] = v
