@@ -792,33 +792,34 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-py"
-version = "3.2.22"
+version = "3.3.1"
 description = "\"A Python library for the Demisto API\""
 optional = false
-python-versions = ">=3.11,<3.15"
-files = []
-develop = false
+python-versions = ">=3.10,<3.15"
+files = [
+    {file = "demisto_py-3.3.1-py3-none-any.whl", hash = "sha256:633b1a980ca4c2a0357c528d0b5daf3f3f91e43fe5db5407b80ed61b5e125fba"},
+    {file = "demisto_py-3.3.1.tar.gz", hash = "sha256:d3646338813b1d98f925acff034d151b0a16804c71bc8760b85871c07e7716ff"},
+]
 
 [package.dependencies]
-certifi = "^2024.2.2"
-python-dateutil = "^2.7.2"
+certifi = ">=2024.2.2,<2025.0.0"
+python-dateutil = ">=2.7.2,<3.0.0"
 setuptools = ">=80.9.0"
-six = "^1.16"
-tzlocal = "^5.2.0"
+six = ">=1.16,<2.0"
+tzlocal = ">=5.2.0,<6.0.0"
 urllib3 = ">2.6.0"
 
 [package.source]
-type = "git"
-url = "https://github.com/demisto/demisto-py.git"
-reference = "sk_demisto_py_new_python"
-resolved_reference = "3677b59ce92bef0dc6dd657c19436ff9c3a54a30"
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
 version = "1.38.25"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = ">=3.11,<3.15"
+python-versions = ">=3.10,<3.15"
 files = []
 develop = false
 
@@ -833,7 +834,7 @@ configparser = "^5.2.0"
 coverage = "^7.2.1,<7.4"
 dateparser = "^1.1.1"
 decorator = "^5.1.1"
-demisto-py = {git = "https://github.com/demisto/demisto-py.git", branch = "sk_demisto_py_new_python"}
+demisto-py = ">=3.3.0"
 dictdiffer = "^0.9.0"
 dictor = "^0.1.9"
 docker = "^7.1.0"
@@ -898,7 +899,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "sk_demisto_sdk_new_python"
-resolved_reference = "1e456f918e75b4e0f181c7ee279f14a6f6056ad6"
+resolved_reference = "ceb95058c6d120764bd9644973876423b4b6bc36"
 
 [[package]]
 name = "dictdiffer"
@@ -3450,13 +3451,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "requests"
-version = "2.33.1"
+version = "2.34.0"
 description = "Python HTTP for Humans."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "requests-2.33.1-py3-none-any.whl", hash = "sha256:4e6d1ef462f3626a1f0a0a9c42dd93c63bad33f9f1c1937509b8c5c8718ab56a"},
-    {file = "requests-2.33.1.tar.gz", hash = "sha256:18817f8c57c6263968bc123d237e3b8b08ac046f5456bd1e307ee8f4250d3517"},
+    {file = "requests-2.34.0-py3-none-any.whl", hash = "sha256:917520a21b767485ce7c588f4ebb917c436b24a31231b44228715eaeb5a52c60"},
+    {file = "requests-2.34.0.tar.gz", hash = "sha256:7d62fe92f50eb82c529b0916bb445afa1531a566fc8f35ffdc64446e771b856a"},
 ]
 
 [package.dependencies]
