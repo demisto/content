@@ -1480,7 +1480,6 @@ def fetch_incidents_lookback(
     lookback_start_time: str,
     min_severity: str,
     statuses_to_fetch: list,
-    limit: int,
 ) -> list:
     """Fetch incidents that were modified within the lookback window.
 
@@ -1492,7 +1491,6 @@ def fetch_incidents_lookback(
         lookback_start_time: The start time of the lookback window.
         min_severity: Minimum severity to filter by.
         statuses_to_fetch: List of statuses to filter by.
-        limit: Maximum number of incidents to fetch.
 
     Returns:
         List of incidents from the lookback window.
@@ -1506,7 +1504,6 @@ def fetch_incidents_lookback(
             f" {status_filter(statuses_to_fetch)}".strip()
         ),
         "orderby": "properties/lastModifiedTimeUtc asc",
-        "limit": limit,
     }
     demisto.debug(f"Lookback filter query: {command_args['filter']}")
 
@@ -1650,6 +1647,7 @@ def fetch_incidents(
     demisto.debug(f"raw incidents id after dedup: {[incident['ID'] for incident in raw_incidents]}")
 
     # Lookback mechanism based on fetching incidents by their modified time within the lookback window
+    lookback_deduped_incidents = []
     current_lookback_ids: dict = {}
     if look_back > 0:
         demisto.debug(f"Lookback enabled with {look_back} minutes")
@@ -1667,7 +1665,6 @@ def fetch_incidents(
             lookback_start_time=lookback_start_time,
             min_severity=min_severity,
             statuses_to_fetch=statuses_to_fetch,
-            limit=limit,
         )
 
         # Dedup lookback incidents using the lookback incidents from loop before and the fetched incidents
@@ -1681,18 +1678,24 @@ def fetch_incidents(
             look_back=look_back,
         )
 
-        # Merge deduped lookback incidents into the regular fetch results
-        raw_incidents.extend(lookback_deduped_incidents)
-        demisto.debug(f"Total incidents after lookback merge: {len(raw_incidents)}")
+        demisto.debug(f"Lookback: {len(lookback_deduped_incidents)} new incidents to ingest")
 
     fetch_incidents_additional_info(client, raw_incidents)
 
-    return process_incidents(
+    next_run, incidents = process_incidents(
         raw_incidents,
         latest_created_time,
         last_incident_number,
         current_lookback_ids,  # type: ignore[attr-defined]
     )
+
+    # Fetch additional info for lookback incidents
+    fetch_incidents_additional_info(client, lookback_deduped_incidents)
+
+    for incident in lookback_deduped_incidents:
+        incidents.append(convert_incident_to_fetch_format(incident))
+
+    return next_run, incidents
 
 
 def fetch_incidents_command(client, params):
@@ -1715,6 +1718,24 @@ def fetch_incidents_command(client, params):
     demisto.debug(f"New last run is {next_run}")
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
+
+
+def convert_incident_to_fetch_format(incident: dict) -> dict:
+    """Convert a raw Sentinel incident to the format expected by the fetch mechanism.
+
+    Args:
+        incident: A raw incident dict from incident_data_to_xsoar_format.
+
+    Returns:
+        A dict with name, occurred, severity, and rawJSON fields.
+    """
+    add_mirroring_fields(incident)
+    return {
+        "name": "[Azure Sentinel] " + (incident.get("Title") or ""),
+        "occurred": incident.get("CreatedTimeUTC"),
+        "severity": severity_to_level(incident.get("Severity")),
+        "rawJSON": json.dumps(incident),
+    }
 
 
 def process_incidents(
@@ -1745,19 +1766,12 @@ def process_incidents(
 
         incident_created_time = dateparser.parse(incident.get("CreatedTimeUTC"))
         current_fetch_ids.append(incident.get("ID"))
-        add_mirroring_fields(incident)
-        xsoar_incident = {
-            "name": "[Azure Sentinel] " + incident.get("Title"),
-            "occurred": incident.get("CreatedTimeUTC"),
-            "severity": incident_severity,
-            "rawJSON": json.dumps(incident),
-        }
 
         # Update last run to the latest fetch time
         if incident_created_time is None:
             raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
 
-        incidents.append(xsoar_incident)
+        incidents.append(convert_incident_to_fetch_format(incident))
 
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time

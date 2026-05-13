@@ -110,8 +110,8 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 # Lookback Parameter
 
-In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing the look-back to a number that is greater than the previous value, then in the initial incident fetching there will be incident duplications. If the integration was already set with look-back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
-Using a look-back value that is very large can lead to an increase in the memory usage of the system and additional API calls. It is recommended to use a small value (e.g., 1-5 minutes).
+If you increase the value of the **Minutes to look back when fetching** parameter after incidents have already been fetched, you may experience duplicated incidents during the next fetch. Incident duplication does not occur if the look-back value remains constant or is decreased.
+Setting a large look-back value can increase system memory usage and the number of API calls. We recommend using a small value (e.g., 1-5 minutes).
 
 ## Commands
 
