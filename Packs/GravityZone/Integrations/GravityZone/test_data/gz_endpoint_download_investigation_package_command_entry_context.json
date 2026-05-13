@@ -1,0 +1,15 @@
+{
+    "GravityZone.Command.DownloadFile(val.ActivityID && val.ActivityID == obj.ActivityID)": [
+        {
+            "ActivityID": "69443b020126750c1a0dbe2f",
+            "ActivityType": "DownloadFile",
+            "Status": "Success",
+            "EndpointID": "6942a43afe8d4e463ca5c197",
+            "ErrorCode": null,
+            "RemoteFile": null,
+            "OutputFile": "investigation_package.zip",
+            "FileID": "abc",
+            "FileName": "investigation_package.zip"
+        }
+    ]
+}

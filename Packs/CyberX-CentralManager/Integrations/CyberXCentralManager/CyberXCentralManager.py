@@ -8,10 +8,9 @@ ssl_check = not demisto.params().get("unsecure", False)
 headers = {"Authorization": token}
 
 if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == "test-module":

@@ -1,0 +1,39 @@
+{
+    "id": "incident_gravityzone_incident_type",
+    "version": -1,
+    "name": "GravityZone Incident Type",
+    "ownerOnly": false,
+    "description": "Specifies the type of the incident.",
+    "cliName": "gravityzoneincidenttype",
+    "type": "singleSelect",
+    "selectValues": [
+        "",
+        "incident",
+        "extendedIncident"
+    ],
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "GravityZone EDR",
+        "GravityZone XDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

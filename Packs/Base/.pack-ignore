@@ -55,6 +55,24 @@ ignore=BA124
 [file:CommonServer_6_10.yml]
 ignore=BA108,BA109
 
+[file:CommonServerPython.yml]
+ignore=BA125
+
+[file:EnrichFileV2.yml]
+ignore=RN107,BA127,BA129,BA124
+
+[file:EnrichIPV2.yml]
+ignore=BA127,BA124,RN107,BA129
+
+[file:EnrichDomainV2.yml]
+ignore=BA127,BA124,RN107,BA129
+
+[file:EnrichCVEV2.yml]
+ignore=BA127,BA124,RN107,BA129
+
+[file:EnrichURLV2.yml]
+ignore=BA127,BA124,RN107,BA129
+
 [known_words]
 createindicatorrelationship
 commonserverpython

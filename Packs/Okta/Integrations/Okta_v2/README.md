@@ -55,6 +55,8 @@ The following scopes are required for the Okta v2 integration to work properly:
 
 For more information, see the '[Implement OAuth for Okta](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)' official documentation article.
 
+**Note:** OAuth 2.0 authentication is confirmed to support the 'Revoke all user sessions' functionality. When using the `okta-clear-user-sessions` command with `revoke_oauth_tokens=true`, it revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+
 ### Instance Configuration
 
 | **Parameter**                              | **Description**                                                                                                                                                                                  | **Required** |
@@ -543,6 +545,7 @@ Enrolls and verifies a push factor for the specified user.
 | factorId | The push factor ID. | Required |
 | polling_time | Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds. | Optional |
 | max_polling_calls | Maximum number of polling calls. Default value is 10. | Optional |
+| polling | Whether to poll for the push factor challenge result. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
@@ -550,6 +553,7 @@ Enrolls and verifies a push factor for the specified user.
 | --- | --- | --- |
 | Account.ID | String | Okta user ID. |
 | Account.VerifyPushResult | String | Okta user push factor result. |
+| Okta.PollingStatusURL | String | The polling URL for the push factor challenge. |
 | Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
 | Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
 | Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
@@ -605,6 +609,39 @@ Enrolls and verifies a push factor for the specified user.
     }
 }
 ```
+
+### okta-verify-mfa-status
+
+***
+Verifies the status of a push factor challenge.
+
+#### Base Command
+
+`okta-verify-mfa-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| polling_url | The polling URL for the push factor challenge. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.FactorResult.ID | String | The push factor challenge ID. |
+| Okta.FactorResult.factorResult | String | The result of the factor challenge. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
+
+##### Command Example
+
+```!okta-verify-mfa-status polling_url="https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"```
+
+##### Human Readable Output
+>
+>The status of the push factor is SUCCESS
 
 ### okta-search
 
@@ -2124,7 +2161,7 @@ Deletes the specified user.
 ### okta-clear-user-sessions
 
 ***
-Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. By default, OpenID Connect and OAuth refresh and access tokens issued to the user are revoked. Token revocation can be disabled if needed.
 For more information and examples:
 https://developer.okta.com/docs/reference/api/users/#user-sessions
 
@@ -2137,6 +2174,7 @@ https://developer.okta.com/docs/reference/api/users/#user-sessions
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userId | Okta User ID. | Required |
+| revokeOauthTokens | When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 

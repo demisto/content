@@ -41,7 +41,7 @@ def test_get_alert_command(mocker, requests_mock):
     import FireEyeETP
 
     base_url = "https://server_url/api/v1"
-    mocker.patch("FireEyeETP.BASE_PATH", base_url)
+    mocker.patch("FireEyeETP.BASE_PATH_V1", base_url)
     mocker.patch("FireEyeETP.API_KEY", "fake-api-key")
     mocker.patch.object(demisto, "args", return_value={"alert_id": "KgBdei7RQS4u4m8Jl7mG"})
     mocker.patch.object(demisto, "results")
@@ -67,104 +67,91 @@ def test_fetch_incident_by_status_messages(mocker):
     Given:
         - A status message similar to the alert's status
     When:
-        - Running fetch-incidents command
+        - Running fetch-incidents command (v2 implementation)
     Then:
         - Ensure one incident was fetched as expected
+        - Ensure the correct v2 request functions were called
     """
-    alerts = {
-        "meta": {"fromLastModifiedOn": {"end": ""}},
-        "data": [
-            {
-                "attributes": {
-                    "email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},
-                    "alert": {"timestamp": "2023-02-09T19:34:17"},
-                }
-            }
-        ],
+    from FireEyeETP import Client
+
+    mock_client = MagicMock(spec=Client)
+    response_1 = {
+        "meta": {"search_after": "token123", "size": 1},
+        "data": [{"id": "alert1", "email_status": "delivered (retroactive)"}],
     }
-    expected_incidents = {
-        "email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},
-        "alert": {"timestamp": "2023-02-09T19:34:17"},
-    }
-    last_run = {"last_modified": "2023-02-08T19:34:17", "last_created": "2023-02-08T19:34:17"}
+    response_2 = {"id": "alert1", "alert": {"occurred": "2023-02-09T19:34:17Z", "severity": "minr"}}
+
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)"])
-    mocker.patch("FireEyeETP.demisto.getLastRun", return_value=last_run)
-    mocker.patch("FireEyeETP.get_alerts_request", return_value=alerts)
-    res = mocker.patch("FireEyeETP.demisto.incidents")
-    FireEyeETP.fetch_incidents()
-    assert res.call_args.args[0][0].get("rawJSON") == json.dumps(expected_incidents)
+    mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
+    mock_client.get_alerts_request_v2.return_value = response_1
+    mock_client.get_alert_request_v2.return_value = response_2
+    mocker.patch("FireEyeETP.demisto.setLastRun")
+
+    incidents, last_run = FireEyeETP.fetch_incidents(mock_client)
+
+    assert incidents[0].get("name") == "alert1"
+    assert incidents[0].get("rawJSON") == json.dumps(response_2)
+    assert last_run.get("pagination_token") == "token123"
 
 
 def test_fetch_incident_by_status_messages_mismatch_status(mocker):
     """
     Given:
-        - A status message differs from to the alert's status
+        - A status message differs from the alert's status
     When:
-        - Running fetch-incidents command
+        - Running fetch-incidents command (v2 implementation)
     Then:
-        - Ensure no incidents were fetched as expected
+        - Ensure no incidents were fetched as expected due to filtering
     """
-    alerts = {
-        "meta": {"fromLastModifiedOn": {"end": ""}},
-        "data": [
-            {
-                "attributes": {
-                    "email": {"status": "deleted", "headers": {"subject": ""}},
-                    "alert": {"timestamp": "2023-02-09T19:34:17"},
-                }
-            }
-        ],
+    from FireEyeETP import Client
+
+    mock_client = MagicMock(spec=Client)
+    response_1 = {
+        "meta": {"search_after": "token123", "size": 1},
+        "data": [{"id": "alert1", "email_status": "deleted"}],
     }
-    last_run = {"last_modified": "2023-02-08T19:34:17", "last_created": "2023-02-08T19:34:17"}
+
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)"])
-    mocker.patch("FireEyeETP.demisto.getLastRun", return_value=last_run)
-    mocker.patch("FireEyeETP.get_alerts_request", return_value=alerts)
-    res = mocker.patch("FireEyeETP.demisto.incidents")
-    FireEyeETP.fetch_incidents()
-    assert len(res.call_args.args[0]) == 0
+    mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
+    mock_client.get_alerts_request_v2.return_value = response_1
+    mocker.patch("FireEyeETP.demisto.setLastRun")
+
+    incidents, _ = FireEyeETP.fetch_incidents(mock_client)
+
+    assert incidents == []
 
 
 def test_fetch_incident_by_status_messages_with_two_status(mocker):
     """
     Given:
-        - A list of status message similar to the alert's status
+        - A list of status messages matching the alerts' statuses
     When:
-        - Running fetch-incidents command
+        - Running fetch-incidents command (v2 implementation)
     Then:
         - Ensure 2 incidents were fetched as expected
     """
-    alerts = {
-        "meta": {"fromLastModifiedOn": {"end": ""}},
-        "data": [
-            {
-                "attributes": {
-                    "email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},
-                    "alert": {"timestamp": "2023-02-09T19:34:17"},
-                }
-            },
-            {
-                "attributes": {
-                    "email": {"status": "deleted", "headers": {"subject": ""}},
-                    "alert": {"timestamp": "2023-02-09T19:34:17"},
-                }
-            },
-        ],
+    from FireEyeETP import Client
+
+    mock_client = MagicMock(spec=Client)
+
+    response_1 = {
+        "meta": {"search_after": "token456", "size": 2},
+        "data": [{"id": "alert1", "email_status": "delivered (retroactive)"}, {"id": "alert2", "email_status": "deleted"}],
     }
-    expected_incidents = [
-        {
-            "email": {"status": "delivered (retroactive)", "headers": {"subject": ""}},
-            "alert": {"timestamp": "2023-02-09T19:34:17"},
-        },
-        {"email": {"status": "deleted", "headers": {"subject": ""}}, "alert": {"timestamp": "2023-02-09T19:34:17"}},
-    ]
-    last_run = {"last_modified": "2023-02-08T19:34:17", "last_created": "2023-02-08T19:34:17"}
+    response_alert1 = {"id": "alert1", "alert": {"occurred": "2023-02-09T19:34:17Z", "severity": "minr"}}
+    response_alert2 = {"id": "alert2", "alert": {"occurred": "2023-02-09T19:34:18Z", "severity": "majr"}}
+
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)", "deleted"])
-    mocker.patch("FireEyeETP.demisto.getLastRun", return_value=last_run)
-    mocker.patch("FireEyeETP.get_alerts_request", return_value=alerts)
-    res = mocker.patch("FireEyeETP.demisto.incidents")
-    FireEyeETP.fetch_incidents()
-    for incident, expected_incident in zip(res.call_args.args[0], expected_incidents):
-        assert incident.get("rawJSON") == json.dumps(expected_incident)
+    mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
+    mock_client.get_alerts_request_v2.return_value = response_1
+    mock_client.get_alert_request_v2.side_effect = [response_alert1, response_alert2]
+    mocker.patch("FireEyeETP.demisto.setLastRun")
+
+    incidents, _ = FireEyeETP.fetch_incidents(mock_client)
+
+    assert len(incidents) == 2
+    assert incidents[0].get("name") == "alert1"
+    assert incidents[1].get("name") == "alert2"
 
 
 @pytest.fixture
@@ -471,3 +458,148 @@ def test_validate_authentication_params_parametrized(
             validate_authentication_params()
     else:
         assert validate_authentication_params() == expected_result
+
+
+def test_convert_to_demisto_severity():
+    from FireEyeETP import convert_to_demisto_severity
+    from CommonServerPython import IncidentSeverity
+
+    assert convert_to_demisto_severity("crit") == IncidentSeverity.CRITICAL
+    assert convert_to_demisto_severity("majr") == IncidentSeverity.HIGH
+    assert convert_to_demisto_severity("minr") == IncidentSeverity.LOW
+    assert convert_to_demisto_severity("unkn") == IncidentSeverity.UNKNOWN
+
+
+def test_get_search_alert_summary_v2():
+    from FireEyeETP import get_search_alert_summary_v2
+
+    alert = {
+        "id": "1",
+        "sha256": "s",
+        "md5": "m",
+        "domain": "d",
+        "original": "o",
+        "report_id": "r",
+        "alert_date": "date",
+        "malware": [{"name": "mn", "stype": "ms"}, {"name": "mn2", "stype": "ms2"}],
+        "email_status": "es",
+    }
+    res = get_search_alert_summary_v2(alert)
+    assert res["Alert ID"] == "1"
+    assert res["Malware name"] == ["mn", "mn2"]
+    assert res["Malware stype"] == ["ms", "ms2"]
+
+
+def test_get_single_alert_summary_v2():
+    from FireEyeETP import get_single_alert_summary_v2
+
+    alert = {
+        "id": "1",
+        "domain": "d",
+        "msg": "m",
+        "traffic_type": "t",
+        "verdict": "v",
+        "report_id": "r",
+        "alert_date": "ad",
+        "product": "p",
+        "alert": {"occurred": "o", "name": "n", "attack-time": "at", "severity": "s"},
+    }
+    res = get_single_alert_summary_v2(alert)
+    assert res["Alert ID"] == "1"
+    assert res["Severity"] == "s"
+
+
+def test_get_alert_list_with_alert_id(mocker):
+    """
+    Given:
+        - An alert_id argument is provided
+    When:
+        - Running get_alert_list function
+    Then:
+        - Ensure get_single_alert_entry is called
+        - Ensure the correct CommandResults is returned
+    """
+    from FireEyeETP import get_alert_list, Client
+
+    mock_client = MagicMock(spec=Client)
+
+    alert_data = {
+        "id": "alert123",
+        "domain": "example.com",
+        "msg": "test message",
+        "traffic_type": "email",
+        "verdict": "malicious",
+        "report_id": "report1",
+        "alert_date": "2023-01-01",
+        "product": "ETP",
+        "alert": {
+            "occurred": "2023-01-01T10:00:00Z",
+            "name": "Test Alert",
+            "attack-time": "2023-01-01T09:00:00Z",
+            "severity": "majr",
+        },
+    }
+
+    mocker.patch("FireEyeETP.demisto.args", return_value={"alert_id": "alert123"})
+    mock_client.get_alert_request_v2.return_value = alert_data
+
+    result = get_alert_list(mock_client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "FireEyeETP.Alerts"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == alert_data
+
+
+def test_get_alert_list_without_alert_id(mocker):
+    """
+    Given:
+        - No alert_id argument is provided (search parameters instead)
+    When:
+        - Running get_alert_list function
+    Then:
+        - Ensure get_alerts_entry is called
+        - Ensure the correct CommandResults is returned with multiple alerts
+    """
+    from FireEyeETP import Client, get_alert_list
+
+    mock_client = MagicMock(spec=Client)
+
+    search_response = {
+        "data": [
+            {
+                "id": "alert1",
+                "sha256": "sha1",
+                "md5": "md5_1",
+                "domain": "example1.com",
+                "original": "orig1",
+                "report_id": "r1",
+                "alert_date": "2023-01-01",
+                "malware": [{"name": "malware1", "stype": "type1"}],
+                "email_status": "delivered",
+            },
+            {
+                "id": "alert2",
+                "sha256": "sha2",
+                "md5": "md5_2",
+                "domain": "example2.com",
+                "original": "orig2",
+                "report_id": "r2",
+                "alert_date": "2023-01-02",
+                "malware": [{"name": "malware2", "stype": "type2"}],
+                "email_status": "quarantined",
+            },
+        ]
+    }
+
+    mocker.patch("FireEyeETP.demisto.args", return_value={"limit": "10", "domain": "example.com"})
+    mock_client.get_alerts_request_v2.return_value = search_response
+
+    result = get_alert_list(mock_client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "FireEyeETP.Alerts"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "alert1"
+    assert result.outputs[1]["id"] == "alert2"

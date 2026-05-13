@@ -6,15 +6,16 @@ The integration supports two types of authorization:
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization perform the following steps:
-1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance. (See [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information). 
-2. Copy the **Client Id** and **Client Secret** (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the **Username** and **Password** fields of the instance configuration.
-3. Select the **Use OAuth Login** checkbox and click **Done**.
-4. Run the command ***!servicenow-cmdb-oauth-login*** from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates and saves in the integration context a refresh token to the ServiceNow instance and is required only the first time you configure a new instance in the XSOAR platform.
-5. (Optional) Test the created instance by running the ***!servicenow-cmdb-oauth-test*** command.
+1. Log in to your ServiceNow instance and create an endpoint for Cortex XSOAR to access your instance. (See [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information).
+2. Copy the **Client Id** and **Client Secret** (click the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the **Client ID** and **Client Secret** fields for the integration instance configuration.
+3. (Recommended) Enter the ServiceNow account **Username** and **Password** in the integration instance configuration. The integration will then automatically perform the initial OAuth login on first use and will automatically renew the refresh token when it expires.
+4. Select the **Use OAuth Login** checkbox and click **Done**.
+5. If you did **not** provide **Username** and **Password** in step 3, run the command `!servicenow-cmdb-oauth-login` from the Cortex XSOAR CLI and fill in the username and password of the ServiceNow integration instance. This step generates and saves in the integration context a refresh token to the ServiceNow instance and is required only the first time you configure a new instance in the Cortex XSOAR platform. If you provided **Username** and **Password**, this step is handled automatically.
+6. (Optional) Test the created integration instance by running the `!servicenow-cmdb-oauth-test` command.
 
 **Notes:**
 1. When running the ***!servicenow-cmdb-oauth-login*** command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. Every time the refresh token expires you will have to run the ***servicenow-cmdb-oauth-login*** command again. Therefore, we recommend to set the **Refresh Token Lifespan** field in the endpoint created in step 1 to a long period (can be set to several years). 
+2. If the **Username** and **Password** fields are configured, the integration will automatically perform the initial login and renew the refresh token when it expires. Otherwise, you have to run the `servicenow-cmdb-oauth-login` command for the initial login and again each time the refresh token expires.
 3. The grant type used to get an access token is `Client credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 #### JWT Authentication

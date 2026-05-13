@@ -118,7 +118,7 @@ def cve_enrich_remediation_command(client: SixgillEnrichClient, args) -> List[Co
 
 
 def main():
-    channel_code = "d5cd46c205c20c87006b55a18b106428"
+    channel_code = "7457a04d972fceb8e0cc2192ba4abc66" if is_xsiam() else "7698e8287dfde53dcd13082be750a85a"
     params = demisto.params()
     command = demisto.command()
     verify = not params.get("insecure", True)

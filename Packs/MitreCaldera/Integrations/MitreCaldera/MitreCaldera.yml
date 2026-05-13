@@ -1,6 +1,9 @@
 commonfields:
   id: MitreCaldera
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: MitreCaldera
 display: MitreCaldera
 category: IT Services

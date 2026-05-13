@@ -725,11 +725,12 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.6391686
 fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
 defaultmapperin: Dataminr Pulse - Incoming Mapper

@@ -4,6 +4,8 @@ from PingOne import (
     deactivate_user_command,
     activate_user_command,
     set_password_command,
+    force_password_change_command,
+    read_password_state_command,
     add_user_to_group_command,
     remove_from_group_command,
     get_groups_for_user_command,
@@ -37,7 +39,7 @@ user_data_by_username = {
     "locale": "en-US",
     "mfaEnabled": False,
     "mobilePhone": "604-999-9999",
-    "name": {"formatted": "Emma Sharp", "given": "Emma", "family": "Sharp"},
+    "name": {"formatted": "Emma Testman", "given": "Emma", "family": "Sharp"},
     "nickname": "emma.sharp",
     "population": {"id": "4cd45bdb-0eb2-42fe-8475-4bcd908269f1"},
     "preferredLanguage": "en",
@@ -67,7 +69,7 @@ user_data_by_id = {
     "locale": "en-US",
     "mfaEnabled": False,
     "mobilePhone": "604-999-9999",
-    "name": {"formatted": "Emma Sharp", "given": "Emma", "family": "Sharp"},
+    "name": {"formatted": "Emma Testman", "given": "Emma", "family": "Sharp"},
     "nickname": "emma.sharp",
     "population": {"id": "4cd45bdb-0eb2-42fe-8475-4bcd908269f1"},
     "preferredLanguage": "en",
@@ -228,6 +230,30 @@ def test_set_password(mocker, args, expected_context, expected_readable):
     assert expected_readable in readable
 
 
+@pytest.mark.parametrize("args, expected_context, expected_readable", [({"username": "emma.sharp"}, {}, "emma.sharp")])
+def test_force_password_change(mocker, args, expected_context, expected_readable):
+    client = ClientTestPing(mocker).client
+
+    mocker.patch.object(client, "get_user_id", return_value=TEST_USER_ID)
+    mocker.patch.object(client, "force_password_change", return_value=None)
+
+    readable, outputs, _ = force_password_change_command(client, args)
+    assert outputs == expected_context
+    assert expected_readable in readable
+
+
+@pytest.mark.parametrize("args, expected_context, expected_readable", [({"username": "emma.sharp"}, {}, "Password state")])
+def test_read_password_state(mocker, args, expected_context, expected_readable):
+    client = ClientTestPing(mocker).client
+
+    mocker.patch.object(client, "get_user_id", return_value=TEST_USER_ID)
+    mocker.patch.object(client, "read_password_state", return_value={"status": "MUST_CHANGE_PASSWORD"})
+
+    readable, outputs, _ = read_password_state_command(client, args)
+    assert outputs == expected_context
+    assert expected_readable in readable
+
+
 @pytest.mark.parametrize(
     "args, expected_context, expected_readable",
     [
@@ -282,7 +308,7 @@ def test_remove_user_to_group(mocker, args, expected_context, expected_readable)
                 "ID": "a8890eb9-38ea-469a-bc00-b64be7903633",
                 "Username": "emma.sharp",
                 "Email": "emma.sharp@example.com",
-                "DisplayName": "Emma Sharp",
+                "DisplayName": "Emma Testman",
                 "Enabled": True,
                 "CreatedAt": "2021-09-03T18:04:03.916Z",
                 "UpdatedAt": "2021-09-08T20:18:19.419Z",
@@ -295,7 +321,7 @@ def test_remove_user_to_group(mocker, args, expected_context, expected_readable)
                 "ID": "a8890eb9-38ea-469a-bc00-b64be7903633",
                 "Username": "emma.sharp",
                 "Email": "emma.sharp@example.com",
-                "DisplayName": "Emma Sharp",
+                "DisplayName": "Emma Testman",
                 "Enabled": True,
                 "CreatedAt": "2021-09-03T18:04:03.916Z",
                 "UpdatedAt": "2021-09-08T20:18:19.419Z",

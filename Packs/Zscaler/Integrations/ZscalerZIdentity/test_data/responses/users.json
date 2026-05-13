@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "comments": "Test user",
+        "groups": [{ "id": 10, "name": "Engineering" }],
+        "department": { "id": 5, "name": "IT" }
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "comments": "",
+        "groups": [],
+        "department": { "id": 6, "name": "HR" }
+    }
+]

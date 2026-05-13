@@ -2,7 +2,7 @@
     "name": "SecurityScorecard",
     "description": "Provides security scorecards and alerts for domains.",
     "support": "partner",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "SecurityScorecard",
     "url": "https://securityscorecard.com/contact-us",
     "email": "support@securityscorecard.io",
@@ -25,10 +25,6 @@
         "hx0ar"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

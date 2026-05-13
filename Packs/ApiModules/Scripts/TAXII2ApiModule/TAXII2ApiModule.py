@@ -90,6 +90,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {  # pragma: no cover
     "location": FeedIndicatorType.Location,
     "vulnerability": FeedIndicatorType.CVE,
     "x509-certificate": FeedIndicatorType.X509,
+    "software": FeedIndicatorType.Software,
 }
 STIX_SUPPORTED_TYPES = {
     "url": ("value",),
@@ -781,7 +782,10 @@ class XSOAR2STIXParser:
         else:
             pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
-        labels = self.get_labels_for_indicator(xsoar_indicator.get("score"))
+        score_labels = self.get_labels_for_indicator(xsoar_indicator.get("score")) or []
+        custom_tags = (xsoar_indicator.get("CustomFields") or {}).get("tags") or []
+        merged_labels = list({*score_labels, *[str(t).lower().replace(" ", "-") for t in custom_tags]})
+        labels = merged_labels or score_labels
 
         stix_domain_object: Dict[str, Any] = assign_params(
             type=stix_type,
@@ -811,7 +815,7 @@ class XSOAR2STIXParser:
         Returns:
             The uuid that represents the indicator according to STIX.
         """
-        if stixid := xsoar_indicator.get("CustomFields", {}).get("stixid"):
+        if stixid := (xsoar_indicator.get("CustomFields") or {}).get("stixid"):
             return stixid
         value = value if value else xsoar_indicator.get("value")
         if stix_type == "attack-pattern":
@@ -974,12 +978,15 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_1:
-            custom_fields = xsoar_indicator.get("CustomFields", {})
+            custom_fields = xsoar_indicator.get("CustomFields", {}) or {}
             stix_type = stix_object["type"]
             if stix_type == "malware":
                 stix_object["is_family"] = custom_fields.get("ismalwarefamily", False)
             elif stix_type == "report" and (published := custom_fields.get("published")):
                 stix_object["published"] = published
+            if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
+                tags = custom_fields.get("tags") or [stix_object["type"]]
+                stix_object["labels"] = [str(x).lower().replace(" ", "-") for x in tags]
         return stix_object
 
     def add_sdo_required_field_2_0(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
@@ -1376,6 +1383,7 @@ class STIX2XSOARParser(BaseClient):
 
         if tlp_color:
             fields["trafficlightprotocol"] = tlp_color
+            obj_to_parse["trafficlightprotocol"] = tlp_color
 
         return fields
 
@@ -1484,6 +1492,7 @@ class STIX2XSOARParser(BaseClient):
                 attack_pattern["score"] = score
 
         fields["tags"] = list(set(attack_pattern_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        attack_pattern_obj["tags"] = fields["tags"]
 
         attack_pattern["fields"] = fields
 
@@ -1546,6 +1555,7 @@ class STIX2XSOARParser(BaseClient):
                 report["score"] = score
 
         fields["tags"] = list(set(report_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        report_obj["tags"] = fields["tags"]
 
         relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(
             report_obj, self.id_to_object, relationships_prefix, ignore_reports_relationships, is_unit42_report
@@ -1595,6 +1605,7 @@ class STIX2XSOARParser(BaseClient):
                 threat_actor["score"] = score
 
         fields["tags"] = list(set(threat_actor_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        threat_actor_obj["tags"] = fields["tags"]
         threat_actor["fields"] = fields
 
         if self.enrichment_excluded:
@@ -1634,6 +1645,7 @@ class STIX2XSOARParser(BaseClient):
                 infrastructure["score"] = score
 
         fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+        infrastructure_obj["tags"] = fields["tags"]
 
         infrastructure["fields"] = fields
 
@@ -1680,6 +1692,7 @@ class STIX2XSOARParser(BaseClient):
                 malware["score"] = score
 
         fields["tags"] = list(set(malware_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        malware_obj["tags"] = fields["tags"]
 
         malware["fields"] = fields
 
@@ -1720,6 +1733,7 @@ class STIX2XSOARParser(BaseClient):
                 tool["score"] = score
 
         fields["tags"] = list(set(tool_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        tool_obj["tags"] = fields["tags"]
 
         tool["fields"] = fields
 
@@ -1758,6 +1772,7 @@ class STIX2XSOARParser(BaseClient):
                 course_of_action["score"] = score
 
         fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+        coa_obj["tags"] = fields["tags"]
 
         course_of_action["fields"] = fields
 
@@ -1793,6 +1808,7 @@ class STIX2XSOARParser(BaseClient):
                 campaign["score"] = score
 
         fields["tags"] = list(set(campaign_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        campaign_obj["tags"] = fields["tags"]
         campaign["fields"] = fields
 
         if self.enrichment_excluded:
@@ -1834,6 +1850,7 @@ class STIX2XSOARParser(BaseClient):
                 intrusion_set["score"] = score
 
         fields["tags"] = list(set(intrusion_set_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        intrusion_set_obj["tags"] = fields["tags"]
 
         if self.enrichment_excluded:
             intrusion_set["enrichmentExcluded"] = self.enrichment_excluded
@@ -1865,6 +1882,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 sco_indicator["score"] = score
         fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+        sco_object["tags"] = fields["tags"]
 
         sco_indicator["fields"] = fields
 
@@ -1923,6 +1941,15 @@ class STIX2XSOARParser(BaseClient):
             mutex_obj (dict): indicator as an observable object of mutex type.
         """
         return self.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping="name")
+
+    def parse_sco_software_indicator(self, software_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses software indicator type to cortex format.
+
+        Args:
+            software_obj (dict): indicator as an observable object of software type.
+        """
+        return self.parse_general_sco_indicator(sco_object=software_obj, value_mapping="name")
 
     def parse_sco_account_indicator(self, account_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -1999,6 +2026,7 @@ class STIX2XSOARParser(BaseClient):
                 identity["score"] = score
 
         fields["tags"] = list(set(identity_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        identity_obj["tags"] = fields["tags"]
 
         identity["fields"] = fields
 
@@ -2036,6 +2064,7 @@ class STIX2XSOARParser(BaseClient):
                 location["score"] = score
 
         fields["tags"] = list(set(location_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
+        location_obj["tags"] = fields["tags"]
 
         location["fields"] = fields
 
@@ -2069,6 +2098,7 @@ class STIX2XSOARParser(BaseClient):
         fields["tags"] = list(
             set(vulnerability_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", [])), {name} if name else {})
         )
+        vulnerability_obj["tags"] = fields["tags"]
 
         cve["fields"] = fields
 
@@ -2124,6 +2154,7 @@ class STIX2XSOARParser(BaseClient):
                 if score:
                     x509_certificate["score"] = score
             fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+            x509_certificate_obj["tags"] = fields["tags"]
             x509_certificate["fields"] = fields
 
             if self.enrichment_excluded:
@@ -2271,6 +2302,9 @@ class STIX2XSOARParser(BaseClient):
             tlp_from_marking_refs = self.get_tlp(ioc_obj_copy)
             fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
+        if fields.get("trafficlightprotocol"):
+            ioc_obj_copy["trafficlightprotocol"] = fields["trafficlightprotocol"]
+
         if self.update_custom_fields:
             custom_fields, score = self.parse_custom_fields(ioc_obj_copy.get("extensions", {}))
             fields.update(assign_params(**custom_fields))
@@ -2286,6 +2320,7 @@ class STIX2XSOARParser(BaseClient):
                 tags.append(field_tag)
 
         fields["tags"] = list(set(tags))
+        ioc_obj_copy["tags"] = fields["tags"]
 
         indicator["fields"] = fields
         fields["publications"] = self.get_indicator_publication(indicator_obj)
@@ -2467,6 +2502,7 @@ class STIX2XSOARParser(BaseClient):
             "autonomous-system": self.parse_sco_autonomous_system_indicator,
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
+            "software": self.parse_sco_software_indicator,
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "identity": self.parse_identity,

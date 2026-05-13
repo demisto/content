@@ -613,16 +613,16 @@ def test_get_domain_who_is_command(
     requests_mock.get(
         url=urljoin(
             BASE_URL,
-            "investigate/v2/security/name/test.com",
+            "investigate/v2/whois/test.com",
         ),
-        json=load_mock_response("domain_security.json"),
+        json=load_mock_response("domain_whois.json"),
     )
     requests_mock.get(
         url=urljoin(
             BASE_URL,
-            "investigate/v2/whois/test.com",
+            "investigate/v2/domains/risk-score/test.com",
         ),
-        json=load_mock_response("domain_whois.json"),
+        json=load_mock_response("domain_risk_score.json"),
     )
     result = module.get_domain_who_is_command(
         mock_client,

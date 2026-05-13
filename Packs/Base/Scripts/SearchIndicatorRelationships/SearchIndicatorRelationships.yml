@@ -186,7 +186,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.12.6391686
+dockerimage: demisto/python3:3.12.12.6663663
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

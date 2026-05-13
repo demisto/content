@@ -424,11 +424,13 @@ def main() -> None:
         command = demisto.command()
         params = demisto.params()
         handle_proxy()
+        timeout = arg_to_number(params.get("timeout")) or 60
         client = Client(
             base_url=urljoin(params["url"], "/rest/v1"),
             auth=(params["credentials"]["identifier"], params["credentials"]["password"]),
             verify=not params.get("unsecure", False),
             proxy=params.get("proxy", False),
+            timeout=timeout,
         )
         commands = {
             "proofpoint-pps-get-user": get_user,

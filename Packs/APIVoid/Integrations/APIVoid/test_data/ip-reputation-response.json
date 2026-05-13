@@ -1,0 +1,30 @@
+{
+    "ip": "8.8.8.8",
+    "version": "IPv4",
+    "blacklists": {
+        "engines": {
+            "0": {"name": "test1", "detected": false, "reference": "https://example.com", "elapsed_ms": 1},
+            "1": {"name": "test2", "detected": true, "reference": "https://example.com", "elapsed_ms": 0}
+        },
+        "detections": 1,
+        "engines_count": 10,
+        "detection_rate": "10%",
+        "scan_time_ms": 100
+    },
+    "information": {
+        "reverse_dns": "dns.google",
+        "continent_code": "NA",
+        "continent_name": "North America",
+        "country_code": "US",
+        "country_name": "United States",
+        "country_calling_code": "1",
+        "region_name": "California",
+        "city_name": "Mountain View",
+        "latitude": 37.386,
+        "longitude": -122.084,
+        "isp": "Google LLC",
+        "asn": "AS15169"
+    },
+    "anonymity": {"is_proxy": false, "is_webproxy": false, "is_vpn": false, "is_hosting": true, "is_tor": false},
+    "risk_score": {"result": 10}
+}

@@ -44,6 +44,28 @@ BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     GROUP BY
         dta.asset_id
 ),
+asset_softwares AS (
+    SELECT
+        das.asset_id,
+        json_agg(
+            json_build_object(
+                'Software_ID', das.software_id,
+                'Fingerprint_source_ID', das.fingerprint_source_id,
+                'Vendor', ds.vendor,
+                'Family', ds.family,
+                'Name', ds.name,
+                'Version', ds.version,
+                'Software_class', ds.software_class,
+                'Cpe', ds.cpe
+            )
+        ) AS aggregated_software_json
+    FROM
+        dim_software ds
+    JOIN
+        dim_asset_software das ON ds.software_id = das.software_id
+    GROUP BY
+        das.asset_id
+),
 asset_macs AS (
     SELECT
         dama.asset_id,
@@ -118,7 +140,7 @@ asset_latest_scan AS (
         ds.finished AS last_scan_date,
         ds.status_id AS last_scan_status_id,
         ds.scan_id AS scan_id,
-        ds.started As started,
+        ds.started AS started,
         ds.type_id AS type_id,
         ds.scan_name AS scan_name,
         fas.vulnerabilities AS vulnerabilities,
@@ -176,18 +198,11 @@ SELECT
     am.aggregated_mac_addresses AS "dim_asset_mac_address.mac_address",
     ai.aggregated_ip_addresses AS "dim_asset_ip_address.ip_address",
     af.aggregated_files_json AS "asset_files",
-    das.software_id AS "dim_asset_software.software_id",
-    das.fingerprint_source_id AS "dim_asset_software.fingerprint_source_id",
-    ds.vendor AS "dim_software.vendor",
-    ds.family AS "dim_software.family",
-    ds.name AS "dim_software.name",
-    ds.version AS "dim_software.version",
-    ds.software_class AS "dim_software.software_class",
-    ds.cpe AS "dim_software.cpe",
+    asoft.aggregated_software_json AS "asset_softwares",
     als.last_scan_date AS "dim_scan.finished",
     als.last_scan_status_id AS "dim_scan.status_id",
     als.scan_id AS "dim_scan.scan_id",
-    als.started As "dim_scan.started",
+    als.started AS "dim_scan.started",
     als.type_id AS "dim_scan.type_id",
     als.scan_name AS "dim_scan.scan_name",
     als.vulnerabilities AS "fact_asset_scan.vulnerabilities",
@@ -213,9 +228,7 @@ LEFT JOIN
 LEFT JOIN
     dim_host_type dht ON da.host_type_id = dht.host_type_id
 LEFT JOIN
-    dim_asset_software das ON da.asset_id = das.asset_id
-LEFT JOIN
-    dim_software ds ON das.software_id = ds.software_id
+    asset_softwares asoft ON da.asset_id = asoft.asset_id
 LEFT JOIN
     assets_host ah ON da.asset_id = ah.asset_id
 INNER JOIN
@@ -336,9 +349,6 @@ VENDOR = {"asset": "Rapid7", "vulnerability": "Rapid7"}
 PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"}
 XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10**6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
-
-# 24 hours converted to seconds
-TWENTYFOUR_HOURS_AS_SECONDS = 24 * 60 * 60
 
 
 def log(event_type: str, log_line: str):
@@ -7726,13 +7736,20 @@ async def xsiam_api_call_async_with_retries(
                     status_code = response.status
                 except aiohttp.ClientResponseError as e:
                     if ok_codes and e.status in ok_codes:
+                        demisto.debug(f"Got retryable status code {e.status} on attempt {attempt_num}, will retry.")
                         continue
                     else:
                         header_msg = f"Error sending new {data_type} into XSIAM.\n"
+                        demisto.debug(
+                            f"XSIAM API returned a non-retryable error. Status: {e.status}, "
+                            f"Message: {e.message}, Request URL: {e.request_info}"
+                        )
+                        # Convert CIMultiDictProxy headers to a plain dict for JSON serialization
+                        serializable_headers = dict(e.headers) if e.headers else {}
                         api_call_info = (
                             "Parameters used:\n"
                             f"\tURL: {xsiam_url}\n"
-                            f"\tHeaders: {json.dumps(e.headers, indent=8)}\n\n"
+                            f"\tHeaders: {json.dumps(serializable_headers, indent=8)}\n\n"
                             f"Response status code: {e.status}\n"
                             f"Error received:\n\t{e.message}\n"
                             f"additional request info: \n\t{e.request_info}"
@@ -7960,38 +7977,22 @@ async def run_all_collectors(
     demisto.debug("All collector workflows finished successfully.")
 
 
-async def fetch_assets_long_running_command(params: dict, token: str):
+async def fetch_assets_command(params: dict, token: str) -> None:
+    """Fetch assets command - replaces long-running-execution.
+
+    The platform's fetch-assets scheduler handles re-invocation at the configured interval.
+    Each invocation runs the full collector pipeline once.
     """
-    Performs the long running execution loop.
-    Args:
-        client (Client): The client.
-        fetch_interval (int): Fetch time for this fetching events cycle.
-    """
-    while True:
-        demisto.debug("Started long running execution")
-        start_time = time.time()
-        try:
-            async with InsightVMClient(
-                base_url=params["server"],
-                username=params["credentials"].get("identifier"),
-                password=params["credentials"].get("password"),
-                token=token,
-                verify=not params.get("unsecure"),
-            ) as client:
-                await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
-            demisto.debug("Finished running all collectors")
-
-        except Exception as e:
-            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
-
-        finally:
-            end_time = time.time()
-            duration_seconds = end_time - start_time
-            demisto.debug(f"The whole run took {duration_seconds} seconds")
-            remaining_time_seconds = TWENTYFOUR_HOURS_AS_SECONDS - duration_seconds
-            demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
-
-            await asyncio.sleep(remaining_time_seconds)
+    demisto.debug("Starting fetch-assets execution")
+    async with InsightVMClient(
+        base_url=params["server"],
+        username=params["credentials"].get("identifier"),
+        password=params["credentials"].get("password"),
+        token=token,
+        verify=not params.get("unsecure"),
+    ) as client:
+        await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
+    demisto.debug("Finished fetch-assets execution")
 
 
 def main():  # pragma: no cover
@@ -8026,9 +8027,9 @@ def main():  # pragma: no cover
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
             results = "ok"
-        elif command == "long-running-execution":
-            demisto.info("Starting long-running execution.")
-            asyncio.run(fetch_assets_long_running_command(params, token))
+        elif command == "fetch-assets":
+            asyncio.run(fetch_assets_command(params, token))
+            return
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
         elif command == "nexpose-create-assets-report":
