@@ -11003,21 +11003,6 @@ script:
         description: An optional field specifying the version of the artifact associated with the document.
         required: false
     outputs:
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Hash
-        description: The Sha256 or Sha1 hash created by the system when the document was created.
-        type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.HashType
-        description: The hash type of the document. Valid values are Sha256 or Sha1.
-        type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Name
-        description: The name of an attachment.
-        type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Size
-        description: The size of an attachment in bytes.
-        type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Url
-        description: The URL location of the attachment content.
-        type: String
       - contextPath: AWS.SSM.Documents.Name
         description: The name of the SSM document.
         type: String
