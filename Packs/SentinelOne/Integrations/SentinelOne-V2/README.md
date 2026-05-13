@@ -888,6 +888,7 @@ Creates a custom STAR rule. Relevant for API version 2.1.
 | account_ids | A comma-separated list of Account IDs. | Optional |
 | network_quarantine | Whether to enable the network quarantine of the STAR rule. Possible values are: true, false. | Required |
 | treatAsThreat | The treatAsThreat type. Possible values are: Malicious, Suspicious, UNDEFINED. | Required |
+| query_lang | The query language version. Supported values are "1.0" and "2.0". | Optional |
 
 #### Context Output
 
@@ -905,6 +906,7 @@ Creates a custom STAR rule. Relevant for API version 2.1.
 | SentinelOne.StarRule.ScopeHierarchy | String | The scope hierarchy of the STAR rule. |
 | SentinelOne.StarRule.CreatedAt | String | The created time for the STAR rule. |
 | SentinelOne.StarRule.UpdatedAt | String | The updated time for the STAR rule. |
+| SentinelOne.StarRule.QueryLanguage | String | The Query language for the STAR rule. |
 
 ### sentinelone-get-star-rules
 
@@ -973,6 +975,7 @@ Updates a custom STAR rule. Relevant for API version 2.1.
 | account_ids | A comma-separated list of account IDs. | Optional |
 | network_quarantine | Whether to enable the network quarantine of the STAR rule. Possible values are: true, false. | Required |
 | treatAsThreat | The treatAsThreat. Possible values are: Malicious, Suspicious, UNDEFINED. | Required |
+| query_lang | The query language version. Supported values are "1.0" and "2.0". | Optional |
 
 #### Context Output
 
@@ -990,6 +993,7 @@ Updates a custom STAR rule. Relevant for API version 2.1.
 | SentinelOne.StarRule.ScopeHierarchy | String | The scope hierarchy of the STAR rule. |
 | SentinelOne.StarRule.CreatedAt | String | The created time for the STAR rule. |
 | SentinelOne.StarRule.UpdatedAt | String | The updated time for the STAR rule. |
+| SentinelOne.StarRule.QueryLanguage | String | The Query language for the STAR rule. |
 
 ### sentinelone-enable-star-rules
 
