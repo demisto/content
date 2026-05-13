@@ -1,183 +1,229 @@
 {
     "iocs": [
         {
-            "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
             "type": "indicator",
             "name": "0.0.0.0",
-            "description": "Sample Testing",
-            "created": "2023-07-11T06:21:42.110Z",
-            "modified": "2023-07-11T06:21:42.110Z",
+            "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+            "description": "",
+            "created": "2016-04-16T19:23:04.000Z",
+            "modified": "2016-04-16T19:23:04.000Z",
             "indicator_types": [
                 "attribution"
             ],
             "pattern": "[ipv4-addr:value = '0.0.0.0']",
             "pattern_type": "stix",
-            "valid_from": "2023-07-11T06:21:42.110Z",
-            "kill_chain_phases  ": [
-                "Command & Control"
-            ],
+            "valid_from": "2016-04-16T19:23:04.000Z",
+            "confidence": 100,
             "spec_version": "2.1",
             "labels": [
-                {
-                    "geographies": "United States",
-                    "tags": [
-                        "group 83",
-                        "macdownloader",
-                        "parastoo",
-                        "Charming Kitten"
-                    ]
-                }
+                "CYFIRMA-IOC",
+                "recommended_actions: Block",
+                "source: CYFIRMA",
+                "threat_actors: Static Spider"
             ],
-            "first_seen": "2022-06-06T00:00:00.000Z",
-            "last_seen": "2022-12-16T00:00:00.000Z"
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {
+                            "AlphaSOC": "suspicious",
+                            "Webroot": "malicious",
+                            "SOCRadar": "malware",
+                            "CyRadar": "malicious",
+                            "alphaMountain.ai": "suspicious"
+                        },
+                        "continent": "EU",
+                        "threat_score_history": {
+                            "2026-03-02": 8,
+                            "2026-04-02": 10
+                        },
+                        "country": "DE",
+                        "recommended_actions": "Block",
+                        "asn_owner": "4830.org e. V.",
+                        "sources": "IOC sourced from 2 sources",
+                        "roles": "",
+                        "correlations": {},
+                        "country_code": "DE",
+                        "threat_actors": "Static Spider",
+                        "exposure_score": 10,
+                        "ip_abuse_categories": [],
+                        "asn": "206813"
+                    }
+                }
+            }
+        }
+    ],
+    "url": [
+        {
+            "type": "indicator",
+            "name": "http://acme[.]xyz/",
+            "id": "indicator--69f03f0b-0d3e-40c5-823b-a92d5465a202",
+            "description": "",
+            "created": "2026-04-28T05:00:59.548Z",
+            "modified": "2026-04-28T05:00:59.548Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value = 'http://acme[.]xyz/']",
+            "pattern_type": "stix",
+            "valid_from": "2026-04-28T05:00:59.548Z",
+            "confidence": 40,
+            "spec_version": "2.1",
+            "labels": [
+                "CYFIRMA-IOC",
+                "recommended_actions: Monitor",
+                "source: CYFIRMA"
+            ],
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {},
+                        "continent": "",
+                        "threat_score_history": {
+                            "2026-04-28": 4
+                        },
+                        "country": "",
+                        "recommended_actions": "Monitor",
+                        "asn_owner": "",
+                        "sources": "IOC sourced from 1 sources",
+                        "roles": "",
+                        "correlations": {},
+                        "country_code": "",
+                        "threat_actors": "",
+                        "exposure_score": 4,
+                        "asn": ""
+                    }
+                }
+            }
+        }
+    ],
+    "domain": [
+        {
+            "type": "indicator",
+            "name": "mel8xo.cfd",
+            "id": "indicator--69efeb73-d2ab-40c5-823b-661a9eccd188",
+            "description": "",
+            "created": "2026-04-27T22:58:49.000Z",
+            "modified": "2026-04-27T22:58:49.000Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'mel8xo.cfd']",
+            "pattern_type": "stix",
+            "valid_from": "2026-04-27T22:58:49.000Z",
+            "confidence": 50,
+            "spec_version": "2.1",
+            "labels": [
+                "CYFIRMA-IOC",
+                "recommended_actions: Monitor",
+                "source: CYFIRMA"
+            ],
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {},
+                        "continent": "",
+                        "threat_score_history": {
+                            "2026-04-27": 5
+                        },
+                        "country": "",
+                        "recommended_actions": "Monitor",
+                        "asn_owner": "",
+                        "sources": "IOC sourced from 1 sources",
+                        "roles": "",
+                        "correlations": {},
+                        "country_code": "",
+                        "threat_actors": "",
+                        "exposure_score": 5,
+                        "asn": ""
+                    }
+                }
+            }
+        }
+    ],
+    "file": [
+        {
+            "type": "indicator",
+            "name": "File SHA-256 hash '9a10e1faa86a5d39417cae44da5adf38824dfb9a16432e34df766aa1dc9e3525'",
+            "id": "indicator--69ef5c93-926e-40c5-823b-0f3574a33f8d",
+            "description": "PCA - Fast16 Malware Targets High-Value Systems With Sabotage Capabilities",
+            "created": "2026-04-27T00:00:00.000Z",
+            "modified": "2026-04-28T05:27:26.104Z",
+            "indicator_types": [
+                "attribution"
+            ],
+            "pattern": "[file:hashes.md5 = 'dbe51eabebf9d4ef9581ef99844a2944' OR file:hashes.'SHA-1' = 'de584703c78a60a56028f9834086facd1401b355' OR file:hashes.'SHA-256' = '9a10e1faa86a5d39417cae44da5adf38824dfb9a16432e34df766aa1dc9e3525']",
+            "pattern_type": "stix",
+            "valid_from": "2026-04-27T00:00:00.000Z",
+            "confidence": 100,
+            "spec_version": "2.1",
+            "labels": [
+                "CYFIRMA-IOC",
+                "recommended_actions: Block",
+                "source: CYFIRMA",
+                "roles: Trojan",
+                "threat_actors: Unknown"
+            ],
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {},
+                        "threat_score_history": {
+                            "2026-04-27": 10
+                        },
+                        "threat_actors": "Unknown",
+                        "recommended_actions": "Block",
+                        "sources": "IOC sourced from 3 sources",
+                        "exposure_score": 10,
+                        "roles": "Trojan",
+                        "correlations": {}
+                    }
+                }
+            }
         }
     ],
     "threat_actors": [
         {
             "type": "threat-actor",
+            "name": "Gamaredon",
+            "id": "threat-actor--5bfb529f-aeee-40c5-823b-579885ab4b06",
             "spec_version": "2.1",
-            "id": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
-            "created": "2023-07-17T11:27:42.558Z",
-            "modified": "2023-07-17T11:27:42.558Z",
-            "description": "China based threat actor.",
-            "aliases": [
-                "Gibberish Panda"
-            ],
-            "labels": [
-                {
-                    "origin-of-country": "China",
-                    "target-technologies": [
-                        "Office Suites Software",
-                        "Web Application",
-                        "Operating System"
-                    ],
-                    "target-industries": [
-                        "Software",
-                        "IT Services"
-                    ],
-                    "target-countries": []
-                }
-            ],
-            "name": "Gibberish Panda",
+            "created": "2026-04-28T06:33:39.582Z",
+            "modified": "2026-04-28T06:33:39.582Z",
+            "description": "The Gamaredon Group has been active since at least 2013 and s observed distributing new, custom developed malware. In the past, the Gamaredon Group has relied heavily on off-the-shelf tools. Our new research shows the Gamaredon Group have made a shift to custom-developed malware. We believe this shift indicates the Gamaredon Group have improved their technical capabilities",
             "threat_actor_types": [
                 "crime-syndicate"
             ],
-            "primary_motivation": "personal-gain"
-        },
-        {
-            "type": "threat-actor",
-            "spec_version": "2.1",
-            "id": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
-            "created": "2023-07-17T11:27:42.558Z",
-            "modified": "2023-07-17T11:27:42.558Z",
-            "description": "Chinese threat actor that uses PlugX",
-            "labels": [
-                {
-                    "origin-of-country": "China",
-                    "target-technologies": [
-                        "Office Suites Software",
-                        "Web Application",
-                        "Operating System"
-                    ],
-                    "target-industries": [
-                        "Software",
-                        "IT Services"
-                    ],
-                    "target-countries": []
-                }
-            ],
-            "name": "Pale Panda",
-            "threat_actor_types": [
-                "crime-syndicate"
-            ],
-            "primary_motivation": "personal-gain"
-        }
-    ],
-    "intrusion_set": [
-        {
-            "name": "Gamaredon Group",
-            "description": "[Gamaredon Group](https://attack.mitre.org/groups/G0047) is a suspected Russian cyber espionage threat group that has targeted military, NGO, judiciary, law enforcement, and non-profit organizations in Ukraine since at least 2013. The name [Gamaredon Group](https://attack.mitre.org/groups/G0047) comes from a misspelling of the word \"Armageddon\", which was detected in the adversary's early campaigns.(Citation: Palo Alto Gamaredon Feb 2017)(Citation: TrendMicro Gamaredon April 2020)(Citation: ESET Gamaredon June 2020)(Citation: Symantec Shuckworm January 2022)(Citation: Microsoft Actinium February 2022)\n\nIn November 2021, the Ukrainian government publicly attributed [Gamaredon Group](https://attack.mitre.org/groups/G0047) to Russia's Federal Security Service (FSB) Center 18.(Citation: Bleepingcomputer Gamardeon FSB November 2021)(Citation: Microsoft Actinium February 2022)",
-            "external_references": [
-                {
-                    "url": "https://attack.mitre.org/groups/G0047",
-                    "source_name": "mitre-attack",
-                    "external_id": "G0047"
-                },
-                {
-                    "source_name": "ACTINIUM"
-                },
-                {
-                    "source_name": "DEV-0157"
-                },
-                {
-                    "source_name": "Gamaredon Group"
-                },
-                {
-                    "source_name": "IRON TILDEN"
-                },
-                {
-                    "source_name": "Armageddon"
-                },
-                {
-                    "source_name": "Shuckworm"
-                },
-                {
-                    "source_name": "Primitive Bear"
-                },
-                {
-                    "url": "https://www.welivesecurity.com/2020/06/11/gamaredon-group-grows-its-game/",
-                    "source_name": "ESET Gamaredon June 2020"
-                },
-                {
-                    "url": "https://blog.trendmicro.com/trendlabs-security-intelligence/gamaredon-apt-group-use-covid-19-lure-in-campaigns/",
-                    "source_name": "TrendMicro Gamaredon April 2020"
-                },
-                {
-                    "url": "https://researchcenter.paloaltonetworks.com/2017/02/unit-42-title-gamaredon-group-toolset-evolution/",
-                    "source_name": "Palo Alto Gamaredon Feb 2017"
-                },
-                {
-                    "url": "https://www.microsoft.com/security/blog/2022/02/04/actinium-targets-ukrainian-organizations/",
-                    "source_name": "Microsoft Actinium February 2022"
-                },
-                {
-                    "url": "https://www.secureworks.com/research/threat-profiles/iron-tilden",
-                    "source_name": "Secureworks IRON TILDEN Profile"
-                },
-                {
-                    "url": "https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/shuckworm-gamaredon-espionage-ukraine",
-                    "source_name": "Symantec Shuckworm January 2022"
-                },
-                {
-                    "url": "https://www.bleepingcomputer.com/news/security/ukraine-links-members-of-gamaredon-hacker-group-to-russian-fsb/",
-                    "source_name": "Bleepingcomputer Gamardeon FSB November 2021"
-                },
-                {
-                    "url": "https://unit42.paloaltonetworks.com/gamaredon-primitive-bear-ukraine-update-2021/",
-                    "source_name": "Unit 42 Gamaredon February 2022"
-                }
-            ],
-            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-            "id": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
-            "created": "2017-05-31T21:32:09.849Z",
-            "modified": "2022-04-15T13:46:34.474Z",
-            "type": "intrusion-set",
-            "objectMarkingRefs": [
-                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-            ],
-            "xMitreDomains": [
-                "enterprise-attack"
-            ],
+            "primary_motivation": "personal-gain",
             "aliases": [
-                "Gamaredon Group",
-                "IRON TILDEN",
                 "Primitive Bear",
-                "ACTINIUM",
+                "UAC-0027",
+                " Shuckworm",
+                "Trident Ursa",
+                "Actinium",
+                "BlueAlpha",
+                "Winterflounder",
+                "UAC-0010",
+                "Armagedon",
                 "Armageddon",
-                "Shuckworm",
-                "DEV-0157"
+                "Iron Tilden"
             ],
-            "isDeprecated": false
+            "labels": [],
+            "extensions": {
+                "extension-definition--d3f7a1c9-6b2e-4a58-9d0c-5e1b7a3f8c92": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "origin-of-country": "Russia",
+                        "target-technologies": "Office Suites Software,Web Application,Operating System",
+                        "target-industries": "Aerospace & Defense,cryptocurrency,Software and Services,Education,Government,Capital Goods,Telecommunications,Defense,Military",
+                        "target-countries": "South Korea,Cambodia,Ukraine,United Kingdom"
+                    }
+                }
+            },
+            "confidence": 90
         }
     ],
     "ta_relationships": [
@@ -193,123 +239,72 @@
                 "Shuckworm",
                 "Trident Ursa"
             ],
-            "labels": [
-                {
-                    "origin-of-country": "Russia",
-                    "target-technologies": [
-                        "Office Suites Software",
-                        "Web Application",
-                        "Operating System"
-                    ],
-                    "target-industries": [
-                        "Aerospace & Defense",
-                        "cryptocurrency",
-                        "Software and Services",
-                        "Education"
-                    ],
-                    "target-countries": [
-                        "South Korea",
-                        "Cambodia",
-                        "Ukraine",
-                        "United Kingdom"
-                    ]
-                }
-            ],
             "name": "Gamaredon",
             "threat_actor_types": [
                 "crime-syndicate"
             ],
-            "primary_motivation": "personal-gain"
-        },
-        {
-            "source_ref": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
-            "target_ref": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
-            "relationship_type": "attributed-to",
-            "type": "relationship",
-            "spec_version": "2.1",
-            "id": "relationship--1219bdcf-41c2-469b-85e1-acda461fe44e",
-            "created": "2023-07-17T14:20:31.760Z",
-            "modified": "2023-07-17T14:20:31.760Z"
-        },
-        {
-            "id": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
-            "name": "Gamaredon Group",
-            "description": "Gamaredon Group",
-            "external_references": [
-                {
-                    "url": "https://attack.mitre.org/groups/G0047",
-                    "source_name": "mitre-attack",
-                    "external_id": "G0047"
-                },
-                {
-                    "source_name": "ACTINIUM"
-                },
-                {
-                    "source_name": "DEV-0157"
-                }
-            ],
-            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-            "created": "2017-05-31T21:32:09.849Z",
-            "modified": "2022-04-15T13:46:34.474Z",
-            "type": "intrusion-set",
-            "objectMarkingRefs": [
-                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-            ],
-            "xMitreDomains": [
-                "enterprise-attack"
-            ],
-            "aliases": [
-                "Gamaredon Group",
-                "IRON TILDEN",
-                "Primitive Bear"
-            ],
-            "isDeprecated": false
-        },
-        {
-            "id": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
-            "type": "vulnerability",
-            "name": "CVE-2021-40444",
-            "description": "Microsoft MSHTML Remote Code Execution",
-            "created": "2021-09-15T12:15:00.000Z",
-            "modified": "2022-10-14T11:49:00.000Z",
-            "spec_version": "2.1",
-            "labels": [
-                {
-                    "cvss_version": "3.1",
-                    "cvss_score": "7.8",
-                    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
-                    "cvss_metrics_data": {
-                        "attack_complexity": "LOW",
-                        "integrity_impact": "HIGH",
-                        "impact_score": 5.9,
-                        "access_vector": "NETWORK",
-                        "attack_vector": "LOCAL",
-                        "privileges_required": "NONE",
-                        "products": [
-                            "windows server"
-                        ],
-                        "availability_impact": "HIGH",
-                        "technologies": [
-                            "microsoft"
-                        ],
-                        "user_interaction": "REQUIRED",
-                        "scope": "UNCHANGED",
-                        "confidentiality_impact": "HIGH",
-                        "vendors": [
-                            "microsoft"
-                        ],
-                        "access_complexity": "MEDIUM",
-                        "exploitability_score": 1.8,
-                        "authentication": "NONE"
+            "primary_motivation": "personal-gain",
+            "extensions": {
+                "extension-definition--d3f7a1c9-6b2e-4a58-9d0c-5e1b7a3f8c92": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "origin-of-country": "Russia",
+                        "target-technologies": " ",
+                        "target-industries": "Aerospace & Defense,Cryptocurrency,Software and Services,Education",
+                        "target-countries": "Myanmar,United States,Hongkong,Thailand"
                     }
                 }
-            ],
+            },
+            "confidence": 100
+        },
+        {
+            "type": "vulnerability",
+            "name": "CVE-2021-40444",
+            "id": "vulnerability--61322aa2-9e80-40c5-823b-4913eb64b4f7",
+            "description": "Microsoft MSHTML Remote Code Execution",
+            "created": "2021-09-15T12:15:16.467Z",
+            "modified": "2025-10-30T19:16:25.180Z",
+            "spec_version": "2.1",
+            "labels": [],
             "external_references": [
                 {
                     "source_name": "cve",
                     "external_id": "CVE-2021-40444"
                 }
-            ]
+            ],
+            "extensions": {
+                "extension-definition--c9e2b7f4-1a5d-4c83-9f6a-3d7b0e2c8a11": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "cvss_score": "8.8",
+                        "integrity_impact": "HIGH",
+                        "impact_score": "5.3",
+                        "access_vector": "NETWORK",
+                        "privileges_required": "NONE",
+                        "products": "windows 10 20h2 (Versions- -10.0.19042.1236), windows 10 21h1 (Versions- -10.0.19043.1236), windows server 2012, windows server 2022 (Versions- -10.0.20348.229), windows 10 1507 (Versions- -10.0.10240.19059), windows 10 2004 (Versions- -10.0.19041.1236), windows 7, windows server 20h2 (Versions- -10.0.19042.1236), windows 10 1809 (Versions- -10.0.17763.2182), windows 8 1, windows 10 1909 (Versions- -10.0.18363.1800), windows rt 8 1, windows server 2008 (Versions- r2), windows server 2019 (Versions- -10.0.17763.2182), windows 10 1607 (Versions- -10.0.14393.4650), windows server 2016 (Versions- -10.0.14393.4650), windows server 2004 (Versions- -10.0.19041.1236)",
+                        "availability_impact": "LOW",
+                        "servers": "",
+                        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:H/A:L",
+                        "scope": "CHANGED",
+                        "confidentiality_impact": "LOW",
+                        "vendors": "microsoft",
+                        "access_complexity": "MEDIUM",
+                        "authentication": "NONE",
+                        "cyfirma_risk_score": 9,
+                        "severity": "Critical",
+                        "attack_complexity": "LOW",
+                        "vulnerability_type": "Code Execution",
+                        "attack_vector": "NETWORK",
+                        "ips": "",
+                        "technologies": "microsoft, operating system, sp1, sp2, x64, r2, defender, authentication systems, browser, microsoft windows",
+                        "cvss_version": "3.1",
+                        "user_interaction": "REQUIRED",
+                        "vulnerability_category": "ASSET_VULNERABILITY",
+                        "exploitability_score": "2.8"
+                    }
+                }
+            },
+            "confidence": 90
         },
         {
             "source_ref": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
@@ -320,62 +315,82 @@
             "id": "relationship--e4a424c8-f9f5-43b7-83f4-50073c746738",
             "created": "2023-07-17T14:20:31.840Z",
             "modified": "2023-07-17T14:20:31.840Z"
-        },
+        }
+    ],
+    "cve": [
         {
-            "description": "malware can insert malicious macros into documents",
+            "type": "vulnerability",
+            "name": "CVE-2025-61882",
+            "id": "vulnerability--68e21a7f-618d-40c5-823b-2b6f6994bf7d",
+            "description": "Vulnerability in the Oracle Concurrent Processing product of Oracle E-Business Suite (component: BI Publisher Integration).  Supported versions that are affected are 12.2.3-12.2.14. Easily exploitable vulnerability allows unauthenticated attacker with network access via HTTP to compromise Oracle Concurrent Processing.  Successful attacks of this vulnerability can result in takeover of Oracle Concurrent Processing. CVSS 3.1 Base Score 9.8 (Confidentiality, Integrity and Availability impacts).  CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H).",
+            "created": "2025-10-05T04:15:40.340Z",
+            "modified": "2025-10-07T21:00:13.017Z",
+            "spec_version": "2.1",
             "external_references": [
                 {
-                    "url": "https://www.welivesecurity.com/2020/06/11/gamaredon-group-grows-its-game/",
-                    "source_name": "ESET Gamaredon June 2020"
+                    "source_name": "cve",
+                    "external_id": "CVE-2025-61882"
                 }
             ],
-            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-            "id": "relationship--69513daf-2acd-4b04-a7be-9f31174a2ae9",
-            "created": "2020-06-16T17:53:18.768Z",
-            "modified": "2020-06-22T18:27:32.047Z",
-            "type": "relationship",
-            "sourceRef": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
-            "relationshipType": "uses",
-            "targetRef": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
-            "objectMarkingRefs": [
-                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-            ]
-        },
+            "extensions": {
+                "extension-definition--bee7e77f-0e2e-47a9-a954-7ae119cae52c": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "cyfirma_risk_score": 10,
+                        "severity": "Critical",
+                        "attack_complexity": "LOW",
+                        "vulnerability_type": "",
+                        "cvss_score": "9.8",
+                        "integrity_impact": "HIGH",
+                        "impact_score": "5.9",
+                        "attack_vector": "NETWORK",
+                        "ips": "",
+                        "privileges_required": "NONE",
+                        "products": "concurrent processing (Versions- 12.2.3)",
+                        "availability_impact": "HIGH",
+                        "technologies": "oracle, application",
+                        "cvss_version": "3.1",
+                        "servers": "",
+                        "user_interaction": "NONE",
+                        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                        "scope": "UNCHANGED",
+                        "confidentiality_impact": "HIGH",
+                        "vulnerability_category": "ASSET_VULNERABILITY",
+                        "vendors": "oracle",
+                        "exploitability_score": "3.9"
+                    }
+                }
+            },
+            "confidence": 100
+        }
+    ],
+    "malware": [
         {
-            "name": "Component Object Model",
-            "description": "Adversaries may use the Windows Component Object",
-            "kill_chain_phases": [
-                {
-                    "kill_chain_name": "mitre-attack",
-                    "phase_name": "execution"
+            "type": "malware",
+            "name": "Lokibot ",
+            "id": "malware--5ddbafd4-1801-40c5-823b-ba10b03dd44a",
+            "spec_version": "2.1",
+            "created": "2026-01-30T04:01:56.154Z",
+            "modified": "2020-10-27T00:00:00.000Z",
+            "aliases": [
+                "Win32/Lokibot"
+            ],
+            "is_family": false,
+            "malware_types": [
+                "unknown"
+            ],
+            "first_seen": "2015-05-02T18:30:00.000Z",
+            "last_seen": "2026-01-15T19:02:07.443Z",
+            "extensions": {
+                "extension-definition--d70c5f32-980c-43a3-a7dc-497ecd23088f": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "geographies": "Global",
+                        "technologies": "Microsoft Office"
+                    }
                 }
-            ],
-            "external_references": [
-                {
-                    "url": "https://attack.mitre.org/techniques/T1559/001",
-                    "source_name": "mitre-attack",
-                    "external_id": "T1559.001"
-                }
-            ],
-            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-            "id": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
-            "created": "2020-02-12T14:09:53.107Z",
-            "modified": "2021-07-26T22:51:20.448Z",
-            "type": "attack-pattern",
-            "objectMarkingRefs": [
-                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-            ],
-            "xMitrePlatforms": [
-                "Windows"
-            ],
-            "xMitreDataSources": [
-                "Script: Script Execution",
-                "Module: Module Load",
-                "Process: Process Creation"
-            ],
-            "xMitreDomains": [
-                "enterprise-attack"
-            ]
+            },
+            "confidence": 90
         }
     ]
 }
