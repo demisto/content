@@ -549,7 +549,13 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_17_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[], update_custom_fields=True
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color="GREEN",
+            objects_to_fetch=[],
+            update_custom_fields=True,
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS, -1)
@@ -574,7 +580,13 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[], update_custom_fields=True
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color="GREEN",
+            objects_to_fetch=[],
+            update_custom_fields=True,
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
@@ -599,7 +611,13 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, skip_complex_mode=True, objects_to_fetch=[], update_custom_fields=True
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            skip_complex_mode=True,
+            objects_to_fetch=[],
+            update_custom_fields=True,
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
@@ -623,7 +641,13 @@ class TestFetchingStixObjects:
 
         """
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], enrichment_excluded=enrichment_excluded, update_custom_fields=True
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            objects_to_fetch=[],
+            enrichment_excluded=enrichment_excluded,
+            update_custom_fields=True,
         )
         objects_envelopes = envelopes_v21
 
@@ -658,7 +682,9 @@ class TestFetchingStixObjects:
         extension-definition objects.
 
         """
-        mock_client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], update_custom_fields=True)
+        mock_client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], update_custom_fields=True
+        )
 
         result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
         assert mock_client.id_to_object == id_to_object
@@ -1410,7 +1436,6 @@ class TestParsingIndicators:
         )
         # rawJSON must still contain the original labels for auditability
         assert result[0]["rawJSON"].get("labels") == ["blocklist"]
-
 
     # Parsing SDO Indicators
 
@@ -3396,7 +3421,7 @@ class TestTagsInRawJSON:
             tlp_color=None,
             objects_to_fetch=[],
             tags=["custom-tag"],
-            update_custom_fields=True
+            update_custom_fields=True,
         )
         indicator_obj = {
             "id": "indicator--abc123",
