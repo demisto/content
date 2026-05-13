@@ -1,5 +1,6 @@
 import hashlib
 import json
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import UTC
@@ -103,9 +104,9 @@ class Client(ContentClient):
             paging_identifiers: Pagination state from the previous response; None for first page.
 
         Returns:
-            Parsed JSON response (dict per docs, but the live API has been observed to return a
-            bare list). Returns None when the API returns an empty 200 (Content-Length: 0),
-            which the docs describe as "no data for this time window".
+            Parsed JSON response (dict per docs, or a list of response wrappers as observed
+            on the live v2 endpoint). Returns None when the API returns an empty 200
+            (Content-Length: 0), which the docs describe as "no data for this time window".
 
         Raises:
             ValueError: If the response body is non-empty but not valid JSON (e.g. HTML auth-error pages).
@@ -201,8 +202,6 @@ def get_events_for_log_type(
     # Rename the worker thread to the log type for cleaner logs (e.g. "[web]" instead of "[ThreadPoolExecutor-12_0]").
     threading.current_thread().name = log_type_ui
     thread_name = log_type_ui
-    # TODO(CIAC-16574): The thread name now contains the log type, so the redundant
-    # "{log_type_ui}:" prefix in debug messages below can be dropped during cleanup.
     api_log_type = LOG_TYPE_MAP[log_type_ui]
     events: list[dict] = []
     paging_identifiers: dict | None = None
@@ -215,7 +214,7 @@ def get_events_for_log_type(
             page_limit = min(MAX_EVENTS_PER_PAGE, max_events)
         else:
             page_limit = MAX_EVENTS_PER_PAGE
-        demisto.debug(f"[{thread_name}] Fetching {log_type_ui}: start={start_epoch}, end={end_epoch}, limit={page_limit}")
+        demisto.debug(f"[{thread_name}] Fetching: start={start_epoch}, end={end_epoch}, limit={page_limit}")
 
         try:
             response = client.fetch_log_page(
@@ -226,12 +225,12 @@ def get_events_for_log_type(
                 paging_identifiers=paging_identifiers,
             )
         except Exception as e:
-            demisto.error(f"[{thread_name}] Error fetching {log_type_ui}: {e}")
+            demisto.error(f"[{thread_name}] Error fetching: {e}")
             break
 
         # The API may return an empty 200 response (Content-Length: 0) when there is no data.
         if not response:
-            demisto.debug(f"[{thread_name}] Empty response for {log_type_ui} — no data.")
+            demisto.debug(f"[{thread_name}] Empty response — no data.")
             break
 
         # The live `web` endpoint returns a LIST of response wrappers, each carrying its own
@@ -251,10 +250,10 @@ def get_events_for_log_type(
                 next_paging = wrapper_paging
 
         if not page_events:
-            demisto.debug(f"[{thread_name}] No more events for {log_type_ui}.")
+            demisto.debug(f"[{thread_name}] No more events.")
             break
 
-        demisto.debug(f"[{thread_name}] Got {len(page_events)} {log_type_ui} events.")
+        demisto.debug(f"[{thread_name}] Got {len(page_events)} events.")
 
         # Per the API docs, each element in the events list is {"event": {...}}.
         source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
@@ -273,15 +272,15 @@ def get_events_for_log_type(
 
         paging_identifiers = next_paging or {}
         if not paging_identifiers:
-            demisto.debug(f"[{thread_name}] All {log_type_ui} events fetched.")
+            demisto.debug(f"[{thread_name}] All events fetched.")
             break
 
     # Trim to the user-requested cap (we may have fetched a few extra in the last page).
     if len(events) > max_events:
-        demisto.debug(f"[{thread_name}] Trimming {log_type_ui} from {len(events)} to {max_events} events.")
+        demisto.debug(f"[{thread_name}] Trimming from {len(events)} to {max_events} events.")
         events = events[:max_events]
 
-    demisto.debug(f"[{thread_name}] Collected {len(events)} {log_type_ui} events total.")
+    demisto.debug(f"[{thread_name}] Collected {len(events)} events total.")
     return events
 
 
@@ -316,6 +315,9 @@ def test_module(client: Client, log_types: list[str]) -> str:  # noqa: PT
             raise
 
     return "ok"
+
+
+test_module.__test__ = False  # type: ignore[attr-defined]  # prevent pytest collection
 
 
 @dataclass
@@ -357,21 +359,19 @@ def _fetch_log_type_task(
     # Rename the worker thread to the log type for cleaner logs (e.g. "[web]" instead of "[ThreadPoolExecutor-12_0]").
     threading.current_thread().name = log_type_ui
     thread_name = log_type_ui
-    # TODO(CIAC-16574): The thread name now contains the log type, so the redundant
-    # "{log_type_ui}:" prefix in debug messages below can be dropped during cleanup.
     result = FetchResult(log_type_ui=log_type_ui)
 
     try:
         last_fetch_time = last_run.get(log_type_ui, {}).get("last_fetch_time")
         if last_fetch_time:
             start_epoch = timestamp_to_epoch(last_fetch_time)
-            demisto.debug(f"[{thread_name}] {log_type_ui}: resuming from {last_fetch_time}")
+            demisto.debug(f"[{thread_name}] resuming from {last_fetch_time}")
         else:
             first_fetch_dt = arg_to_datetime(first_fetch_time)
             if first_fetch_dt is None:
                 raise ValueError(f"Invalid first_fetch_time: {first_fetch_time!r}")
             start_epoch = int(first_fetch_dt.timestamp())
-            demisto.debug(f"[{thread_name}] {log_type_ui}: first fetch from {epoch_to_timestamp(start_epoch)}")
+            demisto.debug(f"[{thread_name}] first fetch from {epoch_to_timestamp(start_epoch)}")
 
         events = get_events_for_log_type(
             client=client,
@@ -392,7 +392,7 @@ def _fetch_log_type_task(
                 else:
                     break
             if skip:
-                demisto.debug(f"[{thread_name}] {log_type_ui}: removed {skip} duplicate(s) at {last_fetch_time!r}")
+                demisto.debug(f"[{thread_name}] removed {skip} duplicate(s) at {last_fetch_time!r}")
                 events = events[skip:]
 
         result.events = events
@@ -402,24 +402,23 @@ def _fetch_log_type_task(
             next_fetch_time = last_event_time or end_timestamp
             next_boundary_hashes = get_boundary_hashes(events, last_event_time)
             demisto.debug(
-                f"[{thread_name}] {log_type_ui}: next fetch from {next_fetch_time} "
-                f"({len(next_boundary_hashes)} boundary hash(es))"
+                f"[{thread_name}] next fetch from {next_fetch_time} " f"({len(next_boundary_hashes)} boundary hash(es))"
             )
             result.next_run_state = {"last_fetch_time": next_fetch_time, "boundary_hashes": next_boundary_hashes}
         else:
             # No events — preserve previous state so the next cycle retries from the same point.
             prev_state = last_run.get(log_type_ui)
             if prev_state:
-                demisto.debug(f"[{thread_name}] {log_type_ui}: no events — preserving state.")
+                demisto.debug(f"[{thread_name}] no events — preserving state.")
                 result.next_run_state = prev_state
             else:
                 # First fetch with no results — advance to now to avoid re-querying the same empty window.
-                demisto.debug(f"[{thread_name}] {log_type_ui}: first fetch, no events — advancing to {end_timestamp}")
+                demisto.debug(f"[{thread_name}] first fetch, no events — advancing to {end_timestamp}")
                 result.next_run_state = {"last_fetch_time": end_timestamp, "boundary_hashes": []}
 
     except Exception as e:
         result.error = str(e)
-        demisto.error(f"[{thread_name}] {log_type_ui}: fetch failed: {e}")
+        demisto.error(f"[{thread_name}] fetch failed: {e}")
 
     return result
 

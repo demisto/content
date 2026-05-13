@@ -2,8 +2,7 @@ commonfields:
   id: Menlo Security
   version: -1
 name: Menlo Security
-#TODO remove Beta
-display: Menlo Security Beta
+display: Menlo Security
 category: Network Security
 provider: Menlo Security
 sectionorder:
@@ -91,7 +90,7 @@ script:
       required: false
       defaultValue: "now"
     - name: log_types
-      description: Comma-separated list of log types to fetch (e.g. "web,audit"). Defaults to all configured log types.
+      description: 'Comma-separated list of log types to fetch. Options: web, safemail, audit, auth_flows, smtp, attachment, bandwidth, heat, firewall, dlp, ms_client_logs. Defaults to all configured log types.'
       required: false
       isArray: true
     - name: limit
