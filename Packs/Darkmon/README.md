@@ -10,12 +10,14 @@ This is an **end-to-end content pack**, not just an integration. It ships
 everything a SOC team needs to put Darkmon intelligence into action.
 
 ### Integration
+
 - **Darkmon** — 18 commands covering indicator enrichment, IOC feed ingestion
   (TIM), compromised data discovery, board-level VIP email protection,
   ransomware tracking, newly-registered-domain monitoring, vulnerability
   intelligence, and a fully dynamic global search.
 
 ### Indicator enrichment (sub-playbooks)
+
 - `Darkmon - Enrich IP`
 - `Darkmon - Enrich Domain`
 - `Darkmon - Enrich URL`
@@ -26,6 +28,7 @@ These are wired into XSOAR's reputation system via `DBotScore` + `Common.<Type>`
 contracts so they slot into any existing playbook with no rewrites.
 
 ### Continuous monitoring
+
 - `Darkmon - Compromised Credentials Sweep` (every 4h)
 - `Darkmon - VIP Email Monitor` (hourly)
 - `Darkmon - Ransomware Mentions Watch` (every 6h)
@@ -37,6 +40,7 @@ List of tunables (customer domains, brand names, tech stack, severity rules)
 so multi-tenant deployments customize without forking.
 
 ### Incident response
+
 - `Darkmon - Phishing Email Triage`
 - `Darkmon - Compromised Account Response`
 - `Darkmon - EDR Alert Enrichment`
@@ -47,6 +51,7 @@ These response playbooks call **provider-agnostic switchboard** sub-playbooks so
 they work whatever your stack looks like.
 
 ### Provider-agnostic adapters (Tier 4)
+
 - `Darkmon - Generic Notify` (Slack | Teams | Email | ServiceNow | Jira)
 - `Darkmon - Generic Block Indicator` (Palo Alto NGFW | Fortinet | Cisco
   Umbrella | CloudFlare)

@@ -1,5 +1,4 @@
 import json
-import re
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -159,11 +158,6 @@ def _apply_ioc_fields(item: dict, ioc_type: str, indicator_obj: dict) -> None:
             indicator_obj["fields"]["tags"] = existing + new_tags
         else:
             indicator_obj["fields"][spec["dst"]] = v
-
-
-def camel_case_to_underscore(name: str) -> str:
-    s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
-    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
 def extract_feature_value(item: dict, key: str) -> Any:
@@ -508,7 +502,7 @@ def generate_ioc_tables(ioc_objects: list) -> str:
     if not ioc_objects:
         return "No indicators found"
 
-    type_groups = {}
+    type_groups: dict[str, list[dict[str, Any]]] = {}
 
     for item in ioc_objects:
         ioc_type = item.get("type", "Unknown")
@@ -570,7 +564,7 @@ def generate_ioc_tables(ioc_objects: list) -> str:
         if not rows:
             continue
 
-        all_headers = set()
+        all_headers: set[str] = set()
         for row in rows:
             all_headers.update(row.keys())
 
@@ -583,7 +577,7 @@ def generate_ioc_tables(ioc_objects: list) -> str:
 
 
 def dmontip_get_indicators_command(client: Client, args: dict) -> CommandResults:
-    size = arg_to_number(args.get("size", DEFAULT_SIZE))
+    size = arg_to_number(args.get("size", DEFAULT_SIZE)) or DEFAULT_SIZE
 
     result = client.get_indicators(size=size)
 
@@ -606,10 +600,10 @@ def dmontip_global_search_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("Query parameter is required")
 
-    indicator_type = args.get("type")
-    user_page = arg_to_number(args.get("page", 1))
+    indicator_type = args.get("type") or ""
+    user_page = arg_to_number(args.get("page", 1)) or 1
     page = max(0, user_page - 1)
-    size = arg_to_number(args.get("size", DEFAULT_SIZE))
+    size = arg_to_number(args.get("size", DEFAULT_SIZE)) or DEFAULT_SIZE
 
     result = client.global_search(query=query, indicator_type=indicator_type, page=page, size=size)
 
@@ -762,7 +756,7 @@ def dmontip_get_compromised_command(client: Client, args: dict) -> CommandResult
     }
 
     if content_items:
-        headers_set = set()
+        headers_set: set[str] = set()
         simplified_rows: list[dict[str, Any]] = []
         for item in content_items:
             row: dict[str, Any] = {}
@@ -825,7 +819,7 @@ def dmontip_get_vpn_command(client: Client, args: dict) -> CommandResults:
     priority = ["ip", "port", "name", "firstSeen", "lastUpdated", "id"]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -886,7 +880,7 @@ def dmontip_get_proxy_command(client: Client, args: dict) -> CommandResults:
     priority = ["ip", "port", "type", "firstSeen", "lastUpdated", "id"]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -945,7 +939,7 @@ def dmontip_get_cve_command(client: Client, args: dict) -> CommandResults:
     priority = ["name", "cvssScore", "description", "published", "lastModified", "sourceIdentifier", "tags"]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -1006,7 +1000,7 @@ def dmontip_get_nrd_command(client: Client, args: dict) -> CommandResults:
     priority = ["value", "timestamp"]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -1069,7 +1063,7 @@ def dmontip_get_tbf_command(client: Client, args: dict) -> CommandResults:
     priority = ["value", "timestamp"]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -1148,7 +1142,7 @@ def dmontip_get_ransomware_command(client: Client, args: dict) -> CommandResults
     ]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -1226,7 +1220,7 @@ def dmontip_get_landscape_command(client: Client, args: dict) -> CommandResults:
     ]
 
     rows: list[dict[str, Any]] = []
-    headers_set = set()
+    headers_set: set[str] = set()
     for item in content:
         row: dict[str, Any] = {}
         for k, v in item.items():
@@ -1511,8 +1505,9 @@ def _search_each(client: Client, args: dict, arg_key: str, type_label: str, miss
                 "size": args.get("size", DEFAULT_SIZE),
             },
         )
-        search_items = cr.outputs.get("Darkmon.SearchResult", []) if cr.outputs else []
-        cr.outputs = {**(cr.outputs or {}), **build_dbot_outputs(v, indicator_type, search_items)}
+        outputs_dict: dict[str, Any] = cr.outputs if isinstance(cr.outputs, dict) else {}
+        search_items = outputs_dict.get("Darkmon.SearchResult", [])
+        cr.outputs = {**outputs_dict, **build_dbot_outputs(v, indicator_type, search_items)}
         results.append(cr)
     return results
 

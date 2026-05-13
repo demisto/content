@@ -13,7 +13,6 @@ Run:
     python -m pytest src_test.py -v
 """
 
-import builtins
 import importlib
 import json
 import os
@@ -75,7 +74,7 @@ def test_test_module_validates_via_test_api_key_endpoint(monkeypatch):
 
 def test_test_module_returns_error_on_invalid_key(monkeypatch):
     monkeypatch.setattr(src.Client, "_http_request", lambda *_a, **_k: "nope")
-    with pytest.raises(builtins.DemistoException, match="Failed to validate API key"):
+    with pytest.raises(src.DemistoException, match="Failed to validate API key"):
         src.test_module(make_client())
 
 
@@ -84,27 +83,13 @@ def test_test_module_swallows_http_exception(monkeypatch):
         raise RuntimeError("connection refused")
 
     monkeypatch.setattr(src.Client, "_http_request", boom)
-    with pytest.raises(builtins.DemistoException):
+    with pytest.raises(src.DemistoException):
         src.test_module(make_client())
 
 
 # ===========================================================================
-# helpers: camel_case_to_underscore + extract_feature_value
+# helpers: extract_feature_value
 # ===========================================================================
-
-
-@pytest.mark.parametrize(
-    "inp, out",
-    [
-        ("camelCase", "camel_case"),
-        ("PascalCase", "pascal_case"),
-        ("lowercase", "lowercase"),
-        ("XMLParser", "xml_parser"),
-        ("simpleHTTP", "simple_http"),
-    ],
-)
-def test_camel_case_to_underscore(inp, out):
-    assert src.camel_case_to_underscore(inp) == out
 
 
 def test_extract_feature_value_finds_match():
@@ -615,7 +600,7 @@ def test_compromised_rejects_invalid_page():
 
 def test_compromised_accounts_endpoint_and_output(monkeypatch):
     # redaction off so we can assert raw password presence in markdown
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {"redact_secrets": False})
+    monkeypatch.setattr(src.demisto, "params", lambda: {"redact_secrets": False})
     calls = patch_http(monkeypatch, COMPROMISED_ACCOUNTS_RESPONSE)
     result = src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "page": "1", "size": "20"})
     assert calls["url_suffix"] == "leaks/accounts"
@@ -1624,7 +1609,7 @@ def _search_response_with_classification(classification):
 
 
 def test_ip_reputation_emits_dbot_score_and_common_ip(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {"feedReliability": "B - Usually reliable"})
+    monkeypatch.setattr(src.demisto, "params", lambda: {"feedReliability": "B - Usually reliable"})
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "203.0.113.5"})
@@ -1651,7 +1636,7 @@ def test_ip_reputation_emits_dbot_score_and_common_ip(monkeypatch):
 
 
 def test_domain_reputation_score_2_no_malicious_block(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)
+    monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, _search_response_with_classification("suspicious"))
 
     out = src.dmontip_search_domain_command(make_client(), {"domain": "evil.example"})
@@ -1663,7 +1648,7 @@ def test_domain_reputation_score_2_no_malicious_block(monkeypatch):
 
 
 def test_url_reputation_score_0_when_no_classification(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)
+    monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_url_command(make_client(), {"url": "https://x.example/a"})
@@ -1675,7 +1660,7 @@ def test_url_reputation_score_0_when_no_classification(monkeypatch):
 
 
 def test_email_reputation_uses_address_field(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)
+    monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_email_command(make_client(), {"email": "bad@example.com"})
@@ -1696,7 +1681,7 @@ def test_email_reputation_uses_address_field(monkeypatch):
     ],
 )
 def test_file_reputation_detects_hash_type(monkeypatch, hash_value, expected_field):
-    monkeypatch.setattr(builtins.demisto, "params", dict)
+    monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_file_command(make_client(), {"hash": hash_value})
@@ -1706,7 +1691,7 @@ def test_file_reputation_detects_hash_type(monkeypatch, hash_value, expected_fie
 
 
 def test_dbot_reliability_falls_back_to_F(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)  # no feedReliability
+    monkeypatch.setattr(src.demisto, "params", dict)  # no feedReliability
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "1.1.1.1"})
@@ -1714,7 +1699,7 @@ def test_dbot_reliability_falls_back_to_F(monkeypatch):
 
 
 def test_reputation_array_input_produces_dbot_per_value(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)
+    monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "1.2.3.4,5.6.7.8"})
@@ -1749,7 +1734,7 @@ def test_redact_rows_skips_empty_secrets():
 
 
 def test_compromised_table_redacts_password_by_default(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)  # default True
+    monkeypatch.setattr(src.demisto, "params", dict)  # default True
     patch_http(monkeypatch, COMPROMISED_ACCOUNTS_RESPONSE)
     out = src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "page": "1", "size": "20"})
     assert "hunter2" not in out.readable_output
@@ -1759,14 +1744,14 @@ def test_compromised_table_redacts_password_by_default(monkeypatch):
 
 
 def test_compromised_table_keeps_password_when_redaction_off(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", lambda: {"redact_secrets": False})
+    monkeypatch.setattr(src.demisto, "params", lambda: {"redact_secrets": False})
     patch_http(monkeypatch, COMPROMISED_ACCOUNTS_RESPONSE)
     out = src.dmontip_get_compromised_command(make_client(), {"type": "accounts"})
     assert "hunter2" in out.readable_output
 
 
 def test_boardemails_accounts_redacts_password_by_default(monkeypatch):
-    monkeypatch.setattr(builtins.demisto, "params", dict)
+    monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, BOARDLEAK_ACCOUNTS_RESPONSE)
     out = src.dmontip_get_boardemails_command(make_client(), {"type": "accounts", "email": "victim@example.com"})
     assert "hunter2" not in out.readable_output
