@@ -9103,14 +9103,15 @@ def test_validate_custom_fields_cli_name_lookup(mocker):
     assert not error_messages
 
 
-def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+def test_validate_custom_fields_multiselect_with_string_value_auto_converts(mocker):
     """
     GIVEN:
-        A multiSelect custom field provided with a string value instead of a list.
+        A multiSelect custom field provided with a plain string value instead of a list.
     WHEN:
         validate_custom_fields is called.
     THEN:
-        The field is excluded and a clear error message instructs the user to provide a list value.
+        The string is auto-converted to a single-element list and the field is accepted.
+        No error messages are returned.
     """
     from CortexPlatformCore import validate_custom_fields, Client
 
@@ -9134,9 +9135,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
     fields_to_validate = {"multi_field": "single_value"}
     valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
 
-    assert "multi_field" not in valid_fields
-    assert "multiSelect" in error_messages
-    assert "list" in error_messages
+    assert valid_fields == {"multi_field": ["single_value"]}
+    assert error_messages == ""
 
 
 def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
