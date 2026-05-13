@@ -4227,7 +4227,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
             "id": s.get("id"),
             "name": s.get("name"),
             "description": s.get("description"),
-            "controls_count": len(s.get("controls_ids") or []),
+            "controls_count": len(s.get("controls_ids")) if isinstance(s.get("controls_ids"), list) else 0,
             "assessments_profiles_count": s.get("assessments_profiles_count", 0),
             "labels": s.get("labels", []),
         }
