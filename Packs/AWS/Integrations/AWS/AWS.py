@@ -8538,7 +8538,7 @@ class SSM:
 
             # Build TargetLocations from tag-style flat arg
             raw_target_locations = parse_tag_field(args.get("target_locations"))
-            target_locations = [{loc["Key"]: loc["Value"] for loc in raw_target_locations}] if raw_target_locations else None
+            target_locations = [{loc["Key"]: loc["Value"] for loc in raw_target_locations}]
 
             # Build TargetMaps from key-values format
             target_maps_str: str = args.get("target_maps") or ""
@@ -8633,7 +8633,8 @@ class SSM:
         if not argToBoolean(args.get("first_run", True)):
             # Polling — check cancellation status
             automation_response = client.get_automation_execution(AutomationExecutionId=automation_execution_id)
-            status = automation_response.get("AutomationExecution", {}).get("AutomationExecutionStatus", "")
+            automation = serialize_response_with_datetime_encoding(automation_response.get("AutomationExecution", {}))
+            status = automation.get("AutomationExecutionStatus", "")
             demisto.debug(
                 f"[ssm] aws-ssm-automation-execution-cancel: {automation_execution_id=} {status=}"
             )
@@ -8641,8 +8642,12 @@ class SSM:
             if status in TERMINAL_COMMAND_STATUSES:
                 return PollResult(
                     response=CommandResults(
+                        outputs_prefix="AWS.SSM.AutomationExecution",
+                        outputs_key_field="AutomationExecutionId",
+                        outputs=automation,
                         readable_output=f"Automation execution {automation_execution_id} status: {status}. "
                         f"{TERMINAL_COMMAND_STATUSES[status]}",
+                        raw_response=automation,
                     ),
                     continue_to_poll=False,
                 )
@@ -8680,8 +8685,8 @@ class SSM:
         Returns:
             CommandResults: Results containing the list of SSM commands with pagination token.
         """
-        raw_filters = parse_filter_field(args.get("filters"))
-        command_filters = [{"key": f["Name"], "value": f["Values"][0]} for f in raw_filters] if raw_filters else None
+        raw_filters = parse_tag_field(args.get("filters"))
+        command_filters = [{"key": f["Key"], "value": f["Value"]} for f in raw_filters]
 
         kwargs: Dict[str, Any] = remove_empty_elements(
             {

@@ -5488,7 +5488,32 @@ Stop an Automation that is currently running and polls until the cancellation is
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.AutomationExecution.AutomationExecutionId | String | The execution ID. |
+| AWS.SSM.AutomationExecution.DocumentName | String | The name of the Automation runbook used during execution. |
+| AWS.SSM.AutomationExecution.DocumentVersion | String | The document version used during the execution. |
+| AWS.SSM.AutomationExecution.ExecutionStartTime | Date | The time the execution started. |
+| AWS.SSM.AutomationExecution.ExecutionEndTime | Date | The time the execution finished. |
+| AWS.SSM.AutomationExecution.AutomationExecutionStatus | String | The status of the execution after cancellation. |
+| AWS.SSM.AutomationExecution.StepExecutions | Unknown | A list of details about the current state of all steps that comprise an execution, containing StepName, Action, StepStatus, Inputs, Outputs, StepExecutionId, and other fields. |
+| AWS.SSM.AutomationExecution.StepExecutionsTruncated | Boolean | Whether the response contains the full list of the Automation step executions. |
+| AWS.SSM.AutomationExecution.Parameters | Unknown | The key-value map of execution parameters supplied when calling StartAutomationExecution. |
+| AWS.SSM.AutomationExecution.Outputs | Unknown | The list of execution outputs as defined in the Automation runbook. |
+| AWS.SSM.AutomationExecution.FailureMessage | String | A message describing why an execution has failed, if the status is set to Failed. |
+| AWS.SSM.AutomationExecution.Mode | String | The Automation execution mode. |
+| AWS.SSM.AutomationExecution.ExecutedBy | String | The IAM role ARN of the user who ran the Automation. |
+| AWS.SSM.AutomationExecution.CurrentStepName | String | The name of the step that is currently running. |
+| AWS.SSM.AutomationExecution.CurrentAction | String | The action of the step that is currently running. |
+| AWS.SSM.AutomationExecution.TargetParameterName | String | The parameter name used as the target resource for the rate-controlled execution. |
+| AWS.SSM.AutomationExecution.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.AutomationExecution.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.AutomationExecution.MaxConcurrency | String | The MaxConcurrency value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecution.MaxErrors | String | The MaxErrors value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecution.Target | String | The target of the execution. |
+| AWS.SSM.AutomationExecution.ProgressCounters | Unknown | An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields. |
+| AWS.SSM.AutomationExecution.AlarmConfiguration | Unknown | The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields. |
+| AWS.SSM.AutomationExecution.TriggeredAlarms | Unknown | The CloudWatch alarm that was invoked by the automation, containing Name and State fields. |
 
 ### aws-ssm-command-list
 
