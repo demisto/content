@@ -15312,11 +15312,21 @@ def test_log_events_filter_command_with_pagination(mocker):
         "nextToken": "abc123token",
     }
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "limit": "10",
+        "next_token": "prev-token",
+    }
 
     result = CloudWatchLogs.log_events_filter_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.filter_log_events.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
+    assert call_kwargs["limit"] == 10
+    assert call_kwargs["nextToken"] == "prev-token"
     assert result.outputs["AWS.CloudWatchLogs(true)"]["EventsNextToken"] == "abc123token"
 
 
@@ -15525,6 +15535,10 @@ def test_log_streams_describe_command_with_pagination(mocker):
 
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
+    call_kwargs = mock_client.describe_log_streams.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-group"
+    assert call_kwargs["limit"] == 1
+    assert call_kwargs["nextToken"] == "token"
     assert result.outputs["AWS.CloudWatchLogs.LogGroups(true)"]["LogStreamsNextToken"] == "stream-next-token"
 
 
@@ -15806,6 +15820,10 @@ def test_metric_filters_describe_command_with_pagination(mocker):
     }
     result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
 
+    call_kwargs = mock_client.describe_metric_filters.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
+    assert call_kwargs["limit"] == 1
+    assert call_kwargs["nextToken"] == "token"
     assert result.outputs["AWS.CloudWatchLogs(true)"]["MetricFiltersNextToken"] == "metric-next-token"
 
 

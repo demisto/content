@@ -15959,7 +15959,7 @@ script:
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes
       description: The number of bytes stored.
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogStreamsNextToken
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreamsNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
 

@@ -8245,7 +8245,7 @@ class CloudWatchLogs:
             "logGroupName": args.get("log_group_name"),
             "kmsKeyId": args.get("kms_key_id"),
             "logGroupClass": args.get("log_group_class"),
-            "tags": {tag["Key"]: tag["Value"] for tag in parse_tag_field(tags)} if tags else None,
+            "tags": {tag["Key"]: tag["Value"] for tag in parse_tag_field(tags)},
             "deletionProtectionEnabled": arg_to_bool_or_none(args.get("deletion_protection_enabled")),
         }
         remove_nulls_from_dictionary(kwargs)
@@ -8465,7 +8465,7 @@ class CloudWatchLogs:
         kwargs: dict[str, Any] = {
             "logGroupNamePrefix": args.get("log_group_name_prefix"),
             "logGroupNamePattern": args.get("log_group_name_pattern"),
-            "logGroupIdentifiers": argToList(log_group_identifiers) if log_group_identifiers else None,
+            "logGroupIdentifiers": argToList(log_group_identifiers),
             "accountIdentifiers": argToList(args.get("account_identifiers")),
             "includeLinkedAccounts": arg_to_bool_or_none(args.get("include_linked_accounts")),
             "logGroupClass": args.get("log_group_class"),
@@ -8666,8 +8666,8 @@ class CloudWatchLogs:
         attributes = parse_tag_field(args.get("attributes"))
 
         entity: dict[str, Any] = {
-            "keyAttributes": {tag["Key"]: tag["Value"] for tag in key_attributes} if key_attributes else None,
-            "attributes": {tag["Key"]: tag["Value"] for tag in attributes} if attributes else None,
+            "keyAttributes": {tag["Key"]: tag["Value"] for tag in key_attributes},
+            "attributes": {tag["Key"]: tag["Value"] for tag in attributes},
         }
         remove_nulls_from_dictionary(entity)
 
@@ -8741,12 +8741,11 @@ class CloudWatchLogs:
             "metricNamespace": args.get("metric_namespace"),
             "metricValue": args.get("metric_value"),
             "defaultValue": float(default_value) if default_value else None,
-            "dimensions": {tag["Key"]: tag["Value"] for tag in parse_tag_field(dimensions)} if dimensions else None,
+            "dimensions": {tag["Key"]: tag["Value"] for tag in parse_tag_field(dimensions)},
             "unit": args.get("unit"),
             "fieldSelectionCriteria": args.get("field_selection_criteria"),
-            "emitSystemFieldDimensions": argToList(emit_system_field_dimensions) if emit_system_field_dimensions else None,
+            "emitSystemFieldDimensions": argToList(emit_system_field_dimensions),
         }
-        metric_transformation = remove_empty_elements(metric_transformation)
 
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),

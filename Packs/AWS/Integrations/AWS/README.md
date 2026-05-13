@@ -5512,7 +5512,7 @@ Lists log events from the specified log group. You can list all the log events o
 | start_time | The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp before this time are not returned. | Optional |
 | end_time | The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp later than this time are not returned. | Optional |
 | filter_pattern | The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation. | Optional |
-| limit | The maximum number of events to return. Max 10,000 events. | Optional |
+| limit | The maximum number of events to return. | Optional |
 | next_token | The token for the next set of events to return. Use the value returned in the previous response as nextToken to get the next page of results. | Optional |
 | unmask | Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false. Possible values are: true, false. | Optional |
 
@@ -5584,7 +5584,7 @@ Lists the log streams for the specified log group. You can list all the log stre
 | log_stream_name_prefix | The prefix to match. If orderBy is LastEventTime, you cannot specify this parameter. | Optional |
 | order_by | If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time. The default value is LogStreamName. Possible values are: LogStreamName, LastEventTime. | Optional |
 | descending | If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending). Possible values are: true, false. | Optional |
-| limit | The maximum number of items returned. If you don't specify a value, maximum 50 items. | Optional |
+| limit | The maximum number of items returned. Maximum value of 50. | Optional |
 | next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
 
 #### Context Output
@@ -5747,7 +5747,7 @@ Lists the specified metric filters. You can list all the metric filters or filte
 | filter_name_prefix | The prefix to match. | Optional |
 | metric_name | Filters results to include only those with the specified metric name. If you include this parameter in your request, you must also include the metric_namespace parameter. | Optional |
 | metric_namespace | Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter. | Optional |
-| limit | The maximum number of items returned. If you don't specify a value, maximum 50 items. | Optional |
+| limit | The maximum number of items returned. Maximum value of 50. | Optional |
 | next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
 
 #### Context Output
