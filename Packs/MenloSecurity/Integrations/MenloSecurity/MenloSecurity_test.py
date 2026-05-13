@@ -668,6 +668,7 @@ class TestGetEventsCommand:
             - Calling get_events_command.
         Then:
             - Events in raw_response have _time and source_log_type fields.
+            - A push confirmation message is included.
         """
         mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
         mocker.patch("MenloSecurity.send_events_to_xsiam")
@@ -679,11 +680,14 @@ class TestGetEventsCommand:
             max_events_per_fetch_per_type=5000,
         )
 
-        raw = results.raw_response
+        # When pushing, returns [table_results, push_message].
+        assert isinstance(results, list)
+        raw = results[0].raw_response
         assert isinstance(raw, list)
         assert len(raw) == 1
         assert "_time" in raw[0]
         assert raw[0]["source_log_type"] == "web_logs"
+        assert "pushed" in results[1].readable_output.lower()
 
     def test_uses_default_log_types_when_not_specified(self, mock_client: Client, mocker):
         """

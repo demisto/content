@@ -8,8 +8,9 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "tags": [
-        "Network Security",
-        "Web Security"
+        "Network",
+        "Security",
+        "Email"
     ],
     "categories": [
         "Network Security"
