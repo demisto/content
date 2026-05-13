@@ -1601,9 +1601,8 @@ def get_aws_tags(client, parameters, tag_filters):
         tag_dict = {t["Key"]: t["Value"] for t in tag_list}
 
         # Apply filtering ONLY if tag filters exist
-        if tag_filters:
-            if not all(tag_dict.get(k) == v for k, v in tag_filters.items()):
-                continue
+        if tag_filters and not all(tag_dict.get(k) == v for k, v in tag_filters.items()):
+            continue
 
         param_copy = param.copy()
         param_copy["Tags"] = tag_dict
