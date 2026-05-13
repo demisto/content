@@ -627,22 +627,21 @@ DEFAULT_ACL_PARAMS: dict[str, Any] = {
 
 
 def _build_acl_session(mocker: MockerFixture, json_body: Any) -> AsyncMock:
-    """Build an AsyncMock httpx session whose get/delete return a 200 with `json_body`."""
+    """Build an AsyncMock httpx session whose request returns a 200 with `json_body`."""
     mock_response = MagicMock(spec=httpx.Response)
     mock_response.status_code = 200
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = json_body
 
     session = AsyncMock()
-    session.get = AsyncMock(return_value=mock_response)
-    session.delete = AsyncMock(return_value=mock_response)
+    session.request = AsyncMock(return_value=mock_response)
     session.__aenter__.return_value = session
     mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
     return session
 
 
 def _build_acl_error_session(mocker: MockerFixture, status_code: int, text: str = "err body") -> AsyncMock:
-    """Build an AsyncMock httpx session whose get/delete raise an HTTPStatusError of the given code."""
+    """Build an AsyncMock httpx session whose request raises an HTTPStatusError of the given code."""
     error_response = httpx.Response(
         status_code=status_code,
         request=httpx.Request("GET", "https://test.com"),
@@ -651,8 +650,7 @@ def _build_acl_error_session(mocker: MockerFixture, status_code: int, text: str 
     error = httpx.HTTPStatusError(f"Error {status_code}", request=error_response.request, response=error_response)
 
     session = AsyncMock()
-    session.get = AsyncMock(side_effect=error)
-    session.delete = AsyncMock(side_effect=error)
+    session.request = AsyncMock(side_effect=error)
     session.__aenter__.return_value = session
     mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
     return session
@@ -665,21 +663,21 @@ class TestAclList:
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
         await client.list_acls()
-        session.get.assert_called_once_with(ACCESS_ACLS_ENDPOINT)
+        session.request.assert_called_once_with("GET", ACCESS_ACLS_ENDPOINT, params=None, json=None)
 
     async def test_acl_list_with_user_group_calls_specific_endpoint(self, mocker: MockerFixture):
         """Given user_group='admin', GET is called against /access/acls/admin."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
         await client.list_acls(user_group="admin")
-        session.get.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin")
+        session.request.assert_called_once_with("GET", f"{ACCESS_ACLS_ENDPOINT}/admin", params=None, json=None)
 
     async def test_acl_list_url_encodes_user_group(self, mocker: MockerFixture):
         """A user_group containing '/' must be URL-encoded so '/' becomes '%2F'."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"acls": [], "status": {"code": 200, "message": "ok"}})
         await client.list_acls(user_group="admin/group")
-        called_url = session.get.call_args.args[0]
+        called_url = session.request.call_args.args[1]
         assert called_url == f"{ACCESS_ACLS_ENDPOINT}/admin%2Fgroup"
         assert "/group" not in called_url.split(ACCESS_ACLS_ENDPOINT, 1)[1].lstrip("/")
 
@@ -716,7 +714,7 @@ class TestFilesystemAclGet:
         body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
         session = _build_acl_session(mocker, body)
         await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01")
-        called_url = session.get.call_args.args[0]
+        called_url = session.request.call_args.args[1]
         assert called_url == "/scalemgmt/v2/filesystems/gpfs0/acl/mnt%2Fgpfs0%2Frest01"
 
     async def test_filesystem_acl_get_no_fields_arg_omits_query_param(self, mocker: MockerFixture):
@@ -725,7 +723,7 @@ class TestFilesystemAclGet:
         body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
         session = _build_acl_session(mocker, body)
         await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01")
-        assert session.get.call_args.kwargs["params"] == {}
+        assert session.request.call_args.kwargs["params"] is None
 
     async def test_filesystem_acl_get_explicit_all_passed_through(self, mocker: MockerFixture):
         """When fields=':all:' is explicitly provided, it is sent verbatim."""
@@ -733,7 +731,7 @@ class TestFilesystemAclGet:
         body = {"status": {"code": 200, "message": "ok"}, "acl": {"type": "NFSv4", "entries": []}}
         session = _build_acl_session(mocker, body)
         await client.get_filesystem_acl("gpfs0", "mnt/gpfs0/rest01", fields=":all:")
-        assert session.get.call_args.kwargs["params"] == {"fields": ":all:"}
+        assert session.request.call_args.kwargs["params"] == {"fields": ":all:"}
 
     async def test_filesystem_acl_get_custom_fields_passed_through_string(self, mocker: MockerFixture):
         """When fields arrives as a CSV string from the user, it reaches the wire as that exact string."""
@@ -744,7 +742,7 @@ class TestFilesystemAclGet:
             client,
             {"file_system_name": "gpfs0", "path": "mnt/gpfs0/rest01", "fields": "owner,group"},
         )
-        assert session.get.call_args.kwargs["params"] == {"fields": "owner,group"}
+        assert session.request.call_args.kwargs["params"] == {"fields": "owner,group"}
 
     async def test_filesystem_acl_get_custom_fields_passed_through_list(self, mocker: MockerFixture):
         """When fields arrives pre-parsed as a list (YAML isArray:true), it is CSV-joined for the wire."""
@@ -755,7 +753,7 @@ class TestFilesystemAclGet:
             client,
             {"file_system_name": "gpfs0", "path": "mnt/gpfs0/rest01", "fields": ["owner", "group"]},
         )
-        assert session.get.call_args.kwargs["params"] == {"fields": "owner,group"}
+        assert session.request.call_args.kwargs["params"] == {"fields": "owner,group"}
 
     async def test_filesystem_acl_get_command_outputs_prefix(self, mocker: MockerFixture):
         """The command returns CommandResults with the documented prefix and `outputs == raw`."""
@@ -799,14 +797,14 @@ class TestAclDelete:
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
         await client.delete_acl(user_group="admin")
-        session.delete.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin")
+        session.request.assert_called_once_with("DELETE", f"{ACCESS_ACLS_ENDPOINT}/admin", params=None, json=None)
 
     async def test_acl_delete_url_encodes_user_group(self, mocker: MockerFixture):
         """user_group with '/' is encoded so '/' becomes '%2F'."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
         await client.delete_acl(user_group="grp/with/slash")
-        called_url = session.delete.call_args.args[0]
+        called_url = session.request.call_args.args[1]
         assert called_url == f"{ACCESS_ACLS_ENDPOINT}/grp%2Fwith%2Fslash"
 
     async def test_acl_delete_readable_output_message(self, mocker: MockerFixture):
@@ -854,14 +852,19 @@ class TestAclEntryDelete:
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
         await client.delete_acl_entry(user_group="admin", entry_id="42")
-        session.delete.assert_called_once_with(f"{ACCESS_ACLS_ENDPOINT}/admin/entry/42")
+        session.request.assert_called_once_with(
+            "DELETE",
+            f"{ACCESS_ACLS_ENDPOINT}/admin/entry/42",
+            params=None,
+            json=None,
+        )
 
     async def test_acl_entry_delete_url_encodes_both_segments(self, mocker: MockerFixture):
         """Both user_group and entry_id are independently URL-encoded as path segments."""
         client = mock_client(mocker, DEFAULT_ACL_PARAMS)
         session = _build_acl_session(mocker, {"jobs": [], "status": {"code": 200, "message": "ok"}})
         await client.delete_acl_entry(user_group="g/x", entry_id="e/y")
-        called_url = session.delete.call_args.args[0]
+        called_url = session.request.call_args.args[1]
         assert called_url == f"{ACCESS_ACLS_ENDPOINT}/g%2Fx/entry/e%2Fy"
 
     async def test_acl_entry_delete_readable_output_message(self, mocker: MockerFixture):

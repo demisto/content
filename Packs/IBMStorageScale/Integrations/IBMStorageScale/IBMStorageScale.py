@@ -52,7 +52,7 @@ def _encode_path_segment(value: str) -> str:
     return quote(value, safe="")
 
 
-def _raise_for_acl_error(error: httpx.HTTPStatusError, *, resource: str) -> Never:
+def _raise_acl_http_error(error: httpx.HTTPStatusError) -> Never:
     """
     Translate an httpx.HTTPStatusError from an ACL endpoint into a DemistoException. Always raises.
 
@@ -65,9 +65,6 @@ def _raise_for_acl_error(error: httpx.HTTPStatusError, *, resource: str) -> Neve
 
     Args:
         error: The exception raised by response.raise_for_status().
-        resource: Human-readable name of the resource being acted upon, used in the error
-                  message (e.g. 'ACLs for user_group=admin' or
-                  'filesystem ACL (filesystem=gpfs0, path=mnt/gpfs0/rest01)').
 
     Raises:
         DemistoException: Always.
@@ -80,9 +77,9 @@ def _raise_for_acl_error(error: httpx.HTTPStatusError, *, resource: str) -> Neve
         demisto.debug(f"Failed to extract response body from ACL error: {traceback.format_exc()}")
 
     if status == 400:
-        raise DemistoException(f"Invalid Request to {resource} (HTTP 400). {body}".strip())
+        raise DemistoException(f"Invalid Request (HTTP 400). {body}".strip())
     # Generic branch: 500 (documented) and any undocumented status code.
-    raise DemistoException(f"HTTP Error: Failed to act on {resource}. Status code: {status}. {body}".strip())
+    raise DemistoException(f"HTTP Error. Status code: {status}. {body}".strip())
 
 
 # --- TIMEZONE HELPERS ---
@@ -592,6 +589,46 @@ class Client:
 
         return debug_info
 
+    async def _acl_request(
+        self,
+        method: str,
+        url_suffix: str,
+        *,
+        params: dict[str, Any] | None = None,
+        json_body: Any | None = None,
+    ) -> dict[str, Any]:
+        """
+        Execute an ACL endpoint call and return the parsed JSON response.
+
+        Owns the httpx.AsyncClient lifecycle (per-call, matching current behaviour) and
+        translates httpx errors into DemistoException via _raise_acl_http_error and the
+        standard Connection Error message.
+
+        Args:
+            method: HTTP verb ("GET", "POST", "PUT", "DELETE", "PATCH", ...).
+            url_suffix: Path suffix appended to self.base_url. Caller is responsible for
+                        URL-encoding any interpolated path segments (use _encode_path_segment).
+            params: Optional query-string parameters, forwarded to httpx as `params=`.
+                    Pass None or omit to send no query string.
+            json_body: Optional JSON-serializable body, forwarded to httpx as `json=`.
+                       Pass None or omit to send no body.
+
+        Returns:
+            Parsed JSON response body as a dict.
+
+        Raises:
+            DemistoException: On HTTP error (via _raise_acl_http_error) or connection error.
+        """
+        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
+            try:
+                response = await client.request(method, url_suffix, params=params, json=json_body)
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                _raise_acl_http_error(e)
+            except httpx.RequestError as e:
+                raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
+            return response.json()
+
     async def list_acls(self, user_group: str | None = None) -> dict[str, Any]:
         """
         List access ACLs, optionally scoped to a single user/group.
@@ -606,16 +643,7 @@ class Client:
             url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}"
         else:
             url_suffix = ACCESS_ACLS_ENDPOINT
-
-        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
-            try:
-                response = await client.get(url_suffix)
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                _raise_for_acl_error(e, resource=f"ACLs (user_group={user_group or '<all>'})")
-            except httpx.RequestError as e:
-                raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
-            return response.json()
+        return await self._acl_request("GET", url_suffix)
 
     async def get_filesystem_acl(
         self,
@@ -636,22 +664,8 @@ class Client:
             file_system_name=_encode_path_segment(file_system_name),
             path=_encode_path_segment(path),
         )
-        params: dict[str, str] = {}
-        if fields:
-            params["fields"] = fields
-
-        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
-            try:
-                response = await client.get(url_suffix, params=params)
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                _raise_for_acl_error(
-                    e,
-                    resource=f"filesystem ACL (filesystem={file_system_name}, path={path})",
-                )
-            except httpx.RequestError as e:
-                raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
-            return response.json()
+        params = {"fields": fields} if fields else None
+        return await self._acl_request("GET", url_suffix, params=params)
 
     async def delete_acl(self, user_group: str) -> dict[str, Any]:
         """
@@ -662,16 +676,7 @@ class Client:
         ``response.json()`` is safe (no defensive empty-body handling needed).
         """
         url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}"
-
-        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
-            try:
-                response = await client.delete(url_suffix)
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                _raise_for_acl_error(e, resource=f"ACLs for user_group={user_group}")
-            except httpx.RequestError as e:
-                raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
-            return response.json()
+        return await self._acl_request("DELETE", url_suffix)
 
     async def delete_acl_entry(self, user_group: str, entry_id: str) -> dict[str, Any]:
         """
@@ -682,16 +687,7 @@ class Client:
         envelope).
         """
         url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}/entry/{_encode_path_segment(entry_id)}"
-
-        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
-            try:
-                response = await client.delete(url_suffix)
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                _raise_for_acl_error(e, resource=f"ACL entry (user_group={user_group}, entry_id={entry_id})")
-            except httpx.RequestError as e:
-                raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
-            return response.json()
+        return await self._acl_request("DELETE", url_suffix)
 
 
 class _ConcurrentEventFetcher:
