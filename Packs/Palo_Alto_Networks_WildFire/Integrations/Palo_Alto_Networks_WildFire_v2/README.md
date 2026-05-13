@@ -503,12 +503,6 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 | DBotScore.Vendor | string | Vendor used to calculate the score. |
 | DBotScore.Score | number | The actual score. |
 
-#### Command Example
-
-``````
-
-#### Human Readable Output
-
 ### wildfire-upload-url
 
 ***
