@@ -695,6 +695,23 @@ class TestGetEventsCommand:
         assert "web" in log_types_called
         assert "audit" in log_types_called
 
+    def test_raises_on_invalid_log_type(self, mock_client: Client, mocker):
+        """
+        Given:
+            - An invalid log type "invalid_type" in the command args.
+        When:
+            - Calling get_events_command.
+        Then:
+            - A ValueError is raised listing the invalid type and valid options.
+        """
+        with pytest.raises(ValueError, match="Unknown log type.*invalid_type"):
+            get_events_command(
+                client=mock_client,
+                args={"start_time": "1 hour", "end_time": "now", "log_types": "invalid_type"},
+                log_types=["web"],
+                max_events_per_fetch=100,
+            )
+
 
 # ─── test_module Tests ────────────────────────────────────────────────────────
 

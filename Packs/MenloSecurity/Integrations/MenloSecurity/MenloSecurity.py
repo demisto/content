@@ -523,10 +523,12 @@ def get_events_command(
     end_epoch = int(end_dt.timestamp())
 
     all_events: list[dict] = []
-    for log_type_ui in arg_log_types:
-        if log_type_ui not in LOG_TYPE_MAP:
-            demisto.debug(f"[get-events] Unknown log type: {log_type_ui}, skipping.")
-            continue
+    valid_log_types = [lt for lt in arg_log_types if lt in LOG_TYPE_MAP]
+    invalid_log_types = [lt for lt in arg_log_types if lt not in LOG_TYPE_MAP]
+    if invalid_log_types:
+        raise ValueError(f"Unknown log type(s): {', '.join(invalid_log_types)}. Valid options: {', '.join(ALL_LOG_TYPES)}")
+
+    for log_type_ui in valid_log_types:
         events = get_events_for_log_type(
             client=client,
             log_type_ui=log_type_ui,
