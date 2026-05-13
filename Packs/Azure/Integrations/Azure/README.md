@@ -949,7 +949,7 @@ Run this command to update a specific blob container. Required Permissions: Micr
 ### azure-vm-instance-start
 
 ***
-Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/start/action.
+Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/start/action.
 
 #### Base Command
 
@@ -1269,7 +1269,7 @@ Gets all resource groups for a subscription. Required Permissions: Microsoft.Res
 ### azure-vm-instance-power-off
 
 ***
-Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/poweroff/action.
+Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/poweroff/action.
 
 #### Base Command
 
@@ -1621,7 +1621,7 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 ### azure-storage-container-blob-tag-set
 
 ***
-Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write.
+Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write.
 
 #### Base Command
 
@@ -1710,7 +1710,7 @@ There is no context output for this command.
 ### azure-storage-container-public-access-block
 
 ***
-Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
+Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
 
 #### Base Command
 

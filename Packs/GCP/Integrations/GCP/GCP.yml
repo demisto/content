@@ -2595,7 +2595,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: "Returns the specified Zone resource. Required Permissions: compute.zone.get."
+    description: "Returns the specified Zone resource. Required Permissions: compute.zones.get."
     name: gcp-compute-zone-get
     outputs:
     - contextPath: GCP.Compute.Zones.id
@@ -2739,7 +2739,7 @@ script:
       predefined:
       - REGIONAL
       - GLOBAL
-    description: "Creates a network in the specified project using the data included in the request. Required Permissions: compute.networks.insert."
+    description: "Creates a network in the specified project using the data included in the request. Required Permissions: compute.networks.create."
     name: gcp-compute-network-insert
     outputs:
     - contextPath: GCP.Compute.Operations.id

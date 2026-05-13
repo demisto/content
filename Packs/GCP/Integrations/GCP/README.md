@@ -1317,7 +1317,7 @@ Returns the specified Region resource. Gets a list of available regions by makin
 ### gcp-compute-zone-get
 
 ***
-Returns the specified Zone resource. Gets a list of available zones by making a list() request. Required Permissions: compute.zone.get.
+Returns the specified Zone resource. Gets a list of available zones by making a list() request. Required Permissions: compute.zones.get.
 
 ##### Base Command
 
@@ -1395,7 +1395,7 @@ Retrieves the list of networks available to the specified project. Required Perm
 ### gcp-compute-network-insert
 
 ***
-Creates a network in the specified project using the data included in the request. Required Permissions: compute.networks.insert.
+Creates a network in the specified project using the data included in the request. Required Permissions: compute.networks.create.
 
 ##### Base Command
 

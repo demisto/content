@@ -629,7 +629,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Retrieve Blob from Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    description: "Create a new Blob under the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     name: azure-storage-container-blob-create
 
   - arguments:
@@ -740,7 +740,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
+    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
     name: azure-storage-container-blob-tag-set
 
   - arguments:
@@ -856,7 +856,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action."
+    description: "Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
     name: azure-storage-container-public-access-block
 
   - arguments:
@@ -2625,7 +2625,7 @@ script:
           - "false"
           - "true"
   - name: azure-vm-instance-start
-    description: "Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/start/action."
+    description: "Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/start/action."
     execution: true
     arguments:
     - description: The subscription ID.
@@ -2650,7 +2650,7 @@ script:
       description: Whether the VM instance is powered on or off.
       type: string
   - name: azure-vm-instance-power-off
-    description: "Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/poweroff/action."
+    description: "Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/poweroff/action."
     execution: true
     arguments:
     - description: The subscription ID.

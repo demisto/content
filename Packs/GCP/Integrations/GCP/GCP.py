@@ -234,9 +234,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
     "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
-    "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zone.get"]),
+    "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
-    "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.insert"]),
+    "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
