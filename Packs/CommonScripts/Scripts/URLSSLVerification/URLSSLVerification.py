@@ -116,17 +116,20 @@ def main():
             url_obj["Verified"] = True
 
         score = UNKNOWN_SCORE
-        
+
         if mark_http_as_suspicious(set_http_as_suspicious) and not url.startswith(SSL_PREFIX):
             score = SUSPICIOUS_SCORE
         elif malicious:
             score = SUSPICIOUS_SCORE
 
-        dbot_score.append({"Indicator": url,
-                           "Type": "url",
-                           "Vendor": VENDOR,
-                           "Score": score,
-                           })
+        dbot_score.append(
+            {
+                "Indicator": url,
+                "Type": "url",
+                "Vendor": VENDOR,
+                "Score": score,
+            }
+        )
 
         url_list.append(url_obj)
 
@@ -139,12 +142,14 @@ def main():
         for url in url_list
     ]
     entry_context = {"URL": url_list, "DBotScore": dbot_score}
-    return_results(CommandResults(
-        readable_output=tableToMarkdown(name="URL SSL Verification",
-                                        t=preview_list,
-                                        headers=["URL", "Verified", "Description"]),
-        outputs=entry_context,
-        outputs_key_field="URL.Data")
+    return_results(
+        CommandResults(
+            readable_output=tableToMarkdown(
+                name="URL SSL Verification", t=preview_list, headers=["URL", "Verified", "Description"]
+            ),
+            outputs=entry_context,
+            outputs_key_field="URL.Data",
+        )
     )
 
 
