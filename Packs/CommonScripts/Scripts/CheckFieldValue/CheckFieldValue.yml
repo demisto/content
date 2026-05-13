@@ -1,5 +1,5 @@
 args:
-- description: The field to check
+- description: The field to check.
   name: field
   required: true
 - description: The regex pattern to check the field for (optional).
@@ -19,7 +19,7 @@ enabled: true
 name: CheckFieldValue
 outputs:
 - contextPath: CheckFieldValue.name
-  description: Field Name
+  description: Field Name.
   type: string
 - contextPath: CheckFieldValue.exists
   description: Whether the field Exists.
@@ -31,7 +31,7 @@ tags:
 - polling
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
