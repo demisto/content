@@ -903,8 +903,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "sk_demisto_sdk_new_python"
-resolved_reference = "78afc7134365dd76dda042e45010922431c0a611"
+reference = "0d401b06e956404b4184f1a5224eab988c9914b7"
+resolved_reference = "0d401b06e956404b4184f1a5224eab988c9914b7"
 
 [[package]]
 name = "dictdiffer"
@@ -4852,4 +4852,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.15"
-content-hash = "0c4e207bf3592a1453f3ae69cd09c96cce66506b00996acbad498cc32a0a0a4f"
+content-hash = "a2f7464546550a62c0ad3977b557669f425aca9e497533b9cdaafc9d1938e177"
