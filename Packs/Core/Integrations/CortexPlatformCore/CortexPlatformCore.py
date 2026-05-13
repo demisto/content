@@ -2262,8 +2262,8 @@ def search_assets_command(client: Client, args):
     asset_types = argToList(args.get("asset_types", ""))
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
-    page_number = arg_to_number(args.get("page_number", 0))
+    page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
     on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
         ("xdm__software_package__version", software_package_versions),
