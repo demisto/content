@@ -2665,3 +2665,170 @@ def test_dedup_lookback_expired_ids_removed_from_dict():
     assert deduped == []
     assert "inc-expired" not in updated_ids, "Expired ID should be removed from the dict"
     assert "inc-active" in updated_ids, "Active ID should be preserved in the dict"
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_fetch_incidents_lookback_builds_correct_filter(mocker):
+    """
+    Given:
+        - A client and lookback parameters with min_severity=High and statuses_to_fetch=["New"].
+    When:
+        - Calling fetch_incidents_lookback.
+    Then:
+        - The filter query uses lastModifiedTimeUtc and includes severity and status filters.
+        - The orderby uses lastModifiedTimeUtc asc.
+    """
+    from AzureSentinel import fetch_incidents_lookback
+
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+
+    result = fetch_incidents_lookback(
+        client=client,
+        lookback_start_time="2026-05-11T12:00:00Z",
+        min_severity="High",
+        statuses_to_fetch=["New"],
+    )
+
+    call_args = client.http_request.call_args[1]
+    filter_expr = call_args["params"]["$filter"]
+    assert "properties/lastModifiedTimeUtc ge 2026-05-11T12:00:00Z" in filter_expr
+    assert "properties/severity eq 'High'" in filter_expr
+    assert "properties/status eq 'New'" in filter_expr
+    assert call_args["params"]["$orderby"] == "properties/lastModifiedTimeUtc asc"
+    assert len(result) == 1
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_fetch_incidents_lookback_returns_empty_on_no_results(mocker):
+    """
+    Given:
+        - A client where the API returns no incidents in the lookback window.
+    When:
+        - Calling fetch_incidents_lookback.
+    Then:
+        - An empty list is returned without errors.
+    """
+    from AzureSentinel import fetch_incidents_lookback
+
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    result = fetch_incidents_lookback(
+        client=client,
+        lookback_start_time="2026-05-11T12:00:00Z",
+        min_severity="Informational",
+        statuses_to_fetch=[],
+    )
+
+    assert result == []
+
+
+@freezegun.freeze_time("2026-05-11T12:30:00Z")
+def test_fetch_incidents_e2e_with_lookback(mocker):
+    """
+    Given:
+        - A client with regular fetch returning one incident (inc_name) and lookback
+          returning a different incident (inc_lookback) that was modified in the lookback window.
+        - look_back=60 minutes, no previous lookback IDs.
+    When:
+        - Calling fetch_incidents with look_back=60.
+    Then:
+        - next_run contains both regular fetch IDs and lookback IDs.
+        - incidents list contains both the regular and lookback incidents.
+        - The lookback incident is appended after the regular incidents.
+    """
+    client = mock_client()
+
+    # Regular fetch API response (inc_name)
+    regular_api_response = {
+        "value": [
+            {
+                "name": "inc_name",
+                "properties": {
+                    "incidentNumber": 1,
+                    "title": "Regular Incident",
+                    "description": "desc",
+                    "severity": "High",
+                    "status": "New",
+                    "owner": {"assignedTo": "user", "email": "user@test.com"},
+                    "labels": [],
+                    "firstActivityTimeUtc": "2026-05-11T12:00:00Z",
+                    "lastActivityTimeUtc": "2026-05-11T12:00:00Z",
+                    "lastModifiedTimeUtc": "2026-05-11T12:00:00Z",
+                    "createdTimeUtc": "2026-05-11T12:00:00Z",
+                    "additionalData": {
+                        "alertsCount": 0,
+                        "bookmarksCount": 0,
+                        "commentsCount": 0,
+                        "alertProductNames": [],
+                        "tactics": [],
+                    },
+                    "firstActivityTimeGenerated": "2026-05-11T12:00:00Z",
+                    "lastActivityTimeGenerated": "2026-05-11T12:00:00Z",
+                },
+            }
+        ]
+    }
+
+    # Lookback API response (inc_lookback - different incident modified in lookback window)
+    lookback_api_response = {
+        "value": [
+            {
+                "name": "inc_lookback",
+                "properties": {
+                    "incidentNumber": 5,
+                    "title": "Lookback Incident",
+                    "description": "escalated severity",
+                    "severity": "High",
+                    "status": "New",
+                    "owner": {"assignedTo": "user", "email": "user@test.com"},
+                    "labels": [],
+                    "firstActivityTimeUtc": "2026-05-11T11:00:00Z",
+                    "lastActivityTimeUtc": "2026-05-11T12:20:00Z",
+                    "lastModifiedTimeUtc": "2026-05-11T12:20:00Z",
+                    "createdTimeUtc": "2026-05-11T11:00:00Z",
+                    "additionalData": {
+                        "alertsCount": 0,
+                        "bookmarksCount": 0,
+                        "commentsCount": 0,
+                        "alertProductNames": [],
+                        "tactics": [],
+                    },
+                    "firstActivityTimeGenerated": "2026-05-11T11:00:00Z",
+                    "lastActivityTimeGenerated": "2026-05-11T12:20:00Z",
+                },
+            }
+        ]
+    }
+
+    # First call = regular fetch, second call = lookback fetch
+    mocker.patch.object(client, "http_request", side_effect=[regular_api_response, lookback_api_response])
+    mocker.patch("AzureSentinel.demisto.params", return_value={"fetch_additional_info": []})
+
+    last_run = {
+        "last_fetch_time": "2026-05-11T12:00:00Z",
+        "last_fetch_ids": [],
+        "last_incident_number": 0,
+    }
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time="3 days",
+        min_severity="Informational",
+        statuses_to_fetch=[],
+        look_back=60,
+    )
+
+    # Validate next_run has regular fetch IDs
+    assert "inc_name" in next_run["last_fetch_ids"]
+    assert next_run["last_incident_number"] == 1
+
+    # Validate next_run has lookback IDs tracked
+    assert "inc_lookback" in next_run["lookback_fetch_ids"]
+
+    # Validate incidents list contains both regular and lookback incidents
+    assert len(incidents) == 2
+    assert incidents[0]["name"] == "[Azure Sentinel] Regular Incident"
+    assert incidents[1]["name"] == "[Azure Sentinel] Lookback Incident"

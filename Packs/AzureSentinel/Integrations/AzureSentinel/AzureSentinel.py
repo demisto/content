@@ -1748,6 +1748,7 @@ def process_incidents(
     Args:
         raw_incidents: The incidents that were fetched from the API.
         latest_created_time: The latest created time.
+        last_incident_number: The last incident number that was fetched.
         lookback_fetch_ids: IDs from the current lookback cycle to store in next_run.
 
     Returns:
