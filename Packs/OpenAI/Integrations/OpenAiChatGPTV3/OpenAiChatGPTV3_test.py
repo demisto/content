@@ -247,11 +247,14 @@ def test_enrich_audit_event(event, expect_time):
     ],
 )
 def test_enrich_compliance_event(event, api_event_type, expect_time, expect_source_log_type):
-    """Compliance enrichment: strict `_time` from `timestamp`, `source_log_type` per API event_type mapping."""
+    """Compliance enrichment: `_time` from `timestamp`, `source_log_type` from the API event-type mapping,
+    and `workspace_id` carried through onto every event."""
 
-    enrich_compliance_event(event, api_event_type)
+    workspace_id = "FAKE_WORKSPACE_UUID"
+    enrich_compliance_event(event, api_event_type, workspace_id)
     assert event["source_log_type"] == expect_source_log_type
     assert event["_event_type"] == api_event_type
+    assert event["workspace_id"] == workspace_id
     if expect_time is None:
         assert "_time" not in event
     else:
@@ -737,6 +740,8 @@ def test_fetch_compliance_logs_two_step_flow(mocker):
     assert len(events) == 3
     assert events[0]["source_log_type"] == SourceLogType.COMPLIANCE_AUDIT_LOG
     assert events[1]["source_log_type"] == SourceLogType.APP_LOG
+    # `workspace_id` is propagated from the fetch call into every enriched event.
+    assert all(e["workspace_id"] == "FAKE_WORKSPACE_ID" for e in events)
     # `last_end_time` is read from the listing response, NOT computed from individual entries.
     assert updates[LastRunKey.COMPLIANCE_LAST_END_TIME] == "2099-01-02T00:00:00Z"
     # Only FAKE_LISTING_002 shares the end_time with the cursor, so it's the only id stored for tie-dedup.

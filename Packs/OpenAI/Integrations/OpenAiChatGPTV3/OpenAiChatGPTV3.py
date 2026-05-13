@@ -1103,8 +1103,8 @@ def enrich_audit_event(event: dict[str, Any]) -> dict[str, Any]:
     return event
 
 
-def enrich_compliance_event(event: dict[str, Any], api_event_type: str) -> dict[str, Any]:
-    """Add `_time` (from `timestamp`) and `source_log_type` (per `event_type`) to a Compliance event."""
+def enrich_compliance_event(event: dict[str, Any], api_event_type: str, workspace_id: str) -> dict[str, Any]:
+    """Add `_time` (from `timestamp`), `source_log_type` (per `event_type`), and `workspace_id` to a Compliance event."""
     timestamp = event.get("timestamp")
     if timestamp:
         event["_time"] = timestamp
@@ -1119,6 +1119,7 @@ def enrich_compliance_event(event: dict[str, Any], api_event_type: str) -> dict[
         )
         event["source_log_type"] = api_event_type.lower()
     event["_event_type"] = api_event_type
+    event["workspace_id"] = workspace_id
     return event
 
 
@@ -1426,7 +1427,7 @@ def fetch_compliance_logs(
         for record in content:
             record.setdefault("id", log_id)
             record.setdefault("end_time", listing.get("end_time"))
-            enrich_compliance_event(record, api_event_type)
+            enrich_compliance_event(record, api_event_type, workspace_id)
             events.append(record)
 
     if failed_content_fetches:
