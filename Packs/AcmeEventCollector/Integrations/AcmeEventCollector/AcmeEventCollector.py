@@ -29,6 +29,7 @@ class Client(BaseClient):
     # Also returns XSOAR-specific transformed data instead of raw API response.
     def get_events(self) -> list[dict]:
         """Fetch events from the Acme API."""
+        demisto.info("Fetching events from Acme Security Platform API")
         response = self._http_request(
             method="GET",
             url_suffix="/api/v1/events",
@@ -70,6 +71,8 @@ def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
 
     deduped: list[dict] = []
     for event in events:
+        del event['_time']
+        event['source_log_type'] = 'Acme'
         event_id = str(event.get("id", ""))
         if event_id and event_id in seen_ids:
             demisto.info(f"Skipping duplicate event id={event_id}")
@@ -124,7 +127,7 @@ def fetch_events(client: Client, max_fetch: int) -> None:
     # VIOLATION §6.3.4: First fetch defaults to "1 year" — unbounded historical data.
     # Rule says: "For event collectors, if no first_fetch is configured, default to the
     # current time minus a couple of minutes (1–10 minutes) — never fetch unbounded historical data."
-    first_fetch = params.get("first_fetch", "60 minutes")
+    first_fetch = params.get("first_fetch", "1 week")
     first_fetch = datetime.strptime(first_fetch, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H:%M:%SZ")
     start_time = last_run.get("last_fetch_time") or first_fetch
 
