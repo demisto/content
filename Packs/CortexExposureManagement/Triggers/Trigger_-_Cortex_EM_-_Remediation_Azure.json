@@ -1,9 +1,9 @@
 {
-    "trigger_id": "714a581ffd144106a948bc9ad0cbd5ed",
-    "playbook_id": "Cortex EM - GCP VM Exposure Remediation",
-    "suggestion_reason": "Recommended for remediation of Cortex Exposure Management issues on VM instances in GCP.",
-    "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management issues for Virtual Machines in GCP",
-    "trigger_name": "Cortex Exposure Management GCP Virtual Machine Remediation",
+    "trigger_id": "d6ac5ec6eccaa166347928a14bf6245d",
+    "playbook_id": "Cortex EM - Azure VM Exposure Remediation",
+    "suggestion_reason": "Recommended for remediation of Cortex Exposure Management issues on VM instances in Azure.",
+    "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management issues for Virtual Machines in in Azure.",
+    "trigger_name": "Cortex Exposure Management Azure Virtual Machine Remediation",
     "alerts_filter": {
         "filter": {
             "AND": [
@@ -67,11 +67,6 @@
                         {
                             "SEARCH_FIELD": "matching_service_rule_id",
                             "SEARCH_TYPE": "CONTAINS",
-                            "SEARCH_VALUE": "SSHTerrapinAttack"
-                        },
-                        {
-                            "SEARCH_FIELD": "matching_service_rule_id",
-                            "SEARCH_TYPE": "CONTAINS",
                             "SEARCH_VALUE": "SnmpServer"
                         },
                         {
@@ -119,7 +114,7 @@
                 {
                     "SEARCH_FIELD": "asset_providers",
                     "SEARCH_TYPE": "CONTAINS_IN_LIST",
-                    "SEARCH_VALUE": "GCP"
+                    "SEARCH_VALUE": "AZURE"
                 }
             ]
         }
