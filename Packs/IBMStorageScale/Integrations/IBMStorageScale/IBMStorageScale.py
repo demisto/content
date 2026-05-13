@@ -6,6 +6,7 @@ from datetime import UTC as _UTC  # type: ignore[attr-defined]
 from datetime import tzinfo
 from urllib.parse import urlparse, urlencode, quote_plus, quote
 from typing import Never
+from collections.abc import Callable
 
 UTC = _UTC
 
@@ -52,16 +53,17 @@ def _encode_path_segment(value: str) -> str:
     return quote(value, safe="")
 
 
-def _raise_acl_http_error(error: httpx.HTTPStatusError) -> Never:
+def _raise_http_error(error: httpx.HTTPStatusError) -> Never:
     """
-    Translate an httpx.HTTPStatusError from an ACL endpoint into a DemistoException. Always raises.
+    Translate an httpx.HTTPStatusError into a DemistoException. Always raises.
 
     Mapping:
-        - HTTP 400 -> "Invalid Request" message (the only status the IBM Storage Scale ACL
-          endpoint docs explicitly document with a distinct meaning).
-        - Any other status (401, 403, 404, 500, ...) -> generic "HTTP Error" message that
-          includes the status code and the raw response body, so operators see exactly what
-          the server returned.
+        - HTTP 401 / 403 -> "Authorization Error: Ensure the credentials are correct and
+          have the required permissions."
+        - HTTP 400 -> "Invalid Request (HTTP 400). <body>" message.
+        - Any other status (404, 500, ...) -> generic "HTTP Error. Status code: <status>.
+          <body>" message that includes the status code and the raw response body, so
+          operators see exactly what the server returned.
 
     Args:
         error: The exception raised by response.raise_for_status().
@@ -74,11 +76,12 @@ def _raise_acl_http_error(error: httpx.HTTPStatusError) -> Never:
     try:
         body = error.response.text
     except Exception:
-        demisto.debug(f"Failed to extract response body from ACL error: {traceback.format_exc()}")
+        demisto.debug(f"Failed to extract response body from error: {traceback.format_exc()}")
 
-    if status == 400:
+    if status in (401, 403):
+        raise DemistoException("Authorization Error: Ensure the credentials are correct and have the required permissions.")
+    elif status == 400:
         raise DemistoException(f"Invalid Request (HTTP 400). {body}".strip())
-    # Generic branch: 500 (documented) and any undocumented status code.
     raise DemistoException(f"HTTP Error. Status code: {status}. {body}".strip())
 
 
@@ -589,19 +592,20 @@ class Client:
 
         return debug_info
 
-    async def _acl_request(
+    async def _request(
         self,
         method: str,
         url_suffix: str,
         *,
         params: dict[str, Any] | None = None,
         json_body: Any | None = None,
+        error_handler: Callable[[httpx.HTTPStatusError], Never] = _raise_http_error,
     ) -> dict[str, Any]:
         """
-        Execute an ACL endpoint call and return the parsed JSON response.
+        Execute an HTTP request and return the parsed JSON response.
 
         Owns the httpx.AsyncClient lifecycle (per-call, matching current behaviour) and
-        translates httpx errors into DemistoException via _raise_acl_http_error and the
+        translates httpx errors into DemistoException via _raise_http_error and the
         standard Connection Error message.
 
         Args:
@@ -612,19 +616,22 @@ class Client:
                     Pass None or omit to send no query string.
             json_body: Optional JSON-serializable body, forwarded to httpx as `json=`.
                        Pass None or omit to send no body.
+            error_handler: Callable invoked with the httpx.HTTPStatusError when the server
+                           returns a non-2xx response. Must always raise (typed as returning
+                           Never); defaults to _raise_http_error.
 
         Returns:
             Parsed JSON response body as a dict.
 
         Raises:
-            DemistoException: On HTTP error (via _raise_acl_http_error) or connection error.
+            DemistoException: On HTTP error (via error_handler (defaults to _raise_http_error)) or connection error.
         """
         async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
             try:
                 response = await client.request(method, url_suffix, params=params, json=json_body)
                 response.raise_for_status()
             except httpx.HTTPStatusError as e:
-                _raise_acl_http_error(e)
+                error_handler(e)
             except httpx.RequestError as e:
                 raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
             return response.json()
@@ -643,7 +650,7 @@ class Client:
             url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}"
         else:
             url_suffix = ACCESS_ACLS_ENDPOINT
-        return await self._acl_request("GET", url_suffix)
+        return await self._request("GET", url_suffix)
 
     async def get_filesystem_acl(
         self,
@@ -665,7 +672,7 @@ class Client:
             path=_encode_path_segment(path),
         )
         params = {"fields": fields} if fields else None
-        return await self._acl_request("GET", url_suffix, params=params)
+        return await self._request("GET", url_suffix, params=params)
 
     async def delete_acl(self, user_group: str) -> dict[str, Any]:
         """
@@ -676,7 +683,7 @@ class Client:
         ``response.json()`` is safe (no defensive empty-body handling needed).
         """
         url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}"
-        return await self._acl_request("DELETE", url_suffix)
+        return await self._request("DELETE", url_suffix)
 
     async def delete_acl_entry(self, user_group: str, entry_id: str) -> dict[str, Any]:
         """
@@ -687,7 +694,7 @@ class Client:
         envelope).
         """
         url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}/entry/{_encode_path_segment(entry_id)}"
-        return await self._acl_request("DELETE", url_suffix)
+        return await self._request("DELETE", url_suffix)
 
 
 class _ConcurrentEventFetcher:
