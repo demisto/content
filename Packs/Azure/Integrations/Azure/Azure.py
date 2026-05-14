@@ -384,6 +384,47 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-blob-tag-set",
 ]
 
+COMMANDS_TO_OUTPUTS_PREFIX = {
+    "azure-storage-container-blob-property-get": "Azure.StorageContainer",
+    "azure-storage-blob-property-get": "Azure.Storage.Blob",
+    "azure-storage-container-blob-tag-get": "Azure.StorageContainer",
+    "azure-storage-blob-tag-get": "Azure.Storage.Blob",
+    "azure-vm-instance-details-get": "Azure.Compute",
+    "azure-compute-vm-get": "Azure.Compute.VirtualMachines",
+    "azure-vm-instance-power-off": "Azure.Compute",
+    "azure-compute-vm-power-off": "Azure.Compute.VirtualMachines",
+    "azure-vm-instance-start": "Azure.Compute",
+    "azure-compute-vm-start": "Azure.Compute.VitualMachines",
+    "azure-cosmos-db-update": "Azure.CosmosDB",
+    "azure-cosmosdb-db-account-update": "Azure.CosmosDB.DBAccounts",
+    "azure-key-vault-update": "Azure.KeyVault",
+    "azure-keyvault-vault-update": "azure-keyvault-vault-update",
+    "azure-nsg-resource-group-list": "Azure.NSGResourceGroup",
+    "azure-rm-resource-groups-list": "Azure.ResourceManagement.ResourceGroups",
+    "azure-sql-db-threat-policy-update": "Azure.SqlDBThreatPolicy",
+    "azure-sqldb-security-alert-policy-update": "Azure.SqlDB.SecurityAlertPolicies",
+    "azure-storage-blob-containers-update": "Azure.StorageBlobContainer",
+    "azure-storage-blob-container-update": "Azure.Storage.BlobContainers",
+    "azure-nsg-network-interfaces-list": "Azure.NSGNetworkInterfaces",
+    "azure-vn-network-interfaces-list": "Azure.VirtualNetworks.NetworkInterfaces",
+    "azure-nsg-public-ip-addresses-list": "Azure.NSGPublicIPAddress",
+    "azure-vn-public-ip-addresses-list": "Azure.VirtualNetworks.PublicIPAddresses",
+    "azure-nsg-security-groups-list": "Azure.NSGSecurityGroup",
+    "azure-vn-security-groups-list": "Azure.VirtualNetworks.SecurityGroups",
+    "azure-nsg-security-rule-create": "Azure.NSGRule",
+    "azure-vn-security-rule-create": "Azure.VirtualNetworks.SecurityRules",
+    "azure-nsg-security-rule-get": "Azure.NSGRule",
+    "azure-vn-security-rule-get": "Azure.VirtualNetworks.SecurityRules",
+    "azure-nsg-security-rule-update": "Azure.NSGRule",
+    "azure-vn-security-rule-update": "Azure.VirtualNetworks.SecurityRules",
+    "azure-nsg-security-rules-list": "Azure.NSGRule",
+    "azure-vn-security-rules-list": "Azure.VirtualNetworks.SecurityRules",
+    "azure-vm-network-interface-details-get": "Azure.Network.Interfaces",
+    "azure-vn-network-interface-get": "Azure.VirtualNetworks.NetworkInterfaces",
+    "azure-vm-public-ip-details-get": "Azure.Network.IPConfigurations",
+    "azure-vn-public-ip-address-get": "Azure.VirtualNetworks.PublicIPAddresses",
+}
+
 
 class TokenScope:
     STORAGE = "STORAGE"
@@ -2644,13 +2685,12 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
         resource_group_name=resource_group_name,
     )
 
-    if demisto.command() == "azure-nsg-security-rule-update":
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(demisto.command(), "Azure.VirtualNetworks.SecurityRules")
+    if outputs_prefix != "Azure.VirtualNetworks.SecurityRules":
         return format_rule(rule, security_rule_name)
 
     hr = tableToMarkdown(f"Rule {security_rule_name} updated successfully", rule, removeNull=True)
-    return CommandResults(
-        outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr
-    )
+    return CommandResults(outputs_prefix=outputs_prefix, outputs_key_field="id", outputs=rule, readable_output=hr)
 
 
 def storage_account_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults | str:
@@ -2789,8 +2829,7 @@ def storage_blob_containers_update_command(client: AzureClient, params: dict, ar
         "Public Access": response.get("properties", {}).get("publicAccess"),
     }
     command = demisto.command()
-    old_name = "azure-storage-blob-containers-update"
-    outputs_prefix = "Azure.StorageBlobContainer" if command == old_name else "Azure.Storage.BlobContainers"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.BlobContainers")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -3030,11 +3069,10 @@ def storage_container_blob_tag_get_command(client: AzureClient, params: dict, ar
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.StorageContainer"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.Blob")
     if command != "azure-storage-container-blob-tag-get":
         outputs["Blob"]["ContainerName"] = outputs.pop("name")
         outputs = outputs.get("Blob", {})
-        outputs_prefix = "Azure.Storage.Blob"
         demisto.debug(f"The {command=} name was used, updated the outputs accordingly.")
 
     return CommandResults(
@@ -3162,11 +3200,10 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.StorageContainer"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.Blob")
     if command != "azure-storage-container-blob-property-get":
         outputs["Blob"]["ContainerName"] = outputs.pop("name")
         outputs = outputs.get("Blob", {})
-        outputs_prefix = "Azure.Storage.Blob"
         demisto.debug(f"The new {command=} name was used, updated the outputs accordingly.")
 
     return CommandResults(
@@ -3679,7 +3716,7 @@ def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: 
         headerTransform=string_to_table_header,
     )
     command = demisto.command()
-    outputs_prefix = "Azure.KeyVault" if command == "azure-key-vault-update" else "Azure.KeyVault.Vault"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.KeyVault.Vault")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -3739,9 +3776,7 @@ def sql_db_threat_policy_update_command(client: AzureClient, params: dict[str, A
     )
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.SqlDBThreatPolicy" if command == "azure-sql-db-threat-policy-update" else "Azure.SqlDB.SecurityAlertPolicies"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.SqlDB.SecurityAlertPolicies")
 
     return CommandResults(
         readable_output=readable_output,
@@ -3802,7 +3837,7 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.CosmosDB" if command == "azure-cosmos-db-update" else "Azure.CosmosDB.DBAccounts"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.CosmosDB.DBAccounts")
 
     return CommandResults(
         readable_output=f"Updated Cosmos DB {account_name}.",
@@ -3843,9 +3878,7 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     )
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.NSGSecurityGroup" if command == "azure-nsg-security-groups-list" else "Azure.VirtualNetworks.SecurityGroups"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.SecurityGroups")
 
     return CommandResults(
         raw_response=response,
@@ -3893,7 +3926,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.NSGRule" if command == "azure-nsg-security-rule-get" else "Azure.VirtualNetworks.SecurityRules"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.SecurityRules")
     return CommandResults(outputs_prefix=outputs_prefix, outputs_key_field="id", outputs=rule, readable_output=hr)
 
 
@@ -3936,7 +3969,7 @@ def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any],
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.NSGRule" if command == "azure-nsg-security-rules-list" else "Azure.VirtualNetworks.SecurityRules"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.SecurityRules")
 
     return CommandResults(
         outputs=security_rules,
@@ -3964,7 +3997,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     direction = args.get("direction", "")  # required in API
     priority = args.get("priority", "")  # required in API
     action = args.get("action", "Allow")  # required in API, named as "access" in the API
-    access = args.get("access") if args.get("access") else action  # required in API, named as "access" in the API
+    access = args.get("access") or action  # required in API, named as "access" in the API
     protocol = args.get("protocol", "Any")  # required in API
     source = args.get("source", "Any")
     source_ports = args.get("source_ports", "*")
@@ -4028,7 +4061,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.NSGRule" if command == "azure-nsg-security-rule-create" else "Azure.VirtualNetworks.SecurityRules"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.SecurityRules")
 
     return CommandResults(outputs_prefix=outputs_prefix, outputs_key_field="id", outputs=rule, readable_output=hr)
 
@@ -4104,9 +4137,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
     )
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.NSGResourceGroup" if command == "azure-nsg-resource-group-list" else "Azure.ResourceManagement.ResourceGroups"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.ResourceManagement.ResourceGroups")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4152,11 +4183,7 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
     )
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.NSGNetworkInterfaces"
-        if command == "azure-nsg-network-interfaces-list"
-        else "Azure.VirtualNetworks.NetworkInterfaces"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.NetworkInterfaces")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4202,11 +4229,7 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     )
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.NSGPublicIPAddress"
-        if command == "azure-nsg-public-ip-addresses-list"
-        else "Azure.VirtualNetworks.PublicIPAddresses"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.PublicIPAddresses")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4282,7 +4305,7 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str
     human_readable = tableToMarkdown(title, vm, removeNull=True, headerTransform=pascalToSpace)
 
     command = demisto.command()
-    outputs_prefix = "Azure.Compute" if command == "azure-vm-instance-start" else "Azure.Compute.VirtualMachines"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.VirtualMachines")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4324,7 +4347,7 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: dict[
     human_readable = tableToMarkdown(name=title, t=vm, removeNull=True, headerTransform=pascalToSpace)
 
     command = demisto.command()
-    outputs_prefix = "Azure.Compute" if command == "azure-vm-instance-power-off" else "Azure.Compute.VirtualMachines"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.VirtualMachines")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4385,7 +4408,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
     human_readable = tableToMarkdown(title, vm, headers=table_headers, removeNull=True, headerTransform=pascalToSpace)
 
     command = demisto.command()
-    outputs_prefix = "Azure.Compute" if command == "azure-vm-instance-details-get" else "Azure.Compute.VirtualMachines"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.VirtualMachines")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4460,11 +4483,7 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
         ip_configuration["etag"] = ip_configuration.get("etag", "")[3:-1]
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.Network.Interfaces"
-        if command == "azure-vm-network-interface-details-get"
-        else "Azure.VirtualNetworks.NetworkInterfaces"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.NetworkInterfaces")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
@@ -4559,11 +4578,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
     )
 
     command = demisto.command()
-    outputs_prefix = (
-        "Azure.Network.IPConfigurations"
-        if command == "azure-vm-public-ip-details-get"
-        else "Azure.VirtualNetworks.PublicIPAddresses"
-    )
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.PublicIPAddresses")
 
     return CommandResults(
         outputs_prefix=outputs_prefix,
