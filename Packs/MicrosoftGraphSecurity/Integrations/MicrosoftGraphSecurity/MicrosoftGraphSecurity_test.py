@@ -56,6 +56,9 @@ from MicrosoftGraphSecurity import (
     _extract_filename_from_headers,
     _download_operation_export_file,
     export_result_ediscovery_data_command,
+    apply_hold_ediscovery_custodian_command,
+    remove_hold_ediscovery_custodian_command,
+    HoldAction,
 )
 
 client_mocker = MsGraphClient(
@@ -1445,3 +1448,68 @@ def test_get_operation_status_command_running(mocker):
     assert result.outputs["Status"] == "running"
     assert result.outputs["PercentProgress"] == 45
     assert result.outputs["CompletedDateTime"] is None
+
+
+# ==============================
+# update_hold_ediscovery_custodian_command tests
+# ==============================
+
+
+def test_apply_hold_ediscovery_custodian_command_no_location(mocker):
+    """
+    Given:
+        A hold response with no Location header.
+    When:
+        Calling apply_hold_ediscovery_custodian_command.
+    Then:
+        Returns CommandResults with status 'success' and context outputs.
+    """
+    mocker.patch.object(
+        client_mocker, "update_hold_ediscovery_custodian", return_value=SimpleNamespace(headers={})
+    )
+    result = apply_hold_ediscovery_custodian_command(client_mocker, {"case_id": "case1", "custodian_id": "cust1"})
+    assert result.outputs_prefix == "MsGraph.eDiscoveryHoldOperation"
+    assert result.outputs["Status"] == "success"
+    assert "success" in result.readable_output
+
+
+def test_apply_hold_ediscovery_custodian_command_with_location(mocker):
+    """
+    Given:
+        A hold response with a Location header.
+    When:
+        Calling apply_hold_ediscovery_custodian_command.
+    Then:
+        Returns CommandResults with the operation status and Location URL in context and table.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case1/operations/op123"
+    mocker.patch.object(
+        client_mocker, "update_hold_ediscovery_custodian", return_value=SimpleNamespace(headers={"Location": location_url})
+    )
+    mocker.patch.object(client_mocker, "get", return_value={"status": "running", "id": "op123", "action": "holdUpdate"})
+    result = apply_hold_ediscovery_custodian_command(client_mocker, {"case_id": "case1", "custodian_id": "cust1"})
+    assert result.outputs_prefix == "MsGraph.eDiscoveryHoldOperation"
+    assert result.outputs["Status"] == "running"
+    assert result.outputs["LocationURL"] == location_url
+    assert "running" in result.readable_output
+    assert location_url in result.readable_output
+
+
+def test_remove_hold_ediscovery_custodian_command(mocker):
+    """
+    Given:
+        A remove hold response with a Location header.
+    When:
+        Calling remove_hold_ediscovery_custodian_command.
+    Then:
+        Returns CommandResults with the operation status and Location URL.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case1/operations/op456"
+    mocker.patch.object(
+        client_mocker, "update_hold_ediscovery_custodian", return_value=SimpleNamespace(headers={"Location": location_url})
+    )
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded", "id": "op456", "action": "holdUpdate"})
+    result = remove_hold_ediscovery_custodian_command(client_mocker, {"case_id": "case1", "custodian_id": "cust1"})
+    assert result.outputs_prefix == "MsGraph.eDiscoveryHoldOperation"
+    assert result.outputs["Status"] == "succeeded"
+    assert result.outputs["LocationURL"] == location_url

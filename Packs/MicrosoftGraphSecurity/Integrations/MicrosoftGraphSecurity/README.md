@@ -47,6 +47,8 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 3. eDiscovery.Download.Read - Delegated (Required for the msg-list-case-operation, download_file=True command)
 More information about defining this permission can be found [here](https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http).
 
+> **Note:** In addition to the API permissions above, the calling user must be a member of the eDiscovery case or be assigned the **eDiscovery Administrator** role. An **eDiscovery Manager** can only view and manage the eDiscovery cases they create or are a member of. For more information, see [Assign eDiscovery permissions](https://learn.microsoft.com/en-us/purview/ediscovery-assign-permissions).
+
 **Threat Assessment**:
 
 1. Mail.Read.Shared - Delegated
@@ -1195,12 +1197,12 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 
 ***
 Start the process of applying hold on eDiscovery custodians.
-Available return statuses:
+Available return statuses: 
 notApplied - The custodian is not on hold (all sources in it are not on hold).
 applied - The custodian is on hold (all sources are on hold).
-applying - The custodian is in applying hold state (applyHold operation triggered).
+applying - The custodian is in applying the hold state (applyHold operation triggered).
 removing - The custodian is in removing the hold state(removeHold operation triggered).
-partial - The custodian is in mixed state where some sources are on hold and some not on hold or error state.
+partial - The custodian is in a mixed state where some sources are on hold and some not on hold or error state.
 
 #### Base Command
 
@@ -1210,25 +1212,25 @@ partial - The custodian is in mixed state where some sources are on hold and som
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required |
-| custodian_id | A comma-seperated list of custodians ids to apply a hold to. | Required |
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | A comma-separated list of custodians IDs to apply a hold to. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
-
-#### Command example
-
-```!msg-apply-hold-ediscovery-custodian custodian_id=09f05c43ffc54ff88cf5c5e89699375d,0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5```
-
-#### Human Readable Output
-
->Apply hold status is running.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. | 
+| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
 
 ### msg-remove-hold-ediscovery-custodian
 
 ***
 Start the process of removing hold from eDiscovery custodians.
+
+### msg-remove-hold-ediscovery-custodian
+
+***
+Start the process of removing a hold from eDiscovery custodians.
 
 #### Base Command
 
@@ -1238,25 +1240,15 @@ Start the process of removing hold from eDiscovery custodians.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required |
-| custodian_id | A comma-seperated list of custodians ids to remove a hold from. | Required |
+| case_id | The ID of the eDiscovery case. | Required | 
+| custodian_id | A comma-separated list of custodians IDs to remove a hold from. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
-
-#### Command example
-
-```!msg-remove-hold-ediscovery-custodian custodian_id=09f05c43ffc54ff88cf5c5e89699375d,0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5```
-
-#### Human Readable Output
-
->Remove hold status is running.
-
-### msg-create-ediscovery-non-custodial-data-source
-
-***
-Create a new eDiscoveryNoncustodialDataSource object.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. | 
+| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
 
 #### Base Command
 
@@ -1583,8 +1575,20 @@ You can collect and purge the following categories of Teams content:
 Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
 Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
 Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
+### msg-purge-ediscovery-data
+
+***
+Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
+
+You can collect and purge the following categories of Teams content:
+
+Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
+Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
+Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
 Private channels - Message posts, replies, and attachments shared in a private Teams channel.
 Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
+
+Note: This request purges a maximum of 100 items per location only. When purgeType is set to either recoverable or permanentlyDelete and purgeAreas is set to teamsMessages, the Teams messages are permanently deleted.
 
 #### Base Command
 
@@ -1594,25 +1598,18 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required |
-| search_id | The ID of the eDiscovery search. | Required |
-| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional |
-| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional |
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the eDiscovery search. | Required | 
+| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional | 
+| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryPurge.Status | String | The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed. | 
+| MsGraph.eDiscoveryPurge.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
 
-### msg-delete-ediscovery-search
-
-***
-Delete an eDiscoverySearch object.
-
-#### Base Command
-
-`msg-delete-ediscovery-search`
-
-#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -2731,7 +2728,6 @@ Update the properties of an ediscoveryHoldPolicy object.
 #### Context Output
 
 There is no context output for this command.
-
 ### msg-get-operation-status
 
 ***

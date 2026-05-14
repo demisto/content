@@ -33,7 +33,6 @@ If you previously had an API V1 configured based on the credentials obtained fro
 1. The ***eDiscovery*** and ***Threat Assessment*** commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 2. When using `Authorization Code flow`, the connection should be tested using the ***!msg-auth-test*** command.
 3. When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
-4. For eDiscovery commands that operate within a specific case, the calling user must be a member of that eDiscovery case or be assigned the **eDiscovery Administrator** role. An **eDiscovery Manager** can only view and manage the eDiscovery cases they create or are a member of. For more information, see [Assign eDiscovery permissions](https://learn.microsoft.com/en-us/purview/ediscovery-assign-permissions).
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.

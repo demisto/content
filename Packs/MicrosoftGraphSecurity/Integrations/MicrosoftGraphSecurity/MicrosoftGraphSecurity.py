@@ -1459,9 +1459,29 @@ def list_ediscovery_non_custodial_data_source_command(client: MsGraphClient, arg
 def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_action: HoldAction):
     demisto.debug(f"{hold_action.value=}")
     res = client.update_hold_ediscovery_custodian(args.get("case_id"), args.get("custodian_id"), hold_action)
-    operation_status = get_status_of_operation(client, res)
-    status = operation_status.get("status", "success")
-    return CommandResults(readable_output=f"{hold_action.value.capitalize()} hold status is {status}.")
+    location = res.headers.get("Location", "")
+    demisto.debug(f"update_hold_ediscovery_custodian response Location header: {location}")
+    operation = get_status_of_operation(client, res)
+    status = operation.get("status", "success")
+
+    outputs = {
+        "Status": status,
+        "LocationURL": location,
+    }
+
+    hr = tableToMarkdown(
+        f"{hold_action.value.capitalize()} Hold Results",
+        outputs,
+        headers=["Status", "LocationURL"],
+        headerTransform=lambda h: "Location URL" if h == "LocationURL" else h,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryHoldOperation",
+        outputs=outputs,
+        readable_output=hr,
+    )
 
 
 def apply_hold_ediscovery_custodian_command(client: MsGraphClient, args):
