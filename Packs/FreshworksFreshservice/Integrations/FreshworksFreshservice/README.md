@@ -8995,7 +8995,9 @@ Gets the list of incidents that were modified since the last update time. Note t
 
 There is no context output for this command.
 
-## Incident Mirroring
+## Incident Mirroring (Cortex XSOAR only)
+
+**Note:** Incident mirroring is supported on Cortex XSOAR only. The mirroring configuration parameters (**Incident Mirroring Direction**, **Close Mirrored XSOAR Incident**, **Close Mirrored Freshservice Ticket**, and **Fetch tickets tasks**) are hidden on Cortex XSIAM and the Cortex platform.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Freshworks Freshservice corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
