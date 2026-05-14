@@ -660,25 +660,35 @@ class MsGraphClient:
 """ HELPER FUNCTIONS """
 
 
-def get_status_of_operation(client: MsGraphClient, res: Response) -> str:
+def get_status_of_operation(client: MsGraphClient, res: Response | None = None, location_url: str = "") -> dict:
     """
-    Some responses from MSG where an action is called return a url in the headers that we can use to retrieve the status
+    Retrieve the status of a long-running eDiscovery operation.
+
+    Some Microsoft Graph eDiscovery action responses (e.g., purgeData, applyHold, removeHold)
+    return a Location header pointing to the created caseOperation resource.
+    This function fetches that URL and returns the full operation response.
+
+    Can be called with either a Response object (extracts the Location header) or a direct location_url string.
+
+    See: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get
+
     Args:
-        client: Microsoft
-        GraphClient
-        res: the response from the api
+        client: MsGraphClient instance.
+        res: The HTTP response from an eDiscovery action. The Location header is extracted from it.
+        location_url: A direct Location URL pointing to the operation resource.
 
     Returns:
-        The status
+        The full operation response dict, or {'status': 'success'} if no Location header is present.
     """
-    location = res.headers.get("Location")
-    status = "success"  # if no location is returned then the custodian is already in this state/theres no data sources
-    if location:
-        location = "security" + location.split("/security")[1]  # chop off the baseurl
-        resp = client.get(location)
-        demisto.debug(f"response from location get: {resp}")
-        status = resp.get("status")
-    return status
+    location = location_url or (res.headers.get("Location") if res else "")
+    if not location:
+        demisto.debug("No Location header or URL provided, returning default success status.")
+        return {"status": "success"}
+
+    location = "security" + location.split("/security")[1]  # chop off the baseurl
+    resp = client.get(location)
+    demisto.debug(f"response from location get: {resp}")
+    return resp
 
 
 def create_search_alerts_filters(args, is_fetch=False):
@@ -1449,7 +1459,8 @@ def list_ediscovery_non_custodial_data_source_command(client: MsGraphClient, arg
 def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_action: HoldAction):
     demisto.debug(f"{hold_action.value=}")
     res = client.update_hold_ediscovery_custodian(args.get("case_id"), args.get("custodian_id"), hold_action)
-    status = get_status_of_operation(client, res)
+    operation = get_status_of_operation(client, res)
+    status = operation.get("status", "success")
     return CommandResults(readable_output=f"{hold_action.value.capitalize()} hold status is {status}.")
 
 
@@ -1484,8 +1495,72 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     resp = client.purge_ediscovery_data(
         args.get("case_id"), args.get("search_id"), args.get("purge_type"), args.get("purge_areas")
     )
-    status = get_status_of_operation(client, resp)
-    return CommandResults(readable_output=f"eDiscovery purge status is {status}.")
+    location = resp.headers.get("Location", "")
+    demisto.debug(f"purge_ediscovery_data response Location header: {location}")
+    operation = get_status_of_operation(client, resp)
+    status = operation.get("status", "success")
+
+    outputs = {
+        "Status": status,
+        "LocationURL": location,
+    }
+
+    hr = tableToMarkdown(
+        "eDiscovery Purge Data Results",
+        outputs,
+        headers=["Status", "LocationURL"],
+        headerTransform=lambda h: "Location URL" if h == "LocationURL" else h,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryPurge",
+        outputs=outputs,
+        readable_output=hr,
+    )
+
+
+def get_operation_status_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Retrieve the status of a long-running eDiscovery operation using the Location URL.
+    Wraps the get_status_of_operation function as a user-facing command.
+
+    Args:
+        client: MsGraphClient instance.
+        args: Command arguments containing 'location_url'.
+
+    Returns:
+        CommandResults with the operation status details.
+    """
+    location_url: str = args.get("location_url", "")
+    if not location_url:
+        raise DemistoException("The 'location_url' argument is required.")
+
+    resp = get_status_of_operation(client, location_url=location_url)
+
+    outputs = {
+        "Id": resp.get("id"),
+        "Action": resp.get("action"),
+        "Status": resp.get("status"),
+        "PercentProgress": resp.get("percentProgress"),
+        "CreatedDateTime": resp.get("createdDateTime"),
+        "CompletedDateTime": resp.get("completedDateTime"),
+    }
+
+    hr = tableToMarkdown(
+        "eDiscovery Operation Status",
+        outputs,
+        headers=["Id", "Action", "Status", "PercentProgress", "CreatedDateTime", "CompletedDateTime"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryOperation",
+        outputs_key_field="Id",
+        outputs=outputs,
+        readable_output=hr,
+        raw_response=resp,
+    )
 
 
 def run_estimate_statistics_command(client: MsGraphClient, args) -> CommandResults:
@@ -2467,6 +2542,7 @@ def main():
         "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
         "msg-list-case-operation": list_case_operation_command,
         "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
+        "msg-get-operation-status": get_operation_status_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")

@@ -38,6 +38,8 @@ from MicrosoftGraphSecurity import (
     list_threat_assessment_requests_command,
     main,
     purge_ediscovery_data_command,
+    get_operation_status_command,
+    get_status_of_operation,
     release_ediscovery_custodian_command,
     reopen_ediscovery_case_command,
     search_alerts_command,
@@ -569,7 +571,32 @@ def test_test_auth_code_command(mocker, command_to_check):
 
 def test_purge_ediscovery_data_command(mocker):
     mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={}))
-    assert purge_ediscovery_data_command(client_mocker, {}).readable_output == "eDiscovery purge status is success."
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs_prefix == "MsGraph.eDiscoveryPurge"
+    assert result.outputs["Status"] == "success"
+    assert "success" in result.readable_output
+
+
+def test_purge_ediscovery_data_command_with_location(mocker):
+    """
+    Given:
+        A purge response with a Location header.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        The Location URL is included in the readable output and context outputs.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case123/operations/op456"
+    mocker.patch.object(
+        client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location_url})
+    )
+    mocker.patch.object(client_mocker, "get", return_value={"status": "running", "id": "op456", "action": "purgeData"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs_prefix == "MsGraph.eDiscoveryPurge"
+    assert result.outputs["Status"] == "running"
+    assert result.outputs["LocationURL"] == location_url
+    assert "running" in result.readable_output
+    assert location_url in result.readable_output
 
 
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
@@ -1288,3 +1315,133 @@ def test_download_operation_export_file_errors(mocker, mock_attrs, expected_erro
         _download_operation_export_file(client_mocker, operation)
 
     assert expected_error_msg in str(e.value)
+
+
+# ==============================
+# get_status_of_operation tests
+# ==============================
+
+
+def test_get_status_of_operation_no_location():
+    """
+    Given:
+        A response with no Location header.
+    When:
+        Calling get_status_of_operation.
+    Then:
+        Returns {'status': 'success'}.
+    """
+    resp = SimpleNamespace(headers={})
+    result = get_status_of_operation(client_mocker, resp)
+    assert result == {"status": "success"}
+
+
+def test_get_status_of_operation_with_location(mocker):
+    """
+    Given:
+        A response with a Location header pointing to an operation.
+    When:
+        Calling get_status_of_operation.
+    Then:
+        Returns the full operation response dict.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case123/operations/op456"
+    mock_response = {"id": "op456", "action": "purgeData", "status": "succeeded", "percentProgress": 100}
+    mocker.patch.object(client_mocker, "get", return_value=mock_response)
+
+    resp = SimpleNamespace(headers={"Location": location_url})
+    result = get_status_of_operation(client_mocker, resp)
+    assert result == mock_response
+
+
+def test_get_status_of_operation_with_location_url(mocker):
+    """
+    Given:
+        A direct location_url string (no Response object).
+    When:
+        Calling get_status_of_operation with location_url parameter.
+    Then:
+        Returns the full operation response dict.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case123/operations/op456"
+    mock_response = {"id": "op456", "action": "purgeData", "status": "running", "percentProgress": 50}
+    mocker.patch.object(client_mocker, "get", return_value=mock_response)
+
+    result = get_status_of_operation(client_mocker, location_url=location_url)
+    assert result == mock_response
+
+
+# ==============================
+# get_operation_status_command tests
+# ==============================
+
+
+def test_get_operation_status_command_missing_url():
+    """
+    Given:
+        No location_url argument.
+    When:
+        Calling get_operation_status_command.
+    Then:
+        Raises DemistoException.
+    """
+    with pytest.raises(DemistoException, match="location_url"):
+        get_operation_status_command(client_mocker, {})
+
+
+def test_get_operation_status_command_success(mocker):
+    """
+    Given:
+        A valid location_url argument.
+    When:
+        Calling get_operation_status_command.
+    Then:
+        Returns CommandResults with the operation status details.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case123/operations/op456"
+    mock_response = {
+        "id": "op456",
+        "action": "purgeData",
+        "status": "succeeded",
+        "percentProgress": 100,
+        "createdDateTime": "2026-05-14T07:00:00Z",
+        "completedDateTime": "2026-05-14T07:05:00Z",
+    }
+    mocker.patch.object(client_mocker, "get", return_value=mock_response)
+
+    result = get_operation_status_command(client_mocker, {"location_url": location_url})
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "MsGraph.eDiscoveryOperation"
+    assert result.outputs["Id"] == "op456"
+    assert result.outputs["Action"] == "purgeData"
+    assert result.outputs["Status"] == "succeeded"
+    assert result.outputs["PercentProgress"] == 100
+    assert "succeeded" in result.readable_output
+
+
+def test_get_operation_status_command_running(mocker):
+    """
+    Given:
+        A location_url for an operation that is still running.
+    When:
+        Calling get_operation_status_command.
+    Then:
+        Returns CommandResults with status 'running'.
+    """
+    location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case123/operations/op789"
+    mock_response = {
+        "id": "op789",
+        "action": "purgeData",
+        "status": "running",
+        "percentProgress": 45,
+        "createdDateTime": "2026-05-14T07:00:00Z",
+        "completedDateTime": None,
+    }
+    mocker.patch.object(client_mocker, "get", return_value=mock_response)
+
+    result = get_operation_status_command(client_mocker, {"location_url": location_url})
+
+    assert result.outputs["Status"] == "running"
+    assert result.outputs["PercentProgress"] == 45
+    assert result.outputs["CompletedDateTime"] is None

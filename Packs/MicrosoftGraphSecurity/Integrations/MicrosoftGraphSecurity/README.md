@@ -2731,3 +2731,32 @@ Update the properties of an ediscoveryHoldPolicy object.
 #### Context Output
 
 There is no context output for this command.
+
+### msg-get-operation-status
+
+***
+Retrieve the status of a long-running eDiscovery operation using the Location URL returned by action commands such as msg-purge-ediscovery-data or msg-apply-hold-ediscovery-custodian.
+
+The Location URL is returned in the response headers when an eDiscovery action is initiated and can be used to poll for the operation status until it completes.
+
+#### Base Command
+
+`msg-get-operation-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| location_url | The Location URL returned in the response headers of an eDiscovery action (e.g., purge, hold). This URL points to the operation resource in Microsoft Graph and is used to retrieve the current status of the operation. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryOperation.Id | String | The ID of the operation. | 
+| MsGraph.eDiscoveryOperation.Action | String | The type of action the operation represents. Possible values include: purgeData, holdUpdate, estimateStatistics, contentExport, and others. | 
+| MsGraph.eDiscoveryOperation.Status | String | The status of the operation. Possible values are: notStarted, running, succeeded, failed, skipped, unknownFutureValue. | 
+| MsGraph.eDiscoveryOperation.PercentProgress | Number | The progress of the operation as a percentage. | 
+| MsGraph.eDiscoveryOperation.CreatedDateTime | Date | The date and time the operation was created. | 
+| MsGraph.eDiscoveryOperation.CompletedDateTime | Date | The date and time the operation was completed. | 
+

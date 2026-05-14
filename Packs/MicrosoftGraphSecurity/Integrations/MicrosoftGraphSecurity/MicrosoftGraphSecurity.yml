@@ -1701,6 +1701,43 @@ script:
       Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
     execution: false
     name: msg-purge-ediscovery-data
+    outputs:
+    - contextPath: MsGraph.eDiscoveryPurge.Status
+      description: 'The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryPurge.LocationURL
+      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status.
+      type: String
+  - arguments:
+    - description: The Location URL returned in the response headers of an eDiscovery action (e.g., purge, hold). This URL points to the operation resource in Microsoft Graph and is used to retrieve the current status of the operation.
+      isArray: false
+      name: location_url
+      required: true
+    description: |-
+      Retrieve the status of a long-running eDiscovery operation using the Location URL returned by action commands such as msg-purge-ediscovery-data or msg-apply-hold-ediscovery-custodian.
+
+      The Location URL is returned in the response headers when an eDiscovery action is initiated and can be used to poll for the operation status until it completes.
+    execution: false
+    name: msg-get-operation-status
+    outputs:
+    - contextPath: MsGraph.eDiscoveryOperation.Id
+      description: The ID of the operation.
+      type: String
+    - contextPath: MsGraph.eDiscoveryOperation.Action
+      description: 'The type of action the operation represents. Possible values include: purgeData, holdUpdate, estimateStatistics, contentExport, and others.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryOperation.Status
+      description: 'The status of the operation. Possible values are: notStarted, running, succeeded, failed, skipped, unknownFutureValue.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryOperation.PercentProgress
+      description: The progress of the operation as a percentage.
+      type: Number
+    - contextPath: MsGraph.eDiscoveryOperation.CreatedDateTime
+      description: The date and time the operation was created.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryOperation.CompletedDateTime
+      description: The date and time the operation was completed.
+      type: Date
   - arguments:
     - description: The email address of the user who received the email.
       isArray: false
