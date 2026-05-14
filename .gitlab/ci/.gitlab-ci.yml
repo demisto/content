@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: CIAC-0000/sk-infra-new-python-on-hf-v0.1.5
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: CIAC-0000/sk-infra-new-python-on-hf-v0.1.5
     project: "${CI_PROJECT_NAMESPACE}/infra"
