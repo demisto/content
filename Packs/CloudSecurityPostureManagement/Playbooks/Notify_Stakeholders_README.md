@@ -31,9 +31,9 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Teams Channel | Provide the Microsoft Teams channel to send messages to. | General | Optional |
-| Slack Channel | Provide the Slack channel to send messages to. | general | Optional |
-| Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses | amore@paloaltonetworks.com | Optional |
+| Teams Channel | Provide the Microsoft Teams channel to send messages to. | | Optional |
+| Slack Channel | Provide the Slack channel to send messages to. | | Optional |
+| Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses | | Optional |
 | Subject | For email | You have a new message for - ${issue.name} | Optional |
 | AssetName | Name of the asset related to the issue. | Core.CoreAsset.xdm__asset__name | Optional |
 | AssetType | Type of the asset related to the issue, for example, EC2, Azure VM, Google Cloud Storage, etc. | Core.CoreAsset.xdm__asset__type__name | Optional |

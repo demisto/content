@@ -102,6 +102,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -110,6 +111,7 @@ tasks:
           right:
             value:
               simple: "yes"
+          ignorecase: true
     - label: Resolve
       condition:
       - - operator: isEqualString
@@ -120,6 +122,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -128,6 +131,7 @@ tasks:
           right:
             value:
               simple: "no"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -363,7 +367,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: efee0d553-78a1-4f35-a00d-704fdf291546
+              simple: fee0d553-78a1-4f35-a00d-704fdf291546
     continueonerrortype: ""
     view: |-
       {

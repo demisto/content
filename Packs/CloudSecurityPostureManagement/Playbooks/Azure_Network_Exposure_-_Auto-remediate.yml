@@ -101,6 +101,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -109,6 +110,7 @@ tasks:
           right:
             value:
               simple: "yes"
+          ignorecase: true
     - label: Resolve
       condition:
       - - operator: isEqualString
@@ -119,6 +121,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -127,6 +130,7 @@ tasks:
           right:
             value:
               simple: "no"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -474,7 +478,7 @@ inputs:
 - key: enableNotifications
   value:
     simple: "no"
-  required: true
+  required: false
   description: |-
     Options: yes/no
     Whether to notify stakeholders about remediation actions. Recipients must be configured in the Notify Stakeholders sub-playbook header. If no recipients are provided, the playbook pauses to request input.  Default is "no".
