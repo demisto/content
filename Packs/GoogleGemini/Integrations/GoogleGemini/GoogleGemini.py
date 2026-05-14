@@ -20,23 +20,15 @@ from google.auth.transport.requests import Request
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601
 SUPPORTED_MODELS = [
     # Stable models
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
+    # Deprecated (Legacy Only) - operational until June 1, 2026
     "gemini-2.0-flash",
     "gemini-2.0-flash-lite",
-    "gemini-1.5-flash",
-    "gemini-1.5-flash-8b",
-    "gemini-1.5-pro",
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
     # Preview models
-    "gemini-2.0-flash-preview-image-generation",
-    "gemini-3-flash-preview",
     "gemini-3.1-pro-preview",
-    "gemini-3.1-flash-lite-preview",
-    # Embedding models
-    "text-embedding-004",
-    "models/embedding-001",
-    # Other specialized models
-    "models/aqa",
+    "gemini-3.1-flash-preview",
+    "gemini-3.1-flash-lite",
 ]
 AUTH_TYPE_AI_STUDIO = "AI Studio API Key"
 AUTH_TYPE_VERTEX_AI = "Vertex AI Service Account"
@@ -57,7 +49,7 @@ class Client(BaseClient):
         verify: bool,
         proxy: bool,
         auth_type: str,
-        model: str = "gemini-2.5-flash-preview-05-20",
+        model: str = "gemini-2.5-flash",
         max_tokens: int = 1024,
         temperature: float | None = None,
         top_p: float | None = None,

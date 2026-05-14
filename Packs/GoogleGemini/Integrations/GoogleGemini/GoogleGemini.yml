@@ -52,25 +52,20 @@ configuration:
   section: Connect
   type: 0
 - defaultvalue: gemini-2.5-flash
-  additionalinfo: Please choose only one model
+  additionalinfo: Please choose only one model, or select another from the list https://ai.google.dev/models.
   display: Default Model
   name: model
   options:
   # Stable models
+  - gemini-2.5-pro
+  - gemini-2.5-flash
+  # Deprecated (Legacy Only) - operational until June 1, 2026
   - gemini-2.0-flash
   - gemini-2.0-flash-lite
-  - gemini-1.5-flash
-  - gemini-1.5-flash-8b
-  - gemini-1.5-pro
-  - gemini-2.5-flash
-  - gemini-2.5-pro
-    # Preview models
-  - gemini-2.0-flash-preview-image-generation
-  # Embedding models
-  - text-embedding-004
-  - models/embedding-001
-  # Other specialized models
-  - models/aqa
+  # Preview models
+  - gemini-3.1-pro-preview
+  - gemini-3.1-flash-preview
+  - gemini-3.1-flash-lite
   required: true
   section: Collect
   type: 16

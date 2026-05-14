@@ -40,30 +40,19 @@ The integration supports various Gemini models including:
 
 **Stable Models:**
 
-- gemini-2.5-flash
 - gemini-2.5-pro
+- gemini-2.5-flash
+
+**Deprecated (Legacy Only) Models** — operational until June 1, 2026:
+
 - gemini-2.0-flash
-- gemini-2.0-flash-lite  
-- gemini-1.5-flash
-- gemini-1.5-flash-8b
-- gemini-1.5-pro
+- gemini-2.0-flash-lite
 
 **Preview Models:**
 
-- gemini-2.0-flash-preview-image-generation
-
-**Audio/TTS Models:**
-
-- gemini-2.5-flash-preview-native-audio-dialog
-- gemini-2.5-flash-exp-native-audio-thinking-dialog
-- gemini-2.5-flash-preview-tts
-- gemini-2.5-pro-preview-tts
-
-**Specialized Models:**
-
-- text-embedding-004 (for embeddings)
-- models/embedding-001 (for embeddings)
-- models/aqa (for attributed question-answering)
+- gemini-3.1-pro-preview
+- gemini-3.1-flash-preview
+- gemini-3.1-flash-lite
 
 Note: You can also use the freetext model field to specify newer models not in the dropdown list.
 
@@ -105,7 +94,7 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 
 ```!google-gemini-send-message prompt="What is artificial intelligence?"```
 
-```!google-gemini-send-message prompt="Analyze this suspicious email for potential threats" model="gemini-1.5-pro"```
+```!google-gemini-send-message prompt="Analyze this suspicious email for potential threats" model="gemini-2.5-pro"```
 
 ```!google-gemini-send-message prompt="Continue our previous discussion" history='[{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there! How can I help you?"}]}]'```
 

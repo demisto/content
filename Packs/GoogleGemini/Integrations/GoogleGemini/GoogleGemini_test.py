@@ -100,7 +100,7 @@ def test_client_init():
         proxy=True,
         auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=2048,
         temperature=0.8,
         top_p=0.9,
@@ -108,7 +108,7 @@ def test_client_init():
     )
 
     assert client.api_key == "test_key"
-    assert client.model == "gemini-1.5-pro"
+    assert client.model == "gemini-2.5-pro"
     assert client.max_tokens == 2048
     assert client.temperature == 0.8
     assert client.top_p == 0.9
@@ -129,7 +129,7 @@ def test_client_init_default_model():
         api_key="test_key",
     )
 
-    assert client.model == "gemini-2.5-flash-preview-05-20"
+    assert client.model == "gemini-2.5-flash"
     assert client.max_tokens == 1024
     assert client.temperature is None
     assert client.top_p is None
@@ -621,7 +621,7 @@ def test_main_model_freetext_override(mocker):
             "url": "https://generativelanguage.googleapis.com",
             "api_key": {"password": "test_api_key"},
             "model": ["gemini-2.0-flash", "test"],
-            "model-freetext": "gemini-1.5-pro",
+            "model-freetext": "gemini-2.5-pro",
             "max_tokens": "2048",
             "temperature": "0.8",
             "top_p": "0.9",
@@ -638,13 +638,14 @@ def test_main_model_freetext_override(mocker):
 
 def test_supported_models_list():
     """Test that SUPPORTED_MODELS contains expected models"""
-    assert "gemini-2.0-flash" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-1.5-pro" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-1.5-flash" in GoogleGemini.SUPPORTED_MODELS
     assert "gemini-2.5-pro" in GoogleGemini.SUPPORTED_MODELS
-    assert "text-embedding-004" in GoogleGemini.SUPPORTED_MODELS
-    assert "models/embedding-001" in GoogleGemini.SUPPORTED_MODELS
-    assert len(GoogleGemini.SUPPORTED_MODELS) == 14
+    assert "gemini-2.5-flash" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-2.0-flash" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-2.0-flash-lite" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.1-pro-preview" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.1-flash-preview" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.1-flash-lite" in GoogleGemini.SUPPORTED_MODELS
+    assert len(GoogleGemini.SUPPORTED_MODELS) == 7
 
 
 def test_send_chat_message_with_instance_parameters():
@@ -655,7 +656,7 @@ def test_send_chat_message_with_instance_parameters():
         proxy=False,
         auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=2048,
         temperature=0.8,
         top_p=0.9,
@@ -687,7 +688,7 @@ def test_send_chat_message_with_optional_parameters_none():
         proxy=False,
         auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=1024,
         temperature=None,
         top_p=None,
