@@ -533,7 +533,7 @@ inputs:
   value:
     simple: Vectra RUX Events Detection
   required: false
-  description: Provide the incident type.
+  description: The XSOAR incident type to search for inactive detections. Default is 'Vectra RUX Events Detection'.
 outputs: []
 tests:
 - No tests (auto formatted)

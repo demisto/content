@@ -25,6 +25,7 @@ def test_main_with_incidents_found_and_linked(mocker):
 
     search_result = [
         {
+            "Type": 1,
             "Contents": [
                 {
                     "Contents": {
@@ -34,7 +35,7 @@ def test_main_with_incidents_found_and_linked(mocker):
                         ]
                     }
                 }
-            ]
+            ],
         }
     ]
     link_result = [{"Type": 1, "Contents": "Incidents linked successfully"}]
@@ -53,7 +54,7 @@ def test_main_with_incidents_found_and_linked(mocker):
 
     search_call_args = execute_command_mock.call_args_list[0]
     assert search_call_args[0][0] == "SearchIncidentsV2"
-    expected_query = "-status:closed -category:job vectraruxexternalreferenceid:123 -vectraruxdetectionid:=456"
+    expected_query = '-status:closed -category:job vectraruxexternalreferenceid:"123" -vectraruxdetectionid:="456"'
     assert search_call_args[0][1]["query"] == expected_query
 
     link_call_args = execute_command_mock.call_args_list[1]
@@ -83,7 +84,7 @@ def test_main_with_no_incidents_found(mocker):
         return_value={"incident_external_reference_id": "123", "incident_detection_id": "456"},
     )
 
-    search_result: list = [{"Contents": [{"Contents": {"data": []}}]}]
+    search_result: list = [{"Type": 1, "Contents": [{"Contents": {"data": []}}]}]
 
     execute_command_mock = mocker.patch.object(
         demisto,
@@ -97,7 +98,7 @@ def test_main_with_no_incidents_found(mocker):
 
     execute_command_mock.assert_called_once_with(
         "SearchIncidentsV2",
-        {"query": "-status:closed -category:job vectraruxexternalreferenceid:123 -vectraruxdetectionid:=456"},
+        {"query": '-status:closed -category:job vectraruxexternalreferenceid:"123" -vectraruxdetectionid:="456"'},
     )
 
     return_results_mock.assert_called_once_with(search_result)
@@ -122,7 +123,7 @@ def test_main_with_empty_content(mocker):
         return_value={"incident_external_reference_id": "999", "incident_detection_id": "888"},
     )
 
-    search_result = [{"Contents": None}]
+    search_result = [{"Type": 1, "Contents": None}]
 
     execute_command_mock = mocker.patch.object(
         demisto,
@@ -157,7 +158,7 @@ def test_main_with_single_incident(mocker):
         return_value={"incident_external_reference_id": "100", "incident_detection_id": "200"},
     )
 
-    search_result = [{"Contents": [{"Contents": {"data": [{"id": "single_incident"}]}}]}]
+    search_result = [{"Type": 1, "Contents": [{"Contents": {"data": [{"id": "single_incident"}]}}]}]
     link_result = [{"Type": 1, "Contents": "Incident linked"}]
 
     execute_command_mock = mocker.patch.object(
@@ -195,6 +196,7 @@ def test_main_with_numeric_incident_ids(mocker):
 
     search_result = [
         {
+            "Type": 1,
             "Contents": [
                 {
                     "Contents": {
@@ -204,7 +206,7 @@ def test_main_with_numeric_incident_ids(mocker):
                         ]
                     }
                 }
-            ]
+            ],
         }
     ]
     link_result = [{"Type": 1, "Contents": "Incidents linked"}]
@@ -240,7 +242,7 @@ def test_main_query_format(mocker):
         return_value={"incident_external_reference_id": "ticket_abc", "incident_detection_id": "detection_xyz"},
     )
 
-    search_result: list = [{"Contents": [{"Contents": {"data": []}}]}]
+    search_result: list = [{"Type": 1, "Contents": [{"Contents": {"data": []}}]}]
 
     execute_command_mock = mocker.patch.object(
         demisto,
@@ -257,5 +259,5 @@ def test_main_query_format(mocker):
 
     assert "-status:closed" in query
     assert "-category:job" in query
-    assert "vectraruxexternalreferenceid:ticket_abc" in query
-    assert "-vectraruxdetectionid:=detection_xyz" in query
+    assert 'vectraruxexternalreferenceid:"ticket_abc"' in query
+    assert '-vectraruxdetectionid:="detection_xyz"' in query

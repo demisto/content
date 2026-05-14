@@ -9,13 +9,11 @@ comment: Get the incidents with the type Vectra RUX Events Detection.
 enabled: true
 args:
 - name: page
-  description: Provide the page number. Single page have max 50 incidents.
+  description: Provide the page number. A single page has a maximum of 50 incidents.
   defaultValue: "0"
-  type: unknown
 - name: incident_type
-  description: Provide the incident type.
+  description: The XSOAR incident type to search for inactive detections. Default is 'Vectra RUX Events Detection'.
   defaultValue: Vectra RUX Events Detection
-  type: unknown
 outputs:
 - contextPath: VectraRUXGetIncidents.id
   description: Incident ID.
@@ -29,7 +27,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.12.13.8428455
+dockerimage: demisto/python3:3.12.13.8927230
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

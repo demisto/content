@@ -2,6 +2,7 @@
     "name": "Vectra RUX",
     "description": "Vectra RUX pack empowers the SOC to create incidents based on events detection using Vectra AI's Attack Signal Intelligence.",
     "support": "partner",
+    "created": "2026-04-30T00:00:00Z",
     "currentVersion": "1.0.0",
     "author": "Vectra AI",
     "url": "https://support.vectra.ai",

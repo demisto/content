@@ -19,29 +19,12 @@ def check_if_found_incident(res: list):
     """
     if res and isinstance(res, list) and isinstance(res[0].get("Contents"), dict):
         if "data" not in res[0]["Contents"]:
-            raise DemistoException(res[0].get("Contents"))
+            raise DemistoException(str(res[0].get("Contents")))
         elif res[0]["Contents"]["data"] is None:
             return False
         return True
     else:
         raise DemistoException(f"failed to get incidents from xsoar.\nGot: {res}")
-
-
-def add_incidents_link(data: list):
-    """Append a clickable XSOAR incident URL to each incident in the list.
-
-    Args:
-        data (list): List of incident dicts returned by getIncidents.
-
-    Returns:
-        list: The same list with an ``incidentLink`` key added to every entry.
-    """
-    server_url = demisto.demistoUrls().get("server")
-    prefix = "" if is_demisto_version_ge("8.4.0") else "#"
-    for incident in data:
-        incident_link = urljoin(server_url, f"{prefix}/Details/{incident.get('id')}")
-        incident["incidentLink"] = incident_link
-    return data
 
 
 def search_incidents(args: dict):  # pragma: no cover
@@ -51,10 +34,9 @@ def search_incidents(args: dict):  # pragma: no cover
         return "Incidents not found.", {}, {}
 
     all_found_incidents = res[0]["Contents"]["data"]
-    all_found_incidents = add_incidents_link(all_found_incidents)
 
-    headers = ["id", "name", "severity", "status", "owner", "created", "closed", "incidentLink"]
-    md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers, url_keys=["incidentLink"])
+    headers = ["id", "name", "severity", "status", "owner", "created", "closed"]
+    md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers)
 
     demisto.debug(f"amount of all the incidents that were found {len(all_found_incidents)}")
 

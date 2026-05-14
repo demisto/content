@@ -1,8 +1,20 @@
-### Vectra AI Detection Intelligence Integration
+## Vectra AI Detection Intelligence Integration
 
 Ingests Vectra AI detections as Cortex XSOAR incidents enriched with entity-level risk prioritization from Attack Signal Intelligence. Priority is persistent and updates as threats evolve - high-risk detections stay surfaced until resolved. Bidirectional synchronization keeps incident state aligned across both platforms in real time.
 
 This integration was integrated and tested with version 3.5 of Vectra API.
+
+### How to get your Vectra Client ID and Client Secret Key
+
+To get your Vectra Client ID and Client Secret Key, follow these steps:
+
+* Create a local user with a sufficient role.
+* Log in to the Vectra UI as this local user.
+* Go to "Configuration" > "API Clients".
+* Click "Add API Client".
+* Provide a Client Name and Role, then click "Generate Credentials".
+* Copy the Client ID and Client Secret Key to a safe place.
+* Use the Client ID and Client Secret Key directly in this integration, or store them in the Cortex XSOAR credentials store. In that case, the Client ID should be stored in the "username" field and the Client Secret Key should be stored in the "password" field.
 
 ### Instance Configuration
 
@@ -47,7 +59,7 @@ To fetch Vectra RUX Events Detections follow the next steps:
 * If you want to close a detection in Vectra when the incident is closed in XSOAR, check the "Close Detection on Incident Closure" option. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 * Set the "Detection Close Reason for Incident Closure" option to set the detection close reason in Vectra when the incident is closed in XSOAR. Default value is 'Benign'. This option is only used when the "Close Detection on Incident Closure" option is checked and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 * The mirroring settings apply only for incidents that are fetched after applying the settings.
-* The mirroring is strictly tied to Incident type "Vectra RUX Events Detection" & Incoming mapper "Vectra RUX  - Incoming Mapper" If you want to change or use your custom incident type/mapper then make sure changes related to these are present.
+* The mirroring is strictly tied to Incident type "Vectra RUX Events Detection" & Incoming mapper "Vectra RUX - Incoming Mapper" If you want to change or use your custom incident type/mapper then make sure changes related to these are present.
 * If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
 * To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Vectra RUX mapper" section for more information.)
 * Following new fields are introduced in the response of the incident to enable the mirroring:
@@ -55,4 +67,4 @@ To fetch Vectra RUX Events Detections follow the next steps:
   * **mirror_tags:** This field determines what would be the tag needed to mirror the XSOAR entry out to Vectra RUX. It is a required field for XSOAR to enable mirroring support.
   * **mirror_instance:** This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
 
-For more information about this integration, visit [Vectra's knwoledge base](https://support.vectra.ai/s/article/KB-VS-1692).
+For more information about this integration, visit [Vectra's knowledge base](https://support.vectra.ai/s/article/KB-VS-1692).

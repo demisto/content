@@ -236,8 +236,14 @@ inputs:
   value:
     simple: Vectra RUX Events Detection
   required: false
-  description: Provide the incident type.
-outputs: []
+  description: The XSOAR incident type to search for inactive detections. Default is 'Vectra RUX Events Detection'.
+outputs:
+  - contextPath: Vectra.Detection.id
+    description: The detection ID.
+    type: String
+  - contextPath: Vectra.Detection.investigation_status
+    description: The detection investigation status.
+    type: String
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

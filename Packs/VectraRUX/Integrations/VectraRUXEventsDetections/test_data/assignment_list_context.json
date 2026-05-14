@@ -4,7 +4,7 @@
       "id": 214,
       "assigned_by": {
         "id": 64,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-18T10:55:29Z",
       "events": [
@@ -35,7 +35,7 @@
       "host_id": 220,
       "assigned_to": {
         "id": 59,
-        "username": "test.user2@mail.com"
+        "username": "test.user2@example.com"
       },
       "assignment_id": 214
     },
@@ -43,7 +43,7 @@
       "id": 213,
       "assigned_by": {
         "id": 65,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-18T09:59:53Z",
       "events": [
@@ -122,7 +122,7 @@
       "account_id": 108,
       "assigned_to": {
         "id": 60,
-        "username": "test.user1@mail.com"
+        "username": "test.user1@example.com"
       },
       "assignment_id": 213
     },
@@ -130,7 +130,7 @@
       "id": 212,
       "assigned_by": {
         "id": 65,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-18T06:29:56Z",
       "date_resolved": "2023-08-18T06:32:09Z",
@@ -178,12 +178,12 @@
       },
       "resolved_by": {
         "id": 65,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "account_id": 108,
       "assigned_to": {
         "id": 60,
-        "username": "test.user1@mail.com"
+        "username": "test.user1@example.com"
       },
       "assignment_id": 212
     },
@@ -191,7 +191,7 @@
       "id": 211,
       "assigned_by": {
         "id": 64,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-17T05:47:04Z",
       "events": [
@@ -210,7 +210,7 @@
       "account_id": 37,
       "assigned_to": {
         "id": 39,
-        "username": "test.user3@mail.com"
+        "username": "test.user3@example.com"
       },
       "assignment_id": 211
     }

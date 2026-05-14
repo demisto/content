@@ -1580,7 +1580,7 @@ Add an assignment for the entity.
     "host_id": 10,
     "assigned_to": {
       "id": 1,
-      "username": "test.user@mail.com"
+      "username": "test.user@example.com"
     },
     "assignment_id": 1,
     "id":1
@@ -1596,7 +1596,7 @@ Add an assignment for the entity.
 >
 >|Assignment ID|Assigned By|Assigned Date|Assigned To|Event Type|
 >|---|---|---|---|---|
->| 1 | test_user_2 | 2023-07-24T08:52:59.367115Z | test.user@mail.com | created |
+>| 1 | test_user_2 | 2023-07-24T08:52:59.367115Z | test.user@example.com | created |
 
 ### vectra-entity-assignment-update
 
@@ -1839,7 +1839,7 @@ Returns a list of all assignments.
             "id": 214,
             "assigned_by": {
               "id": 64,
-              "username": "test.user4@mail.com"
+              "username": "test.user4@example.com"
             },
             "date_assigned": "2023-08-18T10:55:29Z",
             "events": [
@@ -1870,7 +1870,7 @@ Returns a list of all assignments.
             "host_id": 220,
             "assigned_to": {
               "id": 59,
-              "username": "test.user2@mail.com"
+              "username": "test.user2@example.com"
             },
             "assignment_id": 214
           },
@@ -1878,7 +1878,7 @@ Returns a list of all assignments.
             "id": 212,
             "assigned_by": {
               "id": 65,
-              "username": "test.user4@mail.com"
+              "username": "test.user4@example.com"
             },
             "date_assigned": "2023-08-18T06:29:56Z",
             "date_resolved": "2023-08-18T06:32:09Z",
@@ -1926,12 +1926,12 @@ Returns a list of all assignments.
             },
             "resolved_by": {
               "id": 65,
-              "username": "test.user4@mail.com"
+              "username": "test.user4@example.com"
             },
             "account_id": 108,
             "assigned_to": {
               "id": 60,
-              "username": "test.user1@mail.com"
+              "username": "test.user1@example.com"
             },
             "assignment_id": 212
           }
@@ -1948,8 +1948,8 @@ Returns a list of all assignments.
 >
 >|Account ID|Host ID|Assignment ID|Assigned By|Assigned To|Date Assigned|Resolved By|Date Resolved|Outcome ID|Outcome|
 >|---|---|---|---|---|---|---|---|---|---|
->|  | 220 | 214 | test.user4@mail.com | test.user2@mail.com | 2023-08-18T10:55:29Z |  |  |  |  |
->| 108 |  | 212 | test.user4@mail.com | test.user1@mail.com | 2023-08-18T06:29:56Z | test.user4@mail.com | 2023-08-18T06:32:09Z | 1 | Benign True Positive |
+>|  | 220 | 214 | test.user4@example.com | test.user2@example.com | 2023-08-18T10:55:29Z |  |  |  |  |
+>| 108 |  | 212 | test.user4@example.com | test.user1@example.com | 2023-08-18T06:29:56Z | test.user4@example.com | 2023-08-18T06:32:09Z | 1 | Benign True Positive |
 
 ### vectra-entity-note-list
 
@@ -1993,22 +1993,22 @@ Returns a list of notes for a specified entity.
     "Entity": {
       "Notes": [
         {
-          "created_by": "test_user@mail.com",
+          "created_by": "test_user@example.com",
           "date_created": "2023-08-25T07:09:08Z",
           "entity_id": 107,
           "entity_type": "account",
           "id": 1070,
-          "modified_by": "test_user@mail.com",
+          "modified_by": "test_user@example.com",
           "note": "From XSOAR",
           "note_id": 1070
         },
         {
-          "created_by": "test_user@mail.com",
+          "created_by": "test_user@example.com",
           "date_created": "2023-08-25T07:08:58Z",
           "entity_id": 107,
           "entity_type": "account",
           "id": 1069,
-          "modified_by": "test_user@mail.com",
+          "modified_by": "test_user@example.com",
           "note": "Test note",
           "note_id": 1069
         },
@@ -2034,8 +2034,8 @@ Returns a list of notes for a specified entity.
 >
 >|Note ID|Note|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|---|
->| 1070 | From XSOAR | test_user@mail.com | 2023-08-25T07:09:08Z | test_user@mail.com | 2023-08-25T08:10:08Z |
->| 1069 | Test note | test_user@mail.com | 2023-08-25T07:08:58Z | test_user@mail.com | 2023-08-25T08:10:08Z |
+>| 1070 | From XSOAR | test_user@example.com | 2023-08-25T07:09:08Z | test_user@example.com | 2023-08-25T08:10:08Z |
+>| 1069 | Test note | test_user@example.com | 2023-08-25T07:08:58Z | test_user@example.com | 2023-08-25T08:10:08Z |
 >| 922 | [Mirrored From XSOAR] XSOAR Incident ID: 14228<br>Note:XSOAR note<br>Added By: admin | api_client | 2023-08-16T05:23:33Z |  |  |
 
 ### vectra-group-list
@@ -2251,13 +2251,13 @@ Unassign members from the specified group.
   "Vectra": {
     "Group": {
       "cognito_managed": false,
-      "description": "xsoar-group-accout-test",
+      "description": "xsoar-group-account-test",
       "group_id": 23,
       "id": 23,
       "last_modified": "2023-09-04T12:03:02Z",
       "last_modified_by": "API Client a7f5be37",
       "members": ["*.domain1.net", "*.domain2.com", "*.domain3.com"],
-      "name": "xsoar-group-accout-test",
+      "name": "xsoar-group-account-test",
       "type": "domain"
     }
   }
@@ -2272,7 +2272,7 @@ Unassign members from the specified group.
 >
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
->| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com | 2023-09-04T07:30:01Z |
+>| 1 | xsoar-group-account-test | domain | xsoar-group-account-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com | 2023-09-04T07:30:01Z |
 
 ### vectra-group-assign
 
@@ -2322,7 +2322,7 @@ Assign members to the specified group.
   "Vectra": {
     "Group": {
       "cognito_managed": false,
-      "description": "xsoar-group-accout-test",
+      "description": "xsoar-group-account-test",
       "group_id": 23,
       "id": 23,
       "last_modified": "2023-09-04T11:59:15Z",
@@ -2334,7 +2334,7 @@ Assign members to the specified group.
         "*.domain4.com",
         "*.domain5.com"
       ],
-      "name": "xsoar-group-accout-test",
+      "name": "xsoar-group-account-test",
       "type": "domain"
     }
   }
@@ -2349,7 +2349,7 @@ Assign members to the specified group.
 >
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
->| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com, \*\.domain4\.com, \*\.domain5\.com | 2023-09-04T06:30:01Z |
+>| 1 | xsoar-group-account-test | domain | xsoar-group-account-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com, \*\.domain4\.com, \*\.domain5\.com | 2023-09-04T06:30:01Z |
 
 ### vectra-entity-detections-mark-asclosed
 
@@ -2605,20 +2605,20 @@ Returns a list of notes for a specified detection.
     "Detection": {
       "Notes": [
         {
-          "created_by": "test_user@mail.com",
+          "created_by": "test_user@example.com",
           "date_created": "2023-08-25T07:09:08Z",
           "detection_id": 1,
           "id": 1070,
-          "modified_by": "test_user@mail.com",
+          "modified_by": "test_user@example.com",
           "note": "From XSOAR",
           "note_id": 1070
         },
         {
-          "created_by": "test_user@mail.com",
+          "created_by": "test_user@example.com",
           "date_created": "2023-08-25T07:08:58Z",
           "detection_id": 1,
           "id": 1069,
-          "modified_by": "test_user@mail.com",
+          "modified_by": "test_user@example.com",
           "note": "Test note",
           "note_id": 1069
         },
@@ -2642,8 +2642,8 @@ Returns a list of notes for a specified detection.
 >
 >|Note ID|Note|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|---|
->| 1070 | From XSOAR | test_user@mail.com | 2023-08-25T07:08:58Z | test_user@mail.com | 2023-08-25T07:08:58Z |
->| 1069 | Test note | test_user@mail.com | 2023-08-25T07:08:58Z | test_user@mail.com | 2023-08-25T07:08:58Z |
+>| 1070 | From XSOAR | test_user@example.com | 2023-08-25T07:08:58Z | test_user@example.com | 2023-08-25T07:08:58Z |
+>| 1069 | Test note | test_user@example.com | 2023-08-25T07:08:58Z | test_user@example.com | 2023-08-25T07:08:58Z |
 >| 922 | [Mirrored From XSOAR] XSOAR Incident ID: 14228\n\nNote: **bold**\n\n_Italic_\n\n+Underline+\n\n~~strikethrough~~\n\nAdded By: admin | api_client | 2023-08-16T05:23:33Z |  |  |
 
 ### vectra-detection-note-add

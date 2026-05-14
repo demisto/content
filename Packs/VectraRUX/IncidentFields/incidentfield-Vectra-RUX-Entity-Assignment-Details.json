@@ -5,7 +5,7 @@
     "name": "Vectra RUX Entity Assignment Details",
     "ownerOnly": false,
     "cliName": "vectraruxentityassignmentdetails",
-    "type": "shortText",
+    "type": "longText",
     "closeForm": false,
     "editForm": true,
     "required": false,

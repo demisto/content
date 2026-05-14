@@ -2,8 +2,8 @@
   {
     "id": 1,
     "type": "domain",
-    "name": "xsoar-group-accout-test",
-    "description": "xsoar-group-accout-test",
+    "name": "xsoar-group-account-test",
+    "description": "xsoar-group-account-test",
     "cognito_managed": false,
     "members": [
       "*.domain1.net"

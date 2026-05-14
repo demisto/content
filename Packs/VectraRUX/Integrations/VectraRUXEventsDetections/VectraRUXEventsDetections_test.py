@@ -1755,7 +1755,7 @@ def test_vectra_user_list_with_email_filter(mocker, client):
             {
                 "id": 10,
                 "name": "brandon.bishop",
-                "email": "test_user@mail.com",
+                "email": "test_user@example.com",
                 "role": "Security Analyst",
                 "last_login_timestamp": "2023-08-22T09:24:44Z",
             }
@@ -1763,9 +1763,9 @@ def test_vectra_user_list_with_email_filter(mocker, client):
     }
     mock_request = mocker.patch.object(client, "list_users_request", return_value=user_res)
 
-    result = vectra_user_list_command(client, {"email": "test_user@mail.com"})
+    result = vectra_user_list_command(client, {"email": "test_user@example.com"})
 
-    mock_request.assert_called_once_with(email="test_user@mail.com", role="", last_login_timestamp=None)
+    mock_request.assert_called_once_with(email="test_user@example.com", role="", last_login_timestamp=None)
     assert result.outputs_prefix == "Vectra.User"
     assert len(result.outputs) == 1
 

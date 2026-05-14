@@ -120,6 +120,24 @@ class TestMain:
         assert "Failed to execute VectraRUXSyncDetectionNotes" in str(mock_return_error.call_args)
 
     @patch("VectraRUXSyncDetectionNotes.demisto")
+    @patch("VectraRUXSyncDetectionNotes.return_error")
+    @patch("VectraRUXSyncDetectionNotes.traceback")
+    def test_main_handles_invalid_json_detection_notes(self, mock_traceback, mock_return_error, mock_demisto):
+        """Test main function handles vectraruxdetectionnotes containing invalid JSON."""
+        mock_demisto.incident.return_value = {
+            "CustomFields": {
+                "vectraruxdetectionid": "123",
+                "vectraruxdetectionnotes": "not-valid-json",
+            }
+        }
+        mock_traceback.format_exc.return_value = "Traceback details"
+
+        main()
+
+        mock_return_error.assert_called_once()
+        assert "Failed to execute VectraRUXSyncDetectionNotes" in str(mock_return_error.call_args)
+
+    @patch("VectraRUXSyncDetectionNotes.demisto")
     @patch("VectraRUXSyncDetectionNotes.handle_error")
     @patch("VectraRUXSyncDetectionNotes.return_results")
     @patch("VectraRUXSyncDetectionNotes.EntryFormat")

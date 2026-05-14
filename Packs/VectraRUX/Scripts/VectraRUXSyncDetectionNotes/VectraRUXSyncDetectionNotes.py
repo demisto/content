@@ -26,7 +26,7 @@ def handle_error(command_results: list[dict[str, Any]]) -> None:
 def main():
     try:
         detection_id = demisto.incident().get("CustomFields", {}).get("vectraruxdetectionid", "")
-        detection_notes = json.loads(demisto.incident().get("CustomFields", {}).get("vectraruxdetectionnotes", "[]"))
+        detection_notes = json.loads(demisto.incident().get("CustomFields", {}).get("vectraruxdetectionnotes") or "[]")
 
         command_args = {"detection_id": detection_id}
         command_result = demisto.executeCommand("vectra-detection-note-list", command_args)

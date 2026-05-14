@@ -3,8 +3,8 @@
     "Vectra.Group(val.group_id && val.group_id == obj.group_id)": {
       "id": 1,
       "type": "domain",
-      "name": "xsoar-group-accout-test",
-      "description": "xsoar-group-accout-test",
+      "name": "xsoar-group-account-test",
+      "description": "xsoar-group-account-test",
       "cognito_managed": false,
       "last_modified": "2023-09-04T06:30:01Z",
       "last_modified_by": "API Client a7f5be37",

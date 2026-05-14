@@ -7,7 +7,7 @@
       "id": 214,
       "assigned_by": {
         "id": 64,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-18T10:55:29Z",
       "date_resolved": null,
@@ -43,14 +43,14 @@
       "account_id": null,
       "assigned_to": {
         "id": 59,
-        "username": "test.user2@mail.com"
+        "username": "test.user2@example.com"
       }
     },
     {
       "id": 213,
       "assigned_by": {
         "id": 65,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-18T09:59:53Z",
       "date_resolved": null,
@@ -134,14 +134,14 @@
       "account_id": 108,
       "assigned_to": {
         "id": 60,
-        "username": "test.user1@mail.com"
+        "username": "test.user1@example.com"
       }
     },
     {
       "id": 212,
       "assigned_by": {
         "id": 65,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-18T06:29:56Z",
       "date_resolved": "2023-08-18T06:32:09Z",
@@ -193,21 +193,21 @@
       },
       "resolved_by": {
         "id": 65,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "triaged_detections": {},
       "host_id": null,
       "account_id": 108,
       "assigned_to": {
         "id": 60,
-        "username": "test.user1@mail.com"
+        "username": "test.user1@example.com"
       }
     },
     {
       "id": 211,
       "assigned_by": {
         "id": 64,
-        "username": "test.user4@mail.com"
+        "username": "test.user4@example.com"
       },
       "date_assigned": "2023-08-17T05:47:04Z",
       "date_resolved": null,
@@ -231,7 +231,7 @@
       "account_id": 37,
       "assigned_to": {
         "id": 39,
-        "username": "test.user3@mail.com"
+        "username": "test.user3@example.com"
       }
     }
   ]

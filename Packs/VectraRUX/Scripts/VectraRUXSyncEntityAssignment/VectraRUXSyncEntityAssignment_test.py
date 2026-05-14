@@ -88,11 +88,11 @@ def test_main(mocker):
                 "Contents": [
                     {
                         "id": 212,
-                        "assigned_by": {"id": 65, "username": "test.user4@mail.com"},
+                        "assigned_by": {"id": 65, "username": "test.user4@example.com"},
                         "date_assigned": "2023-08-18T06:29:56Z",
                         "events": [],
                         "account_id": 108,
-                        "assigned_to": {"id": 60, "username": "test.user1@mail.com"},
+                        "assigned_to": {"id": 60, "username": "test.user1@example.com"},
                         "assignment_id": 212,
                     }
                 ],

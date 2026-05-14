@@ -22,7 +22,7 @@
       "host_id": 1,
       "assigned_to": {
         "id": 1,
-        "username": "test.user@mail.com"
+        "username": "test.user@example.com"
       },
       "assignment_id": 1,
       "id": 1
@@ -51,7 +51,7 @@
       "account_id": 1,
       "assigned_to": {
         "id": 3,
-        "username": "test.user3@mail.com"
+        "username": "test.user3@example.com"
       },
       "assignment_id": 2,
       "id": 2

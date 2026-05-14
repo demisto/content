@@ -1,4 +1,4 @@
-Link the Detections which have same External Reference ID.
+Link the Detections which have the same External Reference ID.
 
 ## Script Data
 

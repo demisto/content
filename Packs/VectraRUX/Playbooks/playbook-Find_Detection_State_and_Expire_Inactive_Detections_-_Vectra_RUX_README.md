@@ -29,7 +29,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| incident_type | Provide the incident type. | Vectra RUX Events Detection | Optional |
+| incident_type | The XSOAR incident type to search for inactive detections. Default is 'Vectra RUX Events Detection'. | Vectra RUX Events Detection | Optional |
 
 ## Playbook Outputs
 

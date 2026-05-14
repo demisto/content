@@ -1,4 +1,4 @@
-Link the Detections which have same entity ID.
+Link the Detections which have the same entity ID.
 
 ## Script Data
 

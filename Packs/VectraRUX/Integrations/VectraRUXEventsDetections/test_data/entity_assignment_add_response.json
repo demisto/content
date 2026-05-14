@@ -28,7 +28,7 @@
       "account_id": null,
       "assigned_to": {
         "id": 1,
-        "username": "test.user@mail.com"
+        "username": "test.user@example.com"
       }
     }
   },
@@ -61,7 +61,7 @@
       "host_id": null,
       "assigned_to": {
         "id": 3,
-        "username": "test.user3@mail.com"
+        "username": "test.user3@example.com"
       }
     }
   }
