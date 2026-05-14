@@ -568,7 +568,7 @@ def main() -> None:
         or DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE
     )
 
-    demisto.debug(f"[main] Command: {command}, token_type: {token_type}, log types from params: {log_types}")
+    demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
         client = Client(base_url=base_url, token=token, verify=verify_certificate, proxy=proxy, token_type=token_type)

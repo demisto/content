@@ -126,6 +126,40 @@ class TestClient:
         assert params["limit"] == 500
         assert params["format"] == "json"
 
+    def test_fetch_log_page_returns_none_on_empty_body(self, mock_client: Client, mocker):
+        """
+        Given:
+            - The API returns an empty 200 response (Content-Length: 0).
+        When:
+            - Calling fetch_log_page.
+        Then:
+            - Returns None (not an error).
+        """
+        mock_resp = mocker.MagicMock(content=b"", status_code=200, headers={})
+        mocker.patch.object(mock_client, "post", return_value=mock_resp)
+
+        result = mock_client.fetch_log_page(log_type="web", start=1700000000, end=1700003600)
+
+        assert result is None
+
+    def test_fetch_log_page_raises_on_non_json_body(self, mock_client: Client, mocker):
+        """
+        Given:
+            - The API returns a non-JSON body (e.g. HTML auth error page).
+        When:
+            - Calling fetch_log_page.
+        Then:
+            - Raises ValueError with the response snippet.
+        """
+        html = b"<html><title>401:Unauthorized</title></html>"
+        mock_resp = mocker.MagicMock(content=html, status_code=401, headers={})
+        mock_resp.json.side_effect = json.JSONDecodeError("Expecting value", "", 0)
+        mock_resp.text = html.decode()
+        mocker.patch.object(mock_client, "post", return_value=mock_resp)
+
+        with pytest.raises(ValueError, match="Non-JSON response"):
+            mock_client.fetch_log_page(log_type="web", start=1700000000, end=1700003600)
+
 
 # ─── get_events_for_log_type Tests ───────────────────────────────────────────
 
@@ -262,6 +296,38 @@ class TestGetEventsForLogType:
 
         assert events == []
         assert mock_fetch.call_count == 1
+
+    def test_list_of_wrappers_response_flattens_events(self, mock_client: Client, mocker):
+        """
+        Given:
+            - The API returns a list of response wrappers (observed live behavior).
+        When:
+            - Calling get_events_for_log_type.
+        Then:
+            - Events from all wrappers are flattened into a single list.
+        """
+        wrapper1 = {
+            "timestamp": "2024-01-15T10:00:00.000Z",
+            "result": {
+                "events": [{"event": {"event_time": "2024-01-15T10:00:00", "domain": "a.com"}}],
+                "pagingIdentifiers": {},
+            },
+        }
+        wrapper2 = {
+            "timestamp": "2024-01-15T10:00:01.000Z",
+            "result": {
+                "events": [{"event": {"event_time": "2024-01-15T10:00:01", "domain": "b.com"}}],
+                "pagingIdentifiers": {},
+            },
+        }
+        # Return a list of 2 wrappers, then empty to stop pagination.
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[[wrapper1, wrapper2], None])
+
+        events = get_events_for_log_type(mock_client, "web", 1700000000, 1700003600, max_events=100)
+
+        assert len(events) == 2
+        assert events[0]["domain"] == "a.com"
+        assert events[1]["domain"] == "b.com"
 
     def test_api_error_returns_partial_results(self, mock_client: Client, mocker):
         """
@@ -530,8 +596,79 @@ class TestFetchEvents:
         # audit state updated
         assert "audit" in next_run
 
+    # ─── Hash / Dedup Helper Tests ────────────────────────────────────────────────
 
-# ─── Hash / Dedup Helper Tests ────────────────────────────────────────────────
+    def test_end_to_end_multi_type_with_dedup_and_state(self, mock_client: Client, mocker):
+        """
+        Given:
+            - Two log types (web, audit) configured.
+            - web has a previous last_run with a boundary hash matching the first returned event.
+            - audit is a first fetch with events.
+        When:
+            - Calling fetch_events.
+        Then:
+            - web: the duplicate event is removed, remaining events are returned.
+            - audit: all events are returned (no dedup on first fetch).
+            - next_run has updated state for both types.
+        """
+        web_event_dup = {"event": {"event_time": "2024-01-15T10:00:00", "domain": "dup.com"}}
+        web_event_new = {"event": {"event_time": "2024-01-15T10:00:01", "domain": "new.com"}}
+        audit_event = {"event": {"event_time": "2024-01-15T10:00:00", "name": "login"}}
+
+        web_response = {
+            "result": {
+                "events": [web_event_dup, web_event_new],
+                "pagingIdentifiers": {},
+            }
+        }
+        audit_response = {
+            "result": {
+                "events": [audit_event],
+                "pagingIdentifiers": {},
+            }
+        }
+
+        # The hash must match the ENRICHED event (after _time and source_log_type are added).
+        enriched_dup = {**web_event_dup["event"], "_time": "2024-01-15T10:00:00Z", "source_log_type": "web_logs"}
+        dup_hash = hash_event(enriched_dup)
+
+        # Each type calls fetch_log_page twice: once for data, once returns None to stop pagination.
+        call_results: dict[str, list] = {
+            "web": [web_response, None],
+            "audit": [audit_response, None],
+        }
+
+        def mock_fetch(log_type, **kwargs):
+            return call_results[log_type].pop(0) if call_results.get(log_type) else None
+
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=mock_fetch)
+
+        last_run = {
+            "web": {
+                "last_fetch_time": "2024-01-15T10:00:00",
+                "boundary_hashes": [dup_hash],
+            }
+        }
+
+        next_run, events = fetch_events(
+            client=mock_client,
+            last_run=last_run,
+            log_types=["web", "audit"],
+            first_fetch_time="3 hours",
+            max_events_per_fetch_per_type=5000,
+        )
+
+        # web: 1 dup removed, 1 new event kept. audit: 1 event (no dedup on first fetch).
+        assert len(events) == 2
+        domains = {e.get("domain") for e in events if "domain" in e}
+        assert "new.com" in domains
+        assert "dup.com" not in domains
+
+        # Both types have updated state in next_run.
+        assert "web" in next_run
+        assert "audit" in next_run
+        assert next_run["web"]["last_fetch_time"] == "2024-01-15T10:00:01"
+        assert next_run["audit"]["last_fetch_time"] == "2024-01-15T10:00:00"
 
 
 class TestHashHelpers:
@@ -839,3 +976,20 @@ class TestTestModule:
 
         with pytest.raises(Exception, match="500"):
             test_module(mock_client, ["web"])
+
+    def test_returns_connection_error_message(self, mock_client: Client, mocker):
+        """
+        Given:
+            - fetch_log_page raises a ConnectionError.
+        When:
+            - Calling test_module.
+        Then:
+            - Returns a user-friendly connection error message.
+        """
+        from MenloSecurity import test_module  # noqa: PLC0415
+
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=Exception("ConnectionError: Failed to establish"))
+
+        result = test_module(mock_client, ["web"])
+
+        assert "Connection Error" in result
