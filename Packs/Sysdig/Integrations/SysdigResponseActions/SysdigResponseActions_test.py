@@ -48,7 +48,7 @@ def test_execute_response_action(mock_response):
     mock_response.return_value.status_code = HTTPStatus.OK
     client = Client(base_url="https://us2.app.sysdig.com", verify=False, headers={"Authorization": "Bearer token"}, proxy=False)
     result = execute_response_action_command(
-        client, {"actionType": "KILL_CONTAINER", "container_id": "123456789012", "callerId": "test_kill_container_07"}
+        client, {"actionType": "KILL_CONTAINER", "container_id": "123456789012", "host_id": "abc123def456", "callerId": "test_kill_container_07"}
     )
     result = result.to_context().get("Contents")
 

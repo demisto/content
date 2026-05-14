@@ -29,5 +29,11 @@
     "githubUser": [
         "S3B4SZ17"
     ],
-    "defaultDataSource": "SysdigResponseActions"
+    "defaultDataSource": "SysdigResponseActions",
+    "dependencies": {
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        }
+    }
 }
