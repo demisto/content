@@ -15316,7 +15316,7 @@ def test_log_events_filter_command_with_pagination(mocker):
         "account_id": "123456789012",
         "region": "us-east-1",
         "log_group_name": "my-log-group",
-        "limit": "10",
+        "limit": "1",
         "next_token": "prev-token",
     }
 
@@ -15325,7 +15325,7 @@ def test_log_events_filter_command_with_pagination(mocker):
     assert isinstance(result, CommandResults)
     call_kwargs = mock_client.filter_log_events.call_args[1]
     assert call_kwargs["logGroupName"] == "my-log-group"
-    assert call_kwargs["limit"] == 10
+    assert call_kwargs["limit"] == 1
     assert call_kwargs["nextToken"] == "prev-token"
     assert result.outputs["AWS.CloudWatchLogs(true)"]["EventsNextToken"] == "abc123token"
 

@@ -15456,7 +15456,7 @@ script:
       required: false
 
   - name: aws-logs-log-group-create
-    description: "Creates a log group with the specified name. Required IAM Permission: logs:CreateLogGroup."
+    description: "Creates a log group with the specified name. Required IAM permission: logs:CreateLogGroup."
     execution: true
     arguments:
     - name: region
@@ -15497,7 +15497,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -15522,7 +15522,7 @@ script:
       description: Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false.
 
   - name: aws-logs-log-stream-create
-    description: "Creates a log stream for the specified log group. Required IAM Permission: logs:CreateLogStream."
+    description: "Creates a log stream for the specified log group. Required IAM permission: logs:CreateLogStream."
     execution: true
     arguments:
     - name: region
@@ -15563,7 +15563,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -15575,7 +15575,7 @@ script:
       description: The name of the log stream.
 
   - name: aws-logs-log-group-delete
-    description: "Deletes the specified log group and permanently deletes all the archived log events associated with the log group. Required IAM Permission: logs:DeleteLogGroup."
+    description: "Deletes the specified log group and permanently deletes all the archived log events associated with the log group. Required IAM permission: logs:DeleteLogGroup."
     execution: true
     arguments:
     - name: region
@@ -15616,7 +15616,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -15625,7 +15625,7 @@ script:
       description: The name of the log group.
 
   - name: aws-logs-log-stream-delete
-    description: "Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream. Required IAM Permission: logs:DeleteLogStream."
+    description: "Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream. Required IAM permission: logs:DeleteLogStream."
     execution: true
     arguments:
     - name: region
@@ -15666,7 +15666,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -15678,7 +15678,7 @@ script:
       description: The name of the log stream.
 
   - name: aws-logs-log-events-filter
-    description: "Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream. Required IAM Permission: logs:FilterLogEvents."
+    description: "Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream. Required IAM permission: logs:FilterLogEvents."
     arguments:
     - name: region
       required: true
@@ -15718,26 +15718,26 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
-      description: The name of the log group to search. You must include either logGroupName or logGroupIdentifier, but not both.
+      description: The name of the log group to search. Must include either logGroupName or logGroupIdentifier, but not both.
     - name: log_group_identifier
-      description: Specify either the name or ARN of the log group to search. If the log group is in a source account and you are using a monitoring account, you must use the log group ARN. You must include either logGroupName or logGroupIdentifier, but not both.
+      description: Either the name or ARN of the log group to search. If the log group is in a source account and you are using a monitoring account, use the log group ARN. Must include either logGroupName or logGroupIdentifier, but not both.
     - name: log_stream_names
-      description: Comma-separated list of log stream names to search within. Cannot be used together with log_stream_name_prefix.
+      description: A comma-separated list of log stream names to search within. Cannot be used together with log_stream_name_prefix.
       isArray: true
     - name: log_stream_name_prefix
-      description: Filters the results to include only events from log streams that have names starting with this prefix. Cannot be used together with log_stream_names.
+      description: The prefix used to filter results to include only events from log streams with names starting with this value. Cannot be used together with log_stream_names.
     - name: start_time
-      description: The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp before this time are not returned.
+      description: The start of the time range, expressed in Unix time (milliseconds after Jan 1 1970 00:00:00 UTC. For example, 1777536297198). Events with a timestamp before this time are not returned.
     - name: end_time
-      description: The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp later than this time are not returned.
+      description: The end of the time range, expressed in Unix time (milliseconds after Jan 1, 1970 00:00:00 UTC. For example, 1777536297198). Events with a timestamp later than this time are not returned.
     - name: filter_pattern
-      description: The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation.
+      description: The filter pattern to use. If not provided, all events are matched. For more information, see the AWS Filter and Pattern Syntax documentation.
     - name: limit
       description: The maximum number of events to return.
     - name: next_token
@@ -15747,19 +15747,19 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false.
+      description: Whether to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is "false".
     outputs:
     - contextPath: AWS.CloudWatchLogs.Events.LogStreamName
       description: The name of the log stream this event belongs to.
       type: string
     - contextPath: AWS.CloudWatchLogs.Events.Timestamp
-      description: The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The time the event occurred, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
     - contextPath: AWS.CloudWatchLogs.Events.Message
       description: The data contained in the log event.
       type: string
     - contextPath: AWS.CloudWatchLogs.Events.IngestionTime
-      description: The time the event was ingested, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The time the event was ingested, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
     - contextPath: AWS.CloudWatchLogs.Events.EventId
       description: The ID of the event.
@@ -15769,7 +15769,7 @@ script:
       type: string
 
   - name: aws-logs-log-groups-describe
-    description: "Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name. Required IAM Permission: logs:DescribeLogGroups."
+    description: "Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name. Required IAM permission: logs:DescribeLogGroups."
     arguments:
     - name: region
       required: true
@@ -15809,33 +15809,33 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
     - name: log_group_name_prefix
-      description: The prefix to match. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed.
+      description: The prefix used to filter results. Cannot be used together with log_group_name_pattern.
     - name: log_group_name_pattern
-      description: A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed.
+      description: The case-sensitive substring used to filter log group names. Cannot be used together with log_group_name_prefix.
     - name: log_group_identifiers
-      description: Comma-separated list of log group ARNs or names to describe. If you specify log group names, they must be from the same account and Region.
+      description: A comma-separated list of log group ARNs or names to describe. If you specify log group names, they must be from the same account and region.
       isArray: true
     - name: account_identifiers
-      description: Comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying.
+      description: A comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying.
       isArray: true
     - name: include_linked_accounts
       predefined:
       - "true"
       - "false"
-      description: If true, include log groups in the accounts specified by account_identifiers. If this parameter is set to true and account_identifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
+      description: Whether to include log groups in the accounts specified by account_identifiers. If set to true and account_identifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
     - name: log_group_class
       auto: PREDEFINED
       predefined:
       - STANDARD
       - INFREQUENT_ACCESS
-      description: Specifies the log group class for this log group.
+      description: The log group class for this log group.
     - name: limit
-      description: The maximum number of items returned. Maximum value of 50.
+      description: The maximum number of items to return. Maximum value is 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
@@ -15843,7 +15843,7 @@ script:
       description: The name of the log group.
       type: string
     - contextPath: AWS.CloudWatchLogs.LogGroups.CreationTime
-      description: The creation time of the log group, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The creation time of the log group, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: number
     - contextPath: AWS.CloudWatchLogs.LogGroups.RetentionInDays
       description: The number of days to retain the log events in the specified log group.
@@ -15905,30 +15905,30 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
     - name: log_group_name
-      description: The name of the log group. You must include either log_group_name or log_group_identifier, but not both.
+      description: The name of the log group. Must include either log_group_name or log_group_identifier, but not both.
     - name: log_group_identifier
-      description: Specify either the name or ARN of the log group. You must include either log_group_name or log_group_identifier, but not both.
+      description: Either the name or ARN of the log group. Must include either log_group_name or log_group_identifier, but not both.
     - name: log_stream_name_prefix
-      description: The prefix to match. If orderBy is LastEventTime, you cannot specify this parameter.
+      description: The prefix used to filter results. Cannot be used when the orderBy argument is set to LastEventTime.
     - name: order_by
       auto: PREDEFINED
       predefined:
       - LogStreamName
       - LastEventTime
-      description: If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time. The default value is LogStreamName.
+      description: The method used to order the results. Possible values are LogStreamName (results ordered by log stream name) or LastEventTime (results ordered by event time). Default is LogStreamName.
     - name: descending
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending).
+      description: Whether to return results in descending order. If orderBy is not set, the default is false. If orderBy is LastEventTime, the default is true.
     - name: limit
-      description: The maximum number of items returned. Maximum value of 50.
+      description: The maximum number of items to return. Maximum value is 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
@@ -15939,19 +15939,19 @@ script:
       description: The name of the log stream.
       type: string
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime
-      description: The creation time of the stream, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The creation time of the stream, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: number
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.Arn
       description: The Amazon Resource Name (ARN) of the log stream.
       type: string
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.FirstEventTimestamp
-      description: The time of the first event, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The time of the first event, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastEventTimestamp
       description: The time of the most recent log event in the log stream in CloudWatch Logs.
       type: date
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastIngestionTime
-      description: The ingestion time, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The ingestion time, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.UploadSequenceToken
       description: The sequence token.
@@ -15964,7 +15964,7 @@ script:
       type: string
 
   - name: aws-logs-retention-policy-put
-    description: "Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group. Required IAM Permission: logs:PutRetentionPolicy."
+    description: "Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group. Required IAM permission: logs:PutRetentionPolicy."
     execution: true
     arguments:
     - name: region
@@ -16005,7 +16005,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -16036,7 +16036,7 @@ script:
       description: The number of days to retain the log events in the specified log group.
 
   - name: aws-logs-retention-policy-delete
-    description: "Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy. Required IAM Permission: logs:DeleteRetentionPolicy."
+    description: "Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy. Required IAM permission: logs:DeleteRetentionPolicy."
     execution: true
     arguments:
     - name: region
@@ -16077,7 +16077,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -16086,7 +16086,7 @@ script:
       description: The name of the log group.
 
   - name: aws-logs-log-event-put
-    description: "Uploads a log event to the specified log stream. Required IAM Permission: logs:PutLogEvents."
+    description: "Uploads a log event to the specified log stream. Required IAM permission: logs:PutLogEvents."
     execution: true
     arguments:
     - name: region
@@ -16127,7 +16127,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -16139,24 +16139,24 @@ script:
       description: The name of the log stream.
     - name: timestamp
       required: true
-      description: The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time).
+      description: The time the event occurred, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
     - name: message
       required: true
       description: The raw event message.
     - name: key_attributes
-      description: "Entity key attributes that identify the entity. Must be separated by a semicolon (;) and specified using the format: key=<name>,value=<value>;key=<name>,value=<value>. For example: key=Type,value=AWS::EC2::Instance;key=Name,value=my-instance."
+      description: "The entity key attributes that identify the entity. Must be separated by a semicolon (;) and specified using the format: key=<name>,value=<value>;key=<name>,value=<value>. For example: key=Type,value=AWS::EC2::Instance;key=Name,value=my-instance."
     - name: attributes
-      description: "Additional entity attributes that describe the entity. Must be separated by a semicolon (;) and specified using the format: key=<name>,value=<value>;key=<name>,value=<value>. For example: key=Environment,value=production;key=Team,value=platform."
+      description: "The additional entity attributes that describe the entity. Must be separated by a semicolon (;) and specified using the format: key=<name>,value=<value>;key=<name>,value=<value>. For example: key=Environment,value=production;key=Team,value=platform."
     outputs:
     - contextPath: AWS.CloudWatchLogs.PutLogEvents.rejectedLogEventsInfo
-      description: Information about rejected log events, including the reason for rejection.
+      description: The information about rejected log events, including the reason for rejection.
       type: Unknown
     - contextPath: AWS.CloudWatchLogs.PutLogEvents.rejectedEntityInfo
-      description: Information about rejected entity, including the reason for rejection.
+      description: The information about the rejected entity, including the reason for rejection.
       type: Unknown
 
   - name: aws-logs-metric-filter-put
-    description: "Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents. Required IAM Permission: logs:PutMetricFilter."
+    description: "Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents. Required IAM permission: logs:PutMetricFilter."
     execution: true
     arguments:
     - name: region
@@ -16197,7 +16197,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -16255,9 +16255,9 @@ script:
       - None
       description: The unit to assign to the metric. If you omit this, the unit is set as None.
     - name: field_selection_criteria
-      description: A filter expression that specifies which log events should be processed by this metric filter based on system fields such as source account and source region. Uses selection criteria syntax with operators like =, !=, AND, OR, IN, NOT IN. Maximum length of 2000 characters.
+      description: The filter expression used to specify which log events to process based on system fields, such as source account and source region. Uses selection criteria syntax with operators such as =, !=, AND, OR, IN, and NOT IN. Maximum length is 2000 characters.
     - name: emit_system_field_dimensions
-      description: Comma-separated list of system fields to emit as additional dimensions in the generated metrics. Valid values are @aws.account and @aws.region.
+      description: A comma-separated list of system fields to emit as additional dimensions in the generated metrics. Valid values are @aws.account and @aws.region.
       isArray: true
     - name: apply_on_transformed_logs
       auto: PREDEFINED
@@ -16267,7 +16267,7 @@ script:
       description: Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false.
 
   - name: aws-logs-metric-filter-delete
-    description: "Deletes the specified metric filter. Required IAM Permission: logs:DeleteMetricFilter."
+    description: "Deletes the specified metric filter. Required IAM permission: logs:DeleteMetricFilter."
     execution: true
     arguments:
     - name: region
@@ -16308,7 +16308,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -16320,7 +16320,7 @@ script:
       description: The name of the metric filter.
 
   - name: aws-logs-metric-filters-describe
-    description: "Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace. Required IAM Permission: logs:DescribeMetricFilters."
+    description: "Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace. Required IAM permission: logs:DescribeMetricFilters."
     arguments:
     - name: region
       required: true
@@ -16360,7 +16360,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-      description: The AWS Region.
+      description: The AWS region.
     - name: account_id
       required: true
       description: The AWS account ID.
@@ -16369,11 +16369,11 @@ script:
     - name: filter_name_prefix
       description: The prefix to match.
     - name: metric_name
-      description: Filters results to include only those with the specified metric name. If you include this parameter in your request, you must also include the metric_namespace parameter.
+      description: The metric name used to filter results. If this argument is provided, the metric_namespace argument must also be provided.
     - name: metric_namespace
-      description: Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter.
+      description: The namespace used to filter results. If this argument is provided, the metric_name argument must also be provided.
     - name: limit
-      description: The maximum number of items returned. Maximum value of 50.
+      description: The maximum number of items to return. Maximum value is 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
@@ -16396,7 +16396,7 @@ script:
       description: The value to emit when a filter pattern does not match a log event. This value can be null.
       type: string
     - contextPath: AWS.CloudWatchLogs.MetricFilters.CreationTime
-      description: The creation time of the metric filter, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      description: The creation time of the metric filter, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
     - contextPath: AWS.CloudWatchLogs.MetricFilters.LogGroupName
       description: The name of the log group.
