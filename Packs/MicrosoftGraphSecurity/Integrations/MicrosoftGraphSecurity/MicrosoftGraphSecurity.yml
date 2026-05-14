@@ -1389,7 +1389,7 @@ script:
       description: 'The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed.'
       type: String
     - contextPath: MsGraph.eDiscoveryHoldOperation.LocationURL
-      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status.
+      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status.
       type: String
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -1408,7 +1408,7 @@ script:
       description: 'The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed.'
       type: String
     - contextPath: MsGraph.eDiscoveryHoldOperation.LocationURL
-      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status.
+      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status.
       type: String
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -1721,7 +1721,7 @@ script:
       description: 'The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed.'
       type: String
     - contextPath: MsGraph.eDiscoveryPurge.LocationURL
-      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status.
+      description: The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status.
       type: String
   - arguments:
     - description: The Location URL returned in the response headers of an eDiscovery action (e.g., purge, hold). This URL points to the operation resource in Microsoft Graph and is used to retrieve the current status of the operation.
@@ -1733,7 +1733,7 @@ script:
 
       The Location URL is returned in the response headers when an eDiscovery action is initiated and can be used to poll for the operation status until it completes.
     execution: false
-    name: msg-get-operation-status
+    name: msg-ediscovery-get-operation-status
     outputs:
     - contextPath: MsGraph.eDiscoveryOperation.Id
       description: The ID of the operation.
@@ -1748,10 +1748,10 @@ script:
       description: The progress of the operation as a percentage.
       type: Number
     - contextPath: MsGraph.eDiscoveryOperation.CreatedDateTime
-      description: The date and time the operation was created.
+      description: 'The date and time the operation was created. Format: ISO 8601 UTC, e.g., 2026-05-14T09:19:54.721164Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryOperation.CompletedDateTime
-      description: The date and time the operation was completed.
+      description: 'The date and time the operation was completed. Format: ISO 8601 UTC, e.g., 2026-05-14T09:21:24.6853071Z.'
       type: Date
   - arguments:
     - description: The email address of the user who received the email.

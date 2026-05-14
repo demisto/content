@@ -1220,7 +1220,7 @@ partial - The custodian is in a mixed state where some sources are on hold and s
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. |
-| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. |
+| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status. |
 
 #### Command example
 
@@ -1254,7 +1254,7 @@ Start the process of removing a hold from eDiscovery custodians.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. |
-| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. |
+| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status. |
 
 #### Command example
 
@@ -1620,7 +1620,7 @@ Note: This request purges a maximum of 100 items per location only. When purgeTy
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.eDiscoveryPurge.Status | String | The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed. | 
-| MsGraph.eDiscoveryPurge.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
+| MsGraph.eDiscoveryPurge.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status. | 
 
 
 ### msg-delete-ediscovery-search
@@ -2751,7 +2751,7 @@ Update the properties of an ediscoveryHoldPolicy object.
 #### Context Output
 
 There is no context output for this command.
-### msg-get-operation-status
+### msg-ediscovery-get-operation-status
 
 ***
 Retrieve the status of a long-running eDiscovery operation using the Location URL returned by action commands such as msg-purge-ediscovery-data or msg-apply-hold-ediscovery-custodian.
@@ -2760,7 +2760,7 @@ The Location URL is returned in the response headers when an eDiscovery action i
 
 #### Base Command
 
-`msg-get-operation-status`
+`msg-ediscovery-get-operation-status`
 
 #### Input
 

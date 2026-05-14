@@ -2559,7 +2559,7 @@ def main():
         "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
         "msg-list-case-operation": list_case_operation_command,
         "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
-        "msg-get-operation-status": get_operation_status_command,
+        "msg-ediscovery-get-operation-status": get_operation_status_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
