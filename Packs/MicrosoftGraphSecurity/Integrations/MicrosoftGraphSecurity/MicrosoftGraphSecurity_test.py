@@ -58,6 +58,7 @@ from MicrosoftGraphSecurity import (
     export_result_ediscovery_data_command,
     apply_hold_ediscovery_custodian_command,
     remove_hold_ediscovery_custodian_command,
+    build_operation_results,
 )
 
 client_mocker = MsGraphClient(
@@ -1315,6 +1316,54 @@ def test_download_operation_export_file_errors(mocker, mock_attrs, expected_erro
         _download_operation_export_file(client_mocker, operation)
 
     assert expected_error_msg in str(e.value)
+
+
+# ==============================
+# build_operation_results tests
+# ==============================
+
+
+def test_build_operation_results_with_location():
+    """
+    Given:
+        A status and a Location URL.
+    When:
+        Calling build_operation_results.
+    Then:
+        Returns CommandResults with correct outputs_prefix, outputs_key_field, and outputs.
+    """
+    result = build_operation_results(
+        outputs_prefix="MsGraph.eDiscoveryPurge",
+        title="eDiscovery Purge Data Results",
+        status="running",
+        location="https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case1/operations/op1",
+    )
+    assert result.outputs_prefix == "MsGraph.eDiscoveryPurge"
+    assert result.outputs_key_field == "LocationURL"
+    assert result.outputs["Status"] == "running"
+    assert result.outputs["LocationURL"] == "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case1/operations/op1"
+    assert "running" in result.readable_output
+    assert "Location URL" in result.readable_output
+
+
+def test_build_operation_results_without_location():
+    """
+    Given:
+        A status with no Location URL (empty string).
+    When:
+        Calling build_operation_results.
+    Then:
+        Returns CommandResults with Status only; LocationURL is empty but present in outputs.
+    """
+    result = build_operation_results(
+        outputs_prefix="MsGraph.eDiscoveryHoldOperation",
+        title="Apply Hold Results",
+        status="success",
+        location="",
+    )
+    assert result.outputs["Status"] == "success"
+    assert result.outputs["LocationURL"] == ""
+    assert "success" in result.readable_output
 
 
 # ==============================
