@@ -22,7 +22,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
