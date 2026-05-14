@@ -462,7 +462,7 @@ def generate_feature_tables(content: list) -> str:
             if not isinstance(cell, dict):
                 continue
             accessor_key = cell.get("accessorKey") or ""
-            display_name = cell.get("displayName") or accessor_key
+            display_name = cell.get("displayName") or pascalToSpace(accessor_key)
             if not display_name:
                 continue
             value = cell.get("value")
@@ -490,7 +490,6 @@ def generate_feature_tables(content: list) -> str:
             f"{feature_type} Information",
             rows,
             headers=headers,
-            headerTransform=string_to_table_header,
             removeNull=False,
         )
         tables_md.append(table_md)
