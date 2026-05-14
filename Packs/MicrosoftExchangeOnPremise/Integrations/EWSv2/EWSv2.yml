@@ -1060,7 +1060,7 @@ script:
       name: handle_inline_image
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: devdemisto/py-ews:5.6.0.8874281
+  dockerimage: devdemisto/py-ews:5.6.0.8931047
   isfetch: true
   runonce: false
   script: '-'
