@@ -170,12 +170,17 @@ class Client(BaseClient):
                 )
         self._headers.update({"Authorization": "Bearer " + access_token})
 
-    def http_request(self, method, url_suffix, full_url=None, params=None, data=None):
+    def http_request(self, method, url_suffix, full_url=None, params=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
             res = self._http_request(
-                method, url_suffix, full_url=full_url, resp_type="response", ok_codes=ok_codes, params=params, data=data
+                method,
+                url_suffix,
+                full_url=full_url,
+                resp_type="response",
+                ok_codes=ok_codes,
+                params=params,
             )
             if res.status_code in [200, 201]:
                 try:
