@@ -9895,7 +9895,7 @@ script:
       - contextPath: AWS.S3.BucketsPrefix
         description: If Prefix was sent with the request, it is included in the response.
         type: string
-  - name: aws-ssm-association-version-list
+  - name: aws-ssm-association-versions-list
     description: "Retrieves all versions of an association for a specific association ID. Required IAM permission: ssm:ListAssociationVersions."
     arguments:
       - name: account_id
@@ -10762,7 +10762,7 @@ script:
         description: "A semicolon-separated list of tags in the format key=<key>,value=<value>. For example: key=Owner,value=SysAdmin;key=Env,value=Prod."
         required: true
 
-  - name: aws-ssm-tag-list
+  - name: aws-ssm-tags-list
     description: "Returns a list of the tags assigned to the specified resource. Required IAM Permission: ssm:ListTagsForResource."
     arguments:
       - name: account_id
@@ -11046,7 +11046,7 @@ script:
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
 
-  - name: aws-ssm-automation-execution-list
+  - name: aws-ssm-automation-executions-list
     description: "Provides details about all active and terminated Automation executions. Required IAM Permission: ssm:DescribeAutomationExecutions."
     arguments:
       - name: account_id
@@ -11278,7 +11278,7 @@ script:
         description: The name of the parameter used as the target resource for the rate-controlled execution.
         required: false
       - name: targets
-        description: "A semicolon-separated list of key-value mapping to target resources in the format name=<key>,values=<value1>,<value2>."
+        description: "A semicolon-separated list of key-value mapping to target resources in the format key=<key>,values=<value1>,<value2>. For example: key=tag:Env,values=prod."
         required: false
       - name: target_locations
         description: "A semicolon-separated list of target location entries in the format key=<field>,value=<value>. Supported fields: Accounts, Regions, ExecutionRoleName, TargetLocationMaxConcurrency, TargetLocationMaxErrors. For example: key=Accounts,value=123456789012;key=Regions,value=us-east-1."
@@ -11568,7 +11568,7 @@ script:
         description: The CloudWatch alarm that was invoked by the automation, containing Name and State fields.
         type: Unknown
 
-  - name: aws-ssm-command-list
+  - name: aws-ssm-commands-list
     description: "Lists the commands requested by users of the AWS account. Required IAM Permission: ssm:ListCommands."
     arguments:
       - name: account_id

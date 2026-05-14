@@ -326,10 +326,10 @@ def parse_key_values_2_dict(parameters_str: str) -> dict:
 
 def parse_name_value_type_format_filter(filter_string: str | None):
     """
-    Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
+    Parses a list representation of key, values and type with the form of 'key=<key>,values=<values>,type=<type>'.
     You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
     Args:
-        filter_string: The name and values list
+        filter_string: The key, values and type list
     Returns:
         A list of dicts with the form {"Key": <key>, "Values": [<value>], "Type": <type>}
     """
@@ -349,7 +349,7 @@ def parse_name_value_type_format_filter(filter_string: str | None):
         if match_filter is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided "
-                "like so: name=<name>,values=<values>,type=<type>;name=<name>,values=<value1>,<value2>,type=<type>..."
+                "like so: key=<key>,values=<values>,type=<type>;key=<key>,values=<value1>,<value2>,type=<type>..."
             )
         demisto.debug(
             f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
@@ -8524,16 +8524,17 @@ class SSM:
 
         if not execution_id:
             # First execution — start the automation
-            raw_filters = parse_target_field(args.get("targets"))
-            targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
+            targets = parse_target_field(args.get("targets")) or None
 
-            # Build AlarmConfiguration from flat args
+            # Build AlarmConfiguration from flat args — only when alarm_names are provided
             alarm_names = argToList(args.get("alarm_names"))
             alarm_configuration = (
                 {
                     "Alarms": [{"Name": name} for name in alarm_names],
-                    "IgnorePollAlarmFailure": argToBoolean(args.get("alarm_ignore_poll_failure")),
+                    "IgnorePollAlarmFailure": arg_to_bool_or_none(args.get("alarm_ignore_poll_failure")),
                 }
+                if alarm_names
+                else None
             )
 
             # Build TargetLocations from tag-style flat arg
@@ -8635,9 +8636,7 @@ class SSM:
             automation_response = client.get_automation_execution(AutomationExecutionId=automation_execution_id)
             automation = serialize_response_with_datetime_encoding(automation_response.get("AutomationExecution", {}))
             status = automation.get("AutomationExecutionStatus", "")
-            demisto.debug(
-                f"[ssm] aws-ssm-automation-execution-cancel: {automation_execution_id=} {status=}"
-            )
+            demisto.debug(f"[ssm] aws-ssm-automation-execution-cancel: {automation_execution_id=} {status=}")
 
             if status in TERMINAL_COMMAND_STATUSES:
                 return PollResult(

@@ -14666,7 +14666,7 @@ def test_add_tags_to_resource_command_success(mocker):
 
     result = SSM.add_tags_to_resource_command(mock_client, args)
 
-    assert "Tags successfully added to SSM resource 'mi-123'" in result.readable_output
+    assert "Tags were successfully added to the SSM resource 'mi-123'" in result.readable_output
     mock_client.add_tags_to_resource.assert_called_once()
     call_kwargs = mock_client.add_tags_to_resource.call_args[1]
     assert call_kwargs["ResourceType"] == "ManagedInstance"
@@ -15489,13 +15489,13 @@ def test_automation_execution_run_command_first_execution(mocker):
         "max_concurrency": "10",
         "max_errors": "5",
         "target_parameter_name": "InstanceId",
-        "targets": "name=tag:Env,values=prod",
-        "target_locations": "Key=Accounts,Value=123456789012",
+        "targets": "key=resource-groups:Name,values=my-group",
+        "target_locations": "key=Accounts,value=123456789012",
         "target_locations_url": "https://s3.amazonaws.com/my-bucket/locations.json",
         "target_maps": "key=InstanceId,values=i-abc123",
         "alarm_names": "MyAlarm",
         "alarm_ignore_poll_failure": "true",
-        "tags": "Key=Owner,Value=team",
+        "tags": "key=Owner,value=team",
     }
 
     result = SSM.automation_execution_run_command(args, mock_client)
@@ -15513,7 +15513,7 @@ def test_automation_execution_run_command_first_execution(mocker):
     assert call_kwargs["MaxConcurrency"] == "10"
     assert call_kwargs["MaxErrors"] == "5"
     assert call_kwargs["TargetParameterName"] == "InstanceId"
-    assert call_kwargs["Targets"] == [{"Key": "tag:Env", "Values": ["prod"]}]
+    assert call_kwargs["Targets"] == [{"Key": "resource-groups:Name", "Values": ["my-group"]}]
     assert call_kwargs["TargetLocationsURL"] == "https://s3.amazonaws.com/my-bucket/locations.json"
     assert call_kwargs["AlarmConfiguration"]["Alarms"] == [{"Name": "MyAlarm"}]
     assert call_kwargs["AlarmConfiguration"]["IgnorePollAlarmFailure"] is True
