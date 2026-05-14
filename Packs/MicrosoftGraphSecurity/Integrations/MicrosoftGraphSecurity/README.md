@@ -1197,7 +1197,7 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 
 ***
 Start the process of applying hold on eDiscovery custodians.
-Available return statuses: 
+Available return statuses:
 notApplied - The custodian is not on hold (all sources in it are not on hold).
 applied - The custodian is on hold (all sources are on hold).
 applying - The custodian is in applying the hold state (applyHold operation triggered).
@@ -1212,8 +1212,8 @@ partial - The custodian is in a mixed state where some sources are on hold and s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | A comma-separated list of custodians IDs to apply a hold to. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | A comma-separated list of custodians IDs to apply a hold to. | Required |
 
 #### Context Output
 
@@ -1229,6 +1229,7 @@ partial - The custodian is in a mixed state where some sources are on hold and s
 #### Human Readable Output
 
 >### Apply Hold Results
+>
 >|Status|Location URL|
 >|---|---|
 >| running | https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/f7e6d5c4-b3a2-1098-7654-321fedcba987/operations/a1b2c3d4-e5f6-7890-abcd-ef1234567890 |
@@ -1246,8 +1247,8 @@ Start the process of removing a hold from eDiscovery custodians.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | A comma-separated list of custodians IDs to remove a hold from. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | A comma-separated list of custodians IDs to remove a hold from. | Required |
 
 #### Context Output
 
@@ -1263,6 +1264,7 @@ Start the process of removing a hold from eDiscovery custodians.
 #### Human Readable Output
 
 >### Remove Hold Results
+>
 >|Status|Location URL|
 >|---|---|
 >| running | https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/f7e6d5c4-b3a2-1098-7654-321fedcba987/operations/b2c3d4e5-f6a1-2345-bcde-f67890123456 |
@@ -1610,18 +1612,17 @@ Note: This request purges a maximum of 100 items per location only. When purgeTy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| search_id | The ID of the eDiscovery search. | Required | 
-| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional | 
-| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. | Required |
+| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional |
+| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryPurge.Status | String | The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed. | 
-| MsGraph.eDiscoveryPurge.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status. | 
-
+| MsGraph.eDiscoveryPurge.Status | String | The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed. |
+| MsGraph.eDiscoveryPurge.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-ediscovery-get-operation-status command to poll for the operation status. |
 
 ### msg-delete-ediscovery-search
 
@@ -2751,6 +2752,7 @@ Update the properties of an ediscoveryHoldPolicy object.
 #### Context Output
 
 There is no context output for this command.
+
 ### msg-ediscovery-get-operation-status
 
 ***
@@ -2766,16 +2768,15 @@ The Location URL is returned in the response headers when an eDiscovery action i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| location_url | The Location URL returned in the response headers of an eDiscovery action (e.g., purge, hold). This URL points to the operation resource in Microsoft Graph and is used to retrieve the current status of the operation. | Required | 
+| location_url | The Location URL returned in the response headers of an eDiscovery action (e.g., purge, hold). This URL points to the operation resource in Microsoft Graph and is used to retrieve the current status of the operation. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryOperation.Id | String | The ID of the operation. | 
-| MsGraph.eDiscoveryOperation.Action | String | The type of action the operation represents. Possible values include: purgeData, holdUpdate, estimateStatistics, contentExport, and others. | 
-| MsGraph.eDiscoveryOperation.Status | String | The status of the operation. Possible values are: notStarted, running, succeeded, failed, skipped, unknownFutureValue. | 
-| MsGraph.eDiscoveryOperation.PercentProgress | Number | The progress of the operation as a percentage. | 
-| MsGraph.eDiscoveryOperation.CreatedDateTime | Date | The date and time the operation was created. | 
-| MsGraph.eDiscoveryOperation.CompletedDateTime | Date | The date and time the operation was completed. | 
-
+| MsGraph.eDiscoveryOperation.Id | String | The ID of the operation. |
+| MsGraph.eDiscoveryOperation.Action | String | The type of action the operation represents. Possible values include: purgeData, holdUpdate, estimateStatistics, contentExport, and others. |
+| MsGraph.eDiscoveryOperation.Status | String | The status of the operation. Possible values are: notStarted, running, succeeded, failed, skipped, unknownFutureValue. |
+| MsGraph.eDiscoveryOperation.PercentProgress | Number | The progress of the operation as a percentage. |
+| MsGraph.eDiscoveryOperation.CreatedDateTime | Date | The date and time the operation was created. |
+| MsGraph.eDiscoveryOperation.CompletedDateTime | Date | The date and time the operation was completed. |

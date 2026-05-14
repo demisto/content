@@ -58,7 +58,6 @@ from MicrosoftGraphSecurity import (
     export_result_ediscovery_data_command,
     apply_hold_ediscovery_custodian_command,
     remove_hold_ediscovery_custodian_command,
-    HoldAction,
 )
 
 client_mocker = MsGraphClient(
@@ -590,9 +589,7 @@ def test_purge_ediscovery_data_command_with_location(mocker):
         The Location URL is included in the readable output and context outputs.
     """
     location_url = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case123/operations/op456"
-    mocker.patch.object(
-        client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location_url})
-    )
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location_url}))
     mocker.patch.object(client_mocker, "get", return_value={"status": "running", "id": "op456", "action": "purgeData"})
     result = purge_ediscovery_data_command(client_mocker, {})
     assert result.outputs_prefix == "MsGraph.eDiscoveryPurge"
@@ -1464,9 +1461,7 @@ def test_apply_hold_ediscovery_custodian_command_no_location(mocker):
     Then:
         Returns CommandResults with status 'success' and context outputs.
     """
-    mocker.patch.object(
-        client_mocker, "update_hold_ediscovery_custodian", return_value=SimpleNamespace(headers={})
-    )
+    mocker.patch.object(client_mocker, "update_hold_ediscovery_custodian", return_value=SimpleNamespace(headers={}))
     result = apply_hold_ediscovery_custodian_command(client_mocker, {"case_id": "case1", "custodian_id": "cust1"})
     assert result.outputs_prefix == "MsGraph.eDiscoveryHoldOperation"
     assert result.outputs["Status"] == "success"

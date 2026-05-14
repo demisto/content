@@ -681,7 +681,7 @@ def get_status_of_operation(client: MsGraphClient, res: Response | None = None, 
         The full operation response dict, or {'status': 'success'} if no Location header is present.
     """
     location = location_url or (res.headers.get("Location") if res else "")
-    if not location: # if no location is returned then the custodian is already in this state/theres no data sources
+    if not location:  # if no location is returned then the custodian is already in this state/theres no data sources
         demisto.debug("No Location header or URL provided, returning default success status.")
         return {"status": "success"}
 
@@ -1456,21 +1456,26 @@ def list_ediscovery_non_custodial_data_source_command(client: MsGraphClient, arg
     return ediscovery_source_command_results(source_list, DataSourceType["NON_CUSTODIAL"], raw_res)
 
 
-def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_action: HoldAction):
-    demisto.debug(f"{hold_action.value=}")
-    res = client.update_hold_ediscovery_custodian(args.get("case_id"), args.get("custodian_id"), hold_action)
-    location = res.headers.get("Location", "")
-    demisto.debug(f"update_hold_ediscovery_custodian response Location header: {location}")
-    operation = get_status_of_operation(client, res)
-    status = operation.get("status", "success")
+def build_operation_results(outputs_prefix: str, title: str, status: str, location: str) -> CommandResults:
+    """
+    Build a CommandResults object for an eDiscovery operation that returns a Status and LocationURL.
 
+    Args:
+        outputs_prefix: The context output prefix (e.g., 'MsGraph.eDiscoveryHoldOperation').
+        title: The human-readable table title.
+        status: The operation status string.
+        location: The Location URL from the response headers.
+
+    Returns:
+        A CommandResults object with the operation status and location URL.
+    """
     outputs = {
         "Status": status,
         "LocationURL": location,
     }
 
     hr = tableToMarkdown(
-        f"{hold_action.value.capitalize()} Hold Results",
+        title,
         outputs,
         headers=["Status", "LocationURL"],
         headerTransform=lambda h: "Location URL" if h == "LocationURL" else h,
@@ -1478,9 +1483,26 @@ def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_a
     )
 
     return CommandResults(
-        outputs_prefix="MsGraph.eDiscoveryHoldOperation",
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="LocationURL",
         outputs=outputs,
         readable_output=hr,
+    )
+
+
+def update_hold_ediscovery_custodian_command(client: MsGraphClient, args: dict, hold_action: HoldAction):
+    demisto.debug(f"{hold_action.value=}")
+    res = client.update_hold_ediscovery_custodian(args.get("case_id"), args.get("custodian_id"), hold_action)
+    location = res.headers.get("Location", "")
+    demisto.debug(f"update_hold_ediscovery_custodian response Location header: {location}")
+    operation = get_status_of_operation(client, res)
+    status = operation.get("status", "success")
+
+    return build_operation_results(
+        outputs_prefix="MsGraph.eDiscoveryHoldOperation",
+        title=f"{hold_action.value.capitalize()} Hold Results",
+        status=status,
+        location=location,
     )
 
 
@@ -1511,7 +1533,7 @@ def delete_ediscovery_search_command(client: MsGraphClient, args):
     return CommandResults(readable_output=f'eDiscovery search {args.get("search_id")} was deleted successfully.')
 
 
-def purge_ediscovery_data_command(client: MsGraphClient, args):
+def purge_ediscovery_data_command(client: MsGraphClient, args: dict):
     resp = client.purge_ediscovery_data(
         args.get("case_id"), args.get("search_id"), args.get("purge_type"), args.get("purge_areas")
     )
@@ -1520,23 +1542,11 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     operation_status = get_status_of_operation(client, resp)
     status = operation_status.get("status", "success")
 
-    outputs = {
-        "Status": status,
-        "LocationURL": location,
-    }
-
-    hr = tableToMarkdown(
-        "eDiscovery Purge Data Results",
-        outputs,
-        headers=["Status", "LocationURL"],
-        headerTransform=lambda h: "Location URL" if h == "LocationURL" else h,
-        removeNull=True,
-    )
-
-    return CommandResults(
+    return build_operation_results(
         outputs_prefix="MsGraph.eDiscoveryPurge",
-        outputs=outputs,
-        readable_output=hr,
+        title="eDiscovery Purge Data Results",
+        status=status,
+        location=location,
     )
 
 
@@ -1553,6 +1563,8 @@ def get_operation_status_command(client: MsGraphClient, args: dict) -> CommandRe
         CommandResults with the operation status details.
     """
     location_url: str = args.get("location_url", "")
+    if not location_url:
+        raise DemistoException("The 'location_url' argument is required.")
     resp = get_status_of_operation(client, location_url=location_url)
 
     outputs = {
