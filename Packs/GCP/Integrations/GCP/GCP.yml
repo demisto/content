@@ -1901,6 +1901,127 @@ script:
       description: Role to remove (e.g., roles/viewer).
       required: true
     outputs: []
+  - name: gcp-bq-dataset-policy-remove
+    description: Removes an email from the BigQuery dataset policy. Requires the bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy permissions.
+    arguments:
+    - name: project_id
+      required: true
+      description: The GCP project ID.
+    - name: dataset_id
+      required: true
+      description: The dataset ID of the requested dataset.
+    - name: email
+      description: The email address to remove from the dataset access list.
+      required: true
+    outputs:
+      - contextPath: GCP.BigQuery.Datasets.kind
+        description: The resource type.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.etag
+        description: A hash of the resource.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.id
+        description: The fully-qualified unique name of the dataset in the format projectId:datasetId.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.selfLink
+        description: A URL that can be used to access the resource again.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.datasetReference
+        description: A reference that identifies the dataset.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.friendlyName
+        description: A descriptive name for the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.description
+        description: A user-friendly description of the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultTableExpirationMs
+        description: The default lifetime of all tables in the dataset, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultPartitionExpirationMs
+        description: The default partition expiration, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.labels
+        description: The labels associated with this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.role
+        description: The role assigned to the entity.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.userByEmail
+        description: An email address of a user to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.groupByEmail
+        description: An email address of a group to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.domain
+        description: A domain to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.specialGroup
+        description: A special group to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.iamMember
+        description: A type of member that appears in the IAM Policy that isn't a user, group, domain, or special group.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.view
+        description: A view from a different dataset to grant access to.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.access.routine
+        description: A routine from a different dataset to grant access to.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.access.dataset
+        description: A grant authorizing access to this dataset for all resources of a particular type.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.access.condition
+        description: The binding condition.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.creationTime
+        description: The time since the epoch the dataset was created, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.lastModifiedTime
+        description: The time since the epoch the dataset was last modified, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.location
+        description: The geographic location where the dataset resides.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultEncryptionConfiguration
+        description: The default encryption configuration for all tables in the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.type
+        description: The type of the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.linkedDatasetSource
+        description: The source dataset reference when the dataset is of type LINKED.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.linkedDatasetMetadata
+        description: Metadata about the LinkedDataset.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.externalDatasetReference
+        description: Reference to a read-only external dataset defined in data catalogs outside of BigQuery.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.externalCatalogDatasetOptions
+        description: Options defining open source compatible datasets in the BigQuery catalog. Contains metadata of the open source database, schema, or namespace of the current dataset.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.isCaseInsensitive
+        description: True if the dataset and its table names are case-insensitive.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultCollation
+        description: The default collation specification of future tables created in the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultRoundingMode
+        description: The default rounding mode specification of new tables created within this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.maxTimeTravelHours
+        description: The time travel window in hours.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.resourceTags
+        description: The tags attached to this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.storageBillingModel
+        description: The billing model that will be applied to the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.catalogSource
+        description: The origin of the dataset.
+        type: String
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create
