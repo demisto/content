@@ -1,5 +1,8 @@
-CONSTANT_PACK_VERSION = "1.4.1"
-demisto.debug("pack id = CommunityElasticsearch, pack version = 1.4.1")
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *
+
 
 """IMPORTS"""
 import requests
