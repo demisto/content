@@ -10020,7 +10020,7 @@ script:
       - contextPath: AWS.SSM.Associations.Versions.TargetMaps
         description: A key-value mapping of document parameters to target resources.
         type: List
-      - contextPath: AWS.SSM.AssociationVersionNextToken
+      - contextPath: AWS.SSM.Associations.AssociationVersionNextToken
         description: The token to use when requesting the next set of items.
         type: String
   - name: aws-ssm-association-get
@@ -10825,13 +10825,13 @@ script:
         description: The ID of the resource for which to list tags.
         required: true
     outputs:
-      - contextPath: AWS.SSM.Tag.ResourceId
+      - contextPath: AWS.SSM.Tags.ResourceId
         description: The ID of the resource.
         type: String
-      - contextPath: AWS.SSM.Tag.TagList.Key
+      - contextPath: AWS.SSM.Tags.TagList.Key
         description: The key of the tag.
         type: String
-      - contextPath: AWS.SSM.Tag.TagList.Value
+      - contextPath: AWS.SSM.Tags.TagList.Value
         description: The value of the tag.
         type: String
 
@@ -11620,7 +11620,7 @@ script:
         description: Lists commands issued against this managed node ID.
         required: false
       - name: filters
-        description: "A semicolon-separated list of filters in the format name=<key>,values=<value>. Valid filter keys: InvokedAfter, InvokedBefore, Status, ExecutionStage, DocumentName."
+        description: "A semicolon-separated list of filters in the format key=<key>,value=<value>. Valid filter keys: InvokedAfter, InvokedBefore, Status, ExecutionStage, DocumentName. For example: key=Status,value=Success."
         required: false
       - name: limit
         description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.

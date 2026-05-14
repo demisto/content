@@ -14711,7 +14711,7 @@ def test_add_tags_to_resource_command_multiple_tags(mocker):
 
     result = SSM.add_tags_to_resource_command(mock_client, args)
 
-    assert "Tags successfully added to SSM resource 'doc-456'" in result.readable_output
+    assert "Tags were successfully added to the SSM resource 'doc-456'" in result.readable_output
     call_kwargs = mock_client.add_tags_to_resource.call_args[1]
     assert len(call_kwargs["Tags"]) == 2
 
@@ -14731,7 +14731,7 @@ def test_remove_tags_from_resource_command_success(mocker):
 
     result = SSM.remove_tags_from_resource_command(mock_client, args)
 
-    assert "Tags successfully removed from SSM resource 'mi-123'" in result.readable_output
+    assert "Tags were successfully removed from the SSM resource 'mi-123'" in result.readable_output
     mock_client.remove_tags_from_resource.assert_called_once()
     call_kwargs = mock_client.remove_tags_from_resource.call_args[1]
     assert call_kwargs["ResourceType"] == "ManagedInstance"
@@ -14775,7 +14775,7 @@ def test_list_tags_for_resource_command_success(mocker):
 
     result = SSM.list_tags_for_resource_command(mock_client, args)
 
-    assert result.outputs_prefix == "AWS.SSM.Tag"
+    assert result.outputs_prefix == "AWS.SSM.Tags"
     assert result.outputs_key_field == "ResourceId"
     assert result.outputs["ResourceId"] == "mi-123"
     assert len(result.outputs["TagList"]) == 2
@@ -15219,7 +15219,7 @@ def test_association_versions_list_command_with_next_token(mocker):
 
     result = SSM.association_versions_list_command(mock_client, args)
 
-    assert result.outputs["AWS.SSM(true)"]["AssociationVersionNextToken"] == "next-tok"
+    assert result.outputs["AWS.SSM.Associations(true)"]["AssociationVersionNextToken"] == "next-tok"
 
 
 def test_documents_list_command_success(mocker):
@@ -15355,16 +15355,16 @@ def test_document_get_command_no_document(mocker):
 
 def test_document_get_command_with_optional_args(mocker):
     """
-    Given: A mocked SSM client and optional document_version and document_format args.
+    Given: A mocked SSM client and optional document_version and version_name args.
     When: document_get_command is called.
-    Then: It should pass DocumentVersion and DocumentFormat to describe_document.
+    Then: It should pass DocumentVersion and VersionName to describe_document.
     """
     from AWS import SSM
 
     mock_client = mocker.Mock()
     mock_client.describe_document.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Document": {"Name": "MyDoc", "DocumentVersion": "2", "DocumentFormat": "YAML"},
+        "Document": {"Name": "MyDoc", "DocumentVersion": "2", "VersionName": "v2-release"},
     }
     mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
 
@@ -15373,14 +15373,14 @@ def test_document_get_command_with_optional_args(mocker):
         "region": "us-east-1",
         "document_name": "MyDoc",
         "document_version": "2",
-        "document_format": "YAML",
+        "version_name": "v2-release",
     }
 
     SSM.document_get_command(mock_client, args)
 
     call_kwargs = mock_client.describe_document.call_args[1]
     assert call_kwargs["DocumentVersion"] == "2"
-    assert call_kwargs["DocumentFormat"] == "YAML"
+    assert call_kwargs["VersionName"] == "v2-release"
 
 
 def test_automation_execution_list_command_success(mocker):
@@ -15411,7 +15411,7 @@ def test_automation_execution_list_command_success(mocker):
 
     assert "AWS SSM Automation Executions" in result.readable_output
     assert "exec-1" in result.readable_output
-    assert result.outputs["AWS.SSM(true)"]["AutomationExecutionNextToken"] == "exec-tok"
+    assert result.outputs["AWS.SSM(true)"]["AutomationExecutionsNextToken"] == "exec-tok"
 
 
 def test_automation_execution_list_command_no_executions(mocker):

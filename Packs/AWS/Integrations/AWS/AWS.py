@@ -8802,9 +8802,7 @@ class SSM:
         args["first_run"] = False
 
         return PollResult(
-            response=CommandResults(
-                readable_output=f"Cancellation request sent for command '{command_id}'.",
-            ),
+            response=None,
             partial_result=CommandResults(
                 readable_output=f"Cancellation request sent for command '{command_id}'.",
             ),
