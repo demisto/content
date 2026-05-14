@@ -611,8 +611,8 @@ class TestFetchEvents:
             - audit: all events are returned (no dedup on first fetch).
             - next_run has updated state for both types.
         """
-        web_event_dup = {"event": {"event_time": "2024-01-15T10:00:00", "domain": "dup.com"}}
-        web_event_new = {"event": {"event_time": "2024-01-15T10:00:01", "domain": "new.com"}}
+        web_event_dup = {"event": {"event_time": "2024-01-15T10:00:00", "domain": "duplicate.example.com"}}
+        web_event_new = {"event": {"event_time": "2024-01-15T10:00:01", "domain": "fresh.example.com"}}
         audit_event = {"event": {"event_time": "2024-01-15T10:00:00", "name": "login"}}
 
         web_response = {
@@ -629,7 +629,11 @@ class TestFetchEvents:
         }
 
         # The hash must match the ENRICHED event (after _time and source_log_type are added).
-        enriched_dup = {**web_event_dup["event"], "_time": "2024-01-15T10:00:00Z", "source_log_type": "web_logs"}
+        enriched_dup = {
+            **web_event_dup["event"],
+            "_time": "2024-01-15T10:00:00Z",
+            "source_log_type": "web_logs",
+        }
         dup_hash = hash_event(enriched_dup)
 
         # Each type calls fetch_log_page twice: once for data, once returns None to stop pagination.
@@ -661,8 +665,8 @@ class TestFetchEvents:
         # web: 1 dup removed, 1 new event kept. audit: 1 event (no dedup on first fetch).
         assert len(events) == 2
         domains = {e.get("domain") for e in events if "domain" in e}
-        assert "new.com" in domains
-        assert "dup.com" not in domains
+        assert "fresh.example.com" in domains
+        assert "duplicate.example.com" not in domains
 
         # Both types have updated state in next_run.
         assert "web" in next_run
