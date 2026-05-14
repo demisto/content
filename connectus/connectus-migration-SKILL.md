@@ -277,6 +277,7 @@ Read these four files **in this order**, treating each one as a cross-check on t
 
 If steps 1 and 2 disagree (e.g. the YML defines a `credentials` param but the code only ever reads `params.get('api_key')`), step 2 wins. Steps 3 and 4 are tiebreakers when the code is ambiguous.
 
+Before you actually use the `set_auth` command, present the evidence to the user for why you decided on the auth types and config structure in a concise and clear way.
 ---
 
 #### 1.2.1 Classification decision table
