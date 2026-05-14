@@ -1,15 +1,22 @@
 import threading
-from unittest.mock import patch
+from concurrent.futures import ThreadPoolExecutor
+from unittest.mock import MagicMock, patch
 
 import pytest
 from ArmisEventCollector import (
+    BULK_ENRICHMENT_BATCH_SIZE,
     EVENT_TYPE,
     EVENT_TYPES,
     Any,
     Client,
     DemistoException,
     IntegrationContextManager,
+    _attach_enrichment,
+    _bulk_fetch_entities_by_id,
+    _collect_unique_enrichment_ids,
+    _wait_for_enrichment,
     arg_to_datetime,
+    bulk_enrich_alerts,
     datetime,
     fetch_events,
     timedelta,
@@ -67,6 +74,8 @@ class TestClientFunctions:
             },
             "headers": {"Authorization": "test_access_token", "Accept": "application/json"},
             "timeout": 180,
+            "retries": 1,
+            "status_list_to_retry": {500, 502},
         }
 
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
@@ -117,6 +126,8 @@ class TestClientFunctions:
             },
             "headers": {"Authorization": "test_access_token", "Accept": "application/json"},
             "timeout": 180,
+            "retries": 1,
+            "status_list_to_retry": {500, 502},
         }
 
         from_arg = arg_to_datetime("2023-01-01T01:00:01")
@@ -523,7 +534,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["3"],
             "events_last_fetch_next_field": 4,
             "events_last_fetch_time": "2023-01-01T01:00:00",
-            "access_token": "test_access_token",
         },
         4,
     )
@@ -544,7 +554,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["7", "6"],
             "events_last_fetch_next_field": 8,
             "events_last_fetch_time": "2023-01-01T01:00:30",
-            "access_token": "test_access_token",
         },
         8,
     )
@@ -569,7 +578,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["7", "6"],
             "events_last_fetch_next_field": 8,
             "events_last_fetch_time": "2023-01-01T01:00:30",
-            "access_token": "test_access_token",
         },
         8,
     )
@@ -586,7 +594,7 @@ class TestFetchFlow:
         ["Events"],
         {},
         {},
-        {"events_last_fetch_next_field": 4, "events_last_fetch_time": "2023-01-01T01:00:30", "access_token": "test_access_token"},
+        {"events_last_fetch_next_field": 4, "events_last_fetch_time": "2023-01-01T01:00:30"},
         4,
     )
 
@@ -606,7 +614,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["1", "2", "3", "4", "5", "6"],
             "events_last_fetch_next_field": 7,
             "events_last_fetch_time": "2023-01-01T01:00:30",
-            "access_token": "test_access_token",
         },
         7,
     )
@@ -701,7 +708,6 @@ class TestFetchFlow:
                 "events_last_fetch_ids": ["3"],
                 "events_last_fetch_next_field": 4,
                 "events_last_fetch_time": "2023-01-01T01:00:00",
-                "access_token": "new_test_token",  # Token was refreshed
             }
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, ["Events"], None) == (
                 {"events": events_with_different_time["data"]["results"]},
@@ -711,12 +717,12 @@ class TestFetchFlow:
     def test_fetch_alert_flow(self, mocker, dummy_client):
         """
         Given:
-            - Access token has expired in runtime.
+            - A single alert with activityUUIDs and deviceIds.
         When:
-            - Fetching events.
+            - Fetching Alerts event type (which triggers bulk enrichment).
         Then:
-            - Catch the specific exception, updated the access token and perform a second attempt
-              to fetch events for the current event type iteration.
+            - The alert is enriched with activitiesData and devicesData via bulk_enrich_alerts.
+            - The enrichment uses bulk AQL queries (UUID:..., deviceId:...) instead of per-alert calls.
         """
         from ArmisEventCollector import fetch_events
 
@@ -725,42 +731,52 @@ class TestFetchFlow:
                 "results": [
                     {
                         "alertId": "1",
-                        "activityUUIDs": ["123", "456"],
-                        "deviceIds": ["789", "012"],
+                        "activityUUIDs": ["uuid-aaa", "uuid-bbb"],
+                        "deviceIds": [789, 12],
                         "time": "2023-01-01T01:00:10.123456+00:00",
                     }
                 ],
                 "next": 2,
             }
         }
-        activities_response = {"data": {"results": [{"activityUUID": 123, "time": "2023-01-01T01:00:10.123456+00:00"}]}}
-        devices_response = {
+        # Bulk enrichment AQL responses (UUID:uuid-aaa,uuid-bbb and deviceId:789,12)
+        activities_bulk_response = {
             "data": {
                 "results": [
-                    {
-                        "id": "789",
-                        "time": "2023-01-01T01:00:10.123456+00:00",
-                    }
+                    {"activityUUID": "uuid-aaa", "time": "2023-01-01T01:00:10.123456+00:00"},
+                    {"activityUUID": "uuid-bbb", "time": "2023-01-01T01:00:11.123456+00:00"},
+                ]
+            }
+        }
+        devices_bulk_response = {
+            "data": {
+                "results": [
+                    {"id": 789, "name": "device-A", "lastSeen": "2023-01-01T01:00:10.123456+00:00"},
+                    {"id": 12, "name": "device-B", "lastSeen": "2023-01-01T01:00:10.123456+00:00"},
                 ]
             }
         }
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
-        mocker.patch.object(Client, "_http_request", side_effect=[alerts_response, activities_response, devices_response])
-        mocker.patch.dict(EVENT_TYPES, {"Alerts": EVENT_TYPE("unique_id", "events_query", "alerts", "time", "alerts")})
-        expected_result = alerts_response["data"]["results"][0]
-        expected_result["activitiesData"] = activities_response["data"]["results"]
-        expected_result["devicesData"] = devices_response["data"]["results"]
-        if fetch_start_time:
-            last_run = {
-                "alerts_last_fetch_ids": [""],
-                "alerts_last_fetch_next_field": 2,
-                "alerts_last_fetch_time": "2023-01-01T01:00:00",
-                "access_token": "test_access_token",
-            }
-            assert fetch_events(dummy_client, 1, 1, {}, fetch_start_time, ["Alerts"], None) == (
-                {"alerts": [expected_result]},
-                last_run,
-            )
+        # 1st call: fetch alerts; 2nd call: bulk activities; 3rd call: bulk devices
+        mocker.patch.object(
+            Client, "_http_request", side_effect=[alerts_response, activities_bulk_response, devices_bulk_response]
+        )
+
+        events, next_run = fetch_events(dummy_client, 1, 1, {}, fetch_start_time, ["Alerts"], None)
+
+        # Verify the alert was enriched
+        assert len(events["alerts"]) == 1
+        enriched_alert = events["alerts"][0]
+        assert len(enriched_alert["activitiesData"]) == 2
+        assert len(enriched_alert["devicesData"]) == 2
+        # Verify activities are mapped by UUID
+        activity_uuids = {a["activityUUID"] for a in enriched_alert["activitiesData"]}
+        assert activity_uuids == {"uuid-aaa", "uuid-bbb"}
+        # Verify devices are mapped by id
+        device_ids = {d["id"] for d in enriched_alert["devicesData"]}
+        assert device_ids == {789, 12}
+        # Verify next_run state
+        assert next_run["alerts_last_fetch_next_field"] == 2
 
 
 class TestMultithreading:
@@ -952,7 +968,6 @@ class TestMultithreading:
 
         # Both event types should be fetched
         assert "activities" in events or "devices" in events
-        assert "access_token" in next_run
 
     def test_perform_fetch_with_token_refresh_coordination(self, mocker, dummy_client):
         """Test that perform_fetch coordinates token refresh properly.
@@ -982,3 +997,535 @@ class TestMultithreading:
         result = dummy_client.perform_fetch({"aql": "test"})
 
         assert result == {"data": {"results": []}}
+
+
+class TestCollectUniqueEnrichmentIds:
+    """Tests for _collect_unique_enrichment_ids."""
+
+    def test_basic_dedup(self):
+        """
+        Given:
+            - Two alerts sharing some activityUUIDs and deviceIds.
+        When:
+            - Collecting unique enrichment IDs.
+        Then:
+            - Duplicates are removed and all IDs are str-coerced.
+            - Each alert gets empty activitiesData/devicesData lists.
+        """
+        alerts = [
+            {"alertId": "1", "activityUUIDs": ["aaa", "bbb"], "deviceIds": [1, 2]},
+            {"alertId": "2", "activityUUIDs": ["bbb", "ccc"], "deviceIds": [2, 3]},
+        ]
+        uuids, device_ids = _collect_unique_enrichment_ids(alerts)
+
+        assert uuids == {"aaa", "bbb", "ccc"}
+        assert device_ids == {"1", "2", "3"}
+        # Verify initialization of enrichment fields
+        for alert in alerts:
+            assert alert["activitiesData"] == []
+            assert alert["devicesData"] == []
+
+    def test_str_coercion(self):
+        """
+        Given:
+            - Alerts with integer deviceIds and mixed-type activityUUIDs.
+        When:
+            - Collecting unique enrichment IDs.
+        Then:
+            - All IDs are coerced to strings.
+        """
+        alerts = [{"alertId": "1", "activityUUIDs": [123, "456"], "deviceIds": [789]}]
+        uuids, device_ids = _collect_unique_enrichment_ids(alerts)
+
+        assert uuids == {"123", "456"}
+        assert device_ids == {"789"}
+
+    def test_empty_arrays(self):
+        """
+        Given:
+            - An alert with empty activityUUIDs and deviceIds arrays.
+        When:
+            - Collecting unique enrichment IDs.
+        Then:
+            - Returns empty sets.
+        """
+        alerts = [{"alertId": "1", "activityUUIDs": [], "deviceIds": []}]
+        uuids, device_ids = _collect_unique_enrichment_ids(alerts)
+
+        assert uuids == set()
+        assert device_ids == set()
+
+    def test_none_handling(self):
+        """
+        Given:
+            - An alert with None activityUUIDs and missing deviceIds key.
+        When:
+            - Collecting unique enrichment IDs.
+        Then:
+            - Returns empty sets without errors.
+        """
+        alerts = [{"alertId": "1", "activityUUIDs": None}]
+        uuids, device_ids = _collect_unique_enrichment_ids(alerts)
+
+        assert uuids == set()
+        assert device_ids == set()
+
+    def test_none_values_in_arrays(self):
+        """
+        Given:
+            - An alert with None values inside activityUUIDs and deviceIds arrays.
+        When:
+            - Collecting unique enrichment IDs.
+        Then:
+            - None values are filtered out.
+        """
+        alerts = [{"alertId": "1", "activityUUIDs": ["aaa", None, "bbb"], "deviceIds": [1, None]}]
+        uuids, device_ids = _collect_unique_enrichment_ids(alerts)
+
+        assert uuids == {"aaa", "bbb"}
+        assert device_ids == {"1"}
+
+    def test_empty_alerts_list(self):
+        """
+        Given:
+            - An empty alerts list.
+        When:
+            - Collecting unique enrichment IDs.
+        Then:
+            - Returns empty sets.
+        """
+        uuids, device_ids = _collect_unique_enrichment_ids([])
+
+        assert uuids == set()
+        assert device_ids == set()
+
+
+class TestBulkFetchEntitiesById:
+    """Tests for _bulk_fetch_entities_by_id."""
+
+    def test_empty_ids(self, mocker, dummy_client):
+        """
+        Given:
+            - An empty list of IDs.
+        When:
+            - Calling _bulk_fetch_entities_by_id.
+        Then:
+            - Returns empty dict without making any API calls.
+        """
+        mock_fetch = mocker.patch.object(Client, "fetch_by_ids_in_aql_query")
+
+        result = _bulk_fetch_entities_by_id(
+            client=dummy_client,
+            entity_type="activity",
+            aql_field="UUID",
+            ids=[],
+            response_key="activityUUID",
+            order_by="time",
+        )
+
+        assert result == {}
+        mock_fetch.assert_not_called()
+
+    def test_single_batch(self, mocker, dummy_client):
+        """
+        Given:
+            - A list of 3 IDs (below BULK_ENRICHMENT_BATCH_SIZE).
+        When:
+            - Calling _bulk_fetch_entities_by_id.
+        Then:
+            - Makes a single API call and returns results keyed by response_key.
+        """
+        api_results = [
+            {"activityUUID": "aaa", "data": "x"},
+            {"activityUUID": "bbb", "data": "y"},
+        ]
+        mocker.patch.object(Client, "fetch_by_ids_in_aql_query", return_value=api_results)
+
+        result = _bulk_fetch_entities_by_id(
+            client=dummy_client,
+            entity_type="activity",
+            aql_field="UUID",
+            ids=["aaa", "bbb", "ccc"],
+            response_key="activityUUID",
+            order_by="time",
+        )
+
+        assert result == {"aaa": api_results[0], "bbb": api_results[1]}
+
+    def test_batching_over_1000_ids(self, mocker, dummy_client):
+        """
+        Given:
+            - A list of 1500 IDs (exceeds BULK_ENRICHMENT_BATCH_SIZE of 1000).
+        When:
+            - Calling _bulk_fetch_entities_by_id.
+        Then:
+            - Makes 2 API calls (batch of 1000 + batch of 500).
+        """
+        ids = [str(i) for i in range(1500)]
+        batch1_results = [{"id": str(i)} for i in range(1000)]
+        batch2_results = [{"id": str(i)} for i in range(1000, 1500)]
+
+        mock_fetch = mocker.patch.object(Client, "fetch_by_ids_in_aql_query", side_effect=[batch1_results, batch2_results])
+
+        result = _bulk_fetch_entities_by_id(
+            client=dummy_client,
+            entity_type="devices",
+            aql_field="deviceId",
+            ids=ids,
+            response_key="id",
+            order_by="lastSeen",
+        )
+
+        assert mock_fetch.call_count == 2
+        assert len(result) == 1500
+
+    def test_api_failure_handling(self, mocker, dummy_client):
+        """
+        Given:
+            - An API call that raises an exception.
+        When:
+            - Calling _bulk_fetch_entities_by_id.
+        Then:
+            - The exception is caught and logged; returns empty dict.
+        """
+        mocker.patch.object(Client, "fetch_by_ids_in_aql_query", side_effect=Exception("API error"))
+        mocker.patch("ArmisEventCollector.demisto.error")
+
+        result = _bulk_fetch_entities_by_id(
+            client=dummy_client,
+            entity_type="activity",
+            aql_field="UUID",
+            ids=["aaa"],
+            response_key="activityUUID",
+            order_by="time",
+        )
+
+        assert result == {}
+
+    def test_truncation_warning(self, mocker, dummy_client):
+        """
+        Given:
+            - An API response with more results than BULK_ENRICHMENT_BATCH_SIZE.
+        When:
+            - Calling _bulk_fetch_entities_by_id.
+        Then:
+            - A warning is logged but results are still returned.
+        """
+        # Return 1001 results for a batch of 1000 IDs
+        api_results = [{"activityUUID": f"uuid-{i}"} for i in range(BULK_ENRICHMENT_BATCH_SIZE + 1)]
+        mocker.patch.object(Client, "fetch_by_ids_in_aql_query", return_value=api_results)
+        mock_error = mocker.patch("ArmisEventCollector.demisto.error")
+
+        result = _bulk_fetch_entities_by_id(
+            client=dummy_client,
+            entity_type="activity",
+            aql_field="UUID",
+            ids=[f"uuid-{i}" for i in range(BULK_ENRICHMENT_BATCH_SIZE)],
+            response_key="activityUUID",
+            order_by="time",
+        )
+
+        assert len(result) == BULK_ENRICHMENT_BATCH_SIZE + 1
+        mock_error.assert_called_once()
+
+
+class TestAttachEnrichment:
+    """Tests for _attach_enrichment."""
+
+    def test_basic_mapping(self):
+        """
+        Given:
+            - An alert with activityUUIDs and deviceIds.
+            - Lookup dicts with matching entities.
+        When:
+            - Attaching enrichment.
+        Then:
+            - activitiesData and devicesData are populated correctly.
+        """
+        alerts = [
+            {"alertId": "1", "activityUUIDs": ["aaa", "bbb"], "deviceIds": [10, 20], "activitiesData": [], "devicesData": []},
+        ]
+        activities = {"aaa": {"activityUUID": "aaa", "data": "x"}, "bbb": {"activityUUID": "bbb", "data": "y"}}
+        devices = {"10": {"id": 10, "name": "d1"}, "20": {"id": 20, "name": "d2"}}
+
+        _attach_enrichment(alerts, activities, devices)
+
+        assert len(alerts[0]["activitiesData"]) == 2
+        assert len(alerts[0]["devicesData"]) == 2
+
+    def test_deepcopy_shared_references(self):
+        """
+        Given:
+            - Two alerts sharing the same activityUUID.
+        When:
+            - Attaching enrichment.
+        Then:
+            - Each alert gets its own copy (deepcopy) — modifying one doesn't affect the other.
+        """
+        alerts = [
+            {"alertId": "1", "activityUUIDs": ["shared"], "deviceIds": [], "activitiesData": [], "devicesData": []},
+            {"alertId": "2", "activityUUIDs": ["shared"], "deviceIds": [], "activitiesData": [], "devicesData": []},
+        ]
+        activities = {"shared": {"activityUUID": "shared", "data": "original"}}
+
+        _attach_enrichment(alerts, activities, {})
+
+        # Modify one alert's enrichment data
+        alerts[0]["activitiesData"][0]["data"] = "modified"
+        # The other alert should be unaffected
+        assert alerts[1]["activitiesData"][0]["data"] == "original"
+
+    def test_str_coercion_mapping(self):
+        """
+        Given:
+            - An alert with integer deviceIds.
+            - A devices lookup keyed by string IDs.
+        When:
+            - Attaching enrichment.
+        Then:
+            - Integer IDs are str-coerced for lookup and devices are found.
+        """
+        alerts = [{"alertId": "1", "activityUUIDs": [], "deviceIds": [42], "activitiesData": [], "devicesData": []}]
+        devices = {"42": {"id": 42, "name": "device-42"}}
+
+        _attach_enrichment(alerts, {}, devices)
+
+        assert len(alerts[0]["devicesData"]) == 1
+        assert alerts[0]["devicesData"][0]["id"] == 42
+
+    def test_missing_uuids(self):
+        """
+        Given:
+            - An alert with activityUUIDs that don't exist in the lookup.
+        When:
+            - Attaching enrichment.
+        Then:
+            - Missing UUIDs are silently skipped; activitiesData is empty.
+        """
+        alerts = [
+            {"alertId": "1", "activityUUIDs": ["missing-uuid"], "deviceIds": [], "activitiesData": [], "devicesData": []},
+        ]
+
+        _attach_enrichment(alerts, {}, {})
+
+        assert alerts[0]["activitiesData"] == []
+
+    def test_none_values_in_uuid_list(self):
+        """
+        Given:
+            - An alert with None values in activityUUIDs.
+        When:
+            - Attaching enrichment.
+        Then:
+            - None values are filtered out.
+        """
+        alerts = [
+            {"alertId": "1", "activityUUIDs": [None, "aaa"], "deviceIds": [], "activitiesData": [], "devicesData": []},
+        ]
+        activities = {"aaa": {"activityUUID": "aaa"}}
+
+        _attach_enrichment(alerts, activities, {})
+
+        assert len(alerts[0]["activitiesData"]) == 1
+
+
+class TestBulkEnrichAlerts:
+    """Tests for bulk_enrich_alerts."""
+
+    def test_empty_alerts(self, mocker, dummy_client):
+        """
+        Given:
+            - An empty alerts list.
+        When:
+            - Calling bulk_enrich_alerts.
+        Then:
+            - Returns immediately without making API calls.
+        """
+        mock_fetch = mocker.patch.object(Client, "fetch_by_ids_in_aql_query")
+
+        bulk_enrich_alerts(dummy_client, [])
+
+        mock_fetch.assert_not_called()
+
+    def test_full_enrichment_flow(self, mocker, dummy_client):
+        """
+        Given:
+            - Two alerts with overlapping activityUUIDs and deviceIds.
+        When:
+            - Calling bulk_enrich_alerts.
+        Then:
+            - Bulk AQL queries are made for deduplicated IDs.
+            - Each alert is enriched with its own activities and devices.
+        """
+        alerts = [
+            {"alertId": "1", "activityUUIDs": ["uuid-1", "uuid-2"], "deviceIds": [100, 200]},
+            {"alertId": "2", "activityUUIDs": ["uuid-2", "uuid-3"], "deviceIds": [200, 300]},
+        ]
+        activities_api_response = [
+            {"activityUUID": "uuid-1", "info": "a1"},
+            {"activityUUID": "uuid-2", "info": "a2"},
+            {"activityUUID": "uuid-3", "info": "a3"},
+        ]
+        devices_api_response = [
+            {"id": 100, "name": "d100"},
+            {"id": 200, "name": "d200"},
+            {"id": 300, "name": "d300"},
+        ]
+        mocker.patch.object(Client, "fetch_by_ids_in_aql_query", side_effect=[activities_api_response, devices_api_response])
+
+        bulk_enrich_alerts(dummy_client, alerts)
+
+        # Alert 1 should have uuid-1, uuid-2 activities and devices 100, 200
+        assert len(alerts[0]["activitiesData"]) == 2
+        assert len(alerts[0]["devicesData"]) == 2
+        # Alert 2 should have uuid-2, uuid-3 activities and devices 200, 300
+        assert len(alerts[1]["activitiesData"]) == 2
+        assert len(alerts[1]["devicesData"]) == 2
+        # Verify deepcopy: shared uuid-2 should be independent copies
+        alerts[0]["activitiesData"][1]["info"] = "modified"
+        uuid2_in_alert2 = [a for a in alerts[1]["activitiesData"] if a["activityUUID"] == "uuid-2"][0]
+        assert uuid2_in_alert2["info"] == "a2"  # unmodified
+
+
+class TestWaitForEnrichment:
+    """Tests for _wait_for_enrichment."""
+
+    def test_none_future(self):
+        """
+        Given:
+            - future is None (no enrichment was scheduled).
+        When:
+            - Calling _wait_for_enrichment.
+        Then:
+            - Returns immediately without error.
+        """
+        _wait_for_enrichment(None, None)  # Should not raise
+
+    def test_successful_future(self):
+        """
+        Given:
+            - A future that completes successfully.
+        When:
+            - Calling _wait_for_enrichment.
+        Then:
+            - Joins the future and shuts down the executor.
+        """
+        executor = ThreadPoolExecutor(max_workers=1)
+        future = executor.submit(lambda: None)
+
+        _wait_for_enrichment(future, executor)  # Should not raise
+
+    def test_failed_future(self, mocker):
+        """
+        Given:
+            - A future that raises an exception.
+        When:
+            - Calling _wait_for_enrichment.
+        Then:
+            - The exception is logged but NOT re-raised (graceful degradation).
+        """
+        executor = ThreadPoolExecutor(max_workers=1)
+        future = executor.submit(lambda: (_ for _ in ()).throw(RuntimeError("enrichment failed")))
+
+        mock_error = mocker.patch("ArmisEventCollector.demisto.error")
+
+        _wait_for_enrichment(future, executor)  # Should not raise
+
+        mock_error.assert_called_once()
+        assert "enrichment failed" in mock_error.call_args[0][0]
+
+
+# Store a reference to the real _is_token_still_fresh before any fixture can patch it.
+# Must be module-level to avoid Python's descriptor protocol binding it to the test class.
+_real_is_token_still_fresh = Client._is_token_still_fresh
+
+
+class TestIsTokenStillFresh:
+    """Tests for Client._is_token_still_fresh.
+
+    These tests call the real (unpatched) _is_token_still_fresh method using a
+    MagicMock as `self` — the method never accesses `self`, only
+    `demisto.getIntegrationContext()` which is mocked per-test.
+    """
+
+    @freeze_time("2023-06-15T12:00:00")
+    def test_fresh_token(self, mocker):
+        """
+        Given:
+            - A token generated 10 minutes ago (well within the 25-minute threshold).
+        When:
+            - Checking if the token is still fresh.
+        Then:
+            - Returns True.
+        """
+        generated_at = (datetime(2023, 6, 15, 11, 50, 0)).isoformat()
+        mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
+
+        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+
+        assert result is True
+
+    @freeze_time("2023-06-15T12:00:00")
+    def test_stale_token(self, mocker):
+        """
+        Given:
+            - A token generated 26 minutes ago (past the 25-minute threshold).
+        When:
+            - Checking if the token is still fresh.
+        Then:
+            - Returns False.
+        """
+        generated_at = (datetime(2023, 6, 15, 11, 34, 0)).isoformat()
+        mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
+
+        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+
+        assert result is False
+
+    def test_missing_timestamp(self, mocker):
+        """
+        Given:
+            - No token_generated_at in integration context.
+        When:
+            - Checking if the token is still fresh.
+        Then:
+            - Returns False (forces refresh for safety).
+        """
+        mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={})
+
+        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+
+        assert result is False
+
+    def test_unparseable_timestamp(self, mocker):
+        """
+        Given:
+            - A malformed token_generated_at value.
+        When:
+            - Checking if the token is still fresh.
+        Then:
+            - Returns False (forces refresh for safety).
+        """
+        mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": "not-a-date"})
+
+        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+
+        assert result is False
+
+    @freeze_time("2023-06-15T12:00:00")
+    def test_exactly_at_threshold(self, mocker):
+        """
+        Given:
+            - A token generated exactly 25 minutes ago (at the threshold boundary).
+        When:
+            - Checking if the token is still fresh.
+        Then:
+            - Returns False (threshold is exclusive: age < threshold).
+        """
+        # TOKEN_TTL_SECONDS=1800, TOKEN_REFRESH_BUFFER_SECONDS=300, threshold=1500s=25min
+        generated_at = (datetime(2023, 6, 15, 11, 35, 0)).isoformat()
+        mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
+
+        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+
+        assert result is False
