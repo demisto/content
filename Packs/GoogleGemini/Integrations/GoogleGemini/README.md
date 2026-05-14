@@ -1,6 +1,6 @@
 # Google Gemini Integration
 
-This integration provides access to Google Gemini's large language models for AI-powered analysis and chat capabilities in Cortex XSOAR.
+This integration provides access to Google Gemini's large language models for AI-powered analysis and chat capabilities in Cortex XSOAR or XSIAM. Supports both Google AI Studio (API key) and Google Cloud Vertex AI (service account) authentication.
 
 ## Configure GoogleGemini in Cortex XSOAR
 
@@ -8,16 +8,28 @@ This integration provides access to Google Gemini's large language models for AI
 2. Search for Google Gemini.
 3. Click **Add instance** to create and configure a new integration instance.
 
+## Configure GoogleGemini in Cortex XSIAM
+
+1. Go to Marketplace
+2. Search for GoogleGemini
+3. Add ContentPack
+4. Search for GoogleGemini in Data Source and Integrations
+5. Create new instance
+
 ### Instance Configuration Parameters
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The base URL for the Gemini API (default: https://generativelanguage.googleapis.com) | True |
-| API Key | Your Google AI API key with Generative Language API access | True |
-| Model | Select a Gemini model from the dropdown | True |
-| Max Tokens | Maximum number of tokens in the response (default: 1024) | False |
-| Temperature | Controls randomness in responses (0.0-1.0) | False |
-| Top P | Nucleus sampling parameter | False |
+| Authentication Type | Choose between "AI Studio API Key" or "Vertex AI Service Account" | True |
+| Server URL | For AI Studio: `https://generativelanguage.googleapis.com`. For Vertex AI: `https://aiplatform.googleapis.com` (auto-detected if unchanged). | True |
+| API Key | Google AI Studio API key. Required when using AI Studio. | False |
+| Service Account Key (JSON) | Service Account Key JSON for Vertex AI authentication. Required when using Vertex AI. | False |
+| Project ID | Google Cloud Project ID. Required when using Vertex AI. | False |
+| Location | Google Cloud location for Vertex AI (e.g., `global`, `us-central1`). Defaults to `global`. | False |
+| Default Model | Select a Gemini model from the dropdown | True |
+| Max tokens | Maximum number of tokens in the response (default: 1024) | True |
+| Temperature | Controls randomness in responses (0.0-2.0) | False |
+| Top P | Nucleus sampling parameter (0.0-1.0) | False |
 | Top K | Top-k sampling parameter | False |
 | Trust any certificate (not secure) | Whether to ignore SSL certificate verification | False |
 | Use system proxy settings | Whether to use system proxy configuration | False |
@@ -28,6 +40,8 @@ The integration supports various Gemini models including:
 
 **Stable Models:**
 
+- gemini-2.5-flash
+- gemini-2.5-pro
 - gemini-2.0-flash
 - gemini-2.0-flash-lite  
 - gemini-1.5-flash
@@ -36,8 +50,6 @@ The integration supports various Gemini models including:
 
 **Preview Models:**
 
-- gemini-2.5-flash-preview-05-20
-- gemini-2.5-pro-preview-06-05
 - gemini-2.0-flash-preview-image-generation
 
 **Audio/TTS Models:**
@@ -114,15 +126,28 @@ The command returns the AI model's response as human-readable output in the War 
 
 ## Setup Instructions
 
-1. **Obtain API Key**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) to create an API key
-2. **Configure Integration**: Add a new GoogleGemini integration instance with your API key
-3. **Test Connection**: Use the Test button to verify connectivity
-4. **Start Using**: Execute the `google-gemini-send-message` command for AI interactions
+### AI Studio (API Key)
 
-## Troubleshooting
+1. **Obtain API Key**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) to create an API key.
+2. **Configure Integration**: Add a new GoogleGemini integration instance, set Authentication Type to **AI Studio API Key**, and enter your API key.
+3. **Test Connection**: Use the Test button to verify connectivity.
+4. **Start Using**: Execute the `google-gemini-send-message` command for AI interactions.
 
-- **API Key Issues**: Ensure your API key has access to the Generative Language API
-- **Network Connectivity**: Verify your XSOAR instance can reach https://generativelanguage.googleapis.com
-- **Model Availability**: Check that the specified model is available in your region
-- **Rate Limits**: Review usage quotas and rate limits for your API key
-- **Unsupported Models**: The integration will warn but attempt to use models not in the official list
+### Vertex AI (Service Account)
+
+1. **Create a Service Account**: In the Google Cloud Console, go to **IAM & Admin** > **Service Accounts** and create a service account with the **Vertex AI User** role.
+2. **Generate a JSON Key**: On the service account page, create a new JSON key and download it.
+3. **Configure Integration**: Add a new GoogleGemini integration instance, set Authentication Type to **Vertex AI Service Account**, and paste the full JSON key contents into the Service Account Key field.
+4. **Set Project ID**: Enter your Google Cloud Project ID.
+5. **Set Location**: Enter the location (default: `global`). Use `us-central1`, `europe-west4`, etc. for regional endpoints.
+6. **Test Connection**: Use the Test button to verify connectivity.
+
+## Troubleshooting and Tips
+
+- Ensure your API key has access to the Generative Language API.
+- Verify your Cortex XSOAR or XSIAM instance can access the configured endpoint.
+- Check that the specified model is available in your region.
+- Review usage quotas and rate limits for your API key or project.
+- The integration attempts to use models not included in the official list and issues a warning.
+- Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
+- For AI Studio, use the server URL `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` by default.

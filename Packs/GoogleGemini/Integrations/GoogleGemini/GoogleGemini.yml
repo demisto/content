@@ -7,7 +7,18 @@ commonfields:
   id: GoogleGemini
   version: -1
 configuration:
+- additionalinfo: Choose whether to authenticate with a Google AI Studio API Key or a Google Cloud Vertex AI Service Account.
+  defaultvalue: AI Studio API Key
+  display: Authentication Type
+  name: auth_type
+  options:
+  - AI Studio API Key
+  - Vertex AI Service Account
+  required: true
+  section: Connect
+  type: 15
 - defaultvalue: https://generativelanguage.googleapis.com
+  additionalinfo: "For AI Studio: https://generativelanguage.googleapis.com. For Vertex AI: https://aiplatform.googleapis.com (auto-detected if unchanged)."
   display: Server URL
   name: url
   required: true
@@ -15,13 +26,33 @@ configuration:
   type: 0
 - name: api_key
   displaypassword: API Key
-  required: true
+  required: false
   type: 9
   section: Connect
   hiddenusername: true
-  additionalinfo: "API Key to access the service REST API."
-- defaultvalue: gemini-2.5-flash-preview-05-20
-  additionalinfo: Please choose only one model, or select another from the list https://ai.google.dev/models.
+  additionalinfo: "API Key for Google AI Studio authentication. Required when using AI Studio."
+- name: service_account_key
+  displaypassword: Service Account Key (JSON)
+  required: false
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: "Service Account Key JSON for Vertex AI authentication. Required when using Vertex AI."
+- additionalinfo: "Google Cloud Project ID. Required when using Vertex AI."
+  display: Project ID
+  name: project_id
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: "Google Cloud location for Vertex AI (e.g., 'global', 'us-central1'). Defaults to 'global'."
+  defaultvalue: global
+  display: Location
+  name: location
+  required: false
+  section: Connect
+  type: 0
+- defaultvalue: gemini-2.5-flash
+  additionalinfo: Please choose only one model
   display: Default Model
   name: model
   options:
@@ -31,9 +62,9 @@ configuration:
   - gemini-1.5-flash
   - gemini-1.5-flash-8b
   - gemini-1.5-pro
-  # Preview models
-  - gemini-2.5-flash-preview-05-20
-  - gemini-2.5-pro-preview-06-05
+  - gemini-2.5-flash
+  - gemini-2.5-pro
+    # Preview models
   - gemini-2.0-flash-preview-image-generation
   # Embedding models
   - text-embedding-004
@@ -89,6 +120,7 @@ description: |-
   - Text analysis and generation
   - Natural language processing tasks
 
+  Supports both Google AI Studio (API key) and Google Cloud Vertex AI (service account) authentication.
   Supported models include Gemini 2.0 Flash, Gemini 1.5 Pro, and various preview models.
 display: Google Gemini
 name: GoogleGemini
@@ -135,7 +167,7 @@ script:
     - contextPath: GoogleGemini.Chat.ConversationId
       description: A unique identifier, used to identify the chat session.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/google-api-py3:1.0.0.8160132
   runonce: false
   script: ''
   subtype: python3
