@@ -1219,8 +1219,19 @@ partial - The custodian is in a mixed state where some sources are on hold and s
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. | 
-| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
+| MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. |
+| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. |
+
+#### Command example
+
+```!msg-apply-hold-ediscovery-custodian custodian_id=a1b1345673d4,b2c1234565f6c3d4e5 case_id=f71234c4-1234-1234-1234-321fedcba987```
+
+#### Human Readable Output
+
+>### Apply Hold Results
+>|Status|Location URL|
+>|---|---|
+>| running | https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/f7e6d5c4-b3a2-1098-7654-321fedcba987/operations/a1b2c3d4-e5f6-7890-abcd-ef1234567890 |
 
 ### msg-remove-hold-ediscovery-custodian
 
@@ -1242,8 +1253,19 @@ Start the process of removing a hold from eDiscovery custodians.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. | 
-| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
+| MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. |
+| MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. |
+
+#### Command example
+
+```!msg-remove-hold-ediscovery-custodian custodian_id=a1b25412345a1b2c3d4,b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5 case_id=f73tgr5c4-1234-1234-1234-321fedcba987```
+
+#### Human Readable Output
+
+>### Remove Hold Results
+>|Status|Location URL|
+>|---|---|
+>| running | https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/f7e6d5c4-b3a2-1098-7654-321fedcba987/operations/b2c3d4e5-f6a1-2345-bcde-f67890123456 |
 
 ### msg-create-ediscovery-non-custodial-data-source
 
