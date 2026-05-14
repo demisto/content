@@ -384,6 +384,12 @@ def markpass_integration_step(integration_id: str, step_name: str) -> dict:
 
 
 def fail_integration_step(integration_id: str, step_name: str) -> dict:
+    """Programmatic ``fail`` / ``reset-to`` (they share semantics).
+
+    Honours ``preserve_on_reset`` on later steps. The named ``step_name``
+    is always cleared even if it is itself preserved (explicit-target
+    carve-out).
+    """
     cfg = get_config()
     rows = load_csv()
     idx = find_row(rows, integration_id)
@@ -393,18 +399,19 @@ def fail_integration_step(integration_id: str, step_name: str) -> dict:
     if target is None:
         return {"error": f"Unknown step '{step_name}'."}
     row = rows[idx]
-    if target.index == 1:
-        for s in cfg.steps:
-            row[s.name] = ""
-    else:
-        prev = cfg.step_by_index[target.index - 1]
-        row[target.name] = ""
-        reset_after(row, prev)
+    # Explicit-target carve-out: clear the named target even if it's
+    # tagged preserve_on_reset.
+    row[target.name] = ""
+    cleared, preserved = reset_after(row, target, respect_preserve=True)
     save_csv(rows)
     cur = current_step(row)
+    msg = f"Reset '{step_name}' and subsequent non-preserved steps."
+    if preserved:
+        msg += f" Preserved (preserve_on_reset=true): {preserved}."
     return {
-        "message": f"Reset '{step_name}' and subsequent steps.",
+        "message": msg,
         "current_step": cur.name if cur else None,
+        "preserved": preserved,
     }
 
 

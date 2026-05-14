@@ -71,21 +71,24 @@ steps:
     setter: set-params-to-commands
     json_schema: {"validator": "params_to_commands"}
     cross_check: {"validator": "params_to_commands_no_auth_overlap"}
-    description: "Map each integration command to the parameter IDs it consumes (JSON)."
+    preserve_on_reset: true
+    description: "Map each integration command to the parameter IDs it consumes (JSON). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
 
   - name: "Params for test with default in code"
     kind: data
     optional: false
     setter: set-params-for-test
     json_schema: {"validator": "any_json"}
-    description: "List the param IDs whose defaults live in the integration source (JSON)."
+    preserve_on_reset: true
+    description: "List the param IDs whose defaults live in the integration source (JSON). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
 
   - name: "Params same in other handlers"
     kind: data
     optional: true
     setter: set-shared-params
     json_schema: {"validator": "any_json"}
-    description: "Optional: list params shared verbatim with sibling handlers (or `skip`)."
+    preserve_on_reset: true
+    description: "Optional: list params shared verbatim with sibling handlers (or `skip`). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
 
   - name: "generated manifest"
     kind: checkpoint

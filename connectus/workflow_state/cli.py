@@ -19,6 +19,7 @@ from workflow_state.api import (
 from workflow_state.config_loader import get_config
 from workflow_state.csv_io import (
     find_row,
+    wipe_workflow_data,
 )
 
 
@@ -519,7 +520,14 @@ def cmd_skip(args: list[str]) -> None:
 
 
 def _do_reset_to(rows: list[dict[str, str]], idx: int, step_name: str, verb: str) -> None:
-    """Shared implementation for ``fail`` and ``reset-to``."""
+    """Shared implementation for ``fail`` and ``reset-to``.
+
+    Honours ``preserve_on_reset``: steps tagged as preserved retain
+    their value across this operation, EXCEPT when the user names the
+    preserved step explicitly as ``target`` — in that case the user's
+    intent wins for that one step (it is cleared) but later preserved
+    steps in the same blast radius are still preserved.
+    """
     cfg = get_config()
     target = cfg.step_by_name.get(step_name)
     if target is None:
@@ -530,17 +538,24 @@ def _do_reset_to(rows: list[dict[str, str]], idx: int, step_name: str, verb: str
     row = rows[idx]
     integration_id = row.get("Integration ID", "")
 
-    if target.index == 1:
-        for s in cfg.steps:
-            row[s.name] = ""
-    else:
-        prev = cfg.step_by_index[target.index - 1]
-        row[target.name] = ""
-        reset_after(row, prev)
+    # Explicit-target carve-out: clear the named target even if it's
+    # tagged preserve_on_reset (the user named it on purpose).
+    row[target.name] = ""
+
+    # Then clear everything strictly after, honouring preserve_on_reset
+    # for those later steps. When target.index == 1 there is nothing
+    # before it; otherwise we still pivot on `target` itself (which has
+    # already been cleared above) and rely on reset_after's strict
+    # "index > step.index" filter.
+    cleared, preserved = reset_after(row, target, respect_preserve=True)
 
     save_csv(rows)
     print(f"{verb}: cleared step {target.index} ('{target.name}') and all "
-          f"subsequent steps for '{integration_id}'.")
+          f"subsequent non-preserved steps for '{integration_id}'.")
+    if preserved:
+        print(
+            f"  Preserved (preserve_on_reset=true): {preserved}"
+        )
     cur = current_step(row)
     if cur is not None:
         print(f"  Current step is now: #{cur.index} {cur.name}")
@@ -570,6 +585,68 @@ def cmd_reset_to(args: list[str]) -> None:
     rows = load_csv()
     idx = _resolve_row_or_exit(rows, name)
     _do_reset_to(rows, idx, step_name, verb="Reset-to")
+
+
+def cmd_wipe_workflow_data(args: list[str]) -> None:
+    """⚠️  Bulk-wipe every workflow column in the pipeline CSV.
+
+    Identity columns (Integration ID, Integration File Path, Connector ID,
+    plus any future identity columns from the YAML) are preserved
+    verbatim. The header is regenerated from the YAML config so the
+    columns are re-aligned to the current workflow plan.
+
+    Use this only when the workflow plan changes shape and you want to
+    keep the integration roster but drop every per-row state cell. To
+    reset a single integration, use 'reset' instead.
+
+    Requires --yes-i-am-sure to proceed. Writes a sibling backup at
+    ``<csv>.bak.<unix-timestamp>`` unless --no-backup is given.
+    """
+    sure = "--yes-i-am-sure" in args
+    no_backup = "--no-backup" in args
+
+    banner = (
+        "\n"
+        "╔══════════════════════════════════════════════════════════════════════════╗\n"
+        "║   ⚠️   DESTRUCTIVE OPERATION: wipe-workflow-data                         ║\n"
+        "║                                                                          ║\n"
+        "║   This will CLEAR every workflow column for EVERY row in the             ║\n"
+        "║   connectus pipeline CSV. Identity columns are preserved.                ║\n"
+        "║   The header is rewritten from connectus/workflow_state_config.yml       ║\n"
+        "║   so the file aligns with the current workflow plan.                     ║\n"
+        "║                                                                          ║\n"
+        "║   Use 'reset <integration_id>' instead if you only want to reset         ║\n"
+        "║   one row. There is no undo for this operation other than the            ║\n"
+        "║   timestamped backup file written next to the CSV.                       ║\n"
+        "╚══════════════════════════════════════════════════════════════════════════╝\n"
+    )
+    print(banner)
+
+    if not sure:
+        print(
+            "Refusing to run without --yes-i-am-sure.\n"
+            "  Re-run as: workflow_state.py wipe-workflow-data --yes-i-am-sure\n"
+            "  Add --no-backup to skip the timestamped backup file."
+        )
+        sys.exit(1)
+
+    try:
+        result = wipe_workflow_data(confirm=True, backup=not no_backup)
+    except FileNotFoundError as e:
+        print(f"ERROR: pipeline CSV not found: {e}")
+        sys.exit(1)
+
+    header_cols = result["header"]
+    n_header = len(header_cols) if isinstance(header_cols, list) else 0
+    print(f"✅ Wiped {result['cells_cleared']} workflow cell(s) "
+          f"across {result['rows_touched']} row(s).")
+    print(f"   Rows preserved:   {result['rows']}")
+    print(f"   Header columns:   {n_header}")
+    if result["backup_path"]:
+        print(f"   Backup written:   {result['backup_path']}")
+    else:
+        print("   Backup written:   (skipped via --no-backup)")
+    print(f"   CSV path:         {result['csv_path']}")
 
 
 def cmd_reset(args: list[str]) -> None:
@@ -1006,6 +1083,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "fail": cmd_fail,
     "reset-to": cmd_reset_to,
     "reset": cmd_reset,
+    "wipe-workflow-data": cmd_wipe_workflow_data,
     "at-step": cmd_at_step,
     "list": cmd_list,
     "list-by-assignee": cmd_list_by_assignee,

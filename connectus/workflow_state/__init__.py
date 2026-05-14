@@ -68,6 +68,7 @@ from workflow_state.csv_io import (
     load_csv,
     os,  # re-exported for tests that monkey-patch ``workflow_state.os.replace``
     save_csv,
+    wipe_workflow_data,
 )
 
 # ---- Validators ----------------------------------------------------------
@@ -153,6 +154,7 @@ from workflow_state.cli import (
     cmd_skip,
     cmd_status,
     cmd_status_all,
+    cmd_wipe_workflow_data,
     main,
 )
 
@@ -229,6 +231,7 @@ __all__ = [
     "find_row",
     "load_csv",
     "save_csv",
+    "wipe_workflow_data",
     # Validators
     "get_named_validator",
     "validate_any_json",
@@ -284,6 +287,7 @@ __all__ = [
     "cmd_skip",
     "cmd_status",
     "cmd_status_all",
+    "cmd_wipe_workflow_data",
     # Derived legacy constants
     "CHECK",
     "FAIL_MARK",

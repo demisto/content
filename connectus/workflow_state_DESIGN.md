@@ -1,3 +1,5 @@
+> **STATUS: implemented.** This document is the original design proposal for the `workflow_state` config-driven refactor. The refactor has been completed and the design described here is now reality — see [`connectus/workflow_state/`](workflow_state/__init__.py:1) for the implementation, [`connectus/workflow_state_config.yml`](workflow_state_config.yml:1) for the live YAML config, and [`connectus/Readme.md`](Readme.md:1) for current-state documentation. The "Open Questions" in §11 have been decided and are noted inline below. Line-number references throughout the doc point at the pre-refactor monolith and are kept for historical traceability.
+
 # `workflow_state` — Config-Driven Refactor Design
 
 A design for splitting [`connectus/workflow_state.py`](workflow_state.py) into a
@@ -12,8 +14,12 @@ in Python. Only the *declarative* parts move out.
 
 ## 1. Current State Analysis
 
+> *This section describes the codebase before the refactor; preserved for historical context. Today the package is split as described in §3 and the implementation lives in [`connectus/workflow_state/`](workflow_state/__init__.py:1) — `connectus/workflow_state.py` is now a thin backward-compatibility shim.*
+
 [`connectus/workflow_state.py`](workflow_state.py) is a single ~2 585-line
-script that does seven distinct jobs:
+script (historical; today's implementation is split across the
+[`workflow_state/`](workflow_state/__init__.py:1) package) that did seven
+distinct jobs:
 
 | Concern | Where it lives today | Lines |
 |---|---|---|
@@ -851,6 +857,10 @@ flowchart LR
    `cascade_on_set: false` (current proposal) and revisit if a second
    carve-out shows up.**
 
+   **DECIDED: `cascade_on_set: false` on the assignee step.** Implemented
+   exactly as proposed — see the `assignee` step in
+   [`workflow_state_config.yml`](workflow_state_config.yml:54).
+
 2. **Should `markers.checkpoint_done_values` include or exclude the
    historical aliases (`"YES"`, `"true"`, `"True"`, `"done"`, `"Done"`,
    `"DONE"`)?** Today they are accepted on read but never written. The
@@ -860,6 +870,13 @@ flowchart LR
    **Recommendation: keep the historical aliases for now (no behavior
    change); a stricter mode is a separate cleanup.**
 
+   **DECIDED (REVERSED FROM ORIGINAL RECOMMENDATION): strict `"✅"` and
+   `"N/A"` only as of Q2 2026-05.** Historical aliases are no longer
+   recognized by [`is_checked()`](workflow_state/state_machine.py:24).
+   The canonical list lives in `markers.checkpoint_done_values` —
+   see [`workflow_state_config.yml:22-24`](workflow_state_config.yml:22)
+   for the breaking-change comment.
+
 3. **Should the per-cell JSON schema validators (`validate_auth_detail`,
    `validate_params_to_commands`) ALSO move to YAML eventually
    (e.g., declared via JSONSchema)?** Out of scope here; they are
@@ -868,10 +885,23 @@ flowchart LR
    imperative validators. **Recommendation: leave in code, look up by
    name from YAML.**
 
+   **DECIDED: validators stay in code, looked up by name from YAML.**
+   The `json_schema.validator` field on each step in
+   [`workflow_state_config.yml`](workflow_state_config.yml:65) names the
+   in-code validator at
+   [`workflow_state/validators.py`](workflow_state/validators.py:1)
+   (`auth_details` delegates to
+   [`auth_config_parser.validate_auth_details`](auth_config_parser/validator.py:47);
+   `params_to_commands` lives at
+   [`workflow_state/validators.py:49`](workflow_state/validators.py:49)).
+
 4. **Should `CSV_PATH` itself be config-driven (currently a module-level
    `os.path.join`)?** Today there's exactly one CSV. Moving it to YAML
    is overkill until we have a second pipeline. **Recommendation: leave
    `CSV_PATH` in `csv_io.py`.**
+
+   **DECIDED: `CSV_PATH` stays in code.** Implemented at
+   [`workflow_state/csv_io.py`](workflow_state/csv_io.py:1) as proposed.
 
 5. **Should we split the existing 2 619-line
    [`workflow_state_test.py`](workflow_state_test.py) into per-module test
@@ -879,3 +909,7 @@ flowchart LR
    make future edits easier. **Recommendation: defer to a separate
    cleanup; this refactor's success criterion is "the existing test file
    passes unchanged".**
+
+   **DECIDED: deferred — single test file kept.** The success criterion
+   was met (562/562 tests pass against the split package via the shim);
+   a per-module test split remains open as future cleanup.

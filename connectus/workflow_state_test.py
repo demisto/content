@@ -977,13 +977,17 @@ class TestResetVerbs:
 
     def test_reset_after_clears_subsequent_only(self) -> None:
         row = _fully_complete_row()
-        cleared = reset_after(row, STEP_BY_NAME["wrote/checked code"])
+        # Default respect_preserve=False keeps legacy "wipe everything after"
+        # semantics (used by the set-auth cascade path).
+        cleared, preserved = reset_after(row, STEP_BY_NAME["wrote/checked code"])
         # Steps 1-8 untouched (assignee, Auth, P2C, P4T, Pshared, manifest,
         # validate, wrote)
         assert row["wrote/checked code"] == CHECK
         # 9+ cleared
         assert "shadowed command test passes" in cleared
         assert row["code merged"] == ""
+        # Legacy default does not honour preserve_on_reset: nothing reported.
+        assert preserved == []
 
 
 # ---------------------------------------------------------------------------
@@ -1419,6 +1423,161 @@ class TestProgrammaticAPI:
              patch("workflow_state.save_csv"):
             result = set_integration_auth("Nope", VALID_AUTH_JSON_NONE)
         assert "error" in result and "not found" in result["error"].lower()
+
+    # ------------------------------------------------------------------
+    # preserve_on_reset semantics — Option A
+    # ------------------------------------------------------------------
+    #
+    # The three Params* data columns are tagged `preserve_on_reset: true`
+    # in workflow_state_config.yml. The semantics are:
+    #
+    #   - reset-to / fail PRESERVE them (caller's blast radius shrinks).
+    #     Exception: if the user explicitly names a preserved step as the
+    #     reset-to target, that one step IS cleared; later preserved
+    #     steps in the same operation are still kept.
+    #   - set-auth STILL WIPES them (auth changes invalidate downstream
+    #     artifacts; this is by design).
+    #   - plain `reset` STILL WIPES everything (it's the "wipe the row"
+    #     verb; no carve-outs).
+    #
+    # These tests pin the contract end-to-end through the programmatic
+    # API surface so a future refactor that breaks the wiring is caught.
+
+    def test_fail_preserves_params_columns(self) -> None:
+        """fail-ing a checkpoint past Params* keeps the Params* values
+        intact. Demonstrates the central use case: "my pre-commit failed,
+        I shouldn't have to redo my per-command param research"."""
+        row = _fully_complete_row("X")
+        # Sanity — the fixture does set the Params* columns.
+        assert row["Params to Commands"] != ""
+        assert row["Params for test with default in code"] != ""
+        assert row["Params same in other handlers"] != ""
+        p2c_before = row["Params to Commands"]
+        p4t_before = row["Params for test with default in code"]
+        psh_before = row["Params same in other handlers"]
+        with patch("workflow_state.load_csv", return_value=[row]), \
+             patch("workflow_state.save_csv"):
+            result = fail_integration_step(
+                "X", "precommit/validate/unit tests passed"
+            )
+        assert "error" not in result
+        # Failed checkpoint cleared.
+        assert row["precommit/validate/unit tests passed"] == ""
+        # Later checkpoints cleared.
+        assert row["code merged"] == ""
+        # Params* columns preserved verbatim.
+        assert row["Params to Commands"] == p2c_before
+        assert row["Params for test with default in code"] == p4t_before
+        assert row["Params same in other handlers"] == psh_before
+        # The api response advertises which preserved columns retained
+        # values (only those that were non-empty). Order is workflow order.
+        assert "preserved" in result
+        assert result["preserved"] == []  # Params* are BEFORE the failed step.
+
+    def test_fail_at_step_before_params_clears_params_BUT_preserved(self) -> None:
+        """When the fail target is BEFORE Params* in the workflow, the
+        Params* columns are in the blast radius — and preserve_on_reset
+        keeps them. Reported in result["preserved"]."""
+        row = _fully_complete_row("X")
+        p2c_before = row["Params to Commands"]
+        p4t_before = row["Params for test with default in code"]
+        psh_before = row["Params same in other handlers"]
+        with patch("workflow_state.load_csv", return_value=[row]), \
+             patch("workflow_state.save_csv"):
+            # Reset all the way back to step 6 (`generated manifest`),
+            # which is the first checkpoint after the Params* trio.
+            result = fail_integration_step("X", "generated manifest")
+        assert "error" not in result
+        # Failed step + downstream non-preserved cleared.
+        assert row["generated manifest"] == ""
+        assert row["code merged"] == ""
+        # Params* (#3, #4, #5) are AHEAD of `generated manifest` (#6),
+        # so reset_after never visits them — they're trivially intact.
+        assert row["Params to Commands"] == p2c_before
+
+    def test_fail_at_auth_preserves_params_via_respect_preserve(self) -> None:
+        """When the fail target is `Auth Details` (#2), Params* (#3-5)
+        ARE in the blast radius. preserve_on_reset must keep them."""
+        row = _fully_complete_row("X")
+        p2c_before = row["Params to Commands"]
+        p4t_before = row["Params for test with default in code"]
+        psh_before = row["Params same in other handlers"]
+        with patch("workflow_state.load_csv", return_value=[row]), \
+             patch("workflow_state.save_csv"):
+            result = fail_integration_step("X", "Auth Details")
+        assert "error" not in result
+        # Auth Details cleared (named explicitly).
+        assert row["Auth Details"] == ""
+        # Later non-preserved cleared.
+        assert row["generated manifest"] == ""
+        # Params* preserved.
+        assert row["Params to Commands"] == p2c_before
+        assert row["Params for test with default in code"] == p4t_before
+        assert row["Params same in other handlers"] == psh_before
+        # API response surfaces what was preserved.
+        assert set(result["preserved"]) == {
+            "Params to Commands",
+            "Params for test with default in code",
+            "Params same in other handlers",
+        }
+
+    def test_fail_at_a_preserved_step_clears_THAT_step(self) -> None:
+        """Explicit-target carve-out: naming a preserved step as the fail
+        target overrides preservation FOR THAT STEP only. Later preserved
+        steps in the same operation are still preserved."""
+        row = _fully_complete_row("X")
+        p4t_before = row["Params for test with default in code"]
+        psh_before = row["Params same in other handlers"]
+        with patch("workflow_state.load_csv", return_value=[row]), \
+             patch("workflow_state.save_csv"):
+            result = fail_integration_step("X", "Params to Commands")
+        assert "error" not in result
+        # Named target IS cleared even though preserve_on_reset=true.
+        assert row["Params to Commands"] == ""
+        # Later preserved siblings (#4, #5) still preserved.
+        assert row["Params for test with default in code"] == p4t_before
+        assert row["Params same in other handlers"] == psh_before
+        # Later non-preserved (checkpoints) cleared as usual.
+        assert row["generated manifest"] == ""
+        assert set(result["preserved"]) == {
+            "Params for test with default in code",
+            "Params same in other handlers",
+        }
+
+    def test_set_auth_still_wipes_params_columns(self) -> None:
+        """set-auth must continue to wipe Params* — auth changes
+        invalidate the per-command param contract by design."""
+        row = _fully_complete_row("X")
+        assert row["Params to Commands"] != ""
+        assert row["Params for test with default in code"] != ""
+        assert row["Params same in other handlers"] != ""
+        with patch("workflow_state.load_csv", return_value=[row]), \
+             patch("workflow_state.save_csv"):
+            result = set_integration_auth("X", VALID_AUTH_JSON_NONE)
+        assert "error" not in result
+        # Auth set.
+        assert row["Auth Details"] == VALID_AUTH_JSON_NONE
+        # Params* WIPED — preserve_on_reset is intentionally ignored on
+        # the set-auth cascade.
+        assert row["Params to Commands"] == ""
+        assert row["Params for test with default in code"] == ""
+        assert row["Params same in other handlers"] == ""
+        # Workflow rewinds to step #3.
+        assert result["current_step"] == "Params to Commands"
+
+    def test_reset_integration_to_step_is_alias_for_fail(self) -> None:
+        """reset_integration_to_step is documented as a fail() alias.
+        Pin that it inherits the same preserve_on_reset behaviour."""
+        from workflow_state import reset_integration_to_step
+        row = _fully_complete_row("X")
+        p2c_before = row["Params to Commands"]
+        with patch("workflow_state.load_csv", return_value=[row]), \
+             patch("workflow_state.save_csv"):
+            result = reset_integration_to_step("X", "Auth Details")
+        assert "error" not in result
+        assert row["Auth Details"] == ""
+        assert row["Params to Commands"] == p2c_before
+        assert "Params to Commands" in result["preserved"]
 
     def test_skip_integration_step_optional(self, monkeypatch) -> None:
         row = _blank_row("X")

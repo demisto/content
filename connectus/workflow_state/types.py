@@ -16,8 +16,26 @@ class Step:
 
     Backward-compatible: the original positional signature
     ``Step(index, name, kind, optional, setter, description)`` still
-    works because the two new fields (``cascade_on_set`` and
-    ``json_schema``) have defaults.
+    works because the trailing fields all have defaults.
+
+    Two carve-out flags govern the cascade-reset rule:
+
+    - ``cascade_on_set`` (set-write side): when False, a successful
+      ``set-X`` write to THIS step does NOT cascade-reset later steps.
+      Example: ``assignee`` (changing the owner shouldn't nuke their
+      progress).
+    - ``preserve_on_reset`` (reset side): when True, this step's value
+      is PRESERVED across ``reset-to``/``fail`` operations whose blast
+      radius would otherwise include it. The ``set-auth`` cascade
+      (which calls ``reset_after`` directly) ignores this flag — auth
+      changes invalidate downstream artifacts and must continue to
+      wipe everything. Plain ``reset`` (the "wipe the whole row" verb)
+      also ignores this flag.
+
+      The single carve-out: if the user names a preserved step
+      EXPLICITLY as the target of ``reset-to``/``fail``, the user's
+      intent wins for that one step (the named target is cleared), but
+      LATER preserved steps in the same operation are still preserved.
     """
 
     index: int                              # 1..N
@@ -29,6 +47,7 @@ class Step:
     cascade_on_set: bool = True             # if False, setting this step does NOT cascade-reset
     json_schema: Optional[str] = None       # named JSON validator key (or None)
     cross_check: Optional[str] = None       # named cross-step validator key (or None)
+    preserve_on_reset: bool = False         # if True, reset-to/fail preserve this column's value
 
 
 @dataclass(frozen=True)

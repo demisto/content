@@ -428,6 +428,14 @@ def _build_one_step(index: int, item: dict) -> tuple[Optional[Step], list[str]]:
         )
         cascade_on_set = True
 
+    preserve_on_reset = item.get("preserve_on_reset", False)
+    if not isinstance(preserve_on_reset, bool):
+        errors.append(
+            f"{label}.preserve_on_reset must be a bool; got "
+            f"{type(preserve_on_reset).__name__}"
+        )
+        preserve_on_reset = False
+
     json_schema_name = _coerce_validator_name(
         item.get("json_schema"), f"{label}.json_schema", errors
     )
@@ -462,6 +470,7 @@ def _build_one_step(index: int, item: dict) -> tuple[Optional[Step], list[str]]:
             cascade_on_set=cascade_on_set,
             json_schema=json_schema_name,
             cross_check=cross_check_name,
+            preserve_on_reset=preserve_on_reset,
         ),
         errors,
     )

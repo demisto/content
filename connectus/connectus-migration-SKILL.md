@@ -42,7 +42,7 @@ Use when the user says something like "migrate everything assigned to me" / "con
    python3 connectus/workflow_state.py next --mine
    ```
 
-   Or from Python: `from connectus.workflow_state import integrations_for_assignee` and call `integrations_for_assignee("<name>")`. Each result dict carries `integration_id`, `connector_id`, `assignee`, `current_step`, `current_step_index`, `completed_steps`, `all_complete`, `has_progress`.
+   Or from Python: `from workflow_state import integrations_for_assignee` and call `integrations_for_assignee("<name>")`. Each result dict carries `integration_id`, `connector_id`, `assignee`, `current_step`, `current_step_index`, `completed_steps`, `all_complete`, `has_progress`.
 3. **Empty result?** Tell the user there is nothing assigned + in-progress for them, and offer two follow-ups:
    - bulk-assign a connector via `set-assignee-by-connector <connector_id> "<name>"` (suggest running `list-connectors` first to pick one), or
    - browse via `python3 connectus/workflow_state.py dashboard`.
@@ -68,7 +68,7 @@ Use when the user says something like "migrate connector `<connector_id>`" / "do
    python3 connectus/workflow_state.py list-by-connector "<connector_id>"
    ```
 
-   Or programmatically: `from connectus.workflow_state import list_integrations_by_connector` → `list_integrations_by_connector("<connector_id>")`. If the result is empty, suggest `python3 connectus/workflow_state.py list-connectors` to discover valid ids and stop.
+   Or programmatically: `from workflow_state import list_integrations_by_connector` → `list_integrations_by_connector("<connector_id>")`. If the result is empty, suggest `python3 connectus/workflow_state.py list-connectors` to discover valid ids and stop.
 2. **Inspect ownership** on the matched rows (look at the `assignee` field on each dict). One of three cases applies:
    - **All rows assigned to the current git user** → proceed straight to step 4.
    - **All rows unassigned** → offer to bulk-assign to the current user. Confirm before running:
@@ -110,12 +110,16 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 
 ## Critical Rules
 
+> **Architecture.** The source of truth for the workflow's shape (steps, columns, markers, interactions) is [`connectus/workflow_state_config.yml`](workflow_state_config.yml). The CLI dispatch, validators, state machine, CSV I/O, and display helpers live in the [`connectus/workflow_state/`](workflow_state/__init__.py) package. The file [`connectus/workflow_state.py`](workflow_state.py) is now a backward-compatibility shim — `python3 connectus/workflow_state.py …` still works because the script delegates to [`workflow_state.cli.main()`](workflow_state/cli.py:1). Canonical Python import is `from workflow_state import …`.
+>
+> **Q2 2026-05 BREAKING CHANGE — strict checkpoint values.** [`is_checked()`](workflow_state/state_machine.py:24) now accepts ONLY `"✅"` and `"N/A"` as "done". Historical aliases (`"YES"`, `"true"`, `"True"`, `"done"`, `"Done"`, `"DONE"`) are no longer recognized. The canonical list lives in `markers.checkpoint_done_values` in [`workflow_state_config.yml:22-24`](workflow_state_config.yml:22).
+
 1. **NEVER edit [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) directly.** All CSV modifications MUST go through [`connectus/workflow_state.py`](workflow_state.py) CLI commands.
 2. **Follow the workflow checkpoints sequentially.** You cannot skip ahead — the state machine enforces ordering.
 3. **Always check status first** before doing any work on an integration.
 4. **Use `execute_command`** to run all `workflow_state.py` commands from the workspace root.
 5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
-6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`.
+6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** the three Params\* data columns (`Params to Commands`, `Params for test with default in code`, `Params same in other handlers`) — they are tagged `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe Params\* by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes Params\*; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
 
 ## Linked Files
@@ -221,7 +225,7 @@ Three output formats are available — pick the one that matches how you'll cons
 For in-process Python use, import the helper directly:
 
 ```python
-from connectus.workflow_state import get_integration_files
+from workflow_state import get_integration_files
 
 files = get_integration_files("<Integration ID>")
 # files["yml"], files["code"], files["description"], files["readme"], files["test"], plus any extras
@@ -237,7 +241,7 @@ For background only: integration files conventionally live at `Packs/<PackName>/
 
 #### 1.2 Researching `Auth Details` — the four sources of truth
 
-Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_detail()`](workflow_state.py:521); the validator now checks the `config` expression grammar AND that every name referenced in `config` exists as some `auth_types[].name`. Wrong input is rejected at the CLI — better to catch it at research time.
+Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_details()`](auth_config_parser/validator.py:47) (called via the [`workflow_state.validators.validate_auth_detail()`](workflow_state/validators.py:25) wrapper); the validator now checks the `config` expression grammar AND that every name referenced in `config` exists as some `auth_types[].name`. Wrong input is rejected at the CLI — better to catch it at research time.
 
 Read these four files **in this order**, treating each one as a cross-check on the previous:
 
@@ -277,7 +281,7 @@ If steps 1 and 2 disagree (e.g. the YML defines a `credentials` param but the co
 
 #### 1.2.1 Classification decision table
 
-Map "what you saw in the source" → "auth-type enum value" (the values are listed in [`VALID_AUTH_TYPES`](workflow_state.py:118)):
+Map "what you saw in the source" → "auth-type enum value" (the values are derived from the [`AuthType`](auth_config_parser/types.py:11) enum and re-exported from `workflow_state` as `VALID_AUTH_TYPES`):
 
 | You see... | Use type |
 |---|---|
@@ -356,7 +360,7 @@ connection-adjacent YML param that is **not** an auth secret and **not**
 a per-command behavioral param — i.e. everything you reasonably need to
 define the integration's connection besides the secrets themselves.
 
-The validator (see [`validate_auth_detail()`](workflow_state.py:521))
+The validator (see [`validate_auth_details()`](auth_config_parser/validator.py:47))
 requires the key on every `set-auth` write; the field is required even
 when empty (use `[]`).
 
@@ -652,10 +656,10 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
 
 #### 1.8 Auth Details JSON Validation
 
-After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md:16). The same rules are enforced at runtime by [`validate_auth_detail()`](workflow_state.py:521):
+After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md:16). The same rules are enforced at runtime by [`validate_auth_details()`](auth_config_parser/validator.py:47):
 
 1. Must be valid JSON with top-level keys `auth_types` (array), `config` (string), AND `other_connection` (array of strings). All three are REQUIRED on every `set-auth` write — the validator rejects payloads missing any of them.
-2. Each `auth_types[]` entry has a `type` (one of [`VALID_AUTH_TYPES`](workflow_state.py:118)), a unique `name`, and a non-empty `xsoar_params` array (unless the entry is `NoneRequired`-shaped).
+2. Each `auth_types[]` entry has a `type` (one of the [`AuthType`](auth_config_parser/types.py:11) enum values, also re-exported as `VALID_AUTH_TYPES`), a unique `name`, and a non-empty `xsoar_params` array (unless the entry is `NoneRequired`-shaped).
 3. `auth_types[]` entries are sorted by `(type, name)` ascending.
 4. `config` is either the literal `NoneRequired`, or one or more clauses joined with ` + `, each clause being `REQUIRED(...)`, `OPTIONAL(...)`, or `CHOICE(...)`.
 5. Every operand name appearing inside `config`'s parens MUST exist as some `auth_types[].name` (the most common cause of `set-auth` rejection).
@@ -698,9 +702,9 @@ python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details J
 
 This command:
 
-- Validates the Auth Details JSON against the schema (`auth_types` + `config`) — see [`validate_auth_detail()`](workflow_state.py:521).
+- Validates the Auth Details JSON against the schema (`auth_types` + `config`) — see [`validate_auth_details()`](auth_config_parser/validator.py:47).
 - Sets the `Auth Details` workflow data column in the CSV.
-- Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag.
+- Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag. **This includes wiping the three Params\* data columns**, even though they carry `preserve_on_reset: true` for `reset-to`/`fail` — `set-auth` deliberately ignores that flag because auth-classification changes invalidate every downstream artifact (in particular, the per-command param contract validated by `params_to_commands_no_auth_overlap`).
 - Rejects invalid JSON with specific error messages — including unsorted `auth_types[]`, unknown names referenced from `config`, and malformed `config` expressions.
 
 Example:
@@ -774,7 +778,7 @@ python3 connectus/check_command_params.py <integration_dir> \
 
 Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`).
 
-The `--integration-id "<Integration ID>"` flag is **strongly recommended inside the migration workflow.** When supplied, the analyzer additionally calls [`workflow_state.py auth-params <id>`](workflow_state.py:1) and unions every YML param id declared in the integration's `Auth Details` cell (auth-secret params projected from `auth_types[].xsoar_params` plus every `other_connection` entry) into its own ignore set. This removes the entire burden of "remembering which params already live in `Auth Details`" from the AI — those params will simply not appear in the analyzer's per-command output. The flag is OPTIONAL; standalone runs (outside the migration workflow, or on integrations that haven't been classified yet) can omit it and the analyzer falls back to the file-based ignore set with a single-line stderr WARNING.
+The `--integration-id "<Integration ID>"` flag is **strongly recommended inside the migration workflow.** When supplied, the analyzer additionally calls [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions every YML param id declared in the integration's `Auth Details` cell (auth-secret params projected from `auth_types[].xsoar_params` plus every `other_connection` entry) into its own ignore set. This removes the entire burden of "remembering which params already live in `Auth Details`" from the AI — those params will simply not appear in the analyzer's per-command output. The flag is OPTIONAL; standalone runs (outside the migration workflow, or on integrations that haven't been classified yet) can omit it and the analyzer falls back to the file-based ignore set with a single-line stderr WARNING.
 
 Optional flags the skill should know about:
 
@@ -783,7 +787,7 @@ Optional flags the skill should know about:
 - `--timeout SECONDS` — per-command wall-clock timeout (default 30s; the batch runner uses 300s for the whole integration).
 - `--docker {auto,always,never}` — `auto` (default) uses Docker when available; `never` runs in host Python (will fail on integrations needing third-party deps); `always` requires Docker.
 - `--use-integration-docker` — opt-in: instead of the pinned `demisto/py3-native` image, use the integration's own `script.dockerimage` from its YML. Use this for a targeted re-run when an integration reports `module_not_found` (see Step 1 of the decision tree in section 6 below). Falls back to `--docker-image` if the YML doesn't declare one.
-- `--integration-id <id>` — OPTIONAL. When supplied, the analyzer pulls the auth-derived ignore set from [`workflow_state.py auth-params <id>`](workflow_state.py:1) and unions it with the file-based ignore set, guaranteeing that any param already declared in the integration's `Auth Details` cell cannot leak into the per-command output. The analyzer logs a single-line stderr INFO with the pulled list. Inside the migration workflow, ALWAYS pass this flag — `set-params-to-commands` will reject overlap regardless, so pulling the exclusion list up front saves a round-trip. If the integration is not in the workflow CSV, or its `Auth Details` is unset, the analyzer logs a single-line stderr WARNING and proceeds with just the file-based ignore set (it is intentionally not a fatal error).
+- `--integration-id <id>` — OPTIONAL. When supplied, the analyzer pulls the auth-derived ignore set from [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions it with the file-based ignore set, guaranteeing that any param already declared in the integration's `Auth Details` cell cannot leak into the per-command output. The analyzer logs a single-line stderr INFO with the pulled list. Inside the migration workflow, ALWAYS pass this flag — `set-params-to-commands` will reject overlap regardless, so pulling the exclusion list up front saves a round-trip. If the integration is not in the workflow CSV, or its `Auth Details` is unset, the analyzer logs a single-line stderr WARNING and proceeds with just the file-based ignore set (it is intentionally not a fatal error).
 - `--no-sentinel-coercion` — disable automatic sentinel-value coercion. By default the analyzer coerces sentinels for params whose **NAME** (case-insensitive substring match) contains `thumbprint`, `certificate`, or `private_key`, replacing the generic `SENTINEL_PARAM_<name>` string with a syntactically-valid stub (40-char hex thumbprint, stub PEM cert, stub PEM private key). This prevents the cert-thumbprint-hex-validator pattern (see §1.6 row #9) from killing the entire dynamic phase. Pass `--no-sentinel-coercion` for strict-sentinel debug mode.
 - `--seed-param NAME=VALUE` — repeatable. Operator/AI escape hatch: provide an explicit value to seed for a specific YML param, overriding all other sources (YML default, cert coercion, generic sentinel). Use this when an integration has a param the auto-coercion didn't anticipate (e.g., a different format-validating credential, an enum-value selector that needs a specific value to traverse a code path). Values >= 4 chars long act as ad-hoc sentinels — they're grep-able in captured HTTP and the post-hoc attribution code looks for them too.
 - `--no-auto-retry-integration-docker` — disable the automatic retry. By default, when the FIRST command's diagnostic comes back as `module_not_found` AND the analyzer is using the default `demisto/py3-native` image, it will automatically restart the dynamic phase with `--use-integration-docker` (which uses the integration's own production image, usually with the missing package preinstalled). Pass `--no-auto-retry-integration-docker` to disable, in which case the analyzer fast-fails the remaining commands as `module_not_found` (~30s × N saved) and returns immediately.
@@ -1252,19 +1256,25 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 
 ## Error Recovery Commands
 
-### Fail a checkpoint (resets it and all subsequent checkpoints)
+`fail` and `reset-to` share semantics. Both clear the named step and every later step that is **not** tagged `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml). Today only the three Params\* data columns carry that tag — they survive a failed checkpoint so per-command param research is not lost. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept.
+
+**Explicit-target carve-out:** if the user names a preserved step EXPLICITLY as the target of `fail`/`reset-to`, that one step IS cleared (the user's intent wins). Later preserved steps in the same blast radius are still preserved. Example: `fail "Auth Details"` keeps Params\*; `fail "Params to Commands"` clears `Params to Commands` but keeps `Params for test with default in code` and `Params same in other handlers`.
+
+`set-auth` and plain `reset` IGNORE `preserve_on_reset` — see the description of each.
+
+### Fail a checkpoint (clears it and all subsequent non-preserved steps)
 
 ```bash
 python3 connectus/workflow_state.py fail "<Integration ID>" "<checkpoint name>"
 ```
 
-### Reset to a specific checkpoint
+### Reset to a specific checkpoint (alias of fail)
 
 ```bash
 python3 connectus/workflow_state.py reset-to "<Integration ID>" "<checkpoint name>"
 ```
 
-### Reset all workflow columns
+### Reset all workflow columns (no preserve carve-out)
 
 ```bash
 python3 connectus/workflow_state.py reset "<Integration ID>"

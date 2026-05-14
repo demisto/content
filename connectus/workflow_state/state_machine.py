@@ -93,16 +93,49 @@ def get_step_index(step_name: str) -> int:
 # Cascade reset and normalization
 # ---------------------------------------------------------------------------
 
-def reset_after(row: dict[str, str], step: Step) -> list[str]:
-    """Clear every step strictly after ``step``. Returns the cleared columns."""
+def reset_after(
+    row: dict[str, str],
+    step: Step,
+    *,
+    respect_preserve: bool = False,
+) -> tuple[list[str], list[str]]:
+    """Clear every step strictly after ``step``.
+
+    Args:
+        row: The integration row, mutated in place.
+        step: The pivot step. Steps with ``index > step.index`` are
+            candidates for clearing.
+        respect_preserve: When ``True``, candidate steps whose
+            ``preserve_on_reset`` flag is True are kept intact (their
+            names are returned in the second tuple element so the
+            caller can warn the user). When ``False`` (the default),
+            preserve flags are ignored and every later step is cleared.
+            This default keeps the legacy ``set-auth``/``apply_step_action``
+            cascade behavior unchanged: auth changes invalidate every
+            downstream artifact and must wipe Params* too.
+
+    Returns:
+        ``(cleared, preserved)`` — both lists of column names. ``cleared``
+        contains every step that was non-empty before the call AND was
+        wiped; ``preserved`` lists every step that was non-empty AND was
+        kept due to ``respect_preserve=True``. Empty values are not
+        reported in either list.
+    """
     cfg = get_config()
     cleared: list[str] = []
+    preserved: list[str] = []
     for s in cfg.steps:
-        if s.index > step.index:
-            if row.get(s.name, "") != "":
-                cleared.append(s.name)
-            row[s.name] = ""
-    return cleared
+        if s.index <= step.index:
+            continue
+        had_value = row.get(s.name, "") != ""
+        if respect_preserve and s.preserve_on_reset:
+            if had_value:
+                preserved.append(s.name)
+            continue
+        if had_value:
+            cleared.append(s.name)
+        row[s.name] = ""
+    return cleared, preserved
 
 
 def normalize_row(row: dict[str, str]) -> list[str]:
@@ -203,7 +236,9 @@ def apply_step_action(
         return [], False
 
     row[target.name] = new_value
-    cleared = reset_after(row, target)
+    # set-auth/markpass cascade: do NOT honor preserve_on_reset.
+    # Auth-classification changes invalidate every downstream artifact.
+    cleared, _preserved = reset_after(row, target, respect_preserve=False)
     return cleared, False
 
 
@@ -229,7 +264,13 @@ def has_workflow_progress(row: dict[str, str]) -> bool:
 # ---------------------------------------------------------------------------
 
 def reset_from_step(row: dict[str, str], step_name: str) -> None:
-    """Legacy API: clear ``step_name`` and every later step."""
+    """Legacy API: clear ``step_name`` and every later step.
+
+    NOTE: This legacy helper is the unmodified pre-``preserve_on_reset``
+    behaviour — it wipes blindly. New callers should use the CLI
+    ``reset-to`` / ``fail`` commands (which honour ``preserve_on_reset``)
+    or call :func:`reset_after` directly with ``respect_preserve=True``.
+    """
     cfg = get_config()
     step = cfg.step_by_name.get(step_name)
     if step is None:
