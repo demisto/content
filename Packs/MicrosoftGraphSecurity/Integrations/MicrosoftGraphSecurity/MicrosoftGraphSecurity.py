@@ -1490,7 +1490,7 @@ def build_operation_results(outputs_prefix: str, title: str, status: str, locati
     )
 
 
-def update_hold_ediscovery_custodian_command(client: MsGraphClient, args: dict, hold_action: HoldAction):
+def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_action: HoldAction):
     demisto.debug(f"{hold_action.value=}")
     res = client.update_hold_ediscovery_custodian(args.get("case_id"), args.get("custodian_id"), hold_action)
     location = res.headers.get("Location", "")
@@ -1533,7 +1533,7 @@ def delete_ediscovery_search_command(client: MsGraphClient, args):
     return CommandResults(readable_output=f'eDiscovery search {args.get("search_id")} was deleted successfully.')
 
 
-def purge_ediscovery_data_command(client: MsGraphClient, args: dict):
+def purge_ediscovery_data_command(client: MsGraphClient, args):
     resp = client.purge_ediscovery_data(
         args.get("case_id"), args.get("search_id"), args.get("purge_type"), args.get("purge_areas")
     )
