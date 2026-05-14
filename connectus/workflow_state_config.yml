@@ -1,0 +1,154 @@
+# connectus/workflow_state_config.yml
+# Hardcoded declarative configuration for the connectus migration workflow
+# state machine. The runtime engine lives in connectus/workflow_state/.
+# Editing this file changes the workflow's shape; engine code does not need
+# to change for declarative edits (adding/removing/reordering steps,
+# changing descriptions, toggling optional, etc.).
+
+schema_version: 1
+
+# Identity / metadata columns — present in the CSV but NOT part of the
+# 16-step workflow. Never cleared by cascade reset. Order matters: this
+# is the leftmost prefix of the CSV header.
+identity_columns:
+  - {"name": "Integration ID", "description": "Unique human-readable id; primary key for find_row()."}
+  - {"name": "Integration File Path", "description": "Repo-relative path to the integration's YML manifest."}
+  - {"name": "Connector ID", "description": "ConnectUs connector this integration belongs to."}
+
+# Sentinels and marker strings. These are the literal values written into
+# CSV cells by the engine. Changing them is a data migration, not a code
+# change — bump schema_version when you do.
+#
+# Q2 BREAKING CHANGE (2026-05): historical aliases for "done"
+# ("YES", "true", "True", "done", "Done", "DONE") have been DROPPED.
+# Only the strict canonical values are accepted on read AND write.
+markers:
+  check: "✅"
+  fail: "❌"
+  na: "N/A"
+  # Values that count as "done" when seen in a checkpoint cell on read.
+  # Strict-only as of Q2 breaking change.
+  checkpoint_done_values:
+    - "✅"
+    - "N/A"
+  # Valid values for any step whose kind is `flag`.
+  flag_values:
+    - "YES"
+    - "NO"
+    - "N/A"
+
+# Cross-step interactions that don't fit the linear cascade model.
+# Today there is exactly one: the auth-parity flag (#12) auto-fills the
+# auth-parity test (#13) when set to NO/N/A. Modelled here so the engine
+# can find the rule by name instead of string-comparing column titles.
+step_interactions:
+  - kind: flag_auto_na_target
+    when_step: "requires auth parity test"
+    when_value_in: ["NO", "N/A"]
+    target_step: "auth parity test passes"
+    write_value: "N/A"
+
+# The unified ordered sequence. Order in this list IS the step index
+# (1-based). The engine asserts len(steps) >= 1 and unique names.
+steps:
+  - name: "assignee"
+    kind: data
+    optional: false
+    setter: set-assignee
+    cascade_on_set: false
+    description: "Assign an owner to drive this integration's migration."
+
+  - name: "Auth Details"
+    kind: data
+    optional: false
+    setter: set-auth
+    json_schema: {"validator": "auth_details"}
+    description: "Record the auth classification JSON (validated against the Auth Details schema)."
+
+  - name: "Params to Commands"
+    kind: data
+    optional: false
+    setter: set-params-to-commands
+    json_schema: {"validator": "params_to_commands"}
+    cross_check: {"validator": "params_to_commands_no_auth_overlap"}
+    description: "Map each integration command to the parameter IDs it consumes (JSON)."
+
+  - name: "Params for test with default in code"
+    kind: data
+    optional: false
+    setter: set-params-for-test
+    json_schema: {"validator": "any_json"}
+    description: "List the param IDs whose defaults live in the integration source (JSON)."
+
+  - name: "Params same in other handlers"
+    kind: data
+    optional: true
+    setter: set-shared-params
+    json_schema: {"validator": "any_json"}
+    description: "Optional: list params shared verbatim with sibling handlers (or `skip`)."
+
+  - name: "generated manifest"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Generate the ConnectUs manifest YAML for the integration."
+
+  - name: "run manifest make validate"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Run `make validate` on the generated manifest."
+
+  - name: "wrote/checked code"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Write or review the integration source code."
+
+  - name: "shadowed command test passes"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Verify there are no shadowed/conflicting commands in the same connector."
+
+  - name: "write tests"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Author unit tests for the integration."
+
+  - name: "precommit/validate/unit tests passed"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Run pre-commit, validate, and unit tests via demisto-sdk pre-commit."
+
+  - name: "requires auth parity test"
+    kind: flag
+    optional: false
+    setter: set-auth-flag
+    description: "Decide whether the integration needs an auth-parity test (YES/NO/N/A)."
+
+  - name: "auth parity test passes"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Run the auth-parity test (auto-N/A when step 12 is NO/N/A)."
+
+  - name: "param parity test passes"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Run the parameter-parity test."
+
+  - name: "code reviewed"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Complete code review."
+
+  - name: "code merged"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Merge the integration to the branch."
