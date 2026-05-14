@@ -1713,8 +1713,7 @@ script:
       Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
       Private channels - Message posts, replies, and attachments shared in a private Teams channel.
       Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
-
-      Note: This request purges a maximum of 100 items per location only. When purgeType is set to either recoverable or permanentlyDelete and purgeAreas is set to teamsMessages, the Teams messages are permanently deleted.
+      This request purges a maximum of 100 items per mailbox only.
     execution: false
     name: msg-purge-ediscovery-data
     outputs:

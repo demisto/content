@@ -1225,11 +1225,6 @@ partial - The custodian is in a mixed state where some sources are on hold and s
 ### msg-remove-hold-ediscovery-custodian
 
 ***
-Start the process of removing hold from eDiscovery custodians.
-
-### msg-remove-hold-ediscovery-custodian
-
-***
 Start the process of removing a hold from eDiscovery custodians.
 
 #### Base Command
@@ -1249,6 +1244,11 @@ Start the process of removing a hold from eDiscovery custodians.
 | --- | --- | --- |
 | MsGraph.eDiscoveryHoldOperation.Status | String | The status of the hold operation. Possible values are: success, notStarted, running, succeeded, failed. | 
 | MsGraph.eDiscoveryHoldOperation.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
+
+### msg-create-ediscovery-non-custodial-data-source
+
+***
+Create a new eDiscoveryNoncustodialDataSource object.
 
 #### Base Command
 
@@ -1575,16 +1575,6 @@ You can collect and purge the following categories of Teams content:
 Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
 Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
 Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
-### msg-purge-ediscovery-data
-
-***
-Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
-
-You can collect and purge the following categories of Teams content:
-
-Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
-Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
-Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
 Private channels - Message posts, replies, and attachments shared in a private Teams channel.
 Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
 
@@ -1610,6 +1600,17 @@ Note: This request purges a maximum of 100 items per location only. When purgeTy
 | MsGraph.eDiscoveryPurge.Status | String | The status of the purge operation. Possible values are: success, notStarted, running, succeeded, failed. | 
 | MsGraph.eDiscoveryPurge.LocationURL | String | The Location URL returned in the response headers, pointing to the operation resource. Use this URL with the msg-get-operation-status command to poll for the operation status. | 
 
+
+### msg-delete-ediscovery-search
+
+***
+Delete an eDiscoverySearch object.
+
+#### Base Command
+
+`msg-delete-ediscovery-search`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
