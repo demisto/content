@@ -218,7 +218,7 @@ Creates a policy assignment. Required Permissions: Microsoft.Authorization/polic
 ### azure-postgres-config-set
 
 ***
-Updates a configuration of a server. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write.
+Updates a configuration of a server. The command is deprecated due to the retirement of Azure PostgreSQL Single Server.
 
 #### Base Command
 
@@ -621,7 +621,7 @@ Updates a container registry. Required Permissions: Microsoft.ContainerRegistry/
 ### azure-postgres-server-update
 
 ***
-Updates an existing server. Required Permissions: Microsoft.DBforPostgreSQL/servers/read, Microsoft.DBforPostgreSQL/servers/write.
+Updates an existing server. The command is deprecated due to the retirement of Azure PostgreSQL Single Server.
 
 #### Base Command
 
