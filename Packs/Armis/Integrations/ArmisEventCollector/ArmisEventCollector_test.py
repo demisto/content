@@ -1461,7 +1461,7 @@ class TestIsTokenStillFresh:
         generated_at = (datetime(2023, 6, 15, 11, 50, 0)).isoformat()
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
 
-        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+        result = _real_is_token_still_fresh(MagicMock())
 
         assert result is True
 
@@ -1478,7 +1478,7 @@ class TestIsTokenStillFresh:
         generated_at = (datetime(2023, 6, 15, 11, 34, 0)).isoformat()
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
 
-        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+        result = _real_is_token_still_fresh(MagicMock())
 
         assert result is False
 
@@ -1493,7 +1493,7 @@ class TestIsTokenStillFresh:
         """
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={})
 
-        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+        result = _real_is_token_still_fresh(MagicMock())
 
         assert result is False
 
@@ -1508,7 +1508,7 @@ class TestIsTokenStillFresh:
         """
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": "not-a-date"})
 
-        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+        result = _real_is_token_still_fresh(MagicMock())
 
         assert result is False
 
@@ -1526,6 +1526,6 @@ class TestIsTokenStillFresh:
         generated_at = (datetime(2023, 6, 15, 11, 35, 0)).isoformat()
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
 
-        result = _real_is_token_still_fresh(MagicMock(), "some_token")
+        result = _real_is_token_still_fresh(MagicMock())
 
         assert result is False

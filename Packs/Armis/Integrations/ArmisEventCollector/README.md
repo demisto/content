@@ -3,6 +3,11 @@ This integration was integrated and tested with API V.1.8 of Armis API.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
+## Notes
+
+- Due to Armis API limitations, it is recommended to configure a separate integration instance for each event type (Alerts, Activities, Devices), and to tweak the limits according to the issues - lowering the limit for timeout or raising the limit for internal server errors.
+- **Each instance must use its own unique API Secret Key.** Reusing the same API Secret Key across multiple instances is prohibited by Armis and will cause authentication conflicts that lead to failed fetches.
+
 ## Configure Armis Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
@@ -17,7 +22,6 @@ This is the default integration for this content pack when configured by the Dat
 | Events Fetch Interval | Alerts and activity events. | False |
 | Minutes to delay | Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic. | False |
 | Device Fetch Interval | Time between fetch of devices \(for example 12 hours, 60 minutes, etc.\). | False |
-| Enable Concurrent Event Fetching | Enable parallel fetching of multiple event types in a single integration instance. This option optimizes performance and mitigates potential authentication issues when retrieving events across multiple integration instances that utilize the same credentials. | False |
 
 ## Commands
 

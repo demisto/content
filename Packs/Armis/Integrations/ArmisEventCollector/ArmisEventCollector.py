@@ -18,11 +18,12 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 90
+MAX_PAGINATION_DURATION_SECONDS = 90  # Lowered from 120 to leave more margin within the 5-min Docker timeout
 MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
+JSONDECODE_MAX_RETRIES = 3  # Per Armis recommendation for transient nginx malformed JSON
 
 
 class EVENT_TYPE:
@@ -195,7 +196,7 @@ class Client(BaseClient):
         self._context_manager = context_manager
         self._access_token = None  # Initialize to prevent AttributeError in refresh_access_token
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        if not access_token or not self._is_token_still_fresh(access_token):
+        if not access_token or not self._is_token_still_fresh():
             demisto.debug("Access token missing or expired, attempting to get new access token.")
             access_token = self.refresh_access_token()
             demisto.debug("New access token was successfully generated.")
@@ -206,18 +207,18 @@ class Client(BaseClient):
             demisto.debug(f"Reusing existing token (prefix: {token_prefix}..., generated_at: {token_generated_at})")
         self.apply_access_token(access_token)
 
-    def _is_token_still_fresh(self, access_token: str) -> bool:
+    def _is_token_still_fresh(self) -> bool:
         """Check if the token is still within its valid TTL window using a saved timestamp.
 
         Armis tokens have a fixed 30-minute TTL (confirmed by Armis).
         We proactively refresh at 25 minutes to avoid mid-cycle 401 errors.
 
+        The freshness decision is made entirely from `demisto.getIntegrationContext()`
+        (`token_generated_at`), so the actual token string is not needed as a parameter.
+
         If no timestamp is available (e.g., first run, or upgrade from a version that did not
         save token_generated_at), we treat the token as stale and force a refresh. This is
         safer than a live API ping which can succeed for a token that is seconds from expiry.
-
-        Args:
-            access_token (str): The access token to check (kept for signature compatibility).
 
         Returns:
             bool: True if the token is still fresh (< 25 min old), False if it needs refresh.
@@ -226,16 +227,16 @@ class Client(BaseClient):
         token_generated_at_str = integration_context.get("token_generated_at")
         if not token_generated_at_str:
             # No timestamp - force refresh (safer than trusting the existing token)
-            demisto.debug("No token_generated_at in integration context - forcing refresh")
+            safe_debug("No token_generated_at in integration context - forcing refresh")
             return False
         try:
             token_generated_at = datetime.fromisoformat(token_generated_at_str)
         except Exception as ex:
-            demisto.debug(f"Could not parse token_generated_at '{token_generated_at_str}': {ex} - forcing refresh")
+            safe_debug(f"Could not parse token_generated_at '{token_generated_at_str}': {_safe_error_str(ex)} - forcing refresh")
             return False
         age_seconds = (datetime.utcnow() - token_generated_at).total_seconds()
         is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
-        demisto.debug(
+        safe_debug(
             f"Token age: {age_seconds:.0f}s, fresh: {is_fresh} (threshold: {TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS}s)"
         )
         return is_fresh
@@ -245,6 +246,15 @@ class Client(BaseClient):
 
         This method updates the client's in-memory state with the provided token.
         It does NOT persist the token to integration context.
+
+        Thread-safety: This method assigns to ``self._headers`` and ``self._access_token``
+        without an explicit lock. It is safe because all callers invoke it from coordinated
+        paths that have already serialized token-refresh decisions:
+          - ``__init__``: runs before any worker thread is spawned.
+          - ``perform_fetch`` (auth-error retry): the fresh token has just been obtained
+            either from ``IntegrationContextManager`` (which uses its own lock) or via
+            ``refresh_access_token`` (which holds ``_token_refresh_lock`` end-to-end).
+        Worst-case interleaving therefore reassigns the same fresh token, which is benign.
 
         Args:
             access_token (str, optional): The access token to use. If None, generates a new one.
@@ -281,7 +291,7 @@ class Client(BaseClient):
             # (is_valid_access_token) — the live ping can return success for a token that is
             # within seconds of expiring, which then 401s a few seconds later mid-fetch.
             current_token = self._context_manager.get_access_token()
-            if current_token and current_token != self._access_token and self._is_token_still_fresh(current_token):
+            if current_token and current_token != self._access_token and self._is_token_still_fresh():
                 # Token was updated by another thread and is still fresh per our timestamp
                 demisto.debug(
                     f"Thread {threading.current_thread().name}: Token was refreshed by another thread, using updated token"
@@ -294,7 +304,7 @@ class Client(BaseClient):
                 new_token = self.get_access_token()
             except Exception as e:
                 # Handle gracefully if token refresh fails (e.g., API errors)
-                demisto.debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(e)}")
+                safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {_safe_error_str(e)}")
                 raise
 
             # Save to context so other threads can see it
@@ -316,7 +326,7 @@ class Client(BaseClient):
             Exception: If the request fails for reasons other than token expiration.
         """
         try:
-            raw_response = self._http_request(
+            return self._http_request(
                 url_suffix="/search/",
                 method="GET",
                 params=params,
@@ -326,87 +336,98 @@ class Client(BaseClient):
                 status_list_to_retry={500, 502},
             )
         except Exception as e:
-            # Use repr() for JSON errors to avoid parsing issues, str() for others
-            error_str = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
+            error_str = _safe_error_str(e)
 
             # Detect authentication errors more broadly - including JSON parse errors from HTML responses
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
-                integration_context = demisto.getIntegrationContext()
-                token_generated_at = integration_context.get("token_generated_at", "unknown")
-                token_prefix = self._access_token[:8] if self._access_token else "None"
-                safe_debug(
-                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}. "
-                    f"Token prefix: {token_prefix}..., generated_at: {token_generated_at}"
-                )
+                return self._handle_auth_error_and_retry(params, error_str)
+            if isinstance(e, json.JSONDecodeError):
+                return self._handle_json_decode_error_and_retry(params, e)
 
-                # If using context manager, try to get fresh token from context first
-                if self._context_manager:
-                    fresh_token = self._context_manager.get_access_token()
-                    if fresh_token and fresh_token != self._access_token:
-                        safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
-                        self.apply_access_token(fresh_token)
-                        # Retry with the fresh token
-                        try:
-                            return self._http_request(
-                                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                            )
-                        except Exception as retry_e:
-                            # Use repr() for JSON errors to avoid parsing issues, str() for others
-                            retry_error_str = repr(retry_e) if isinstance(retry_e, json.JSONDecodeError) else str(retry_e)
-                            # Check if retry with context token failed for a non-auth reason
-                            # If it's not an auth error (e.g., network issue, timeout), raise immediately
-                            is_retry_auth_error = "Invalid access token" in retry_error_str or "401" in retry_error_str
-                            if not is_retry_auth_error:
-                                raise retry_e
-                            # If we reach here, the token from context was also invalid - proceed to full refresh
-                            safe_debug(
-                                f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh"
-                            )
+            safe_debug(f"Error occurred while fetching events: {error_str}")
+            raise
 
-                # Perform coordinated token refresh (handles 401 gracefully during refresh)
+    def _handle_auth_error_and_retry(self, params: dict, error_str: str) -> dict:
+        """Handle a detected auth error: try the in-context token, else perform a full refresh, then retry.
+
+        Extracted from ``perform_fetch`` to keep the dispatcher small. Behaviour is
+        identical to the previous inline implementation.
+        """
+        integration_context = demisto.getIntegrationContext()
+        token_generated_at = integration_context.get("token_generated_at", "unknown")
+        # Cast to str for mypy: the truthiness check above already guards against None,
+        # but mypy doesn't narrow self._access_token (declared Optional) across the boolean.
+        token_prefix = str(self._access_token)[:8] if self._access_token else "None"
+        safe_debug(
+            f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}. "
+            f"Token prefix: {token_prefix}..., generated_at: {token_generated_at}"
+        )
+
+        # If using context manager, try to get fresh token from context first
+        if self._context_manager:
+            fresh_token = self._context_manager.get_access_token()
+            if fresh_token and fresh_token != self._access_token:
+                safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
+                self.apply_access_token(fresh_token)
+                # Retry with the fresh token
                 try:
-                    new_token = self.refresh_access_token()
-                    self.apply_access_token(new_token)
-                    safe_debug(f"Thread {threading.current_thread().name}: Access token successfully refreshed and applied")
-                except Exception as refresh_e:
-                    safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(refresh_e)}")
-                    raise
+                    return self._http_request(
+                        url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                    )
+                except Exception as retry_e:
+                    retry_error_str = _safe_error_str(retry_e)
+                    # Check if retry with context token failed for a non-auth reason
+                    # If it's not an auth error (e.g., network issue, timeout), raise immediately
+                    is_retry_auth_error = "Invalid access token" in retry_error_str or "401" in retry_error_str
+                    if not is_retry_auth_error:
+                        raise
+                    # If we reach here, the token from context was also invalid - proceed to full refresh
+                    safe_debug(f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh")
 
-                # Retry the request with new token
+        # Perform coordinated token refresh (handles 401 gracefully during refresh)
+        try:
+            new_token = self.refresh_access_token()
+            self.apply_access_token(new_token)
+            safe_debug(f"Thread {threading.current_thread().name}: Access token successfully refreshed and applied")
+        except Exception as refresh_e:
+            safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {_safe_error_str(refresh_e)}")
+            raise
+
+        # Retry the request with new token
+        return self._http_request(url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT)
+
+    def _handle_json_decode_error_and_retry(self, params: dict, original_exc: Exception) -> dict:
+        """Handle a JSONDecodeError: retry up to JSONDECODE_MAX_RETRIES times with exponential backoff.
+
+        Armis occasionally returns malformed/truncated JSON (nginx internal timeout on large
+        responses). Per Armis recommendation we retry with backoff before giving up.
+        """
+        safe_debug(f"JSONDecodeError on fetch, will retry up to {JSONDECODE_MAX_RETRIES} times: {_safe_error_str(original_exc)}")
+        last_retry_exc: Exception = original_exc
+        for attempt in range(1, JSONDECODE_MAX_RETRIES + 1):
+            backoff = 2 ** (attempt - 1)  # 1s, 2s, 4s
+            safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES}, backing off {backoff}s")
+            # Intentional: simple exponential-backoff sleep between retries on transient
+            # malformed-JSON responses from Armis (nginx-side parse errors). There is no event
+            # loop to yield to in this single-threaded fetch path, so a blocking sleep is the
+            # right primitive. The xsoar-lint "no sleep" rule (E9003) is suppressed below for
+            # the same reason — Armis explicitly recommends a small backoff between retries.
+            time.sleep(backoff)  # pylint: disable=E9003
+            try:
                 raw_response = self._http_request(
                     url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                 )
-            elif isinstance(e, json.JSONDecodeError):
-                # Armis occasionally returns malformed/truncated JSON (nginx internal timeout on large responses).
-                # Retry up to 3 times with exponential backoff (1s, 2s, 4s) as recommended by Armis.
-                demisto.debug(f"JSONDecodeError on fetch, will retry up to 3 times: {repr(e)}")
-                last_retry_exc: Exception = e
-                for attempt in range(1, 4):
-                    backoff = 2 ** (attempt - 1)  # 1s, 2s, 4s
-                    demisto.debug(f"JSONDecodeError retry {attempt}/3, backing off {backoff}s")
-                    time.sleep(backoff)
-                    try:
-                        raw_response = self._http_request(
-                            url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                        )
-                        demisto.debug(f"JSONDecodeError retry {attempt}/3 succeeded")
-                        break  # success - raw_response is set
-                    except Exception as retry_e:
-                        last_retry_exc = retry_e
-                        demisto.debug(
-                            f"JSONDecodeError retry {attempt}/3 failed: "
-                            f"{repr(retry_e) if isinstance(retry_e, json.JSONDecodeError) else str(retry_e)}"
-                        )
-                else:
-                    # All 3 retries exhausted
-                    demisto.debug("JSONDecodeError: all 3 retries exhausted, raising last exception")
-                    raise last_retry_exc
-            else:
-                demisto.debug(f"Error occurred while fetching events: {e}")
-                raise e
-        return raw_response
+                safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES} succeeded")
+                return raw_response
+            except Exception as retry_e:
+                last_retry_exc = retry_e
+                safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES} failed: {_safe_error_str(retry_e)}")
+
+        # All retries exhausted
+        safe_debug(f"JSONDecodeError: all {JSONDECODE_MAX_RETRIES} retries exhausted, raising last exception")
+        raise last_retry_exc
 
     def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time", length: int = 1000):
         """Fetches events using AQL query (single page, no pagination).
@@ -546,6 +567,11 @@ def safe_debug(message: str) -> None:
             except Exception:
                 # Final fallback - silently continue to prevent cascade failures
                 demisto.debug("[safe_debug] Final fallback - silently continue to prevent cascade failures")
+
+
+def _safe_error_str(e: Exception) -> str:
+    """Format an exception safely — repr for JSONDecodeError (avoids re-parsing), str for others."""
+    return repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
 
 
 def calculate_fetch_start_time(
@@ -825,7 +851,11 @@ def _bulk_fetch_entities_by_id(
                 f"{len(results)} returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
             )
         except Exception as ex:
-            demisto.error(f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {ex!r}")
+            # Intentional: per-batch isolation — one failed batch (e.g., transient network/parse error
+            # on a chunk of 1000 IDs) must not abort the entire enrichment cycle. We log and move on
+            # so other batches can still complete; alerts whose IDs fell in the failed batch will simply
+            # ship without their enrichment data, which is preferable to dropping the whole cycle.
+            demisto.error(f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {_safe_error_str(ex)}")
 
     demisto.debug(
         f"[{tname}] bulk_enrich: {entity_type} fetch done in "
@@ -922,7 +952,7 @@ def _wait_for_enrichment(future, executor) -> None:
     try:
         future.result()
         demisto.debug(
-            f"[{tname}] bulk_enrich: background enrichment joined after " f"{(datetime.now() - wait_start).total_seconds():.2f}s"
+            f"[{tname}] bulk_enrich: background enrichment joined after {(datetime.now() - wait_start).total_seconds():.2f}s"
         )
     except Exception as ex:
         demisto.error(f"[{tname}] bulk_enrich: background enrichment FAILED: {ex!r}")
@@ -976,9 +1006,7 @@ def fetch_event_type_worker(
         return event_type_name, events, next_run
 
     except Exception as e:
-        # Use repr() for JSON errors to avoid serialization issues in logging
-        error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
-        safe_debug(f"[{thread_id}] Error fetching {event_type_name}: {error_msg}")
+        safe_debug(f"[{thread_id}] Error fetching {event_type_name}: {_safe_error_str(e)}")
         raise
 
 
@@ -991,7 +1019,7 @@ def fetch_events(
     event_types_to_fetch: list[str],
     device_fetch_interval: timedelta | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
-    use_multithreading: bool = False,
+    use_multithreading: bool = True,
     context_manager: IntegrationContextManager | None = None,
 ):
     """Fetch events from Armis API with optional multithreading support.
@@ -1005,7 +1033,9 @@ def fetch_events(
         event_types_to_fetch (list[str]): List of event types to fetch.
         device_fetch_interval (timedelta | None): Time interval to fetch devices.
         fetch_delay (int): The number of minutes to delay in the search.
-        use_multithreading (bool): Whether to use multithreading for parallel fetching.
+        use_multithreading (bool): Whether to use multithreading for parallel fetching. Multithreading
+            is always on for the periodic ``fetch-events`` command and disabled for the manual
+            ``armis-get-events`` command (which only fetches a single event type at a time).
         context_manager (Optional[IntegrationContextManager]): Thread-safe context manager.
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
@@ -1041,7 +1071,7 @@ def fetch_events(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
         alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
-        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in " f"{(datetime.now() - alerts_start).total_seconds():.2f}s")
+        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
 
         if events and events.get(EVENT_TYPE_ALERTS):
             safe_debug(
@@ -1061,7 +1091,9 @@ def fetch_events(
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
         return events, next_run
 
-    # Use multithreading only if enabled and there are multiple event types
+    # Use multithreading only if it's beneficial: more than one event type AND the caller is the
+    # periodic ``fetch-events`` command (manual ``armis-get-events`` always passes False).
+    # ``not context_manager`` is a defensive guard — in production it is always set.
     if not use_multithreading or len(event_types_to_fetch) == 1 or not context_manager:
         # Fallback to sequential processing
         safe_debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
@@ -1138,9 +1170,7 @@ def fetch_events(
                     )
 
                 except Exception as e:
-                    # Safely log the error without causing JSON parsing issues
-                    error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
-                    safe_debug(f"[Worker:{event_type_name}] Failed: {error_msg}")
+                    safe_debug(f"[Worker:{event_type_name}] Failed: {_safe_error_str(e)}")
                     safe_debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
 
             parallel_duration = (datetime.now() - parallel_start).total_seconds()
@@ -1295,13 +1325,12 @@ def main():  # pragma: no cover
     parsed_interval = dateparser.parse(params.get("deviceFetchInterval", "24 hours")) or dateparser.parse("24 hours")
     device_fetch_interval: timedelta = datetime.now() - parsed_interval  # type: ignore[operator]
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
-    use_multithreading = argToBoolean(params.get("enable_multithreading", False))
 
     demisto.debug(f"Command being called is {command}")
 
     try:
-        # Initialize context manager for thread-safe operations when multithreading is enabled
-        context_manager = IntegrationContextManager() if use_multithreading else None
+        # Multithreading is always on; the context manager is required for thread-safe operations.
+        context_manager = IntegrationContextManager()
 
         client = Client(
             base_url=base_url,
@@ -1343,7 +1372,7 @@ def main():  # pragma: no cover
                 event_types_to_fetch=event_types_to_fetch,
                 device_fetch_interval=device_fetch_interval,
                 fetch_delay=fetch_delay,
-                use_multithreading=use_multithreading and command == "fetch-events",
+                use_multithreading=command == "fetch-events",
                 context_manager=context_manager,
             )
             for key, value in events.items():
