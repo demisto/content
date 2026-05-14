@@ -1,3 +1,4 @@
+import concurrent.futures
 import re  # pylint: disable=W9011
 import sys
 import time
@@ -128,6 +129,10 @@ ASSETS_NUMBER = 100
 MAX_CHUNKS_PER_FETCH = 8
 # Cap the configured value at 50 to bound per-fetch memory/runtime/API usage.
 MAX_VULNS_CHUNKS_PER_FETCH = min(arg_to_number(PARAMS.get("max_vulns_chunks_per_fetch")) or 8, 50)
+# Larger XSIAM payload chunk size cuts per-fetch POST count by ~4x for high-volume
+# tenants (vulnerabilities especially). Stays well below the 5 MB per-entry max
+# and the 9 MB XSIAM_EVENT_CHUNK_SIZE_LIMIT documented in CommonServerPython.
+XSIAM_CHUNK_SIZE_LARGE = int(4.5 * 1024 * 1024)  # 4.5 MiB
 ASSETS_FETCH_FROM = "90 days"
 VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
@@ -2151,6 +2156,13 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     data_type="assets",
                     snapshot_id=snapshot_id,
                     items_count=str(items_count),
+                    # Larger chunk_size reduces the number of sequential XSIAM POSTs
+                    # by ~4x. Kept SINGLE-THREADED (multiple_threads=False, the SDK
+                    # default) to preserve snapshot-sealing semantics: every POST in
+                    # this call shares the same snapshot-id header and total-items-count,
+                    # and the snapshot must be fully sent before main()'s sealing
+                    # empty-payload call (or the lastrun cleanup at end-of-cycle) runs.
+                    chunk_size=XSIAM_CHUNK_SIZE_LARGE,
                     # Disable automatic health module update here because we update it separately
                     # below with the cumulative total_assets count across all fetch cycles,
                     # rather than just the count from this single batch
@@ -2178,6 +2190,8 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                         data_type="assets",
                         snapshot_id=snapshot_id,
                         items_count=str(cumulative_total),
+                        # Sealer call - kept synchronous (default) for the same
+                        # snapshot-ordering reason as the data send above.
                         should_update_health_module=False,
                     )
                 else:
@@ -2190,7 +2204,28 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
+                # Vulnerabilities are not snapshot-sealed (no snapshot_id / items_count
+                # headers, unlike assets), so we can safely use multiple_threads=True
+                # to parallelize the XSIAM POST loop. Combined with the larger chunk_size
+                # this gives an estimated ~7-8x throughput improvement over the previous
+                # single-threaded 1 MiB chunk approach. We MUST wait on the returned
+                # futures before main() proceeds to the lastrun cleanup below, so that
+                # any failed POST surfaces here and is not silently swallowed.
+                vuln_futures = send_data_to_xsiam(
+                    data=vulnerabilities,
+                    vendor=VENDOR,
+                    product=f"{PRODUCT}_vulnerabilities",
+                    chunk_size=XSIAM_CHUNK_SIZE_LARGE,
+                    multiple_threads=True,
+                )
+                if vuln_futures:
+                    done, not_done = concurrent.futures.wait(vuln_futures, return_when=concurrent.futures.ALL_COMPLETED)
+                    # Re-raise the first exception (if any) so the integration's
+                    # outer try/except in main() can return_error consistently and
+                    # the lastrun cleanup below is skipped on failure.
+                    for fut in done:
+                        fut.result()
+                    demisto.debug(f"All {len(done)} vulnerability XSIAM POST futures completed successfully.")
 
             # Update module health separately to show the number of assets pulled
             cumulative_total = assets_last_run.get("total_assets", 0)

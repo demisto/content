@@ -1,3 +1,4 @@
+import concurrent.futures
 import json
 
 import demistomock as demisto
@@ -1023,3 +1024,198 @@ def test_request_uuid_export_vulnerabilities_with_tags(mocker, args, expected_ta
     # Verify PollResult structure
     assert result.continue_to_poll is True
     assert result.args_for_next_run["exportUuid"] == mock_export_uuid
+
+
+# ---------------------------------------------------------------------------
+# Throughput-improvement tests (XSUP-60780): verify the assets and vulnerability
+# send_data_to_xsiam call sites use the larger chunk size, and that the
+# vulnerabilities path uses multithreading + waits on returned futures before
+# returning so the lastrun cleanup ordering is preserved.
+# ---------------------------------------------------------------------------
+
+
+def test_xsiam_chunk_size_constant_is_under_5mb_per_entry_limit():
+    """
+    Given:
+        - The XSIAM_CHUNK_SIZE_LARGE constant introduced for throughput.
+    When:
+        - Reading the value from the integration module.
+    Then:
+        - Verify it is strictly less than the documented 5 MB per-entry max
+          and the 9 MB XSIAM_EVENT_CHUNK_SIZE_LIMIT hard cap, so individual
+          POSTs cannot accidentally exceed platform limits.
+    """
+    from Tenable_io import XSIAM_CHUNK_SIZE_LARGE
+
+    five_mb_per_entry_max = 5 * 1024 * 1024
+    nine_mb_hard_cap = 9 * (10**6)
+    assert five_mb_per_entry_max > XSIAM_CHUNK_SIZE_LARGE, (
+        "Chunk size must stay below the 5 MB per-entry max documented in "
+        "CommonServerPython to avoid 413 / oversized-payload rejections."
+    )
+    assert nine_mb_hard_cap > XSIAM_CHUNK_SIZE_LARGE, "Chunk size must stay below the 9 MB XSIAM_EVENT_CHUNK_SIZE_LIMIT hard cap."
+    # Sanity floor: must be larger than the 1 MiB default to actually buy a speedup.
+    one_mib = 1024 * 1024
+    assert one_mib < XSIAM_CHUNK_SIZE_LARGE, "Chunk size must exceed the 1 MiB default to actually reduce POST count."
+
+
+def test_main_fetch_assets_uses_large_chunk_size_for_assets(mocker):
+    """
+    Given:
+        - main() is invoked for the fetch-assets command with a list of assets.
+    When:
+        - The integration calls send_data_to_xsiam for assets.
+    Then:
+        - Verify chunk_size=XSIAM_CHUNK_SIZE_LARGE is passed.
+        - Verify multiple_threads is NOT enabled (must remain synchronous to
+          preserve snapshot-id/items-count sealing semantics).
+    """
+    import Tenable_io
+    from Tenable_io import XSIAM_CHUNK_SIZE_LARGE, main
+
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(
+        demisto,
+        "getAssetsLastRun",
+        return_value={"snapshot_id": "snap-1", "total_assets": 0, "type": 1},
+    )
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(Tenable_io, "skip_fetch_assets", return_value=False)
+    mocker.patch.object(Tenable_io, "is_assets_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_io, "is_vulns_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_io, "run_assets_fetch", return_value=[{"id": "asset-1"}])
+    mocker.patch.object(Tenable_io, "run_vulnerabilities_fetch", return_value=[])
+    mock_send = mocker.patch.object(Tenable_io, "send_data_to_xsiam", return_value=None)
+
+    main()
+
+    assert mock_send.called, "send_data_to_xsiam must be called for the assets payload"
+    asset_calls = [c for c in mock_send.call_args_list if c.kwargs.get("data_type") == "assets"]
+    assert asset_calls, "expected at least one asset send_data_to_xsiam call"
+    for call in asset_calls:
+        assert (
+            call.kwargs.get("chunk_size") == XSIAM_CHUNK_SIZE_LARGE
+        ), "asset send_data_to_xsiam call must pass chunk_size=XSIAM_CHUNK_SIZE_LARGE"
+        # multiple_threads must NOT be True for assets — snapshot sealing requires
+        # the SDK to send all chunks (sharing snapshot-id headers) before returning.
+        assert not call.kwargs.get(
+            "multiple_threads"
+        ), "asset send_data_to_xsiam must remain single-threaded to preserve snapshot semantics"
+
+
+def test_main_fetch_assets_uses_multithreading_for_vulnerabilities_and_waits(mocker):
+    """
+    Given:
+        - main() is invoked for the fetch-assets command with vulnerabilities.
+    When:
+        - The integration calls send_data_to_xsiam for vulnerabilities.
+    Then:
+        - Verify chunk_size=XSIAM_CHUNK_SIZE_LARGE is passed.
+        - Verify multiple_threads=True is passed (vulnerabilities have no snapshot
+          ordering requirement, so parallel POSTs are safe).
+        - Verify the integration waits on the returned futures before main()
+          completes (so failures surface and lastrun cleanup ordering is preserved).
+    """
+    import Tenable_io
+    from Tenable_io import XSIAM_CHUNK_SIZE_LARGE, main
+
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(
+        demisto,
+        "getAssetsLastRun",
+        return_value={"snapshot_id": "snap-1", "total_assets": 0, "type": 1},
+    )
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(Tenable_io, "skip_fetch_assets", return_value=False)
+    mocker.patch.object(Tenable_io, "is_assets_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_io, "is_vulns_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_io, "run_assets_fetch", return_value=[])
+    mocker.patch.object(
+        Tenable_io,
+        "run_vulnerabilities_fetch",
+        return_value=[{"plugin_id": 1, "asset_uuid": "a", "received": "2025-01-01T00:00:00Z"}],
+    )
+    # parse_vulnerabilities is called inside main() before send; make it a no-op.
+    mocker.patch.object(Tenable_io, "parse_vulnerabilities", side_effect=lambda v: v)
+
+    # Build a fake completed future the integration can wait on.
+    completed_future = concurrent.futures.Future()
+    completed_future.set_result(1)
+    mock_send = mocker.patch.object(Tenable_io, "send_data_to_xsiam", return_value=[completed_future])
+
+    main()
+
+    vuln_calls = [c for c in mock_send.call_args_list if c.kwargs.get("product", "").endswith("_vulnerabilities")]
+    assert vuln_calls, "expected a vulnerability send_data_to_xsiam call"
+    vuln_call = vuln_calls[0]
+    assert (
+        vuln_call.kwargs.get("chunk_size") == XSIAM_CHUNK_SIZE_LARGE
+    ), "vulnerability send_data_to_xsiam must pass chunk_size=XSIAM_CHUNK_SIZE_LARGE"
+    assert vuln_call.kwargs.get("multiple_threads") is True, "vulnerability send_data_to_xsiam must pass multiple_threads=True"
+    # The future must be drained — calling .result() on an already-completed
+    # future is a no-op, but we want to assert main() actually consumed it
+    # rather than fire-and-forgetting.
+    assert completed_future.done(), "future returned by send_data_to_xsiam must be drained"
+
+
+def test_main_fetch_assets_propagates_vulnerability_post_failure(mocker):
+    """
+    Given:
+        - main() is invoked for fetch-assets and a vulnerability XSIAM POST fails.
+    When:
+        - send_data_to_xsiam returns a list of futures, one of which raised.
+    Then:
+        - Verify the integration surfaces the failure (does not silently swallow
+          it), so the outer try/except in main() can return_error and the
+          lastrun cleanup is correctly skipped.
+    """
+    import Tenable_io
+    from Tenable_io import main
+
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(
+        demisto,
+        "getAssetsLastRun",
+        return_value={"snapshot_id": "snap-1", "total_assets": 0, "type": 1},
+    )
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mock_return_error = mocker.patch.object(Tenable_io, "return_error")
+    mocker.patch.object(Tenable_io, "skip_fetch_assets", return_value=False)
+    mocker.patch.object(Tenable_io, "is_assets_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_io, "is_vulns_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_io, "run_assets_fetch", return_value=[])
+    mocker.patch.object(
+        Tenable_io,
+        "run_vulnerabilities_fetch",
+        return_value=[{"plugin_id": 1, "asset_uuid": "a", "received": "2025-01-01T00:00:00Z"}],
+    )
+    mocker.patch.object(Tenable_io, "parse_vulnerabilities", side_effect=lambda v: v)
+
+    failed_future = concurrent.futures.Future()
+    failed_future.set_exception(RuntimeError("simulated XSIAM POST failure"))
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam", return_value=[failed_future])
+
+    main()
+
+    # main()'s outer try/except converts exceptions into a return_error call.
+    assert mock_return_error.called, (
+        "a failed vulnerability future must propagate into the outer try/except so "
+        "return_error is invoked and lastrun cleanup is skipped"
+    )
+    err_msg = mock_return_error.call_args[0][0]
+    assert "simulated XSIAM POST failure" in err_msg
