@@ -88,12 +88,19 @@ import csv
 import io
 import json
 import os
-import re
 import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
 from typing import Callable, Optional
+
+from auth_config_parser import (
+    AuthType,
+    auth_param_ids_with_sources as _pkg_auth_param_ids_with_sources,
+    parse_auth_details as _pkg_parse_auth_details,
+    project_xsoar_param_to_yml_id as _pkg_project_xsoar_param_to_yml_id,
+    validate_auth_details as _pkg_validate_auth_details,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -115,16 +122,9 @@ DATA_COLUMNS = [
 
 VALID_FLAG_VALUES = {"YES", "NO", "N/A"}
 
-# Valid auth type enum values for Auth Details schema validation
-VALID_AUTH_TYPES = {
-    "OAuth2AuthCode",
-    "OAuth2ClientCreds",
-    "OAuth2JWT",
-    "APIKey",
-    "Plain",
-    "Other",
-    "NoneRequired",
-}
+# Valid auth type enum values for Auth Details schema validation.
+# Derived from the ``AuthType`` enum in the ``auth_config_parser`` package.
+VALID_AUTH_TYPES: set[str] = {t.value for t in AuthType}
 
 
 # ---------------------------------------------------------------------------
@@ -431,303 +431,16 @@ def find_row(rows: list[dict[str, str]], integration_id: str) -> Optional[int]:
 # Auth Details schema validation
 # ---------------------------------------------------------------------------
 
-# Regexes for the Auth Details `config` mini-grammar.
-_AUTH_CONFIG_CLAUSE_RE = re.compile(
-    r"^\s*(REQUIRED|OPTIONAL|CHOICE)\s*\(\s*([^)]*?)\s*\)\s*$"
-)
-_AUTH_CONFIG_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-# Split clauses on `+` surrounded by optional whitespace. We use a manual
-# split rather than re.split so we can detect leading/trailing `+` (which
-# would produce empty segments).
-_AUTH_CONFIG_SPLIT_RE = re.compile(r"\s*\+\s*")
-
-
-def _parse_auth_config(config: str) -> tuple[list[str], list[str]]:
-    """Parse the Auth Details ``config`` expression mini-grammar.
-
-    Returns ``(referenced_names, parse_errors)`` where ``referenced_names``
-    is the (order-preserving, possibly duplicate) list of operand names
-    appearing inside any ``REQUIRED(...)``, ``OPTIONAL(...)`` or
-    ``CHOICE(...)`` clause, and ``parse_errors`` is a list of human-readable
-    issues with the expression itself (malformed clauses, bad operand
-    names, stray ``+``, etc.).
-
-    Grammar (case-sensitive on keywords):
-
-        config       := "NoneRequired" | clause ( " + " clause )*
-        clause       := ("REQUIRED" | "OPTIONAL" | "CHOICE") "(" name_list ")"
-        name_list    := name ("," name)*
-        name         := /[A-Za-z_][A-Za-z0-9_]*/
-
-    Surrounding whitespace inside clauses and around ``+`` / ``,`` is
-    tolerated. Empty clauses (``REQUIRED()``) are rejected.
-    """
-    referenced_names: list[str] = []
-    parse_errors: list[str] = []
-
-    stripped = config.strip()
-    if stripped == "":
-        parse_errors.append("config expression is empty")
-        return referenced_names, parse_errors
-    if stripped == "NoneRequired":
-        return referenced_names, parse_errors
-
-    # Detect leading/trailing `+` before splitting, so the resulting empty
-    # segments give a clear error message.
-    if stripped.startswith("+"):
-        parse_errors.append("config expression starts with '+' (no leading clause)")
-    if stripped.endswith("+"):
-        parse_errors.append("config expression ends with '+' (no trailing clause)")
-
-    segments = _AUTH_CONFIG_SPLIT_RE.split(stripped)
-    for seg_idx, segment in enumerate(segments):
-        if segment.strip() == "":
-            # Already covered by the leading/trailing checks above OR a
-            # genuine "+ +" in the middle.
-            if not (seg_idx == 0 and stripped.startswith("+")) and not (
-                seg_idx == len(segments) - 1 and stripped.endswith("+")
-            ):
-                parse_errors.append("empty clause between '+' separators")
-            continue
-        m = _AUTH_CONFIG_CLAUSE_RE.match(segment)
-        if not m:
-            parse_errors.append(
-                f"malformed clause '{segment}' (expected "
-                "REQUIRED(...), OPTIONAL(...), or CHOICE(...))"
-            )
-            continue
-        keyword, inner = m.group(1), m.group(2)
-        if inner.strip() == "":
-            parse_errors.append(f"clause '{keyword}(...)' has no operands")
-            continue
-        operands = [op.strip() for op in inner.split(",")]
-        for op in operands:
-            if op == "":
-                parse_errors.append(
-                    f"clause '{keyword}(...)' has an empty operand "
-                    "(stray comma?)"
-                )
-                continue
-            if not _AUTH_CONFIG_NAME_RE.fullmatch(op):
-                parse_errors.append(
-                    f"clause '{keyword}(...)' operand '{op}' is not a "
-                    "valid identifier (must match [A-Za-z_][A-Za-z0-9_]*)"
-                )
-                continue
-            referenced_names.append(op)
-
-    return referenced_names, parse_errors
-
-
 def validate_auth_detail(value: str) -> list[str]:
     """Validate Auth Details JSON shape. Returns list of errors ([] = valid).
 
-    Shape: ``{"auth_types": [{"type": <enum>, "name": <logical_name>,
-    "xsoar_params": [<xsoar_param_id>, ...], "interpolated"?: <bool>},
-    ...], "config": <expression>,
-    "other_connection": [<yml_param_id>, ...]}``.
+    Backward-compatible wrapper that delegates to
+    :func:`auth_config_parser.validate_auth_details`.
 
-    Each ``auth_types[]`` entry describes one prospective ConnectUs
-    connection type that the migrated integration should expose. ``name``
-    is a free-form logical id chosen for that connection type and must be
-    unique across entries within this row. ``xsoar_params`` is the list
-    of XSOAR parameter ids whose values feed the secrets for that
-    connection type (the same XSOAR param may appear in multiple entries
-    if it supplies several connection types). ``config`` references the
-    entry ``name``s (not the XSOAR param ids).
-
-    ``other_connection`` is a flat sorted list of YML param ids that are
-    connection-adjacent but not auth secrets — e.g. ``url``, ``proxy``,
-    ``insecure``, ``port``, ``host``, ``region``. The list captures the
-    ids exactly as they appear in the integration YML's
-    ``configuration[].name``. An empty list ``[]`` is valid (= the
-    integration has no connection-adjacent params besides its auth
-    secrets). The validator does NOT check overlap with
-    ``auth_types[].xsoar_params`` — keeping the two lists disjoint is the
-    classifier's responsibility.
-
-    Validation performed (in addition to the per-entry shape checks):
-
-      - ``xsoar_params`` must be a non-empty list of non-empty strings.
-      - ``auth_types`` entries must be sorted by ``(type, name)``
-        ascending. The first out-of-order pair is reported.
-      - ``config`` must conform to the mini-grammar parsed by
-        :func:`_parse_auth_config` (``NoneRequired`` or one or more
-        ``REQUIRED/OPTIONAL/CHOICE`` clauses joined by ``+``).
-      - Every operand name referenced by ``config`` must appear as some
-        ``auth_types[].name`` in the same row.
-      - If ``config == "NoneRequired"`` then ``auth_types`` must be
-        empty; otherwise ``auth_types`` must be non-empty.
-      - ``other_connection`` is REQUIRED on write. It must be a list of
-        non-empty unique strings, sorted ascending. ``[]`` is allowed.
-
-    NOTE on backward compatibility: legacy CSV rows written before this
-    field existed lack ``other_connection`` entirely. The read/display
-    path tolerates that (see ``format_status`` / ``format_step_value``)
-    and renders a ``(not set — re-run set-auth)`` hint, but ``set-auth``
-    writes go through this validator and MUST include the key.
+    Accepts a raw JSON **string** and returns ``list[str]`` of
+    human-readable error messages (empty list = valid).
     """
-    errors: list[str] = []
-
-    try:
-        detail = json.loads(value)
-    except json.JSONDecodeError as e:
-        return [f"Invalid JSON: {e}"]
-
-    if not isinstance(detail, dict):
-        return [f"Expected a JSON object, got {type(detail).__name__}"]
-
-    required_keys = {"auth_types", "config", "other_connection"}
-    missing = required_keys - set(detail.keys())
-    if missing:
-        errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
-        return errors
-
-    seen_names: set[str] = set()
-    # Track per-entry validity for the sort check (only consider entries
-    # whose `type` and `name` are both well-formed).
-    sortable: list[tuple[int, str, str]] = []
-    valid_auth_types_list = isinstance(detail["auth_types"], list)
-    if not valid_auth_types_list:
-        errors.append(f"'auth_types' must be a list, got {type(detail['auth_types']).__name__}")
-    else:
-        for i, entry in enumerate(detail["auth_types"]):
-            if not isinstance(entry, dict):
-                errors.append(f"auth_types[{i}]: expected object, got {type(entry).__name__}")
-                continue
-            entry_type_ok = False
-            entry_name_ok = False
-            if "type" not in entry:
-                errors.append(f"auth_types[{i}]: missing 'type'")
-            elif entry["type"] not in VALID_AUTH_TYPES:
-                errors.append(f"auth_types[{i}]: invalid type '{entry['type']}'")
-            else:
-                entry_type_ok = True
-            if "name" not in entry:
-                errors.append(f"auth_types[{i}]: missing 'name'")
-            elif not isinstance(entry["name"], str):
-                errors.append(f"auth_types[{i}]: 'name' must be a string")
-            elif not entry["name"]:
-                errors.append(f"auth_types[{i}]: 'name' must be a non-empty string")
-            elif entry["name"] in seen_names:
-                errors.append(
-                    f"auth_types[{i}]: duplicate 'name' '{entry['name']}' "
-                    "(each entry must have a unique logical name)"
-                )
-            else:
-                seen_names.add(entry["name"])
-                entry_name_ok = True
-            if "xsoar_params" not in entry:
-                errors.append(f"auth_types[{i}]: missing 'xsoar_params'")
-            elif not isinstance(entry["xsoar_params"], list):
-                errors.append(
-                    f"auth_types[{i}]: 'xsoar_params' must be a list, "
-                    f"got {type(entry['xsoar_params']).__name__}"
-                )
-            elif len(entry["xsoar_params"]) == 0:
-                errors.append(
-                    f"auth_types[{i}]: 'xsoar_params' must contain at least one entry"
-                )
-            else:
-                for j, p in enumerate(entry["xsoar_params"]):
-                    if not isinstance(p, str) or not p:
-                        errors.append(
-                            f"auth_types[{i}]: xsoar_params[{j}] must be a non-empty string"
-                        )
-            if "interpolated" in entry and not isinstance(entry["interpolated"], bool):
-                errors.append(
-                    f"auth_types[{i}]: 'interpolated' must be a bool, "
-                    f"got {type(entry['interpolated']).__name__}"
-                )
-
-            if entry_type_ok and entry_name_ok:
-                sortable.append((i, entry["type"], entry["name"]))
-
-        # Sort-order check: report the first out-of-order adjacent pair
-        # among the entries that have valid `type` and `name`.
-        for k in range(len(sortable) - 1):
-            i_a, type_a, name_a = sortable[k]
-            i_b, type_b, name_b = sortable[k + 1]
-            if (type_a, name_a) > (type_b, name_b):
-                errors.append(
-                    f"auth_types must be sorted by (type, name); entry "
-                    f"[{i_a}] '{type_a}'/'{name_a}' should come after "
-                    f"entry [{i_b}] '{type_b}'/'{name_b}'"
-                )
-                break
-
-    if not isinstance(detail["config"], str):
-        errors.append(f"'config' must be a string, got {type(detail['config']).__name__}")
-    else:
-        config_str = detail["config"]
-        referenced_names, parse_errors = _parse_auth_config(config_str)
-        for pe in parse_errors:
-            errors.append(f"'config': {pe}")
-        for n in referenced_names:
-            if n not in seen_names:
-                errors.append(
-                    f"'config' references unknown connection-type name "
-                    f"'{n}' (must match an auth_types[].name)"
-                )
-        # Coherence between `config` and `auth_types`.
-        if valid_auth_types_list:
-            auth_types_empty = len(detail["auth_types"]) == 0
-            if config_str.strip() == "NoneRequired":
-                if not auth_types_empty:
-                    errors.append(
-                        "'config' is 'NoneRequired' but 'auth_types' "
-                        "contains entries; remove the entries or change "
-                        "'config'"
-                    )
-            else:
-                # Only flag the empty-auth_types mismatch if the config
-                # itself parsed cleanly (otherwise the parse error is
-                # the more informative signal).
-                if not parse_errors and auth_types_empty:
-                    errors.append(
-                        "'config' is not 'NoneRequired' but 'auth_types' is empty"
-                    )
-
-    other_connection = detail["other_connection"]
-    if not isinstance(other_connection, list):
-        errors.append(
-            f"'other_connection' must be a list, got "
-            f"{type(other_connection).__name__}"
-        )
-    else:
-        all_strings = True
-        for j, item in enumerate(other_connection):
-            if not isinstance(item, str):
-                errors.append(
-                    f"'other_connection'[{j}]: must be a string, got "
-                    f"{type(item).__name__}"
-                )
-                all_strings = False
-            elif not item:
-                errors.append(
-                    f"'other_connection'[{j}]: must be a non-empty string"
-                )
-                all_strings = False
-        if all_strings:
-            if len(set(other_connection)) != len(other_connection):
-                seen: set[str] = set()
-                dups: list[str] = []
-                for item in other_connection:
-                    if item in seen and item not in dups:
-                        dups.append(item)
-                    seen.add(item)
-                errors.append(
-                    "'other_connection' contains duplicate entries: "
-                    f"{dups}"
-                )
-            sorted_oc = sorted(other_connection)
-            if other_connection != sorted_oc:
-                errors.append(
-                    "'other_connection' must be sorted ascending; got "
-                    f"{other_connection}, expected {sorted_oc}"
-                )
-
-    return errors
+    return _pkg_validate_auth_details(value)
 
 
 # Hint embedded in every "extra top-level key" error reported by
@@ -869,72 +582,28 @@ def validate_params_to_commands(value: str) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def _project_xsoar_param_to_yml_id(xsoar_param: str) -> str:
-    """Project a single ``auth_types[].xsoar_params`` entry to its YML param id.
-
-    Bare ids (``api_key``) pass through unchanged. Dotted forms like
-    ``credentials.identifier`` / ``credentials.password`` collapse to the
-    segment before the first ``.`` (``credentials``) — that's the actual
-    YML ``configuration[].name`` so it can be cross-checked against the
-    ``Params to Commands`` payload (whose values are bare YML ids).
-    """
-    if not isinstance(xsoar_param, str):
-        return ""
-    return xsoar_param.split(".", 1)[0]
+    """Backward-compatible wrapper — delegates to the package."""
+    return _pkg_project_xsoar_param_to_yml_id(xsoar_param)
 
 
 def _auth_param_sources(auth_detail: dict) -> dict[str, list[str]]:
-    """Return ``{yml_param_id: [<source description>, ...]}`` for an Auth
-    Details object.
+    """Return ``{yml_param_id: [<source description>, ...]}`` for a raw
+    Auth Details dict.
 
-    Used by :func:`auth_param_ids` and the ``set-params-to-commands``
-    overlap-rejection error message — the latter needs to name *where*
-    each offending param was declared (``auth_types[].name='credentials'
-    (xsoar_params=[...])`` vs ``other_connection``).
-
-    Tolerates legacy-shape Auth Details that lack ``other_connection``
-    by simply omitting that source — see :func:`auth_param_ids` for
-    the user-visible error/warning behaviour.
+    Backward-compatible wrapper that parses the raw dict via the package's
+    :func:`~auth_config_parser.parse_auth_details` (tolerating legacy
+    shapes) and delegates to
+    :func:`~auth_config_parser.auth_param_ids_with_sources`.
     """
-    sources: dict[str, list[str]] = {}
+    from auth_config_parser import AuthConfigParseError
 
-    auth_types = auth_detail.get("auth_types")
-    if isinstance(auth_types, list):
-        for entry in auth_types:
-            if not isinstance(entry, dict):
-                continue
-            entry_name = entry.get("name", "<unnamed>")
-            xsoar_params = entry.get("xsoar_params")
-            if not isinstance(xsoar_params, list):
-                continue
-            projected_for_entry: list[str] = []
-            for xp in xsoar_params:
-                yml_id = _project_xsoar_param_to_yml_id(xp)
-                if yml_id:
-                    projected_for_entry.append(yml_id)
-            # Group source description by entry — every projected id
-            # cites the same entry-level (name, xsoar_params) pair so
-            # the overlap message can quote the dotted forms verbatim.
-            # Dedupe per-yml_id so dotted forms collapsing to the same
-            # bare id (credentials.identifier + credentials.password →
-            # credentials) don't repeat the same descriptor twice.
-            descriptor = (
-                f"auth_types[].name={entry_name!r} "
-                f"(xsoar_params={list(xsoar_params)!r})"
-            )
-            seen_for_entry: set[str] = set()
-            for yml_id in projected_for_entry:
-                if yml_id in seen_for_entry:
-                    continue
-                seen_for_entry.add(yml_id)
-                sources.setdefault(yml_id, []).append(descriptor)
-
-    other_connection = auth_detail.get("other_connection")
-    if isinstance(other_connection, list):
-        for item in other_connection:
-            if isinstance(item, str) and item:
-                sources.setdefault(item, []).append("other_connection")
-
-    return sources
+    try:
+        details = _pkg_parse_auth_details(auth_detail)
+    except AuthConfigParseError:
+        # Structurally invalid — return empty sources (caller handles
+        # the error via other paths).
+        return {}
+    return _pkg_auth_param_ids_with_sources(details)
 
 
 def auth_param_ids(integration_id: str) -> list[str]:
@@ -945,7 +614,7 @@ def auth_param_ids(integration_id: str) -> list[str]:
     ``configuration[].name`` values composed from:
 
     * Every ``auth_types[].xsoar_params`` entry, projected via
-      :func:`_project_xsoar_param_to_yml_id` (bare ids pass through;
+      :func:`project_xsoar_param_to_yml_id` (bare ids pass through;
       dotted forms like ``credentials.identifier`` collapse to
       ``credentials``).
     * Every entry in ``other_connection`` (already bare YML ids — no
