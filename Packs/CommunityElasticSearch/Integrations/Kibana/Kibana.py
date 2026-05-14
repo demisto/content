@@ -473,7 +473,7 @@ def kibana_update_alert_status(args, proxies):
         ],
     }
 
-    response = http_request(method="POST", url_suffix="/api/detection_engine/signals/status", data=data, headers=headers)
+    http_request(method="POST", url_suffix="/api/detection_engine/signals/status", data=data, headers=headers)
 
     return f"Updated alert ID {alert_id} to status of {status}"
 
@@ -560,7 +560,7 @@ def kibana_delete_case(args, proxies):
 
     params = {"ids": case_list}
 
-    response = http_request(method="DELETE", url_suffix="/api/cases", params=params, headers=headers)
+    http_request(method="DELETE", url_suffix="/api/cases", params=params, headers=headers)
 
     return f"Successfully deleted case with ID of {case_id}"
 
@@ -576,7 +576,7 @@ def kibana_delete_rule(args, proxies):
 
     rule_id = args.get("rule_id")
 
-    response = http_request(method="DELETE", url_suffix=f"/api/alerting/rule/{rule_id}", headers=headers)
+    http_request(method="DELETE", url_suffix=f"/api/alerting/rule/{rule_id}", headers=headers)
 
     return f"Successfully deleted rule with ID of {rule_id}"
 
@@ -635,10 +635,6 @@ def kibana_get_user_list(args, proxies):
     Search for a list of all users and UIDs in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-security-query-user
     """
-    headers = {
-        "kbn-xsrf": "true",  # Required for Kibana API requests
-    }
-
     es = elasticsearch_builder(proxies)
 
     try:
@@ -680,7 +676,7 @@ def kibana_assign_alert_user(args, proxies):
         },
     }
 
-    response = http_request(method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers)
 
     return f"Assigned user ID {user_id} to alert {alert_id}"
 
@@ -748,8 +744,6 @@ def kibana_add_alert_note(args, proxies):
     event_id = args.get("alert_id")
     note = args.get("note")
 
-    url = f"{KIBANA_SERVER}/api/note"
-
     json_data = {
         "note": {
             "eventId": event_id,
@@ -758,7 +752,7 @@ def kibana_add_alert_note(args, proxies):
         },
     }
 
-    response = http_request(method="PATCH", url_suffix="/api/note", data=json_data, headers=headers)
+    http_request(method="PATCH", url_suffix="/api/note", data=json_data, headers=headers)
 
     return f"Added note {note} to alert {event_id}"
 
@@ -797,7 +791,7 @@ def kibana_disable_alert_rule(args, proxies):
         "untrack": True,
     }
 
-    response = http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers)
 
     return f"Successfully disabled rule with ID of {rule_id}"
 
@@ -813,7 +807,7 @@ def kibana_enable_alert_rule(args, proxies):
 
     rule_id = args.get("rule_id")
 
-    response = http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_enable", headers=headers)
+    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_enable", headers=headers)
 
     return f"Successfully enabled rule with ID of {rule_id}"
 
@@ -859,7 +853,7 @@ def kibana_create_value_list(args, proxies):
         "description": description,
     }
 
-    response = http_request(method="POST", url_suffix="/api/lists", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix="/api/lists", data=json_data, headers=headers)
 
     return f"Successfully created value list with name of {name}"
 
@@ -902,7 +896,7 @@ def kibana_import_value_list_items(args, proxies):
 
     files = {"file": ("value_list.txt", file_content, "text/plain")}
 
-    response = http_request(method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers)
+    http_request(method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers)
 
     return f"Successfully imported {file_content} to value list with ID of {list_id}"
 
@@ -921,7 +915,7 @@ def kibana_create_value_list_item(args, proxies):
 
     json_data = {"value": new_item, "list_id": list_id}
 
-    response = http_request(method="POST", url_suffix="/api/lists/items", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix="/api/lists/items", data=json_data, headers=headers)
 
     return f"Successfully added {new_item} to value list with ID of {list_id}"
 
@@ -966,7 +960,7 @@ def kibana_delete_value_list_item(args, proxies):
 
     json_data = {"id": item_id, "list_id": list_id}
 
-    response = http_request(method="DELETE", url_suffix="/api/lists/items", params=json_data, headers=headers)
+    http_request(method="DELETE", url_suffix="/api/lists/items", params=json_data, headers=headers)
 
     return f"Successfully deleted {item_id} from value list with ID of {list_id}"
 
@@ -985,7 +979,7 @@ def kibana_delete_value_list(args, proxies):
 
     params = {"id": list_id}
 
-    response = http_request(method="DELETE", url_suffix="/api/lists", params=params, headers=headers)
+    http_request(method="DELETE", url_suffix="/api/lists", params=params, headers=headers)
 
     return f"Successfully deleted value list with ID of {list_id}"
 
@@ -1061,7 +1055,7 @@ def kibana_delete_case_comment(args, proxies):
     case_id = args.get("case_id")
     comment_id = args.get("comment_id")
 
-    response = http_request(method="DELETE", url_suffix=f"/api/cases/{case_id}/comments/{comment_id}", headers=headers)
+    http_request(method="DELETE", url_suffix=f"/api/cases/{case_id}/comments/{comment_id}", headers=headers)
 
     return f"Deleted comment with ID {comment_id} from case {case_id}"
 
@@ -1085,7 +1079,7 @@ def kibana_add_file_to_case(args, proxies):
     with open(file_path, "rb") as f:
         files = {"file": (file_name, f)}
 
-        response = http_request(method="POST", url_suffix=f"/api/cases/{case_id}/files", files=files, headers=headers)
+        http_request(method="POST", url_suffix=f"/api/cases/{case_id}/files", files=files, headers=headers)
         return f"Successfully added file {file_name} to case {case_id}"
 
 
@@ -1094,9 +1088,6 @@ def kibana_get_user_by_email(args, proxies):
     Search for a single user's UID in Kibana by email address filter.
     Reference - https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-security-query-user
     """
-    headers = {
-        "kbn-xsrf": "true",  # Required for Kibana API requests
-    }
 
     email_wildcard = args.get("email_wildcard")
 
@@ -1231,4 +1222,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()
-
