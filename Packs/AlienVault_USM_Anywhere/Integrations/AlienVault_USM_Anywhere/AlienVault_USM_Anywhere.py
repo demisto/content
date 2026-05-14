@@ -472,30 +472,70 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("timestamp")
 
+    # UUID -> fetch timestamp
+    fetched_ids = last_run.get("fetched_ids", {})
+
+    # First fetch handling
     if last_fetch is None:
         time_field = last_run.get("time")
+
         if time_field:
             last_fetch = date_to_timestamp(time_field, parse_time(time_field))
         else:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    start_fetch_time = last_fetch
-    if LOOKBACK_MINUTES:
-        start_fetch_time = int(last_fetch) - (LOOKBACK_MINUTES * 60 * 1000)
+    limit = dict_value_to_int(demisto.params(), "fetch_limit")
 
-    limit = last_run.get("limit") or FETCH_LIMIT
+    # Apply lookback window
+    start_fetch = max(0, int(last_fetch) - (LOOKBACK_MINUTES * 60 * 1000))
+    demisto.debug(f"last fetch is: {last_fetch}, fetch from is: {start_fetch}")
+    demisto.debug(f"previously fetched ids: {fetched_ids}")
+    items = search_alarms(start_time=start_fetch, direction="asc", limit=limit)
 
-    items = search_alarms(start_time=start_fetch_time, direction="asc", limit=limit)
+    # Track newest occurred timestamp seen this run
+    latest_timestamp = int(last_fetch)
 
+    now_ms = int(time.time() * 1000)
+
+    # Keep IDs only inside lookback window (+1h safety buffer)
+    retention_ms = (LOOKBACK_MINUTES + 60) * 60 * 1000
+
+    # Remove expired cached UUIDs
+    fetched_ids = {uuid: ts for uuid, ts in fetched_ids.items() if now_ms - ts <= retention_ms}
+    demisto.debug(f"previously fetched ids after removing cached: {fetched_ids}")
     for item in items:
+        incident_id = item.get("uuid")
+
+        if not incident_id:
+            demisto.debug("Skipping item without UUID")
+            continue
+
+        # Full cross-window dedup
+        if incident_id in fetched_ids:
+            demisto.debug(f"Skipping duplicate incident: {incident_id}")
+            continue
+
         incident = item_to_incident(item)
         incidents.append(incident)
 
-    if incidents:
-        last_run["timestamp"] = date_to_timestamp(incidents[-1].get("occurred"), parse_time(incidents[-1].get("occurred")))
+        occurred = incident.get("occurred")
+
+        incident_timestamp = date_to_timestamp(occurred, parse_time(occurred))
+
+        # Track latest timestamp
+        latest_timestamp = max(latest_timestamp, incident_timestamp)
+
+        # Remember UUID as fetched
+        fetched_ids[incident_id] = now_ms
+
+    demisto.setLastRun(
+        {
+            "timestamp": latest_timestamp,
+            "fetched_ids": fetched_ids,
+        }
+    )
 
     demisto.incidents(incidents)
-    demisto.setLastRun(last_run)
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
