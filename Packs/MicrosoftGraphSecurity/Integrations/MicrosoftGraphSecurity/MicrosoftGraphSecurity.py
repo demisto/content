@@ -681,7 +681,7 @@ def get_status_of_operation(client: MsGraphClient, res: Response | None = None, 
         The full operation response dict, or {'status': 'success'} if no Location header is present.
     """
     location = location_url or (res.headers.get("Location") if res else "")
-    if not location:
+    if not location: # if no location is returned then the custodian is already in this state/theres no data sources
         demisto.debug("No Location header or URL provided, returning default success status.")
         return {"status": "success"}
 
@@ -1459,8 +1459,8 @@ def list_ediscovery_non_custodial_data_source_command(client: MsGraphClient, arg
 def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_action: HoldAction):
     demisto.debug(f"{hold_action.value=}")
     res = client.update_hold_ediscovery_custodian(args.get("case_id"), args.get("custodian_id"), hold_action)
-    operation = get_status_of_operation(client, res)
-    status = operation.get("status", "success")
+    operation_status = get_status_of_operation(client, res)
+    status = operation_status.get("status", "success")
     return CommandResults(readable_output=f"{hold_action.value.capitalize()} hold status is {status}.")
 
 
@@ -1497,8 +1497,8 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     )
     location = resp.headers.get("Location", "")
     demisto.debug(f"purge_ediscovery_data response Location header: {location}")
-    operation = get_status_of_operation(client, resp)
-    status = operation.get("status", "success")
+    operation_status = get_status_of_operation(client, resp)
+    status = operation_status.get("status", "success")
 
     outputs = {
         "Status": status,
@@ -1533,9 +1533,6 @@ def get_operation_status_command(client: MsGraphClient, args: dict) -> CommandRe
         CommandResults with the operation status details.
     """
     location_url: str = args.get("location_url", "")
-    if not location_url:
-        raise DemistoException("The 'location_url' argument is required.")
-
     resp = get_status_of_operation(client, location_url=location_url)
 
     outputs = {
