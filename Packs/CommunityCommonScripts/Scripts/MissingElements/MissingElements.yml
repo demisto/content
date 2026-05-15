@@ -25,7 +25,7 @@ outputs:
   description: The missing elements from the input list of integers.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 fromversion: 6.10.0
 tests:

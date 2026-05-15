@@ -74,6 +74,7 @@ configuration:
   display: Incident type
   type: 13
   required: false
+  section: Collect
 - name: max_fetch
   display: Max Incidents
   defaultvalue: 50
@@ -2590,7 +2591,7 @@ script:
       description: A link to the user's profile photo, if available.
       type: String
   - name: google-drive-file-delete
-    description: 'Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted. When the optional soft_delete argument is set to true, the file is moved to the user''s Trash instead of being permanently deleted (reversible via the Drive UI or API).'
+    description: Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted.
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
@@ -2603,20 +2604,10 @@ script:
       predefined:
       - "true"
       - "false"
-    - auto: PREDEFINED
-      defaultValue: "false"
-      description: 'When set to true, the file is moved to the user''s Trash (reversible) instead of being permanently deleted. Default false preserves the existing permanent-delete behavior.'
-      name: soft_delete
-      predefined:
-      - "true"
-      - "false"
     outputs:
     - contextPath: GoogleDrive.File.File.id
-      description: ID of the deleted (or trashed) file.
+      description: ID of the deleted file.
       type: String
-    - contextPath: GoogleDrive.File.File.trashed
-      description: Whether the file was moved to the Trash. `true` when `soft_delete=true` was used; absent otherwise.
-      type: Boolean
   - name: google-drive-file-permissions-list
     description: Lists a file's or shared drive's permissions.
     arguments:
@@ -2665,18 +2656,6 @@ script:
     - contextPath: GoogleDrive.FilePermission.FilePermission.photoLink
       description: A link to the user's profile photo, if available.
       type: String
-    - contextPath: GoogleDrive.FilePermission.FilePermission.permissionDetails.inherited
-      description: 'Whether the permission is inherited from a parent (Shared Drive) folder. Inherited permissions cannot be deleted directly on the file resource.'
-      type: Boolean
-    - contextPath: GoogleDrive.FilePermission.FilePermission.permissionDetails.permissionType
-      description: The type of the permission record (e.g., `member` or `file`).
-      type: String
-    - contextPath: GoogleDrive.FilePermission.FilePermission.permissionDetails.role
-      description: The role represented by the permission record.
-      type: String
-    - contextPath: GoogleDrive.FilePermission.FilePermission.permissionDetails.inheritedFrom
-      description: The ID of the item from which this permission is inherited.
-      type: String
   - name: google-drive-file-permission-create
     description: Creates a permission for a file or shared drive.
     arguments:
@@ -2715,13 +2694,6 @@ script:
       description: The domain to which this permission refers.
     - name: email_address
       description: The email address of the user or group to which this permission refers.
-    - auto: PREDEFINED
-      defaultValue: "false"
-      description: 'When set to true, transfers ownership of the file to the new permission holder by appending `transferOwnership=true` to the request URL. Default false preserves the existing behavior (no `transferOwnership` query parameter is sent). Note: per the Drive API, `transferOwnership=true` only works for files in My Drive (not shared drives) and requires `role=owner`.'
-      name: transfer_ownership
-      predefined:
-      - "true"
-      - "false"
     outputs:
     - contextPath: GoogleDrive.FilePermission.FilePermission.deleted
       description: Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions.
@@ -2789,7 +2761,7 @@ script:
       description: A link to the user's profile photo, if available.
       type: String
   - name: google-drive-file-permission-delete
-    description: 'Deletes a permission. When the optional `ignore_not_found` argument is set to true, an HTTP 404 response from the Drive API (the permission no longer exists) is treated as success instead of being raised as an error — useful for idempotent loop deletion.'
+    description: Delete a permission.
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
@@ -2801,13 +2773,6 @@ script:
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives.'
       name: supports_all_drives
-      predefined:
-      - "true"
-      - "false"
-    - auto: PREDEFINED
-      defaultValue: "false"
-      description: 'When set to true, treats an HTTP 404 response (permission already absent) as success and returns a successful result instead of raising an error. Useful for idempotent operations. Default false preserves the existing behavior (404 raises an error).'
-      name: ignore_not_found
       predefined:
       - "true"
       - "false"
@@ -3217,7 +3182,7 @@ script:
     - contextPath: GoogleDrive.File.parents
       description: The list of parent folder IDs.
       type: Unknown
-  dockerimage: demisto/googleapi-python3:1.0.0.115338
+  dockerimage: demisto/googleapi-python3:1.0.0.8516410
   isfetch: true
   runonce: false
   script: "-"
