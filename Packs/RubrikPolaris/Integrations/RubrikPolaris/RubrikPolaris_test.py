@@ -227,12 +227,8 @@ def test_fetch_incidents_success_without_last_run(client, requests_mock):
     """Test fetch_incidents function to return incidents and new last run with provided empty last run."""
     from RubrikPolaris import fetch_incidents
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
-    )
-    incidents = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_incidents.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_incidents_success_response.json")
+    incidents = util_load_json("test_data/fetch_incidents_success_incidents.json")
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     responses = [
         {"json": enum_values.get("activity_type_enum")},
@@ -259,12 +255,8 @@ def test_fetch_incidents_success_with_last_run(client, requests_mock):
     """Test fetch_incidents function to return incidents and new last run with a provided last run."""
     from RubrikPolaris import fetch_incidents
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
-    )
-    incidents = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_incidents.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_incidents_success_response.json")
+    incidents = util_load_json("test_data/fetch_incidents_success_incidents.json")
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     responses = [
         {"json": enum_values.get("activity_type_enum")},
@@ -293,9 +285,7 @@ def test_fetch_incidents_empty_response_without_last_run(client, requests_mock):
     from RubrikPolaris import fetch_incidents
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
-    fetch_incidents_empty_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_empty_response.json")
-    )
+    fetch_incidents_empty_response = util_load_json("test_data/fetch_incidents_empty_response.json")
     responses = [
         {"json": enum_values.get("activity_type_enum")},
         {"json": enum_values.get("event_sort_by_enum")},
@@ -318,9 +308,7 @@ def test_fetch_incidents_empty_response_with_last_run(client, requests_mock):
     from RubrikPolaris import fetch_incidents
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
-    fetch_incidents_empty_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_empty_response.json")
-    )
+    fetch_incidents_empty_response = util_load_json("test_data/fetch_incidents_empty_response.json")
     responses = [
         {"json": enum_values.get("activity_type_enum")},
         {"json": enum_values.get("event_sort_by_enum")},
@@ -346,9 +334,7 @@ def test_object_search_success(client, requests_mock):
 
     args = {"object_name": "admin"}
 
-    object_search_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_search_response.json")
-    )
+    object_search_response = util_load_json("test_data/object_search_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_search_hr1.md")) as f:
         object_search_response_hr = f.read()
 
@@ -378,9 +364,7 @@ def test_object_search_with_token_hr_success(client, requests_mock):
 
     args = {"object_name": "admin", "limit": 2}
 
-    object_search_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_search_response2.json")
-    )
+    object_search_response = util_load_json("test_data/object_search_response2.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_search_hr2.md")) as f:
         object_search_response_hr = f.read()
 
@@ -514,7 +498,7 @@ def test_vm_object_metadata_when_valid_response_is_returned(client, requests_moc
 
     args = {"object_id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef"}
 
-    data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/vm_object_metadata_get.json"))
+    data = util_load_json("test_data/vm_object_metadata_get.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=data.get(f"{response}"))
     object_response = rubrik_polaris_vm_object_metadata_get_command(client, args)
@@ -548,9 +532,7 @@ def test_vm_objects_list_success(client, requests_mock):
     """Tests success for rubrik_polaris_vm_objects_list."""
     from RubrikPolaris import rubrik_polaris_vm_objects_list_command
 
-    objects_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/objects_list_response.json")
-    )
+    objects_list_response = util_load_json("test_data/objects_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/objects_list_hr.md")) as f:
         objects_list_response_hr = f.read()
 
@@ -843,9 +825,7 @@ def test_vm_object_snapshot_get_success(client, requests_mock, empty_response):
     """Tests success for rubrik_polaris_vm_object_snapshot_get."""
     from RubrikPolaris import rubrik_polaris_vm_object_snapshot_list_command
 
-    object_snapshot_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/vm_object_snapshot_get_response.json")
-    )
+    object_snapshot_response = util_load_json("test_data/vm_object_snapshot_get_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/vm_object_snapshot_get_hr.md")) as f:
         object_snapshot_response_hr = f.read()
 
@@ -918,9 +898,7 @@ def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_respons
     """Tests success for rubrik_radar_anomaly_csv_analysis."""
     from RubrikPolaris import rubrik_radar_anomaly_csv_analysis_command
 
-    radar_anomaly_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_csv_analysis_response.json")
-    )
+    radar_anomaly_response = util_load_json("test_data/radar_anomaly_csv_analysis_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_csv_analysis_hr.md")) as f:
         radar_anomaly_hr = f.read()
 
@@ -976,9 +954,7 @@ def test_sonar_csv_download_success(client, requests_mock, empty_response):
     """Tests success for rubrik_sonar_csv_download."""
     from RubrikPolaris import rubrik_sonar_csv_download_command
 
-    sonar_csv_download_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_csv_download_response.json")
-    )
+    sonar_csv_download_response = util_load_json("test_data/sonar_csv_download_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_csv_download_hr.md")) as f:
         sonar_csv_download_hr = f.read()
 
@@ -1074,9 +1050,7 @@ def test_gps_vm_export_success(client, requests_mock, empty_response):
     """Tests success for rubrik-gps-vm-export."""
     from RubrikPolaris import rubrik_gps_vm_export_command
 
-    vm_export_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_export_success.json")
-    )
+    vm_export_response = util_load_json("test_data/gps_vm_export_success.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_export_hr.md")) as f:
         vm_export_response_hr = f.read()
 
@@ -1291,9 +1265,7 @@ def test_user_downloads_list_success(client, requests_mock, empty_response):
     """Tests success for rubrik_user_downloads_list."""
     from RubrikPolaris import rubrik_user_downloads_list_command
 
-    user_downloads_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/user_downloads_get_response.json")
-    )
+    user_downloads_response = util_load_json("test_data/user_downloads_get_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/user_downloads_get_hr.md")) as f:
         user_downloads_hr = f.read()
 
@@ -1320,9 +1292,7 @@ def test_sonar_csv_result_download_success(client, requests_mock, empty_response
     """Tests success for rubrik_sonar_csv_result_download."""
     from RubrikPolaris import rubrik_sonar_csv_result_download_command
 
-    sonar_csv_download_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_csv_result_download_response.json")
-    )
+    sonar_csv_download_response = util_load_json("test_data/sonar_csv_result_download_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_csv_result_download_hr.md")) as f:
         sonar_csv_download_hr = f.read()
 
@@ -1414,9 +1384,7 @@ def test_gps_snapshot_file_download_success(client, requests_mock, empty_respons
     """Tests success for rubrik_gps_snapshot_file_download."""
     from RubrikPolaris import rubrik_gps_snapshot_files_download_command
 
-    gps_snapshot_file_download_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_snapshot_file_download_response.json")
-    )
+    gps_snapshot_file_download_response = util_load_json("test_data/gps_snapshot_file_download_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_snapshot_file_download_hr.md")) as f:
         gps_snapshot_file_download_hr = f.read()
 
@@ -1534,9 +1502,7 @@ def test_gps_vm_host_list_success(client, requests_mock, empty_response):
     """Tests success for rubrik-gps-vm-host-list."""
     from RubrikPolaris import rubrik_gps_vm_host_list_command
 
-    vm_host_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_host_list_response.json")
-    )
+    vm_host_list_response = util_load_json("test_data/gps_vm_host_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_host_list_hr.md")) as f:
         vm_host_list_response_hr = f.read()
 
@@ -1575,9 +1541,7 @@ def test_gps_vm_datastore_list_success(client, requests_mock, empty_response):
     """Tests success for rubrik-gps-vm-datastore-list."""
     from RubrikPolaris import rubrik_gps_vm_datastore_list_command
 
-    vm_datastore_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_datastore_list_response.json")
-    )
+    vm_datastore_list_response = util_load_json("test_data/gps_vm_datastore_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_datastore_list_hr.md")) as f:
         vm_datastore_list_response_hr = f.read()
 
@@ -1620,9 +1584,7 @@ def test_cdm_cluster_connection_state_command_success(client, requests_mock, emp
     """Tests success for rubrik-cdm-cluster-connection-state."""
     from RubrikPolaris import cdm_cluster_connection_state_command
 
-    cdm_cluster_connection_state_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_connection_state_response.json")
-    )
+    cdm_cluster_connection_state_response = util_load_json("test_data/cdm_cluster_connection_state_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_connection_state_hr.md")) as f:
         cdm_cluster_connection_state_hr = f.read()
 
@@ -1658,9 +1620,7 @@ def test_cdm_cluster_location_command_command_success(client, requests_mock, emp
     """Tests success for rubrik-cdm-cluster-location."""
     from RubrikPolaris import cdm_cluster_location_command
 
-    cdm_cluster_location_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_location_response.json")
-    )
+    cdm_cluster_location_response = util_load_json("test_data/cdm_cluster_location_response.json")
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_location_hr.md")) as f:
         cdm_cluster_location_hr = f.read()
@@ -1685,9 +1645,7 @@ def test_cdm_cluster_location_command_when_key_not_present(client, requests_mock
     """Tests rubrik-cdm-cluster-location command when some of the keys are not present in response."""
     from RubrikPolaris import cdm_cluster_location_command
 
-    cdm_cluster_location_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_location_response.json")
-    )
+    cdm_cluster_location_response = util_load_json("test_data/cdm_cluster_location_response.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=cdm_cluster_location_response.get("empty_location"))
 
@@ -1710,9 +1668,7 @@ def test_radar_analysis_status_command_success(client, requests_mock, empty_resp
     """Tests success for rubrik-radar-analysis-status."""
     from RubrikPolaris import radar_analysis_status_command
 
-    radar_analysis_status_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_analysis_status_response.json")
-    )
+    radar_analysis_status_response = util_load_json("test_data/radar_analysis_status_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_analysis_status_hr.md")) as f:
         radar_analysis_status_hr = f.read()
 
@@ -1754,9 +1710,7 @@ def test_event_list_success(client, requests_mock, empty_response):
     """Tests success for rubrik-event-list."""
     from RubrikPolaris import rubrik_event_list_command
 
-    event_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/event_list_response.json")
-    )
+    event_list_response = util_load_json("test_data/event_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/event_list_response_hr.md")) as f:
         event_list_response_hr = f.read()
 
@@ -1813,9 +1767,7 @@ def test_sonar_sensitive_hits_success(client, requests_mock):
     """
     from RubrikPolaris import sonar_sensitive_hits_command
 
-    sonar_sensitive_hits_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_sensitive_hits_response.json")
-    )
+    sonar_sensitive_hits_response = util_load_json("test_data/sonar_sensitive_hits_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_sensitive_hits_response_hr.md")) as f:
         sonar_sensitive_hits_response_hr = f.read()
     responses = [
@@ -1842,9 +1794,7 @@ def test_sonar_sensitive_hits_when_response_is_empty(client, requests_mock):
     """
     from RubrikPolaris import sonar_sensitive_hits_command
 
-    sonar_sensitive_hits_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_sensitive_hits_response.json")
-    )
+    sonar_sensitive_hits_response = util_load_json("test_data/sonar_sensitive_hits_response.json")
     responses = [
         {"json": sonar_sensitive_hits_response.get("raw_response_list")},
         {"json": sonar_sensitive_hits_response.get("empty_response")},
@@ -1888,9 +1838,7 @@ def test_object_list_success(client, requests_mock, empty_response):
     """
     from RubrikPolaris import rubrik_polaris_object_list_command
 
-    object_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_list_response.json")
-    )
+    object_list_response = util_load_json("test_data/object_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_list_response_hr.md")) as f:
         object_list_response_hr = f.read()
 
@@ -1961,9 +1909,7 @@ def test_polaris_object_snapshot_list_success(client, requests_mock, empty_respo
     """Tests success for rubrik-polaris-object-snapshot-list."""
     from RubrikPolaris import rubrik_polaris_object_snapshot_list_command
 
-    object_snapshot_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_snapshot_list_response.json")
-    )
+    object_snapshot_list_response = util_load_json("test_data/object_snapshot_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_snapshot_list_response_hr.md")) as f:
         object_snapshot_list_response_hr = f.read()
 
@@ -2182,7 +2128,7 @@ def test_radar_ioc_scan_when_invalid_arguments_are_provided(client, requests_moc
     """
     from RubrikPolaris import rubrik_radar_ioc_scan_command
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/enum_values.json"))
+    enum_values = util_load_json("test_data/enum_values.json")
 
     requests_mock.post(BASE_URL + "/graphql", json=enum_values.get("hash_type_enum"))
     with pytest.raises(ValueError) as e:
@@ -2202,9 +2148,7 @@ def test_radar_ioc_scan_when_success(client, requests_mock, empty_response):
     """
     from RubrikPolaris import rubrik_radar_ioc_scan_command
 
-    ioc_scan_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_response.json")
-    )
+    ioc_scan_response = util_load_json("test_data/ioc_scan_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_response_hr.md")) as f:
         ioc_scan_response_hr = f.read()
     args = {
@@ -2257,9 +2201,7 @@ def test_radar_ioc_scan_list_when_success(client, requests_mock, empty_response)
     """
     from RubrikPolaris import rubrik_radar_ioc_scan_list_command
 
-    ioc_scan_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_response.json")
-    )
+    ioc_scan_list_response = util_load_json("test_data/ioc_scan_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_response_hr.md")) as f:
         ioc_scan_list_response_hr = f.read()
 
@@ -2315,9 +2257,7 @@ def test_radar_ioc_scan_results_success(client, requests_mock, empty_response):
     """
     from RubrikPolaris import rubrik_radar_ioc_scan_results_command
 
-    ioc_scan_results_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_ioc_scan_results_response.json")
-    )
+    ioc_scan_results_response = util_load_json("test_data/radar_ioc_scan_results_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_ioc_scan_results_response_hr.md")) as f:
         ioc_scan_results_response_hr = f.read()
 
@@ -2349,9 +2289,7 @@ def test_gps_async_result_command_success(client, requests_mock, empty_response)
     """
     from RubrikPolaris import rubrik_gps_async_result_command
 
-    gps_async_result_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_async_result_response.json")
-    )
+    gps_async_result_response = util_load_json("test_data/gps_async_result_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_async_result_response_hr.md")) as f:
         gps_async_result_hr = f.read()
 
@@ -2408,9 +2346,7 @@ def test_gps_cluster_list_command_success(client, requests_mock, empty_response)
     """
     from RubrikPolaris import rubrik_gps_cluster_list_command
 
-    gps_cluster_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_cluster_list_response.json")
-    )
+    gps_cluster_list_response = util_load_json("test_data/gps_cluster_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_cluster_list_response_hr.md")) as f:
         gps_cluster_list_hr = f.read()
 
@@ -2507,9 +2443,7 @@ def test_gps_vm_recover_files_command_success(client, requests_mock, empty_respo
     """
     from RubrikPolaris import rubrik_gps_vm_recover_files
 
-    gps_vm_recover_files_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_recover_files_response.json")
-    )
+    gps_vm_recover_files_response = util_load_json("test_data/gps_vm_recover_files_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_recover_files_response_hr.md")) as f:
         gps_vm_recover_files_hr = f.read()
 
@@ -2546,9 +2480,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_empty_response(clien
     from RubrikPolaris import rubrik_sonar_user_access_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_list_response.json")
 
     args = {"sort_order": "ASC", "limit": 1, "page_number": 1, "include_whitelisted_results": True, "user_email": "demo"}
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("empty_response")}])
@@ -2569,9 +2501,7 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, li
     from RubrikPolaris import rubrik_sonar_user_access_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_list_response.json")
     with open(
         os.path.join(
             os.path.dirname(os.path.realpath(__file__)), f"test_data/sonar_user_access_list_response_hr_{limit}_{page_number}.md"
@@ -2614,9 +2544,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_invalid_user_email(c
     from RubrikPolaris import rubrik_sonar_user_access_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_list_response.json")
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("raw_response")}])
 
     args = {"sort_order": "ASC", "limit": "1", "user_email": "invalid_user_email", "next_page_token": "cursor_1"}
@@ -2643,9 +2571,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     from RubrikPolaris import rubrik_sonar_user_access_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_list_response.json")
     with open(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_list_response_hr_2_1.md")
     ) as f:
@@ -2704,9 +2630,7 @@ def test_rubrik_sonar_user_access_get_command_success_with_empty_response(client
     from RubrikPolaris import rubrik_sonar_user_access_get_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_get_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_get_response.json")
 
     args = {"user_id": "S-1-0-01-0000000000-0000000000-000000000-0001", "include_whitelisted_results": True}
 
@@ -2727,9 +2651,7 @@ def test_rubrik_sonar_user_access_get_command_success(client, requests_mock):
     from RubrikPolaris import rubrik_sonar_user_access_get_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_get_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_get_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_get_response_hr.md")) as f:
         hr_data = f.read()
 
@@ -2757,9 +2679,7 @@ def test_rubrik_sonar_user_access_get_command_success_when_not_whitelisted(clien
     from RubrikPolaris import rubrik_sonar_user_access_get_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_get_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_user_access_get_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_user_access_get_response_hr.md")) as f:
         hr_data = f.read()
 
@@ -2806,9 +2726,7 @@ def test_rubrik_sonar_file_context_list_command_success_with_empty_response(clie
     from RubrikPolaris import rubrik_sonar_file_context_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_file_context_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_file_context_list_response.json")
 
     args = {"object_id": "1", "snapshot_id": "1", "sort_order": "ASC", "limit": "1", "include_whitelisted_results": True}
 
@@ -2829,9 +2747,7 @@ def test_rubrik_sonar_file_context_list_command_success(client, requests_mock):
     from RubrikPolaris import rubrik_sonar_file_context_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_file_context_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_file_context_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_file_context_list_response_hr.md")) as f:
         hr_data = f.read()
 
@@ -2862,9 +2778,7 @@ def test_rubrik_sonar_file_context_list_command_success_when_not_whitelisted(cli
     from RubrikPolaris import rubrik_sonar_file_context_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_file_context_list_response.json")
-    )
+    response_data = util_load_json("test_data/sonar_file_context_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/sonar_file_context_list_response_hr.md")) as f:
         hr_data = f.read()
 
@@ -2945,9 +2859,7 @@ def test_rubrik_radar_suspicious_file_list_command_success_with_empty_response(
     from RubrikPolaris import rubrik_radar_suspicious_file_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_suspicious_file_list_response.json")
-    )
+    response_data = util_load_json("test_data/radar_suspicious_file_list_response.json")
 
     args = {"snapshot_id": "00000000-0000-0000-0000-000000000001"}
 
@@ -2968,9 +2880,7 @@ def test_rubrik_radar_suspicious_file_list_command_success(client, requests_mock
     from RubrikPolaris import rubrik_radar_suspicious_file_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_suspicious_file_list_response.json")
-    )
+    response_data = util_load_json("test_data/radar_suspicious_file_list_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_suspicious_file_list_hr.md")) as f:
         hr_data = f.read()
 
@@ -2998,9 +2908,7 @@ def test_rubrik_radar_suspicious_file_list_command_success_when_no_anomalies(cli
     from RubrikPolaris import rubrik_radar_suspicious_file_list_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_suspicious_file_list_response.json")
-    )
+    response_data = util_load_json("test_data/radar_suspicious_file_list_response.json")
     with open(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_suspicious_file_list_no_anomalies_hr.md")
     ) as f:
@@ -3148,9 +3056,7 @@ def test_rubrik_radar_anomaly_status_update_command_success(client, requests_moc
     from RubrikPolaris import rubrik_radar_anomaly_status_update_command
 
     # Load test data
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_status_update_response.json")
-    )
+    response_data = util_load_json("test_data/radar_anomaly_status_update_response.json")
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_status_update_hr.md")) as f:
         hr_data = f.read()
 
@@ -3280,9 +3186,7 @@ def test_threat_monitoring_matched_object_list_command_success_when_empty_respon
     """Tests success when empty response is received for rubrik-threat-monitoring-matched-object-list command."""
     from RubrikPolaris import rubrik_threat_monitoring_matched_object_list_command
 
-    threat_monitoring_empty_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_list_empty_response.json")
-    )
+    threat_monitoring_empty_response = util_load_json("test_data/threat_monitoring_list_empty_response.json")
 
     args = {"start_time": "3 days"}
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_empty_response}])
@@ -3294,9 +3198,7 @@ def test_threat_monitoring_matched_object_list_command_success(client, requests_
     """Tests success for rubrik-threat-monitoring-matched-object-list command."""
     from RubrikPolaris import rubrik_threat_monitoring_matched_object_list_command
 
-    threat_monitoring_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_list_response.json")
-    )
+    threat_monitoring_response = util_load_json("test_data/threat_monitoring_list_response.json")
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_list_response_hr.md")) as f:
         threat_monitoring_response_hr = f.read()
@@ -3344,9 +3246,7 @@ def test_threat_monitoring_matched_object_get_command_success(client, requests_m
     """Tests success for rubrik-threat-monitoring-matched-object-get command."""
     from RubrikPolaris import OUTPUT_PREFIX, rubrik_threat_monitoring_matched_object_get_command
 
-    threat_monitoring_get_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_get_response.json")
-    )
+    threat_monitoring_get_response = util_load_json("test_data/threat_monitoring_get_response.json")
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_get_hr.md")) as f:
         threat_monitoring_get_hr = f.read()
@@ -3389,9 +3289,7 @@ def test_threat_monitoring_matched_file_list_command_success_when_empty_response
     """Tests success when empty response is received for rubrik-threat-monitoring-matched-file-list command."""
     from RubrikPolaris import rubrik_threat_monitoring_matched_file_list_command
 
-    file_list_empty_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_list_empty_response.json")
-    )
+    file_list_empty_response = util_load_json("test_data/threat_monitoring_file_list_empty_response.json")
 
     args = {"object_id": "dummy-object-id"}
 
@@ -3404,9 +3302,7 @@ def test_threat_monitoring_matched_file_list_command_success(client, requests_mo
     """Tests success for rubrik-threat-monitoring-matched-file-list command."""
     from RubrikPolaris import rubrik_threat_monitoring_matched_file_list_command
 
-    file_list_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_list_response.json")
-    )
+    file_list_response = util_load_json("test_data/threat_monitoring_file_list_response.json")
 
     with open(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_list_response_hr.md")
@@ -3522,9 +3418,7 @@ def test_threat_monitoring_matched_file_get_success(client, requests_mock):
 
     args = {"matched_snapshot_id": "test-id", "file_path": "/dummy/path/file1.txt"}
 
-    mock_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_get_response.json")
-    )
+    mock_response = util_load_json("test_data/threat_monitoring_file_get_response.json")
 
     with open(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_file_get_response_hr.md")
@@ -3549,9 +3443,7 @@ def test_fetch_incidents_with_threat_monitoring_only(client, requests_mock):
     from RubrikPolaris import fetch_incidents
 
     # Mock the threat monitoring response
-    threat_monitoring_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
-    )
+    threat_monitoring_response = util_load_json("test_data/fetch_threat_monitoring_objects_response.json")
     threat_monitoring_incidents = util_load_json(
         os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_events_and_threat_monitoring_objects_incidents.json"
@@ -3585,9 +3477,7 @@ def test_fetch_incidents_with_threat_monitoring_with_last_run(client, requests_m
     from RubrikPolaris import fetch_incidents
 
     # Mock the threat monitoring response
-    threat_monitoring_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
-    )
+    threat_monitoring_response = util_load_json("test_data/fetch_threat_monitoring_objects_response.json")
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": threat_monitoring_response}])
 
     first_fetch = "2025-07-01T14:55:51.616000Z"
@@ -3620,12 +3510,8 @@ def test_fetch_incidents_with_both_types(client, requests_mock):
     from RubrikPolaris import fetch_incidents
 
     # Load test data
-    threat_monitoring_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
-    )
-    event_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
-    )
+    threat_monitoring_response = util_load_json("test_data/fetch_threat_monitoring_objects_response.json")
+    event_response = util_load_json("test_data/fetch_incidents_success_response.json")
     expected_incidents = util_load_json(
         os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_events_and_threat_monitoring_objects_incidents.json"
@@ -3734,9 +3620,7 @@ def test_rubrik_ioc_scan_list_v2_command_success_when_empty_response(client, req
     """Tests success when empty response is received for rubrik-ioc-scan-list-v2 command."""
     from RubrikPolaris import rubrik_ioc_scan_list_v2_command
 
-    ioc_scan_empty_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_v2_empty_response.json")
-    )
+    ioc_scan_empty_response = util_load_json("test_data/ioc_scan_list_v2_empty_response.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": ioc_scan_empty_response.get("raw_response")}])
     response = rubrik_ioc_scan_list_v2_command(client, {})
@@ -3749,9 +3633,7 @@ def test_rubrik_ioc_scan_list_v2_command_success(client, requests_mock):
     """Tests success for rubrik-ioc-scan-list-v2 command."""
     from RubrikPolaris import rubrik_ioc_scan_list_v2_command
 
-    ioc_scan_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_v2_response.json")
-    )
+    ioc_scan_response = util_load_json("test_data/ioc_scan_list_v2_response.json")
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_v2_response_hr.md")) as f:
         ioc_scan_response_hr = f.read()
@@ -3849,9 +3731,7 @@ def test_rubrik_ioc_scan_results_v2_success(client, requests_mock):
 
     args = {"hunt_id": "test-hunt-id"}
 
-    mock_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_results_v2_response.json")
-    )
+    mock_response = util_load_json("test_data/ioc_scan_results_v2_response.json")
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_results_v2_response_hr.md")) as f:
         hr = f.read()
@@ -3871,9 +3751,7 @@ def test_turbo_ioc_scan_command_success(client, requests_mock):
     """Tests success for rubrik-turbo-ioc-scan command."""
     from RubrikPolaris import rubrik_turbo_ioc_scan_command
 
-    turbo_ioc_scan_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/turbo_ioc_scan_response.json")
-    )
+    turbo_ioc_scan_response = util_load_json("test_data/turbo_ioc_scan_response.json")
 
     args = {
         "ioc": "hash123",
@@ -3945,9 +3823,7 @@ def test_rubrik_advance_ioc_scan_command_success(client, requests_mock):
     args = {"object_id": "obj-123", "ioc_type": "INDICATOR_OF_COMPROMISE_TYPE_HASH", "ioc_value": "deadbeef"}
     from RubrikPolaris import rubrik_advance_ioc_scan_command
 
-    mock_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/advance_ioc_scan_response.json")
-    )
+    mock_response = util_load_json("test_data/advance_ioc_scan_response.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": mock_response.get("raw_response")}])
 
@@ -4046,13 +3922,9 @@ def test_fetch_incidents_success_with_event_severity_filter_without_last_run(cli
     """Test fetch_incidents function to return incidents and new last run with provided empty last run."""
     from RubrikPolaris import fetch_incidents
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_incidents_success_response.json")
     fetch_response["data"]["activitySeriesConnection"]["edges"][0]["node"]["severity"] = "Info"
-    incidents = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_incidents.json")
-    )
+    incidents = util_load_json("test_data/fetch_incidents_success_incidents.json")
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     responses = [
@@ -4107,9 +3979,7 @@ def test_rubrik_anomaly_csv_analysis_v2_initial_request_success(client, requests
     """Test initial CSV download request (non-polling) returns success status."""
     from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
 
-    radar_anomaly_v2_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
-    )
+    radar_anomaly_v2_response = util_load_json("test_data/anomaly_csv_analysis_v2_response.json")
 
     args = {
         "cluster_id": "cluster-123",
@@ -4140,9 +4010,7 @@ def test_rubrik_anomaly_csv_analysis_v2_polling_file_ready(client, requests_mock
     """Test polling execution when CSV file is ready - should download and return file."""
     from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
 
-    radar_anomaly_v2_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
-    )
+    radar_anomaly_v2_response = util_load_json("test_data/anomaly_csv_analysis_v2_response.json")
 
     args = {
         "cluster_id": "cluster-123",
@@ -4173,9 +4041,7 @@ def test_rubrik_anomaly_csv_analysis_v2_polling_file_not_ready(client, requests_
     """Test polling execution when CSV file is not ready yet - should return polling status."""
     from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
 
-    radar_anomaly_v2_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
-    )
+    radar_anomaly_v2_response = util_load_json("test_data/anomaly_csv_analysis_v2_response.json")
 
     args = {
         "cluster_id": "cluster-123",
@@ -4200,9 +4066,7 @@ def test_rubrik_anomaly_csv_analysis_v2_polling_file_failed(client, requests_moc
     """Test polling execution when CSV file status is failed."""
     from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
 
-    radar_anomaly_v2_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
-    )
+    radar_anomaly_v2_response = util_load_json("test_data/anomaly_csv_analysis_v2_response.json")
 
     args = {
         "cluster_id": "cluster-123",
@@ -4257,12 +4121,8 @@ def test_fetch_dspm_violations_success_without_last_run(client, requests_mock):
     """
     from RubrikPolaris import fetch_dspm_violations
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
-    )
-    expected_incidents = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_incidents.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_dspm_violations_success_response.json")
+    expected_incidents = util_load_json("test_data/fetch_dspm_violations_incidents.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
 
@@ -4296,12 +4156,8 @@ def test_fetch_dspm_violations_success_with_last_run(client, requests_mock):
     """
     from RubrikPolaris import fetch_dspm_violations
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
-    )
-    expected_incidents = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_incidents.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_dspm_violations_success_response.json")
+    expected_incidents = util_load_json("test_data/fetch_dspm_violations_incidents.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
 
@@ -4340,12 +4196,8 @@ def test_fetch_dspm_violations_with_duplicates(client, requests_mock):
     """
     from RubrikPolaris import fetch_dspm_violations
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
-    )
-    expected_incidents = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_incidents.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_dspm_violations_success_response.json")
+    expected_incidents = util_load_json("test_data/fetch_dspm_violations_incidents.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
 
@@ -4385,9 +4237,7 @@ def test_fetch_dspm_violations_empty_response(client, requests_mock):
     """
     from RubrikPolaris import fetch_dspm_violations
 
-    fetch_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_empty_response.json")
-    )
+    fetch_response = util_load_json("test_data/fetch_dspm_violations_empty_response.json")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
 
@@ -4423,16 +4273,10 @@ def test_fetch_incidents_with_all_fetch_types(client, requests_mock):
     from RubrikPolaris import fetch_incidents
 
     # Load test data for all fetch types
-    threat_monitoring_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
-    )
-    event_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
-    )
-    dspm_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
-    )
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/enum_values.json"))
+    threat_monitoring_response = util_load_json("test_data/fetch_threat_monitoring_objects_response.json")
+    event_response = util_load_json("test_data/fetch_incidents_success_response.json")
+    dspm_response = util_load_json("test_data/fetch_dspm_violations_success_response.json")
+    enum_values = util_load_json("test_data/enum_values.json")
 
     # Mock responses for all fetch types
     # Order matches execution: Threat Monitoring -> DSPM Violations -> Events (with 3 enum calls)
@@ -4501,7 +4345,7 @@ def test_fetch_incidents_with_all_fetch_types(client, requests_mock):
 )
 def test_fetch_dspm_violations_invalid_filter_parameters(client, invalid_param, invalid_value, expected_error):
     """
-    Test Case 5: Invalid filter parameter with parameterize.
+    Test Case : Invalid filter parameter with parameterize.
     Tests that invalid filter values raise appropriate ValueError.
     """
     from RubrikPolaris import fetch_dspm_violations
@@ -4528,12 +4372,9 @@ def test_data_security_violation_list_command_success(client, requests_mock):
     """Tests success for rubrik-data-security-violation-list command."""
     from RubrikPolaris import rubrik_data_security_violation_list_command
 
-    dspm_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_list_response.json")
-    )
+    dspm_response = util_load_json("test_data/dspm_violation_list_response.json")
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_list_response_hr.md")) as f:
-        dspm_response_hr = f.read()
+    dspm_response_hr = util_load_text_data("test_data/dspm_violation_list_response_hr.md")
 
     args = {"status": "OPEN", "severity": "MEDIUM", "sort_order": "DESC"}
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": dspm_response.get("raw_response")}])
@@ -4548,9 +4389,7 @@ def test_data_security_violation_list_command_success_when_empty_response(client
     """Tests success when empty response is received for rubrik-data-security-violation-list command."""
     from RubrikPolaris import rubrik_data_security_violation_list_command
 
-    dspm_empty_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_list_empty_response.json")
-    )
+    dspm_empty_response = util_load_json("test_data/dspm_violation_list_empty_response.json")
 
     args = {}
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": dspm_empty_response}])
@@ -4639,11 +4478,8 @@ def test_rubrik_data_security_violation_get_command_success(client, requests_moc
     """
     from RubrikPolaris import rubrik_data_security_violation_get_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_get_response.json")
-    )
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_get_response_hr.md")) as f:
-        hr_data = f.read()
+    response_data = util_load_json("test_data/dspm_violation_get_response.json")
+    hr_data = util_load_text_data("test_data/dspm_violation_get_response_hr.md")
 
     args = {"violation_id": "00000000-0000-0000-0000-000000000001"}
 
@@ -4711,9 +4547,7 @@ def test_rubrik_data_security_violation_status_update_command_success(client, re
     """
     from RubrikPolaris import rubrik_data_security_violation_status_update_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_status_update_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_status_update_response.json")
 
     hr_data = "#### Successfully updated the DSPM violation status to In Progress"
 
@@ -4765,14 +4599,9 @@ def test_data_security_violation_file_list_command_success(client, requests_mock
     """Tests success for rubrik-data-security-violation-file-list command."""
     from RubrikPolaris import rubrik_data_security_violation_file_list_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_file_list_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_file_list_response.json")
 
-    with open(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_file_list_response_hr.md")
-    ) as f:
-        hr_output = f.read()
+    hr_output = util_load_text_data("test_data/dspm_violation_file_list_response_hr.md")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -4793,12 +4622,10 @@ def test_data_security_violation_file_list_command_success(client, requests_mock
 
 
 def test_data_security_violation_file_list_command_success_when_empty_response(client, requests_mock):
-    """Tests success when empty response is received for rubrik-data-security-violation-file_list command."""
+    """Tests success when empty response is received for rubrik-data-security-violation-file-list command."""
     from RubrikPolaris import rubrik_data_security_violation_file_list_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_file_list_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_file_list_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -4911,13 +4738,11 @@ def test_data_security_violation_file_list_command_invalid_arguments(client, arg
 
 
 @pytest.mark.parametrize("empty_response", [True, False])
-def test_rubrik_data_security_violation_csv_downaload_initial_request_success(client, requests_mock, empty_response):
+def test_rubrik_data_security_violation_csv_download_initial_request_success(client, requests_mock, empty_response):
     """Test initial CSV download request (non-polling) returns success status."""
-    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_csv_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_csv_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -4930,12 +4755,12 @@ def test_rubrik_data_security_violation_csv_downaload_initial_request_success(cl
     if empty_response:
         raw_response = response_data.get("empty_response")
         requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
-        result = rubrik_data_security_violation_csv_downaload_command(client, args)
+        result = rubrik_data_security_violation_csv_download_command(client, args)
         assert result[0].readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
     else:
         raw_response = response_data.get("initial_request_success", {}).get("raw_response")
         requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
-        result = rubrik_data_security_violation_csv_downaload_command(client, args)
+        result = rubrik_data_security_violation_csv_download_command(client, args)
 
         assert len(result) == 1
         assert result[0].raw_response == response_data.get("initial_request_success", {}).get("raw_response")
@@ -4943,13 +4768,11 @@ def test_rubrik_data_security_violation_csv_downaload_initial_request_success(cl
         assert result[0].readable_output == "#### Successfully initiated the downloading of the CSV file."
 
 
-def test_rubrik_data_security_violation_csv_downaload_polling_file_ready(client, requests_mock):
+def test_rubrik_data_security_violation_csv_download_polling_file_ready(client, requests_mock):
     """Test polling execution when CSV file is ready - should download and return file."""
-    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_csv_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_csv_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -4961,15 +4784,14 @@ def test_rubrik_data_security_violation_csv_downaload_polling_file_ready(client,
 
     user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_file.csv")) as f:
-        file_data = f.read()
+    file_data = util_load_text_data("test_data/dspm_violation_csv_file.csv")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
     requests_mock.get(
         "https://demo.my.rubrik.com/file-downloads/00000000-0000-0000-0000-000000000011", text=file_data, status_code=200
     )
 
-    result = rubrik_data_security_violation_csv_downaload_command(client, args)
+    result = rubrik_data_security_violation_csv_download_command(client, args)
 
     assert len(result) == 2
     assert result[0].raw_response == response_data.get("polling_file_ready", {}).get("raw_response")
@@ -4979,13 +4801,11 @@ def test_rubrik_data_security_violation_csv_downaload_polling_file_ready(client,
         assert result[1].get("File") == "test_object-violating-files_file_results_1775629027.csv"
 
 
-def test_rubrik_data_security_violation_csv_downaload_polling_file_not_ready(client, requests_mock):
+def test_rubrik_data_security_violation_csv_download_polling_file_not_ready(client, requests_mock):
     """Test polling execution when CSV file is not ready yet - should return polling status."""
-    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_csv_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_csv_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -4999,7 +4819,7 @@ def test_rubrik_data_security_violation_csv_downaload_polling_file_not_ready(cli
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
 
-    result = rubrik_data_security_violation_csv_downaload_command(client, args)
+    result = rubrik_data_security_violation_csv_download_command(client, args)
 
     assert len(result) == 1
     assert result[0].raw_response == response_data.get("polling_file_not_ready", {}).get("raw_response")
@@ -5007,13 +4827,11 @@ def test_rubrik_data_security_violation_csv_downaload_polling_file_not_ready(cli
     assert result[0].readable_output == "#### Polling for CSV file availability. The command will automatically retry..."
 
 
-def test_rubrik_data_security_violation_csv_downaload_polling_file_failed(client, requests_mock):
+def test_rubrik_data_security_violation_csv_download_polling_file_failed(client, requests_mock):
     """Test polling execution when CSV file status is failed."""
-    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_csv_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_csv_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5027,7 +4845,7 @@ def test_rubrik_data_security_violation_csv_downaload_polling_file_failed(client
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
 
-    result = rubrik_data_security_violation_csv_downaload_command(client, args)
+    result = rubrik_data_security_violation_csv_download_command(client, args)
 
     assert len(result) == 1
     assert result[0].raw_response == response_data.get("polling_file_failed", {}).get("raw_response")
@@ -5052,20 +4870,20 @@ def test_rubrik_data_security_violation_csv_downaload_polling_file_failed(client
         ),
     ],
 )
-def test_rubrik_data_security_violation_csv_downaload_invalid_arguments_are_provided(client, args, error_message):
+def test_rubrik_data_security_violation_csv_download_invalid_arguments_are_provided(client, args, error_message):
     """Test that missing required arguments raise ValueError."""
-    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_csv_download_command
 
     with pytest.raises(ValueError) as e:
-        rubrik_data_security_violation_csv_downaload_command(client, args)
+        rubrik_data_security_violation_csv_download_command(client, args)
 
     assert error_message in str(e.value)
 
 
-def test_run_polling_command_completed_data_security_violation_csv_downaload(client, requests_mock):
+def test_run_polling_command_completed_data_security_violation_csv_download(client, requests_mock):
     """
-    Test run_polling_command when DSPM violation csv downaload job is completed"""
-    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command, run_polling_command
+    Test run_polling_command when DSPM violation csv download job is completed"""
+    from RubrikPolaris import rubrik_data_security_violation_csv_download_command, run_polling_command
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5074,14 +4892,11 @@ def test_run_polling_command_completed_data_security_violation_csv_downaload(cli
         "object_name": "test_object",
         "polling": True,
     }
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_csv_download_response.json")
 
     user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_file.csv")) as f:
-        file_data = f.read()
+    file_data = util_load_text_data("test_data/dspm_violation_csv_file.csv")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
     requests_mock.get(
@@ -5089,23 +4904,20 @@ def test_run_polling_command_completed_data_security_violation_csv_downaload(cli
     )
 
     result = run_polling_command(
-        client, args, "rubrik-data-security-violation-csv-download", rubrik_data_security_violation_csv_downaload_command
+        client, args, "rubrik-data-security-violation-csv-download", rubrik_data_security_violation_csv_download_command
     )
 
-    # Should return single CommandResults, not a list
     assert isinstance(result, list)
     assert len(result) == 2
     assert result[0].outputs.get("isSuccessful") is True
 
 
 @pytest.mark.parametrize("empty_response", [True, False])
-def test_rubrik_data_security_violation_log_downaload_command_initial_request_success(client, requests_mock, empty_response):
+def test_rubrik_data_security_violation_log_download_command_initial_request_success(client, requests_mock, empty_response):
     """Test initial CSV download request (non-polling) returns success status."""
-    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_log_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_log_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5117,12 +4929,12 @@ def test_rubrik_data_security_violation_log_downaload_command_initial_request_su
     if empty_response:
         raw_response = response_data.get("empty_response")
         requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
-        result = rubrik_data_security_violation_log_downaload_command(client, args)
+        result = rubrik_data_security_violation_log_download_command(client, args)
         assert result[0].readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
     else:
         raw_response = response_data.get("initial_request_success", {}).get("raw_response")
         requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
-        result = rubrik_data_security_violation_log_downaload_command(client, args)
+        result = rubrik_data_security_violation_log_download_command(client, args)
 
         assert len(result) == 1
         assert result[0].raw_response == response_data.get("initial_request_success", {}).get("raw_response")
@@ -5130,13 +4942,11 @@ def test_rubrik_data_security_violation_log_downaload_command_initial_request_su
         assert result[0].readable_output == "#### Successfully initiated the downloading of the Remediation Log file."
 
 
-def test_rubrik_data_security_violation_log_downaload_command_polling_file_ready(client, requests_mock):
+def test_rubrik_data_security_violation_log_download_command_polling_file_ready(client, requests_mock):
     """Test polling execution when CSV file is ready - should download and return file."""
-    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_log_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_log_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5147,15 +4957,14 @@ def test_rubrik_data_security_violation_log_downaload_command_polling_file_ready
 
     user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_file.csv")) as f:
-        file_data = f.read()
+    file_data = util_load_text_data("test_data/dspm_violation_log_file.csv")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
     requests_mock.get(
         "https://demo.my.rubrik.com/file-downloads/00000000-0000-0000-0000-000000000011", text=file_data, status_code=200
     )
 
-    result = rubrik_data_security_violation_log_downaload_command(client, args)
+    result = rubrik_data_security_violation_log_download_command(client, args)
 
     assert len(result) == 2
     assert result[0].raw_response == response_data.get("polling_file_ready", {}).get("raw_response")
@@ -5165,13 +4974,11 @@ def test_rubrik_data_security_violation_log_downaload_command_polling_file_ready
         assert result[1].get("File") == "test_object actions log.csv"
 
 
-def test_rubrik_data_security_violation_log_downaload_command_polling_file_not_ready(client, requests_mock):
+def test_rubrik_data_security_violation_log_download_command_polling_file_not_ready(client, requests_mock):
     """Test polling execution when CSV file is not ready yet - should return polling status."""
-    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_log_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_log_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5184,7 +4991,7 @@ def test_rubrik_data_security_violation_log_downaload_command_polling_file_not_r
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
 
-    result = rubrik_data_security_violation_log_downaload_command(client, args)
+    result = rubrik_data_security_violation_log_download_command(client, args)
 
     assert len(result) == 1
     assert result[0].raw_response == response_data.get("polling_file_not_ready", {}).get("raw_response")
@@ -5194,13 +5001,11 @@ def test_rubrik_data_security_violation_log_downaload_command_polling_file_not_r
     )
 
 
-def test_rubrik_data_security_violation_log_downaload_command_polling_file_failed(client, requests_mock):
+def test_rubrik_data_security_violation_log_download_command_polling_file_failed(client, requests_mock):
     """Test polling execution when CSV file status is failed."""
-    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_log_download_command
 
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_log_download_response.json")
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5214,7 +5019,7 @@ def test_rubrik_data_security_violation_log_downaload_command_polling_file_faile
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
 
-    result = rubrik_data_security_violation_log_downaload_command(client, args)
+    result = rubrik_data_security_violation_log_download_command(client, args)
 
     assert len(result) == 1
     assert result[0].raw_response == response_data.get("polling_file_failed", {}).get("raw_response")
@@ -5235,20 +5040,20 @@ def test_rubrik_data_security_violation_log_downaload_command_polling_file_faile
         ),
     ],
 )
-def test_rubrik_data_security_violation_log_downaload_command_invalid_arguments_are_provided(client, args, error_message):
+def test_rubrik_data_security_violation_log_download_command_invalid_arguments_are_provided(client, args, error_message):
     """Test that missing required arguments raise ValueError."""
-    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+    from RubrikPolaris import rubrik_data_security_violation_log_download_command
 
     with pytest.raises(ValueError) as e:
-        rubrik_data_security_violation_log_downaload_command(client, args)
+        rubrik_data_security_violation_log_download_command(client, args)
 
     assert error_message in str(e.value)
 
 
-def test_run_polling_command_completed_data_security_violation_log_downaload(client, requests_mock):
+def test_run_polling_command_completed_data_security_violation_log_download(client, requests_mock):
     """
-    Test run_polling_command when DSPM violation log downaload is completed"""
-    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command, run_polling_command
+    Test run_polling_command when DSPM violation log download is completed"""
+    from RubrikPolaris import rubrik_data_security_violation_log_download_command, run_polling_command
 
     args = {
         "violation_id": "00000000-0000-0000-0000-000000000001",
@@ -5256,14 +5061,11 @@ def test_run_polling_command_completed_data_security_violation_log_downaload(cli
         "object_name": "test_object",
         "polling": True,
     }
-    response_data = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
-    )
+    response_data = util_load_json("test_data/dspm_violation_log_download_response.json")
 
     user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_file.csv")) as f:
-        file_data = f.read()
+    file_data = util_load_text_data("test_data/dspm_violation_log_file.csv")
 
     requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
     requests_mock.get(
@@ -5271,10 +5073,9 @@ def test_run_polling_command_completed_data_security_violation_log_downaload(cli
     )
 
     result = run_polling_command(
-        client, args, "rubrik-data-security-violation-csv-download", rubrik_data_security_violation_log_downaload_command
+        client, args, "rubrik-data-security-violation-log-download", rubrik_data_security_violation_log_download_command
     )
 
-    # Should return single CommandResults, not a list
     assert isinstance(result, list)
     assert len(result) == 2
     assert result[0].outputs.get("isSuccessful") is True

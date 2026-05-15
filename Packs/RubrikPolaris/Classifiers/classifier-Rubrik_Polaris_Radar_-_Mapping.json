@@ -276,13 +276,6 @@
             "transformers": []
           }
         },
-        "Rubrik Create Time": {
-          "complex": {
-            "filters": [],
-            "root": "createdAt",
-            "transformers": []
-          }
-        },
         "Rubrik Data Categories": {
           "complex": {
             "accessor": "dataCategories",

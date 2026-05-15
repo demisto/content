@@ -8038,7 +8038,7 @@ def rubrik_data_security_violation_file_list_command(client: PolarisClient, args
     )
 
 
-def rubrik_data_security_violation_csv_downaload_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+def rubrik_data_security_violation_csv_download_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Scheduled polling command to download DSPM Violation Files at Risk CSV file.
 
@@ -8194,7 +8194,7 @@ def rubrik_data_security_violation_csv_downaload_command(client: PolarisClient, 
     return result
 
 
-def rubrik_data_security_violation_log_downaload_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+def rubrik_data_security_violation_log_download_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Scheduled polling command to download DSPM Violation Remediation Log file.
 
@@ -8535,8 +8535,8 @@ def main() -> None:
 
             SCHEDULED_COMMAND_TO_FUNCTION: dict = {
                 "rubrik-anomaly-csv-analysis-v2": rubrik_anomaly_csv_analysis_v2_command,
-                "rubrik-data-security-violation-csv-download": rubrik_data_security_violation_csv_downaload_command,
-                "rubrik-data-security-violation-log-download": rubrik_data_security_violation_log_downaload_command,
+                "rubrik-data-security-violation-csv-download": rubrik_data_security_violation_csv_download_command,
+                "rubrik-data-security-violation-log-download": rubrik_data_security_violation_log_download_command,
             }
             command = demisto.command()
 

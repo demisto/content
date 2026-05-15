@@ -52,10 +52,10 @@ def test_sync_the_violation_information_with_error(mock_execute_command, mocker,
     mock_return_results = mocker.patch("RubrikPullDSPMViolationInformation.return_results")
 
     # Act and Assert
-    with capfd.disabled(), pytest.raises(SystemExit) as err:
+    with capfd.disabled(), pytest.raises(ValueError) as err:
         sync_the_violation_information({})
 
-    assert err.value.code == 0
+    assert "Failed to get violation information" in str(err.value)
     mock_execute_command.assert_called_once_with("rubrik-data-security-violation-get", {"violation_id": VIOLATION_ID})
     mock_return_results.assert_not_called()
 

@@ -102,10 +102,10 @@ def test_sync_the_violation_file_information_with_error(mock_execute_command, mo
     mock_return_results = mocker.patch("RubrikPullDSPMViolationFileInformation.return_results")
 
     # Act and Assert
-    with capfd.disabled(), pytest.raises(SystemExit) as err:
+    with capfd.disabled(), pytest.raises(ValueError) as err:
         sync_the_violation_file_information({"limit": "5"})
 
-    assert err.value.code == 0
+    assert "Failed to get violation file information" in str(err.value)
     mock_execute_command.assert_called_once_with(
         "rubrik-data-security-violation-file-list",
         {"violation_id": VIOLATION_ID, "snapshot_id": SNAPSHOT_ID, "object_id": OBJECT_ID, "limit": 5},

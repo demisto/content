@@ -8,7 +8,6 @@
     "closeForm": false,
     "editForm": true,
     "required": false,
-    "runScriptAfterUpdate": false,
     "neverSetAsRequired": false,
     "isReadOnly": true,
     "useAsKpi": false,
@@ -164,5 +163,5 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }

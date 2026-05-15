@@ -27,7 +27,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| file_information | The list of files to quarantine. Each entry should contain the file name and its path.<br/>Example: \[\{"file_name": "&lt;file_name&gt;", "file_path": "&lt;file_path&gt;"\}\] |  | Optional |
+| file_information | The list of files to quarantine. Each entry should contain the file name and its path.<br/>Example: \[\{"name": "&lt;file_name&gt;", "path": "&lt;file_path&gt;"\}\] |  | Optional |
 | quarantine_folder_id | The ID of the quarantine folder where the file will be moved. |  | Optional |
 
 ## Playbook Outputs

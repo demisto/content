@@ -8,7 +8,7 @@ ERROR_MESSAGES = {"MISSING_ARGUMENT": "Please provide correct input for '{}' arg
 
 def sync_the_violation_information(args: dict[str, Any]) -> list:
     """
-    Sync the DSPM Violation infromation from RSC.
+    Sync the DSPM Violation information from RSC.
 
     :type args: ``Dict[str, Any]``
     :param args: Arguments provided by user.
@@ -38,7 +38,7 @@ def sync_the_violation_information(args: dict[str, Any]) -> list:
             break
 
     if not command_result:
-        return_error(command_results[0].get("Contents"))
+        raise ValueError(f"Failed to get violation information: {command_results[0].get('Contents')}")
 
     response = command_result.get("Contents")
     violation_data = demisto.get(response, "data.policyViolation", {})
@@ -67,6 +67,7 @@ def main():
     try:
         return_results(sync_the_violation_information(demisto.args()))
     except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute RubrikPullDSPMViolationInformation-RubrikSecurityCloud. Error: {ex!s}")
 
 

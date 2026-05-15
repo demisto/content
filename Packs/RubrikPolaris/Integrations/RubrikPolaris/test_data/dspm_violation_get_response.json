@@ -23,7 +23,7 @@
                         "name": "DEMO-RADAR02",
                         "objectType": "VSPHERE_VIRTUAL_MACHINE",
                         "platform": "PLATFORM_DATA_CENTER",
-                        "physicalHost": "vcsa.rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                        "physicalHost": "vcsa.rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
                         "clusterInfo": {
                             "clusterName": "Cluster_C",
                             "clusterUuid": "00000000-0000-0000-0000-000000000004",
@@ -108,7 +108,7 @@
                 "name": "DEMO-RADAR02",
                 "objectType": "VSPHERE_VIRTUAL_MACHINE",
                 "platform": "PLATFORM_DATA_CENTER",
-                "physicalHost": "vcsa.rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                "physicalHost": "vcsa.rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
                 "clusterInfo": {
                     "clusterName": "Cluster_C",
                     "clusterUuid": "00000000-0000-0000-0000-000000000004",

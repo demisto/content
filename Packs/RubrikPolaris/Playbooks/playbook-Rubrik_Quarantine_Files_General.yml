@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dab25b54-b290-4922-83f8-3d8a42fa5904
+    taskid: ccaa50b0-96b1-4e50-8216-7d5ee073a1ae
     type: start
     task:
-      id: dab25b54-b290-4922-83f8-3d8a42fa5904
+      id: ccaa50b0-96b1-4e50-8216-7d5ee073a1ae
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0d6e7cdf-c4a5-43c2-8d1a-43a5b27b50ff
+    taskid: f0706f50-49a1-4ae5-84f3-5b2e654fe09e
     type: title
     task:
-      id: 0d6e7cdf-c4a5-43c2-8d1a-43a5b27b50ff
+      id: f0706f50-49a1-4ae5-84f3-5b2e654fe09e
       version: -1
       name: Done
       type: title
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cb1c25f5-bcf1-4487-8b03-33ca1809c13b
+    taskid: 20225ad2-8bb4-4559-80a1-1898678cbdde
     type: regular
     task:
-      id: cb1c25f5-bcf1-4487-8b03-33ca1809c13b
+      id: 20225ad2-8bb4-4559-80a1-1898678cbdde
       version: -1
       name: Set the delete keys
       description: Set the custom context keys to delete.
@@ -103,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 026ea04e-8aba-4fa3-855a-17036c17b904
+    taskid: 30235085-a750-495b-8b46-a3539f6d3ca7
     type: regular
     task:
-      id: 026ea04e-8aba-4fa3-855a-17036c17b904
+      id: 30235085-a750-495b-8b46-a3539f6d3ca7
       version: -1
       name: Clear Previous Inputs
       description: Delete the custom keys from the context.
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a5ba4627-f094-4f14-8a1c-30bec449c9b3
+    taskid: b7f0f97d-23ad-4856-8218-7a97933521b9
     type: collection
     task:
-      id: a5ba4627-f094-4f14-8a1c-30bec449c9b3
+      id: b7f0f97d-23ad-4856-8218-7a97933521b9
       version: -1
       name: Collect the quarantine folder information
       description: |-
@@ -219,13 +219,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e4b47867-2a9d-48bb-8e1b-be9904657d0e
+    taskid: 1435636c-85db-4a58-80ab-a02d7c3247cb
     type: playbook
     task:
-      id: e4b47867-2a9d-48bb-8e1b-be9904657d0e
+      id: 1435636c-85db-4a58-80ab-a02d7c3247cb
       version: -1
       name: Rubrik Quarantine Files using MS Graph Search (O365 File Management)
-      description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration by downloading them, uploading them to a quarantine folder, and deleting them from their original location.
+      description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration by downloading them, uploading them to a quarantine folder and deleting them from their original location.
       playbookName: Rubrik Quarantine Files using MS Graph Search
       type: playbook
       iscommand: false
@@ -237,14 +237,24 @@ tasks:
       file_name:
         complex:
           root: inputs.file_information
-          accessor: name
           transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
           - operator: trim
       file_path:
         complex:
           root: inputs.file_information
-          accessor: path
           transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: path
           - operator: trim
       quarantine_folder_id:
         complex:
@@ -283,10 +293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 4e07c3bb-a0fc-4d2d-8a49-397ed89aba43
+    taskid: 53a0f1cf-d734-43b6-8a64-96be5efb4493
     type: condition
     task:
-      id: 4e07c3bb-a0fc-4d2d-8a49-397ed89aba43
+      id: 53a0f1cf-d734-43b6-8a64-96be5efb4493
       version: -1
       name: Is quarantine folder ID present in the playbook inputs?
       description: Checks whether the quarantine folder ID is provided in the playbook inputs.
@@ -345,7 +355,9 @@ inputs:
 - key: file_information
   value: {}
   required: false
-  description: "The list of files to quarantine. Each entry should contain the file name and its path.\nExample: [{\"file_name\": \"<file_name>\", \"file_path\": \"<file_path>\"}]"
+  description: |-
+    The list of files to quarantine. Each entry should contain the file name and its path.
+    Example: [{"name": "<file_name>", "path": "<file_path>"}]
   playbookInputQuery:
 - key: quarantine_folder_id
   value: {}

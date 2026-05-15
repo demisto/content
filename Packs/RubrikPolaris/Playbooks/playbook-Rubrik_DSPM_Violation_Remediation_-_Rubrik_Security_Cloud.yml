@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: adc2ab85-975b-474c-8710-5899192aa909
+    taskid: 386b67db-16c0-44e2-8d22-0979c7265754
     type: start
     task:
-      id: adc2ab85-975b-474c-8710-5899192aa909
+      id: 386b67db-16c0-44e2-8d22-0979c7265754
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fedc4620-2e8e-4971-8c03-9c7ebeab4a65
+    taskid: 71f679f7-fd6e-4024-8c20-62917cd2edd6
     type: condition
     task:
-      id: fedc4620-2e8e-4971-8c03-9c7ebeab4a65
+      id: 71f679f7-fd6e-4024-8c20-62917cd2edd6
       version: -1
       name: Is Rubrik Security Cloud integration enabled?
       description: Checks whether Rubrik Security Cloud integration is enabled or not.
@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7f1e5c47-a834-434a-8762-8b1e0567ccbb
+    taskid: 4d4f1f45-7b1c-4b35-8b1e-7aa26e98363e
     type: regular
     task:
-      id: 7f1e5c47-a834-434a-8762-8b1e0567ccbb
+      id: 4d4f1f45-7b1c-4b35-8b1e-7aa26e98363e
       version: -1
       name: Set the delete keys
       description: Set the custom context keys to delete.
@@ -137,10 +137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 53fc5e22-126e-471f-8375-c9f361b12ade
+    taskid: aead3c76-e168-467e-85f6-6405dd454c75
     type: regular
     task:
-      id: 53fc5e22-126e-471f-8375-c9f361b12ade
+      id: aead3c76-e168-467e-85f6-6405dd454c75
       version: -1
       name: Clear Previous Inputs
       description: Delete the custom keys from the context.
@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b8df24cb-cdb0-4238-84a6-d867802e7aa6
+    taskid: aea8f33d-dccc-409d-8246-6e638bd83b22
     type: condition
     task:
-      id: b8df24cb-cdb0-4238-84a6-d867802e7aa6
+      id: aea8f33d-dccc-409d-8246-6e638bd83b22
       version: -1
       name: Check whether the DSPM Violation information is available in playbook input
       description: Check whether the violation ID, object ID and snapshot ID are available or not in the playbook input.
@@ -243,10 +243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0fee2f17-f60a-40ea-8af2-35dd4678a3fc
+    taskid: bf69965d-4f1e-40e9-8fcc-ab1ee72ba2c1
     type: collection
     task:
-      id: 0fee2f17-f60a-40ea-8af2-35dd4678a3fc
+      id: bf69965d-4f1e-40e9-8fcc-ab1ee72ba2c1
       version: -1
       name: Collect the DSPM violation information
       description: Collecting violation ID, object ID and snapshot ID to retrieve the DSPM violation and violation files data.
@@ -338,10 +338,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d2d8df41-701b-489b-8f6c-fbe962652919
+    taskid: 2fe902fd-4a92-4769-8cd3-c7ef121543d5
     type: title
     task:
-      id: d2d8df41-701b-489b-8f6c-fbe962652919
+      id: 2fe902fd-4a92-4769-8cd3-c7ef121543d5
       version: -1
       name: Sync the Violation Information
       type: title
@@ -372,10 +372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 91d5f68f-f5dc-4e38-8cbd-92abba63f72a
+    taskid: 9d9899c7-3ca1-4575-8f41-07095199618e
     type: regular
     task:
-      id: 91d5f68f-f5dc-4e38-8cbd-92abba63f72a
+      id: 9d9899c7-3ca1-4575-8f41-07095199618e
       version: -1
       name: Retrieve DSPM violation files information
       description: Syncs the violation file information from RSC to XSOAR.
@@ -452,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ff456906-4a98-4a24-87c9-287c3ee00a21
+    taskid: acda9f44-1660-446c-8d62-8a37a729d195
     type: regular
     task:
-      id: ff456906-4a98-4a24-87c9-287c3ee00a21
+      id: acda9f44-1660-446c-8d62-8a37a729d195
       version: -1
       name: Download the files at risk CSV file
       description: Download all files at risk as CSV file for the specified data security violation.
@@ -530,10 +530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 82f505be-0e73-45dc-831b-cc0d8dca27db
+    taskid: 30bcf7db-f31b-4cfd-8730-d79b34c18c90
     type: regular
     task:
-      id: 82f505be-0e73-45dc-831b-cc0d8dca27db
+      id: 30bcf7db-f31b-4cfd-8730-d79b34c18c90
       version: -1
       name: Download the remediation Log file
       description: Download remediation logs as CSV file for the specified data security violation.
@@ -595,10 +595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0a2da00a-7154-4f58-8626-d79c606a80d1
+    taskid: d8395560-cd02-4161-8961-bf3e55ed0e33
     type: condition
     task:
-      id: 0a2da00a-7154-4f58-8626-d79c606a80d1
+      id: d8395560-cd02-4161-8961-bf3e55ed0e33
       version: -1
       name: Whether to update the status of the violation
       description: Update the status of DSPM violation?
@@ -606,12 +606,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "14"
       "No":
       - "14"
       "Yes":
       - "12"
-      '#default#':
-      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -648,10 +648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: fbb72007-0d8f-47e4-8c63-b98031d5748e
+    taskid: 59db632f-fbe3-4d3b-8ce1-b95851d157b8
     type: collection
     task:
-      id: fbb72007-0d8f-47e4-8c63-b98031d5748e
+      id: 59db632f-fbe3-4d3b-8ce1-b95851d157b8
       version: -1
       name: Collect the new status of the violation
       description: Collect the new status of the DSPM violation.
@@ -721,10 +721,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 129ae53c-34fa-46cf-8193-78359acbc3bc
+    taskid: 7c6bd1e2-933d-4020-84b4-dd715474908b
     type: regular
     task:
-      id: 129ae53c-34fa-46cf-8193-78359acbc3bc
+      id: 7c6bd1e2-933d-4020-84b4-dd715474908b
       version: -1
       name: Update the status of the DSPM violation
       description: Updates the status of the DSPM violation.
@@ -773,10 +773,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a1c4b858-bf7f-46a5-8287-9613299699c1
+    taskid: a939017b-6071-4ee9-8d0e-fca3db38ba00
     type: title
     task:
-      id: a1c4b858-bf7f-46a5-8287-9613299699c1
+      id: a939017b-6071-4ee9-8d0e-fca3db38ba00
       version: -1
       name: Done
       type: title
@@ -801,10 +801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 0ec999a4-840e-4dab-8df8-b861550de3cd
+    taskid: a859db50-f365-4b6d-8f15-c905a1c420f7
     type: regular
     task:
-      id: 0ec999a4-840e-4dab-8df8-b861550de3cd
+      id: a859db50-f365-4b6d-8f15-c905a1c420f7
       version: -1
       name: Retrieve DSPM violation data
       description: Syncs the DSPM violation information from RSC to XSOAR.
@@ -848,10 +848,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: c5550c1d-4fed-4f44-8b03-21f92a7449f5
+    taskid: 31ad4689-454b-4cb7-86cc-ac6e05ec3cf0
     type: title
     task:
-      id: c5550c1d-4fed-4f44-8b03-21f92a7449f5
+      id: 31ad4689-454b-4cb7-86cc-ac6e05ec3cf0
       version: -1
       name: Quarantine the files
       type: title
@@ -879,10 +879,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: bb2e3b5d-4214-41e8-8387-f65633a8b0ab
+    taskid: 4b9f6038-6906-4394-82ec-f6ea55a53983
     type: title
     task:
-      id: bb2e3b5d-4214-41e8-8387-f65633a8b0ab
+      id: 4b9f6038-6906-4394-82ec-f6ea55a53983
       version: -1
       name: Update the violation status
       type: title
@@ -910,10 +910,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 9db227e2-aa68-4ee7-8952-3cc406822d8e
+    taskid: 7636b0e5-20f4-4129-8192-313087e2fda1
     type: condition
     task:
-      id: 9db227e2-aa68-4ee7-8952-3cc406822d8e
+      id: 7636b0e5-20f4-4129-8192-313087e2fda1
       version: -1
       name: Are the file paths available?
       description: Checks whether the file paths of the affected files are available in the incident context.
@@ -954,10 +954,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 4e59ea46-f118-4c51-86c0-5ac6e95ad7e6
+    taskid: 4490422a-f1ea-4583-8f21-9a4e39c9b452
     type: playbook
     task:
-      id: 4e59ea46-f118-4c51-86c0-5ac6e95ad7e6
+      id: 4490422a-f1ea-4583-8f21-9a4e39c9b452
       version: -1
       name: Rubrik Quarantine Files General
       description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration.
@@ -972,6 +972,13 @@ tasks:
       file_information:
         complex:
           root: FileInformation
+          transformers:
+          - operator: Stringify
+      quarantine_folder_id:
+        complex:
+          root: inputs.quarantine_folder_id
+          transformers:
+          - operator: trim
     separatecontext: true
     continueonerrortype: ""
     view: |-

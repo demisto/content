@@ -53,10 +53,10 @@ def test_sync_the_violation_status_with_error(mock_execute_command, mocker, capf
     mock_return_results = mocker.patch("RubrikPushDSPMViolationStatus.return_results")
 
     # Act and Assert
-    with capfd.disabled(), pytest.raises(SystemExit) as err:
+    with capfd.disabled(), pytest.raises(ValueError) as err:
         sync_the_violation_status(args)
 
-    assert err.value.code == 0
+    assert "Failed to update violation status" in str(err.value)
     mock_execute_command.assert_called_once_with(
         "rubrik-data-security-violation-status-update", {"violation_id": VIOLATION_ID, "status": VIOLATION_STATUS}
     )
@@ -71,7 +71,7 @@ def test_sync_the_violation_status_with_error(mock_execute_command, mocker, capf
     ],
 )
 def test_sync_the_violation_status_with_invalid_args(args, error_message, capfd):
-    """Tests sync_the_violation_status command function with invalid argumets."""
+    """Tests sync_the_violation_status command function with invalid arguments."""
 
     # Act and Assert
     with capfd.disabled(), pytest.raises(ValueError) as err:

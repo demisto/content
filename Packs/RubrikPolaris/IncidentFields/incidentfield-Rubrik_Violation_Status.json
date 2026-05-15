@@ -9,7 +9,6 @@
     "editForm": true,
     "required": false,
     "script": "RubrikPushDSPMViolationStatus",
-    "runScriptAfterUpdate": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
@@ -36,5 +35,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }

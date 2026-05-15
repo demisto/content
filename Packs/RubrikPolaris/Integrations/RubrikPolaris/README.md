@@ -4332,7 +4332,7 @@ Retrieve the list of DSPM violations.
                         "name": "DEMO-RADAR02",
                         "objectType": "VSPHERE_VIRTUAL_MACHINE",
                         "platform": "PLATFORM_DATA_CENTER",
-                        "physicalHost": "rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                        "physicalHost": "rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
                         "__typename": "CommonAssetMetadata"
                     },
                     "__typename": "ResourceMetadata"
@@ -4548,7 +4548,7 @@ Retrieve the details of DSPM violation based on the provided violation ID.
                     "name": "DEMO-RADAR02",
                     "objectType": "VSPHERE_VIRTUAL_MACHINE",
                     "platform": "PLATFORM_DATA_CENTER",
-                    "physicalHost": "vcsa.rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                    "physicalHost": "vcsa.rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
                     "clusterInfo": {
                         "clusterName": "Cluster_C",
                         "clusterUuid": "00000000-0000-0000-0000-000000000004",
@@ -4616,7 +4616,7 @@ Retrieve the details of DSPM violation based on the provided violation ID.
 >
 >|ID|Violation Name|Severity|Violation Status|Detection Time|Last Updated|Policy ID|Policy Description|Policy Category|Policy Severity|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Snapshot ID|Object ID|Object Name|Object Type|Object Location|Object Platform|Cluster ID|Cluster Name|Data Types|Data Categories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001 | Secrets stored outside of vault | Medium | Open | 2026-03-06T06:30:45.000Z | 2026-03-24T05:30:07.000Z | 00000000-0000-0000-0000-000000000003 | Storing secrets outside vaults can lead to privilege escalation and unauthorized access. Store secrets in a secure vault to limit exposure. | MISPLACED | Medium | 40 | 0 | 1 | 2 | 37 | 00000000-0000-0000-0000-000000000005 | 00000000-0000-0000-0000-000000000002 | DEMO-RADAR02 | VSPHERE_VIRTUAL_MACHINE | vcsa.rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine | PLATFORM_DATA_CENTER | 00000000-0000-0000-0000-000000000004 | Cluster_C | **-** ***id***: 00000000-0000-0000-0000-000000000006<br> ***name***: Country<br> ***totalViolatedHits***: 35<br>**-** ***id***: 00000000-0000-0000-0000-000000000007<br> ***name***: US State<br> ***totalViolatedHits***: 2 | **-** ***id***: 00000000-0000-0000-0000-000000000008<br> ***name***: Geographical<br> ***totalViolatedHits***: 37 |
+>| 00000000-0000-0000-0000-000000000001 | Secrets stored outside of vault | Medium | Open | 2026-03-06T06:30:45.000Z | 2026-03-24T05:30:07.000Z | 00000000-0000-0000-0000-000000000003 | Storing secrets outside vaults can lead to privilege escalation and unauthorized access. Store secrets in a secure vault to limit exposure. | MISPLACED | Medium | 40 | 0 | 1 | 2 | 37 | 00000000-0000-0000-0000-000000000005 | 00000000-0000-0000-0000-000000000002 | DEMO-RADAR02 | VSPHERE_VIRTUAL_MACHINE | vcsa.rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine | PLATFORM_DATA_CENTER | 00000000-0000-0000-0000-000000000004 | Cluster_C | **-** ***id***: 00000000-0000-0000-0000-000000000006<br/> ***name***: Country<br/> ***totalViolatedHits***: 35<br/>**-** ***id***: 00000000-0000-0000-0000-000000000007<br/> ***name***: US State<br/> ***totalViolatedHits***: 2 | **-** ***id***: 00000000-0000-0000-0000-000000000008<br/> ***name***: Geographical<br/> ***totalViolatedHits***: 37 |
 
 ### rubrik-data-security-violation-status-update
 
@@ -5344,8 +5344,8 @@ Retrieve the file information of data security violation based on the provided v
 >
 >|File Path|File Size in Bytes|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Last Access Time|Last Modified Time|Data Categories|
 >|---|---|---|---|---|---|---|---|---|---|
->| /Sales Department/fileName.txt | 67615 | 3022 | 0 | 1533 | 0 | 1489 | 1970-01-01T00:00:00Z | 2023-05-24T19:47:56Z | **-** ***id***: 00000000-0000-0000-0000-000000000008<br> ***name***: Personal<br> ***totalViolatedHits***: 1533<br>**-** ***id***: 00000000-0000-0000-0000-000000000007<br> ***name***: Geographical<br> ***totalViolatedHits***: 1489 |
->| /Sales Department/fileName1.txt | 25653 | 790 | 0 | 393 | 0 | 397 | 1970-01-01T00:00:00Z | 2023-05-24T19:42:35Z | **-** ***id***: 00000000-0000-0000-0000-000000000007<br> ***name***: Geographical<br> ***totalViolatedHits***: 397<br>**-** ***id***: 00000000-0000-0000-0000-000000000008<br> ***name***: Personal<br> ***totalViolatedHits***: 393 |
+>| /Sales Department/fileName.txt | 67615 | 3022 | 0 | 1533 | 0 | 1489 | 1970-01-01T00:00:00Z | 2023-05-24T19:47:56Z | **-** ***id***: 00000000-0000-0000-0000-000000000008<br/> ***name***: Personal<br/> ***totalViolatedHits***: 1533<br/>**-** ***id***: 00000000-0000-0000-0000-000000000007<br/> ***name***: Geographical<br/> ***totalViolatedHits***: 1489 |
+>| /Sales Department/fileName1.txt | 25653 | 790 | 0 | 393 | 0 | 397 | 1970-01-01T00:00:00Z | 2023-05-24T19:42:35Z | **-** ***id***: 00000000-0000-0000-0000-000000000007<br/> ***name***: Geographical<br/> ***totalViolatedHits***: 397<br/>**-** ***id***: 00000000-0000-0000-0000-000000000008<br/> ***name***: Personal<br/> ***totalViolatedHits***: 393 |
 >
 >Note: To retrieve the next set of results use, "next_page_token" = end_hash_cursor
 

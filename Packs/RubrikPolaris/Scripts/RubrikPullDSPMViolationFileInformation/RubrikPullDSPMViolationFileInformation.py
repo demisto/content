@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-ERROR_MESSAGES = {"MISSING_ARGUMENT": "Please provide corrent input for '{}' argument."}
+ERROR_MESSAGES = {"MISSING_ARGUMENT": "Please provide correct input for '{}' argument."}
 HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 """ COMMAND FUNCTION """
@@ -9,7 +9,7 @@ HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 def sync_the_violation_file_information(args: dict[str, Any]) -> list:
     """
-    Sync the DSPM Violation file infromation from RSC.
+    Sync the DSPM Violation file information from RSC.
 
     :type args: ``Dict[str, Any]``
     :param args: Arguments provided by user.
@@ -49,7 +49,7 @@ def sync_the_violation_file_information(args: dict[str, Any]) -> list:
             break
 
     if not command_result:
-        return_error(command_results[0].get("Contents"))
+        raise ValueError(f"Failed to get violation file information: {command_results[0].get('Contents')}")
 
     response = command_result.get("Contents")
     file_info = demisto.get(response, "data.policyObj.fileResultConnection", {})
@@ -108,6 +108,7 @@ def main():
     try:
         return_results(sync_the_violation_file_information(demisto.args()))
     except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute RubrikPullDSPMViolationFileInformation-RubrikSecurityCloud. Error: {ex!s}")
 
 

@@ -17,7 +17,7 @@ Syncs the DSPM violation information from RSC to XSOAR.
 | --- | --- |
 | violation_id | The ID of the DSPM Violation.<br/><br/>Note: If not provided, the script will try to retrieve it from the incident context. |
 | object_id | The Object ID.<br/><br/>Note: If not provided, the script will try to retrieve it from the incident context. |
-| snapshot_id | The Sanpshot ID.<br/><br/>Note: If not provided, the script will try to retrieve it from the incident context. |
+| snapshot_id | The Snapshot ID.<br/><br/>Note: If not provided, the script will try to retrieve it from the incident context. |
 | limit | Number of results to retrieve in the response. The maximum allowed size is 1000. |
 
 ## Outputs

@@ -27,7 +27,7 @@
                                     "name": "DEMO-RADAR02",
                                     "objectType": "VSPHERE_VIRTUAL_MACHINE",
                                     "platform": "PLATFORM_DATA_CENTER",
-                                    "physicalHost": "rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                                    "physicalHost": "rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
                                     "cloudAccountInfo": {
                                         "accountName": "",
                                         "__typename": "CloudAccountInfo"
@@ -196,7 +196,7 @@
                         "name": "DEMO-RADAR02",
                         "objectType": "VSPHERE_VIRTUAL_MACHINE",
                         "platform": "PLATFORM_DATA_CENTER",
-                        "physicalHost": "rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                        "physicalHost": "rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
                         "cloudAccountInfo": {
                             "accountName": "",
                             "__typename": "CloudAccountInfo"

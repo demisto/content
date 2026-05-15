@@ -8,7 +8,7 @@ ERROR_MESSAGES = {"MISSING_ARGUMENT": "Please provide correct input for '{}' arg
 
 def sync_the_violation_status(args: dict[str, Any]) -> dict[str, Any]:
     """
-    Push the DSPM Violation Status infromation from XSOAR to RSC.
+    Push the DSPM Violation Status information from XSOAR to RSC.
 
     :type args: ``Dict[str, Any]``
     :param args: Arguments provided by user.
@@ -42,7 +42,7 @@ def sync_the_violation_status(args: dict[str, Any]) -> dict[str, Any]:
             break
 
     if not command_result:
-        return_error(command_results[0].get("Contents"))
+        raise ValueError(f"Failed to update violation status: {command_results[0].get('Contents')}")
 
     return command_result
 
