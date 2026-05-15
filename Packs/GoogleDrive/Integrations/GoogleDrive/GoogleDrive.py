@@ -2056,7 +2056,9 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     :return: Command Result.
     """
     file_name = args.get("file_name", "")
-    mime_type = args.get("mime_type", "application/vnd.google-apps.folder")
+    # mime_type is optional; when omitted, the field is not sent in the request body
+    # and Google Drive will infer the type instead of receiving an empty value.
+    mime_type = args.get("mime_type")
     parent = args.get("parent", "")
     description = args.get("description", "")
     supports_all_drives = argToBoolean(args.get("supports_all_drives", False))
@@ -2072,8 +2074,9 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     }
     body: dict[str, Any] = {
         "name": file_name,
-        "mimeType": mime_type,
     }
+    if mime_type:
+        body["mimeType"] = mime_type
     if parent:
         body["parents"] = [parent]
     if description:

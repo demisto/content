@@ -1146,8 +1146,80 @@ class TestFilePermissionMethods:
         _, call_kwargs = mocker_http_request.call_args
         assert call_kwargs["body"]["name"] == "Quarantine Folder"
         assert call_kwargs["body"]["parents"] == ["root"]
+        # When mime_type is provided, it must be forwarded as-is in the request body.
+        assert call_kwargs["body"]["mimeType"] == "application/vnd.google-apps.folder"
         # supports_all_drives defaults to False when not provided
         assert call_kwargs["params"]["supportsAllDrives"] is False
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_with_mime_type(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-create command with an explicit mime_type.
+
+        Given:
+        - Command args including mime_type="application/vnd.google-apps.document".
+
+        When:
+        - Calling google-drive-file-create command with the parameters provided.
+
+        Then:
+        - Ensure the request body includes the provided mimeType value.
+        """
+        from GoogleDrive import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "doc_id_001",
+            "name": "My Document",
+            "mimeType": "application/vnd.google-apps.document",
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "My Document",
+            "mime_type": "application/vnd.google-apps.document",
+            "user_id": "admin@example.com",
+        }
+        file_create_command(gsuite_client, args)
+
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["body"]["name"] == "My Document"
+        assert call_kwargs["body"]["mimeType"] == "application/vnd.google-apps.document"
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_without_mime_type(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-create command without mime_type argument.
+
+        Given:
+        - Command args without mime_type.
+
+        When:
+        - Calling google-drive-file-create command with the parameters provided.
+
+        Then:
+        - Ensure the request body does NOT include a mimeType key
+          (so Google Drive infers the type instead of receiving an empty value).
+        """
+        from GoogleDrive import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "no_mime_id_001",
+            "name": "Untyped File",
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "Untyped File",
+            "user_id": "admin@example.com",
+        }
+        file_create_command(gsuite_client, args)
+
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["body"]["name"] == "Untyped File"
+        # mimeType key must be omitted entirely when the arg is not provided.
+        assert "mimeType" not in call_kwargs["body"]
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_create_tombstone_command_success(self, mocker_http_request, gsuite_client):

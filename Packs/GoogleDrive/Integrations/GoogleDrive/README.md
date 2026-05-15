@@ -1432,7 +1432,7 @@ Creates a new metadata-only file or folder without uploading content. Use for cr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_name | The name of the file or folder to create. | Required | 
-| mime_type | The MIME type of the file. Use "application/vnd.google-apps.folder" to create a folder. Default is "application/vnd.google-apps.folder". Default is application/vnd.google-apps.folder. | Optional | 
+| mime_type | Optional. The MIME type of the file (for example, "application/vnd.google-apps.folder" to create a folder). If omitted, no MIME type is sent and Google Drive will infer it. | Optional |
 | user_id | The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used. | Optional | 
 | parent | The ID of the parent folder. If not specified, the file will be created in the user's root folder. | Optional | 
 | description | A short description of the file or folder. | Optional | 

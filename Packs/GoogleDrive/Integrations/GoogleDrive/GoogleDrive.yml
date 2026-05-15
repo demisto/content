@@ -3188,8 +3188,7 @@ script:
       required: true
       description: The name of the file or folder to create.
     - name: mime_type
-      description: 'The MIME type of the file. Use "application/vnd.google-apps.folder" to create a folder. Default is "application/vnd.google-apps.folder".'
-      defaultValue: application/vnd.google-apps.folder
+      description: 'Optional. The MIME type of the file (for example, "application/vnd.google-apps.folder" to create a folder). If omitted, no MIME type is sent and Google Drive will infer it.'
     - name: user_id
       required: false
       description: The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used.
