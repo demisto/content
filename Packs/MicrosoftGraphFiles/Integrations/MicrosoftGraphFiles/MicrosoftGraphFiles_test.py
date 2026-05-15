@@ -8,14 +8,17 @@ import pytest
 from CommonServerPython import CommandResults, DemistoException
 from MicrosoftGraphFiles import (
     MsGraphClient,
+    apply_sensitivity_label_command,
     create_new_folder_command,
     create_site_permissions_command,
     delete_file_command,
     delete_site_permission_command,
     download_file_command,
+    extract_sensitivity_label_command,
     get_site_id_from_site_name,
     list_drive_content_command,
     list_drives_in_site_command,
+    list_sensitivity_labels_command,
     list_sharepoint_sites_command,
     list_site_permissions_command,
     parse_key_to_context,
@@ -1056,3 +1059,320 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
         result = test_function(client)
         assert result == expected_result
         client.ms_client.http_request.assert_called_once_with(url_suffix="sites", timeout=7, method="GET")
+
+
+# ---------------------------------------------------------------------------
+# Sensitivity-label commands
+# ---------------------------------------------------------------------------
+
+SENSITIVITY_LABELS_RAW_RESPONSE = {
+    "@odata.context": "https://graph.microsoft.com/beta/$metadata#security/informationProtection/sensitivityLabels",
+    "value": [
+        {
+            "id": "label-id-1",
+            "name": "Confidential",
+            "displayName": "Confidential",
+            "description": "Internal company data",
+            "color": "#ff0000",
+            "isActive": True,
+            "sensitivity": 3,
+            "tooltip": "Use for confidential content",
+            "parent": {"id": "parent-label-id"},
+        },
+        {
+            "id": "label-id-2",
+            "name": "Public",
+            "displayName": "Public",
+            "description": "Public data",
+            "color": "#00ff00",
+            "isActive": True,
+            "sensitivity": 1,
+            "tooltip": "Public content",
+            "parent": {},
+        },
+    ],
+}
+
+
+def test_list_sensitivity_labels_command_happy_path(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - A successful Microsoft Graph response containing two sensitivity labels.
+    When:
+        - Running the list_sensitivity_labels_command.
+    Then:
+        - The command returns CommandResults with both labels under the
+          MsGraphFiles.SensitivityLabel context path, including the parent.id field
+          for the label that has a parent.
+    """
+    http_mock = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=SENSITIVITY_LABELS_RAW_RESPONSE)
+    result = list_sensitivity_labels_command(CLIENT_MOCKER, {})
+
+    assert http_mock.call_count == 1
+    call_kwargs = http_mock.call_args.kwargs
+    assert call_kwargs["method"] == "GET"
+    assert call_kwargs["full_url"].endswith("/beta/security/informationProtection/sensitivityLabels")
+
+    assert result.outputs_prefix == "MsGraphFiles.SensitivityLabel"
+    assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "label-id-1"
+    assert result.outputs[0]["displayName"] == "Confidential"
+    assert result.outputs[0]["parent"] == {"id": "parent-label-id"}
+    assert result.outputs[1]["id"] == "label-id-2"
+    assert result.outputs[1]["parent"] is None
+
+
+def test_list_sensitivity_labels_command_respects_limit(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - A Graph response with two labels and a `limit` argument of 1.
+    When:
+        - Running the list_sensitivity_labels_command.
+    Then:
+        - Only the first label is returned in the outputs.
+    """
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=SENSITIVITY_LABELS_RAW_RESPONSE)
+    result = list_sensitivity_labels_command(CLIENT_MOCKER, {"limit": "1"})
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "label-id-1"
+
+
+@pytest.mark.parametrize(
+    "object_type, expected_uri_part",
+    [
+        ("drives", "drives/drive-1/items/item-1/extractSensitivityLabels"),
+        ("users", "users/user-1/drive/items/item-1/extractSensitivityLabels"),
+        ("sites", "sites/site-1/drive/items/item-1/extractSensitivityLabels"),
+        ("groups", "groups/group-1/drive/items/item-1/extractSensitivityLabels"),
+    ],
+)
+def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_type: str, expected_uri_part: str) -> None:
+    """
+    Given:
+        - A request to extract a sensitivity label for each supported object_type.
+    When:
+        - Running the extract_sensitivity_label_command.
+    Then:
+        - The Graph URL is constructed using the correct drive-prefix branching:
+          'drives/{id}/items/...' for drives and '{type}/{id}/drive/items/...' for users/sites/groups.
+    """
+    http_mock = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value={"extractedSensitivityLabel": []},
+    )
+    object_type_id_map = {
+        "drives": "drive-1",
+        "users": "user-1",
+        "sites": "site-1",
+        "groups": "group-1",
+    }
+    args = {
+        "object_type": object_type,
+        "object_type_id": object_type_id_map[object_type],
+        "item_id": "item-1",
+    }
+    extract_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    call_kwargs = http_mock.call_args.kwargs
+    assert call_kwargs["method"] == "POST"
+    assert call_kwargs["url_suffix"] == expected_uri_part
+
+
+def test_extract_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - A Graph response containing a single extracted sensitivity label.
+    When:
+        - Running the extract_sensitivity_label_command.
+    Then:
+        - The outputs include the label GUID and the assignment method.
+    """
+    response = {"extractedSensitivityLabel": [{"sensitivityLabelId": "label-guid-1", "assignmentMethod": "standard"}]}
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
+    result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    assert result.outputs_prefix == "MsGraphFiles.ExtractedSensitivityLabel"
+    assert result.outputs == {
+        "itemId": "i1",
+        "sensitivityLabelId": "label-guid-1",
+        "assignmentMethod": "standard",
+    }
+
+
+def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - A Graph response with an empty `extractedSensitivityLabel` array,
+          meaning the drive item has no sensitivity label assigned.
+    When:
+        - Running the extract_sensitivity_label_command.
+    Then:
+        - The command does NOT raise an error.
+        - The outputs contain empty strings for `sensitivityLabelId` and `assignmentMethod`.
+    """
+    mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value={"extractedSensitivityLabel": []},
+    )
+    args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
+    result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    assert result.outputs == {
+        "itemId": "i1",
+        "sensitivityLabelId": "",
+        "assignmentMethod": "",
+    }
+
+
+@pytest.mark.parametrize(
+    "command, args",
+    [
+        (extract_sensitivity_label_command, {"object_type_id": "x", "item_id": "y"}),
+        (extract_sensitivity_label_command, {"object_type": "drives", "item_id": "y"}),
+        (extract_sensitivity_label_command, {"object_type": "drives", "object_type_id": "x"}),
+        (
+            apply_sensitivity_label_command,
+            {"object_type_id": "x", "item_id": "y", "sensitivity_label_id": "z"},
+        ),
+        (
+            apply_sensitivity_label_command,
+            {"object_type": "drives", "item_id": "y", "sensitivity_label_id": "z"},
+        ),
+        (
+            apply_sensitivity_label_command,
+            {"object_type": "drives", "object_type_id": "x", "sensitivity_label_id": "z"},
+        ),
+        (
+            apply_sensitivity_label_command,
+            {"object_type": "drives", "object_type_id": "x", "item_id": "y"},
+        ),
+    ],
+)
+def test_sensitivity_label_commands_missing_required_args(command: Callable, args: dict) -> None:
+    """
+    Given:
+        - Sensitivity-label commands invoked with one required argument missing.
+    When:
+        - Running the command.
+    Then:
+        - A KeyError is raised because the handler indexes into the args dict for required values.
+    """
+    with pytest.raises(KeyError):
+        command(CLIENT_MOCKER, args)
+
+
+@pytest.mark.parametrize(
+    "object_type, expected_uri_part",
+    [
+        ("drives", "drives/drive-1/items/item-1/assignSensitivityLabel"),
+        ("users", "users/user-1/drive/items/item-1/assignSensitivityLabel"),
+        ("sites", "sites/site-1/drive/items/item-1/assignSensitivityLabel"),
+        ("groups", "groups/group-1/drive/items/item-1/assignSensitivityLabel"),
+    ],
+)
+def test_apply_sensitivity_label_uri_branching(mocker: MockerFixture, object_type: str, expected_uri_part: str) -> None:
+    """
+    Given:
+        - A request to apply a sensitivity label for each supported object_type.
+    When:
+        - Running the apply_sensitivity_label_command.
+    Then:
+        - The Graph URL uses the correct drive-prefix branching for each object_type.
+        - The request body contains sensitivityLabelId, assignmentMethod, and justificationText.
+    """
+    http_mock = mocker.patch.object(
+        CLIENT_MOCKER.ms_client, "http_request", return_value=MockedResponse(status_code=200, json={})
+    )
+    object_type_id_map = {
+        "drives": "drive-1",
+        "users": "user-1",
+        "sites": "site-1",
+        "groups": "group-1",
+    }
+    args = {
+        "object_type": object_type,
+        "object_type_id": object_type_id_map[object_type],
+        "item_id": "item-1",
+        "sensitivity_label_id": "label-guid-1",
+    }
+    apply_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    call_kwargs = http_mock.call_args.kwargs
+    assert call_kwargs["method"] == "POST"
+    assert call_kwargs["url_suffix"] == expected_uri_part
+    assert call_kwargs["resp_type"] == "response"
+    assert call_kwargs["json_data"] == {
+        "sensitivityLabelId": "label-guid-1",
+        "assignmentMethod": "standard",
+        "justificationText": "Applied via Cortex XSOAR",
+    }
+
+
+def test_apply_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - A successful 200 OK response from Microsoft Graph for the assignSensitivityLabel call.
+    When:
+        - Running the apply_sensitivity_label_command with a non-default assignment_method
+          and justification_text.
+    Then:
+        - The outputs include result=SUCCESS and the HTTP status code.
+        - The request body uses the user-supplied assignment_method and justification_text.
+    """
+    http_mock = mocker.patch.object(
+        CLIENT_MOCKER.ms_client, "http_request", return_value=MockedResponse(status_code=200, json={})
+    )
+    args = {
+        "object_type": "drives",
+        "object_type_id": "d1",
+        "item_id": "i1",
+        "sensitivity_label_id": "label-guid-1",
+        "assignment_method": "privileged",
+        "justification_text": "Manual review",
+    }
+    result = apply_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    assert result.outputs_prefix == "MsGraphFiles.AppliedSensitivityLabel"
+    assert result.outputs == {
+        "itemId": "i1",
+        "sensitivityLabelId": "label-guid-1",
+        "result": "SUCCESS",
+        "httpStatusCode": 200,
+    }
+    sent_body = http_mock.call_args.kwargs["json_data"]
+    assert sent_body["assignmentMethod"] == "privileged"
+    assert sent_body["justificationText"] == "Manual review"
+
+
+@pytest.mark.parametrize("status_code", [400, 403, 404, 503])
+def test_apply_sensitivity_label_propagates_http_errors(mocker: MockerFixture, status_code: int) -> None:
+    """
+    Given:
+        - Microsoft Graph returns a 4xx or 5xx error for the assignSensitivityLabel call.
+    When:
+        - Running the apply_sensitivity_label_command.
+    Then:
+        - The DemistoException raised by the underlying HTTP client is allowed to propagate
+          (caught by the outer main() try/except in the integration entry point) so the
+          calling layer can inspect the raw Graph error message.
+    """
+    error_message = f"Error in API call [{status_code}] - error from Graph"
+    mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        side_effect=DemistoException(error_message),
+    )
+    args = {
+        "object_type": "drives",
+        "object_type_id": "d1",
+        "item_id": "i1",
+        "sensitivity_label_id": "label-guid-1",
+    }
+    with pytest.raises(DemistoException) as exc_info:
+        apply_sensitivity_label_command(CLIENT_MOCKER, args)
+    assert error_message in str(exc_info.value)
