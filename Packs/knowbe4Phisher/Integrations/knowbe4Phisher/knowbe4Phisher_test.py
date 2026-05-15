@@ -128,7 +128,11 @@ MSG_B = {
 
 
 def _gql_response(messages):
-    return {"data": {"phisherMessages": {"nodes": messages, "pagination": {"page": 1, "pages": 1, "per": 50, "totalCount": len(messages)}}}}
+    return {
+        "data": {
+            "phisherMessages": {"nodes": messages, "pagination": {"page": 1, "pages": 1, "per": 50, "totalCount": len(messages)}}
+        }
+    }
 
 
 @freeze_time("2024-01-01T11:00:00Z")
@@ -192,7 +196,13 @@ def test_fetch_incidents_late_arrival_recovered(mocker):
         "category": "UNKNOWN",
         "comments": [],
         "events": [
-            {"causer": "null", "createdAt": "2024-01-01T10:05:00Z", "eventType": "CREATED", "id": "evt-late", "triggerer": "null"},
+            {
+                "causer": "null",
+                "createdAt": "2024-01-01T10:05:00Z",
+                "eventType": "CREATED",
+                "id": "evt-late",
+                "triggerer": "null",
+            },
         ],
         "from": "late@example.com",
         "id": "msg-late",
@@ -241,8 +251,20 @@ def test_fetch_incidents_max_fetch_truncates(mocker):
     - Only 2 incidents are emitted
     """
     msgs = [
-        {**MSG_A, "id": f"msg-{i}", "subject": f"Msg {i}",
-         "events": [{"causer": "null", "createdAt": f"2024-01-01T10:0{i}:00Z", "eventType": "CREATED", "id": f"evt-{i}", "triggerer": "null"}]}
+        {
+            **MSG_A,
+            "id": f"msg-{i}",
+            "subject": f"Msg {i}",
+            "events": [
+                {
+                    "causer": "null",
+                    "createdAt": f"2024-01-01T10:0{i}:00Z",
+                    "eventType": "CREATED",
+                    "id": f"evt-{i}",
+                    "triggerer": "null",
+                }
+            ],
+        }
         for i in range(5)
     ]
     mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response(msgs))
