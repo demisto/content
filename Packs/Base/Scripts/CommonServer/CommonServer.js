@@ -2055,6 +2055,13 @@ function mergeVersionedIntegrationContext(args) {
         var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
         if(response.Error){
             logDebug(response.Error)
+            // Decorrelated jitter backoff (50-200ms) between retries to spread
+            // concurrent writers and reduce thundering-herd version conflicts.
+            // Without this delay, back-to-back retries all re-read the same
+            // revised version and collide again under contention.
+            if (retries > 0) {
+                try { wait((50 + Math.floor(Math.random() * 150)) / 1000); } catch (e) {}
+            }
         }
         else
         {

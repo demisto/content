@@ -32,6 +32,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Merge retry attempts
+  name: merge_retries
+  defaultvalue: "5"
+  type: 0
+  additionalinfo: 'Number of optimistic-concurrency retries the integration performs against the integration-context document for both lock acquire and release. Each retry waits a small randomized backoff (50-200ms) to spread concurrent writers and reduce version conflicts. Increase this (e.g. 20) when many concurrent incidents (>10) contend for the same locks and you see ***demisto-lock-release*** intermittently failing or downstream ***demisto-lock-get*** timing out under load. Leave at the default 5 for normal use.'
+  section: Connect
+  advanced: true
+  required: false
 script:
   script: ''
   type: javascript

@@ -7,15 +7,42 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 var sync = params.sync;
+var MERGE_RETRIES = parseInt(params.merge_retries, 10);
+if (isNaN(MERGE_RETRIES) || MERGE_RETRIES < 0) {
+    MERGE_RETRIES = 5;
+}
+
+// Run `op` (a no-arg merge call with retries:0) up to MERGE_RETRIES extra
+// times on failure, sleeping 50-200ms between attempts (decorrelated jitter).
+// Replaces the SDK's tight internal back-to-back retries that all collide on
+// the same revised version under contention (XSUP-67021).
+function mergeWithJitter(op) {
+    var attempt = 0;
+    while (true) {
+        try { op(); return; }
+        catch (err) {
+            if (attempt++ >= MERGE_RETRIES) { throw err; }
+            try { wait((50 + Math.floor(Math.random() * 150)) / 1000); } catch (e) {}
+        }
+    }
+}
+
 function setLock(guid, info, version) {
     if (sync) {
-        mergeVersionedIntegrationContext({newContext : {[lockName] : {guid: guid, info: info}}, version : version});
+        mergeWithJitter(function () {
+            mergeVersionedIntegrationContext({
+                newContext: {[lockName]: {guid: guid, info: info}},
+                version: version,
+                retries: 0
+            });
+        });
     } else {
         var integrationContext = getIntegrationContext() || {};
         integrationContext[lockName] = {guid: guid, info: info};
         setIntegrationContext(integrationContext);
     }
-} function getLock() {
+}
+function getLock() {
     if (sync) {
         var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
         var integrationContext = versionedIntegrationContext.context;
@@ -35,8 +62,10 @@ function attemptToAcquireLock(guid, lockInfo, version) {
     logDebug("Attempting to acquire lock");
     try {
         setLock(guid, lockInfo, version);
+        return true;
     } catch (err) {
-        logDebug(err.message);
+        logDebug("attemptToAcquireLock failed: " + err.message);
+        return false;
     }
 }
 var lockName = args.name || 'Default';
@@ -54,6 +83,7 @@ switch (command) {
         var guid = args.guid || guid();
         var time = 0;
         var lock, version, lock_candidate;
+        var acquireSucceeded = false;
 
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
             logDebug('Running on XSOAR version 8');
@@ -68,12 +98,14 @@ switch (command) {
 
             // if no lock found, try to acquire a new lock
             if (!lock.guid) {
-                attemptToAcquireLock(guid, lockInfo, version)
-                lock_candidate = getLock();
+                acquireSucceeded = attemptToAcquireLock(guid, lockInfo, version);
+                if (acquireSucceeded) {
+                    lock_candidate = getLock();
+                }
             }
 
-            // stopping condition - the lock is acquired successfully
-            if (lock_candidate && lock_candidate[0].guid === guid) {
+            // stopping condition - the lock is acquired successfully AND the re-read confirms our GUID is the actual holder.
+            if (acquireSucceeded && lock_candidate && lock_candidate[0].guid === guid) {
                 var md = '### Demisto Locking Mechanism\n';
                 md += 'Lock acquired successfully\n';
                 md += 'GUID: ' + guid;
@@ -81,9 +113,10 @@ switch (command) {
                 return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
             }
             else { // polling condition - the lock acquire attempt failed (another lock already exist)
+                var holderInfo = (lock_candidate && lock_candidate[0].info) || lock.info || 'unknown';
                 var timeout_err_msg = 'Timeout waiting for lock\n';
                 timeout_err_msg += 'Lock name: ' + lockName + '\n';
-                timeout_err_msg += 'Lock info: ' + lock.info + '\n';
+                timeout_err_msg += 'Lock info: ' + holderInfo + '\n';
                 logDebug(timeout_err_msg)
                 return {
                     Type: entryTypes.note,
@@ -129,16 +162,42 @@ switch (command) {
 
     case 'demisto-lock-release':
         logDebug('Releasing lock lockName: ' + lockName);
-        if(sync)   {
-            mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
-        } else {
-            integrationContext = getVersionedIntegrationContext(sync);
-            delete integrationContext[lockName];
-            setVersionedIntegrationContext(integrationContext, sync);
+        // Catch the SDK throw on retry exhaustion so the failure is surfaced
+        // instead of silently aborting the command (XSUP-67021).
+        var releaseError = null;
+        try {
+            if (sync) {
+                mergeWithJitter(function () {
+                    mergeVersionedIntegrationContext({
+                        newContext: {[lockName]: 'remove'},
+                        retries: 0
+                    });
+                });
+            } else {
+                var integrationContext = getVersionedIntegrationContext(sync);
+                delete integrationContext[lockName];
+                setVersionedIntegrationContext(integrationContext, sync);
+            }
+        } catch (err) {
+            releaseError = err && err.message ? err.message : String(err);
+            logDebug('Release merge failed: ' + releaseError);
         }
+
+        // Verify the lock entry is actually gone before reporting success.
         [lock, version] = getLock();
         logDebug('Current lock is: ' + JSON.stringify(lock) + ', version: ' + JSON.stringify(version));
 
+        if (releaseError || (lock && lock.guid)) {
+            var failMd = '### Demisto Locking Mechanism\n';
+            failMd += 'Lock release FAILED for lock: ' + lockName + '\n';
+            if (releaseError) {
+                failMd += 'Error: ' + releaseError + '\n';
+            }
+            if (lock && lock.guid) {
+                failMd += 'Lock is still held by GUID: ' + lock.guid + '\n';
+            }
+            return { ContentsFormat: formats.markdown, Type: entryTypes.error, Contents: failMd };
+        }
 
         var md = '### Demisto Locking Mechanism\n';
         md += 'Lock released successfully';
