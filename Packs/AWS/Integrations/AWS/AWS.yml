@@ -16485,7 +16485,7 @@ script:
         description: The action of the step that is currently running.
         type: String
       - contextPath: AWS.SSM.AutomationExecutions.FailureMessage
-        description: The list of execution outputs as defined in the Automation runbook.
+        description: A message describing why an execution has failed, if the status is set to Failed.
         type: String
       - contextPath: AWS.SSM.AutomationExecutions.TargetParameterName
         description: The parameter name used as the target resource for the rate-controlled execution.
@@ -16506,7 +16506,7 @@ script:
         description: The MaxErrors value specified by the user when starting the automation.
         type: String
       - contextPath: AWS.SSM.AutomationExecutions.Target
-        description: The list of execution outputs as defined in the Automation runbook.
+        description: The target of the execution.
         type: String
       - contextPath: AWS.SSM.AutomationExecutions.TargetLocationsURL
         description: A publicly accessible URL for a file that contains the TargetLocations body.
