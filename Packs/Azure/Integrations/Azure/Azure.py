@@ -90,27 +90,34 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-public-ip-address-get",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": [
-        
         "azure-storage-blob-containers-update",
         "azure-storage-blob-container-update",
         "azure-storage-container-create",
-        "azure-storage-container-public-access-block",
     ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action": ["azure-storage-container-public-access-block"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": ["azure-storage-container-property-get"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
         "azure-storage-container-blob-create",
+        "azure-storage-blob-create",
         "azure-storage-container-blob-property-set",
+        "azure-storage-blob-property-set",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-get",
+        "azure-storage-blob-get",
         "azure-storage-container-blob-property-get",
+        "azure-storage-blob-property-get",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
         "azure-storage-container-blob-tag-get",
+        "azure-storage-blob-tag-get",
         "azure-storage-container-blob-tag-set",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": ["azure-storage-container-blob-tag-set"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
+        "azure-storage-container-blob-tag-set",
+        "azure-storage-blob-tag-set",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
@@ -215,7 +222,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vm-instance-details-get",
         "azure-vm-instance-start",
         "azure-vm-instance-power-off",
-        "azure-compute-vm-get"],
+        "azure-compute-vm-get",
+    ],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start", "azure-compute-vm-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off", "azure-compute-vm-power-off"],
     "Microsoft.ContainerRegistry/registries/read": [
@@ -248,26 +256,6 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
-        "azure-storage-container-blob-property-get",
-        "azure-storage-blob-property-get",
-        "azure-storage-container-blob-get",
-        "azure-storage-blob-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
-        "azure-storage-container-blob-tag-get",
-        "azure-storage-blob-tag-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
-        "azure-storage-container-blob-create",
-        "azure-storage-blob-create",
-        "azure-storage-container-blob-property-set",
-        "azure-storage-blob-property-set",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
-        "azure-storage-container-blob-tag-set",
-        "azure-storage-blob-tag-set",
-    ],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -323,7 +311,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     ],
     "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
     "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
-    "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/write"],
+    "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
     "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
@@ -355,6 +343,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action",
     "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",

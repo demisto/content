@@ -578,7 +578,7 @@ script:
       description: Type of the resource (e.g., compute#operation).
       type: string
   - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
-    description: Disables default GCP firewall rule which is overly permissive (except HTTP and HTTPS).
+    description: "Disables default GCP firewall rule which is overly permissive (except HTTP and HTTPS). Required Permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list."
     prettyname: Disable GCP Firewall Rule
     quickaction: true
     hidden: true
@@ -686,7 +686,7 @@ script:
       description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action
-    description: Revoke 'allUsers' permission access in GCP Storage buckets.
+    description: "Revoke 'allUsers' permission access in GCP Storage buckets. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     prettyname: Remove GCP Bucket AllUsers Access
     quickaction: true
     hidden: true
@@ -714,7 +714,7 @@ script:
         description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action
-    description: Revokes 'allAuthenticatedUsers' permission access in GCP Storage buckets.
+    description: "Revokes 'allAuthenticatedUsers' permission access in GCP Storage buckets. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     prettyname: Remove GCP Bucket AllAuthenticatedUser Access
     quickaction: true
     hidden: true
@@ -742,7 +742,7 @@ script:
         description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action
-    description: Revokes 'allUsers' and 'allAuthenticatedUsers' permissions access in a GCP Storage bucket.
+    description: "Revokes 'allUsers' and 'allAuthenticatedUsers' permissions access in a GCP Storage bucket. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     prettyname: Make GCP Bucket Private
     quickaction: true
     hidden: true
@@ -832,7 +832,7 @@ script:
       type: String
 
   - name: gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action
-    description: Enables VPC Flow Logs on a GCP subnet.
+    description: "Enables VPC Flow Logs on a GCP subnet. Required Permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     prettyname: Enable GCP Subnet Flow Logs
     quickaction: true
     hidden: true
@@ -903,7 +903,7 @@ script:
         type: String
 
   - name: gcp-compute-enable-private-ip-access-on-subnet-quick-action
-    description: Enables Private Google Access on a GCP subnet.
+    description: "Enables Private Google Access on a GCP subnet. Required Permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     prettyname: Enable Private IP Access on Subnet
     quickaction: true
     hidden: true
@@ -1079,7 +1079,7 @@ script:
       type: String
 
   - name: gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
-    description: Enables intra-node visibility on a GKE cluster for enhanced network monitoring.
+    description: "Enables intra-node visibility on a GKE cluster for enhanced network monitoring. Required Permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     prettyname: Enable GKE Cluster Intra-Node Visibility
     quickaction: true
     hidden: true
@@ -1189,7 +1189,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
-    description: Enables Master Authorized Networks on a GKE cluster to restrict API server access.
+    description: "Enables Master Authorized Networks on a GKE cluster to restrict API server access. Required Permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     prettyname: Enable Master Authorized Networks on GKE
     quickaction: true
     hidden: true
@@ -1392,7 +1392,7 @@ script:
       type: String
 
   - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
-    description: Enables versioning on a GCP Storage bucket to preserve object versions.
+    description: "Enables versioning on a GCP Storage bucket to preserve object versions. Required Permissions: storage.buckets.update."
     prettyname: Enable GCP Bucket Versioning
     quickaction: true
     hidden: true
@@ -1495,7 +1495,7 @@ script:
         type: String
 
   - name: gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action
-    description: Enables uniform bucket-level access on a GCP Storage bucket for enhanced security.
+    description: "Enables uniform bucket-level access on a GCP Storage bucket for enhanced security. Required Permissions: storage.buckets.update."
     prettyname: Set GCP Bucket Access to Uniform
     quickaction: true
     hidden: true

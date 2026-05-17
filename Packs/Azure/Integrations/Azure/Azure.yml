@@ -1271,7 +1271,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
+    description: "Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action."
     name: azure-storage-container-public-access-block
 
   - arguments:

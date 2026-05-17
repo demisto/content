@@ -1710,7 +1710,7 @@ There is no context output for this command.
 ### azure-storage-container-public-access-block
 
 ***
-Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
+Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
 
 #### Base Command
 
