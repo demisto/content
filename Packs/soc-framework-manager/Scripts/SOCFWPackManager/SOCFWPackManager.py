@@ -91,13 +91,15 @@ def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: Dict[str, Any]) -> List[Dict
 # Demisto helpers
 # ---------------------------
 
-def get_error(res):
+def socfw_get_error(res):
+    # Renamed from get_error to avoid shadowing CommonServerPython.get_error
     try:
         return res[0].get("Contents") or res[0].get("HumanReadable") or str(res[0])
     except Exception:
         return str(res)
 
-def is_error(res0):
+def socfw_is_error(res0):
+    # Renamed from is_error to avoid shadowing CommonServerPython.is_error
     try:
         return bool(res0.get("Type") == 4)  # entryTypes["error"] == 4
     except Exception:
@@ -163,9 +165,9 @@ def exec_cmd(command: str, args: Dict[str, Any], fail_on_error: bool = True):
         if fail_on_error:
             raise Exception(f"{command} returned empty response")
         return res
-    if is_error(res[0]):
+    if socfw_is_error(res[0]):
         if fail_on_error:
-            raise Exception(get_error(res))
+            raise Exception(socfw_get_error(res))
         return res
     return res
 
@@ -185,7 +187,8 @@ def exec_with_retry(
             last_err = str(e)
             if attempt >= retry_count:
                 break
-            time.sleep(max(1, retry_sleep_seconds))
+            # Backoff via platform Sleep script — no time.sleep in pack code.
+            demisto.executeCommand("Sleep", {"seconds": str(max(1, retry_sleep_seconds))})
             continue
     if fail_on_error:
         raise Exception(f"{context_for_error}\nError: {last_err}")
@@ -691,7 +694,8 @@ def wait_for_pack_installed(
             )
             return False
 
-        time.sleep(interval)
+        # Backoff via platform Sleep script — no time.sleep in pack code.
+        demisto.executeCommand("Sleep", {"seconds": str(interval)})
 
 def install_custom_pack_zip(
     url: str,
@@ -846,7 +850,8 @@ def configure_integrations_from_xsoar_config(
                     )
                     break
 
-                time.sleep(max(1, retry_sleep_seconds))
+                # Backoff via platform Sleep script — no time.sleep in pack code.
+                demisto.executeCommand("Sleep", {"seconds": str(max(1, retry_sleep_seconds))})
 
     emit_progress(
         "\n".join(
@@ -909,7 +914,8 @@ def _wait_for_dataset(dataset_name: str, using: str, debug: bool, wait_seconds: 
     while time.time() < deadline:
         if _dataset_exists(dataset_name, using=using, debug=debug):
             return True
-        time.sleep(max(1, interval_seconds))
+        # Backoff via platform Sleep script — no time.sleep in pack code.
+        demisto.executeCommand("Sleep", {"seconds": str(max(1, interval_seconds))})
     return False
 
 def _xql_call_first_working(paths: List[str], body: Dict[str, Any], using: str, debug: bool) -> Dict[str, Any]:
@@ -1116,7 +1122,8 @@ def configure_lookups_from_xsoar_config(
 
             _xql_lookup_add_data_list(dataset_name=name, rows=rows, using=using, debug=debug)
 
-            time.sleep(2)
+            # Brief settle before count check — via platform Sleep script.
+            demisto.executeCommand("Sleep", {"seconds": "2"})
 
             after_count = None
             try:
@@ -1334,7 +1341,8 @@ def configure_jobs_from_xsoar_config(
             existing = jobs_api_find_by_name(name, using=using, search_path=search_path, debug=debug)
             if existing:
                 break
-            time.sleep(1)
+            # Backoff via platform Sleep script — no time.sleep in pack code.
+            demisto.executeCommand("Sleep", {"seconds": "1"})
 
         if existing:
             summary["ok"] += 1
@@ -1349,7 +1357,8 @@ def configure_jobs_from_xsoar_config(
                 verified = jobs_api_find_by_name(name, using=using, search_path=search_path, debug=debug)
                 if verified:
                     break
-                time.sleep(2)
+                # Backoff via platform Sleep script — no time.sleep in pack code.
+                demisto.executeCommand("Sleep", {"seconds": "2"})
 
             if not verified:
                 raise Exception("Upsert ran but job still not visible via Jobs API.")
@@ -1492,7 +1501,7 @@ def _get_current_meta(using, debug):
     """
     try:
         res = exec_cmd("getList", {"listName": VALUE_TAGS_LIST_NAME}, fail_on_error=False)
-        if not res or is_error(res[0]):
+        if not res or socfw_is_error(res[0]):
             return None
         contents = get_contents(res)
         if not contents:
@@ -1514,7 +1523,7 @@ def _set_current_meta(meta: Dict[str, Any], using: str, debug: bool):
     payload = json.dumps(meta)
     # Try setList first (update); fall back to createList if it doesn't exist
     res = exec_cmd("setList", {"listName": VALUE_TAGS_LIST_NAME, "listData": payload}, fail_on_error=False)
-    if res and is_error(res[0]):
+    if res and socfw_is_error(res[0]):
         # List may not exist yet — create it
         exec_cmd(
             "createList",
