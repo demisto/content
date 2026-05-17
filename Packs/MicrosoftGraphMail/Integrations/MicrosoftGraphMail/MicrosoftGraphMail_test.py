@@ -2390,40 +2390,26 @@ def test_get_mailtips_missing_email_address():
 
 
 @pytest.mark.parametrize(
-    "value, required, expected",
+    "value, expected",
     [
-        (None, False, None),
-        ("", False, None),
-        ('{"k": 1}', False, {"k": 1}),
-        ({"already": "dict"}, False, {"already": "dict"}),
-        ([1, 2, 3], False, [1, 2, 3]),
+        (None, None),
+        ("", None),
+        ('{"k": 1}', {"k": 1}),
+        ({"already": "dict"}, {"already": "dict"}),
+        ([1, 2, 3], [1, 2, 3]),
     ],
 )
-def test_parse_json_arg_valid(value, required, expected):
+def test_parse_json_arg_valid(value, expected):
     """
     Given:
       - Various valid inputs to _parse_json_arg.
     When:
-      - Parsing them with required=False.
+      - Parsing them.
     Then:
       - None/empty -> None; valid JSON string -> parsed object;
         already-parsed dict/list -> passthrough.
     """
-    assert _parse_json_arg(value, "myarg", required=required) == expected
-
-
-def test_parse_json_arg_required_empty_raises():
-    """
-    Given:
-      - Empty value with required=True.
-    When:
-      - Calling _parse_json_arg.
-    Then:
-      - DemistoException is raised mentioning the arg name.
-    """
-    with pytest.raises(DemistoException) as exc_info:
-        _parse_json_arg("", "myarg", required=True)
-    assert "myarg" in str(exc_info.value)
+    assert _parse_json_arg(value, "myarg") == expected
 
 
 def test_parse_json_arg_invalid_json_raises():

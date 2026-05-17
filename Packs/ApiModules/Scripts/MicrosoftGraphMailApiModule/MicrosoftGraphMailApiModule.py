@@ -2298,11 +2298,12 @@ ALL_MAIL_TIPS_OPTIONS = (
 )
 
 
-def _parse_json_arg(value, arg_name: str, required: bool = False):
-    """Parse a JSON-string CLI arg into a Python object, raising a clear error on failure."""
+def _parse_json_arg(value, arg_name: str):
+    """Parse a JSON-string CLI arg into a Python object, raising a clear error on JSON parse failure.
+
+    None/empty values return None — required-ness is enforced at the YAML layer.
+    """
     if value is None or value == "":
-        if required:
-            raise DemistoException(f"Argument '{arg_name}' is required.")
         return None
     if isinstance(value, (dict, list)):  # already parsed
         return value
@@ -2344,7 +2345,7 @@ def create_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
     display_name = args.get("display_name")
     sequence = arg_to_number(args.get("sequence"))
 
-    actions = _parse_json_arg(args.get("actions"), "actions", required=True)
+    actions = _parse_json_arg(args.get("actions"), "actions")
     if not isinstance(actions, dict) or not actions:
         raise DemistoException("'actions' must be a non-empty JSON object with at least one action.")
 
