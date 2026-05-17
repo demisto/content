@@ -7,6 +7,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftApiModule import MicrosoftClient
 from MicrosoftGraphMail import *
+from MicrosoftGraphMailApiModule import _parse_json_arg
 
 
 class MockedResponse:
@@ -2030,3 +2031,412 @@ def test_send_mail_with_large_inline_image_uses_upload_session(mocker):
 
     send_mail_mock.assert_not_called()
     upload_flow_mock.assert_called_once()
+
+
+def test_create_rule_happy_minimal(mocker):
+    """
+    Given:
+      - Minimal required args (user_id, display_name, actions, sequence=1).
+    When:
+      - Running create_rule_command and mocking the POST to Graph.
+    Then:
+      - HTTP POST goes to /users/{user_id}/mailFolders/inbox/messageRules.
+      - Body contains displayName, sequence=1 and actions.
+      - CommandResults has the expected prefix/key and @odata.* stripped.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    api_response = {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('u')/mailFolders('inbox')/messageRules/$entity",
+        "@odata.etag": 'W/"abc"',
+        "id": "AQAAAJ1=",
+        "displayName": "minimal rule",
+        "sequence": 1,
+        "isEnabled": True,
+        "actions": {"markAsRead": True},
+    }
+    args = {
+        "user_id": user_id,
+        "display_name": "minimal rule",
+        "sequence": 1,
+        "actions": '{"markAsRead": true}',
+    }
+    with requests_mock.Mocker() as m:
+        mocked = m.post(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules",
+            json=api_response,
+        )
+        result = create_rule_command(client, args)
+
+    assert mocked.call_count == 1
+    sent_body = mocked.last_request.json()
+    assert sent_body.get("displayName") == "minimal rule"
+    assert sent_body.get("sequence") == 1
+    assert sent_body.get("actions") == {"markAsRead": True}
+    # No conditions/exceptions/isEnabled should be in body when not provided.
+    assert "conditions" not in sent_body
+    assert "exceptions" not in sent_body
+    assert "isEnabled" not in sent_body
+
+    assert result.outputs_prefix == "MSGraphMail.Rule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["id"] == "AQAAAJ1="
+    assert result.outputs["displayName"] == "minimal rule"
+    # @odata.* keys stripped
+    for k in result.outputs:
+        assert not k.startswith("@odata")
+
+
+def test_create_rule_happy_full(mocker):
+    """
+    Given:
+      - All supported fields supplied as JSON-string args.
+    When:
+      - Running create_rule_command with conditions, exceptions, is_enabled=true.
+    Then:
+      - The POST body contains all fields nested as Graph expects.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    actions = {"markAsRead": True, "moveToFolder": "AAAA="}
+    conditions = {"subjectContains": ["invoice"]}
+    exceptions = {"fromAddresses": [{"emailAddress": {"address": "boss@example.com"}}]}
+    api_response = {"id": "1", "displayName": "full rule", "actions": actions}
+    args = {
+        "user_id": user_id,
+        "display_name": "full rule",
+        "sequence": 2,
+        "is_enabled": "true",
+        "actions": json.dumps(actions),
+        "conditions": json.dumps(conditions),
+        "exceptions": json.dumps(exceptions),
+    }
+    with requests_mock.Mocker() as m:
+        mocked = m.post(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules",
+            json=api_response,
+        )
+        create_rule_command(client, args)
+
+    sent_body = mocked.last_request.json()
+    assert sent_body["displayName"] == "full rule"
+    assert sent_body["sequence"] == 2
+    assert sent_body["isEnabled"] is True
+    assert sent_body["actions"] == actions
+    assert sent_body["conditions"] == conditions
+    assert sent_body["exceptions"] == exceptions
+
+
+def test_create_rule_invalid_json_actions():
+    """
+    Given:
+      - actions is an invalid JSON string.
+    When:
+      - Running create_rule_command.
+    Then:
+      - DemistoException is raised mentioning 'actions' and 'valid JSON'.
+    """
+    client = self_deployed_client()
+    args = {"user_id": "u", "display_name": "x", "sequence": 1, "actions": "{notValidJson"}
+    with pytest.raises(DemistoException) as exc_info:
+        create_rule_command(client, args)
+    msg = str(exc_info.value)
+    assert "actions" in msg
+    assert "valid JSON" in msg
+
+
+def test_create_rule_empty_actions():
+    """
+    Given:
+      - actions is an empty JSON object.
+    When:
+      - Running create_rule_command.
+    Then:
+      - DemistoException is raised mentioning 'non-empty'.
+    """
+    client = self_deployed_client()
+    args = {"user_id": "u", "display_name": "x", "sequence": 1, "actions": "{}"}
+    with pytest.raises(DemistoException) as exc_info:
+        create_rule_command(client, args)
+    assert "non-empty" in str(exc_info.value)
+
+
+def test_update_rule_happy_partial(mocker):
+    """
+    Given:
+      - Only display_name is supplied.
+    When:
+      - Running update_rule_command.
+    Then:
+      - PATCH goes to /users/{user_id}/mailFolders/inbox/messageRules/{rule_id}.
+      - Body contains exactly {"displayName": "..."} (no other keys).
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    rule_id = "RULE123"
+    api_response = {"id": rule_id, "displayName": "renamed"}
+
+    args = {"user_id": user_id, "rule_id": rule_id, "display_name": "renamed"}
+    with requests_mock.Mocker() as m:
+        mocked = m.patch(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}",
+            json=api_response,
+        )
+        result = update_rule_command(client, args)
+
+    assert mocked.call_count == 1
+    sent_body = mocked.last_request.json()
+    assert sent_body == {"displayName": "renamed"}
+    assert set(sent_body.keys()) == {"displayName"}
+    assert result.outputs_prefix == "MSGraphMail.Rule"
+    assert result.outputs_key_field == "id"
+
+
+def test_update_rule_happy_disable(mocker):
+    """
+    Given:
+      - is_enabled=false is supplied.
+    When:
+      - Running update_rule_command.
+    Then:
+      - PATCH body contains {"isEnabled": false}.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    rule_id = "RULE123"
+    api_response = {"id": rule_id, "isEnabled": False}
+    args = {"user_id": user_id, "rule_id": rule_id, "is_enabled": "false"}
+    with requests_mock.Mocker() as m:
+        mocked = m.patch(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}",
+            json=api_response,
+        )
+        update_rule_command(client, args)
+
+    sent_body = mocked.last_request.json()
+    assert sent_body.get("isEnabled") is False
+
+
+def test_update_rule_happy_all_fields(mocker):
+    """
+    Given:
+      - All updatable fields are supplied.
+    When:
+      - Running update_rule_command.
+    Then:
+      - PATCH body contains all fields nested as Graph expects.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    rule_id = "RULE123"
+    actions = {"markAsRead": True}
+    conditions = {"subjectContains": ["foo"]}
+    exceptions = {"sensitivity": "personal"}
+    api_response = {"id": rule_id, "displayName": "all"}
+
+    args = {
+        "user_id": user_id,
+        "rule_id": rule_id,
+        "display_name": "all",
+        "sequence": 5,
+        "is_enabled": "true",
+        "is_read_only": "false",
+        "actions": json.dumps(actions),
+        "conditions": json.dumps(conditions),
+        "exceptions": json.dumps(exceptions),
+    }
+    with requests_mock.Mocker() as m:
+        mocked = m.patch(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}",
+            json=api_response,
+        )
+        update_rule_command(client, args)
+
+    sent_body = mocked.last_request.json()
+    assert sent_body["displayName"] == "all"
+    assert sent_body["sequence"] == 5
+    assert sent_body["isEnabled"] is True
+    assert sent_body["isReadOnly"] is False
+    assert sent_body["actions"] == actions
+    assert sent_body["conditions"] == conditions
+    assert sent_body["exceptions"] == exceptions
+
+
+def test_update_rule_empty_body_guard():
+    """
+    Given:
+      - Only user_id and rule_id are supplied — no updatable fields.
+    When:
+      - Running update_rule_command.
+    Then:
+      - DemistoException is raised before any HTTP call is made.
+    """
+    client = self_deployed_client()
+    args = {"user_id": "u", "rule_id": "R"}
+    with pytest.raises(DemistoException) as exc_info:
+        update_rule_command(client, args)
+    assert str(exc_info.value).startswith("At least one updatable field must be provided")
+
+
+# Note: We intentionally do NOT test for client-side sequence validation
+# on update either; Graph rejects invalid sequence values server-side.
+
+
+# ---------- get_mailbox_settings_command (T11) ----------
+
+
+def test_get_settings_happy(mocker):
+    """
+    Given:
+      - A realistic mailboxSettings payload from Graph.
+    When:
+      - Running get_mailbox_settings_command.
+    Then:
+      - GET goes to /users/{user_id}/mailboxSettings.
+      - outputs['userId'] is synthesized to the requested user_id.
+      - @odata.* keys are stripped from outputs.
+      - CommandResults has the expected prefix and key field.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "test@example.com"
+    with open("test_data/mailbox_settings_response.json") as f:
+        api_response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        mocked = m.get(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailboxSettings",
+            json=api_response,
+        )
+        result = get_mailbox_settings_command(client, {"user_id": user_id})
+
+    assert mocked.call_count == 1
+    assert result.outputs_prefix == "MSGraphMail.MailboxSettings"
+    assert result.outputs_key_field == "userId"
+    assert result.outputs["userId"] == user_id  # synthesized
+    assert result.outputs["timeZone"] == "Pacific Standard Time"
+    assert result.outputs["archiveFolder"] == api_response["archiveFolder"]
+    # @odata.* keys stripped
+    for k in result.outputs:
+        assert not k.startswith("@odata")
+
+
+# ---------- get_mail_tips_command (T12-T13) ----------
+
+
+def test_get_mailtips_happy(mocker):
+    """
+    Given:
+      - A mailTips response with a single recipient.
+    When:
+      - Running get_mail_tips_command.
+    Then:
+      - POST goes to /users/{email_address}/getMailTips.
+      - Body contains EmailAddresses=[email_address] and the full
+        ALL_MAIL_TIPS_OPTIONS string.
+      - outputs is a LIST of one item; @odata.* keys stripped.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    email_address = "test@example.com"
+    with open("test_data/mail_tips_response.json") as f:
+        api_response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        mocked = m.post(
+            f"https://graph.microsoft.com/v1.0/users/{email_address}/getMailTips",
+            json=api_response,
+        )
+        result = get_mail_tips_command(client, {"email_address": email_address})
+
+    assert mocked.call_count == 1
+    sent_body = mocked.last_request.json()
+    assert sent_body.get("EmailAddresses") == [email_address]
+    assert sent_body.get("MailTipsOptions") == ALL_MAIL_TIPS_OPTIONS
+    # Sanity-check a few discrete options are present in the option string.
+    for opt in ("automaticReplies", "mailboxFullStatus", "recipientSuggestions"):
+        assert opt in sent_body["MailTipsOptions"]
+
+    assert result.outputs_prefix == "MSGraphMail.MailTips"
+    assert result.outputs_key_field == "emailAddress.address"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["emailAddress"]["address"] == email_address
+    for k in result.outputs[0]:
+        assert not k.startswith("@odata")
+
+
+def test_get_mailtips_missing_email_address():
+    """
+    Given:
+      - No email_address argument supplied.
+    When:
+      - Running get_mail_tips_command.
+    Then:
+      - DemistoException is raised mentioning 'email_address'.
+    """
+    client = self_deployed_client()
+    with pytest.raises(DemistoException) as exc_info:
+        get_mail_tips_command(client, {})
+    assert "email_address" in str(exc_info.value)
+
+
+# ---------- _parse_json_arg helper (T14) ----------
+
+
+@pytest.mark.parametrize(
+    "value, required, expected",
+    [
+        (None, False, None),
+        ("", False, None),
+        ('{"k": 1}', False, {"k": 1}),
+        ({"already": "dict"}, False, {"already": "dict"}),
+        ([1, 2, 3], False, [1, 2, 3]),
+    ],
+)
+def test_parse_json_arg_valid(value, required, expected):
+    """
+    Given:
+      - Various valid inputs to _parse_json_arg.
+    When:
+      - Parsing them with required=False.
+    Then:
+      - None/empty -> None; valid JSON string -> parsed object;
+        already-parsed dict/list -> passthrough.
+    """
+    assert _parse_json_arg(value, "myarg", required=required) == expected
+
+
+def test_parse_json_arg_required_empty_raises():
+    """
+    Given:
+      - Empty value with required=True.
+    When:
+      - Calling _parse_json_arg.
+    Then:
+      - DemistoException is raised mentioning the arg name.
+    """
+    with pytest.raises(DemistoException) as exc_info:
+        _parse_json_arg("", "myarg", required=True)
+    assert "myarg" in str(exc_info.value)
+
+
+def test_parse_json_arg_invalid_json_raises():
+    """
+    Given:
+      - A malformed JSON string.
+    When:
+      - Calling _parse_json_arg.
+    Then:
+      - DemistoException is raised mentioning the arg name and 'valid JSON'.
+    """
+    with pytest.raises(DemistoException) as exc_info:
+        _parse_json_arg("{notValidJson", "myarg")
+    msg = str(exc_info.value)
+    assert "myarg" in msg
+    assert "valid JSON" in msg

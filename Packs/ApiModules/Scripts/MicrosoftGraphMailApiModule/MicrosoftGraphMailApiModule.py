@@ -2406,6 +2406,12 @@ def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
         exceptions=exceptions,
     )
 
+    if not body:
+        raise DemistoException(
+            "At least one updatable field must be provided "
+            "(display_name, sequence, is_enabled, is_read_only, actions, conditions, exceptions)."
+        )
+
     response = client.update_message_rule(user_id, rule_id, body)
 
     # Strip Graph metadata keys (@odata.context, @odata.etag) from outputs.
