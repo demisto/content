@@ -1,5 +1,31 @@
 # Design: Auth Parity Test
 
+> **⚠️ Status banner (2026-05):** the workflow schema was simplified.
+> Two columns this document references no longer exist:
+>
+> - `Params for test with default in code` — **REMOVED.** The historical
+>   "use these hardcoded defaults during the test" data column is gone.
+>   This document still references it as a source of test-time
+>   parameter defaults; the equivalent data now needs to be sourced
+>   elsewhere (TBD — likely inferred at test time from the integration
+>   source, or moved into the test harness's own fixture file).
+> - `requires auth parity test` (the gate **flag**) — **REMOVED.**
+>   `auth parity test passes` (step #11 in the new 14-step model — see
+>   [`connectus/workflow_state_config.yml`](workflow_state_config.yml))
+>   is now **unconditional**; the test is expected to be runnable on
+>   every integration. There is no longer a `set-auth-flag` verb that
+>   would auto-`N/A` the checkpoint. To opt out, an operator must mark
+>   the checkpoint `N/A` explicitly.
+>
+> The body of this document below is the **original design proposal**
+> and has not been rewritten line-by-line. Treat it as historical
+> context; the current sources of truth are:
+>
+> - [`connectus/workflow_state_config.yml`](workflow_state_config.yml) — current YAML schema (14 steps).
+> - [`connectus/column-schemas.md`](column-schemas.md) — current JSON-valued column shapes.
+> - [`connectus/Readme.md`](Readme.md) — current CLI and step table.
+> - [`connectus/workflow_state_DESIGN.md`](workflow_state_DESIGN.md) §12 — schema-change decision log.
+
 ## Purpose
 
 Verify that for each non-interpolated connection declared in an

@@ -33,14 +33,54 @@ def is_checked(value: str) -> bool:
     return value.strip() in cfg.markers.checkpoint_done_values
 
 
+def step_flag_values(step: Step) -> tuple[str, ...]:
+    """Return the effective enum for a flag step.
+
+    Per-step ``Step.flag_values`` win over the global
+    ``markers.flag_values``. Returns an empty tuple for non-flag steps.
+    """
+    if step.kind != "flag":
+        return ()
+    if step.flag_values is not None:
+        return step.flag_values
+    cfg = get_config()
+    return tuple(cfg.markers.flag_values)
+
+
+def _is_flag_value_match(step: Step, candidate: str) -> bool:
+    """True iff ``candidate`` matches any of the step's enum values.
+
+    Per-step enums (e.g. ``verify button placement`` →
+    ``connection|configuration|none``) are matched case-sensitively.
+    The global YES/NO/N/A enum is matched case-insensitively to keep
+    backwards-compatible CLI behaviour.
+    """
+    values = step_flag_values(step)
+    if step.flag_values is not None:
+        return candidate in values
+    return candidate.upper() in {v.upper() for v in values}
+
+
+def read_step_value(row: dict[str, str], step: Step) -> str:
+    """Return the cell value for ``step``, applying read-side defaults.
+
+    For ``kind: flag`` steps with a declared ``default``, an empty cell
+    returns the default value (read-side fallback only — the CSV cell
+    is NOT auto-written). For all other shapes, returns the raw value.
+    """
+    raw = row.get(step.name, "")
+    if step.kind == "flag" and step.default is not None and raw.strip() == "":
+        return step.default
+    return raw
+
+
 def is_done(row: dict[str, str], step: Step) -> bool:
     """The unified completion predicate for any step kind."""
-    cfg = get_config()
-    val = row.get(step.name, "").strip()
+    val = read_step_value(row, step).strip()
     if step.kind == "data":
         return val != ""
     if step.kind == "flag":
-        return val.upper() in set(cfg.markers.flag_values)
+        return _is_flag_value_match(step, val)
     if step.kind == "checkpoint":
         return is_checked(val)
     raise AssertionError(f"Unknown step kind: {step.kind!r}")
@@ -225,8 +265,19 @@ def apply_step_action(
         )
 
     if target.kind == "flag":
-        existing = row.get(target.name, "").strip().upper()
-        if existing == new_value.strip().upper() and existing in set(cfg.markers.flag_values):
+        existing_raw = row.get(target.name, "").strip()
+        new_raw = new_value.strip()
+        # Compare with per-step enum awareness. For the legacy global
+        # YES/NO/N/A enum we keep case-insensitive parity; per-step
+        # enums are case-sensitive (matching their declared spelling).
+        if target.flag_values is not None:
+            same = existing_raw == new_raw and existing_raw in target.flag_values
+        else:
+            same = (
+                existing_raw.upper() == new_raw.upper()
+                and existing_raw.upper() in {v.upper() for v in cfg.markers.flag_values}
+            )
+        if same:
             return [], True
 
     # YAML-driven carve-out: when cascade_on_set=False (e.g. assignee),
@@ -313,20 +364,25 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
     if is_done(row, step):
         return f"'{step_name}' is already marked as passed for '{integration_id}'."
 
-    # Honour any flag_auto_na_target interaction whose target_step matches.
+    # Honour any configured flag_auto_na_target interaction whose
+    # target_step matches. (Currently none are configured; kept as a
+    # generic mechanism for future per-flag auto-fill rules.)
     for inter in cfg.step_interactions:
         if inter.kind == "flag_auto_na_target" and inter.target_step == step_name:
             flag = row.get(inter.when_step, "").strip().upper()
             if flag in {v.upper() for v in inter.when_value_in}:
                 row[step_name] = inter.write_value
-                return f"'{step_name}' set to {inter.write_value} (auth parity test not required)."
+                return (
+                    f"'{step_name}' set to {inter.write_value} "
+                    f"(auto-filled via {inter.when_step!r} flag)."
+                )
             if flag == "":
+                step_obj = cfg.step_by_name.get(inter.when_step)
+                setter = step_obj.setter if step_obj and step_obj.setter else "<setter>"
                 return (
                     f"ERROR: Cannot mark '{step_name}' as passed — "
                     f"'{inter.when_step}' flag is not set.\n"
-                    f"  Use 'set-auth-flag' first.\n"
-                    f"  Example: workflow_state.py set-auth-flag "
-                    f"\"{integration_id}\" YES"
+                    f"  Use {setter!r} first."
                 )
 
     ok, reason = _can_advance_to(row, step)

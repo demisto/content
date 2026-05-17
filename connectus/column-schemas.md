@@ -266,63 +266,30 @@ Must be valid JSON. Required before `generated manifest` can be marked passed.
 
 ---
 
-## `Params for test with default in code`
+## `verify button placement` (flag)
 
-The list of parameter IDs whose default value is hardcoded in the integration's
-Python/JS/PWSH source (not provided through the XSOAR UI). These need to be
-substituted during test runs.
+> **Status:** placeholder added in the 2026-05 schema simplification.
+> Details (UI semantics, manifest implications) **to be filled in later**.
 
-Recommended shape — a JSON array of strings:
+Enum values: `connection`, `configuration`, `none`. The cell stores the
+raw enum string verbatim (no JSON wrapping).
 
-```json
-["param_id_1", "param_id_2", "param_id_3"]
-```
-
-Alternative shape — a JSON object whose values are the in-code defaults:
-
-```json
-{
-  "param_id_1": "<default value as encoded in code>",
-  "param_id_2": "<default value as encoded in code>"
-}
-```
-
-Notes:
-
-- Either shape is accepted; pick one and stay consistent within a row.
-- Must be valid JSON.
+| Value | Intended meaning (TBD) |
+|---|---|
+| `connection` | The verify/test button lives at the per-connection level (default on read when the cell is empty). |
+| `configuration` | The verify/test button lives at the per-integration / per-configuration level. |
+| `none` | The integration exposes no verify/test button. |
 
 Setter:
-[`workflow_state.py set-params-for-test "<Integration ID>" '<json>'`](workflow_state/cli.py:254)
-([`cmd_set_params_for_test`](workflow_state/cli.py:254)).
-Required before `generated manifest` can be marked passed.
+[`workflow_state.py set-verify-placement "<Integration ID>" <value>`](workflow_state/cli.py:1)
+([`cmd_set_verify_placement`](workflow_state/cli.py:1)). Case-insensitive
+input is canonicalised to the YAML spelling on write. Empty cells read
+as `connection` and do NOT block the workflow's "current step" from
+advancing past step #4.
 
-> **Reset semantics.** `Params for test with default in code` is
-> **preserved** on `fail` and `reset-to` because the column carries
-> `preserve_on_reset: true` in
-> [`workflow_state_config.yml`](workflow_state_config.yml:82). It is
-> **wiped** by `set-auth` and by plain `reset` — those two operations
-> deliberately ignore the carve-out because auth changes invalidate
-> every downstream artifact and `reset` is the "wipe the row" verb with
-> no carve-outs.
-
----
-
-## `Params same in other handlers` (optional)
-```json
-{
-    "paramname" :  {"otherintegrationID1" : "paramname", "otherintegrationID2" : "paramnamedifferent" },
-    "param2name" :  {"integrationID1" : ""},
-
-}
-Must be valid JSON when set. Not a prerequisite for any checkpoint.
-```
-
-> **Reset semantics.** `Params same in other handlers` is **preserved**
-> on `fail` and `reset-to` because the column carries
-> `preserve_on_reset: true` in
-> [`workflow_state_config.yml`](workflow_state_config.yml:90). It is
-> **wiped** by `set-auth` and by plain `reset` — those two operations
-> deliberately ignore the carve-out because auth changes invalidate
-> every downstream artifact and `reset` is the "wipe the row" verb with
-> no carve-outs.
+> **Reset semantics.** `verify button placement` is **wiped** by all
+> reset paths (`reset`, `set-auth`, `fail`, `reset-to`). It does not
+> carry `preserve_on_reset: true`. Today only `Params to Commands`
+> retains that flag (the historical `Params for test with default in
+> code` and `Params same in other handlers` columns were removed in the
+> 2026-05 schema simplification).
