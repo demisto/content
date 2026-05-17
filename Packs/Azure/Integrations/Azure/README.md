@@ -2628,45 +2628,45 @@ Updates the configuration settings of an existing Azure Web App. Required permis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| name | Name of the Web App. | Required | 
-| http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional | 
-| remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional | 
-| min_tls_version | Configures the minimum version of TLS required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional |
+| remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional |
+| min_tls_version | Configures the minimum version of TLS required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.AppService.WebAppConfiguration.id | String | Resource ID. | 
-| Azure.AppService.WebAppConfiguration.name | String | Resource name. | 
-| Azure.AppService.WebAppConfiguration.type | String | Resource type. | 
-| Azure.AppService.WebAppConfiguration.location | String | Resource location. | 
-| Azure.AppService.WebAppConfiguration.properties.numberOfWorkers | Number | Number of workers. | 
-| Azure.AppService.WebAppConfiguration.properties.defaultDocuments | Unknown | List of default documents. | 
-| Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion | String | .NET Framework version. | 
-| Azure.AppService.WebAppConfiguration.properties.phpVersion | String | PHP version. | 
-| Azure.AppService.WebAppConfiguration.properties.pythonVersion | String | Python version. | 
-| Azure.AppService.WebAppConfiguration.properties.nodeVersion | String | Node.js version. | 
-| Azure.AppService.WebAppConfiguration.properties.powerShellVersion | String | PowerShell version. | 
-| Azure.AppService.WebAppConfiguration.properties.linuxFxVersion | String | Linux app framework and version. | 
-| Azure.AppService.WebAppConfiguration.properties.windowsFxVersion | String | Windows container image name. | 
-| Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion | String | Remote debugging version. | 
-| Azure.AppService.WebAppConfiguration.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.minTlsVersion | String | Minimum TLS version required. | 
-| Azure.AppService.WebAppConfiguration.properties.ftpsState | String | State of FTP / FTPS service. | 
-| Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.managedPipelineMode | String | Managed pipeline mode. | 
-| Azure.AppService.WebAppConfiguration.properties.loadBalancing | String | Site load balancing mode. | 
-| Azure.AppService.WebAppConfiguration.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. | 
-| Azure.AppService.WebAppConfiguration.properties.autoHealRules | Unknown | Auto Heal rules configuration. | 
-| Azure.AppService.WebAppConfiguration.properties.cors | Unknown | Cross-Origin Resource Sharing \(CORS\) settings. | 
-| Azure.AppService.WebAppConfiguration.properties.apiDefinition.url | String | URL of the API definition. | 
-| Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id | String | Azure API management integration ID. | 
+| Azure.AppService.WebAppConfiguration.id | String | Resource ID. |
+| Azure.AppService.WebAppConfiguration.name | String | Resource name. |
+| Azure.AppService.WebAppConfiguration.type | String | Resource type. |
+| Azure.AppService.WebAppConfiguration.location | String | Resource location. |
+| Azure.AppService.WebAppConfiguration.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.AppService.WebAppConfiguration.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.AppService.WebAppConfiguration.properties.phpVersion | String | PHP version. |
+| Azure.AppService.WebAppConfiguration.properties.pythonVersion | String | Python version. |
+| Azure.AppService.WebAppConfiguration.properties.nodeVersion | String | Node.js version. |
+| Azure.AppService.WebAppConfiguration.properties.powerShellVersion | String | PowerShell version. |
+| Azure.AppService.WebAppConfiguration.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.AppService.WebAppConfiguration.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.AppService.WebAppConfiguration.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.AppService.WebAppConfiguration.properties.ftpsState | String | State of FTP / FTPS service. |
+| Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.AppService.WebAppConfiguration.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.AppService.WebAppConfiguration.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.AppService.WebAppConfiguration.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.AppService.WebAppConfiguration.properties.cors | Unknown | Cross-Origin Resource Sharing \(CORS\) settings. |
+| Azure.AppService.WebAppConfiguration.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id | String | Azure API management integration ID. |
 
 ### azure-appservice-webapp-auth-settings-update
 
@@ -2681,47 +2681,48 @@ Updates the authentication and authorization settings of an existing Azure Web A
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| name | Name of the Web App. | Required | 
-| enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.AppService.WebAppAuthSettings.id | String | Resource ID. | 
-| Azure.AppService.WebAppAuthSettings.name | String | Resource Name. | 
-| Azure.AppService.WebAppAuthSettings.type | String | Resource type. | 
-| Azure.AppService.WebAppAuthSettings.properties.enabled | Boolean | Indicates whether Authentication/Authorization is enabled for the app. | 
-| Azure.AppService.WebAppAuthSettings.properties.runtimeVersion | String | The RuntimeVersion of the Authentication/Authorization feature. | 
-| Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction | String | The action to take when an unauthenticated client attempts to access the app. | 
-| Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled | Boolean | Indicates whether the Azure App Service Authentication platform’s token store is enabled. | 
-| Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls | Unknown | External URLs that are allowed to be redirected to as part of logging in or logging out of the app. | 
-| Azure.AppService.WebAppAuthSettings.properties.defaultProvider | String | The default authentication provider to use when multiple providers are configured. | 
-| Azure.AppService.WebAppAuthSettings.properties.clientId | String | The Client ID of the app used for AAD login. | 
-| Azure.AppService.WebAppAuthSettings.properties.clientSecret | String | The client secret associated with the AAD app. | 
-| Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName | String | The app setting that contains the client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.issuer | String | The OpenID Connect Issuer URI that represents the entity that issues access tokens. | 
-| Azure.AppService.WebAppAuthSettings.properties.allowedAudiences | Unknown | The list of audiences that can receive the authentication tokens. | 
-| Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams | Unknown | Additional parameters to send to the authentication provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned | Boolean | True if AAD is auto-provisioned; otherwise false. | 
-| Azure.AppService.WebAppAuthSettings.properties.googleClientId | String | The Client ID of the app used for Google login. | 
-| Azure.AppService.WebAppAuthSettings.properties.googleClientSecret | String | The client secret associated with the Google app. | 
-| Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName | String | The app setting that contains the client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.facebookAppId | String | The App ID of the Facebook app used for login. | 
-| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret | String | The app secret associated with the Facebook app. | 
-| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName | String | The app setting that contains the Facebook app secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey | String | The OAuth 1.0a consumer key of the Twitter application used for login. | 
-| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret | String | The consumer secret associated with the Twitter application. | 
-| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName | String | The app setting that contains the Twitter consumer secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId | String | The OAuth 2.0 client ID for the Microsoft account provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret | String | The client secret for the Microsoft account provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName | String | The app setting that contains the Microsoft account client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.appleClientId | String | The client ID for the Apple provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.appleClientSecret | String | The client secret for the Apple provider. | 
-| Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName | String | The app setting that contains the Apple provider client secret. | 
-| Azure.AppService.WebAppAuthSettings.properties.authFilePath | String | The path to the authentication configuration file. | 
+| Azure.AppService.WebAppAuthSettings.id | String | Resource ID. |
+| Azure.AppService.WebAppAuthSettings.name | String | Resource Name. |
+| Azure.AppService.WebAppAuthSettings.type | String | Resource type. |
+| Azure.AppService.WebAppAuthSettings.properties.enabled | Boolean | Indicates whether Authentication/Authorization is enabled for the app. |
+| Azure.AppService.WebAppAuthSettings.properties.runtimeVersion | String | The RuntimeVersion of the Authentication/Authorization feature. |
+| Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction | String | The action to take when an unauthenticated client attempts to access the app. |
+| Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled | Boolean | Indicates whether the Azure App Service Authentication platform’s token store is enabled. |
+| Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls | Unknown | External URLs that are allowed to be redirected to as part of logging in or logging out of the app. |
+| Azure.AppService.WebAppAuthSettings.properties.defaultProvider | String | The default authentication provider to use when multiple providers are configured. |
+| Azure.AppService.WebAppAuthSettings.properties.clientId | String | The Client ID of the app used for AAD login. |
+| Azure.AppService.WebAppAuthSettings.properties.clientSecret | String | The client secret associated with the AAD app. |
+| Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.issuer | String | The OpenID Connect Issuer URI that represents the entity that issues access tokens. |
+| Azure.AppService.WebAppAuthSettings.properties.allowedAudiences | Unknown | The list of audiences that can receive the authentication tokens. |
+| Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams | Unknown | Additional parameters to send to the authentication provider. |
+| Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned | Boolean | True if AAD is auto-provisioned; otherwise false. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientId | String | The Client ID of the app used for Google login. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientSecret | String | The client secret associated with the Google app. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppId | String | The App ID of the Facebook app used for login. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret | String | The app secret associated with the Facebook app. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName | String | The app setting that contains the Facebook app secret. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey | String | The OAuth 1.0a consumer key of the Twitter application used for login. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret | String | The consumer secret associated with the Twitter application. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName | String | The app setting that contains the Twitter consumer secret. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId | String | The OAuth 2.0 client ID for the Microsoft account provider. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret | String | The client secret for the Microsoft account provider. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName | String | The app setting that contains the Microsoft account client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientId | String | The client ID for the Apple provider. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientSecret | String | The client secret for the Apple provider. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName | String | The app setting that contains the Apple provider client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.authFilePath | String | The path to the authentication configuration file. |
+
 ### azure-compute-disk-update
 
 ***
@@ -2735,56 +2736,56 @@ Updates a disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| disk_name | The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required | 
-| public_network_access | Policy for controlling export on the disk. Possible values are: Disabled, Enabled. | Optional | 
-| network_access_policy | Policy for accessing the disk via network. Possible values are: AllowAll, AllowPrivate, DenyAll. | Optional | 
-| data_access_auth_mode | Additional authentication requirements when exporting or uploading to a disk or snapshot. Possible values are: AzureActiveDirectory. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| disk_name | The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
+| public_network_access | Policy for controlling export on the disk. Possible values are: Disabled, Enabled. | Optional |
+| network_access_policy | Policy for accessing the disk via network. Possible values are: AllowAll, AllowPrivate, DenyAll. | Optional |
+| data_access_auth_mode | Additional authentication requirements when exporting or uploading to a disk or snapshot. Possible values are: AzureActiveDirectory. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.Disks.id | String | Resource ID of the disk. | 
-| Azure.Compute.Disks.name | String | Name of the disk. | 
-| Azure.Compute.Disks.type | String | Type of the resource. | 
-| Azure.Compute.Disks.location | String | Location of the disk. | 
-| Azure.Compute.Disks.tags | unknown | Resource tags. | 
-| Azure.Compute.Disks.managedBy | String | ARM ID of the resource that manages the disk. | 
-| Azure.Compute.Disks.sku | unknown | The disk SKU name. | 
-| Azure.Compute.Disks.zones | unknown | A list of availability zones. | 
-| Azure.Compute.Disks.properties.timeCreated | String | The time when the disk was created. | 
-| Azure.Compute.Disks.properties.diskSizeGB | Number | Size of the disk in GB. | 
-| Azure.Compute.Disks.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. | 
-| Azure.Compute.Disks.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. | 
-| Azure.Compute.Disks.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. | 
-| Azure.Compute.Disks.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. | 
-| Azure.Compute.Disks.properties.diskSizeBytes | Number | The size of the disk in bytes. | 
-| Azure.Compute.Disks.properties.networkAccessPolicy | String | Policy for accessing the disk via network. | 
-| Azure.Compute.Disks.properties.publicNetworkAccess | String | Policy for export on the disk. | 
-| Azure.Compute.Disks.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. | 
-| Azure.Compute.Disks.properties.optimization | String | The disk optimization setting. | 
-| Azure.Compute.Disks.properties.diskState | String | The current state of the disk. | 
-| Azure.Compute.Disks.properties.supportedCapabilities | unknown | Supported capabilities of the disk. | 
-| Azure.Compute.Disks.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. | 
-| Azure.Compute.Disks.properties.supportedDiskTypes | unknown | Supported disk types for the disk. | 
-| Azure.Compute.Disks.properties.provisioningState | unknown | The provisioning state of the disk. | 
-| Azure.Compute.Disks.properties.timeModified | unknown | The time when the disk was last modified. | 
-| Azure.Compute.Disks.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. | 
-| Azure.Compute.Disks.properties.networkProfile | unknown | The network profile of the disk. | 
-| Azure.Compute.Disks.properties.creationData | unknown | Disk creation data. | 
-| Azure.Compute.Disks.properties.encryption | unknown | Encryption settings for the disk. | 
-| Azure.Compute.Disks.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. | 
-| Azure.Compute.Disks.properties.encryptionType | String | The type of key used to encrypt the data on the disk. | 
-| Azure.Compute.Disks.properties.securityProfile | unknown | Security profile for the disk. | 
-| Azure.Compute.Disks.properties.tieringProfile | unknown | Tiering profile for the disk. | 
-| Azure.Compute.Disks.properties.supportedTierList | unknown | List of supported tiers for the disk. | 
-| Azure.Compute.Disks.properties.availabilityZone | String | Availability zone of the disk. | 
-| Azure.Compute.Disks.properties.dataAccessAuthMode | String | Additional authentication requirements when exporting or uploading to a disk. | 
-| Azure.Compute.Disks.properties.osType | String | The operating system type. | 
-| Azure.Compute.Disks.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. | 
-| Azure.Compute.Disks.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. | 
+| Azure.Compute.Disks.id | String | Resource ID of the disk. |
+| Azure.Compute.Disks.name | String | Name of the disk. |
+| Azure.Compute.Disks.type | String | Type of the resource. |
+| Azure.Compute.Disks.location | String | Location of the disk. |
+| Azure.Compute.Disks.tags | unknown | Resource tags. |
+| Azure.Compute.Disks.managedBy | String | ARM ID of the resource that manages the disk. |
+| Azure.Compute.Disks.sku | unknown | The disk SKU name. |
+| Azure.Compute.Disks.zones | unknown | A list of availability zones. |
+| Azure.Compute.Disks.properties.timeCreated | String | The time when the disk was created. |
+| Azure.Compute.Disks.properties.diskSizeGB | Number | Size of the disk in GB. |
+| Azure.Compute.Disks.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. |
+| Azure.Compute.Disks.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. |
+| Azure.Compute.Disks.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. |
+| Azure.Compute.Disks.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. |
+| Azure.Compute.Disks.properties.diskSizeBytes | Number | The size of the disk in bytes. |
+| Azure.Compute.Disks.properties.networkAccessPolicy | String | Policy for accessing the disk via network. |
+| Azure.Compute.Disks.properties.publicNetworkAccess | String | Policy for export on the disk. |
+| Azure.Compute.Disks.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. |
+| Azure.Compute.Disks.properties.optimization | String | The disk optimization setting. |
+| Azure.Compute.Disks.properties.diskState | String | The current state of the disk. |
+| Azure.Compute.Disks.properties.supportedCapabilities | unknown | Supported capabilities of the disk. |
+| Azure.Compute.Disks.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. |
+| Azure.Compute.Disks.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
+| Azure.Compute.Disks.properties.provisioningState | unknown | The provisioning state of the disk. |
+| Azure.Compute.Disks.properties.timeModified | unknown | The time when the disk was last modified. |
+| Azure.Compute.Disks.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
+| Azure.Compute.Disks.properties.networkProfile | unknown | The network profile of the disk. |
+| Azure.Compute.Disks.properties.creationData | unknown | Disk creation data. |
+| Azure.Compute.Disks.properties.encryption | unknown | Encryption settings for the disk. |
+| Azure.Compute.Disks.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. |
+| Azure.Compute.Disks.properties.encryptionType | String | The type of key used to encrypt the data on the disk. |
+| Azure.Compute.Disks.properties.securityProfile | unknown | Security profile for the disk. |
+| Azure.Compute.Disks.properties.tieringProfile | unknown | Tiering profile for the disk. |
+| Azure.Compute.Disks.properties.supportedTierList | unknown | List of supported tiers for the disk. |
+| Azure.Compute.Disks.properties.availabilityZone | String | Availability zone of the disk. |
+| Azure.Compute.Disks.properties.dataAccessAuthMode | String | Additional authentication requirements when exporting or uploading to a disk. |
+| Azure.Compute.Disks.properties.osType | String | The operating system type. |
+| Azure.Compute.Disks.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. |
+| Azure.Compute.Disks.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. |
 
 ### azure-appservice-webapp-update
 
@@ -2799,41 +2800,41 @@ Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| name | Name of the Web App. | Required | 
-| identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional | 
-| https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional | 
-| client_cert_enabled | Whether client certificates are enabled. Possible values are: true, false. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional |
+| https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
+| client_cert_enabled | Whether client certificates are enabled. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.AppService.WebApp.id | String | Fully qualified resource ID for the web app. | 
-| Azure.AppService.WebApp.name | String | The name of the web app. | 
-| Azure.AppService.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. | 
-| Azure.AppService.WebApp.location | String | Geographic location of the web app. | 
-| Azure.AppService.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. | 
-| Azure.AppService.WebApp.tags | Unknown | Resource tags as key-value pairs. | 
-| Azure.AppService.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). | 
-| Azure.AppService.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. | 
-| Azure.AppService.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. | 
-| Azure.AppService.WebApp.identity.userAssignedIdentities | Unknown | The list of user-assigned identities associated with the web app. | 
-| Azure.AppService.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). | 
-| Azure.AppService.WebApp.properties.enabled | Boolean | Whether the web app is enabled. | 
-| Azure.AppService.WebApp.properties.defaultHostName | String | Default host name of the web app. | 
-| Azure.AppService.WebApp.properties.hostNames | String | List of host names associated with the web app. | 
-| Azure.AppService.WebApp.properties.repositorySiteName | String | Name of the repository site. | 
-| Azure.AppService.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. | 
-| Azure.AppService.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. | 
-| Azure.AppService.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. | 
-| Azure.AppService.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. | 
-| Azure.AppService.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. | 
-| Azure.AppService.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. | 
-| Azure.AppService.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. | 
-| Azure.AppService.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. | 
-| Azure.AppService.WebApp.properties.siteConfig | Unknown | Configuration of the app. | 
+| Azure.AppService.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.AppService.WebApp.name | String | The name of the web app. |
+| Azure.AppService.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.AppService.WebApp.location | String | Geographic location of the web app. |
+| Azure.AppService.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.AppService.WebApp.tags | Unknown | Resource tags as key-value pairs. |
+| Azure.AppService.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.AppService.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.userAssignedIdentities | Unknown | The list of user-assigned identities associated with the web app. |
+| Azure.AppService.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.AppService.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.AppService.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.AppService.WebApp.properties.hostNames | String | List of host names associated with the web app. |
+| Azure.AppService.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.AppService.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.AppService.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.AppService.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.AppService.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.AppService.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.AppService.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.AppService.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.AppService.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.AppService.WebApp.properties.siteConfig | Unknown | Configuration of the app. |
 
 ### azure-cr-registry-update
 
@@ -2848,38 +2849,38 @@ Updates a container registry. Required permissions: Microsoft.ContainerRegistry/
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | Subscription ID. | Required | 
-| registry_name | The name of the container registry. | Required | 
-| allow_exports | Whether artifacts can be exported. Possible values are: disabled, enabled. | Optional | 
-| public_network_access | Whether public network access is allowed for the container registry. Possible values are: disabled, enabled. | Optional | 
-| anonymous_pull_enabled | Whether to enable registry-wide pulls from unauthenticated clients. Possible values are: true, false. | Optional | 
-| authentication_as_arm_policy | Whether the policy is enabled or not. Possible values are: disabled, enabled. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| registry_name | The name of the container registry. | Required |
+| allow_exports | Whether artifacts can be exported. Possible values are: disabled, enabled. | Optional |
+| public_network_access | Whether public network access is allowed for the container registry. Possible values are: disabled, enabled. | Optional |
+| anonymous_pull_enabled | Whether to enable registry-wide pulls from unauthenticated clients. Possible values are: true, false. | Optional |
+| authentication_as_arm_policy | Whether the policy is enabled or not. Possible values are: disabled, enabled. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.ContainerRegistry.Registries.id | String | The resource ID. | 
-| Azure.ContainerRegistry.Registries.identity | Unknown | The identity of the container registry. | 
-| Azure.ContainerRegistry.Registries.location | String | The location of the resource. | 
-| Azure.ContainerRegistry.Registries.name | String | The name of the resource. | 
-| Azure.ContainerRegistry.Registries.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. | 
-| Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. | 
-| Azure.ContainerRegistry.Registries.properties.creationDate | String | The creation date of the container registry in ISO8601 format. | 
-| Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. | 
-| Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. | 
-| Azure.ContainerRegistry.Registries.properties.encryption | Unknown | The encryption settings of container registry. | 
-| Azure.ContainerRegistry.Registries.properties.loginServer | String | The URL that can be used to log into the container registry. | 
-| Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. | 
-| Azure.ContainerRegistry.Registries.properties.networkRuleSet | Unknown | The network rule set for a container registry. | 
-| Azure.ContainerRegistry.Registries.properties.policies | Unknown | The policies for a container registry. | 
-| Azure.ContainerRegistry.Registries.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. | 
-| Azure.ContainerRegistry.Registries.properties.provisioningState | String | The provisioning state of the container registry at the time the operation was called. | 
-| Azure.ContainerRegistry.Registries.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. | 
-| Azure.ContainerRegistry.Registries.properties.status | Unknown | The status of the container registry at the time the operation was called. | 
-| Azure.ContainerRegistry.Registries.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. | 
-| Azure.ContainerRegistry.Registries.sku | Unknown | The SKU of the container registry. | 
-| Azure.ContainerRegistry.Registries.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. | 
-| Azure.ContainerRegistry.Registries.tags | Unknown | The tags of the resource. | 
-| Azure.ContainerRegistry.Registries.type | String | The type of the resource. | 
+| Azure.ContainerRegistry.Registries.id | String | The resource ID. |
+| Azure.ContainerRegistry.Registries.identity | Unknown | The identity of the container registry. |
+| Azure.ContainerRegistry.Registries.location | String | The location of the resource. |
+| Azure.ContainerRegistry.Registries.name | String | The name of the resource. |
+| Azure.ContainerRegistry.Registries.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ContainerRegistry.Registries.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ContainerRegistry.Registries.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ContainerRegistry.Registries.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ContainerRegistry.Registries.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ContainerRegistry.Registries.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ContainerRegistry.Registries.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ContainerRegistry.Registries.properties.provisioningState | String | The provisioning state of the container registry at the time the operation was called. |
+| Azure.ContainerRegistry.Registries.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ContainerRegistry.Registries.properties.status | Unknown | The status of the container registry at the time the operation was called. |
+| Azure.ContainerRegistry.Registries.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ContainerRegistry.Registries.sku | Unknown | The SKU of the container registry. |
+| Azure.ContainerRegistry.Registries.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ContainerRegistry.Registries.tags | Unknown | The tags of the resource. |
+| Azure.ContainerRegistry.Registries.type | String | The type of the resource. |
