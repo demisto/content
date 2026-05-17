@@ -321,7 +321,7 @@ Retrieve properties and relationships of a Risky User.
             "riskLastUpdatedDateTime": "2020-10-05T12:12:17.2115592Z",
             "riskLevel": "none",
             "riskState": "remediated",
-            "userDisplayName": "Yossi Israel",
+            "userDisplayName": "Yossi Israeli",
             "userPrincipalName": "yossi@test.com"
         }
     }
@@ -334,7 +334,7 @@ Retrieve properties and relationships of a Risky User.
 >
 >|Id|User Display Name|User Principal Name|Risk Level|Risk State|Risk Detail|Risk Last Updated Date Time|
 >|---|---|---|---|---|---|---|
->| 333 | Yossi Israel | yossi@test.com | none | remediated | userPerformedSecuredPasswordReset | 2020-10-05T12:12:17.2115592Z |
+>| 333 | Yossi Israeli | yossi@test.com | none | remediated | userPerformedSecuredPasswordReset | 2020-10-05T12:12:17.2115592Z |
 
 ### azure-risky-users-risk-detections-list
 
