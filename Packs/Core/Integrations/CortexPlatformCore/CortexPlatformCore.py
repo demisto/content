@@ -2107,14 +2107,22 @@ def update_issue_command(client: Client, args: dict):
     link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
     unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
 
+    name = args.get("name")
+    description = args.get("description")
+
+    if name and len(name) > 50:
+        raise ValueError(f"'name' must be 50 characters or fewer (got {len(name)}).")
+    if description and len(description) > 50:
+        raise ValueError(f"'description' must be 50 characters or fewer (got {len(description)}).")
+
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value else None,
-        "name": args.get("name"),
+        "name": name,
         "occurred": arg_to_timestamp(args.get("occurred"), ""),
         "phase": args.get("phase"),
         "type": args.get("type"),
-        "description": args.get("description"),
+        "description": description,
         "resolution_status": status_map.get(status) if status else None,
     }
 
@@ -3342,6 +3350,11 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
+
+    if case_name and len(case_name) > 50:
+        raise ValueError(f"'case_name' must be 50 characters or fewer (got {len(case_name)}).")
+    if description and len(description) > 50:
+        raise ValueError(f"'description' must be 50 characters or fewer (got {len(description)}).")
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
