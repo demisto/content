@@ -85,10 +85,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-network-interface-get",
     ],
     "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-public-ip-details-get", "azure-vn-public-ip-addresses-list",
-        "azure-vn-public-ip-address-get",],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update",
-        "azure-storage-blob-container-update",],
+    "Microsoft.Network/publicIPAddresses/read": [
+        "azure-nsg-public-ip-addresses-list",
+        "azure-vm-public-ip-details-get",
+        "azure-vn-public-ip-addresses-list",
+        "azure-vn-public-ip-address-get",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write": [
+        "azure-storage-blob-containers-update",
+        "azure-storage-blob-container-update",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
@@ -208,8 +214,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
     ],
-    "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update", "azure-key-vault-purge-and-soft-delete-enable-quick-action", "azure-keyvault-vault-update"],
-    "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update", "azure-key-vault-purge-and-soft-delete-enable-quick-action", "azure-keyvault-vault-update"],
+    "Microsoft.KeyVault/vaults/read": [
+        "azure-key-vault-update",
+        "azure-key-vault-purge-and-soft-delete-enable-quick-action",
+        "azure-keyvault-vault-update",
+    ],
+    "Microsoft.KeyVault/vaults/write": [
+        "azure-key-vault-update",
+        "azure-key-vault-purge-and-soft-delete-enable-quick-action",
+        "azure-keyvault-vault-update",
+    ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
         "azure-sql-db-threat-policy-update",
         "azure-sql-db-threat-policy-update-quick-action",
@@ -220,8 +234,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
     ],
-    "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update", "azure-cosmos-db-disable-key-quick-action", "azure-cosmosdb-db-account-update"],
-    "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update", "azure-cosmos-db-disable-key-quick-action", "azure-cosmosdb-db-account-update"],
+    "Microsoft.DocumentDB/databaseAccounts/read": [
+        "azure-cosmos-db-update",
+        "azure-cosmos-db-disable-key-quick-action",
+        "azure-cosmosdb-db-account-update",
+    ],
+    "Microsoft.DocumentDB/databaseAccounts/write": [
+        "azure-cosmos-db-update",
+        "azure-cosmos-db-disable-key-quick-action",
+        "azure-cosmosdb-db-account-update",
+    ],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": [
         "azure-sql-db-transparent-data-encryption-set",
         "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
@@ -238,7 +260,8 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/publicIPAddresses/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": [
-        "Microsoft.Network/loadBalancers/backendAddressPools/join/action"],
+        "Microsoft.Network/loadBalancers/backendAddressPools/join/action"
+    ],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-property-get",
