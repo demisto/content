@@ -2486,10 +2486,7 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
 
     # Graph returns {"@odata.context": "...", "value": [ {...mailTips...} ]}
     raw_tips = response.get("value", []) if isinstance(response, dict) else []
-    outputs = [
-        {k: v for k, v in tip.items() if not k.startswith("@odata")}
-        for tip in raw_tips
-    ]
+    outputs = [{k: v for k, v in tip.items() if not k.startswith("@odata")} for tip in raw_tips]
 
     # Build a flat readable summary keyed by recipient address.
     table_rows = []
@@ -2497,20 +2494,22 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
         addr_obj = tip.get("emailAddress") or {}
         auto_replies = tip.get("automaticReplies") or {}
         err = tip.get("error") or {}
-        table_rows.append({
-            "Email Address": addr_obj.get("address"),
-            "Display Name": addr_obj.get("name"),
-            "Mailbox Full": tip.get("mailboxFull"),
-            "Recipient Scope": tip.get("recipientScope"),
-            "Auto-Reply Message": (auto_replies.get("message") or "").strip()[:120] or None,
-            "Total Members": tip.get("totalMemberCount"),
-            "External Members": tip.get("externalMemberCount"),
-            "Max Message Size (bytes)": tip.get("maxMessageSize"),
-            "Delivery Restricted": tip.get("deliveryRestricted"),
-            "Is Moderated": tip.get("isModerated"),
-            "Custom Mail Tip": tip.get("customMailTip") or None,
-            "Error": err.get("message") if err else None,
-        })
+        table_rows.append(
+            {
+                "Email Address": addr_obj.get("address"),
+                "Display Name": addr_obj.get("name"),
+                "Mailbox Full": tip.get("mailboxFull"),
+                "Recipient Scope": tip.get("recipientScope"),
+                "Auto-Reply Message": (auto_replies.get("message") or "").strip()[:120] or None,
+                "Total Members": tip.get("totalMemberCount"),
+                "External Members": tip.get("externalMemberCount"),
+                "Max Message Size (bytes)": tip.get("maxMessageSize"),
+                "Delivery Restricted": tip.get("deliveryRestricted"),
+                "Is Moderated": tip.get("isModerated"),
+                "Custom Mail Tip": tip.get("customMailTip") or None,
+                "Error": err.get("message") if err else None,
+            }
+        )
 
     readable_output = tableToMarkdown(
         f"Mail Tips for {email_address}",
