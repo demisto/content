@@ -8433,9 +8433,11 @@ class SSM:
                 status, schedule, and target information.
         """
 
+        raw_filters = parse_tag_field(args.get("filters"))
+        association_filter_list = [{"key": f["Key"], "value": f["Value"]} for f in raw_filters]
         kwargs: Dict[str, Any] = remove_empty_elements(
             {
-                "AssociationFilterList": parse_tag_field(args.get("filters")),
+                "AssociationFilterList": association_filter_list,
             }
         )
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))

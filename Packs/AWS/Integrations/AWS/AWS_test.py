@@ -15509,7 +15509,7 @@ def test_associations_list_command_with_filter(mocker):
 
     call_kwargs = mock_client.list_associations.call_args[1]
     filter_list = call_kwargs.get("AssociationFilterList", [])
-    assert any(f["Key"] == "AssociationId" and f["Value"] == "assoc-1" for f in filter_list)
+    assert any(f["key"] == "AssociationId" and f["value"] == "assoc-1" for f in filter_list)
 
 
 def test_associations_list_command_no_filter_args_omits_filter_list(mocker):
