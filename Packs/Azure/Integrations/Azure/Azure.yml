@@ -120,8 +120,9 @@ script:
       predefined:
       - Allow
       - Deny
-    description: "Update a security rule. If one does not exist, it will be created. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    description: "Update a security rule. If one does not exist, it will be created. The command is deprecated, please use azure-vn-security-rule-update. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
     name: azure-nsg-security-rule-update
+    deprecated: true
     outputs:
     - contextPath: Azure.NSGRule.name
       description: The rule's name.
@@ -167,6 +168,101 @@ script:
       type: Number
     - contextPath: Azure.NSGRule.direction
       description: The rule's direction. Can be "Inbound" or "Outbound".
+      type: String
+  - name: azure-vn-security-rule-update
+    description: "Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - description: The name of the resource group.
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The name of the security group.
+      name: security_group_name
+      required: true
+    - description: The name of the rule to be updated.
+      name: security_rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The direction of the rule.
+      name: direction
+      predefined:
+        - Inbound
+        - Outbound
+    - description: The protocol on which to apply the rule.
+      name: protocol
+      auto: PREDEFINED
+      predefined:
+        - Any
+        - TCP
+        - UDP
+        - ICMP
+    - description: The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag.
+      name: source
+    - description: The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules.
+      name: priority
+    - description: The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+      name: source_ports
+    - description: The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
+      name: destination
+    - description: The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+      name: destination_ports
+    - description: A description to add to the rule.
+      name: description
+    - auto: PREDEFINED
+      description: The network traffic is allowed or denied.
+      name: access
+      predefined:
+        - Allow
+        - Deny
+    outputs:
+    - contextPath: Azure.VirtualNetworks.SecurityRules.name
+      description: The rule's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.id
+      description: The rule's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.type
+      description: The rule's type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.protocol
+      description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
+      description: For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges
+      description: For multiple ports, a list of ports. For a single port, sourcePortRange is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
+      description: For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges
+      description: For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.priority
+      description: The rule’s priority, ranging from 100 to 4096.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.direction
+      description: The rule's direction, which can be "Inbound" or "Outbound".
       type: String
   - arguments:
     - description: The resource group name.
@@ -485,8 +581,9 @@ script:
       - description: The storage account name.
         name: account_name
         required: true
-  - description: Run this command to update a specific blob container.
+  - description: Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
     name: azure-storage-blob-containers-update
+    deprecated: true
     outputs:
       - contextPath: Azure.StorageBlobContainer.id
         description: Fully qualified resource ID for the resource.
@@ -537,6 +634,59 @@ script:
           - Blob
           - Container
           - None
+
+  - name: azure-storage-blob-container-update
+    description: "Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The container name.
+      name: container_name
+      required: true
+    - description: Uses the specified encryption scope by default for all writes to the container.
+      name: default_encryption_scope
+    - auto: PREDEFINED
+      description: Blocks overriding the container’s default encryption scope.
+      name: deny_encryption_scope_override
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Specifies the access level.
+      name: public_access
+      predefined:
+        - Blob
+        - Container
+        - None
+    outputs:
+    - contextPath: Azure.Storage.BlobContainers.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.metadata
+      description: A name-value pair to associate with the container as metadata.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
+      description: Specifies whether data in the container may be accessed publicly and the access level.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy
+      description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobContainers.properties.hasLegalHold
+      description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
+      type: Boolean
 
   - arguments:
     - description: The name of the Container.
@@ -629,8 +779,30 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Create a new Blob under the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    description: "Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    deprecated: true
     name: azure-storage-container-blob-create
+
+  - name: azure-storage-blob-create
+    description: "Create a new Blob under the specified Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    arguments:
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output.
+      name: file_entry_id
+      required: true
+    - description: The name of the Blob to create. Default is the file name.
+      name: blob_name
 
   - arguments:
     - description: The name of the Blob Container.
@@ -648,8 +820,9 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Retrieve Blob from Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    description: "Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     name: azure-storage-container-blob-get
+    deprecated: true
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -682,6 +855,56 @@ script:
       description: The file extension.
       type: String
 
+  - name: azure-storage-blob-get
+    description: "Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    arguments:
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the Blob to retrieve.
+      name: blob_name
+      required: true
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+
   - arguments:
     - description: The name of the Blob Container.
       name: container_name
@@ -698,8 +921,9 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read."
+    description: "Retrieve the tags of the specified Blob. The command is deprecated, please use azure-storage-blob-tag-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read."
     name: azure-storage-container-blob-tag-get
+    deprecated: true
     outputs:
     - contextPath: Azure.StorageContainer.Container.Blob.Tag.Key
       description: Tag key.
@@ -711,6 +935,37 @@ script:
       description: Blob name.
       type: String
     - contextPath: Azure.StorageContainer.Container.name
+      description: Container name.
+      type: String
+  - name: azure-storage-blob-tag-get
+    description: "Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    outputs:
+    - contextPath: Azure.Storage.Blob.Tag.Key
+      description: Tag key.
+      type: String
+    - contextPath: Azure.Storage.Blob.Tag.Value
+      description: Tag value.
+      type: String
+    - contextPath: Azure.Storage.Blob.name
+      description: Blob name.
+      type: String
+    - contextPath: Azure.Storage.Blob.ContainerName
       description: Container name.
       type: String
 
@@ -740,8 +995,38 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
+    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
     name: azure-storage-container-blob-tag-set
+    deprecated: true
+
+  - name: azure-storage-blob-tag-set
+    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
+      name: tags
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Whether to append tags to the existing tags or not. Default is false.
+      name: append
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
 
   - arguments:
     - description: The name of the Blob Container.
@@ -759,8 +1044,9 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: "Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    description: "Retrieve Blob properties. The command is deprecated, please use azure-storage-blob-property-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     name: azure-storage-container-blob-property-get
+    deprecated: true
     outputs:
     - contextPath: Azure.StorageContainer.Container.Blob.Property.last_modified
       description: Last modified time of the blob.
@@ -791,6 +1077,85 @@ script:
       type: Date
     - contextPath: Azure.StorageContainer.Container.Blob.name
       description: Blob name.
+      type: String
+  - name: azure-storage-blob-property-get
+    description: "Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    outputs:
+    - contextPath: Azure.Storage.Blob.Property.Last-Modified
+      description: Last modified time of the blob.
+      type: Date
+    - contextPath: Azure.Storage.Blob.Property.Etag
+      description: The entity tag for the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Lease-Status
+      description: The lease status of the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Lease-State
+      description: The lease state of the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Blob-Type
+      description: The blob type.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Content-Type
+      description: The content type specified for the blob. If no content type was specified, the default content type is application/octet-stream.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Content-Md5
+      description: The MD5 hash of the blob content.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Creation-Time
+      description: The date at which the blob was created.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Server
+      description: The server used to process the request.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Accept-Ranges
+      description: Indicates that the service supports requests for partial blob content.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Connection
+      description: The connection status of the response.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Date
+      description: A UTC date/time value generated by the service that indicates the time when the response was initiated.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.Transfer-Encoding
+      description: The form of encoding used to safely transfer the payload to the user.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Access-Tier
+      description: The tier of page blob on a Premium Storage account or tier of a block blob in a Blob Storage or general purpose v2 account.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Access-Tier-Inferred
+      description: For page blobs on a Premium Storage account only. If the access tier isn't explicitly set on the blob, the tier is inferred based on its content length, and this header is returned with a value of true.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Request-Id
+      description: This header uniquely identifies the request that was made.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Server-Encrypted
+      description: The value of this header is set to true if the blob data and application metadata are completely encrypted using the specified algorithm.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property.X-Ms-Version
+      description: Specifies the version of the operation to use for this request.
+      type: String
+    - contextPath: Azure.Storage.Blob.name
+      description: Blob name.
+      type: String
+    - contextPath: Azure.Storage.Blob.ContainerName
+      description: Container name.
       type: String
 
   - arguments:
@@ -840,8 +1205,58 @@ script:
       name: request_id
     - description: Required if the blob has an active lease.
       name: lease_id
-    description: "Set Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    description: "Set Blob properties. The command is deprecated, please use azure-storage-blob-property-set. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     name: azure-storage-container-blob-property-set
+    deprecated: true
+  - name: azure-storage-blob-property-set
+    description: "Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: Blob content type. Indicates the media type of the blob.
+      name: content_type
+    - description: Blob MD5 hash value. Can be used by the client to check for content integrity.
+      name: content_md5
+    - auto: PREDEFINED
+      description: Blob content encoding. Used to specify the compression algorithm of the blob content.
+      name: content_encoding
+      predefined:
+        - identity
+        - gzip
+        - deflate
+        - br
+        - compress
+        - zstd
+        - aes128gcm
+        - dcb
+        - dcz
+        - exi
+        - pack200-gzip
+        - x-compress
+        - x-gzip
+    - description: Blob content language. Describes the human languages of the blob content.
+      name: content_language
+    - description: Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata.
+      name: content_disposition
+    - description: Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses.
+      name: cache_control
+    - description: Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled.
+      name: request_id
+    - description: Required if the blob has an active lease.
+      name: lease_id
 
   - arguments:
     - description: Name of a container.
@@ -1465,7 +1880,7 @@ script:
       - 'true'
       - 'false'
     - name: client_cert_enabled
-      description: Configures the web site to accept only https requests.
+      description: Whether client certificates are enabled.
       type: bool
       predefined:
       - 'true'
@@ -1832,8 +2247,9 @@ script:
       auto: PREDEFINED
       predefined:
       - 'true'
-    description: "Updates a key vault in the specified subscription. Required Permissions: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write."
+    description: "Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update. Required Permissions: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write."
     name: azure-key-vault-update
+    deprecated: true
     outputs:
     - contextPath: Azure.KeyVault.id
       description: Resource ID.
@@ -1906,6 +2322,87 @@ script:
       description: The list of IP address rules.
     - contextPath: Azure.KeyVault.properties.networkAcls.virtualNetworkRules
       description: The list of virtual network rules.
+  - name: azure-keyvault-vault-update
+    description: "Updates a key vault in the specified subscription. The required permissions are: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write."
+    arguments:
+    - description: Key Vault name.
+      name: vault_name
+      required: true
+    - name: subscription_id
+      required: true
+      description: The subscription ID.
+      type: String
+    - name: resource_group_name
+      required: true
+      description: The name of the resource group.
+      type: String
+    - name: enable_purge_protection
+      description: Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: enable_soft_delete
+      description: Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Azure.KeyVault.Vault.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.name
+      description: Key Vault name.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.type
+      description: Resource type in Azure.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.location
+      description: Key Vault location.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.tags
+      description: Resource tags.
+      type: Unknown
+    - contextPath: Azure.KeyVault.Vault.properties.sku
+      description: SKU details.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.properties.tenantId
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.properties.accessPolicies
+      description: An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
+      type: Unknown
+    - contextPath: Azure.KeyVault.Vault.properties.enabledForDeployment
+      description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
+      type: Boolean
+    - contextPath: Azure.KeyVault.Vault.properties.enabledForDiskEncryption
+      description: Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys.
+      type: Boolean
+    - contextPath: Azure.KeyVault.Vault.properties.enabledForTemplateDeployment
+      description: Whether Azure Resource Manager is allowed to retrieve secrets from the key vault.
+      type: Boolean
+    - contextPath: Azure.KeyVault.Vault.properties.enableSoftDelete
+      description: Whether soft delete is enabled for this key vault.
+      type: Boolean
+    - contextPath: Azure.KeyVault.Vault.properties.enablePurgeProtection
+      description: Whether purge protection is enabled for this key vault.
+      type: Boolean
+    - contextPath: Azure.KeyVault.Vault.properties.enableRbacAuthorization
+      description: Whether Azure Key Vault uses Role Based Access Control, RBAC, for authorization of data actions.
+      type: Boolean
+    - contextPath: Azure.KeyVault.Vault.properties.vaultUri
+      description: The URI of the vault for performing operations on keys and secrets.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.properties.provisioningState
+      description: The current provisioning state.
+      type: String
+    - contextPath: Azure.KeyVault.Vault.properties.privateEndpointConnections
+      description: List of private endpoint connections associated with the key vault.
+      type: Unknown
+    - contextPath: Azure.KeyVault.Vault.properties.networkAcls
+      description: Rules governing the accessibility of the key vault from specific network locations.
+      type: Unknown
   - arguments:
     - description: Server name.
       name: server_name
@@ -1925,8 +2422,9 @@ script:
     - description: The name of the resource group.
       name: resource_group_name
       required: true
-    description: "Updates the database's threat detection policy. Required Permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
+    description: "Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update. Required Permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
     name: azure-sql-db-threat-policy-update
+    deprecated: true
     outputs:
     - contextPath: Azure.SqlDBThreatPolicy.kind
       description: Kind of threat policy.
@@ -1975,6 +2473,76 @@ script:
     - contextPath: Azure.SqlDBThreatPolicy.serverName
       description: The name of server that the threat policy is related to.
       type: String
+  - name: azure-sqldb-security-alert-policy-update
+    description: "Updates a database's security alert policy. The required permissions are: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
+    arguments:
+    - description: Server name.
+      name: server_name
+      required: true
+    - description: Database name.
+      name: db_name
+      required: true
+    - auto: PREDEFINED
+      description: Whether the alert is sent to the account administrators.
+      name: email_account_admins_enabled
+      predefined:
+        - 'true'
+        - 'false'
+    - description: Subscription ID.
+      name: subscription_id
+      required: true
+    - description: The name of the resource group.
+      name: resource_group_name
+      required: true
+    outputs:
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
+      description: Threat policy ID.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
+      description: Threat policy name.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.state
+      description: Specifies the state of the policy, whether it is enabled or disabled or a policy has not been applied yet on the specific database.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.creationTime
+      description: Specifies the UTC creation time of the policy.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays
+      description: Specifies the number of days to keep in the Threat Detection audit logs.
+      type: Number
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.storageAccountAccessKey
+      description: Specifies the identifier key of the Threat Detection audit storage account.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint
+      description: Specifies the blob storage endpoint.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins
+      description: Specifies that the alert is sent to the account administrators.
+      type: Boolean
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses
+      description: Specifies an array of e-mail addresses to which the alert is sent.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts
+      description: Specifies an array of alerts that are disabled.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.createdAt
+      description: The timestamp of resource creation (UTC).
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.createdBy
+      description: The identity that created the resource.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.createdByType
+      description: The type of identity that created the resource.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedAt
+      description: The timestamp of resource last modification (UTC).
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedBy
+      description: The identity that last modified the resource.
+      type: Unknown
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.systemData.lastModifiedByType
+      description: The type of identity that last modified the resource.
+      type: Unknown
   - arguments:
     - description: Server name.
       name: server_name
@@ -2015,8 +2583,9 @@ script:
     - description: The name of the resource group.
       required: true
       name: resource_group_name
-    description: "Updates the properties of an existing Azure Cosmos DB database account. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write."
+    description: "Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write."
     name: azure-cosmos-db-update
+    deprecated: true
     outputs:
     - contextPath: Azure.CosmosDB.id
       description: The unique resource identifier of the ARM resource.
@@ -2149,8 +2718,160 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+  - name: azure-cosmosdb-db-account-update
+    description: "Updates the properties of an existing Azure Cosmos DB database account. The required permissions are: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write."
+    arguments:
+    - description: Cosmos DB database account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Whether to disable write operations on metadata resources via account keys.
+      name: disable_key_based_metadata_write_access
+      predefined:
+        - 'true'
+        - 'false'
+    - description: Subscription ID.
+      name: subscription_id
+      required: true
+    - description: The name of the resource group.
+      required: true
+      name: resource_group_name
+    outputs:
+    - contextPath: Azure.CosmosDB.DBAccounts.id
+      description: The unique resource identifier of the ARM resource.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.name
+      description: The name of the ARM resource.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.location
+      description: The location of the resource group to which the resource belongs.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.kind
+      description: The database account type.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.identity.type
+      description: The type of identity used for the resource.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities
+      description: The list of user identities associated with the resource.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration
+      description: Analytical storage specific properties.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.apiProperties
+      description: API specific properties.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.backupPolicy
+      description: The policy for taking backups on an account.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.capabilities
+      description: List of Cosmos DB capabilities for the account.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.capacity
+      description: Properties related to capacity enforcement on an account.
+      type: Number
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.connectorOffer
+      description: The Cassandra connector offer type for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.consistencyPolicy
+      description: The consistency policy for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.cors
+      description: The CORS policy for the Cosmos DB database account.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.createMode
+      description: The mode of account creation.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.customerManagedKeyStatus
+      description: Status of the Customer Managed Key feature on the account.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.databaseAccountOfferType
+      description: The offer type for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.defaultIdentity
+      description: The default identity for accessing key vault used in features like customer managed keys.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.disableKeyBasedMetadataWriteAccess
+      description: Whether write operations on metadata resources via account keys is disabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.disableLocalAuth
+      description: Whether local authentication is disabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.documentEndpoint
+      description: The connection endpoint for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enableAnalyticalStorage
+      description: Whether storage analytics are enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enableAutomaticFailover
+      description: Enables automatic failover of the write region.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enableBurstCapacity
+      description: Whether Burst Capacity is enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enableCassandraConnector
+      description: Enables the Cassandra connector on the Cosmos DB account.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enableFreeTier
+      description: Whether Free Tier is enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enableMultipleWriteLocations
+      description: Enables the account to write in multiple locations.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enablePartitionMerge
+      description: Whether Partition Merge is enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.enablePerRegionPerPartitionAutoscale
+      description: Whether PerRegionPerPartitionAutoscale is enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.failoverPolicies
+      description: An array that contains the regions ordered by their failover priorities.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.instanceId
+      description: A unique identifier assigned to the database account.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.ipRules
+      description: List of IP rules.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled
+      description: Whether the Virtual Network ACL rules are enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.keyVaultKeyUri
+      description: The URI of the key vault.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.keysMetadata
+      description: Metadata related to each access key for the given Cosmos DB database account.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.locations
+      description: An array that contains all of the locations enabled for the Cosmos DB account.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion
+      description: The minimum allowed TLS version.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypass
+      description: Which services are allowed to bypass firewall checks.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds
+      description: List of resource IDs that are allowed to bypass firewall checks.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections
+      description: List of private endpoint connections.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.provisioningState
+      description: The status of the Cosmos DB account at the time the operation was called.
+      type: String
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.readLocations
+      description: An array that contains the read locations enabled for the Cosmos DB account.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules
+      description: List of Virtual Network ACL rules.
+      type: Unknown
+    - contextPath: Azure.CosmosDB.DBAccounts.properties.writeLocations
+      description: An array that contains the write locations enabled for the Cosmos DB account.
+      type: Unknown
   - name: azure-nsg-security-groups-list
-    description: "List all network security groups. Required Permissions: Microsoft.Network/networkSecurityGroups/read."
+    description: "List all network security groups. The command is deprecated, please use azure-vn-security-groups-list. Required Permissions: Microsoft.Network/networkSecurityGroups/read."
+    deprecated: true
     outputs:
       - contextPath: Azure.NSGSecurityGroup.name
         description: The security group's name.
@@ -2194,8 +2915,55 @@ script:
         description: "The resource group name."
         type: String
         required: true
+  - name: azure-vn-security-groups-list
+    description: "List all network security groups. Required permissions: Microsoft.Network/networkSecurityGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The subscription ID.
+      type: String
+      required: true
+    - name: resource_group_name
+      description: "The resource group name."
+      type: String
+      required: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.name
+      description: The security group's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.id
+      description: The security group's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.type
+      description: The security group's type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.location
+      description: The security group's location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.etag
+      description: The security group's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.tags
+      description: The security group's tags.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules
+      description: The default security rules.
+      type: List
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces
+      description: The network interfaces.
+      type: List
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.provisioningState
+      description: The provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid
+      description: The resource GUID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.SecurityRules
+      description: The security rules.
+      type: List
+
   - name: azure-nsg-security-rule-get
-    description: "Get a specific rule. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
+    description: "Get a specific rule. The command is deprecated, please use azure-vn-security-rule-get. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
+    deprecated: true
     outputs:
       - contextPath: Azure.NSGRule.name
         description: The rule's name.
@@ -2261,8 +3029,77 @@ script:
       - description: The name of the rule to get.
         name: security_rule_name
         required: true
+  - name: azure-vn-security-rule-get
+    description: "Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - description: Resource group name.
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The name of the security group.
+      name: security_group_name
+      type: String
+      required: true
+    - description: The name of the rule to get.
+      name: security_rule_name
+      required: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.SecurityRules.name
+      description: The rule's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.id
+      description: The rule's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.location
+      description: The rule's location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.type
+      description: The rule's type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.protocol
+      description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
+      description: For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges
+      description: For multiple ports, a list of ports. For a single port, sourcePortRange is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
+      description: For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges
+      description: For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.priority
+      description: The rule’s priority, ranging from 100 to 4096.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.direction
+      description: The rule's direction, which can be "Inbound" or "Outbound".
+      type: String
+
   - name: azure-nsg-security-rules-list
-    description: "Gets all security rules in a network security group. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
+    description: "Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
+    deprecated: true
     arguments:
       - description: The subscription ID.
         name: subscription_id
@@ -2310,8 +3147,58 @@ script:
       - contextPath: Azure.NSGRule.properties.direction
         description: The rule's direction, which can be "Inbound" or "Outbound".
         type: String
+  - name: azure-vn-security-rules-list
+    description: "Gets all security rules in a network security group. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - description: Resource group name.
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The name of the network security group.
+      name: network_security_group_name
+      type: String
+      required: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.SecurityRules.name
+      description: The rule's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.id
+      description: The rule's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.protocol
+      description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
+      description: For a single port, the source port or a range of ports.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
+      description: For a single port, the destination port or range of ports.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.priority
+      description: The rule’s priority, ranging from 100 to 4096.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.direction
+      description: The rule's direction, which can be "Inbound" or "Outbound".
+      type: String
   - name: azure-nsg-security-rule-create
-    description: "Create a security rule. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    description: "Create a security rule. The command is deprecated, please use azure-vn-security-rule-create. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    deprecated: true
     outputs:
       - contextPath: Azure.NSGRule.name
         description: The rule's name.
@@ -2422,8 +3309,122 @@ script:
         type: String
       - description: A description to add to the rule.
         name: description
-  - description: Delete a security rule.
+  - name: azure-vn-security-rule-create
+    description: "Create a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - description: Resource group name.
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The name of the security group.
+      name: security_group_name
+      required: true
+      type: String
+    - description: The name of the rule to create.
+      name: security_rule_name
+      required: true
+      type: String
+    - auto: PREDEFINED
+      description: The direction of the rule.
+      name: direction
+      predefined:
+        - Inbound
+        - Outbound
+      required: true
+    - description: Whether to allow the traffic.
+      name: access
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      defaultValue: Allow
+      type: String
+    - description: The protocol on which to apply the rule.
+      name: protocol
+      auto: PREDEFINED
+      predefined:
+        - Any
+        - TCP
+        - UDP
+        - ICMP
+      defaultValue: Any
+      type: String
+    - description: The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag.
+      name: source
+      defaultValue: Any
+      type: String
+    - description: The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority.
+      name: priority
+      required: true
+      type: Number
+    - description: The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+      name: source_ports
+      defaultValue: '*'
+      type: String
+    - description: The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
+      name: destination
+      defaultValue: Any
+      type: String
+    - description: The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+      name: destination_ports
+      defaultValue: '*'
+      type: String
+    - description: A description to add to the rule.
+      name: description
+    outputs:
+    - contextPath: Azure.VirtualNetworks.SecurityRules.name
+      description: The rule's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.id
+      description: The rule's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.type
+      description: The rule's type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.protocol
+      description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange
+      description: For a single port, the source port or a range of ports. For multiple ports, sourcePortRanges is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges
+      description: For multiple ports, a list of ports. For a single port, sourcePortRange is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange
+      description: For a single port, the destination port or range of ports. For multiple ports, destinationPortRanges is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges
+      description: For multiple ports, a list of destination ports. For a single port, destinationPortRange is used instead.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.priority
+      description: The rule’s priority, ranging from 100 to 4096.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.SecurityRules.properties.direction
+      description: The rule's direction, which can be "Inbound" or "Outbound".
+      type: String
+
+  - description: Delete a security rule. The command is deprecated, please use azure-vn-security-rule-delete.
     name: azure-nsg-security-rule-delete
+    deprecated: true
     arguments:
       - description: The subscription ID.
         name: subscription_id
@@ -2439,8 +3440,26 @@ script:
       - description: The name of the rule to delete.
         name: security_rule_name
         required: true
-  - description: Gets all resource groups for a subscription.
+  - description: "Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete."
+    name: azure-vn-security-rule-delete
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - description: Resource group name.
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The name of the security group.
+      name: security_group_name
+      required: true
+    - description: The name of the rule to delete.
+      name: security_rule_name
+      required: true
+  - description: Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list.
     name: azure-nsg-resource-group-list
+    deprecated: true
     arguments:
       - description: The subscription ID.
         name: subscription_id
@@ -2490,7 +3509,58 @@ script:
       - contextPath: Azure.NSGResourceGroup.tags.type
         description: 'The type tag associated with the Azure Network Security Groups resource group.'
         type: String
-  - description: Gets network interfaces in a resource group.
+  - description: "Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read."
+    name: azure-rm-resource-groups-list
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      defaultValue: 50
+      type: Number
+    - name: tag
+      description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
+    outputs:
+    - contextPath: Azure.ResourceManagement.ResourceGroups.id
+      description: 'The unique identifier of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.name
+      description: 'The name of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.type
+      description: 'The type of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.location
+      description: 'The location of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.properties.provisioningState
+      description: 'The provisioning state of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.tags.Owner
+      description: 'The owner tag of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.tags
+      description: 'The tags associated with the Azure Network Security Groups resource group.'
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.ResourceGroups.tags.Name
+      description: 'The name tag of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.managedBy
+      description: 'The entity that manages the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.tags.aNSG-managed-cluster-name
+      description: 'The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.tags.aNSG-managed-cluster-rg
+      description: 'The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: Azure.ResourceManagement.ResourceGroups.tags.type
+      description: 'The type tag associated with the Azure Network Security Groups resource group.'
+      type: String
+  - description: Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list.
+    deprecated: true
     name: azure-nsg-network-interfaces-list
     outputs:
       - contextPath: Azure.NSGNetworkInterfaces.name
@@ -2558,8 +3628,69 @@ script:
         predefined:
           - "false"
           - "true"
-  - description: Gets public IP addresses in a resource group.
+  - name: azure-vn-network-interfaces-list
+    description: "Gets network interfaces in a resource group. Required permissions: Microsoft.Network/networkInterfaces/read."
+    arguments:
+    - description: The resource group name.
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+      type: Number
+    - name: all_results
+      description: Whether to retrieve all results by overriding the default limit.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - "false"
+        - "true"
+    outputs:
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+      description: The network interface's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+      description: The network interface's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.kind
+      description: The kind of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+      description: The ETag of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+      description: The location of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.managedBy
+      description: The entity that manages the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
+      description: The tags associated with the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+      description: The network interface's provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+      description: A list of IPConfigurations of the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations
+      description: List of tap configurations.
+      type: List
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out
+      description: Whether port 25 outbound traffic is allowed.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
+      description: The network interface card type (Standard/Basic).
+      type: String
+
+  - description: Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
     name: azure-nsg-public-ip-addresses-list
+    deprecated: true
     outputs:
       - contextPath: Azure.NSGPublicIPAddress.name
         description: The public IP address's name.
@@ -2621,14 +3752,81 @@ script:
         type: Number
       - name: all_results
         description: Whether to retrieve all results by overriding the default limit.
-        default: false
+        defaultValue: "false"
         auto: PREDEFINED
         predefined:
           - "false"
           - "true"
+  - name: azure-vn-public-ip-addresses-list
+    description: "Gets public IP addresses in a resource group. Required permissions: Microsoft.Network/publicIPAddresses/read."
+    arguments:
+    - description: "The resource group name."
+      name: resource_group_name
+      type: String
+      required: true
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+      type: Number
+    - name: all_results
+      description: Whether to retrieve all results by overriding the default limit.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+        - "false"
+        - "true"
+    outputs:
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.name
+      description: The public IP address's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.id
+      description: The public IP address's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.location
+      description: The location of the public IP address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.sku
+      description: The public IP address's SKU.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.type
+      description: The type of the public IP address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.etag
+      description: The public IP address's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState
+      description: The public IP address's provisioning state.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion
+      description: The public IP address's version.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress
+      description: The public IP address's IP address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAllocationMethod
+      description: The public IP address's allocation method.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.resourceGuid
+      description: The public IP address's resource GUID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.sku.name
+      description: The public IP address's SKU name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.sku.tier
+      description: The public IP address's SKU tier.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.ipConfiguration
+      description: The reference to another IP configuration associated with this resource.
+      type: String
+
   - name: azure-vm-instance-start
-    description: "Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/start/action."
+    description: "Powers on a given virtual machine. The command is deprecated, please use azure-compute-vm-start. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/start/action."
     execution: true
+    deprecated: true
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2651,9 +3849,33 @@ script:
     - contextPath: Azure.Compute.powerState
       description: Whether the VM instance is powered on or off.
       type: string
-  - name: azure-vm-instance-power-off
-    description: "Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/poweroff/action."
+  - name: azure-compute-vm-start
+    description: "Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/start/action."
     execution: true
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: Resource Group to which the virtual machine belongs.
+      name: resource_group_name
+      required: true
+    - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    outputs:
+    - contextPath: Azure.Compute.VirtualMachines.name
+      description: Name of the VM that was started.
+      type: String
+    - contextPath: Azure.Compute.VirtualMachines.resourceGroup
+      description: Resource group the VM resides in.
+      type: String
+    - contextPath: Azure.Compute.VirtualMachines.powerState
+      description: Whether the VM instance is powered on or off.
+      type: String
+  - name: azure-vm-instance-power-off
+    description: "Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/poweroff/action."
+    execution: true
+    deprecated: true
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2683,8 +3905,39 @@ script:
     - contextPath: Azure.Compute.powerState
       description: Whether the virtual machine instance is powered on or off.
       type: string
+  - name: azure-compute-vm-power-off
+    description: "Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/poweroff/action."
+    execution: true
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command.
+      name: resource_group_name
+      required: true
+    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set to True to request non-graceful VM shutdown.
+      name: skip_shutdown
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Azure.Compute.VirtualMachines.name
+      description: The name of the virtual machine that was powered off.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.resourceGroup
+      description: The resource group in which the virtual machine resides.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.powerState
+      description: Whether the virtual machine instance is powered on or off.
+      type: string
   - name: azure-vm-instance-details-get
-    description: "Gets the properties of a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read."
+    description: "Gets the properties of a given virtual machine. The command is deprecated, please use azure-compute-vm-get. Required Permissions: Microsoft.Compute/virtualMachines/read."
+    deprecated: true
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2754,8 +4007,69 @@ script:
     - contextPath: Azure.Compute.properties.diagnosticsProfile
       description: The configuration for boot diagnostics and monitoring of the virtual machine.
       type: string
+  - name: azure-compute-vm-get
+    description: "Gets the properties of a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group to which the virtual machine belongs.
+      name: resource_group_name
+      required: true
+    - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: instanceView
+      description: The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation.
+      name: expand
+      predefined:
+        - 'instanceView'
+        - 'userData'
+        - 'resiliencyView'
+    outputs:
+    - contextPath: Azure.Compute.VirtualMachines.name
+      description: The name of the virtual machine you want to get details of.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.id
+      description: The ID of the virtual machine.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.location
+      description: The region in which the virtual machine is hosted.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
+      description: The provisioning state of the deployed virtual machine.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.networkProfile.networkInterfaces
+      description: The list of network interfaces attached to this virtual machine.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
+      description: Specifies the hardware settings for the virtual machine.
+      type: Unknown
+    - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
+      description: The operating system configuration of the virtual machine, including admin credentials and hostname.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
+      description: The storage settings for the virtual machine, including OS and data disks.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.vmId
+      description: The unique identifier assigned to the virtual machine instance.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
+      description: Detailed runtime status information about the virtual machine, such as power state and extensions.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
+      description: The timestamp when the virtual machine was created.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
+      description: The network configuration of the virtual machine, including associated network interfaces and settings.
+      type: string
+    - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
+      description: The configuration for boot diagnostics and monitoring of the virtual machine.
+      type: string
   - name: azure-vm-network-interface-details-get
-    description: "Gets the properties of a given network interface. Required Permissions: Microsoft.Network/networkInterfaces/read."
+    description: "Gets the properties of a given network interface. The command is deprecated, please use azure-vn-network-interface-get. Required Permissions: Microsoft.Network/networkInterfaces/read."
+    deprecated: true
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2811,8 +4125,61 @@ script:
     - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
+  - name: azure-vn-network-interface-get
+    description: "Gets the properties of a given network interface. Required permissions: Microsoft.Network/networkInterfaces/read."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group to which the network interface belongs.
+      name: resource_group_name
+      required: true
+    - description: The name of the network interface you want to view the details of.
+      name: network_interface_name
+      required: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+      description: The interface public IP address ID.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress
+      description: The interface MAC address.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+      description: The interface name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+      description: The interface location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+      description: The interface ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+      description: A unique read-only string that changes whenever the network interface resource is updated.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.kind
+      description: The type of the network interface resource, used for Azure internal classification.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations
+      description: The list of tap configurations attached to the network interface for traffic mirroring.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out
+      description: Indicates whether outbound traffic on port 25 (SMTP) is allowed from this network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
+      description: Specifies the type of network interface, such as Standard or Elastic.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+      description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
+      description: The DNS configuration of the network interface, including DNS servers and domain name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding
+      description: Indicates whether IP forwarding is enabled for the network interface.
+      type: String
   - name: azure-vm-public-ip-details-get
-    description: "Gets the properties of a given public IP address. Required Permissions: Microsoft.Network/publicIPAddresses/read."
+    description: "Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-address-get. Required Permissions: Microsoft.Network/publicIPAddresses/read."
+    deprecated: true
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2862,6 +4229,61 @@ script:
     - contextPath: Azure.Network.IPConfigurations.properties.sku
       description: The SKU of the public IP address associated with the configuration, defining its performance tier.
       type: String
+  - name: azure-vn-public-ip-address-get
+    description: "Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group to which the IP address belongs.
+      name: resource_group_name
+      required: true
+    - description: The IP address name.
+      name: address_name
+      required: true
+    outputs:
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.name
+        description: The public IP address's name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.id
+        description: The public IP address's ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.location
+        description: The location of the public IP address.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.sku
+        description: The public IP address's SKU.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.type
+        description: The type of the public IP address.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.etag
+        description: The public IP address's ETag.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState
+        description: The public IP address's provisioning state.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion
+        description: The public IP address's version.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress
+        description: The public IP address's IP address.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAllocationMethod
+        description: The public IP address's allocation method.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.resourceGuid
+        description: The public IP address's resource GUID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.sku.name
+        description: The public IP address's SKU name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.sku.tier
+        description: The public IP address's SKU tier.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.ipConfiguration
+        description: The reference to another IP configuration associated with this resource.
+        type: String
   - arguments:
     - description: The subscription ID.
       name: subscription_id
