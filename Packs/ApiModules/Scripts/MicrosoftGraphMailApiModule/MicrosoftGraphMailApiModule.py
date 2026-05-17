@@ -2291,14 +2291,21 @@ def send_email_command(client: MsGraphMailBaseClient, args):
 
 
 # All mailTipsType flag values (per Microsoft Graph mailTipsType enum docs).
-ALL_MAIL_TIPS_OPTIONS = (
-    "automaticReplies, mailboxFullStatus, customMailTip, externalMemberCount, "
-    "totalMemberCount, maxMessageSize, deliveryRestriction, moderationStatus, "
-    "recipientScope, recipientSuggestions"
-)
+ALL_MAIL_TIPS_OPTIONS = [
+    "automaticReplies",
+    "mailboxFullStatus",
+    "customMailTip",
+    "externalMemberCount",
+    "totalMemberCount",
+    "maxMessageSize",
+    "deliveryRestriction",
+    "moderationStatus",
+    "recipientScope",
+    "recipientSuggestions",
+]
 
 
-def _parse_json_arg(value, arg_name: str):
+def parse_json_arg(value, arg_name: str):
     """Parse a JSON-string CLI arg into a Python object, raising a clear error on JSON parse failure.
 
     None/empty values return None — required-ness is enforced at the YAML layer.
@@ -2340,17 +2347,17 @@ def delete_rule_command(client: MsGraphMailBaseClient, args) -> str:
 
 
 def create_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
-    """msgraph-mail-create-rule"""
+    """Creates a new mailbox inbox rule for the specified user."""
     user_id = args.get("user_id")
     display_name = args.get("display_name")
     sequence = arg_to_number(args.get("sequence"))
 
-    actions = _parse_json_arg(args.get("actions"), "actions")
+    actions = parse_json_arg(args.get("actions"), "actions")
     if not isinstance(actions, dict) or not actions:
         raise DemistoException("'actions' must be a non-empty JSON object with at least one action.")
 
-    conditions = _parse_json_arg(args.get("conditions"), "conditions")
-    exceptions = _parse_json_arg(args.get("exceptions"), "exceptions")
+    conditions = parse_json_arg(args.get("conditions"), "conditions")
+    exceptions = parse_json_arg(args.get("exceptions"), "exceptions")
     is_enabled = arg_to_bool_or_none(args.get("is_enabled"))
 
     body = assign_params(
@@ -2385,15 +2392,15 @@ def create_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
 
 
 def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
-    """msgraph-mail-update-rule"""
+    """Updates an existing mailbox inbox rule for the specified user."""
     user_id = args.get("user_id")
     rule_id = args.get("rule_id")
 
-    sequence = args.get("sequence")
+    sequence = arg_to_number(args.get("sequence"))
 
-    actions = _parse_json_arg(args.get("actions"), "actions")
-    conditions = _parse_json_arg(args.get("conditions"), "conditions")
-    exceptions = _parse_json_arg(args.get("exceptions"), "exceptions")
+    actions = parse_json_arg(args.get("actions"), "actions")
+    conditions = parse_json_arg(args.get("conditions"), "conditions")
+    exceptions = parse_json_arg(args.get("exceptions"), "exceptions")
     is_enabled = arg_to_bool_or_none(args.get("is_enabled"))
     is_read_only = arg_to_bool_or_none(args.get("is_read_only"))
 
@@ -2436,7 +2443,7 @@ def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
 
 
 def get_mailbox_settings_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
-    """msgraph-mail-get-settings"""
+    """Retrieves the mailbox settings (timezone, language, automatic replies, working hours, etc.) for the specified user."""
     user_id = args.get("user_id")
 
     response = client.get_mailbox_settings(user_id)
@@ -2478,7 +2485,7 @@ def get_mailbox_settings_command(client: MsGraphMailBaseClient, args: dict) -> C
 
 
 def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
-    """msgraph-mail-get-mailtips"""
+    """Retrieves mail tips (out-of-office, mailbox full, delivery restrictions, etc.) for a recipient email address."""
     email_address = args.get("email_address")
     if not email_address:
         raise DemistoException("'email_address' is required.")
@@ -2488,6 +2495,10 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
     # Graph returns {"@odata.context": "...", "value": [ {...mailTips...} ]}
     raw_tips = response.get("value", []) if isinstance(response, dict) else []
     outputs = [{k: v for k, v in tip.items() if not k.startswith("@odata")} for tip in raw_tips]
+
+    # Flatten the recipient address into a top-level key so it can be used as outputs_key_field
+    for tip in outputs:
+        tip["emailAddressValue"] = (tip.get("emailAddress") or {}).get("address")
 
     # Build a flat readable summary keyed by recipient address.
     table_rows = []
@@ -2520,7 +2531,7 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
 
     return CommandResults(
         outputs_prefix="MSGraphMail.MailTips",
-        outputs_key_field="emailAddress.address",
+        outputs_key_field="emailAddressValue",
         outputs=outputs,
         readable_output=readable_output,
         raw_response=response,

@@ -7,7 +7,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftApiModule import MicrosoftClient
 from MicrosoftGraphMail import *
-from MicrosoftGraphMailApiModule import _parse_json_arg
+from MicrosoftGraphMailApiModule import parse_json_arg
 
 
 class MockedResponse:
@@ -2363,10 +2363,11 @@ def test_get_mailtips_happy(mocker):
         assert opt in sent_body["MailTipsOptions"]
 
     assert result.outputs_prefix == "MSGraphMail.MailTips"
-    assert result.outputs_key_field == "emailAddress.address"
+    assert result.outputs_key_field == "emailAddressValue"
     assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
     assert result.outputs[0]["emailAddress"]["address"] == email_address
+    assert result.outputs[0]["emailAddressValue"] == email_address
     for k in result.outputs[0]:
         assert not k.startswith("@odata")
 
@@ -2386,7 +2387,7 @@ def test_get_mailtips_missing_email_address():
     assert "email_address" in str(exc_info.value)
 
 
-# ---------- _parse_json_arg helper (T14) ----------
+# ---------- parse_json_arg helper (T14) ----------
 
 
 @pytest.mark.parametrize(
@@ -2402,14 +2403,14 @@ def test_get_mailtips_missing_email_address():
 def test_parse_json_arg_valid(value, expected):
     """
     Given:
-      - Various valid inputs to _parse_json_arg.
+      - Various valid inputs to parse_json_arg.
     When:
       - Parsing them.
     Then:
       - None/empty -> None; valid JSON string -> parsed object;
         already-parsed dict/list -> passthrough.
     """
-    assert _parse_json_arg(value, "myarg") == expected
+    assert parse_json_arg(value, "myarg") == expected
 
 
 def test_parse_json_arg_invalid_json_raises():
@@ -2417,12 +2418,12 @@ def test_parse_json_arg_invalid_json_raises():
     Given:
       - A malformed JSON string.
     When:
-      - Calling _parse_json_arg.
+      - Calling parse_json_arg.
     Then:
       - DemistoException is raised mentioning the arg name and 'valid JSON'.
     """
     with pytest.raises(DemistoException) as exc_info:
-        _parse_json_arg("{notValidJson", "myarg")
+        parse_json_arg("{notValidJson", "myarg")
     msg = str(exc_info.value)
     assert "myarg" in msg
     assert "valid JSON" in msg

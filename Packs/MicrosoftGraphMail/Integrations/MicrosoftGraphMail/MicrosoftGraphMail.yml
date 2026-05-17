@@ -1364,6 +1364,9 @@ script:
     - contextPath: MSGraphMail.MailTips.emailAddress.address
       description: The SMTP address of the recipient.
       type: String
+    - contextPath: MSGraphMail.MailTips.emailAddressValue
+      description: The email address of the recipient (flattened key used for context merging).
+      type: String
     - contextPath: MSGraphMail.MailTips.automaticReplies.message
       description: The automatic reply message.
       type: String
