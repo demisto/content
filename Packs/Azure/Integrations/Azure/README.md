@@ -2014,6 +2014,7 @@ Creates a network security group. Requires the Microsoft.Network/networkSecurity
 | location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
 
 #### Context Output
+
 | Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. |
 | Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. |
 | Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. |
