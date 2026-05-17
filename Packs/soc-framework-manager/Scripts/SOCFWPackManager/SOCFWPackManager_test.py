@@ -18,7 +18,7 @@ SCRIPT_MODULE_NAME = "SOCFWPackManager"
 def load_script():
     """Import SOCFWPackManager with mocked XSOAR runtime."""
     demisto_mock = types.SimpleNamespace()
-    demisto_mock._args    = {}
+    demisto_mock._args = {}
     demisto_mock._results = []
     demisto_mock._commands = []
     demisto_mock._command_responses = {}
@@ -31,23 +31,20 @@ def load_script():
             return response(args)
         return response if response is not None else []
 
-    demisto_mock.args             = lambda: demisto_mock._args
-    demisto_mock.results          = lambda x: demisto_mock._results.append(x)
-    demisto_mock.executeCommand   = _execute_command
-    demisto_mock.debug            = lambda x: None
-    demisto_mock.info             = lambda x: None
-    demisto_mock.context          = lambda: demisto_mock._context
+    demisto_mock.args = lambda: demisto_mock._args
+    demisto_mock.results = lambda x: demisto_mock._results.append(x)
+    demisto_mock.executeCommand = _execute_command
+    demisto_mock.debug = lambda x: None
+    demisto_mock.info = lambda x: None
+    demisto_mock.context = lambda: demisto_mock._context
 
     sys.modules["demistomock"] = demisto_mock
 
     common = types.ModuleType("CommonServerPython")
     common.return_results = lambda x: demisto_mock._results.append(x)
-    common.return_error   = lambda x: (_ for _ in ()).throw(RuntimeError(x))
-    common.argToList      = lambda v: (
-        v if isinstance(v, list)
-        else [x.strip() for x in str(v).split(",") if x.strip()]
-        if v not in (None, "")
-        else []
+    common.return_error = lambda x: (_ for _ in ()).throw(RuntimeError(x))
+    common.argToList = lambda v: (
+        v if isinstance(v, list) else [x.strip() for x in str(v).split(",") if x.strip()] if v not in (None, "") else []
     )
     sys.modules["CommonServerPython"] = common
 
@@ -59,14 +56,15 @@ def load_script():
     # Inject demisto into the module namespace.
     # Scripts use demisto as a module-level global; importlib loses
     # the binding when sys.modules["demistomock"] is swapped between tests.
-    module.demisto        = demisto_mock
+    module.demisto = demisto_mock
     module.return_results = lambda x: demisto_mock._results.append(x)
-    module.return_error   = lambda msg: (_ for _ in ()).throw(RuntimeError(msg))
+    module.return_error = lambda msg: (_ for _ in ()).throw(RuntimeError(msg))
 
     return module, demisto_mock
 
 
 # ── Utility helpers ───────────────────────────────────────────────────────────
+
 
 def test_arg_to_bool_true_variants():
     script, _ = load_script()
@@ -113,12 +111,15 @@ def test_is_timeout_error_detects_common_patterns():
 
 # ── Catalog helpers ───────────────────────────────────────────────────────────
 
+
 def test_find_pack_in_catalog_found():
     script, _ = load_script()
-    catalog = {"packs": [
-        {"id": "soc-optimization-unified", "version": "3.6.3"},
-        {"id": "SocFrameworkTrendMicroVisionOne", "version": "1.0.30"},
-    ]}
+    catalog = {
+        "packs": [
+            {"id": "soc-optimization-unified", "version": "3.6.3"},
+            {"id": "SocFrameworkTrendMicroVisionOne", "version": "1.0.30"},
+        ]
+    }
     result = script.find_pack_in_catalog(catalog, "soc-optimization-unified")
     assert result["version"] == "3.6.3"
 
@@ -136,11 +137,14 @@ def test_find_pack_in_catalog_empty():
 
 # ── xsoar_config helpers ──────────────────────────────────────────────────────
 
+
 def test_extract_custom_packs_from_xsoar_cfg():
     script, _ = load_script()
-    cfg = {"custom_packs": [
-        {"id": "my-pack.zip", "url": "https://example.com/my-pack-v1.0.0.zip", "system": "true"},
-    ]}
+    cfg = {
+        "custom_packs": [
+            {"id": "my-pack.zip", "url": "https://example.com/my-pack-v1.0.0.zip", "system": "true"},
+        ]
+    }
     result = script._extract_custom_packs_from_xsoar_cfg(cfg)
     assert len(result) == 1
     assert result[0]["url"] == "https://example.com/my-pack-v1.0.0.zip"
@@ -167,18 +171,39 @@ def test_has_config_docs_post_false_when_empty():
 
 # ── action=list ───────────────────────────────────────────────────────────────
 
+
 def test_do_list_renders_table(mocker):
     script, demisto = load_script()
-    catalog = {"packs": [
-        {"id": "soc-optimization-unified", "display_name": "SOC Framework Unified",
-         "version": "3.6.3", "visible": True, "path": "Packs/soc-optimization-unified"},
-        {"id": "SocFrameworkTrendMicroVisionOne", "display_name": "SOC Trend Micro",
-         "version": "1.0.30", "visible": True, "path": "Packs/SocFrameworkTrendMicroVisionOne"},
-    ]}
+    catalog = {
+        "packs": [
+            {
+                "id": "soc-optimization-unified",
+                "display_name": "SOC Framework Unified",
+                "version": "3.6.3",
+                "visible": True,
+                "path": "Packs/soc-optimization-unified",
+            },
+            {
+                "id": "SocFrameworkTrendMicroVisionOne",
+                "display_name": "SOC Trend Micro",
+                "version": "1.0.30",
+                "visible": True,
+                "path": "Packs/SocFrameworkTrendMicroVisionOne",
+            },
+        ]
+    }
     mocker.patch.object(script, "fetch_pack_catalog", return_value=catalog)
 
-    script.do_list({"limit": "50", "offset": "0", "sort_by": "id", "sort_dir": "asc",
-                    "fields": "id,display_name,version,visible,path", "show_total": "True"})
+    script.do_list(
+        {
+            "limit": "50",
+            "offset": "0",
+            "sort_by": "id",
+            "sort_dir": "asc",
+            "fields": "id,display_name,version,visible,path",
+            "show_total": "True",
+        }
+    )
 
     output = " ".join(str(r) for r in demisto._results)
     assert "soc-optimization-unified" in output
@@ -188,16 +213,27 @@ def test_do_list_renders_table(mocker):
 
 def test_do_list_filter(mocker):
     script, demisto = load_script()
-    catalog = {"packs": [
-        {"id": "soc-optimization-unified", "display_name": "SOC Framework Unified",
-         "version": "3.6.3", "visible": True, "path": "Packs/soc-optimization-unified"},
-        {"id": "SocFrameworkTrendMicroVisionOne", "display_name": "Trend Micro",
-         "version": "1.0.30", "visible": True, "path": "Packs/SocFrameworkTrendMicroVisionOne"},
-    ]}
+    catalog = {
+        "packs": [
+            {
+                "id": "soc-optimization-unified",
+                "display_name": "SOC Framework Unified",
+                "version": "3.6.3",
+                "visible": True,
+                "path": "Packs/soc-optimization-unified",
+            },
+            {
+                "id": "SocFrameworkTrendMicroVisionOne",
+                "display_name": "Trend Micro",
+                "version": "1.0.30",
+                "visible": True,
+                "path": "Packs/SocFrameworkTrendMicroVisionOne",
+            },
+        ]
+    }
     mocker.patch.object(script, "fetch_pack_catalog", return_value=catalog)
 
-    script.do_list({"filter": "trend", "limit": "50", "offset": "0",
-                    "sort_by": "id", "fields": "id,version"})
+    script.do_list({"filter": "trend", "limit": "50", "offset": "0", "sort_by": "id", "fields": "id,version"})
 
     output = " ".join(str(r) for r in demisto._results)
     assert "SocFrameworkTrendMicroVisionOne" in output
@@ -205,6 +241,7 @@ def test_do_list_filter(mocker):
 
 
 # ── action=sync-tags ──────────────────────────────────────────────────────────
+
 
 def test_compute_hash_is_stable():
     script, _ = load_script()
@@ -231,14 +268,15 @@ def test_do_sync_tags_up_to_date(mocker):
     mocker.patch.object(script, "http_get_json", return_value=rows)
     mocker.patch.object(script, "_normalize_lookup_rows", return_value=rows)
     mocker.patch.object(script, "_remove_omitted_fields", return_value=rows)
-    mocker.patch.object(script, "_get_current_meta",
-                        return_value={"hash": current_hash, "version": current_hash[:8],
-                                      "updated_at": "2026-01-01T00:00:00Z"})
+    mocker.patch.object(
+        script,
+        "_get_current_meta",
+        return_value={"hash": current_hash, "version": current_hash[:8], "updated_at": "2026-01-01T00:00:00Z"},
+    )
 
     script.do_sync_tags({"force": "False"})
 
-    results_flat = " ".join(json.dumps(r) if not isinstance(r, str) else r
-                            for r in demisto._results)
+    results_flat = " ".join(json.dumps(r) if not isinstance(r, str) else r for r in demisto._results)
     assert "up_to_date" in results_flat
 
 
@@ -249,18 +287,19 @@ def test_do_sync_tags_updates_when_hash_differs(mocker):
     mocker.patch.object(script, "http_get_json", return_value=rows)
     mocker.patch.object(script, "_normalize_lookup_rows", return_value=rows)
     mocker.patch.object(script, "_remove_omitted_fields", return_value=rows)
-    mocker.patch.object(script, "_get_current_meta",
-                        return_value={"hash": "old_hash_abc", "version": "old_hash",
-                                      "updated_at": "2025-01-01T00:00:00Z"})
+    mocker.patch.object(
+        script,
+        "_get_current_meta",
+        return_value={"hash": "old_hash_abc", "version": "old_hash", "updated_at": "2025-01-01T00:00:00Z"},
+    )
     mock_upload = mocker.patch.object(script, "_xql_lookup_add_data_list")
-    mock_set    = mocker.patch.object(script, "_set_current_meta")
+    mock_set = mocker.patch.object(script, "_set_current_meta")
 
     script.do_sync_tags({"force": "False"})
 
     mock_upload.assert_called_once()
     mock_set.assert_called_once()
-    upload_rows = mock_upload.call_args[1]["rows"] if mock_upload.call_args[1] \
-        else mock_upload.call_args[0][1]
+    upload_rows = mock_upload.call_args[1]["rows"] if mock_upload.call_args[1] else mock_upload.call_args[0][1]
     assert upload_rows == rows  # only data rows, no meta row in dataset
 
 
@@ -273,9 +312,11 @@ def test_do_sync_tags_force_updates_even_when_equal(mocker):
     mocker.patch.object(script, "http_get_json", return_value=rows)
     mocker.patch.object(script, "_normalize_lookup_rows", return_value=rows)
     mocker.patch.object(script, "_remove_omitted_fields", return_value=rows)
-    mocker.patch.object(script, "_get_current_meta",
-                        return_value={"hash": current_hash, "version": current_hash[:8],
-                                      "updated_at": "2026-01-01T00:00:00Z"})
+    mocker.patch.object(
+        script,
+        "_get_current_meta",
+        return_value={"hash": current_hash, "version": current_hash[:8], "updated_at": "2026-01-01T00:00:00Z"},
+    )
     mock_upload = mocker.patch.object(script, "_xql_lookup_add_data_list")
     mocker.patch.object(script, "_set_current_meta")
 
@@ -296,6 +337,7 @@ def test_do_sync_tags_no_rows_raises(mocker):
 
 # ── action=configure ──────────────────────────────────────────────────────────
 
+
 def test_do_configure_missing_pack_id_raises():
     script, _ = load_script()
     with pytest.raises(Exception, match="pack_id is required"):
@@ -310,13 +352,12 @@ def test_do_configure_calls_all_sections(mocker):
         "jobs": [],
         "lookup_datasets": [],
     }
-    mock_catalog = {"packs": [{"id": "my-pack", "version": "1.0.0",
-                                "xsoar_config": "https://example.com/xsoar_config.json"}]}
+    mock_catalog = {"packs": [{"id": "my-pack", "version": "1.0.0", "xsoar_config": "https://example.com/xsoar_config.json"}]}
     mocker.patch.object(script, "fetch_pack_catalog", return_value=mock_catalog)
-    mocker.patch.object(script, "fetch_xsoar_config",  return_value=xsoar_cfg)
+    mocker.patch.object(script, "fetch_xsoar_config", return_value=xsoar_cfg)
     mocker.patch.object(script, "fetch_installed_marketplace_pack_ids", return_value=[])
-    mock_integ   = mocker.patch.object(script, "configure_integrations_from_xsoar_config")
-    mock_jobs    = mocker.patch.object(script, "configure_jobs_from_xsoar_config")
+    mock_integ = mocker.patch.object(script, "configure_integrations_from_xsoar_config")
+    mock_jobs = mocker.patch.object(script, "configure_jobs_from_xsoar_config")
     mock_lookups = mocker.patch.object(script, "configure_lookups_from_xsoar_config")
     mocker.patch.object(script, "print_config_docs")
 
@@ -331,21 +372,22 @@ def test_do_configure_respects_flags(mocker):
     script, _ = load_script()
 
     xsoar_cfg = {"integration_instances": [], "jobs": [], "lookup_datasets": []}
-    mocker.patch.object(script, "fetch_pack_catalog",
-                        return_value={"packs": [{"id": "p", "version": "1.0.0"}]})
+    mocker.patch.object(script, "fetch_pack_catalog", return_value={"packs": [{"id": "p", "version": "1.0.0"}]})
     mocker.patch.object(script, "fetch_xsoar_config", return_value=xsoar_cfg)
     mocker.patch.object(script, "fetch_installed_marketplace_pack_ids", return_value=[])
-    mock_integ   = mocker.patch.object(script, "configure_integrations_from_xsoar_config")
-    mock_jobs    = mocker.patch.object(script, "configure_jobs_from_xsoar_config")
+    mock_integ = mocker.patch.object(script, "configure_integrations_from_xsoar_config")
+    mock_jobs = mocker.patch.object(script, "configure_jobs_from_xsoar_config")
     mock_lookups = mocker.patch.object(script, "configure_lookups_from_xsoar_config")
     mocker.patch.object(script, "print_config_docs")
 
-    script.do_configure({
-        "pack_id": "p",
-        "configure_integrations": "False",
-        "configure_jobs": "False",
-        "configure_lookups": "True",
-    })
+    script.do_configure(
+        {
+            "pack_id": "p",
+            "configure_integrations": "False",
+            "configure_jobs": "False",
+            "configure_lookups": "True",
+        }
+    )
 
     mock_integ.assert_not_called()
     mock_jobs.assert_not_called()
@@ -353,6 +395,7 @@ def test_do_configure_respects_flags(mocker):
 
 
 # ── action dispatch (main) ────────────────────────────────────────────────────
+
 
 def test_main_unsupported_action_raises():
     script, demisto = load_script()

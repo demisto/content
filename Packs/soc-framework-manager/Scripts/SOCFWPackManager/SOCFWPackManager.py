@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401,F403
 
 import json
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -38,14 +38,18 @@ SCRIPT_NAME = "SOCFWPackManager"
 # Basic helpers
 # ---------------------------
 
+
 def _norm(s: Any) -> str:
     return (str(s) if s is not None else "").strip()
+
 
 def _to_lower(s: Any) -> str:
     return _norm(s).lower()
 
-def _safe_sort_key(row: Dict[str, Any], key: str) -> str:
+
+def _safe_sort_key(row: dict[str, Any], key: str) -> str:
     return _norm(row.get(key, "")).lower()
+
 
 def _guess_pack_id_from_label(label: str) -> str:
     """
@@ -66,7 +70,8 @@ def _guess_pack_id_from_label(label: str) -> str:
         s = s.split("-v")[0]
     return s.strip()
 
-def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: Dict[str, Any]) -> List[Dict[str, str]]:
+
+def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: dict[str, Any]) -> list[dict[str, str]]:
     """
     Returns a normalized list of custom packs to install from xsoar_config.json.
     Expected input key: custom_packs
@@ -74,7 +79,7 @@ def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: Dict[str, Any]) -> List[Dict
     Output: [{ "name": "<id>", "url": "<url>" }, ...]
     """
     packs = xsoar_cfg.get("custom_packs") or []
-    out: List[Dict[str, str]] = []
+    out: list[dict[str, str]] = []
 
     if isinstance(packs, list):
         for p in packs:
@@ -87,9 +92,11 @@ def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: Dict[str, Any]) -> List[Dict
                 out.append({"name": pid or url, "url": url, "system": system})
     return out
 
+
 # ---------------------------
 # Demisto helpers
 # ---------------------------
+
 
 def get_error(res):
     try:
@@ -97,16 +104,19 @@ def get_error(res):
     except Exception:
         return str(res)
 
+
 def is_error(res0):
     try:
         return bool(res0.get("Type") == 4)  # entryTypes["error"] == 4
     except Exception:
         return False
 
+
 def get_contents(res):
     if not res or not isinstance(res, list) or not res[0]:
         return {}
     return res[0].get("Contents") or {}
+
 
 def arg_to_bool(val, default=False) -> bool:
     if val is None:
@@ -118,14 +128,17 @@ def arg_to_bool(val, default=False) -> bool:
         return default
     return s in ("true", "1", "yes", "y", "on")
 
+
 def to_int(val, default: int) -> int:
     try:
         return int(val)
     except Exception:
         return default
 
+
 def bool_str_tf(val: bool) -> str:
     return "true" if bool(val) else "false"
+
 
 def is_timeout_error(err_text: str) -> bool:
     if not err_text:
@@ -142,7 +155,8 @@ def is_timeout_error(err_text: str) -> bool:
         or "context deadline exceeded (client.timeout exceeded while awaiting headers)" in t
     )
 
-def emit_progress(message: str, stage: Optional[str] = None):
+
+def emit_progress(message: str, stage: str | None = None):
     title = f"{SCRIPT_NAME} — {stage}" if stage else SCRIPT_NAME
     return_results(
         {
@@ -153,11 +167,13 @@ def emit_progress(message: str, stage: Optional[str] = None):
         }
     )
 
-def log(message: str, stage: Optional[str], debug: bool, always: bool = False):
+
+def log(message: str, stage: str | None, debug: bool, always: bool = False):
     if always or debug:
         emit_progress(message, stage=stage)
 
-def exec_cmd(command: str, args: Dict[str, Any], fail_on_error: bool = True):
+
+def exec_cmd(command: str, args: dict[str, Any], fail_on_error: bool = True):
     res = demisto.executeCommand(command, args)
     if not res:
         if fail_on_error:
@@ -169,9 +185,10 @@ def exec_cmd(command: str, args: Dict[str, Any], fail_on_error: bool = True):
         return res
     return res
 
+
 def exec_with_retry(
     command: str,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     retry_count: int,
     retry_sleep_seconds: int,
     context_for_error: str,
@@ -191,14 +208,17 @@ def exec_with_retry(
         raise Exception(f"{context_for_error}\nError: {last_err}")
     return None
 
+
 def is_instance_already_exists_error(err_text: str) -> bool:
     if not err_text:
         return False
     return "already exists (33)" in err_text.lower()
 
+
 # ---------------------------
 # Pre/Post docs helpers (LOUD + optional content)
 # ---------------------------
+
 
 def _md_link(name: str, url: str) -> str:
     n = (name or "").strip() or url
@@ -206,6 +226,7 @@ def _md_link(name: str, url: str) -> str:
     if not u:
         return f"- {n}"
     return f"- [{n}]({u})"
+
 
 def _github_blob_to_raw(url: str) -> str:
     """
@@ -240,10 +261,12 @@ def _github_blob_to_raw(url: str) -> str:
             return f"https://raw.githubusercontent.com/{org}/{repo}/{branch}/{path}"
     return u
 
+
 def _fetch_text(url: str, timeout: int = 20) -> str:
     r = requests.get(url, timeout=timeout)
     r.raise_for_status()
     return r.text or ""
+
 
 def _truncate_text(s: str, max_chars: int, max_lines: int) -> str:
     if not s:
@@ -256,7 +279,8 @@ def _truncate_text(s: str, max_chars: int, max_lines: int) -> str:
         s = s[:max_chars] + "\n\n... (truncated by max_chars) ..."
     return s
 
-def has_config_docs(xsoar_cfg: Dict[str, Any], when: str) -> bool:
+
+def has_config_docs(xsoar_cfg: dict[str, Any], when: str) -> bool:
     key = "pre_config_docs" if when == "pre" else "post_config_docs"
     docs = xsoar_cfg.get(key) or []
     if not isinstance(docs, list):
@@ -268,8 +292,9 @@ def has_config_docs(xsoar_cfg: Dict[str, Any], when: str) -> bool:
             return True
     return False
 
+
 def print_config_docs(
-    xsoar_cfg: Dict[str, Any],
+    xsoar_cfg: dict[str, Any],
     when: str,
     debug: bool,
     include_doc_content: bool = False,
@@ -283,9 +308,7 @@ def print_config_docs(
         return
 
     banner_title = (
-        " 🚧 PRE-INSTALL / PRE-CONFIG REQUIRED STEPS"
-        if when == "pre"
-        else "✅ POST-INSTALL / POST-CONFIG MANUAL STEPS"
+        " 🚧 PRE-INSTALL / PRE-CONFIG REQUIRED STEPS" if when == "pre" else "✅ POST-INSTALL / POST-CONFIG MANUAL STEPS"
     )
     banner_sub = (
         "_These docs usually contain prerequisites / manual steps you must complete BEFORE install._"
@@ -295,8 +318,8 @@ def print_config_docs(
 
     banner = "\n".join(["---", f"## {banner_title}", banner_sub, "---"])
 
-    link_lines: List[str] = []
-    normalized_docs: List[Dict[str, str]] = []
+    link_lines: list[str] = []
+    normalized_docs: list[dict[str, str]] = []
     for d in docs:
         if isinstance(d, dict):
             name = _norm(d.get("name") or "")
@@ -315,7 +338,7 @@ def print_config_docs(
         return
 
     want_content = bool(include_doc_content or debug)
-    body: List[str] = [banner, "### Links", *link_lines]
+    body: list[str] = [banner, "### Links", *link_lines]
 
     if want_content and normalized_docs:
         body += ["", "### Doc contents (preview)", " _Showing a truncated preview._", ""]
@@ -349,34 +372,40 @@ def print_config_docs(
 
     emit_progress("\n".join(body), stage=f"docs.{when}")
 
+
 # ---------------------------
 # Core API wrappers
 # ---------------------------
 
-def core_api_get(path: str, using: str = "", execution_timeout: int = 600) -> Dict[str, Any]:
+
+def core_api_get(path: str, using: str = "", execution_timeout: int = 600) -> dict[str, Any]:
     args = {"uri": path, "execution-timeout": str(execution_timeout)}
     if using:
         args["using"] = using
     res = exec_cmd("core-api-get", args)
     return get_contents(res) or {}
 
-def core_api_post(path: str, body: Any, using: str = "", execution_timeout: int = 600) -> Dict[str, Any]:
+
+def core_api_post(path: str, body: Any, using: str = "", execution_timeout: int = 600) -> dict[str, Any]:
     args = {"uri": path, "body": json.dumps(body if body is not None else {}), "execution-timeout": str(execution_timeout)}
     if using:
         args["using"] = using
     res = exec_cmd("core-api-post", args)
     return get_contents(res) or {}
 
-def core_api_put(path: str, body: Any, using: str = "", execution_timeout: int = 600) -> Dict[str, Any]:
+
+def core_api_put(path: str, body: Any, using: str = "", execution_timeout: int = 600) -> dict[str, Any]:
     args = {"uri": path, "body": json.dumps(body if body is not None else {}), "execution-timeout": str(execution_timeout)}
     if using:
         args["using"] = using
     res = exec_cmd("core-api-put", args)
     return get_contents(res) or {}
 
+
 # ---------------------------
 # HTTP JSON helpers
 # ---------------------------
+
 
 def _parse_json_stream(raw: str) -> Any:
     """
@@ -395,7 +424,7 @@ def _parse_json_stream(raw: str) -> Any:
     dec = json.JSONDecoder()
     idx = 0
     n = len(raw)
-    values: List[Any] = []
+    values: list[Any] = []
 
     while idx < n:
         while idx < n and raw[idx].isspace():
@@ -410,10 +439,12 @@ def _parse_json_stream(raw: str) -> Any:
         return values[0]
     return values
 
+
 def http_get_text(url: str, timeout: int = 30) -> str:
     r = requests.get(url, timeout=timeout)
     r.raise_for_status()
     return r.text or ""
+
 
 def http_get_json(url: str, timeout: int = 30) -> Any:
     """
@@ -430,19 +461,22 @@ def http_get_json(url: str, timeout: int = 30) -> Any:
     except Exception:
         return _parse_json_stream(raw)
 
+
 # ---------------------------
 # Catalog + Manifest resolver
 # ---------------------------
 
 DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
 
-def fetch_pack_catalog(catalog_url: str = DEFAULT_CATALOG_URL) -> Dict[str, Any]:
+
+def fetch_pack_catalog(catalog_url: str = DEFAULT_CATALOG_URL) -> dict[str, Any]:
     data = http_get_json(catalog_url)
     if not isinstance(data, dict):
         raise Exception(f"pack_catalog.json unexpected format at {catalog_url}")
     return data
 
-def find_pack_in_catalog(catalog: Dict[str, Any], pack_id: str) -> Optional[Dict[str, Any]]:
+
+def find_pack_in_catalog(catalog: dict[str, Any], pack_id: str) -> dict[str, Any] | None:
     packs = catalog.get("packs") or catalog.get("Packs") or catalog.get("items") or []
     if not isinstance(packs, list):
         return None
@@ -451,8 +485,9 @@ def find_pack_in_catalog(catalog: Dict[str, Any], pack_id: str) -> Optional[Dict
             return p
     return None
 
-def resolve_manifest(pack_id: str, include_hidden: bool, catalog_url: str) -> Dict[str, Any]:
-    if pack_id.startswith("http://") or pack_id.startswith("https://"):
+
+def resolve_manifest(pack_id: str, include_hidden: bool, catalog_url: str) -> dict[str, Any]:
+    if pack_id.startswith(("http://", "https://")):
         return http_get_json(pack_id)
 
     catalog = fetch_pack_catalog(catalog_url)
@@ -463,15 +498,16 @@ def resolve_manifest(pack_id: str, include_hidden: bool, catalog_url: str) -> Di
     visible = bool(pack.get("visible", True))
     if (not include_hidden) and (not visible):
         raise Exception(
-            f"Pack '{pack_id}' is marked visible=false in the catalog. "
-            f"Re-run with include_hidden=true to install it anyway."
+            f"Pack '{pack_id}' is marked visible=false in the catalog. " f"Re-run with include_hidden=true to install it anyway."
         )
 
     version = (pack.get("version") or "").strip()
     if not version:
         raise Exception(f"Pack '{pack_id}' missing version in pack_catalog.json")
 
-    xsoar_config_url = f"https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/Packs/{pack_id}/xsoar_config.json"
+    xsoar_config_url = (
+        f"https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/Packs/{pack_id}/xsoar_config.json"
+    )
     release_tag = f"{pack_id}-v{version}"
     zip_url = f"https://github.com/Palo-Cortex/secops-framework/releases/download/{release_tag}/{release_tag}.zip"
 
@@ -491,11 +527,13 @@ def resolve_manifest(pack_id: str, include_hidden: bool, catalog_url: str) -> Di
         "pack_version": version,
     }
 
+
 # ---------------------------
 # list action (filter + paging)
 # ---------------------------
 
-def do_list(args: Dict[str, Any]):
+
+def do_list(args: dict[str, Any]):
     using = _norm(args.get("using") or "")
     include_hidden = arg_to_bool(args.get("include_hidden"), False)
 
@@ -519,7 +557,7 @@ def do_list(args: Dict[str, Any]):
     if not isinstance(packs, list):
         raise Exception("pack_catalog.json is missing 'packs' list")
 
-    rows: List[Dict[str, Any]] = []
+    rows: list[dict[str, Any]] = []
     for p in packs:
         if not isinstance(p, dict):
             continue
@@ -554,7 +592,7 @@ def do_list(args: Dict[str, Any]):
     reverse = sort_dir == "desc"
     rows.sort(key=lambda r: _safe_sort_key(r, sort_by), reverse=reverse)
 
-    page = rows[offset: offset + limit]
+    page = rows[offset : offset + limit]
     start = offset + 1 if page else 0
     end = offset + len(page)
 
@@ -581,19 +619,20 @@ def do_list(args: Dict[str, Any]):
         summary_lines.append(f"showing: {start}-{end} of {total}")
 
     emit_progress("\n".join(summary_lines) + "\n\n" + table, stage="list")
-    return
+
 
 # ---------------------------
 # Marketplace install
 # ---------------------------
 
+
 def install_marketplace_packs(
-    marketplace_packs: List[Dict[str, str]],
+    marketplace_packs: list[dict[str, str]],
     using: str,
     retry_count: int,
     retry_sleep_seconds: int,
     debug: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     if debug:
         emit_progress(
             "Installing marketplace packs via **XSIAMContentPackInstaller**…\n"
@@ -625,7 +664,8 @@ def install_marketplace_packs(
     )
     return get_contents(res) if res else {}
 
-def fetch_installed_marketplace_pack_ids(using: str) -> List[str]:
+
+def fetch_installed_marketplace_pack_ids(using: str) -> list[str]:
     """
     Note: This endpoint returns installed content pack IDs.
     We'll also use it for custom zip installs polling (best-effort).
@@ -642,19 +682,23 @@ def fetch_installed_marketplace_pack_ids(using: str) -> List[str]:
     except Exception:
         return []
 
+
 # ---------------------------
 # xsoar_config
 # ---------------------------
 
-def fetch_xsoar_config(xsoar_config_url: str) -> Dict[str, Any]:
+
+def fetch_xsoar_config(xsoar_config_url: str) -> dict[str, Any]:
     data = http_get_json(xsoar_config_url)
     if not isinstance(data, dict):
         raise Exception(f"xsoar_config.json unexpected format at {xsoar_config_url}")
     return data
 
+
 # ---------------------------
 # Custom packs install (with timeout -> polling fallback)
 # ---------------------------
+
 
 def wait_for_pack_installed(
     pack_id: str,
@@ -693,6 +737,7 @@ def wait_for_pack_installed(
 
         time.sleep(interval)
 
+
 def install_custom_pack_zip(
     url: str,
     asset_filename: str,
@@ -712,11 +757,13 @@ def install_custom_pack_zip(
     """
     if debug:
         emit_progress(
-            "\n".join([
-                "install_custom_pack_zip (socfw-install-pack):",
-                f"- url:      {url}",
-                f"- filename: {asset_filename}",
-            ]),
+            "\n".join(
+                [
+                    "install_custom_pack_zip (socfw-install-pack):",
+                    f"- url:      {url}",
+                    f"- filename: {asset_filename}",
+                ]
+            ),
             stage="packs.custom.debug",
         )
 
@@ -744,13 +791,13 @@ def install_custom_pack_zip(
 
 
 def configure_integrations_from_xsoar_config(
-    xsoar_cfg: Dict[str, Any],
+    xsoar_cfg: dict[str, Any],
     using: str,
     retry_count: int,
     retry_sleep_seconds: int,
-    installed_pack_ids: List[str],
+    installed_pack_ids: list[str],
     debug: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     items = [x for x in (xsoar_cfg.get("integration_instances", []) or []) if isinstance(x, dict)]
     emit_progress(f"Configuring integration instances… ({len(items)} instance(s))", stage="configure.integrations")
 
@@ -769,9 +816,9 @@ def configure_integrations_from_xsoar_config(
         if not instance_name:
             continue
 
-        required_pack = ((inst.get("required_pack_id") or inst.get("marketplace_pack") or inst.get("pack_id") or "").strip())
+        required_pack = (inst.get("required_pack_id") or inst.get("marketplace_pack") or inst.get("pack_id") or "").strip()
         if required_pack and required_pack not in installed_pack_ids:
-            summary["skipped_missing_pack"] += 1
+            summary["skipped_missing_pack"] += 1  # type: ignore[operator]
             log(
                 f"Skipping integration instance **{instance_name}** — marketplace pack **{required_pack}** not installed.",
                 stage="configure.integrations.debug",
@@ -781,7 +828,7 @@ def configure_integrations_from_xsoar_config(
 
         brand = (inst.get("brand") or "").strip()
         if not brand:
-            summary["skipped_missing_brand"] += 1
+            summary["skipped_missing_brand"] += 1  # type: ignore[operator]
             log(
                 f"Skipping integration instance **{instance_name}** — missing required field `brand`.",
                 stage="configure.integrations.debug",
@@ -789,7 +836,7 @@ def configure_integrations_from_xsoar_config(
             )
             continue
 
-        summary["attempted"] += 1
+        summary["attempted"] += 1  # type: ignore[operator]
 
         payload = {
             "name": instance_name,
@@ -818,7 +865,7 @@ def configure_integrations_from_xsoar_config(
             try:
                 resp = _do_put()
                 rid = (resp.get("id") if isinstance(resp, dict) else None) or ""
-                summary["ok"] += 1
+                summary["ok"] += 1  # type: ignore[operator]
                 log(
                     f"Integration instance **{instance_name}** created/updated. id={rid or '(unknown)'}",
                     stage="configure.integrations.result",
@@ -829,7 +876,7 @@ def configure_integrations_from_xsoar_config(
                 last_err = str(e)
 
                 if is_instance_already_exists_error(last_err):
-                    summary["already_exists"] += 1
+                    summary["already_exists"] += 1  # type: ignore[operator]
                     log(
                         f"Integration instance **{instance_name}** already exists — skipping (idempotent).",
                         stage="configure.integrations.result",
@@ -838,8 +885,8 @@ def configure_integrations_from_xsoar_config(
                     break
 
                 if attempt >= retry_count:
-                    summary["failed"] += 1
-                    summary["failed_items"].append({"name": instance_name, "error": last_err})
+                    summary["failed"] += 1  # type: ignore[operator]
+                    summary["failed_items"].append({"name": instance_name, "error": last_err})  # type: ignore[attr-defined]
                     emit_progress(
                         f"Failed configuring integration instance **{instance_name}**.\nError: {last_err}",
                         stage="configure.integrations.error",
@@ -867,9 +914,11 @@ def configure_integrations_from_xsoar_config(
 
     return summary
 
+
 # ---------------------------
 # Lookup dataset population (FIXED + aligned to LookupDatasetCreator)
 # ---------------------------
+
 
 def _is_dataset_not_found_error(err_text: str, dataset_name: str) -> bool:
     t = (err_text or "").lower()
@@ -878,23 +927,25 @@ def _is_dataset_not_found_error(err_text: str, dataset_name: str) -> bool:
         ("dataset" in t and "not found" in t and dn in t)
         or (f"dataset {dn} not found" in t)
         or (f"dataset '{dn}' not found" in t)
-        or (f"dataset \"{dn}\" not found" in t)
+        or (f'dataset "{dn}" not found' in t)
     )
 
-def _xql_get_datasets(using: str, debug: bool) -> List[Dict[str, Any]]:
+
+def _xql_get_datasets(using: str, debug: bool) -> list[dict[str, Any]]:
     try:
         resp = core_api_post("/public_api/v1/xql/get_datasets", body={}, using=using, execution_timeout=600) or {}
         if isinstance(resp, dict):
             if isinstance(resp.get("reply"), list):
-                return [x for x in resp.get("reply") if isinstance(x, dict)]
+                return [x for x in resp.get("reply") if isinstance(x, dict)]  # type: ignore[union-attr]
             r = resp.get("response") or {}
             if isinstance(r, dict) and isinstance(r.get("reply"), list):
-                return [x for x in r.get("reply") if isinstance(x, dict)]
+                return [x for x in r.get("reply") if isinstance(x, dict)]  # type: ignore[union-attr]
         return []
     except Exception as e:
         if debug:
             emit_progress(f"get_datasets failed: {e}", stage="configure.lookups.debug")
         return []
+
 
 def _dataset_exists(dataset_name: str, using: str, debug: bool) -> bool:
     want = _norm(dataset_name).lower()
@@ -904,6 +955,7 @@ def _dataset_exists(dataset_name: str, using: str, debug: bool) -> bool:
             return True
     return False
 
+
 def _wait_for_dataset(dataset_name: str, using: str, debug: bool, wait_seconds: int = 90, interval_seconds: int = 3) -> bool:
     deadline = time.time() + max(1, wait_seconds)
     while time.time() < deadline:
@@ -912,7 +964,8 @@ def _wait_for_dataset(dataset_name: str, using: str, debug: bool, wait_seconds: 
         time.sleep(max(1, interval_seconds))
     return False
 
-def _xql_call_first_working(paths: List[str], body: Dict[str, Any], using: str, debug: bool) -> Dict[str, Any]:
+
+def _xql_call_first_working(paths: list[str], body: dict[str, Any], using: str, debug: bool) -> dict[str, Any]:
     last_err = None
     for p in paths:
         try:
@@ -923,7 +976,8 @@ def _xql_call_first_working(paths: List[str], body: Dict[str, Any], using: str, 
                 emit_progress(f"Lookup API probe failed on {p}: {e}", stage="configure.lookups.debug")
     raise Exception(f"Lookup API call failed on all known endpoints. Last error: {last_err}")
 
-def _xql_lookup_get_total_count(dataset_name: str, using: str, debug: bool) -> Optional[int]:
+
+def _xql_lookup_get_total_count(dataset_name: str, using: str, debug: bool) -> int | None:
     body = {"request_data": {"dataset_name": dataset_name, "filters": [], "limit": 1}}
     try:
         resp = _xql_call_first_working(
@@ -941,17 +995,18 @@ def _xql_lookup_get_total_count(dataset_name: str, using: str, debug: bool) -> O
     if isinstance(reply, dict):
         tc = reply.get("total_count")
         try:
-            return int(tc)
+            return int(tc)  # type: ignore[arg-type]
         except Exception:
             return 0
 
     tc = resp.get("total_count") if isinstance(resp, dict) else None
     try:
-        return int(tc)
+        return int(tc)  # type: ignore[arg-type]
     except Exception:
         return 0
 
-def _normalize_lookup_rows(source_obj: Any) -> List[Dict[str, Any]]:
+
+def _normalize_lookup_rows(source_obj: Any) -> list[dict[str, Any]]:
     """
     Accept:
       - [ {row}, {row} ]
@@ -969,21 +1024,23 @@ def _normalize_lookup_rows(source_obj: Any) -> List[Dict[str, Any]]:
 
     if isinstance(source_obj, dict):
         if isinstance(source_obj.get("data"), list):
-            return [r for r in source_obj.get("data") if isinstance(r, dict)]
+            return [r for r in source_obj.get("data") if isinstance(r, dict)]  # type: ignore[union-attr]
         for _k, v in source_obj.items():
             if isinstance(v, list) and v and all(isinstance(x, dict) for x in v):
                 return v
 
     return []
 
-def _remove_omitted_fields(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    omitted = ['_collector_name', '_collector_type', '_insert_time', '_update_time']
+
+def _remove_omitted_fields(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    omitted = ["_collector_name", "_collector_type", "_insert_time", "_update_time"]
     for r in rows:
         for f in omitted:
             r.pop(f, None)
     return rows
 
-def _xql_lookup_add_data_list(dataset_name: str, rows: List[Dict[str, Any]], using: str, debug: bool):
+
+def _xql_lookup_add_data_list(dataset_name: str, rows: list[dict[str, Any]], using: str, debug: bool):
     if not rows:
         raise Exception("No rows to upload")
     body = {"request_data": {"dataset_name": dataset_name, "data": rows}}
@@ -994,7 +1051,8 @@ def _xql_lookup_add_data_list(dataset_name: str, rows: List[Dict[str, Any]], usi
         debug=debug,
     )
 
-def _xql_create_dataset_direct(ds: Dict[str, Any], using: str, debug: bool):
+
+def _xql_create_dataset_direct(ds: dict[str, Any], using: str, debug: bool):
     dataset_name = _norm(ds.get("dataset_name") or ds.get("name"))
     if not dataset_name:
         raise Exception("Lookup dataset definition missing 'dataset_name'/'name'")
@@ -1012,14 +1070,15 @@ def _xql_create_dataset_direct(ds: Dict[str, Any], using: str, debug: bool):
 
     _ = core_api_post("/public_api/v1/xql/add_dataset", body=body, using=using, execution_timeout=600)
 
+
 def configure_lookups_from_xsoar_config(
-    xsoar_cfg: Dict[str, Any],
+    xsoar_cfg: dict[str, Any],
     using: str,
     retry_count: int,
     retry_sleep_seconds: int,
     overwrite_lookup: bool,
     debug: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     dsets = [x for x in (xsoar_cfg.get("lookup_datasets", []) or []) if isinstance(x, dict)]
     emit_progress(f"Configuring lookup datasets… ({len(dsets)} dataset(s))", stage="configure.lookups")
 
@@ -1030,7 +1089,7 @@ def configure_lookups_from_xsoar_config(
         if not name:
             continue
 
-        summary["attempted"] += 1
+        summary["attempted"] += 1  # type: ignore[operator]
         log(f"Configuring lookup dataset: **{name}**", stage="configure.lookups.debug", debug=debug)
 
         # Ensure dataset exists
@@ -1043,16 +1102,16 @@ def configure_lookups_from_xsoar_config(
             try:
                 _xql_create_dataset_direct(ds, using=using, debug=debug)
             except Exception as e:
-                summary["failed"] += 1
-                summary["failed_items"].append({"name": name, "error": f"Direct create failed: {e}"})
+                summary["failed"] += 1  # type: ignore[operator]
+                summary["failed_items"].append({"name": name, "error": f"Direct create failed: {e}"})  # type: ignore[attr-defined]
                 emit_progress(f"Failed creating lookup dataset **{name}**.\nError: {e}", stage="configure.lookups.error")
                 continue
 
             exists = _wait_for_dataset(name, using=using, debug=debug, wait_seconds=90, interval_seconds=3)
 
         if not exists:
-            summary["failed"] += 1
-            summary["failed_items"].append(
+            summary["failed"] += 1  # type: ignore[operator]
+            summary["failed_items"].append(  # type: ignore[attr-defined]
                 {
                     "name": name,
                     "error": f"Dataset '{name}' not found via get_datasets after direct create.",
@@ -1069,13 +1128,13 @@ def configure_lookups_from_xsoar_config(
         try:
             before_count = _xql_lookup_get_total_count(name, using=using, debug=debug)
         except Exception as e:
-            summary["failed"] += 1
-            summary["failed_items"].append({"name": name, "error": str(e)})
+            summary["failed"] += 1  # type: ignore[operator]
+            summary["failed_items"].append({"name": name, "error": str(e)})  # type: ignore[attr-defined]
             emit_progress(f"Failed reading lookup count for **{name}**.\nError: {e}", stage="configure.lookups.error")
             continue
 
         if before_count is not None and before_count > 0 and (not overwrite_lookup):
-            summary["ok"] += 1
+            summary["ok"] += 1  # type: ignore[operator]
             emit_progress(
                 f"Lookup **{name}** already has data (total_count={before_count}). "
                 f"Not modifying it unless `overwrite_lookup=true`.",
@@ -1085,7 +1144,7 @@ def configure_lookups_from_xsoar_config(
 
         should_populate = overwrite_lookup or (before_count is None) or (before_count == 0)
         if not should_populate:
-            summary["ok"] += 1
+            summary["ok"] += 1  # type: ignore[operator]
             emit_progress(f"Lookup **{name}** is present; no population needed.", stage="configure.lookups.result")
             continue
 
@@ -1130,11 +1189,11 @@ def configure_lookups_from_xsoar_config(
                 stage="configure.lookups.result",
             )
 
-            summary["ok"] += 1
+            summary["ok"] += 1  # type: ignore[operator]
 
         except Exception as e:
-            summary["failed"] += 1
-            summary["failed_items"].append({"name": name, "error": str(e)})
+            summary["failed"] += 1  # type: ignore[operator]
+            summary["failed_items"].append({"name": name, "error": str(e)})  # type: ignore[attr-defined]
             emit_progress(f"Failed populating lookup dataset **{name}**.\nError: {e}", stage="configure.lookups.error")
 
     emit_progress(
@@ -1150,11 +1209,13 @@ def configure_lookups_from_xsoar_config(
     )
     return summary
 
+
 # ---------------------------
 # Jobs verification + upsert
 # ---------------------------
 
-def _extract_list(resp: Any) -> List[Dict[str, Any]]:
+
+def _extract_list(resp: Any) -> list[dict[str, Any]]:
     if isinstance(resp, dict):
         v = resp.get("response")
         if isinstance(v, dict):
@@ -1171,19 +1232,16 @@ def _extract_list(resp: Any) -> List[Dict[str, Any]]:
         return [x for x in resp if isinstance(x, dict)]
     return []
 
-def _job_name(job_obj: Dict[str, Any]) -> str:
-    return _norm(
-        job_obj.get("name")
-        or job_obj.get("jobName")
-        or job_obj.get("job_name")
-        or job_obj.get("displayName")
-        or ""
-    )
 
-def _job_id(job_obj: Dict[str, Any]) -> str:
+def _job_name(job_obj: dict[str, Any]) -> str:
+    return _norm(job_obj.get("name") or job_obj.get("jobName") or job_obj.get("job_name") or job_obj.get("displayName") or "")
+
+
+def _job_id(job_obj: dict[str, Any]) -> str:
     return _norm(job_obj.get("id") or job_obj.get("_id") or job_obj.get("jobId") or "")
 
-def jobs_api_endpoints() -> Dict[str, str]:
+
+def jobs_api_endpoints() -> dict[str, str]:
     return {
         "search_xsoar": "/xsoar/public/v1/jobs/search",
         "search_public": "/public/v1/jobs/search",
@@ -1193,7 +1251,8 @@ def jobs_api_endpoints() -> Dict[str, str]:
         "update_public": "/public/v1/jobs",
     }
 
-def jobs_api_search_probe(using: str) -> Optional[str]:
+
+def jobs_api_search_probe(using: str) -> str | None:
     eps = jobs_api_endpoints()
     probe_body = {"page": 0, "size": 1, "query": "", "sort": [{"field": "id", "asc": True}]}
     for p in (eps["search_xsoar"], eps["search_public"]):
@@ -1204,7 +1263,8 @@ def jobs_api_search_probe(using: str) -> Optional[str]:
             continue
     return None
 
-def jobs_api_find_by_name(name: str, using: str, search_path: Optional[str], debug: bool) -> Optional[Dict[str, Any]]:
+
+def jobs_api_find_by_name(name: str, using: str, search_path: str | None, debug: bool) -> dict[str, Any] | None:
     n = _norm(name).lower()
 
     if search_path:
@@ -1232,7 +1292,8 @@ def jobs_api_find_by_name(name: str, using: str, search_path: Optional[str], deb
 
     return None
 
-def jobs_api_upsert(job: Dict[str, Any], using: str, search_path: str, debug: bool) -> Dict[str, Any]:
+
+def jobs_api_upsert(job: dict[str, Any], using: str, search_path: str, debug: bool) -> dict[str, Any]:
     eps = jobs_api_endpoints()
     name = _job_name(job)
     if not name:
@@ -1281,13 +1342,14 @@ def jobs_api_upsert(job: Dict[str, Any], using: str, search_path: str, debug: bo
 
     raise Exception(f"Failed creating job '{name}'. Last error: {last_err}")
 
+
 def configure_jobs_from_xsoar_config(
-    xsoar_cfg: Dict[str, Any],
+    xsoar_cfg: dict[str, Any],
     using: str,
     retry_count: int,
     retry_sleep_seconds: int,
     debug: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     jobs = [x for x in (xsoar_cfg.get("jobs", []) or []) if isinstance(x, dict)]
     emit_progress(f"Configuring jobs… ({len(jobs)} job(s))", stage="configure.jobs")
 
@@ -1311,19 +1373,19 @@ def configure_jobs_from_xsoar_config(
             ),
             stage="configure.jobs.error",
         )
-        summary["notes"].append("jobs_api_unreachable=true")
+        summary["notes"].append("jobs_api_unreachable=true")  # type: ignore[attr-defined]
 
     for job in jobs:
         name = _norm(job.get("name") or job.get("job_name") or "")
         if not name:
             continue
 
-        summary["attempted"] += 1
+        summary["attempted"] += 1  # type: ignore[operator]
         log(f"Configuring job: **{name}**", stage="configure.jobs.debug", debug=debug)
 
         if not search_path:
-            summary["failed"] += 1
-            summary["failed_items"].append(
+            summary["failed"] += 1  # type: ignore[operator]
+            summary["failed_items"].append(  # type: ignore[attr-defined]
                 {"name": name, "error": "Jobs API verification unavailable; cannot confirm job creation/update."}
             )
             continue
@@ -1337,7 +1399,7 @@ def configure_jobs_from_xsoar_config(
             time.sleep(1)
 
         if existing:
-            summary["ok"] += 1
+            summary["ok"] += 1  # type: ignore[operator]
             log(f"⏭️ Job **{name}** already exists — skipping.", stage="configure.jobs.result", debug=debug, always=True)
             continue
 
@@ -1354,12 +1416,12 @@ def configure_jobs_from_xsoar_config(
             if not verified:
                 raise Exception("Upsert ran but job still not visible via Jobs API.")
 
-            summary["ok"] += 1
+            summary["ok"] += 1  # type: ignore[operator]
             log(f"✅ Job **{name}** created and verified.", stage="configure.jobs.result", debug=debug, always=True)
 
         except Exception as e:
-            summary["failed"] += 1
-            summary["failed_items"].append({"name": name, "error": str(e)})
+            summary["failed"] += 1  # type: ignore[operator]
+            summary["failed_items"].append({"name": name, "error": str(e)})  # type: ignore[attr-defined]
             emit_progress(f"Failed configuring job **{name}**.\nError: {e}", stage="configure.jobs.error")
 
     emit_progress(
@@ -1369,12 +1431,13 @@ def configure_jobs_from_xsoar_config(
                 f"- attempted: {summary['attempted']}",
                 f"- ok (verified/skip): {summary['ok']}",
                 f"- failed: {summary['failed']}",
-                f"- notes: {', '.join(summary['notes']) if summary['notes'] else '(none)'}",
+                f"- notes: {', '.join(summary['notes']) if summary['notes'] else '(none)'}",  # type: ignore[arg-type]
             ]
         ),
         stage="configure.jobs.summary",
     )
     return summary
+
 
 # ---------------------------
 # Main
@@ -1385,52 +1448,57 @@ def configure_jobs_from_xsoar_config(
 # action=configure — config only, no install
 # ─────────────────────────────────────────
 
+
 def do_configure(args):
-    pack_id          = (args.get("pack_id") or "").strip()
-    catalog_url      = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
-    using            = (args.get("using") or "").strip()
-    retry_count      = to_int(args.get("retry_count"), 5)
-    retry_sleep      = to_int(args.get("retry_sleep_seconds"), 15)
-    overwrite        = arg_to_bool(args.get("overwrite_lookup"), False)
-    cfg_jobs         = arg_to_bool(args.get("configure_jobs"), True)
+    pack_id = (args.get("pack_id") or "").strip()
+    catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
+    using = (args.get("using") or "").strip()
+    retry_count = to_int(args.get("retry_count"), 5)
+    retry_sleep = to_int(args.get("retry_sleep_seconds"), 15)
+    overwrite = arg_to_bool(args.get("overwrite_lookup"), False)
+    cfg_jobs = arg_to_bool(args.get("configure_jobs"), True)
     cfg_integrations = arg_to_bool(args.get("configure_integrations"), True)
-    cfg_lookups      = arg_to_bool(args.get("configure_lookups"), True)
-    debug            = arg_to_bool(args.get("debug"), False)
-    include_doc_content    = arg_to_bool(args.get("include_doc_content"), False)
-    doc_content_max_chars  = to_int(args.get("doc_content_max_chars"), 6000)
-    doc_content_max_lines  = to_int(args.get("doc_content_max_lines"), 200)
+    cfg_lookups = arg_to_bool(args.get("configure_lookups"), True)
+    debug = arg_to_bool(args.get("debug"), False)
+    include_doc_content = arg_to_bool(args.get("include_doc_content"), False)
+    doc_content_max_chars = to_int(args.get("doc_content_max_chars"), 6000)
+    doc_content_max_lines = to_int(args.get("doc_content_max_lines"), 200)
 
     if not pack_id:
         raise Exception("pack_id is required for action=configure")
 
     catalog = fetch_pack_catalog(catalog_url)
-    pack    = find_pack_in_catalog(catalog, pack_id)
+    pack = find_pack_in_catalog(catalog, pack_id)
 
     xsoar_config_url = (
         (pack.get("xsoar_config") or pack.get("xsoar_config_url") or "")
-        if pack else
-        f"https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/Packs/{pack_id}/xsoar_config.json"
+        if pack
+        else f"https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/Packs/{pack_id}/xsoar_config.json"
     )
 
     emit_progress(
-        "\n".join([
-            f"action=configure for **{pack_id}**",
-            f"- xsoar_config_url: {xsoar_config_url}",
-            f"- jobs={cfg_jobs}, integrations={cfg_integrations}, lookups={cfg_lookups}",
-            f"- overwrite_lookup={overwrite}",
-        ]),
+        "\n".join(
+            [
+                f"action=configure for **{pack_id}**",
+                f"- xsoar_config_url: {xsoar_config_url}",
+                f"- jobs={cfg_jobs}, integrations={cfg_integrations}, lookups={cfg_lookups}",
+                f"- overwrite_lookup={overwrite}",
+            ]
+        ),
         stage="configure.start",
     )
 
     xsoar_cfg = fetch_xsoar_config(xsoar_config_url) or {}
 
     emit_progress(
-        "\n".join([
-            "xsoar_config loaded.",
-            f"- integration_instances: {len(xsoar_cfg.get('integration_instances', []) or [])}",
-            f"- jobs:                  {len(xsoar_cfg.get('jobs', []) or [])}",
-            f"- lookup_datasets:       {len(xsoar_cfg.get('lookup_datasets', []) or [])}",
-        ]),
+        "\n".join(
+            [
+                "xsoar_config loaded.",
+                f"- integration_instances: {len(xsoar_cfg.get('integration_instances', []) or [])}",
+                f"- jobs:                  {len(xsoar_cfg.get('jobs', []) or [])}",
+                f"- lookup_datasets:       {len(xsoar_cfg.get('lookup_datasets', []) or [])}",
+            ]
+        ),
         stage="configure.summary",
     )
 
@@ -1438,25 +1506,36 @@ def do_configure(args):
 
     if cfg_integrations:
         configure_integrations_from_xsoar_config(
-            xsoar_cfg=xsoar_cfg, using=using,
-            retry_count=retry_count, retry_sleep_seconds=retry_sleep,
-            installed_pack_ids=installed_pack_ids, debug=debug,
+            xsoar_cfg=xsoar_cfg,
+            using=using,
+            retry_count=retry_count,
+            retry_sleep_seconds=retry_sleep,
+            installed_pack_ids=installed_pack_ids,
+            debug=debug,
         )
     if cfg_jobs:
         configure_jobs_from_xsoar_config(
-            xsoar_cfg=xsoar_cfg, using=using,
-            retry_count=retry_count, retry_sleep_seconds=retry_sleep, debug=debug,
+            xsoar_cfg=xsoar_cfg,
+            using=using,
+            retry_count=retry_count,
+            retry_sleep_seconds=retry_sleep,
+            debug=debug,
         )
     if cfg_lookups:
         configure_lookups_from_xsoar_config(
-            xsoar_cfg=xsoar_cfg, using=using,
-            retry_count=retry_count, retry_sleep_seconds=retry_sleep,
-            overwrite_lookup=overwrite, debug=debug,
+            xsoar_cfg=xsoar_cfg,
+            using=using,
+            retry_count=retry_count,
+            retry_sleep_seconds=retry_sleep,
+            overwrite_lookup=overwrite,
+            debug=debug,
         )
 
     emit_progress("Configuration complete.", stage="configure.done")
     print_config_docs(
-        xsoar_cfg, when="post", debug=debug,
+        xsoar_cfg,
+        when="post",
+        debug=debug,
         include_doc_content=include_doc_content,
         doc_content_max_chars=doc_content_max_chars,
         doc_content_max_lines=doc_content_max_lines,
@@ -1471,11 +1550,12 @@ VALUE_TAGS_URL = (
     "https://raw.githubusercontent.com/Palo-Cortex/secops-framework"
     "/refs/heads/main/Packs/soc-optimization-unified/Lookup/value_tags.json"
 )
-VALUE_TAGS_DATASET  = "value_tags"
+VALUE_TAGS_DATASET = "value_tags"
 
 
 def _compute_hash(obj):
     import hashlib
+
     canonical = json.dumps(obj, sort_keys=True, separators=(",", ":"))
     return hashlib.md5(canonical.encode()).hexdigest()
 
@@ -1506,7 +1586,7 @@ def _get_current_meta(using, debug):
         return None
 
 
-def _set_current_meta(meta: Dict[str, Any], using: str, debug: bool):
+def _set_current_meta(meta: dict[str, Any], using: str, debug: bool):
     """
     Write version metadata to the SOCFWTagsVersion XSIAM List.
     Creates the list if it doesn't exist, updates it if it does.
@@ -1524,25 +1604,27 @@ def _set_current_meta(meta: Dict[str, Any], using: str, debug: bool):
 
 
 def do_sync_tags(args):
-    using       = (args.get("using") or "").strip()
-    force       = arg_to_bool(args.get("force"), False)
-    tags_url    = _norm(args.get("tags_url") or VALUE_TAGS_URL)
-    debug       = arg_to_bool(args.get("debug"), False)
+    using = (args.get("using") or "").strip()
+    force = arg_to_bool(args.get("force"), False)
+    tags_url = _norm(args.get("tags_url") or VALUE_TAGS_URL)
+    debug = arg_to_bool(args.get("debug"), False)
 
     emit_progress(
-        "\n".join([
-            "action=sync-tags",
-            f"- dataset: {VALUE_TAGS_DATASET}",
-            f"- source:  {tags_url}",
-            f"- force:   {force}",
-        ]),
+        "\n".join(
+            [
+                "action=sync-tags",
+                f"- dataset: {VALUE_TAGS_DATASET}",
+                f"- source:  {tags_url}",
+                f"- force:   {force}",
+            ]
+        ),
         stage="sync-tags.start",
     )
 
     # Fetch incoming
-    source_obj   = http_get_json(tags_url)
-    rows         = _normalize_lookup_rows(source_obj)
-    rows         = _remove_omitted_fields(rows)
+    source_obj = http_get_json(tags_url)
+    rows = _normalize_lookup_rows(source_obj)
+    rows = _remove_omitted_fields(rows)
 
     if not rows:
         raise Exception("Downloaded value_tags.json but found 0 usable rows.")
@@ -1554,18 +1636,20 @@ def do_sync_tags(args):
     )
 
     # Check current version
-    meta            = _get_current_meta(using=using, debug=debug)
-    current_hash    = (meta or {}).get("hash", "")
+    meta = _get_current_meta(using=using, debug=debug)
+    current_hash = (meta or {}).get("hash", "")
     current_version = (meta or {}).get("version", "")
     current_updated = (meta or {}).get("updated_at", "")
 
     if meta:
         emit_progress(
-            "\n".join([
-                "Current value_tags version:",
-                f"- version:    `{current_version}` (hash: `{current_hash}`)",
-                f"- updated_at: {current_updated}",
-            ]),
+            "\n".join(
+                [
+                    "Current value_tags version:",
+                    f"- version:    `{current_version}` (hash: `{current_hash}`)",
+                    f"- updated_at: {current_updated}",
+                ]
+            ),
             stage="sync-tags.version",
         )
     else:
@@ -1577,29 +1661,34 @@ def do_sync_tags(args):
     # Up to date?
     if not force and current_hash and current_hash == incoming_hash:
         emit_progress(
-            "\n".join([
-                "**value_tags is already up to date.** No update needed.",
-                f"  Version: `{current_version}` (hash: `{current_hash}`)",
-                "",
-                "Run with `force=true` to overwrite anyway.",
-            ]),
+            "\n".join(
+                [
+                    "**value_tags is already up to date.** No update needed.",
+                    f"  Version: `{current_version}` (hash: `{current_hash}`)",
+                    "",
+                    "Run with `force=true` to overwrite anyway.",
+                ]
+            ),
             stage="sync-tags.result",
         )
-        return_results({
-            "action": "sync-tags",
-            "status": "up_to_date",
-            "dataset": VALUE_TAGS_DATASET,
-            "version": current_version,
-            "hash": current_hash,
-            "rows": len(rows),
-            "updated": False,
-        })
+        return_results(
+            {
+                "action": "sync-tags",
+                "status": "up_to_date",
+                "dataset": VALUE_TAGS_DATASET,
+                "version": current_version,
+                "hash": current_hash,
+                "rows": len(rows),
+                "updated": False,
+            }
+        )
         return
 
     # Apply update
     import time as _time
-    updated_at   = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
-    short_ver    = incoming_hash[:8]
+
+    updated_at = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+    short_ver = incoming_hash[:8]
     # Upload only the actual value_tags rows — no meta row in the dataset.
     # Version state is stored in the SOCFWTagsVersion List (reliable persistence).
     _xql_lookup_add_data_list(
@@ -1610,36 +1699,48 @@ def do_sync_tags(args):
     )
 
     # Persist version metadata to List
-    _set_current_meta({
-        "hash":       incoming_hash,
-        "version":    short_ver,
-        "updated_at": updated_at,
-        "row_count":  str(len(rows)),
-    }, using=using, debug=debug)
+    _set_current_meta(
+        {
+            "hash": incoming_hash,
+            "version": short_ver,
+            "updated_at": updated_at,
+            "row_count": str(len(rows)),
+        },
+        using=using,
+        debug=debug,
+    )
 
     changed = current_hash != incoming_hash if current_hash else True
     emit_progress(
-        "\n".join([
-            f"{'value_tags **updated**.' if changed else 'value_tags force-refreshed.'}",
-            f"- Rows:         {len(rows)}",
-            f"- New version:  `{short_ver}` (hash: `{incoming_hash}`)",
-            f"- Updated at:   {updated_at}",
-            *(["- Previous:     `" + current_hash[:8] + "` (hash: `" + current_hash + "`)"] if current_hash and changed else []),
-        ]),
+        "\n".join(
+            [
+                f"{'value_tags **updated**.' if changed else 'value_tags force-refreshed.'}",
+                f"- Rows:         {len(rows)}",
+                f"- New version:  `{short_ver}` (hash: `{incoming_hash}`)",
+                f"- Updated at:   {updated_at}",
+                *(
+                    ["- Previous:     `" + current_hash[:8] + "` (hash: `" + current_hash + "`)"]
+                    if current_hash and changed
+                    else []
+                ),
+            ]
+        ),
         stage="sync-tags.result",
     )
 
-    return_results({
-        "action": "sync-tags",
-        "status": "updated",
-        "dataset": VALUE_TAGS_DATASET,
-        "version": short_ver,
-        "hash": incoming_hash,
-        "rows": len(rows),
-        "updated": True,
-        "previous_hash": current_hash or None,
-        "updated_at": updated_at,
-    })
+    return_results(
+        {
+            "action": "sync-tags",
+            "status": "updated",
+            "dataset": VALUE_TAGS_DATASET,
+            "version": short_ver,
+            "hash": incoming_hash,
+            "rows": len(rows),
+            "updated": True,
+            "previous_hash": current_hash or None,
+            "updated_at": updated_at,
+        }
+    )
 
 
 def _run_main():
@@ -1749,7 +1850,7 @@ def _run_main():
         stage="manifest.summary",
     )
 
-    xsoar_cfg: Dict[str, Any] = {}
+    xsoar_cfg: dict[str, Any] = {}
     if xsoar_config_url:
         emit_progress("Fetching xsoar_config.json…", stage="xsoar_config.fetch")
         xsoar_cfg = fetch_xsoar_config(xsoar_config_url) or {}
@@ -1821,13 +1922,13 @@ def _run_main():
                     "next_command_hint": f"!SOCFWPackManager action=apply pack_id={pack_id} pre_config_done=true",
                 }
             )
-            return
+            return None
 
     if dry_run:
         emit_progress("dry_run=True — not installing or configuring anything.", stage="done")
-        return
+        return None
 
-    marketplace_errors: List[str] = []
+    marketplace_errors: list[str] = []
     if install_marketplace_flag and marketplace_packs:
         mp = []
         for p in marketplace_packs:
@@ -1950,6 +2051,8 @@ def _run_main():
             doc_content_max_chars=doc_content_max_chars,
             doc_content_max_lines=doc_content_max_lines,
         )
+        return None
+    return None
 
 
 def main():

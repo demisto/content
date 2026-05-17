@@ -52,9 +52,7 @@ def _make_common_server_python_stub(captured_results, captured_errors):
             self._headers = headers or {}
 
         def _http_request(self, method, url_suffix="", full_url=None, **kwargs):
-            raise NotImplementedError(
-                "Test must replace _http_request on the client instance."
-            )
+            raise NotImplementedError("Test must replace _http_request on the client instance.")
 
     class _StubDemistoException(Exception):
         pass
@@ -103,9 +101,7 @@ def load_integration(params=None, args=None):
     dm.error = lambda x: None
 
     sys.modules["demistomock"] = dm
-    sys.modules["CommonServerPython"] = _make_common_server_python_stub(
-        dm._results, dm._errors
-    )
+    sys.modules["CommonServerPython"] = _make_common_server_python_stub(dm._results, dm._errors)
 
     if MODULE_NAME in sys.modules:
         del sys.modules[MODULE_NAME]
@@ -179,10 +175,7 @@ def test_set_sdk_env_uses_api_prefix():
         proxy=False,
     )
     client._set_sdk_env()
-    assert (
-        os.environ["DEMISTO_BASE_URL"]
-        == "https://api-tenant.xdr.us.paloaltonetworks.com"
-    )
+    assert os.environ["DEMISTO_BASE_URL"] == "https://api-tenant.xdr.us.paloaltonetworks.com"
     assert os.environ["DEMISTO_API_KEY"] == "my-key"
     assert os.environ["XSIAM_AUTH_ID"] == "3"
 
@@ -197,10 +190,7 @@ def test_set_sdk_env_preserves_existing_api_prefix():
         proxy=False,
     )
     client._set_sdk_env()
-    assert (
-        os.environ["DEMISTO_BASE_URL"]
-        == "https://api-tenant.xdr.us.paloaltonetworks.com"
-    )
+    assert os.environ["DEMISTO_BASE_URL"] == "https://api-tenant.xdr.us.paloaltonetworks.com"
 
 
 # ---------------------------------------------------------------------------
@@ -279,9 +269,7 @@ def test_stream_download_writes_full_payload(tmp_path):
     payload = b"abc" * 100
 
     client = _make_client(mod)
-    client._http_request = lambda **kw: _StreamingResponse(
-        payload, headers={"Content-Length": str(len(payload))}
-    )
+    client._http_request = lambda **kw: _StreamingResponse(payload, headers={"Content-Length": str(len(payload))})
 
     dest = str(tmp_path / "out.zip")
     client.stream_download_zip("https://example.com/pack.zip", dest)
@@ -293,9 +281,7 @@ def test_stream_download_rejects_oversized_content_length(tmp_path):
     too_big = mod.MAX_DOWNLOAD_BYTES + 1
 
     client = _make_client(mod)
-    client._http_request = lambda **kw: _StreamingResponse(
-        b"x", headers={"Content-Length": str(too_big)}
-    )
+    client._http_request = lambda **kw: _StreamingResponse(b"x", headers={"Content-Length": str(too_big)})
 
     dest = str(tmp_path / "out.zip")
     with pytest.raises(Exception, match="exceeds size limit"):
@@ -356,9 +342,7 @@ def test_stream_download_threads_verify_flag(tmp_path):
         return _StreamingResponse(b"abc")
 
     secure_client._http_request = capture
-    secure_client.stream_download_zip(
-        "https://example.com/pack.zip", str(tmp_path / "out.zip")
-    )
+    secure_client.stream_download_zip("https://example.com/pack.zip", str(tmp_path / "out.zip"))
     assert seen.get("stream") is True
 
 
@@ -380,9 +364,7 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
     zip_bytes = open(zip_path, "rb").read()
 
     client = _make_client(mod, verify=True)
-    client._http_request = lambda **kw: _StreamingResponse(
-        zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
-    )
+    client._http_request = lambda **kw: _StreamingResponse(zip_bytes, headers={"Content-Length": str(len(zip_bytes))})
 
     sdk_calls = []
 
@@ -426,9 +408,7 @@ def test_command_install_pack_threads_insecure_param(tmp_path):
     # Insecure instance — verify=False is what the integration's main()
     # would build from params={"insecure": True}.
     client = _make_client(mod, verify=False)
-    client._http_request = lambda **kw: _StreamingResponse(
-        zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
-    )
+    client._http_request = lambda **kw: _StreamingResponse(zip_bytes, headers={"Content-Length": str(len(zip_bytes))})
 
     sdk_calls = []
 
@@ -487,9 +467,7 @@ def test_command_install_pack_derives_filename_from_url(monkeypatch):
     with pytest.raises(RuntimeError, match="stop_here"):
         mod.install_pack_command(
             client,
-            args={
-                "url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip"
-            },
+            args={"url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip"},
         )
 
     assert derived == ["Pack-v2.0.0.zip"]

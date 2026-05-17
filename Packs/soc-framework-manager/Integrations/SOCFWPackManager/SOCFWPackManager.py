@@ -107,10 +107,7 @@ class ContentClient(BaseClient):
         if advertised is not None:
             try:
                 if int(advertised) > MAX_DOWNLOAD_BYTES:
-                    raise DemistoException(
-                        f"Pack ZIP exceeds size limit "
-                        f"({int(advertised)} bytes > {MAX_DOWNLOAD_BYTES})"
-                    )
+                    raise DemistoException(f"Pack ZIP exceeds size limit " f"({int(advertised)} bytes > {MAX_DOWNLOAD_BYTES})")
             except ValueError:
                 # Non-integer Content-Length — fall through to streaming guard.
                 pass
@@ -125,10 +122,7 @@ class ContentClient(BaseClient):
                     fh.close()
                     if os.path.exists(dest_path):
                         os.unlink(dest_path)
-                    raise DemistoException(
-                        f"Pack ZIP exceeds size limit during download "
-                        f"(> {MAX_DOWNLOAD_BYTES} bytes)"
-                    )
+                    raise DemistoException(f"Pack ZIP exceeds size limit during download " f"(> {MAX_DOWNLOAD_BYTES} bytes)")
                 fh.write(chunk)
         return written
 
@@ -146,9 +140,7 @@ class ContentClient(BaseClient):
         from demisto_sdk.commands.common.logger import logging_setup
         from demisto_sdk.commands.upload.upload import upload_content_entity
 
-        logging_setup(
-            INTEGRATION_NAME, console_threshold="CRITICAL", propagate=True
-        )
+        logging_setup(INTEGRATION_NAME, console_threshold="CRITICAL", propagate=True)
 
         try:
             upload_content_entity(
@@ -165,9 +157,7 @@ class ContentClient(BaseClient):
             if code is None:
                 raise
             if str(code) not in ("0", "None"):
-                raise DemistoException(
-                    f"demisto-sdk upload failed with exit code {code}: {exc}"
-                ) from exc
+                raise DemistoException(f"demisto-sdk upload failed with exit code {code}: {exc}") from exc
             return {"success": True, "message": f"Uploaded {pack_path}"}
 
     # -- internals ----------------------------------------------------------
@@ -207,31 +197,16 @@ def _safe_extract_zip(zip_path: str, target_dir: str) -> None:
                 continue  # directories handled by extractall
 
             # Reject absolute paths and Windows drive paths.
-            if os.path.isabs(member_name) or (
-                len(member_name) > 1 and member_name[1] == ":"
-            ):
-                raise DemistoException(
-                    f"Refusing to extract absolute path from ZIP: {member_name}"
-                )
+            if Path.is_absolute(Path(member_name)) or (len(member_name) > 1 and member_name[1] == ":"):  # type: ignore[arg-type]
+                raise DemistoException(f"Refusing to extract absolute path from ZIP: {member_name}")
 
-            dest_path = os.path.realpath(
-                os.path.join(target_root, member_name)
-            )
-            if (
-                dest_path != target_root
-                and not dest_path.startswith(target_root + os.sep)
-            ):
-                raise DemistoException(
-                    f"Refusing to extract member outside destination "
-                    f"(ZipSlip): {member_name}"
-                )
+            dest_path = os.path.realpath(os.path.join(target_root, member_name))
+            if dest_path != target_root and not dest_path.startswith(target_root + os.sep):
+                raise DemistoException(f"Refusing to extract member outside destination " f"(ZipSlip): {member_name}")
 
             total_uncompressed += info.file_size
             if total_uncompressed > MAX_DOWNLOAD_BYTES:
-                raise DemistoException(
-                    "Pack ZIP uncompressed size exceeds limit "
-                    f"(> {MAX_DOWNLOAD_BYTES} bytes)"
-                )
+                raise DemistoException("Pack ZIP uncompressed size exceeds limit " f"(> {MAX_DOWNLOAD_BYTES} bytes)")
 
         # Validation passed — safe to extract.
         zf.extractall(target_root)
@@ -260,13 +235,8 @@ def _safe_flatten_one_level(pack_path: str) -> None:
     for item in os.listdir(inner_real):
         src = os.path.join(inner_real, item)
         dst = os.path.realpath(os.path.join(pack_root, item))
-        if (
-            dst != pack_root
-            and not dst.startswith(pack_root + os.sep)
-        ):
-            raise DemistoException(
-                f"Refusing to flatten file outside pack root: {item}"
-            )
+        if dst != pack_root and not dst.startswith(pack_root + os.sep):
+            raise DemistoException(f"Refusing to flatten file outside pack root: {item}")
         shutil.move(src, dst)
     Path(inner_real).rmdir()
 
@@ -298,9 +268,7 @@ def _prepare_pack_dir(zip_path: str, filename: str) -> str:
 
     # Confirm the pack actually has metadata before we hand it to the SDK.
     if not _has_pack_metadata(pack_path):
-        raise DemistoException(
-            "Zip missing pack_metadata.json — not a valid pack."
-        )
+        raise DemistoException("Zip missing pack_metadata.json — not a valid pack.")
 
     _safe_flatten_one_level(pack_path)
     return pack_path
@@ -312,9 +280,7 @@ def _has_pack_metadata(pack_path: str) -> bool:
         return True
     for entry in os.listdir(pack_path):
         sub = os.path.join(pack_path, entry)
-        if os.path.isdir(sub) and os.path.isfile(
-            os.path.join(sub, "pack_metadata.json")
-        ):
+        if os.path.isdir(sub) and os.path.isfile(os.path.join(sub, "pack_metadata.json")):
             return True
     return False
 
@@ -330,9 +296,7 @@ def test_module(client: ContentClient) -> str:
     return "ok"
 
 
-def install_pack_command(
-    client: ContentClient, args: dict[str, Any]
-) -> CommandResults:
+def install_pack_command(client: ContentClient, args: dict[str, Any]) -> CommandResults:
     """Download a pack ZIP from ``url`` and install it as system content.
 
     The ``url`` argument is declared ``required: true`` in the YAML, so the
@@ -347,9 +311,7 @@ def install_pack_command(
     # (derived from filename) from escaping Packs/ via "../" segments.
     filename = os.path.basename(filename)
     if not filename or filename in (".", ".."):
-        raise DemistoException(
-            "filename argument resolves to an empty or unsafe value"
-        )
+        raise DemistoException("filename argument resolves to an empty or unsafe value")
     if not filename.endswith(".zip"):
         filename += ".zip"
 
