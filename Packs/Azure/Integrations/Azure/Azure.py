@@ -453,6 +453,29 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-vn-network-interface-get": "Azure.VirtualNetworks.NetworkInterfaces",
     "azure-vm-public-ip-details-get": "Azure.Network.IPConfigurations",
     "azure-vn-public-ip-address-get": "Azure.VirtualNetworks.PublicIPAddresses",
+    "azure-webapp-config-set": "Azure.WebAppConfig",
+    "azure-webapp-set-http2-quick-action": "Azure.WebAppConfig",
+    "azure-set-function-app-http-version2-0-quick-action": "Azure.WebAppConfig",
+    "azure-webapp-disable-remote-debugging-quick-action": "Azure.WebAppConfig",
+    "azure-webapp-set-min-tls-version-quick-action": "Azure.WebAppConfig",
+    "azure-function-app-set-min-tls-version-quick-action": "Azure.WebAppConfig",
+    "azure-appservice-webapp-config-update": "Azure.AppService.WebAppConfiguration",
+    "azure-webapp-auth-update": "Azure.WebAppAuth",
+    "azure-appservice-webapp-auth-settings-update": "Azure.AppService.WebAppAuthSettings",
+    "azure-webapp-auth-update-quick-action": "Azure.WebAppAuth",
+    "azure-disk-update": "Azure.Disk",
+    "azure-disk-set-data-access-ad-quick-action": "Azure.Disk",
+    "azure-disable-public-private-access-vm-disk-quick-action": "Azure.Disk",
+    "azure-compute-disk-update": "Azure.Compute.Disks",
+    "azure-webapp-update": "Azure.WebApp",
+    "azure-appservice-webapp-update": "Azure.AppService.WebApp",
+    "azure-webapp-assign-managed-identity-quick-action": "Azure.WebApp",
+    "azure-webapp-update-assign-managed-identity-quick-action": "Azure.WebApp",
+    "azure-acr-update": "Azure.ACR",
+    "azure-cr-registry-update": "Azure.ContainerRegistry.Registries",
+    "azure-acr-disable-public-private-access-quick-action": "Azure.ACR",
+    "azure-acr-disable-authentication-as-arm-quick-action": "Azure.ACR",
+    "azure-acr-disable-anonymous-pull-quick-action": "Azure.ACR",
 }
 
 
@@ -3417,16 +3440,9 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         ["Name", "Http20 Enabled", "Remote Debugging Enabled", "Min Tls Version", "ID"],
         removeNull=True,
     )
-    old_namings = [
-        "azure-webapp-config-set",
-        "azure-webapp-set-http2-quick-action",
-        "azure-set-function-app-http-version2-0-quick-action",
-        "azure-webapp-disable-remote-debugging-quick-action",
-        "azure-webapp-set-min-tls-version-quick-action",
-        "azure-function-app-set-min-tls-version-quick-action",
-    ]
+
     command = demisto.command()
-    outputs_prefix = "Azure.WebAppConfig" if command in old_namings else "Azure.AppService.WebAppConfiguration"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.AppService.WebAppConfiguration")
     return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field="id",
@@ -3468,7 +3484,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.WebAppAuth" if "azure-webapp" in command else "Azure.AppService.WebAppAuthSettings"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.AppService.WebAppAuthSettings")
     return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field="id",
@@ -3590,12 +3606,7 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
     )
 
     command = demisto.command()
-    old_namings = [
-        "azure-disk-update",
-        "azure-disk-set-data-access-ad-quick-action",
-        "azure-disable-public-private-access-vm-disk-quick-action",
-    ]
-    outputs_prefix = "Azure.Disk" if command in old_namings else "Azure.Compute.Disks"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.Disks")
     return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field="id",
@@ -3706,7 +3717,7 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.ACR" if "azure-acr" in command else "Azure.ContainerRegistry.Registries"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.ContainerRegistry.Registries")
     return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field="id",

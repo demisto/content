@@ -5004,11 +5004,12 @@ script:
       defaultValue: SystemAssigned
       description: Managed service identity type.
       hidden: true
-    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials."
+    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. The quick action is deprecated, please use Assign Web App Managed Identity."
     name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
     quickaction: true
     hidden: true
+    deprecated: true
     outputs:
     - contextPath: Azure.WebApp.id
       description: Fully qualified resource ID for the web app.
