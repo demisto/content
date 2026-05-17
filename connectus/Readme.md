@@ -65,9 +65,10 @@ Special case: `NoneRequired` (no auth params)
 
 #### JSON Column Schemas
 
-The JSON shapes for `Auth Details`, `Params to Commands`,
-`Params for test with default in code`, and `Params same in other handlers`
-live in [`connectus/column-schemas.md`](column-schemas.md).
+The JSON shapes for `Auth Details` and `Params to Commands` live in
+[`connectus/column-schemas.md`](column-schemas.md). The same file also
+covers the `verify button placement` flag (enum
+`connection|configuration|none`, default `connection`).
 
 ### Per-command parameter analysis
 
@@ -128,33 +129,31 @@ analyzer and processes its output.
 
 ## Workflow State Machine (`workflow_state.py`)
 
-The [`workflow_state.py`](workflow_state.py) script manages the **16 workflow columns** (columns 5–20) of [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). It models the workflow as a **single linear 16-step sequence**, strictly gated. The current step is always the first step that is not yet done.
+The [`workflow_state.py`](workflow_state.py) script manages the **14 workflow columns** (columns 4–17) of [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). It models the workflow as a **single linear 14-step sequence**, strictly gated. The current step is always the first step that is not yet done.
 
 State is **purely derived from row contents** — there is no separate "current step" pointer. Re-issuing any `set-*`, `markpass`, or `skip` for a step at-or-behind the current step writes the new value AND clears every step that follows it ("cascade reset"). Two carve-outs apply:
 
 - **`set-assignee`** never cascades (governed by the YAML flag `cascade_on_set: false`).
-- **`reset-to` and `fail`** preserve any step tagged `preserve_on_reset: true` in [`workflow_state_config.yml`](workflow_state_config.yml). Today the three Params\* data columns (#3 `Params to Commands`, #4 `Params for test with default in code`, #5 `Params same in other handlers`) carry that flag — see Rule 8 below.
+- **`reset-to` and `fail`** preserve any step tagged `preserve_on_reset: true` in [`workflow_state_config.yml`](workflow_state_config.yml). Today only step #3 `Params to Commands` carries that flag (the historical `Params for test with default in code` and `Params same in other handlers` columns were removed in 2026-05) — see Rule 8 below.
 
-### The 16-Step Sequence
+### The 14-Step Sequence
 
 | # | Step (== CSV column) | Kind | Set via |
 |---|---|---|---|
 | 1 | `assignee` | data | `set-assignee` |
 | 2 | `Auth Details` | data (JSON; includes `auth_types`, `config`, **and `other_connection`** — see [`column-schemas.md`](column-schemas.md)) | `set-auth` |
 | 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
-| 4 | `Params for test with default in code` | data (JSON) | `set-params-for-test` |
-| 5 | `Params same in other handlers` | data (JSON) | `set-shared-params` (or `skip`) |
-| 6 | `generated manifest` | checkpoint | `markpass` |
-| 7 | `run manifest make validate` | checkpoint | `markpass` |
-| 8 | `wrote/checked code` | checkpoint | `markpass` |
-| 9 | `shadowed command test passes` | checkpoint | `markpass` |
-| 10 | `write tests` | checkpoint | `markpass` |
-| 11 | `precommit/validate/unit tests passed` | checkpoint | `markpass` |
-| 12 | `requires auth parity test` | flag (`YES`/`NO`/`N/A`) | `set-auth-flag` |
-| 13 | `auth parity test passes` | checkpoint | `markpass` (auto-`N/A` when #12 is `NO`/`N/A`) |
-| 14 | `param parity test passes` | checkpoint | `markpass` |
-| 15 | `code reviewed` | checkpoint | `markpass` |
-| 16 | `code merged` | checkpoint | `markpass` |
+| 4 | `verify button placement` | flag (`connection`/`configuration`/`none`; default `connection` on read) | `set-verify-placement` |
+| 5 | `generated manifest` | checkpoint | `markpass` |
+| 6 | `run manifest make validate` | checkpoint | `markpass` |
+| 7 | `wrote/checked code` | checkpoint | `markpass` |
+| 8 | `shadowed command test passes` | checkpoint | `markpass` |
+| 9 | `write tests` | checkpoint | `markpass` |
+| 10 | `precommit/validate/unit tests passed` | checkpoint | `markpass` |
+| 11 | `auth parity test passes` | checkpoint | `markpass` (unconditional; the historical `requires auth parity test` gate flag was removed in 2026-05) |
+| 12 | `param parity test passes` | checkpoint | `markpass` |
+| 13 | `code reviewed` | checkpoint | `markpass` |
+| 14 | `code merged` | checkpoint | `markpass` |
 
 ### Rules
 
@@ -162,13 +161,13 @@ State is **purely derived from row contents** — there is no separate "current 
 2. **Strict ordering.** Any `set-*`/`markpass`/`skip` targeting a step **ahead** of the current step is rejected with a message naming the missing prerequisite.
 3. **Cascade reset.** Re-issuing any `set-*`/`markpass`/`skip` at-or-behind current writes the new value AND clears every step after it.
 4. **`set-assignee` carve-out.** `set-assignee` (step #1) updates in place without cascading. Re-assigning an integration mid-flight does NOT wipe progress. Configured via `cascade_on_set: false` in [`workflow_state_config.yml`](workflow_state_config.yml).
-5. **Optional step #5.** `Params same in other handlers` may be `skip`-ped; that writes the sentinel `"N/A"` and unblocks step #6. Setting it to a real JSON value later cascade-resets steps #6+.
-6. **Flag step #12 → step #13 auto-N/A.** Setting `requires auth parity test` to `NO` or `N/A` automatically writes `"N/A"` into `auth parity test passes`. Setting it to `YES` leaves #13 empty so the user must `markpass` it.
-7. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
-8. **`fail` and `reset-to` honour `preserve_on_reset`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behaviour. **EXCEPTION:** any step tagged `preserve_on_reset: true` in [`workflow_state_config.yml`](workflow_state_config.yml) keeps its value across these operations — its name is reported in the CLI output (`Preserved (preserve_on_reset=true): [...]`) and in the api response (`result["preserved"]`). Today the three Params\* data columns (#3, #4, #5) are preserved so a failed checkpoint does not wipe per-command param research.
+5. **Default-on-read for `verify button placement`.** An empty cell at step #4 reads as `connection` (the YAML default). The cell still counts as "done" for current-step purposes, so an unset flag does NOT block step #5.
+6. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
+7. **`fail` and `reset-to` honour `preserve_on_reset`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behaviour. **EXCEPTION:** any step tagged `preserve_on_reset: true` in [`workflow_state_config.yml`](workflow_state_config.yml) keeps its value across these operations — its name is reported in the CLI output (`Preserved (preserve_on_reset=true): [...]`) and in the api response (`result["preserved"]`). Today only step #3 `Params to Commands` is preserved so a failed checkpoint does not wipe per-command param research.
    - **Explicit-target carve-out:** if the user names a preserved step **directly** as the `reset-to`/`fail` target, that one step IS cleared (the user's intent wins), but later preserved steps in the same operation are still preserved.
-   - **`set-auth` is NOT covered by `preserve_on_reset`.** Auth changes invalidate every downstream artifact — `set-auth` continues to wipe steps #3-#16 (Params\* included) by design. See `apply_step_action` in [`connectus/workflow_state/state_machine.py`](workflow_state/state_machine.py).
-9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved. **`preserve_on_reset` is intentionally ignored** — `reset` is the "wipe the row" verb with no carve-outs.
+   - **`set-auth` is NOT covered by `preserve_on_reset`.** Auth changes invalidate every downstream artifact — `set-auth` continues to wipe steps #3-#14 (`Params to Commands` included) by design. See `apply_step_action` in [`connectus/workflow_state/state_machine.py`](workflow_state/state_machine.py).
+8. **`reset` (no step).** Clears all 14 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved. **`preserve_on_reset` is intentionally ignored** — `reset` is the "wipe the row" verb with no carve-outs.
+9. **Column-number addressability.** Every CLI verb that takes a column name (`show-step`, `markpass`, `skip`, `fail`, `reset-to`) also accepts a **1-based CSV column number** (1..17). Identity columns (#1-#3) are addressable only for read-only `show-step`; write verbs reject them with a verb-aware error. Example: `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5` resolves to `Auth Details`.
 
 ### CLI Commands
 
@@ -178,13 +177,13 @@ the current step cascade-resets every step after it.** The lone exception is
 `set-assignee`, which never resets later steps.
 
 ```bash
-# Show status (with [N/16] linear indicator)
+# Show status (with [N/14] linear indicator)
 python3 connectus/workflow_state.py status "Cisco Spark"
 
 # Show all integrations with any progress
 python3 connectus/workflow_state.py status-all
 
-# Compact dashboard (16-cell progress bars)
+# Compact dashboard (14-cell progress bars)
 python3 connectus/workflow_state.py dashboard
 
 # Print the literal next action for an integration
@@ -212,26 +211,21 @@ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 # column-schemas.md.
 python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)","other_connection":["insecure","proxy","url"]}'
 
-# Set Params to Commands (validates JSON; cascade-resets steps #4-#16).
+# Set Params to Commands (validates JSON; cascade-resets steps #4-#14).
 # REJECTED if any param in the payload also appears in Auth Details
 # (auth secrets or other_connection). Run `auth-params <id>` first to
 # see what to exclude, or pass `--integration-id <id>` to the analyzer
 # so it pulls the exclusion set automatically.
 python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["fetch_query"]}}'
 
-# Set Params for test with default in code (validates JSON; cascade-resets #5-#16)
-python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '["bot_token"]'
+# Set the verify-button placement flag (connection|configuration|none;
+# default 'connection' on read when the cell is empty).
+python3 connectus/workflow_state.py set-verify-placement "Cisco Spark" connection
 
-# Set Params same in other handlers (validates JSON; cascade-resets #6-#16)
-python3 connectus/workflow_state.py set-shared-params "Cisco Spark" '[]'
-
-# Mark the (optional) step #5 as skipped
-python3 connectus/workflow_state.py skip "Cisco Spark" "Params same in other handlers"
-
-# Set the auth parity flag (YES/NO/N/A); NO/N/A auto-N/A's step #13
-python3 connectus/workflow_state.py set-auth-flag "Cisco Spark" YES
-
-# Mark a checkpoint as passed (must be at-or-behind current; behind→cascade-resets)
+# Mark a checkpoint as passed (must be at-or-behind current; behind→cascade-resets).
+# Every column-name argument below also accepts a 1-based CSV column number, e.g.
+#   python3 connectus/workflow_state.py markpass "Cisco Spark" 8
+# would target column #8 (`generated manifest`).
 python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
 
 # Fail a step (clears it + every step after)
@@ -240,7 +234,7 @@ python3 connectus/workflow_state.py fail "Cisco Spark" "wrote/checked code"
 # Reset to a specific step (alias for fail; clears it + every step after)
 python3 connectus/workflow_state.py reset-to "Cisco Spark" "wrote/checked code"
 
-# Reset all 16 workflow columns
+# Reset all 14 workflow columns
 python3 connectus/workflow_state.py reset "Cisco Spark"
 
 # List integrations currently at a specific step (any step kind)
@@ -267,19 +261,16 @@ python3 connectus/workflow_state.py auth-params "Cisco Spark" --format=json
 |---|---|
 | `status <id>` | Show full per-step status of one integration |
 | `status-all` | Show full status for every integration with progress |
-| `dashboard` | Compact 16-cell progress bar for every in-progress integration |
+| `dashboard` | Compact 14-cell progress bar for every in-progress integration |
 | `next` / `next <id>` / `next --all` / `next --connector <c>` / `next --mine` | Print the literal next action |
-| `show-step <id> <col>` | Pretty-print one column's value (JSON-aware) |
+| `show-step <id> <col\|#>` | Pretty-print one column's value (JSON-aware); `<col>` may be a name OR a 1-based CSV column number |
 | `set-assignee <id> <name>` | Set the owner (admin; never cascades) |
-| `set-auth <id> '<json>'` | Set Auth Details (validates schema; cascade-resets #3-#16) |
+| `set-auth <id> '<json>'` | Set Auth Details (validates schema; cascade-resets #3-#14) |
 | `set-params-to-commands <id> '<json>'` | Set per-command param map. **Rejected** if any param overlaps with `Auth Details` (auth-secret or `other_connection`); use `auth-params` to inspect the exclusion set. |
-| `set-params-for-test <id> '<json>'` | Set in-code-default params (cascade-resets #5-#16) |
-| `set-shared-params <id> '<json>'` | Set shared-handler params (cascade-resets #6-#16) |
-| `skip <id> "Params same in other handlers"` | Skip the optional step #5 |
-| `set-auth-flag <id> YES\|NO\|N/A` | Set the auth-parity flag (#12) |
-| `markpass <id> <step>` | Mark a checkpoint as passed |
-| `fail <id> <step>` / `reset-to <id> <step>` | Clear a step + every step after |
-| `reset <id>` | Clear all 16 workflow columns |
+| `set-verify-placement <id> connection\|configuration\|none` | Set the verify-button placement flag (#4); empty cell reads as `connection`. |
+| `markpass <id> <step\|#>` | Mark a checkpoint as passed; `<step>` may be a name OR a 1-based CSV column number (identity columns rejected) |
+| `fail <id> <step\|#>` / `reset-to <id> <step\|#>` | Clear a step + every step after; column-number argument accepted |
+| `reset <id>` | Clear all 14 workflow columns |
 | `at-step <step>` | List integrations currently at a specific step |
 | `list` | List every Integration ID |
 | `list-by-assignee <name>` | List integrations for one assignee |
@@ -317,14 +308,11 @@ nxt = next_step_for("Cisco Spark")
 # Mark a checkpoint as passed (cascade-resets later steps if at-or-behind current)
 result = markpass_integration_step("Cisco Spark", "generated manifest")
 
-# Skip an optional step (only #5 is optional)
-result = skip_integration_step("Cisco Spark", "Params same in other handlers")
-
 # Fail / reset-to: clear the named step + every step after
 result = fail_integration_step("Cisco Spark", "wrote/checked code")
 result = reset_integration_to_step("Cisco Spark", "wrote/checked code")
 
-# Set Auth Details (validates schema; cascade-resets steps #3-#16)
+# Set Auth Details (validates schema; cascade-resets steps #3-#14)
 result = set_integration_auth("Cisco Spark", '{"auth_types":...}')
 ```
 
@@ -336,19 +324,26 @@ Run the test suite from the `connectus/` directory:
 cd connectus && python3 -m pytest workflow_state_test.py -v
 ```
 
-The suite covers: schema constants, `is_checked`, `get_current_step`,
-`get_step_index`, `reset_from_step`, `markpass_step` (non-checkpoint
-rejection, prerequisite enforcement, sequential enforcement, auth parity
-cases, full workflow), `find_row`, `format_status`,
-`format_dashboard_row`, `format_step_value`, `cmd_show_step`,
-`set-shared-params` registration, round-trip scenarios, edge cases,
-assignee handling, and the `Params*` workflow data columns including
-the optional `Params same in other handlers`.
+The current test suite lives under [`connectus/workflow_state/tests/`](workflow_state/tests/) and covers:
+the YAML loader and its validation rules (`test_config_loader.py`); the
+cascade-reset engine (`test_state_machine.py`); the `verify button
+placement` flag column (`test_verify_button_placement.py`); the 1-based
+column-number addressability shared by `show-step`/`markpass`/`skip`/
+`fail`/`reset-to` (`test_column_addressability.py`); and the destructive
+schema-alignment `wipe-workflow-data` verb (`test_wipe_workflow_data.py`).
+The legacy top-level [`workflow_state_test.py`](workflow_state_test.py)
+is intentionally empty — see its module docstring for the migration map.
+
+Run from the repo root:
+
+```bash
+python3 -m pytest connectus/workflow_state/tests/ -v
+```
 
 ### Example Walkthrough
 
 Below is a walkthrough showing what each command outputs under the unified
-16-step sequence.
+14-step sequence.
 
 #### 1. Check initial status
 
@@ -362,24 +357,22 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
   File Path:       (not set)
   Connector ID:    (not set)
 
-  Workflow ([0/16]):
+  Workflow ([0/14]):
   ----------------------------------------
   ▶ 1. assignee                               : (not set)
     2. Auth Details                           : (not set)
     3. Params to Commands                     : (not set)
-    4. Params for test with default in code   : (not set)
-    5. Params same in other handlers          : (not set)
-    6. generated manifest                     : ⬜
-    7. run manifest make validate             : ⬜
-    8. wrote/checked code                     : ⬜
-    9. shadowed command test passes           : ⬜
-   10. write tests                            : ⬜
-   11. precommit/validate/unit tests passed   : ⬜
-   12. requires auth parity test              : (not set)
-   13. auth parity test passes                : ⬜
-   14. param parity test passes               : ⬜
-   15. code reviewed                          : ⬜
-   16. code merged                            : ⬜
+    4. verify button placement                : connection (default; cell empty)
+    5. generated manifest                     : ⬜
+    6. run manifest make validate             : ⬜
+    7. wrote/checked code                     : ⬜
+    8. shadowed command test passes           : ⬜
+    9. write tests                            : ⬜
+   10. precommit/validate/unit tests passed   : ⬜
+   11. auth parity test passes                : ⬜
+   12. param parity test passes               : ⬜
+   13. code reviewed                          : ⬜
+   14. code merged                            : ⬜
 
   ➡️  Current step: #1 assignee (run: set-assignee)
 ```
@@ -389,7 +382,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
 ```
 $ python3 connectus/workflow_state.py next "Cisco Spark"
 
-Cisco Spark — step 1 of 16: assignee
+Cisco Spark — step 1 of 14: assignee
   Run:    python3 connectus/workflow_state.py set-assignee "Cisco Spark" "<your name>"
   About:  Assign an owner to drive this integration's migration.
 ```
@@ -399,7 +392,7 @@ Cisco Spark — step 1 of 16: assignee
 ```
 $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
 
-ERROR: Cannot markpass 'generated manifest' (step 6/16) yet — current step is #1 'assignee'.
+ERROR: Cannot markpass 'generated manifest' (step 5/14) yet — current step is #1 'assignee'.
   Complete it first via 'set-assignee'.
 ```
 
@@ -422,33 +415,31 @@ Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
 $ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_params":["credentials.identifier","credentials.password"]}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
-Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
+Set 'Auth Details' (step 2/14) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 
 $ python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{}'
-Set 'Params to Commands' (step 3/16) for 'Cisco Spark'.
-  Current step: #4 Params for test with default in code
+Set 'Params to Commands' (step 3/14) for 'Cisco Spark'.
+  Current step: #4 verify button placement
 
-$ python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '[]'
-Set 'Params for test with default in code' (step 4/16) for 'Cisco Spark'.
-  Current step: #5 Params same in other handlers
-
-# Step #5 is optional — `skip` writes "N/A" and unblocks step #6
-$ python3 connectus/workflow_state.py skip "Cisco Spark" "Params same in other handlers"
-✓ Skipped step 5 ('Params same in other handlers') for 'Cisco Spark'.
-  Next step: #6 generated manifest
+# Step #4 (`verify button placement`) is a flag; empty cell reads as
+# 'connection' (the YAML default) so the workflow does NOT block on it.
+# Explicitly set it when you want a non-default value.
+$ python3 connectus/workflow_state.py set-verify-placement "Cisco Spark" configuration
+Set 'verify button placement' = configuration for 'Cisco Spark'.
+  Current step: #5 generated manifest
 
 $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
-✅ 'generated manifest' (step 6/16) marked as passed for 'Cisco Spark'.
-  Next step: #7 run manifest make validate
+✅ 'generated manifest' (step 5/14) marked as passed for 'Cisco Spark'.
+  Next step: #6 run manifest make validate
 ```
 
 #### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
 $ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NoneRequired","other_connection":[]}'
-Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
-  Cleared 4 subsequent step(s): ['Params to Commands', 'Params for test with default in code', 'Params same in other handlers', 'generated manifest']
+Set 'Auth Details' (step 2/14) for 'Cisco Spark'.
+  Cleared 3 subsequent step(s): ['Params to Commands', 'verify button placement', 'generated manifest']
   Current step: #3 Params to Commands
 ```
 
@@ -459,21 +450,26 @@ Re-issuing any setter at-or-behind the current step writes the new value AND cle
 ```
 $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "Jane Smith"
 Set assignee for 'Cisco Spark' to: Jane Smith
-  Current step: #7 run manifest make validate
+  Current step: #6 run manifest make validate
 ```
 
 Re-assigning preserves all migration progress — only the `assignee` cell changes.
 
-#### 8. Auth parity flag → step #13 auto-N/A
+#### 8. Column-number addressability
 
 ```
-$ python3 connectus/workflow_state.py set-auth-flag "Cisco Spark" NO
-Set 'requires auth parity test' = NO for 'Cisco Spark'.
-  Auto-set 'auth parity test passes' = N/A.
-  Current step: #14 param parity test passes
+# Numbers are 1-based into the full 17-column CSV (3 identity + 14 steps).
+$ python3 connectus/workflow_state.py show-step "Cisco Spark" 5
+# → resolves to column #5 → 'Auth Details'
+
+$ python3 connectus/workflow_state.py markpass "Cisco Spark" 8
+# → resolves to column #8 → 'generated manifest' (first checkpoint)
+
+$ python3 connectus/workflow_state.py markpass "Cisco Spark" 1
+ERROR: column #1 ('Integration ID') is an identity column; cannot apply markpass
 ```
 
-#### 9. Dashboard view (16-cell bar)
+#### 9. Dashboard view (14-cell bar)
 
 ```
 $ python3 connectus/workflow_state.py dashboard
@@ -483,7 +479,7 @@ $ python3 connectus/workflow_state.py dashboard
 ================================================================================
   Integration ID                                Progress             → Current Step
   ---------------------------------------------------------------------------
-  Cisco Spark                                   [████████████░░░░] 12/16  → param parity test passes
+  Cisco Spark                                   [███████████░░░] 11/14  → param parity test passes
 
   Summary: 0 complete, 1 in progress, 981 not started
 ```

@@ -90,6 +90,26 @@ def _resolve_row_or_exit(rows: list[dict[str, str]], name: str) -> int:
     return idx
 
 
+def _resolve_column_or_exit(
+    ref: str,
+    *,
+    allow_identity: bool = True,
+    verb: str = "this operation",
+) -> str:
+    """Resolve a column reference (name or 1-based number) or exit(1).
+
+    See :meth:`workflow_state.types.WorkflowConfig.resolve_column_ref`
+    for the resolution rules. CLI-side wrapper that prints the error
+    and exits on failure (since every CLI call site does the same thing).
+    """
+    cfg = get_config()
+    try:
+        return cfg.resolve_column_ref(ref, allow_identity=allow_identity, verb=verb)
+    except ValueError as e:
+        print(f"ERROR: {e}")
+        sys.exit(1)
+
+
 def _set_step_via_dispatch(
     row: dict[str, str],
     target: Step,
@@ -169,7 +189,9 @@ def cmd_dashboard(_args: list[str]) -> None:
 # ---------------------------------------------------------------------------
 
 def _set_json_data_step(args: list[str], step_name: str, setter_cmd: str) -> None:
-    """Shared CLI handler for set-auth / set-params-* / set-shared-params."""
+    """Shared CLI handler for JSON-shaped data setters (currently
+    ``set-auth`` and ``set-params-to-commands``).
+    """
     cfg = get_config()
     if len(args) < 2:
         print(f"Usage: workflow_state.py {setter_cmd} <integration_id> '<json>'")
@@ -252,12 +274,10 @@ def cmd_set_params_to_commands(args: list[str]) -> None:
     _set_json_data_step(args, "Params to Commands", "set-params-to-commands")
 
 
-def cmd_set_params_for_test(args: list[str]) -> None:
-    _set_json_data_step(args, "Params for test with default in code", "set-params-for-test")
-
-
-def cmd_set_shared_params(args: list[str]) -> None:
-    _set_json_data_step(args, "Params same in other handlers", "set-shared-params")
+# (Removed 2026-05) ``set-params-for-test`` and ``set-shared-params``:
+# the ``Params for test with default in code`` and ``Params same in other
+# handlers`` columns were retired in the schema simplification. See the
+# §11 decisions log for rationale.
 
 
 # ---------------------------------------------------------------------------
@@ -339,56 +359,93 @@ def cmd_set_assignee_by_connector(args: list[str]) -> None:
 # Flag setters / markpass / skip / fail / reset
 # ---------------------------------------------------------------------------
 
-def cmd_set_auth_flag(args: list[str]) -> None:
-    """Set the 'requires auth parity test' flag (or whatever YAML configures).
+def _set_flag_step_via_dispatch(
+    args: list[str],
+    step_name: str,
+    setter_cmd: str,
+) -> None:
+    """Generic CLI handler for any ``kind: flag`` step.
 
-    When the new value triggers a configured ``flag_auto_na_target``
-    interaction, also write that interaction's ``write_value`` into the
-    target step so the user is auto-advanced past it.
+    Validates the candidate value against the step's effective enum
+    (per-step ``flag_values`` win over global ``markers.flag_values``),
+    routes through the cascade-reset dispatcher, and honours any
+    configured ``flag_auto_na_target`` interaction whose ``when_step``
+    matches.
     """
+    from workflow_state.state_machine import step_flag_values
+
     cfg = get_config()
+    target = cfg.step_by_name.get(step_name)
+    if target is None or target.kind != "flag":
+        print(f"ERROR: Internal: {step_name!r} is not a configured flag step.")
+        sys.exit(1)
+
+    enum = list(step_flag_values(target))
     if len(args) < 2:
-        print("Usage: workflow_state.py set-auth-flag <integration_id> <YES|NO|N/A>")
+        print(
+            f"Usage: workflow_state.py {setter_cmd} <integration_id> "
+            f"<{'|'.join(enum)}>"
+        )
         sys.exit(1)
 
     name = args[0]
-    flag = args[1].upper().strip()
+    raw_value = args[1].strip()
 
-    if flag not in set(cfg.markers.flag_values):
-        print(f"ERROR: Flag must be one of {list(cfg.markers.flag_values)}. Got: '{args[1]}'")
-        sys.exit(1)
-
-    flag_col = cfg.auth_parity_flag_column
-    if flag_col is None:
-        print("ERROR: no flag_auto_na_target interaction configured.")
-        sys.exit(1)
+    # Per-step enums match case-sensitively; global YES/NO/N/A is case-insensitive.
+    if target.flag_values is not None:
+        if raw_value not in enum:
+            print(
+                f"ERROR: '{step_name}' must be one of {enum}. Got: '{args[1]}'"
+            )
+            sys.exit(1)
+        chosen = raw_value
+    else:
+        upper = raw_value.upper()
+        upper_to_canonical = {v.upper(): v for v in enum}
+        if upper not in upper_to_canonical:
+            print(
+                f"ERROR: '{step_name}' must be one of {enum}. Got: '{args[1]}'"
+            )
+            sys.exit(1)
+        chosen = upper_to_canonical[upper]
 
     rows = load_csv()
     idx = _resolve_row_or_exit(rows, name)
-    target = cfg.step_by_name[flag_col]
 
     try:
-        cleared, no_op = apply_step_action(rows[idx], target, flag, verb="set-auth-flag")
+        cleared, no_op = apply_step_action(
+            rows[idx], target, chosen, verb=setter_cmd
+        )
     except WorkflowError as e:
         print(f"ERROR: {e.message}")
         sys.exit(1)
 
-    interaction = cfg.find_flag_auto_na_target(flag_col)
-    if interaction is not None and flag in {v.upper() for v in interaction.when_value_in}:
+    interaction = cfg.find_flag_auto_na_target(step_name)
+    if interaction is not None and chosen.upper() in {
+        v.upper() for v in interaction.when_value_in
+    }:
         rows[idx][interaction.target_step] = interaction.write_value
 
     save_csv(rows)
 
     if no_op:
-        print(f"'{flag_col}' already set to '{flag}' "
-              f"for '{rows[idx]['Integration ID']}'. No change.")
+        print(
+            f"'{step_name}' already set to '{chosen}' "
+            f"for '{rows[idx]['Integration ID']}'. No change."
+        )
     else:
-        print(f"Set '{flag_col}' = {flag} "
-              f"for '{rows[idx]['Integration ID']}'.")
+        print(
+            f"Set '{step_name}' = {chosen} "
+            f"for '{rows[idx]['Integration ID']}'."
+        )
         if cleared:
             print(f"  Cleared {len(cleared)} subsequent step(s): {cleared}")
-        if interaction is not None and flag in {v.upper() for v in interaction.when_value_in}:
-            print(f"  Auto-set '{interaction.target_step}' = {interaction.write_value}.")
+        if interaction is not None and chosen.upper() in {
+            v.upper() for v in interaction.when_value_in
+        }:
+            print(
+                f"  Auto-set '{interaction.target_step}' = {interaction.write_value}."
+            )
 
     cur = current_step(rows[idx])
     if cur is not None:
@@ -397,23 +454,34 @@ def cmd_set_auth_flag(args: list[str]) -> None:
         print(f"  🎉 All {len(cfg.steps)} steps complete!")
 
 
+def cmd_set_verify_placement(args: list[str]) -> None:
+    """Set the 'verify button placement' flag (connection|configuration|none)."""
+    _set_flag_step_via_dispatch(args, "verify button placement", "set-verify-placement")
+
+
 def cmd_markpass(args: list[str]) -> None:
     cfg = get_config()
     non_checkpoint = cfg.non_checkpoint_steps
 
     if len(args) < 2:
-        print("Usage: workflow_state.py markpass <integration_id> <step_name>")
+        print("Usage: workflow_state.py markpass <integration_id> <step_name|step_number>")
+        print("  (column name or 1-based number into the full CSV column list)")
         print("\nCheckpoint steps (in order):")
         for s in cfg.steps:
             if s.kind == "checkpoint":
-                print(f"  {s.index:2d}. {s.name}")
+                # CSV column number = identity columns + step index
+                csv_num = len(cfg.identity_columns) + s.index
+                print(f"  #{csv_num:2d} (step {s.index:2d}). {s.name}")
         print("\nNon-checkpoint columns (use a different command):")
         for step_name, cmd in non_checkpoint.items():
             print(f"  - '{step_name}' → use '{cmd}'")
         sys.exit(1)
 
     name = args[0]
-    step_name = " ".join(args[1:])
+    raw_step = " ".join(args[1:])
+    step_name = _resolve_column_or_exit(
+        raw_step, allow_identity=False, verb="markpass"
+    )
 
     if step_name in non_checkpoint:
         correct = non_checkpoint[step_name]
@@ -440,12 +508,12 @@ def cmd_markpass(args: list[str]) -> None:
         if inter.kind == "flag_auto_na_target" and inter.target_step == step_name:
             flag = row.get(inter.when_step, "").strip().upper()
             if flag == "":
+                src = cfg.step_by_name.get(inter.when_step)
+                setter = src.setter if src and src.setter else "<setter>"
                 print(
                     f"ERROR: Cannot mark '{step_name}' as passed — "
                     f"'{inter.when_step}' flag is not set.\n"
-                    f"  Use 'set-auth-flag' first.\n"
-                    f"  Example: workflow_state.py set-auth-flag "
-                    f"\"{row['Integration ID']}\" YES"
+                    f"  Use {setter!r} first."
                 )
                 sys.exit(1)
             if flag in {v.upper() for v in inter.when_value_in}:
@@ -481,15 +549,19 @@ def cmd_markpass(args: list[str]) -> None:
 def cmd_skip(args: list[str]) -> None:
     cfg = get_config()
     if len(args) < 2:
-        print("Usage: workflow_state.py skip <integration_id> <step_name>")
+        print("Usage: workflow_state.py skip <integration_id> <step_name|step_number>")
         print("Skippable (optional) steps:")
         for s in cfg.steps:
             if s.optional:
-                print(f"  {s.index:2d}. {s.name}")
+                csv_num = len(cfg.identity_columns) + s.index
+                print(f"  #{csv_num:2d} (step {s.index:2d}). {s.name}")
         sys.exit(1)
 
     name = args[0]
-    step_name = " ".join(args[1:])
+    raw_step = " ".join(args[1:])
+    step_name = _resolve_column_or_exit(
+        raw_step, allow_identity=False, verb="skip"
+    )
 
     target = cfg.step_by_name.get(step_name)
     if target is None:
@@ -527,6 +599,9 @@ def _do_reset_to(rows: list[dict[str, str]], idx: int, step_name: str, verb: str
     preserved step explicitly as ``target`` — in that case the user's
     intent wins for that one step (it is cleared) but later preserved
     steps in the same blast radius are still preserved.
+
+    ``step_name`` here is the resolved column name; column-number /
+    identity-column rejection happens in the caller before reaching us.
     """
     cfg = get_config()
     target = cfg.step_by_name.get(step_name)
@@ -564,11 +639,14 @@ def _do_reset_to(rows: list[dict[str, str]], idx: int, step_name: str, verb: str
 def cmd_fail(args: list[str]) -> None:
     cfg = get_config()
     if len(args) < 2:
-        print("Usage: workflow_state.py fail <integration_id> <step_name>")
+        print("Usage: workflow_state.py fail <integration_id> <step_name|step_number>")
         print(f"Valid steps: {', '.join(cfg.workflow_columns)}")
         sys.exit(1)
     name = args[0]
-    step_name = " ".join(args[1:])
+    raw_step = " ".join(args[1:])
+    step_name = _resolve_column_or_exit(
+        raw_step, allow_identity=False, verb="fail"
+    )
     rows = load_csv()
     idx = _resolve_row_or_exit(rows, name)
     _do_reset_to(rows, idx, step_name, verb="Reset (fail)")
@@ -577,11 +655,14 @@ def cmd_fail(args: list[str]) -> None:
 def cmd_reset_to(args: list[str]) -> None:
     cfg = get_config()
     if len(args) < 2:
-        print("Usage: workflow_state.py reset-to <integration_id> <step_name>")
+        print("Usage: workflow_state.py reset-to <integration_id> <step_name|step_number>")
         print(f"Valid steps: {', '.join(cfg.workflow_columns)}")
         sys.exit(1)
     name = args[0]
-    step_name = " ".join(args[1:])
+    raw_step = " ".join(args[1:])
+    step_name = _resolve_column_or_exit(
+        raw_step, allow_identity=False, verb="reset-to"
+    )
     rows = load_csv()
     idx = _resolve_row_or_exit(rows, name)
     _do_reset_to(rows, idx, step_name, verb="Reset-to")
@@ -793,27 +874,29 @@ def cmd_list_connectors(_args: list[str]) -> None:
 def cmd_show_step(args: list[str]) -> None:
     cfg = get_config()
     if len(args) < 2:
-        print("Usage: workflow_state.py show-step <integration_id> <column_name>")
+        print("Usage: workflow_state.py show-step <integration_id> <column_name|column_number>")
+        print("  (column name or 1-based number into the full CSV column list)")
         print("\nValid columns:")
-        for col in cfg.identity_column_names:
-            print(f"  - {col} (data)")
-        for col in cfg.workflow_columns:
-            print(f"  - {col}")
+        idx_cols = cfg.identity_column_names
+        for n, col in enumerate(idx_cols, start=1):
+            print(f"  #{n:2d} {col} (identity)")
+        for s in cfg.steps:
+            csv_num = len(idx_cols) + s.index
+            print(f"  #{csv_num:2d} {s.name} ({s.kind})")
         sys.exit(1)
 
     name = args[0]
-    step = " ".join(args[1:])
+    raw_step = " ".join(args[1:])
+
+    # show-step is read-only and may target identity columns.
+    step = _resolve_column_or_exit(
+        raw_step, allow_identity=True, verb="show-step"
+    )
 
     rows = load_csv()
     idx = find_row(rows, name)
     if idx is None:
         print(f"ERROR: Integration '{name}' not found.")
-        sys.exit(1)
-
-    valid_steps = set(cfg.workflow_columns) | set(cfg.identity_column_names)
-    if step not in valid_steps:
-        print(f"ERROR: Unknown column '{step}' for integration '{rows[idx]['Integration ID']}'.")
-        print(f"Valid columns: {', '.join(sorted(valid_steps))}")
         sys.exit(1)
 
     print(format_step_value(rows[idx], step))
@@ -1046,7 +1129,7 @@ def cmd_next(args: list[str]) -> None:
 # Help & main dispatch
 # ---------------------------------------------------------------------------
 
-_DOC = """Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 16-STEP MODEL)
+_DOC = """Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 14-STEP MODEL)
 
 This script manages the workflow tracking columns in the CSV. The shape
 of the workflow (steps, columns, markers) is declared in
@@ -1075,9 +1158,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "set-assignee": cmd_set_assignee,
     "set-auth": cmd_set_auth,
     "set-params-to-commands": cmd_set_params_to_commands,
-    "set-params-for-test": cmd_set_params_for_test,
-    "set-shared-params": cmd_set_shared_params,
-    "set-auth-flag": cmd_set_auth_flag,
+    "set-verify-placement": cmd_set_verify_placement,
     "markpass": cmd_markpass,
     "skip": cmd_skip,
     "fail": cmd_fail,

@@ -913,3 +913,58 @@ flowchart LR
    **DECIDED: deferred — single test file kept.** The success criterion
    was met (562/562 tests pass against the split package via the shim);
    a per-module test split remains open as future cleanup.
+
+   **UPDATE (2026-05):** the legacy top-level
+   [`workflow_state_test.py`](workflow_state_test.py) was emptied to a
+   migration-map stub in the schema-simplification pass below; the active
+   test suite now lives entirely under
+   [`workflow_state/tests/`](workflow_state/tests/).
+
+---
+
+## 12. Decision Log
+
+### 2026-05-17 — schema simplification + column-number addressability
+
+- **Removed** three columns from the workflow:
+  - `Params for test with default in code` (was data, step #4 of the
+    historical 16-step model);
+  - `Params same in other handlers` (was data, optional step #5);
+  - `requires auth parity test` (was flag, step #12, gated step #13).
+- **Removed** the corresponding CLI verbs: `set-params-for-test`,
+  `set-shared-params`, `set-auth-flag`.
+- **Added** `verify button placement` as step #4 — a `flag` kind with a
+  per-step enum `["connection", "configuration", "none"]` and
+  `default: "connection"` (read-on-default fallback). The cell counts
+  as "done" for `current_step` purposes when empty so it does NOT block
+  the workflow from advancing. **Placeholder pending detailed spec.**
+- **CLI:** new verb `set-verify-placement <id> <enum>`.
+- **`step_interactions`** is now empty in the bundled YAML. The
+  historical `flag_auto_na_target` interaction (`requires auth parity
+  test` → `auth parity test passes`) is gone. `auth parity test passes`
+  is unconditional now; the engine's `flag_auto_na_target` capability is
+  retained in [`config_loader.py`](workflow_state/config_loader.py:1)
+  for future use and is exercised by the synthetic fixture in
+  [`workflow_state/tests/test_config_loader.py`](workflow_state/tests/test_config_loader.py:1).
+- **`preserve_on_reset: true`** is now carried by `Params to Commands`
+  only (the other two preserved columns were removed).
+- **CSV header:** total columns went from 19 (3 identity + 16 workflow)
+  to 17 (3 identity + 14 workflow). The pipeline CSV was wiped via
+  `wipe-workflow-data --yes-i-am-sure` to realign the header against
+  the new YAML; identity columns were preserved.
+- **Column-number addressability:** every CLI verb that takes a
+  column-name argument (`show-step`, `markpass`, `skip`, `fail`,
+  `reset-to`) now also accepts a **1-based CSV column number** (1..17).
+  Identity columns (#1-#3) are addressable only via read-only
+  `show-step`; write verbs reject them with a verb-aware error.
+  Resolution lives in
+  [`WorkflowConfig.resolve_column_ref()`](workflow_state/types.py:182)
+  and the CLI-side wrapper
+  [`_resolve_column_or_exit()`](workflow_state/cli.py:93).
+- **Tests:** new test modules
+  [`test_verify_button_placement.py`](workflow_state/tests/test_verify_button_placement.py)
+  and
+  [`test_column_addressability.py`](workflow_state/tests/test_column_addressability.py)
+  cover the new behaviour; legacy
+  [`connectus/workflow_state_test.py`](workflow_state_test.py) is now a
+  stub.

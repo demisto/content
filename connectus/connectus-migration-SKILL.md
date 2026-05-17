@@ -11,11 +11,11 @@ This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs pla
 
 The CSV has two kinds of columns (see [`connectus/Readme.md`](Readme.md) for full details):
 
-- **Data columns** (3) — identity / metadata: `Integration ID`, `Integration File Path`, `Connector ID`.
-- **Workflow columns** (16, managed by the state machine):
-  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params same in other handlers`.
-  - **Workflow checkpoints** (sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
-  - **Workflow flag**: `requires auth parity test` (`YES` / `NO` / `N/A`).
+- **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
+- **Workflow columns** (14, managed by the state machine — CSV total is 17):
+  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands` (3).
+  - **Workflow flag** (1): `verify button placement` (enum `connection|configuration|none`, default `connection` on read).
+  - **Workflow checkpoints** (10, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
 
 Authentication classification is the **prerequisite for everything**: you must set `Auth Details` with `set-auth` before the workflow can meaningfully begin (setting it also resets the workflow). The Validate Auth Classification procedure below is run before invoking `set-auth`.
 
@@ -25,11 +25,19 @@ The skill supports three top-level invocation styles. Pick the matching flow bas
 
 | User phrase (examples) | Action |
 |---|---|
-| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 16-step procedure for that one integration. |
+| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 14-step procedure for that one integration. |
 | "migrate everything assigned to me" / "what's next for me" / "continue my work" / "keep going" | [Assignee batch flow](#assignee-batch-flow) — enumerate the user's in-progress + assigned integrations and walk them one by one. |
 | "migrate connector `<connector_id>`" / "work on connector `<connector_id>`" / "do the whole `<connector>` connector" | [Connector batch flow](#connector-batch-flow) — enumerate that connector's integrations and walk them one by one (with ownership disambiguation up front). |
 
-Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 16-step workflow — they pick *which* integration to run that workflow on next.
+Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 14-step workflow — they pick *which* integration to run that workflow on next.
+
+> **CLI column references accept numbers too.** Every CLI verb in this
+> skill that takes a column name (`show-step`, `markpass`, `skip`, `fail`,
+> `reset-to`) also accepts a **1-based CSV column number** (1..17).
+> Identity columns (#1-#3) are addressable only by read-only `show-step`;
+> write verbs reject them. Example:
+> `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5`
+> resolves to `Auth Details`.
 
 ## Assignee batch flow
 
@@ -47,13 +55,13 @@ Use when the user says something like "migrate everything assigned to me" / "con
    - bulk-assign a connector via `set-assignee-by-connector <connector_id> "<name>"` (suggest running `list-connectors` first to pick one), or
    - browse via `python3 connectus/workflow_state.py dashboard`.
    Then stop.
-4. **Multiple results?** Before starting, present them as a numbered list with `Integration ID`, `Connector ID`, current step, and `completed_steps / 16`. Apply the [Order-of-work disambiguation](#order-of-work-disambiguation) heuristic. The order is "obvious" only when:
+4. **Multiple results?** Before starting, present them as a numbered list with `Integration ID`, `Connector ID`, current step, and `completed_steps / 14`. Apply the [Order-of-work disambiguation](#order-of-work-disambiguation) heuristic. The order is "obvious" only when:
    - There is exactly one integration, OR
    - All integrations belong to the same connector AND exactly one is clearly furthest along (highest `current_step_index` with `has_progress: true`) — proceed with that one first and confirm.
 
    Otherwise, **ask the user** for the work order. Suggest a sensible default ("furthest-along first" or "by connector then alphabetical") but let them override.
 5. **Walk one integration at a time.** For each integration in the chosen order:
-   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 16 steps here — the rest of this skill already documents them.
+   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 14 steps here — the rest of this skill already documents them.
    - Between integrations, print a short progress recap (`X/N done in this batch — next: <integration id>`) and confirm before moving on, **unless** the user has explicitly said "do them all without asking" / "no confirmations" / equivalent.
 6. **Mid-loop "what's next" check.** Re-run `python3 connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
 7. **Finish.** When the queue is empty, summarize what was done and ask whether to start a new batch (e.g., a connector batch, or assigning more work).
@@ -119,13 +127,13 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 3. **Always check status first** before doing any work on an integration.
 4. **Use `execute_command`** to run all `workflow_state.py` commands from the workspace root.
 5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
-6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** the three Params\* data columns (`Params to Commands`, `Params for test with default in code`, `Params same in other handlers`) — they are tagged `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe Params\* by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes Params\*; preservation is for `reset-to`/`fail` only.
+6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (the historical `Params for test with default in code` and `Params same in other handlers` columns were removed in 2026-05; today only `Params to Commands` carries `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
 
 ## Linked Files
 
 - [`connectus/Readme.md`](Readme.md) — Full reference for auth types, CSV columns, walkthrough.
-- [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params same in other handlers`.
+- [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details` and `Params to Commands`, plus the `verify button placement` flag enum.
 - [`connectus/workflow_state.py`](workflow_state.py) — The state machine CLI (source of truth for workflow). Provides the `files <integration_id>` subcommand and the [`get_integration_files()`](workflow_state.py) helper used to resolve every source file for an integration (see [§1.1](#11-locate-integration-files)).
 - [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) — The tracking spreadsheet (DO NOT EDIT DIRECTLY).
 
@@ -148,8 +156,7 @@ The status output shows:
 - **Connector ID** — the ConnectUs connector this integration belongs to (data column)
 - **Auth Details** — authentication detail JSON (with embedded `config` expression)
 - **Params to Commands** — JSON mapping of commands → param ids
-- **Params for test with default in code** — JSON list of param ids with hardcoded defaults
-- **Params same in other handlers** — optional JSON listing shared params
+- **verify button placement** — flag (`connection` | `configuration` | `none`; default `connection` on read). Placeholder pending detailed spec.
 - **Workflow Checkpoints** — which checkpoints are done, which remain
 - **Current step** — what to work on next
 
@@ -546,7 +553,7 @@ Open the YML file and examine the `configuration` section. Extract ALL auth-rela
 | Params with `type: 15` (select dropdown) | May be an `auth_type` selector for multi-auth integrations |
 | `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password |
 | `display` and `displaypassword` labels | Reveal what the credential actually is (e.g., "Client ID" / "Client Secret" vs "Username" / "Password") |
-| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — not in `auth_types[].xsoar_params`, not in `other_connection`, not in `Params to Commands`, not in `Params for test with default in code`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
+| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — not in `auth_types[].xsoar_params`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
 | `deprecated: true` or `_deprecated` in param names | Ignore these entirely — they are no longer functional |
 | `additionalinfo` text | Often describes the auth mechanism in plain English |
 | Params named `auth_type` with `type: 15` | Indicates multi-auth integrations with user-selectable auth flow |
@@ -728,7 +735,7 @@ Note: there is **no `markpass "auth params set"`** anymore — the verification 
 
 Before invoking `set-auth`, walk this checklist mentally. The validator will catch most of these but it's faster (and clearer) to catch them locally.
 
-- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears anywhere in `auth_types[].xsoar_params`, `other_connection`, `Params to Commands`, or `Params for test with default in code`. Hidden params are excluded entirely. (See §1.3.)
+- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears anywhere in `auth_types[].xsoar_params`, `other_connection`, or `Params to Commands`. Hidden params are excluded entirely. (See §1.3.)
 - [ ] Every YML param the source code reads as an auth secret is covered by some `auth_types[].xsoar_params`.
 - [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is in any `xsoar_params`.
 - [ ] Every credentials-typed (YML type `9`) auth param appears as **both** `<id>.identifier` AND `<id>.password` (not just one).
@@ -1099,33 +1106,28 @@ Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` at any 
 
 Whenever you set params to command not strictly what the script returned, present the evidence clearly and concisely to the user why you decided to do it, and allow them to tweak the input.
 
-### Step 3: Set Params for test with default in code (workflow data column)
+### Step 3: Set `verify button placement` (flag, placeholder)
 
-List the parameter IDs whose default value is hardcoded in the integration source (and therefore must be substituted during testing).
+> **Placeholder.** This step was added in the 2026-05 schema simplification.
+> Detailed semantics (UI behaviour, manifest implications) are **to be
+> filled in later**. For now: pick the value that matches the integration
+> and move on. Empty cells read as `connection`.
 
-- Hidden YML params are excluded here too. Even if the source has a hardcoded default for a hidden legacy param, do NOT include the hidden id; only consider visible params.
+Enum values:
 
-```bash
-python3 connectus/workflow_state.py set-params-for-test "<Integration ID>" '<JSON>'
-```
-
-Either a JSON array of strings or an object keyed by param ID is accepted (see [`column-schemas.md`](column-schemas.md)).
-
-Example — APIVoid declares hardcoded defaults for `bad`, `integrationReliability`, `suspicious`, and `url` in [`Packs/APIVoid/Integrations/APIVoid/APIVoid.py`](Packs/APIVoid/Integrations/APIVoid/APIVoid.py) `main()`.
-
-```bash
-python3 connectus/workflow_state.py set-params-for-test "APIVoid" '["bad", "integrationReliability", "suspicious", "url"]'
-```
-
-### Step 3.5 (Optional): Set Params same in other handlers
-
-If this integration is part of a multi-handler family, list parameter IDs that are shared verbatim with sibling handlers.
+| Value | Meaning |
+|---|---|
+| `connection` | Verify/test button at the per-connection level (default). |
+| `configuration` | Verify/test button at the per-integration / per-configuration level. |
+| `none` | No verify/test button. |
 
 ```bash
-python3 connectus/workflow_state.py set-shared-params "<Integration ID>" '<JSON>'
+python3 connectus/workflow_state.py set-verify-placement "<Integration ID>" connection
 ```
 
-This column is **optional** — leave it empty if the integration is standalone or has no shared params. It is never a prerequisite for any checkpoint.
+This step is a `flag`, not a `data` column — the input is the bare enum
+string (no JSON wrapping). See
+[`connectus/column-schemas.md`](column-schemas.md) §`verify button placement`.
 
 ### Step 4: Mark `generated manifest` (first checkpoint)
 
@@ -1135,7 +1137,8 @@ After generating the ConnectUs manifest YAML for the integration:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "generated manifest"
 ```
 
-Prerequisites: `Params to Commands` AND `Params for test with default in code` must both be set (valid JSON). The state machine enforces this and tells you which one is missing if either is unset.
+Prerequisite: `Params to Commands` must be set (valid JSON). The state
+machine enforces this and tells you what's missing.
 
 ### Step 5: `run manifest make validate`
 
@@ -1204,34 +1207,22 @@ When everything passes (Yuval decides which checks may be skipped):
 python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
 ```
 
-### Step 10: Auth Parity Flag
+### Step 10: `auth parity test passes`
 
-This is a **flag**, not a checkpoint. Set it based on whether the integration requires auth parity testing:
+> **Schema change (2026-05):** the historical `requires auth parity test`
+> gate flag was removed. `auth parity test passes` is now **unconditional** —
+> there is no longer a setter that auto-N/A's it. If you decide the
+> test is not applicable, mark it `markpass` with the `N/A` sentinel via
+> the standard markpass machinery (see CLI help).
 
-```bash
-# If auth parity testing is needed
-python3 connectus/workflow_state.py set-auth-flag "<Integration ID>" YES
-
-# If NOT needed (e.g., NoneRequired auth)
-python3 connectus/workflow_state.py set-auth-flag "<Integration ID>" NO
-
-# If not applicable
-python3 connectus/workflow_state.py set-auth-flag "<Integration ID>" N/A
-```
-
-When set to `NO` or `N/A`, the next checkpoint (`auth parity test passes`) is automatically set to `N/A` and skipped.
-
-### Step 11: `auth parity test passes`
-
-Only meaningful if the flag is `YES`. Run the auth parity test to verify authentication works identically:
+Run the auth parity test to verify authentication works identically.
+When it passes:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "auth parity test passes"
 ```
 
-If the flag was `NO` or `N/A`, this step is auto-skipped.
-
-### Step 12: `param parity test passes`
+### Step 11: `param parity test passes`
 
 Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
 
@@ -1239,7 +1230,7 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
 ```
 
-### Step 13: `code reviewed`
+### Step 12: `code reviewed`
 
 After code review is complete:
 
@@ -1247,7 +1238,7 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
 ```
 
-### Step 14: `code merged`
+### Step 13: `code merged`
 
 After the code is merged to the branch:
 
@@ -1259,7 +1250,7 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 
 `fail` and `reset-to` share semantics. Both clear the named step and every later step that is **not** tagged `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml). Today only the three Params\* data columns carry that tag — they survive a failed checkpoint so per-command param research is not lost. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept.
 
-**Explicit-target carve-out:** if the user names a preserved step EXPLICITLY as the target of `fail`/`reset-to`, that one step IS cleared (the user's intent wins). Later preserved steps in the same blast radius are still preserved. Example: `fail "Auth Details"` keeps Params\*; `fail "Params to Commands"` clears `Params to Commands` but keeps `Params for test with default in code` and `Params same in other handlers`.
+**Explicit-target carve-out:** if the user names a preserved step EXPLICITLY as the target of `fail`/`reset-to`, that one step IS cleared (the user's intent wins). Later preserved steps in the same blast radius are still preserved. Example: with the 2026-05 schema, `fail "Auth Details"` keeps `Params to Commands`; `fail "Params to Commands"` clears `Params to Commands` itself (there are no later preserved data columns to keep).
 
 `set-auth` and plain `reset` IGNORE `preserve_on_reset` — see the description of each.
 

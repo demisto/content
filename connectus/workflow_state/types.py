@@ -48,6 +48,17 @@ class Step:
     json_schema: Optional[str] = None       # named JSON validator key (or None)
     cross_check: Optional[str] = None       # named cross-step validator key (or None)
     preserve_on_reset: bool = False         # if True, reset-to/fail preserve this column's value
+    # Per-step enum override for ``kind: flag`` steps. When None, the
+    # global ``markers.flag_values`` apply. When set, this list IS the
+    # complete enum for this step (the global default does not extend
+    # it). Optional even for flag steps — the historical YES/NO/N/A
+    # flag did not declare its own values.
+    flag_values: Optional[tuple[str, ...]] = None
+    # Optional read-side default for ``kind: flag`` steps. When the cell
+    # is empty on read, ``is_done`` / ``show-step`` / ``status`` see
+    # this value instead of "". The CSV cell is NOT auto-written; only
+    # an explicit setter call persists a value to disk.
+    default: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -165,3 +176,61 @@ class WorkflowConfig:
             if inter.kind == "flag_auto_na_target" and inter.when_step == when_step:
                 return inter
         return None
+
+    # ---- Column-number addressability ----------------------------------
+
+    def resolve_column_ref(
+        self,
+        ref: str,
+        *,
+        allow_identity: bool = True,
+        verb: str = "this operation",
+    ) -> str:
+        """Resolve a column reference (name OR 1-based number) to a column name.
+
+        ``ref`` may be:
+          - a column name (must match an identity column or a step name); or
+          - an all-digits string parsed as a 1-based index into
+            ``all_columns`` (identity columns first, then steps).
+
+        When ``allow_identity`` is False, an identity-column index is
+        rejected with a verb-aware error. Names that match identity
+        columns are likewise rejected when ``allow_identity`` is False.
+
+        Raises ``ValueError`` with a single human-readable message on any
+        validation failure (out-of-range, unknown name, identity reject).
+        The CLI layer wraps this in its own user-facing print/exit.
+        """
+        all_cols = self.all_columns
+        n = len(all_cols)
+        identity_names = set(self.identity_column_names)
+
+        stripped = ref.strip()
+        if stripped.isdigit() and stripped:
+            num = int(stripped)
+            if num < 1 or num > n:
+                raise ValueError(
+                    f"column number must be between 1 and {n}; got {num}"
+                )
+            resolved = all_cols[num - 1]
+            if not allow_identity and resolved in identity_names:
+                raise ValueError(
+                    f"column #{num} ({resolved!r}) is an identity column; "
+                    f"cannot apply {verb}"
+                )
+            return resolved
+
+        # Name-based lookup.
+        if stripped in self.step_by_name:
+            return stripped
+        if stripped in identity_names:
+            if not allow_identity:
+                raise ValueError(
+                    f"column {stripped!r} is an identity column; "
+                    f"cannot apply {verb}"
+                )
+            return stripped
+        raise ValueError(
+            f"unknown column {ref!r}. "
+            f"Provide a column name or a 1-based number 1..{n}."
+        )

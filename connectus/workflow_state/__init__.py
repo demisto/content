@@ -44,6 +44,7 @@ from workflow_state.config_loader import (
 
 from workflow_state.state_machine import (
     _can_advance_to,
+    _is_flag_value_match,
     _normalize_rows_with_warning,
     apply_step_action,
     current_step,
@@ -55,8 +56,10 @@ from workflow_state.state_machine import (
     is_done,
     markpass_step,
     normalize_row,
+    read_step_value,
     reset_after,
     reset_from_step,
+    step_flag_values,
 )
 
 # ---- CSV I/O -------------------------------------------------------------
@@ -126,7 +129,9 @@ from workflow_state.cli import (
     COMMANDS,
     _git_user_name,
     _parse_next_flags,
+    _resolve_column_or_exit,
     _resolve_row_or_exit,
+    _set_flag_step_via_dispatch,
     _set_json_data_step,
     _set_step_via_dispatch,
     cmd_at_step,
@@ -146,10 +151,8 @@ from workflow_state.cli import (
     cmd_set_assignee,
     cmd_set_assignee_by_connector,
     cmd_set_auth,
-    cmd_set_auth_flag,
-    cmd_set_params_for_test,
     cmd_set_params_to_commands,
-    cmd_set_shared_params,
+    cmd_set_verify_placement,
     cmd_show_step,
     cmd_skip,
     cmd_status,
@@ -223,8 +226,10 @@ __all__ = [
     "is_done",
     "markpass_step",
     "normalize_row",
+    "read_step_value",
     "reset_after",
     "reset_from_step",
+    "step_flag_values",
     # CSV I/O
     "BASE_DIR",
     "CSV_PATH",
@@ -279,10 +284,8 @@ __all__ = [
     "cmd_set_assignee",
     "cmd_set_assignee_by_connector",
     "cmd_set_auth",
-    "cmd_set_auth_flag",
-    "cmd_set_params_for_test",
     "cmd_set_params_to_commands",
-    "cmd_set_shared_params",
+    "cmd_set_verify_placement",
     "cmd_show_step",
     "cmd_skip",
     "cmd_status",

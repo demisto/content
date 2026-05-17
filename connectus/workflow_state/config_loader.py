@@ -456,6 +456,54 @@ def _build_one_step(index: int, item: dict) -> tuple[Optional[Step], list[str]]:
         )
         cross_check_name = None
 
+    # ---- Per-step flag_values + default (kind: flag only) -----------
+    raw_flag_values = item.get("flag_values", None)
+    flag_values_clean: Optional[tuple[str, ...]] = None
+    if raw_flag_values is not None:
+        if kind != "flag":
+            errors.append(
+                f"{label}.flag_values is only valid for kind=flag; "
+                f"got kind={kind!r}"
+            )
+        elif not isinstance(raw_flag_values, list) or not raw_flag_values:
+            errors.append(
+                f"{label}.flag_values must be a non-empty list of strings"
+            )
+        else:
+            bad = [v for v in raw_flag_values if not isinstance(v, str) or not v]
+            if bad:
+                errors.append(
+                    f"{label}.flag_values entries must be non-empty strings; "
+                    f"got {raw_flag_values!r}"
+                )
+            elif len(set(raw_flag_values)) != len(raw_flag_values):
+                errors.append(
+                    f"{label}.flag_values must contain unique values; "
+                    f"got {raw_flag_values!r}"
+                )
+            else:
+                flag_values_clean = tuple(raw_flag_values)
+
+    raw_default = item.get("default", None)
+    default_clean: Optional[str] = None
+    if raw_default is not None:
+        if kind != "flag":
+            errors.append(
+                f"{label}.default is only valid for kind=flag; "
+                f"got kind={kind!r}"
+            )
+        elif not isinstance(raw_default, str) or not raw_default:
+            errors.append(
+                f"{label}.default must be a non-empty string; got {raw_default!r}"
+            )
+        elif flag_values_clean is not None and raw_default not in flag_values_clean:
+            errors.append(
+                f"{label}.default {raw_default!r} is not in flag_values "
+                f"{list(flag_values_clean)}"
+            )
+        else:
+            default_clean = raw_default
+
     if errors and (kind not in _VALID_STEP_KINDS or not name):
         return None, errors
 
@@ -471,6 +519,8 @@ def _build_one_step(index: int, item: dict) -> tuple[Optional[Step], list[str]]:
             json_schema=json_schema_name,
             cross_check=cross_check_name,
             preserve_on_reset=preserve_on_reset,
+            flag_values=flag_values_clean,
+            default=default_clean,
         ),
         errors,
     )

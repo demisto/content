@@ -102,8 +102,8 @@ class TestLoadDefault:
     def test_default_yaml_loads(self) -> None:
         cfg = load_config()
         assert isinstance(cfg, WorkflowConfig)
-        # The bundled YAML has 16 steps and 3 identity columns.
-        assert len(cfg.steps) == 16
+        # The bundled YAML has 14 steps and 3 identity columns.
+        assert len(cfg.steps) == 14
         assert len(cfg.identity_columns) == 3
         # Markers match the expected sentinels.
         assert cfg.markers.check == "✅"
@@ -115,14 +115,16 @@ class TestLoadDefault:
         assert first.name == "assignee"
         assert first.cascade_on_set is False
 
-    def test_default_yaml_has_one_flag_auto_na_interaction(self) -> None:
+    def test_default_yaml_has_no_step_interactions(self) -> None:
+        # The 2026-05 schema simplification removed the
+        # ``requires auth parity test`` flag and its ``flag_auto_na_target``
+        # interaction. The bundled YAML now ships with an empty
+        # ``step_interactions`` list. The loader is still capable of parsing
+        # ``flag_auto_na_target`` interactions; that capability is
+        # exercised by :class:`TestMinimalFixture` below using a synthetic
+        # fixture.
         cfg = load_config()
-        flag_inters = [i for i in cfg.step_interactions if i.kind == "flag_auto_na_target"]
-        assert len(flag_inters) == 1
-        inter = flag_inters[0]
-        assert inter.when_step == "requires auth parity test"
-        assert inter.target_step == "auth parity test passes"
-        assert inter.write_value == "N/A"
+        assert len(cfg.step_interactions) == 0
 
     def test_get_config_singleton_caches(self) -> None:
         a = get_config()

@@ -8,7 +8,7 @@
 schema_version: 1
 
 # Identity / metadata columns — present in the CSV but NOT part of the
-# 16-step workflow. Never cleared by cascade reset. Order matters: this
+# 14-step workflow. Never cleared by cascade reset. Order matters: this
 # is the leftmost prefix of the CSV header.
 identity_columns:
   - {"name": "Integration ID", "description": "Unique human-readable id; primary key for find_row()."}
@@ -31,22 +31,20 @@ markers:
   checkpoint_done_values:
     - "✅"
     - "N/A"
-  # Valid values for any step whose kind is `flag`.
+  # Default valid values for any step whose kind is `flag` and which does
+  # NOT declare its own ``flag_values``. Per-step ``flag_values`` always
+  # win over this default (see e.g. "verify button placement").
   flag_values:
     - "YES"
     - "NO"
     - "N/A"
 
 # Cross-step interactions that don't fit the linear cascade model.
-# Today there is exactly one: the auth-parity flag (#12) auto-fills the
-# auth-parity test (#13) when set to NO/N/A. Modelled here so the engine
-# can find the rule by name instead of string-comparing column titles.
-step_interactions:
-  - kind: flag_auto_na_target
-    when_step: "requires auth parity test"
-    when_value_in: ["NO", "N/A"]
-    target_step: "auth parity test passes"
-    write_value: "N/A"
+# Currently empty: the historical ``requires auth parity test`` flag and
+# its ``flag_auto_na_target`` interaction were removed in 2026-05 (see
+# §11 decisions log). All checkpoints, including ``auth parity test
+# passes``, are now unconditional.
+step_interactions: []
 
 # The unified ordered sequence. Order in this list IS the step index
 # (1-based). The engine asserts len(steps) >= 1 and unique names.
@@ -74,21 +72,13 @@ steps:
     preserve_on_reset: true
     description: "Map each integration command to the parameter IDs it consumes (JSON). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
 
-  - name: "Params for test with default in code"
-    kind: data
+  - name: "verify button placement"
+    kind: flag
     optional: false
-    setter: set-params-for-test
-    json_schema: {"validator": "any_json"}
-    preserve_on_reset: true
-    description: "List the param IDs whose defaults live in the integration source (JSON). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
-
-  - name: "Params same in other handlers"
-    kind: data
-    optional: true
-    setter: set-shared-params
-    json_schema: {"validator": "any_json"}
-    preserve_on_reset: true
-    description: "Optional: list params shared verbatim with sibling handlers (or `skip`). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
+    setter: set-verify-placement
+    flag_values: ["connection", "configuration", "none"]
+    default: "connection"
+    description: "Verify the location of the test/verify button in the UI: 'connection' (per-connection), 'configuration' (per-integration), or 'none'. Defaults to 'connection' on read when unset; details to be filled in later."
 
   - name: "generated manifest"
     kind: checkpoint
@@ -126,17 +116,11 @@ steps:
     setter: null
     description: "Run pre-commit, validate, and unit tests via demisto-sdk pre-commit."
 
-  - name: "requires auth parity test"
-    kind: flag
-    optional: false
-    setter: set-auth-flag
-    description: "Decide whether the integration needs an auth-parity test (YES/NO/N/A)."
-
   - name: "auth parity test passes"
     kind: checkpoint
     optional: false
     setter: null
-    description: "Run the auth-parity test (auto-N/A when step 12 is NO/N/A)."
+    description: "Run the auth-parity test (mandatory; mark explicitly with markpass)."
 
   - name: "param parity test passes"
     kind: checkpoint

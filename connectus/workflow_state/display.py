@@ -9,6 +9,7 @@ from workflow_state.state_machine import (
     current_step,
     has_workflow_progress,
     is_done,
+    read_step_value,
 )
 from workflow_state.types import Step
 
@@ -20,6 +21,8 @@ def _summary_value(step: Step, raw: str) -> str:
     if not val:
         if step.kind == "checkpoint":
             return "⬜"
+        if step.kind == "flag" and step.default is not None:
+            return f"{step.default} (default)"
         return "(not set)"
     if step.kind == "data" and step.name in cfg.json_valued_columns:
         if len(val) > 60:
@@ -133,6 +136,14 @@ def format_step_value(row: dict[str, str], step_name: str) -> str:
     )
 
     if not value:
+        # Apply read-side default for flag steps that declare one.
+        step_obj = cfg.step_by_name.get(step_name)
+        if (
+            step_obj is not None
+            and step_obj.kind == "flag"
+            and step_obj.default is not None
+        ):
+            return f"{header}\n  {step_obj.default} (default; cell empty)"
         return f"{header}\n  (not set)"
 
     if step_name in cfg.json_valued_columns:
@@ -181,14 +192,18 @@ def _example_value_for(step: Step) -> str:
         if step.name == "Auth Details":
             return ("'{\"auth_types\":[],\"config\":\"NoneRequired\","
                     "\"other_connection\":[]}'")
-        if step.name == "Params for test with default in code":
-            return "'[]'"
-        if step.name == "Params same in other handlers":
-            return "'[]'"
         return "'{}'"
     if step.name == "assignee":
         return '"<your name>"'
     if step.kind == "flag":
+        # Prefer the per-step default; fall back to the first declared
+        # value; final fallback is the historical YES.
+        if step.default is not None:
+            return step.default
+        from workflow_state.state_machine import step_flag_values
+        values = step_flag_values(step)
+        if values:
+            return values[0]
         return "YES"
     return ""
 
