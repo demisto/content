@@ -850,7 +850,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.redundant_error_raising = redundant_error_raising
         # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich
         self.indicator_mapping = {
-            indicator_instance.extracted_value: indicator_instance
+            indicator_instance.extracted_value.lower(): indicator_instance
             for indicator_instance in indicator_instances
             if indicator_instance.extracted_value
         }
@@ -1066,7 +1066,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for i, ioc in enumerate(iocs):
             demisto.debug(f"Processing #{i+1} TIM result")
             parsed_indicators, indicator_score, value, message = self._process_single_tim_ioc(ioc)
-            indicator_instance = self.indicator_mapping[value]
+            indicator_instance = self.indicator_mapping[value.lower()]
             indicator_instance.tim_context = parsed_indicators
             indicator_instance.indicator_score = indicator_score
             demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
