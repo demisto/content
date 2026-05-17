@@ -3,7 +3,7 @@ import itertools
 import threading
 import time
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, as_completed
 from typing import Any
 
 import urllib3
@@ -24,6 +24,10 @@ TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed 
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
 JSONDECODE_MAX_RETRIES = 3  # Per Armis recommendation for transient nginx malformed JSON
+# Bound how long the main thread waits for the background enrichment to finish. If exceeded,
+# we ship alerts without enrichment instead of blowing the 5-min Docker timeout (graceful
+# degrade, same philosophy as the per-batch fallback inside _bulk_fetch_entities_by_id).
+ENRICHMENT_WAIT_TIMEOUT_SECONDS = 180
 
 
 class EVENT_TYPE:
@@ -79,11 +83,15 @@ API_TIMEOUT = BaseClient.REQUESTS_TIMEOUT * 3
 
 
 class IntegrationContextManager:
-    """Thread-safe manager for integration context operations.
+    """Thread-safe manager for integration context + last_run operations.
 
-    This class provides thread-safe access to the integration context (last_run)
-    with proper locking mechanisms to prevent race conditions when multiple threads
-    are accessing or updating the context simultaneously.
+    Provides serialized access to two distinct backing stores:
+      * ``demisto.getIntegrationContext()`` — holds the shared access token and its
+        ``token_generated_at`` timestamp (read/written by token-management methods).
+      * ``demisto.getLastRun()`` — holds per-event-type fetch state (read/written by
+        ``update_event_type_state`` and ``get_last_run``).
+
+    All methods are safe to call from worker threads.
     """
 
     def __init__(self):
@@ -91,10 +99,11 @@ class IntegrationContextManager:
 
         Two distinct locks are used to separate concerns and optimize performance:
 
-        Lock #1 (_lock): General-purpose RLock for protecting integration context operations
+        Lock #1 (_lock): General-purpose RLock for protecting both backing stores
         - Type: threading.RLock() - Reentrant lock (same thread can acquire multiple times)
-        - Purpose: Protects all read/write operations to integration context and last_run
-        - Used by: get_access_token(), save_access_token_to_context(), update_event_type_state(), get_last_run()
+        - Purpose: Protects read/write of integration context (access token + timestamp) AND last_run
+        - Used by: get_access_token(), save_access_token_to_context() (integration context);
+                   update_event_type_state(), get_last_run() (last_run)
         - Why RLock: Methods can call each other while holding the lock without deadlocking
 
         Lock #2 (_token_refresh_lock): Specialized lock for coordinating token refresh
@@ -144,7 +153,7 @@ class IntegrationContextManager:
         with self._lock:
             integration_context = demisto.getIntegrationContext()
             integration_context["access_token"] = new_token
-            integration_context["token_generated_at"] = datetime.utcnow().isoformat()
+            integration_context["token_generated_at"] = datetime.now(timezone.utc).isoformat()
             demisto.setIntegrationContext(integration_context)
             demisto.debug(f"Access token saved to integration context by thread {threading.current_thread().name}")
 
@@ -188,10 +197,13 @@ class Client(BaseClient):
         base_url,
         api_key,
         access_token,
+        context_manager: IntegrationContextManager,
         verify=False,
         proxy=False,
-        context_manager: IntegrationContextManager | None = None,
     ):
+        # context_manager is REQUIRED — main() always builds one, and refresh_access_token,
+        # auth-retry, and IntegrationContextManager-based locking all depend on it. Tests that
+        # used to pass it positionally still work because we moved it before the kw-args.
         self._api_key = api_key
         self._context_manager = context_manager
         self._access_token = None  # Initialize to prevent AttributeError in refresh_access_token
@@ -234,35 +246,39 @@ class Client(BaseClient):
         except Exception as ex:
             safe_debug(f"Could not parse token_generated_at '{token_generated_at_str}': {_safe_error_str(ex)} - forcing refresh")
             return False
-        age_seconds = (datetime.utcnow() - token_generated_at).total_seconds()
+        # Normalize: tokens written by current code are tz-aware UTC; tokens written by older
+        # versions of this integration (or by a manual edit) may be naive. Treat naive as UTC.
+        if token_generated_at.tzinfo is None:
+            token_generated_at = token_generated_at.replace(tzinfo=timezone.utc)
+        age_seconds = (datetime.now(timezone.utc) - token_generated_at).total_seconds()
         is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
         safe_debug(
             f"Token age: {age_seconds:.0f}s, fresh: {is_fresh} (threshold: {TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS}s)"
         )
         return is_fresh
 
-    def apply_access_token(self, access_token=None):
-        """Apply access token to client instance (updates headers and internal state).
+    def apply_access_token(self, access_token: str) -> None:
+        """Apply an already-acquired access token to client instance (updates headers + internal state).
 
-        This method updates the client's in-memory state with the provided token.
-        It does NOT persist the token to integration context.
+        This method only updates the client's in-memory state with the provided token; it
+        does NOT acquire a new token and does NOT persist anything to integration context.
+        Callers must therefore pass a non-empty token that they obtained via
+        ``refresh_access_token`` / ``IntegrationContextManager.get_access_token`` (those paths
+        own the timestamp persistence).
 
-        Thread-safety: This method assigns to ``self._headers`` and ``self._access_token``
-        without an explicit lock. It is safe because all callers invoke it from coordinated
-        paths that have already serialized token-refresh decisions:
+        Thread-safety: assigns to ``self._headers`` and ``self._access_token`` without an
+        explicit lock. Safe because all callers invoke it from coordinated paths that have
+        already serialized token-refresh decisions:
           - ``__init__``: runs before any worker thread is spawned.
-          - ``perform_fetch`` (auth-error retry): the fresh token has just been obtained
-            either from ``IntegrationContextManager`` (which uses its own lock) or via
-            ``refresh_access_token`` (which holds ``_token_refresh_lock`` end-to-end).
+          - ``_handle_auth_error_and_retry``: the fresh token has just been obtained either
+            from ``IntegrationContextManager`` (its own lock) or via ``refresh_access_token``
+            (which holds ``_token_refresh_lock`` end-to-end).
         Worst-case interleaving therefore reassigns the same fresh token, which is benign.
 
         Args:
-            access_token (str, optional): The access token to use. If None, generates a new one.
+            access_token (str): The access token to apply. Must be non-empty.
         """
-        if not access_token:
-            access_token = self.get_access_token()
-        headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-        self._headers = headers
+        self._headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
         self._access_token = access_token
 
     def refresh_access_token(self) -> str:
@@ -274,22 +290,13 @@ class Client(BaseClient):
         Returns:
             str: The refreshed access token.
         """
-        if not self._context_manager:
-            # No context manager - single-threaded mode, just refresh and save timestamp
-            new_token = self.get_access_token()
-            integration_context = demisto.getIntegrationContext()
-            integration_context["access_token"] = new_token
-            integration_context["token_generated_at"] = datetime.utcnow().isoformat()
-            demisto.setIntegrationContext(integration_context)
-            demisto.debug("Single-threaded: access token and token_generated_at saved to integration context")
-            return new_token
-
         # Use token refresh lock to ensure only one thread refreshes at a time
         with self._context_manager.acquire_token_refresh_lock():
             # Double-check: another thread might have refreshed while we were waiting.
             # Use timestamp-based freshness (_is_token_still_fresh) instead of a live API ping
-            # (is_valid_access_token) — the live ping can return success for a token that is
-            # within seconds of expiring, which then 401s a few seconds later mid-fetch.
+            # (is_valid_access_token used in older revisions) — the live ping can return success
+            # for a token that is within seconds of expiring, which then 401s a few seconds
+            # later mid-fetch.
             current_token = self._context_manager.get_access_token()
             if current_token and current_token != self._access_token and self._is_token_still_fresh():
                 # Token was updated by another thread and is still fresh per our timestamp
@@ -307,11 +314,26 @@ class Client(BaseClient):
                 safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {_safe_error_str(e)}")
                 raise
 
-            # Save to context so other threads can see it
-            if self._context_manager:
-                self._context_manager.save_access_token_to_context(new_token)
-
+            # Save to context so other threads can see it (also writes token_generated_at)
+            self._context_manager.save_access_token_to_context(new_token)
             return new_token
+
+    def _do_search_request(self, params: dict) -> dict:
+        """Single chokepoint for the GET /search/ call.
+
+        Every call site (initial fetch, auth-retry, JSON-decode-retry) goes through here
+        so the retry policy (``retries=1``, ``status_list_to_retry={500, 502}``) is applied
+        uniformly. Adding upstream/proxy 5xx codes here will propagate everywhere.
+        """
+        return self._http_request(
+            url_suffix="/search/",
+            method="GET",
+            params=params,
+            headers=self._headers,
+            timeout=API_TIMEOUT,
+            retries=1,
+            status_list_to_retry={500, 502},
+        )
 
     def perform_fetch(self, params):
         """Perform API fetch with coordinated token refresh on expiration.
@@ -326,15 +348,7 @@ class Client(BaseClient):
             Exception: If the request fails for reasons other than token expiration.
         """
         try:
-            return self._http_request(
-                url_suffix="/search/",
-                method="GET",
-                params=params,
-                headers=self._headers,
-                timeout=API_TIMEOUT,
-                retries=1,
-                status_list_to_retry={500, 502},
-            )
+            return self._do_search_request(params)
         except Exception as e:
             error_str = _safe_error_str(e)
 
@@ -371,11 +385,9 @@ class Client(BaseClient):
             if fresh_token and fresh_token != self._access_token:
                 safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
                 self.apply_access_token(fresh_token)
-                # Retry with the fresh token
+                # Retry with the fresh token (uses the same retry policy as the initial call)
                 try:
-                    return self._http_request(
-                        url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                    )
+                    return self._do_search_request(params)
                 except Exception as retry_e:
                     retry_error_str = _safe_error_str(retry_e)
                     # Check if retry with context token failed for a non-auth reason
@@ -395,8 +407,8 @@ class Client(BaseClient):
             safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {_safe_error_str(refresh_e)}")
             raise
 
-        # Retry the request with new token
-        return self._http_request(url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT)
+        # Retry the request with new token (uses the same retry policy as the initial call)
+        return self._do_search_request(params)
 
     def _handle_json_decode_error_and_retry(self, params: dict, original_exc: Exception) -> dict:
         """Handle a JSONDecodeError: retry up to JSONDECODE_MAX_RETRIES times with exponential backoff.
@@ -416,9 +428,7 @@ class Client(BaseClient):
             # the same reason — Armis explicitly recommends a small backoff between retries.
             time.sleep(backoff)  # pylint: disable=E9003
             try:
-                raw_response = self._http_request(
-                    url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                )
+                raw_response = self._do_search_request(params)
                 safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES} succeeded")
                 return raw_response
             except Exception as retry_e:
@@ -755,19 +765,15 @@ def fetch_by_event_type(
     )
     new_events: list[dict] = []
     demisto.debug(f"fetched {len(response)} {event_type.type} from API")
-    demisto.debug(f"[checkpoint 1] starting dedup for {event_type.type}")
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
         )
-        demisto.debug(f"[checkpoint 2] dedup complete for {event_type.type}: {len(new_events)} new events")
         events.setdefault(event_type.dataset_name, []).extend(new_events)
         demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
         last_event_str = str(new_events[-1])[:500] if new_events else "{}"
         demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
-        demisto.debug(f"[checkpoint 3] logged last event for {event_type.type}")
 
-    demisto.debug(f"[checkpoint 4] updating next_run for {event_type.type}")
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
         #  can empty the list.
@@ -776,7 +782,6 @@ def fetch_by_event_type(
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
     demisto.debug(f"updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}")
-    demisto.debug(f"[checkpoint 5] fetch_by_event_type complete for {event_type.type}")
 
 
 def _collect_unique_enrichment_ids(alerts: list[dict]) -> tuple[set[str], set[str]]:
@@ -938,26 +943,38 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
     )
 
 
-def _wait_for_enrichment(future, executor) -> None:
-    """Block until the background enrichment task completes and tear down its executor.
+def _wait_for_enrichment(future, executor, timeout_seconds: int = ENRICHMENT_WAIT_TIMEOUT_SECONDS) -> None:
+    """Block until the background enrichment task completes (bounded) and tear down its executor.
 
-    Safe to call with `(None, None)` if no enrichment was scheduled (e.g., no Alerts in cycle).
-    Logs but does not re-raise enrichment errors — alerts ship without enrichment in the worst
-    case, which is preferable to losing the whole cycle.
+    Safe to call with ``(None, None)`` if no enrichment was scheduled (e.g., no Alerts in cycle).
+
+    Failure modes (all graceful-degrade — alerts ship without enrichment instead of losing the cycle):
+      * The enrichment raises -> logged, suppressed.
+      * The enrichment exceeds ``timeout_seconds`` -> logged, the executor is shut down without
+        waiting, and the enrichment thread is left to either finish naturally and be GC'd or be
+        torn down with the integration container. This is the same philosophy as the per-batch
+        fallback inside ``_bulk_fetch_entities_by_id``: we'd rather ship partial data than blow
+        the 5-minute Docker timeout that would lose ALL events in the cycle.
     """
     tname = threading.current_thread().name
     if future is None:
         return
     wait_start = datetime.now()
     try:
-        future.result()
+        future.result(timeout=timeout_seconds)
         demisto.debug(
             f"[{tname}] bulk_enrich: background enrichment joined after {(datetime.now() - wait_start).total_seconds():.2f}s"
+        )
+    except FuturesTimeoutError:
+        demisto.error(
+            f"[{tname}] bulk_enrich: background enrichment did NOT finish within {timeout_seconds}s — "
+            f"shipping alerts without (full) enrichment to avoid the 5-min Docker timeout"
         )
     except Exception as ex:
         demisto.error(f"[{tname}] bulk_enrich: background enrichment FAILED: {ex!r}")
     finally:
         if executor is not None:
+            # wait=False: do NOT block on outstanding enrichment threads in the timeout case.
             executor.shutdown(wait=False)
 
 
@@ -995,11 +1012,9 @@ def fetch_event_type_worker(
     try:
         fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
 
-        safe_debug(f"[{thread_id}] [checkpoint 6] fetch_by_event_type returned, updating context state")
         # Update context for this event type atomically
         context_manager.update_event_type_state(next_run)
 
-        safe_debug(f"[{thread_id}] [checkpoint 7] context state updated")
         event_count = len(events.get(event_type.dataset_name, []))
         safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
 

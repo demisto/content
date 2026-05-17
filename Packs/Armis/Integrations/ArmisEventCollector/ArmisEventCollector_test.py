@@ -30,7 +30,17 @@ def dummy_client(mocker):
     A dummy client fixture for testing.
     """
     mocker.patch.object(Client, "_is_token_still_fresh", return_value=True)
-    return Client(base_url="test_base_url", api_key="test_api_key", access_token="test_access_token", verify=False, proxy=False)
+    # context_manager is required by Client.__init__ (no fallback path remains in production).
+    # Tests that exercise context-aware behaviour build their own client with a real
+    # IntegrationContextManager; this fixture wires a minimal one to satisfy the signature.
+    return Client(
+        base_url="test_base_url",
+        api_key="test_api_key",
+        access_token="test_access_token",
+        context_manager=IntegrationContextManager(),
+        verify=False,
+        proxy=False,
+    )
 
 
 class TestClientFunctions:
