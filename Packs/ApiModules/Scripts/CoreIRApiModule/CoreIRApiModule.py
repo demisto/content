@@ -1220,7 +1220,7 @@ class CoreClient(BaseClient):
         return self._http_request(
             method="GET",
             url_suffix=re.findall("download.*", link)[0],
-            resp_type="response",
+            resp_type="content"
         )
 
     def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
@@ -3851,7 +3851,7 @@ def get_script_execution_result_files_command(client: CoreClient, args: Dict) ->
     except Exception as e:
         demisto.debug(f"Failed extracting filename from response headers - [{e!s}]")
         filename = action_id + ".zip"
-    return fileResult(filename, file_response.content)
+    return fileResult(filename, file_response)
 
 
 def add_exclusion_command(client: CoreClient, args: Dict) -> CommandResults:
