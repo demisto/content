@@ -6086,10 +6086,24 @@ def run_polling_command(
         command_status = "Completed" if action_status == "Succeeded" else None
 
     if action_status in ["Failed", "Cancelled"] or command_status == "Failed":
-        error_msg = f"Command {action_status}."
-        if command_result.outputs.get("commands", []):
-            error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
-        raise Exception(error_msg)
+        machine_action_id = args.get("machine_action_id", "unknown")
+        error_msg = f"Live Response action '{machine_action_id}' {action_status}."
+        commands = command_result.outputs.get("commands", [])
+        if commands:
+            command_errors = commands[0].get("errors")
+            if command_errors:
+                error_msg += f" Errors: {command_errors}"
+            else:
+                error_msg += (
+                    " No error details were returned by the API."
+                    " Please verify the machine is online and the file path is correct."
+                )
+        else:
+            error_msg += (
+                " No error details were returned by the API."
+                " Please verify the machine is online and the file path is correct."
+            )
+        raise DemistoException(error_msg)
 
     elif command_status != "Completed" or action_status in ("InProgress", "Pending"):
         demisto.debug("action status is not completed, will poll again")
