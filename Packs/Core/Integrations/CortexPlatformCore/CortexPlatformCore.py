@@ -3570,10 +3570,8 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                             f"Field '{field_name}' contains invalid value(s): {invalid_values}."
                             f" Allowed values are: {select_values}"
                         )
-                    else:
-                        valid_fields[field_name] = field_value
-                else:
-                    valid_fields[field_name] = field_value
+                        continue
+                valid_fields[field_name] = field_value
             elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type shortText and does not accept a list value."
