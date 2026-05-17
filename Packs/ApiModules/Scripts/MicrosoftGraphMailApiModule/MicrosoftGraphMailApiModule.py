@@ -1074,8 +1074,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """Updates an existing messageRule in the user's Inbox folder via PATCH.
 
         Args:
-            user_id: ID or UPN of the mailbox owner. Required.
-            rule_id: The ID of the rule to update. Required.
+            user_id: ID or UPN of the mailbox owner.
+            rule_id: The ID of the rule to update.
             body: Partial messageRule JSON containing only the fields to change.
 
         Returns:
