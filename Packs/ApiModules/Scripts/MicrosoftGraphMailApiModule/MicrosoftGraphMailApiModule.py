@@ -1057,7 +1057,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         url = f"{f'/users/{user_id}' if user_id else '/me'}/mailFolders/inbox/messageRules{f'/{rule_id}' if rule_id else ''}"
         return self.http_request(action.upper(), url, return_empty_response=return_empty_response, params=params)
 
-    def create_message_rule(self, user_id: str, body: dict) -> dict:
+    def create_message_rule(self, user_id, body) -> dict:
         """Creates a new messageRule in the user's Inbox folder.
 
         Args:
@@ -1070,7 +1070,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         suffix = f"/users/{user_id}/mailFolders/inbox/messageRules"
         return self.http_request("POST", suffix, json_data=body)
 
-    def update_message_rule(self, user_id: str, rule_id: str, body: dict) -> dict:
+    def update_message_rule(self, user_id, rule_id, body) -> dict:
         """Updates an existing messageRule in the user's Inbox folder via PATCH.
 
         Args:
@@ -1084,7 +1084,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         suffix = f"/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}"
         return self.http_request("PATCH", suffix, json_data=body)
 
-    def get_mailbox_settings(self, user_id: str) -> dict:
+    def get_mailbox_settings(self, user_id) -> dict:
         """Retrieves the user's mailboxSettings via Microsoft Graph.
 
         Args:
@@ -1096,7 +1096,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         suffix = f"/users/{user_id}/mailboxSettings"
         return self.http_request("GET", suffix)
 
-    def get_mail_tips(self, email_address: str) -> dict:
+    def get_mail_tips(self, email_address) -> dict:
         """Retrieves Mail Tips for the given email address via Microsoft Graph.
 
         The same email_address is used both as the path mailbox (asker) and as the single
