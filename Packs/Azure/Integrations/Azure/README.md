@@ -2751,7 +2751,7 @@ Updates a disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Co
 | Azure.Compute.Disks.name | String | Name of the disk. |
 | Azure.Compute.Disks.type | String | Type of the resource. |
 | Azure.Compute.Disks.location | String | Location of the disk. |
-| Azure.Compute.Disks.tags | unknown | Resource tags. |
+| Azure.Compute.Disks.tags | Unknown | Resource tags. |
 | Azure.Compute.Disks.managedBy | String | ARM ID of the resource that manages the disk. |
 | Azure.Compute.Disks.sku | unknown | The disk SKU name. |
 | Azure.Compute.Disks.zones | unknown | A list of availability zones. |

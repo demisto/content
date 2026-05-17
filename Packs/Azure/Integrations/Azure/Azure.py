@@ -3448,7 +3448,7 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3490,7 +3490,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3652,7 +3652,7 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
     )
 
     command = demisto.command()
-    outputs_prefix = "Azure.WebApp" if "azure-webapp" in command else "Azure.AppService.WebApp"
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.AppService.WebApp")
     return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field="id",

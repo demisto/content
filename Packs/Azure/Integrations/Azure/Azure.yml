@@ -2154,6 +2154,7 @@ script:
       type: String
     - contextPath: Azure.Compute.Disks.tags
       description: Resource tags.
+      type: Unknown
     - contextPath: Azure.Compute.Disks.managedBy
       description: ARM ID of the resource that manages the disk.
       type: String
@@ -8108,6 +8109,7 @@ script:
       type: String
     - contextPath: Azure.Compute.Disks.tags
       description: Resource tags.
+      type: Unknown
     - contextPath: Azure.Compute.Disks.managedBy
       description: ARM ID of the resource that manages the disk.
       type: String
