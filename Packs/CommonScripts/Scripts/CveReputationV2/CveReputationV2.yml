@@ -20,7 +20,7 @@ dependson:
   must:
   - cve
 timeout: 2.4µs
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.12.13.8428455
 runonce: false
 fromversion: 6.5.0
 tests:
