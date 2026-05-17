@@ -1152,7 +1152,7 @@ script:
     description: Deletes a specific email rule by ID from a user's mailbox using the Microsoft Graph API.
     name: msgraph-mail-delete-rule
   - arguments:
-    - description: 'The ID of the user that own the mailbox.'
+    - description: 'The ID or User Principal Name (UPN) of the user that owns the mailbox.'
       name: user_id
       required: true
     - description: The display name of the rule.
@@ -1214,7 +1214,7 @@ script:
       description: Exception conditions for the rule.
       type: Unknown
   - arguments:
-    - description: 'The ID of the user that owns the mailbox.'
+    - description: 'The ID or User Principal Name (UPN) of the user that owns the mailbox.'
       name: user_id
       required: true
     - description: The ID of the rule to update.
@@ -1352,10 +1352,10 @@ script:
       description: The time zone name to which the working hours apply.
       type: String
   - arguments:
-    - description: The email address (User Principal Name / UPN) of the mailbox to retrieve Mail Tips for. The same value is used both as the executing mailbox and as the single recipient being queried (a self-lookup).
+    - description: The email address (User Principal Name / UPN) of the mailbox to retrieve Mail Tips for.
       name: email_address
       required: true
-    description: Retrieves Mail Tips for the specified email address, including out-of-office status, mailbox-full status, max message size, delivery restrictions, recipient scope, custom mail tip, and group membership counts. Performs a self-lookup using the same email_address for both the executing mailbox and the queried recipient. All available Mail Tips types are requested.
+    description: Retrieves Mail Tips for the specified email address, including out-of-office status, mailbox-full status, max message size, delivery restrictions, recipient scope, custom mail tip, and group membership counts.
     name: msgraph-mail-get-mailtips
     outputs:
     - contextPath: MSGraphMail.MailTips.emailAddress.name
