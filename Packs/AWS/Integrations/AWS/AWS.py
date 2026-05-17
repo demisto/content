@@ -8802,7 +8802,7 @@ class SSM:
 
         if not execution_id:
             # First execution — start the automation
-            targets = parse_target_field(args.get("targets")) or None
+            targets = parse_target_field(args.get("targets"))
 
             # Build AlarmConfiguration from flat args — only when alarm_names are provided
             alarm_names = argToList(args.get("alarm_names"))
@@ -8856,8 +8856,6 @@ class SSM:
             return PollResult(
                 partial_result=CommandResults(
                     readable_output=f"Automation execution {execution_id} started successfully.",
-                    outputs={"AutomationExecutionId": execution_id},
-                    outputs_prefix="AWS.SSM.AutomationExecution",
                 ),
                 response=None,
                 continue_to_poll=True,
@@ -8878,7 +8876,7 @@ class SSM:
                 readable_output = f"Automation execution {execution_id} status: {status}. {TERMINAL_COMMAND_STATUSES[status]}"
             return PollResult(
                 response=CommandResults(
-                    outputs_prefix="AWS.SSM.AutomationExecution",
+                    outputs_prefix="AWS.SSM.AutomationExecutions",
                     outputs_key_field="AutomationExecutionId",
                     outputs=automation,
                     readable_output=readable_output,
@@ -8900,7 +8898,7 @@ class SSM:
         """
         Cancels an SSM automation execution and polls until the cancellation is confirmed.
         Args:
-            args (dict): Command arguments including automation_execution_id, optional type (Cancel or CompleteExecution),
+            args (dict): Command arguments including automation_execution_id, optional type (Cancel or Complete),
                 and first_run (hidden, used for polling state).
             client: The AWS SSM boto3 client used to perform the request.
 
@@ -8919,7 +8917,7 @@ class SSM:
             if status in TERMINAL_COMMAND_STATUSES:
                 return PollResult(
                     response=CommandResults(
-                        outputs_prefix="AWS.SSM.AutomationExecution",
+                        outputs_prefix="AWS.SSM.AutomationExecutions",
                         outputs_key_field="AutomationExecutionId",
                         outputs=automation,
                         readable_output=f"Automation execution {automation_execution_id} status: {status}. "
