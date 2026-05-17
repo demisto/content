@@ -1,38 +1,30 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Splunk Finding",
         "Splunk Investigation"
     ],
     "caseInsensitive": true,
-    "cliName": "splunkstatus",
+    "cliName": "splunkinvestigationid",
     "closeForm": false,
     "content": true,
-    "description": "The status from Splunk.",
+    "description": "The investigation ID from Splunk Mission Control (e.g. ES-00015).",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_splunkstatus",
+    "id": "incident_splunkinvestigationid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Splunk Status",
+    "name": "Splunk Investigation ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
     ],
     "required": false,
-    "selectValues": [
-        "New",
-        "In Progress",
-        "Pending",
-        "Resolved",
-        "Closed"
-    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "singleSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
