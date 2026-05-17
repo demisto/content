@@ -122,13 +122,21 @@ Worked example with `other_connection`:
 ```
 
 Schema validation is enforced by
-[`workflow_state.py validate_auth_detail()`](workflow_state.py:520) and runs
-automatically on every `set-auth` invocation.
+[`auth_config_parser.validate_auth_details()`](auth_config_parser/validator.py:47)
+(the workflow CLI calls a one-line wrapper at
+[`workflow_state.validators.validate_auth_detail()`](workflow_state/validators.py:25))
+and runs automatically on every `set-auth` invocation.
 
 Setter:
-[`workflow_state.py set-auth "<Integration ID>" '<json>'`](workflow_state.py:833).
+[`workflow_state.py set-auth "<Integration ID>" '<json>'`](workflow_state/cli.py:225)
+([`cmd_set_auth`](workflow_state/cli.py:225)).
 Setting this value resets the workflow back to the first checkpoint
-(`generated manifest`).
+(`generated manifest`). The reset wipes every later workflow column
+including the three Params\* data columns — `set-auth` deliberately
+ignores the `preserve_on_reset` carve-out that `reset-to`/`fail`
+honour, because auth-classification changes invalidate every
+downstream artifact (in particular, the per-command param contract
+validated by `params_to_commands_no_auth_overlap`).
 
 ---
 
@@ -165,24 +173,46 @@ Example (post-ignore-list — only behavioral params remain):
 Notes:
 
 - `commands` is a flat object: command name → array of parameter IDs.
-- Per-command lists are **sorted alphabetically (case-sensitive)** when
-  produced by the analyzer; downstream consumers should treat them as
-  sorted sets.
+- Per-command lists are produced sorted (case-sensitive ascending) **by
+  convention** — the analyzer emits them sorted, but
+  [`validate_params_to_commands`](workflow_state/validators.py:49) does
+  not enforce sort order on per-command lists. Downstream consumers
+  should treat them as sets and re-sort if they care.
 - An empty list (`[]`) is the valid value for a command with no
   behavioral params.
 - Parameter IDs match those in the integration's YML `configuration` section.
 - Free-form: no enforced ordering or required keys beyond `integration` and
   `commands`.
+- Per-command lists: the analyzer produces sorted lists by convention
+  (case-sensitive ascending); the validator at
+  [`validate_params_to_commands`](workflow_state/validators.py:49) does
+  not enforce sort order on per-command lists, so downstream consumers
+  should treat them as sets and re-sort if they care.
+- **Extra top-level keys are HARD-REJECTED.** The validator at
+  [`validate_params_to_commands`](workflow_state/validators.py:49)
+  rejects any payload containing top-level keys other than `integration`
+  and `commands`. The error for `diagnostics` specifically includes a
+  strip-it one-liner
+  (`import sys, json; o = json.load(sys.stdin); o.pop('diagnostics', None); print(json.dumps(o))`)
+  because that is the most common offender — the analyzer emits
+  `diagnostics` as internal AI metadata that must NEVER be persisted.
 - **Disjointness with `Auth Details`:** `set-params-to-commands` HARD
   REJECTS any payload whose per-command lists include a YML param id
   that is already declared in the integration's `Auth Details` cell —
   either as a projected `auth_types[].xsoar_params` entry (dotted forms
   collapse to the segment before the first `.`) or as an
   `other_connection` entry. Inspect the live exclusion set with
-  [`workflow_state.py auth-params <Integration ID>`](workflow_state.py:1)
+  [`workflow_state.py auth-params <Integration ID>`](workflow_state/cli.py:1)
   and see [`connectus/Readme.md`](Readme.md:1) for the full CLI
   reference. The analyzer can also pull this set automatically when
   invoked with `--integration-id <id>` (see below).
+- **Reset semantics.** `Params to Commands` is **preserved** on `fail`
+  and `reset-to` because the column carries `preserve_on_reset: true`
+  in [`workflow_state_config.yml`](workflow_state_config.yml:74). It is
+  **wiped** by `set-auth` and by plain `reset` — those two operations
+  deliberately ignore the carve-out because auth changes invalidate
+  every downstream artifact and `reset` is the "wipe the row" verb with
+  no carve-outs.
 
 ### Production source
 
@@ -200,7 +230,7 @@ python3 connectus/check_command_params.py <integration_dir> \
 
 Pass `--integration-id <id>` to make the analyzer additionally pull the
 integration's auth-derived ignore set from
-[`workflow_state.py auth-params <id>`](workflow_state.py:1) and union it
+[`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and union it
 into its own ignore set. This guarantees the per-command output is
 disjoint from the integration's `Auth Details` cell from the start.
 
@@ -230,7 +260,8 @@ The analyzer's stdout is:
 > §5 for the full rule.
 
 Setter:
-[`workflow_state.py set-params-to-commands "<Integration ID>" '<json>'`](workflow_state.py:682).
+[`workflow_state.py set-params-to-commands "<Integration ID>" '<json>'`](workflow_state/cli.py:229)
+([`cmd_set_params_to_commands`](workflow_state/cli.py:229)).
 Must be valid JSON. Required before `generated manifest` can be marked passed.
 
 ---
@@ -262,8 +293,18 @@ Notes:
 - Must be valid JSON.
 
 Setter:
-[`workflow_state.py set-params-for-test "<Integration ID>" '<json>'`](workflow_state.py:687).
+[`workflow_state.py set-params-for-test "<Integration ID>" '<json>'`](workflow_state/cli.py:254)
+([`cmd_set_params_for_test`](workflow_state/cli.py:254)).
 Required before `generated manifest` can be marked passed.
+
+> **Reset semantics.** `Params for test with default in code` is
+> **preserved** on `fail` and `reset-to` because the column carries
+> `preserve_on_reset: true` in
+> [`workflow_state_config.yml`](workflow_state_config.yml:82). It is
+> **wiped** by `set-auth` and by plain `reset` — those two operations
+> deliberately ignore the carve-out because auth changes invalidate
+> every downstream artifact and `reset` is the "wipe the row" verb with
+> no carve-outs.
 
 ---
 
@@ -276,3 +317,12 @@ Required before `generated manifest` can be marked passed.
 }
 Must be valid JSON when set. Not a prerequisite for any checkpoint.
 ```
+
+> **Reset semantics.** `Params same in other handlers` is **preserved**
+> on `fail` and `reset-to` because the column carries
+> `preserve_on_reset: true` in
+> [`workflow_state_config.yml`](workflow_state_config.yml:90). It is
+> **wiped** by `set-auth` and by plain `reset` — those two operations
+> deliberately ignore the carve-out because auth changes invalidate
+> every downstream artifact and `reset` is the "wipe the row" verb with
+> no carve-outs.

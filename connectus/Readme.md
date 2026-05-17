@@ -1,4 +1,7 @@
 Note, this folder should not be merged to master.
+
+> **Architecture note.** [`connectus/workflow_state.py`](workflow_state.py:1) is now a thin backward-compatible shim that re-exports the real package at [`connectus/workflow_state/`](workflow_state/__init__.py:1). The CLI entrypoint, validators, state machine, CSV I/O, display helpers, and config loader live there. Behavior is identical; the file split is purely for maintainability. The canonical Python import is `from workflow_state import …`.
+
 ## Authentication Type Catalog
 
 Each integration's authentication is classified into an **Auth Class** string
@@ -85,7 +88,7 @@ python3 connectus/check_command_params.py <integration_dir> \
 `--integration-id` is **optional but strongly recommended inside the
 migration workflow**. When set, the analyzer additionally pulls the
 auth-derived ignore set from
-[`workflow_state.py auth-params <id>`](workflow_state.py:1) and unions it
+[`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions it
 into its own ignore set, guaranteeing that any param already declared in
 `Auth Details` (auth secrets + `other_connection`) cannot leak into the
 per-command output. Standalone runs outside the migration workflow can
@@ -127,7 +130,10 @@ analyzer and processes its output.
 
 The [`workflow_state.py`](workflow_state.py) script manages the **16 workflow columns** (columns 5–20) of [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). It models the workflow as a **single linear 16-step sequence**, strictly gated. The current step is always the first step that is not yet done.
 
-State is **purely derived from row contents** — there is no separate "current step" pointer. Re-issuing any `set-*`, `markpass`, or `skip` for a step at-or-behind the current step writes the new value AND clears every step that follows it ("cascade reset"). The ONLY exception is `set-assignee`, which is administrative and never resets later steps.
+State is **purely derived from row contents** — there is no separate "current step" pointer. Re-issuing any `set-*`, `markpass`, or `skip` for a step at-or-behind the current step writes the new value AND clears every step that follows it ("cascade reset"). Two carve-outs apply:
+
+- **`set-assignee`** never cascades (governed by the YAML flag `cascade_on_set: false`).
+- **`reset-to` and `fail`** preserve any step tagged `preserve_on_reset: true` in [`workflow_state_config.yml`](workflow_state_config.yml). Today the three Params\* data columns (#3 `Params to Commands`, #4 `Params for test with default in code`, #5 `Params same in other handlers`) carry that flag — see Rule 8 below.
 
 ### The 16-Step Sequence
 
@@ -155,12 +161,14 @@ State is **purely derived from row contents** — there is no separate "current 
 1. **Single linear sequence.** The current step is the first step not yet done.
 2. **Strict ordering.** Any `set-*`/`markpass`/`skip` targeting a step **ahead** of the current step is rejected with a message naming the missing prerequisite.
 3. **Cascade reset.** Re-issuing any `set-*`/`markpass`/`skip` at-or-behind current writes the new value AND clears every step after it.
-4. **`set-assignee` carve-out.** `set-assignee` is the ONLY exception — it updates step #1 in place without cascading. Re-assigning an integration mid-flight does NOT wipe progress.
+4. **`set-assignee` carve-out.** `set-assignee` (step #1) updates in place without cascading. Re-assigning an integration mid-flight does NOT wipe progress. Configured via `cascade_on_set: false` in [`workflow_state_config.yml`](workflow_state_config.yml).
 5. **Optional step #5.** `Params same in other handlers` may be `skip`-ped; that writes the sentinel `"N/A"` and unblocks step #6. Setting it to a real JSON value later cascade-resets steps #6+.
 6. **Flag step #12 → step #13 auto-N/A.** Setting `requires auth parity test` to `NO` or `N/A` automatically writes `"N/A"` into `auth parity test passes`. Setting it to `YES` leaves #13 empty so the user must `markpass` it.
 7. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
-8. **`fail` and `reset-to`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behavior; `reset-to` is the explicit name, `fail` reads as "this step failed, redo it".
-9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved.
+8. **`fail` and `reset-to` honour `preserve_on_reset`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behaviour. **EXCEPTION:** any step tagged `preserve_on_reset: true` in [`workflow_state_config.yml`](workflow_state_config.yml) keeps its value across these operations — its name is reported in the CLI output (`Preserved (preserve_on_reset=true): [...]`) and in the api response (`result["preserved"]`). Today the three Params\* data columns (#3, #4, #5) are preserved so a failed checkpoint does not wipe per-command param research.
+   - **Explicit-target carve-out:** if the user names a preserved step **directly** as the `reset-to`/`fail` target, that one step IS cleared (the user's intent wins), but later preserved steps in the same operation are still preserved.
+   - **`set-auth` is NOT covered by `preserve_on_reset`.** Auth changes invalidate every downstream artifact — `set-auth` continues to wipe steps #3-#16 (Params\* included) by design. See `apply_step_action` in [`connectus/workflow_state/state_machine.py`](workflow_state/state_machine.py).
+9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved. **`preserve_on_reset` is intentionally ignored** — `reset` is the "wipe the row" verb with no carve-outs.
 
 ### CLI Commands
 
@@ -287,7 +295,7 @@ python3 connectus/workflow_state.py auth-params "Cisco Spark" --format=json
 The script exposes functions that can be imported and called directly:
 
 ```python
-from connectus.workflow_state import (
+from workflow_state import (
     get_integration_status,
     next_step_for,
     markpass_integration_step,
