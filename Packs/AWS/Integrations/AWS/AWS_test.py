@@ -15133,7 +15133,7 @@ def test_add_tags_to_resource_command_success(mocker):
     """
     Given: A mocked SSM client and valid resource_type, resource_id, and tags args.
     When: add_tags_to_resource_command is called.
-    Then: It should call add_tags_to_resource and return a success readable_output.
+    Then: It should call add_tags_to_resource with all expected kwargs and return a success readable_output.
     """
     from AWS import SSM
 
@@ -15149,6 +15149,7 @@ def test_add_tags_to_resource_command_success(mocker):
     call_kwargs = mock_client.add_tags_to_resource.call_args[1]
     assert call_kwargs["ResourceType"] == "ManagedInstance"
     assert call_kwargs["ResourceId"] == "mi-123"
+    assert call_kwargs["Tags"] == [{"Key": "Env", "Value": "Prod"}]
 
 
 def test_add_tags_to_resource_command_error_response(mocker):
@@ -15489,7 +15490,7 @@ def test_associations_list_command_no_results(mocker):
 
 def test_associations_list_command_with_filter(mocker):
     """
-    Given: A mocked SSM client and association_id filter arg.
+    Given: A mocked SSM client and a filters arg in key=<key>,value=<value> format.
     When: associations_list_command is called.
     Then: It should pass the correct AssociationFilterList with lowercase key/value to list_associations.
     """
@@ -15502,13 +15503,13 @@ def test_associations_list_command_with_filter(mocker):
     }
     mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
 
-    args = {"account_id": "123456789012", "region": "us-east-1", "association_id": "assoc-1"}
+    args = {"account_id": "123456789012", "region": "us-east-1", "filters": "key=AssociationId,value=assoc-1"}
 
     SSM.associations_list_command(mock_client, args)
 
     call_kwargs = mock_client.list_associations.call_args[1]
     filter_list = call_kwargs.get("AssociationFilterList", [])
-    assert any(f["key"] == "AssociationId" and f["value"] == "assoc-1" for f in filter_list)
+    assert any(f["Key"] == "AssociationId" and f["Value"] == "assoc-1" for f in filter_list)
 
 
 def test_associations_list_command_no_filter_args_omits_filter_list(mocker):
@@ -15778,10 +15779,10 @@ def test_documents_list_command_with_filters(mocker):
     assert "self" in call_kwargs["Filters"][0]["Values"]
 
 
-def test_document_get_command_success(mocker):
+def test_document_describe_command_success(mocker):
     """
     Given: A mocked SSM client returning a document description.
-    When: document_get_command is called.
+    When: document_describe_command is called.
     Then: It should return CommandResults with the document and correct outputs_prefix.
     """
     from AWS import SSM
@@ -15801,7 +15802,7 @@ def test_document_get_command_success(mocker):
 
     args = {"account_id": "123456789012", "region": "us-east-1", "document_name": "AWS-RunShellScript"}
 
-    result = SSM.document_get_command(mock_client, args)
+    result = SSM.document_describe_command(mock_client, args)
 
     assert result.outputs_prefix == "AWS.SSM.Documents"
     assert result.outputs_key_field == "Name"
@@ -15809,10 +15810,10 @@ def test_document_get_command_success(mocker):
     mock_client.describe_document.assert_called_once_with(Name="AWS-RunShellScript")
 
 
-def test_document_get_command_no_document(mocker):
+def test_document_describe_command_no_document(mocker):
     """
     Given: A mocked SSM client returning an empty Document dict.
-    When: document_get_command is called.
+    When: document_describe_command is called.
     Then: It should return a readable_output indicating no document found.
     """
     from AWS import SSM
@@ -15826,15 +15827,15 @@ def test_document_get_command_no_document(mocker):
 
     args = {"account_id": "123456789012", "region": "us-east-1", "document_name": "NonExistent"}
 
-    result = SSM.document_get_command(mock_client, args)
+    result = SSM.document_describe_command(mock_client, args)
 
     assert "No document found with name 'NonExistent'" in result.readable_output
 
 
-def test_document_get_command_with_optional_args(mocker):
+def test_document_describe_command_with_optional_args(mocker):
     """
     Given: A mocked SSM client and optional document_version and version_name args.
-    When: document_get_command is called.
+    When: document_describe_command is called.
     Then: It should pass DocumentVersion and VersionName to describe_document.
     """
     from AWS import SSM
@@ -15854,7 +15855,7 @@ def test_document_get_command_with_optional_args(mocker):
         "version_name": "v2-release",
     }
 
-    SSM.document_get_command(mock_client, args)
+    SSM.document_describe_command(mock_client, args)
 
     call_kwargs = mock_client.describe_document.call_args[1]
     assert call_kwargs["DocumentVersion"] == "2"
@@ -16044,7 +16045,7 @@ def test_automation_execution_run_command_polling_terminal_success(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.scheduled_command is None
-    assert result.outputs_prefix == "AWS.SSM.AutomationExecution"
+    assert result.outputs_prefix == "AWS.SSM.AutomationExecutions"
     assert "exec-abc" in result.readable_output
 
 
@@ -16338,3 +16339,173 @@ def test_command_cancel_command_with_instance_ids(mocker):
     call_kwargs = mock_client.cancel_command.call_args[1]
     assert "i-111" in call_kwargs["InstanceIds"]
     assert "i-222" in call_kwargs["InstanceIds"]
+
+
+def test_associations_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=5, and next_token args.
+    When: associations_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_associations, and
+          AssociationsNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Associations": [{"AssociationId": "assoc-1", "Name": "doc"}],
+        "NextToken": "next-assoc-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "5", "next_token": "prev-tok"}
+
+    result = SSM.associations_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_associations.call_args[1]
+    assert call_kwargs["MaxResults"] == 5
+    assert call_kwargs["NextToken"] == "prev-tok"
+    assert result.outputs["AWS.SSM(true)"]["AssociationsNextToken"] == "next-assoc-tok"
+
+
+def test_association_versions_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=3, and next_token args.
+    When: association_versions_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_association_versions, and
+          AssociationVersionNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_association_versions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationVersions": [{"AssociationId": "assoc-1", "AssociationVersion": "1"}],
+        "NextToken": "next-ver-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "association_id": "assoc-1",
+        "limit": "3",
+        "next_token": "prev-ver-tok",
+    }
+
+    result = SSM.association_versions_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_association_versions.call_args[1]
+    assert call_kwargs["MaxResults"] == 3
+    assert call_kwargs["NextToken"] == "prev-ver-tok"
+    assert result.outputs["AWS.SSM.Associations(true)"]["AssociationVersionNextToken"] == "next-ver-tok"
+
+
+def test_documents_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=10, and next_token args.
+    When: documents_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_documents, and
+          DocumentsNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_documents.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "DocumentIdentifiers": [{"Name": "MyDoc", "Owner": "self", "DocumentType": "Command"}],
+        "NextToken": "next-doc-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "10", "next_token": "prev-doc-tok"}
+
+    result = SSM.documents_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_documents.call_args[1]
+    assert call_kwargs["MaxResults"] == 10
+    assert call_kwargs["NextToken"] == "prev-doc-tok"
+    assert result.outputs["AWS.SSM(true)"]["DocumentsNextToken"] == "next-doc-tok"
+
+
+def test_automation_execution_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=7, and next_token args.
+    When: automation_execution_list_command is called.
+    Then: MaxResults and NextToken are forwarded to describe_automation_executions, and
+          AutomationExecutionsNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_automation_executions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AutomationExecutionMetadataList": [
+            {"AutomationExecutionId": "exec-1", "DocumentName": "doc", "AutomationExecutionStatus": "Success"}
+        ],
+        "NextToken": "next-exec-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "7", "next_token": "prev-exec-tok"}
+
+    result = SSM.automation_execution_list_command(mock_client, args)
+
+    call_kwargs = mock_client.describe_automation_executions.call_args[1]
+    assert call_kwargs["MaxResults"] == 7
+    assert call_kwargs["NextToken"] == "prev-exec-tok"
+    assert result.outputs["AWS.SSM(true)"]["AutomationExecutionsNextToken"] == "next-exec-tok"
+
+
+def test_command_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=20, and next_token args.
+    When: command_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_commands, and
+          CommandNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Commands": [{"CommandId": "cmd-1", "DocumentName": "doc", "Status": "Success"}],
+        "NextToken": "next-cmd-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "20", "next_token": "prev-cmd-tok"}
+
+    result = SSM.command_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_commands.call_args[1]
+    assert call_kwargs["MaxResults"] == 20
+    assert call_kwargs["NextToken"] == "prev-cmd-tok"
+    assert result.outputs["AWS.SSM(true)"]["CommandNextToken"] == "next-cmd-tok"
+
+
+def test_inventory_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=15, and next_token args.
+    When: inventory_list_command is called.
+    Then: MaxResults and NextToken are forwarded to get_inventory, and
+          InventoryNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_inventory.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entities": [{"Id": "i-abc123", "Data": {}}],
+        "NextToken": "next-inv-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "15", "next_token": "prev-inv-tok"}
+
+    result = SSM.inventory_list_command(mock_client, args)
+
+    call_kwargs = mock_client.get_inventory.call_args[1]
+    assert call_kwargs["MaxResults"] == 15
+    assert call_kwargs["NextToken"] == "prev-inv-tok"
+    assert result.outputs["AWS.SSM(true)"]["InventoryNextToken"] == "next-inv-tok"

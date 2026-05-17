@@ -15508,7 +15508,7 @@ script:
         required: false
         defaultValue: '50'
       - name: next_token
-        description: The token for the next set of items to return. Use AWS.SSM.AssociationVersionNextToken.
+        description: The token for the next set of items to return. Use AWS.SSM.Associations.AssociationVersionNextToken.
         required: false
     outputs:
       - contextPath: AWS.SSM.Associations.AssociationId
@@ -15789,31 +15789,8 @@ script:
           - sa-east-1
           - us-gov-east-1
           - us-gov-west-1
-      - name: name
-        description: The SSM document name to filter associations by.
-        required: false
-      - name: association_id
-        description: The association ID to filter associations by.
-        required: false
-      - name: association_status_name
-        description: The status name to filter associations by.
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - Pending
-          - Success
-          - Failed
-      - name: last_executed_before
-        description: Filter associations that were last executed before this date (ISO 8601 format, e.g. 2024-01-01T00:00:00Z).
-        required: false
-      - name: last_executed_after
-        description: Filter associations that were last executed after this date (ISO 8601 format, e.g. 2024-01-01T00:00:00Z).
-        required: false
-      - name: association_name
-        description: Filter associations by association name.
-        required: false
-      - name: resource_group_name
-        description: Filter associations by resource group name.
+      - name: filters
+        description: "One or more filters separated by ';' in the format key=<key>,value=<value>. Valid filter keys: AssociationId, AssociationStatusName, AssociationName, InstanceId, LastExecutedBefore, LastExecutedAfter, Name, ResourceGroupName. For example: key=AssociationStatusName,value=Success."
         required: false
       - name: limit
         description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.
@@ -16179,7 +16156,7 @@ script:
       - name: limit
         description: The maximum number of documents to return. Minimum 1, maximum 50. Default is 50.
       - name: next_token
-        description: The token for the next set of items to return. Received from a previous call.
+        description: The token for the next set of items to return. Received from a previous call. Use AWS.SSM.DocumentsNextToken.
     outputs:
       - contextPath: AWS.SSM.Documents.Name
         description: The name of the SSM document.
@@ -16242,7 +16219,7 @@ script:
         description: The token to use when requesting the next set of items. Empty string if no additional items exist.
         type: String
 
-  - name: aws-ssm-document-get
+  - name: aws-ssm-document-describe
     description: "Describes the specified SSM document. Required IAM Permission: ssm:DescribeDocument."
     arguments:
       - name: account_id
@@ -16339,6 +16316,78 @@ script:
       - contextPath: AWS.SSM.Documents.Requires.VersionName
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
+      - contextPath: AWS.SSM.Documents.Owner
+        description: The AWS user that created the document.
+        type: String
+      - contextPath: AWS.SSM.Documents.Author
+        description: The user in your organization who created the document.
+        type: String
+      - contextPath: AWS.SSM.Documents.Description
+        description: A description of the document.
+        type: String
+      - contextPath: AWS.SSM.Documents.Hash
+        description: The Sha256 or Sha1 hash created by the system when the document was created.
+        type: String
+      - contextPath: AWS.SSM.Documents.HashType
+        description: The hash type of the document. Valid values include Sha256 or Sha1.
+        type: String
+      - contextPath: AWS.SSM.Documents.SchemaVersion
+        description: The schema version.
+        type: String
+      - contextPath: AWS.SSM.Documents.DefaultVersion
+        description: The default version.
+        type: String
+      - contextPath: AWS.SSM.Documents.LatestVersion
+        description: The latest version of the document.
+        type: String
+      - contextPath: AWS.SSM.Documents.ApprovedVersion
+        description: The version of the document currently approved for use in the organization.
+        type: String
+      - contextPath: AWS.SSM.Documents.PendingReviewVersion
+        description: The version of the document that is currently under review.
+        type: String
+      - contextPath: AWS.SSM.Documents.PlatformTypes
+        description: A list of OS platforms compatible with this SSM document.
+        type: Unknown
+      - contextPath: AWS.SSM.Documents.TargetType
+        description: The target type which defines the kinds of resources the document can run on.
+        type: String
+      - contextPath: AWS.SSM.Documents.Tags.Key
+        description: The key of the tag.
+        type: String
+      - contextPath: AWS.SSM.Documents.Tags.Value
+        description: The value of the tag.
+        type: String
+      - contextPath: AWS.SSM.Documents.AttachmentsInformation.Name
+        description: The name of the attachment.
+        type: String
+      - contextPath: AWS.SSM.Documents.Parameters.Name
+        description: The name of the parameter.
+        type: String
+      - contextPath: AWS.SSM.Documents.Parameters.Type
+        description: The type of parameter. Valid values include String or StringList.
+        type: String
+      - contextPath: AWS.SSM.Documents.Parameters.Description
+        description: A description of what the parameter does, how to use it, the default value, and whether or not the parameter is optional.
+        type: String
+      - contextPath: AWS.SSM.Documents.Parameters.DefaultValue
+        description: If specified, the default values for the parameters.
+        type: String
+      - contextPath: AWS.SSM.Documents.ReviewInformation.ReviewedTime
+        description: The time that the reviewer took action on the document review request.
+        type: Date
+      - contextPath: AWS.SSM.Documents.ReviewInformation.Reviewer
+        description: The reviewer of the document.
+        type: String
+      - contextPath: AWS.SSM.Documents.ReviewInformation.Status
+        description: The current status of the document review request.
+        type: String
+      - contextPath: AWS.SSM.Documents.Category
+        description: The classification of a document to help you identify and categorize its use.
+        type: Unknown
+      - contextPath: AWS.SSM.Documents.CategoryEnum
+        description: The value that identifies a document's category.
+        type: Unknown
 
   - name: aws-ssm-automation-executions-list
     description: "Provides details about all active and terminated Automation executions. Required IAM Permission: ssm:DescribeAutomationExecutions."
@@ -16393,106 +16442,106 @@ script:
         required: false
         defaultValue: '50'
       - name: next_token
-        description: The token for the next set of items to return. Use AWS.SSM.AutomationExecutionNextToken.
+        description: The token for the next set of items to return. Use AWS.SSM.AutomationExecutionsNextToken.
         required: false
     outputs:
-      - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionId
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationExecutionId
         description: The execution ID.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.DocumentName
+      - contextPath: AWS.SSM.AutomationExecutions.DocumentName
         description: The name of the Automation runbook used during execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.DocumentVersion
+      - contextPath: AWS.SSM.AutomationExecutions.DocumentVersion
         description: The document version used during the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionStatus
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationExecutionStatus
         description: The status of the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ExecutionStartTime
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutionStartTime
         description: The time the execution started.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.ExecutionEndTime
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutionEndTime
         description: The time the execution finished.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.ExecutedBy
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutedBy
         description: The IAM role ARN of the user who ran the Automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.LogFile
+      - contextPath: AWS.SSM.AutomationExecutions.LogFile
         description: An S3 bucket where execution information is stored.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Outputs
+      - contextPath: AWS.SSM.AutomationExecutions.Outputs
         description: The list of execution outputs as defined in the Automation runbook.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.Mode
+      - contextPath: AWS.SSM.AutomationExecutions.Mode
         description: The Automation execution mode.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ParentAutomationExecutionId
+      - contextPath: AWS.SSM.AutomationExecutions.ParentAutomationExecutionId
         description: The execution ID of the parent automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.CurrentStepName
+      - contextPath: AWS.SSM.AutomationExecutions.CurrentStepName
         description: The name of the step that is currently running.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.CurrentAction
+      - contextPath: AWS.SSM.AutomationExecutions.CurrentAction
         description: The action of the step that is currently running.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.FailureMessage
+      - contextPath: AWS.SSM.AutomationExecutions.FailureMessage
         description: The list of execution outputs as defined in the Automation runbook.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.TargetParameterName
+      - contextPath: AWS.SSM.AutomationExecutions.TargetParameterName
         description: The parameter name used as the target resource for the rate-controlled execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Targets.Key
+      - contextPath: AWS.SSM.AutomationExecutions.Targets.Key
         description: The user-defined criteria for sending commands that target managed nodes.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Targets.Values
+      - contextPath: AWS.SSM.AutomationExecutions.Targets.Values
         description: The user-defined values that map to the key.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ResolvedTargets
+      - contextPath: AWS.SSM.AutomationExecutions.ResolvedTargets
         description: A list of resolved targets in the rate control execution, containing ParameterValues and Truncated fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.MaxConcurrency
+      - contextPath: AWS.SSM.AutomationExecutions.MaxConcurrency
         description: The MaxConcurrency value specified by the user when starting the automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.MaxErrors
+      - contextPath: AWS.SSM.AutomationExecutions.MaxErrors
         description: The MaxErrors value specified by the user when starting the automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Target
+      - contextPath: AWS.SSM.AutomationExecutions.Target
         description: The list of execution outputs as defined in the Automation runbook.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.TargetLocationsURL
+      - contextPath: AWS.SSM.AutomationExecutions.TargetLocationsURL
         description: A publicly accessible URL for a file that contains the TargetLocations body.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.TargetMaps
+      - contextPath: AWS.SSM.AutomationExecutions.TargetMaps
         description: A key-value mapping of document parameters to target resources.
         type: List
-      - contextPath: AWS.SSM.AutomationExecution.AutomationType
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationType
         description: Use this filter with DescribeAutomationExecutions. Specify either Local or CrossAccount.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.AlarmConfiguration
+      - contextPath: AWS.SSM.AutomationExecutions.AlarmConfiguration
         description: The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.TriggeredAlarms
+      - contextPath: AWS.SSM.AutomationExecutions.TriggeredAlarms
         description: The CloudWatch alarm that was invoked by the automation, containing Name and State fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.AutomationSubtype
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationSubtype
         description: The subtype of the Automation operation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ScheduledTime
+      - contextPath: AWS.SSM.AutomationExecutions.ScheduledTime
         description: The date and time the Automation operation is scheduled to start.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.Runbooks
+      - contextPath: AWS.SSM.AutomationExecutions.Runbooks
         description: Information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.OpsItemId
+      - contextPath: AWS.SSM.AutomationExecutions.OpsItemId
         description: The ID of an OpsItem that is created to represent a Change Manager change request.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.AssociationId
+      - contextPath: AWS.SSM.AutomationExecutions.AssociationId
         description: The ID of a State Manager association used in the Automation operation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ChangeRequestName
+      - contextPath: AWS.SSM.AutomationExecutions.ChangeRequestName
         description: The name of the Change Manager change request.
         type: String
-      - contextPath: AWS.SSM.AutomationExecutionNextToken
+      - contextPath: AWS.SSM.AutomationExecutionsNextToken
         description: The token to use when requesting the next set of items.
         type: String
 
@@ -16613,106 +16662,106 @@ script:
         description: Hide the polling message and only print the final status at the end.
         hidden: true
     outputs:
-      - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionId
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationExecutionId
         description: The execution ID.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.DocumentName
+      - contextPath: AWS.SSM.AutomationExecutions.DocumentName
         description: The name of the Automation runbook used during execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.DocumentVersion
+      - contextPath: AWS.SSM.AutomationExecutions.DocumentVersion
         description: The document version used during the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ExecutionStartTime
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutionStartTime
         description: The time the execution started.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.ExecutionEndTime
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutionEndTime
         description: The time the execution finished.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionStatus
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationExecutionStatus
         description: The status of the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.StepExecutions
+      - contextPath: AWS.SSM.AutomationExecutions.StepExecutions
         description: A list of details about the current state of all steps that comprise an execution, containing StepName, Action, StepStatus, Inputs, Outputs, StepExecutionId, and other fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.StepExecutionsTruncated
+      - contextPath: AWS.SSM.AutomationExecutions.StepExecutionsTruncated
         description: Whether the response contains the full list of the Automation step executions.
         type: Boolean
-      - contextPath: AWS.SSM.AutomationExecution.Parameters
+      - contextPath: AWS.SSM.AutomationExecutions.Parameters
         description: The key-value map of execution parameters supplied when calling StartAutomationExecution.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.Outputs
+      - contextPath: AWS.SSM.AutomationExecutions.Outputs
         description: The list of execution outputs as defined in the Automation runbook.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.FailureMessage
+      - contextPath: AWS.SSM.AutomationExecutions.FailureMessage
         description: A message describing why an execution has failed, if the status is set to Failed.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Mode
+      - contextPath: AWS.SSM.AutomationExecutions.Mode
         description: The Automation execution mode.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ParentAutomationExecutionId
+      - contextPath: AWS.SSM.AutomationExecutions.ParentAutomationExecutionId
         description: The execution ID of the parent automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ExecutedBy
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutedBy
         description: The IAM role ARN of the user who ran the Automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.CurrentStepName
+      - contextPath: AWS.SSM.AutomationExecutions.CurrentStepName
         description: The name of the step that is currently running.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.CurrentAction
+      - contextPath: AWS.SSM.AutomationExecutions.CurrentAction
         description: The action of the step that is currently running.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.TargetParameterName
+      - contextPath: AWS.SSM.AutomationExecutions.TargetParameterName
         description: The parameter name used as the target resource for the rate-controlled execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Targets.Key
+      - contextPath: AWS.SSM.AutomationExecutions.Targets.Key
         description: The user-defined criteria for sending commands that target managed nodes.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Targets.Values
+      - contextPath: AWS.SSM.AutomationExecutions.Targets.Values
         description: The user-defined values that map to the key.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ResolvedTargets
+      - contextPath: AWS.SSM.AutomationExecutions.ResolvedTargets
         description: A list of resolved targets in the rate control execution, containing ParameterValues and Truncated fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.MaxConcurrency
+      - contextPath: AWS.SSM.AutomationExecutions.MaxConcurrency
         description: The MaxConcurrency value specified by the user when starting the automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.MaxErrors
+      - contextPath: AWS.SSM.AutomationExecutions.MaxErrors
         description: The MaxErrors value specified by the user when starting the automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Target
+      - contextPath: AWS.SSM.AutomationExecutions.Target
         description: The target of the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.TargetLocations
+      - contextPath: AWS.SSM.AutomationExecutions.TargetLocations
         description: The combination of AWS regions and/or AWS accounts where you want to run the Automation, containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, and ExecutionRoleName fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.ProgressCounters
+      - contextPath: AWS.SSM.AutomationExecutions.ProgressCounters
         description: An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.TargetLocationsURL
+      - contextPath: AWS.SSM.AutomationExecutions.TargetLocationsURL
         description: Specify a publicly accessible URL for a file that contains the TargetLocations body. Currently, only files in presigned Amazon S3 buckets are supported.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.AlarmConfiguration
+      - contextPath: AWS.SSM.AutomationExecutions.AlarmConfiguration
         description: The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.TriggeredAlarms
+      - contextPath: AWS.SSM.AutomationExecutions.TriggeredAlarms
         description: The CloudWatch alarm that was invoked by the automation, containing Name and State fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.AutomationSubtype
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationSubtype
         description: The subtype of the Automation operation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ScheduledTime
+      - contextPath: AWS.SSM.AutomationExecutions.ScheduledTime
         description: The date and time the Automation operation is scheduled to start.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Runbooks
+      - contextPath: AWS.SSM.AutomationExecutions.Runbooks
         description: The information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.OpsItemId
+      - contextPath: AWS.SSM.AutomationExecutions.OpsItemId
         description: The ID of an OpsItem that is created to represent a Change Manager change request.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.AssociationId
+      - contextPath: AWS.SSM.AutomationExecutions.AssociationId
         description: The ID of a State Manager association used in the Automation operation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ChangeRequestName
+      - contextPath: AWS.SSM.AutomationExecutions.ChangeRequestName
         description: The name of the Change Manager change request.
         type: String
 
@@ -16766,7 +16815,7 @@ script:
         description: The execution ID of the Automation to stop.
         required: true
       - name: type
-        description: The stop request type. Valid values are Cancel and CompleteExecution. The default value is Cancel.
+        description: The stop request type. Valid values are Cancel and Complete. The default value is Cancel.
         required: false
         auto: PREDEFINED
         predefined:
@@ -16789,76 +16838,76 @@ script:
         description: Hide the polling message and only print the final status at the end.
         hidden: true
     outputs:
-      - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionId
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationExecutionId
         description: The execution ID.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.DocumentName
+      - contextPath: AWS.SSM.AutomationExecutions.DocumentName
         description: The name of the Automation runbook used during execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.DocumentVersion
+      - contextPath: AWS.SSM.AutomationExecutions.DocumentVersion
         description: The document version used during the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ExecutionStartTime
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutionStartTime
         description: The time the execution started.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.ExecutionEndTime
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutionEndTime
         description: The time the execution finished.
         type: Date
-      - contextPath: AWS.SSM.AutomationExecution.AutomationExecutionStatus
+      - contextPath: AWS.SSM.AutomationExecutions.AutomationExecutionStatus
         description: The status of the execution after cancellation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.StepExecutions
+      - contextPath: AWS.SSM.AutomationExecutions.StepExecutions
         description: A list of details about the current state of all steps that comprise an execution, containing StepName, Action, StepStatus, Inputs, Outputs, StepExecutionId, and other fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.StepExecutionsTruncated
+      - contextPath: AWS.SSM.AutomationExecutions.StepExecutionsTruncated
         description: Whether the response contains the full list of the Automation step executions.
         type: Boolean
-      - contextPath: AWS.SSM.AutomationExecution.Parameters
+      - contextPath: AWS.SSM.AutomationExecutions.Parameters
         description: The key-value map of execution parameters supplied when calling StartAutomationExecution.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.Outputs
+      - contextPath: AWS.SSM.AutomationExecutions.Outputs
         description: The list of execution outputs as defined in the Automation runbook.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.FailureMessage
+      - contextPath: AWS.SSM.AutomationExecutions.FailureMessage
         description: A message describing why an execution has failed, if the status is set to Failed.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Mode
+      - contextPath: AWS.SSM.AutomationExecutions.Mode
         description: The Automation execution mode.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ExecutedBy
+      - contextPath: AWS.SSM.AutomationExecutions.ExecutedBy
         description: The IAM role ARN of the user who ran the Automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.CurrentStepName
+      - contextPath: AWS.SSM.AutomationExecutions.CurrentStepName
         description: The name of the step that is currently running.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.CurrentAction
+      - contextPath: AWS.SSM.AutomationExecutions.CurrentAction
         description: The action of the step that is currently running.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.TargetParameterName
+      - contextPath: AWS.SSM.AutomationExecutions.TargetParameterName
         description: The parameter name used as the target resource for the rate-controlled execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Targets.Key
+      - contextPath: AWS.SSM.AutomationExecutions.Targets.Key
         description: The user-defined criteria for sending commands that target managed nodes.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Targets.Values
+      - contextPath: AWS.SSM.AutomationExecutions.Targets.Values
         description: The user-defined values that map to the key.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.MaxConcurrency
+      - contextPath: AWS.SSM.AutomationExecutions.MaxConcurrency
         description: The MaxConcurrency value specified by the user when starting the automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.MaxErrors
+      - contextPath: AWS.SSM.AutomationExecutions.MaxErrors
         description: The MaxErrors value specified by the user when starting the automation.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.Target
+      - contextPath: AWS.SSM.AutomationExecutions.Target
         description: The target of the execution.
         type: String
-      - contextPath: AWS.SSM.AutomationExecution.ProgressCounters
+      - contextPath: AWS.SSM.AutomationExecutions.ProgressCounters
         description: An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.AlarmConfiguration
+      - contextPath: AWS.SSM.AutomationExecutions.AlarmConfiguration
         description: The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields.
         type: Unknown
-      - contextPath: AWS.SSM.AutomationExecution.TriggeredAlarms
+      - contextPath: AWS.SSM.AutomationExecutions.TriggeredAlarms
         description: The CloudWatch alarm that was invoked by the automation, containing Name and State fields.
         type: Unknown
 

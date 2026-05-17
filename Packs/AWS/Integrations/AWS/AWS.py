@@ -8424,27 +8424,18 @@ class SSM:
 
         Args:
             client (BotoClient): The boto3 client for SSM service.
-            args (Dict[str, Any]): Command arguments including optional name, association_id,
-                association_status_name, last_executed_before, last_executed_after,
-                association_name, resource_group_name, limit, and next_token.
+            args (Dict[str, Any]): Command arguments including optional filters
+                (semicolon-separated list in the format key=<key>,value=<value>),
+                limit, and next_token.
 
         Returns:
             CommandResults: Results containing the list of SSM associations with their
                 status, schedule, and target information.
         """
 
-        raw_filter_list = [
-            {"key": "Name", "value": args.get("name")},
-            {"key": "AssociationId", "value": args.get("association_id")},
-            {"key": "AssociationStatusName", "value": args.get("association_status_name")},
-            {"key": "LastExecutedBefore", "value": args.get("last_executed_before")},
-            {"key": "LastExecutedAfter", "value": args.get("last_executed_after")},
-            {"key": "AssociationName", "value": args.get("association_name")},
-            {"key": "ResourceGroupName", "value": args.get("resource_group_name")},
-        ]
         kwargs: Dict[str, Any] = remove_empty_elements(
             {
-                "AssociationFilterList": [f for f in raw_filter_list if f["value"] is not None] or None,
+                "AssociationFilterList": parse_tag_field(args.get("filters")),
             }
         )
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
@@ -8668,7 +8659,7 @@ class SSM:
         )
 
     @staticmethod
-    def document_get_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def document_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Describes the specified SSM document.
         Args:
@@ -9262,7 +9253,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ssm-tag-add": SSM.add_tags_to_resource_command,
     "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
     "aws-ssm-documents-list": SSM.documents_list_command,
-    "aws-ssm-document-get": SSM.document_get_command,
+    "aws-ssm-document-describe": SSM.document_describe_command,
     "aws-ssm-automation-executions-list": SSM.automation_execution_list_command,
     "aws-ssm-automation-execution-run": SSM.automation_execution_run_command,
     "aws-ssm-automation-execution-cancel": SSM.automation_execution_cancel_command,
