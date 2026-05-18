@@ -266,6 +266,185 @@ Must be valid JSON. Required before `generated manifest` can be marked passed.
 
 ---
 
+## `Param Defaults`
+
+Plain JSON object mapping YML param name → its default value. Values can
+be any JSON type (string, number, boolean, null, list, object) — whatever
+the integration would treat as a default. Empty object `{}` is valid and
+is the recommended value when an integration has no defaults to
+override.
+
+Consumed by
+[`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:618)
+as the `PARAM_DEFAULTS_JSON` positional argument.
+
+```json
+{
+  "<yml_param_name>": <any JSON value>,
+  ...
+}
+```
+
+Worked example:
+
+```json
+{
+  "fetch_limit": 50,
+  "first_fetch": "3 days",
+  "isFetchEvents": false,
+  "max_fetch_size": null
+}
+```
+
+Validator: [`validate_param_defaults()`](workflow_state/validators.py:147)
+enforces:
+
+1. Valid JSON.
+2. Top-level is a JSON object (not list / not scalar).
+3. Every key is a non-empty string.
+4. Values may be any JSON type (no further restriction).
+
+There are NO cross-checks against any other column. There are NO required
+keys — `{}` is a valid value for any integration with no overridable
+defaults.
+
+Setter:
+[`workflow_state.py set-param-defaults "<Integration ID>" '<json>'`](workflow_state/cli.py:1)
+([`cmd_set_param_defaults`](workflow_state/cli.py:1)).
+Must be valid JSON.
+
+> **Reset semantics.** `Param Defaults` is **wiped** by every reset path
+> (`reset`, `set-auth`, `fail`, `reset-to`). It does NOT carry
+> `preserve_on_reset: true`. Today only `Params to Commands` retains
+> that flag.
+
+---
+
+## `Params to Capabilities`
+
+Bare capability dict — exactly the JSON written by
+[`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
+to its `-o` / `--output` file. Top-level keys are capability names
+(closed enum, listed below) plus the literal `general_configurations`,
+and each value is a flat list of YML config param ids.
+
+```json
+{
+  "<capability_key>": ["<yml_param_id>", "<yml_param_id>", ...],
+  ...
+}
+```
+
+### Allowed top-level keys (closed enum)
+
+Sourced from
+[`connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:13)
+lines 13-18 plus the literal `"general_configurations"` used on line 141:
+
+- `general_configurations`
+- `Fetch Assets and Vulnerabilities`
+- `Fetch Issues`
+- `Log Collection`
+- `Fetch Secrets`
+- `Threat Intelligence & Enrichment`
+- `Automation`
+
+No key is REQUIRED. Empty `{}` is a valid payload.
+
+Worked example (the verbatim Gmail Single User mapper output; see
+[`connectus/connectus_migration/_gmail_param_mapping_sample.json`](connectus_migration/_gmail_param_mapping_sample.json:1)):
+
+```json
+{
+  "general_configurations": ["fetch_limit", "query"],
+  "Fetch Issues": ["fetch_time"],
+  "Automation": ["legacy_name", "send_as", "redirect_uri"]
+}
+```
+
+Validator: [`validate_params_to_capabilities()`](workflow_state/validators.py:204)
+enforces:
+
+1. Valid JSON.
+2. Top-level is a JSON object.
+3. Every key is a non-empty string drawn from the closed enum above. An
+   unknown key is rejected with an error that names the offender and
+   lists the allowed set.
+4. Every value is a list of non-empty unique strings (no duplicates
+   within a single capability's list).
+5. No top-level keys are REQUIRED (empty `{}` valid).
+
+There are NO cross-checks. Param ids do NOT need to appear in
+`Params to Commands` — the mapper may legitimately route YML config
+params (like `longRunningPort`) that the per-command analyzer does not
+report.
+
+Setter:
+[`workflow_state.py set-params-to-capabilities "<Integration ID>" '<json>'`](workflow_state/cli.py:1)
+([`cmd_set_params_to_capabilities`](workflow_state/cli.py:1)).
+Must be valid JSON.
+
+> **Reset semantics.** `Params to Capabilities` is **wiped** by every
+> reset path (`reset`, `set-auth`, `fail`, `reset-to`). It does NOT carry
+> `preserve_on_reset: true`.
+
+### How to call the mapper script
+
+[`connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
+is a single-command Typer app — invoke it **without** a subcommand name;
+the positional arguments come straight after the script path.
+
+Positional arguments (in order):
+
+1. `COMMAND_PARAMS_JSON` — pull from this integration's
+   [`Params to Commands`](#params-to-commands) cell, e.g.
+   `python3 connectus/workflow_state.py show-step "<Integration ID>" "Params to Commands"`.
+2. `PARAM_DEFAULTS_JSON` — pull from this integration's
+   [`Param Defaults`](#param-defaults) cell.
+3. `INTEGRATION_YML_PATH` — the integration's YML manifest path; resolve
+   via `python3 connectus/workflow_state.py files "<Integration ID>"`.
+4. `MANUAL_COMMAND_TO_CAPABILITY_JSON` (OPTIONAL, defaults to `'{}'`) —
+   command-name → list-of-capability-names overrides. Use `'{}'` unless
+   you are deliberately overriding a routing decision (e.g.
+   `'{"long-running-execution": ["Log Collection"]}'`).
+
+Plus the option:
+
+- `-o` / `--output` — output JSON path (defaults to
+  `./param_mapping_output.json`).
+
+Canonical invocation:
+
+```bash
+python3 connectus/connectus_migration/connector_param_mapper.py \
+  '<COMMAND_PARAMS_JSON from Params to Commands cell>' \
+  '<PARAM_DEFAULTS_JSON from Param Defaults cell>' \
+  '<INTEGRATION_YML_PATH from workflow_state.py files>' \
+  '{}' \
+  -o connectus/connectus_migration/_<integration>_param_mapping.json
+```
+
+Concrete example for Gmail Single User:
+
+```bash
+python3 connectus/connectus_migration/connector_param_mapper.py \
+  '{"integration":"Gmail Single User","commands":{"test-module":[],"send-mail":["legacy_name","send_as"]}}' \
+  '{}' \
+  Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml \
+  '{}' \
+  -o connectus/connectus_migration/_gmail_param_mapping.json
+```
+
+The output file is then fed verbatim into
+`set-params-to-capabilities`:
+
+```bash
+python3 connectus/workflow_state.py set-params-to-capabilities "Gmail Single User" \
+  "$(cat connectus/connectus_migration/_gmail_param_mapping.json)"
+```
+
+---
+
 ## `verify button placement` (flag)
 
 > **Status:** placeholder added in the 2026-05 schema simplification.

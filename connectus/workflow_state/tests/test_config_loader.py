@@ -102,8 +102,8 @@ class TestLoadDefault:
     def test_default_yaml_loads(self) -> None:
         cfg = load_config()
         assert isinstance(cfg, WorkflowConfig)
-        # The bundled YAML has 14 steps and 3 identity columns.
-        assert len(cfg.steps) == 14
+        # The bundled YAML has 16 steps and 3 identity columns.
+        assert len(cfg.steps) == 16
         assert len(cfg.identity_columns) == 3
         # Markers match the expected sentinels.
         assert cfg.markers.check == "✅"

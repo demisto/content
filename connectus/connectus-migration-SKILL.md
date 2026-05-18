@@ -12,8 +12,8 @@ This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs pla
 The CSV has two kinds of columns (see [`connectus/Readme.md`](Readme.md) for full details):
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
-- **Workflow columns** (14, managed by the state machine — CSV total is 17):
-  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands` (3).
+- **Workflow columns** (16, managed by the state machine — CSV total is 19):
+  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Param Defaults`, `Params to Capabilities` (5).
   - **Workflow flag** (1): `verify button placement` (enum `connection|configuration|none`, default `connection` on read).
   - **Workflow checkpoints** (10, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
 
@@ -25,15 +25,15 @@ The skill supports three top-level invocation styles. Pick the matching flow bas
 
 | User phrase (examples) | Action |
 |---|---|
-| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 14-step procedure for that one integration. |
+| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 16-step procedure for that one integration. |
 | "migrate everything assigned to me" / "what's next for me" / "continue my work" / "keep going" | [Assignee batch flow](#assignee-batch-flow) — enumerate the user's in-progress + assigned integrations and walk them one by one. |
 | "migrate connector `<connector_id>`" / "work on connector `<connector_id>`" / "do the whole `<connector>` connector" | [Connector batch flow](#connector-batch-flow) — enumerate that connector's integrations and walk them one by one (with ownership disambiguation up front). |
 
-Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 14-step workflow — they pick *which* integration to run that workflow on next.
+Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 16-step workflow — they pick *which* integration to run that workflow on next.
 
 > **CLI column references accept numbers too.** Every CLI verb in this
 > skill that takes a column name (`show-step`, `markpass`, `skip`, `fail`,
-> `reset-to`) also accepts a **1-based CSV column number** (1..17).
+> `reset-to`) also accepts a **1-based CSV column number** (1..19).
 > Identity columns (#1-#3) are addressable only by read-only `show-step`;
 > write verbs reject them. Example:
 > `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5`
@@ -61,7 +61,7 @@ Use when the user says something like "migrate everything assigned to me" / "con
 
    Otherwise, **ask the user** for the work order. Suggest a sensible default ("furthest-along first" or "by connector then alphabetical") but let them override.
 5. **Walk one integration at a time.** For each integration in the chosen order:
-   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 14 steps here — the rest of this skill already documents them.
+   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 16 steps here — the rest of this skill already documents them.
    - Between integrations, print a short progress recap (`X/N done in this batch — next: <integration id>`) and confirm before moving on, **unless** the user has explicitly said "do them all without asking" / "no confirmations" / equivalent.
 6. **Mid-loop "what's next" check.** Re-run `python3 connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
 7. **Finish.** When the queue is empty, summarize what was done and ask whether to start a new batch (e.g., a connector batch, or assigning more work).
@@ -1129,7 +1129,115 @@ This step is a `flag`, not a `data` column — the input is the bare enum
 string (no JSON wrapping). See
 [`connectus/column-schemas.md`](column-schemas.md) §`verify button placement`.
 
-### Step 4: Mark `generated manifest` (first checkpoint)
+### Step 4a: Set `Param Defaults` (data column)
+
+Set the JSON object mapping YML param name → default value. This cell
+feeds the next step (`Params to Capabilities`) by becoming the
+`PARAM_DEFAULTS_JSON` positional argument of
+[`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:618).
+
+Empty `{}` is valid AND is the recommended value when the integration
+has no defaults the user should override. Values may be any JSON type
+(string, number, bool, null, list, object).
+
+```bash
+python3 connectus/workflow_state.py set-param-defaults "<Integration ID>" '<JSON>'
+```
+
+Example:
+
+```bash
+python3 connectus/workflow_state.py set-param-defaults "Gmail Single User" '{}'
+python3 connectus/workflow_state.py set-param-defaults "QRadar v3" '{"fetch_limit": 50, "first_fetch": "3 days", "isFetchEvents": false}'
+```
+
+Validator reference:
+[`validate_param_defaults()`](workflow_state/validators.py:147) — enforces
+top-level object, non-empty string keys, any JSON value. Full schema in
+[`column-schemas.md`](column-schemas.md) §`Param Defaults`.
+
+> **Reset semantics.** `Param Defaults` is NOT preserved on any reset
+> path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
+> `Params to Commands` carries `preserve_on_reset: true` today.
+
+### Step 4b: Set `Params to Capabilities` (data column)
+
+Produce and persist the **bare capability dict** — exactly what
+[`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
+writes to its `-o` file. Top-level keys are capability names from a
+closed enum (`general_configurations`, `Fetch Assets and Vulnerabilities`,
+`Fetch Issues`, `Log Collection`, `Fetch Secrets`,
+`Threat Intelligence & Enrichment`, `Automation`); each value is a flat
+list of YML config param ids. Empty `{}` is valid. See
+[`column-schemas.md`](column-schemas.md) §`Params to Capabilities` for
+the full schema.
+
+#### Gather the mapper's inputs from earlier pipeline data
+
+Pull the inputs from the workflow CSV — do NOT make the user re-type
+anything that already exists upstream in the pipeline. Show the values
+to the user before running the script so wrong input is spotted
+immediately.
+
+```bash
+# 1. Params to Commands cell (already set in Step 2)
+python3 connectus/workflow_state.py show-step "<Integration ID>" "Params to Commands"
+
+# 2. Param Defaults cell (just set in Step 4a)
+python3 connectus/workflow_state.py show-step "<Integration ID>" "Param Defaults"
+
+# 3. Integration YML path
+python3 connectus/workflow_state.py files "<Integration ID>"
+# -> use files["yml"]
+```
+
+#### Canonical mapper invocation
+
+[`connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
+is a single-command Typer app — invoke it **without** a subcommand name;
+the four positionals come straight after the script path:
+
+```bash
+python3 connectus/connectus_migration/connector_param_mapper.py \
+  '<COMMAND_PARAMS_JSON from Params to Commands cell>' \
+  '<PARAM_DEFAULTS_JSON from Param Defaults cell>' \
+  '<INTEGRATION_YML_PATH from workflow_state.py files>' \
+  '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
+  -o connectus/connectus_migration/_<integration>_param_mapping.json
+```
+
+`MANUAL_COMMAND_TO_CAPABILITY_JSON` should be `'{}'` unless the user
+explicitly overrides a command → capability routing decision. Construct
+the override using the actual **command names** as outer keys and arrays
+of capability names as values, for example:
+
+```json
+{"long-running-execution": ["Log Collection"]}
+```
+
+#### Persist the mapper's output verbatim
+
+```bash
+python3 connectus/workflow_state.py set-params-to-capabilities "<Integration ID>" \
+  "$(cat connectus/connectus_migration/_<integration>_param_mapping.json)"
+```
+
+Concrete example for Gmail Single User:
+
+```bash
+python3 connectus/workflow_state.py set-params-to-capabilities "Gmail Single User" \
+  '{"general_configurations":["fetch_limit","query"],"Fetch Issues":["fetch_time"],"Automation":["legacy_name","send_as","redirect_uri"]}'
+```
+
+Validator reference:
+[`validate_params_to_capabilities()`](workflow_state/validators.py:204) —
+enforces top-level object, capability keys drawn from the closed enum,
+list-of-unique-non-empty-strings values, no required keys, `{}` valid.
+
+> **Reset semantics.** `Params to Capabilities` is NOT preserved on any
+> reset path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it).
+
+### Step 4c: Mark `generated manifest` (first checkpoint)
 
 After generating the ConnectUs manifest YAML for the integration:
 

@@ -29,15 +29,15 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (3 identity columns + 14 steps). If the YAML shifts, fix
+# bundled YAML (3 identity columns + 16 steps). If the YAML shifts, fix
 # these numbers in lock-step with the column references below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 17
+_EXPECTED_TOTAL_COLS = 19
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
 _COL_VERIFY_PLACEMENT = 7        # step #4 → CSV column 7
-_COL_GENERATED_MANIFEST = 8      # step #5 → CSV column 8 (first checkpoint)
+_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Param Defaults + Params to Capabilities)
 
 
 @pytest.fixture(autouse=True)
@@ -49,7 +49,7 @@ def _reset_singleton():
 
 @pytest.fixture
 def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Seed a CSV with steps 1-7 already done so ``markpass <id> 8``
+    """Seed a CSV with steps 1-6 already done so ``markpass <id> 10``
     (the first checkpoint, ``generated manifest``) is at the workflow's
     current step. Identity + earlier data/flag steps are pre-filled."""
     cfg = workflow_state.get_config()
@@ -63,6 +63,8 @@ def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     row["Auth Details"] = "{}"
     row["Params to Commands"] = "{}"
     row["verify button placement"] = "connection"
+    row["Param Defaults"] = "{}"
+    row["Params to Capabilities"] = "{}"
     with open(p, "w", encoding="utf-8", newline="") as f:
         w = _csv.writer(f)
         w.writerow(header)

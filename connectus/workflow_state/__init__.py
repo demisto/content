@@ -76,7 +76,7 @@ from workflow_state.csv_io import (
 
 # ---- Validators ----------------------------------------------------------
 
-from workflow_state.validators import (
+from workflow_state.validators import (  # noqa: I001
     auth_param_sources as _auth_param_sources,
     get_named_validator,
     is_known_cross_check,
@@ -84,6 +84,8 @@ from workflow_state.validators import (
     known_validator_names,
     validate_any_json,
     validate_auth_detail,
+    validate_param_defaults,
+    validate_params_to_capabilities,
     validate_params_to_commands,
 )
 
@@ -151,6 +153,8 @@ from workflow_state.cli import (
     cmd_set_assignee,
     cmd_set_assignee_by_connector,
     cmd_set_auth,
+    cmd_set_param_defaults,
+    cmd_set_params_to_capabilities,
     cmd_set_params_to_commands,
     cmd_set_verify_placement,
     cmd_show_step,
@@ -241,6 +245,8 @@ __all__ = [
     "get_named_validator",
     "validate_any_json",
     "validate_auth_detail",
+    "validate_param_defaults",
+    "validate_params_to_capabilities",
     "validate_params_to_commands",
     # Display
     "format_by_assignee",
@@ -284,6 +290,8 @@ __all__ = [
     "cmd_set_assignee",
     "cmd_set_assignee_by_connector",
     "cmd_set_auth",
+    "cmd_set_param_defaults",
+    "cmd_set_params_to_capabilities",
     "cmd_set_params_to_commands",
     "cmd_set_verify_placement",
     "cmd_show_step",

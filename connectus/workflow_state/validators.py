@@ -143,6 +143,120 @@ def validate_params_to_commands(value: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Param Defaults
+# ---------------------------------------------------------------------------
+
+def validate_param_defaults(value: str) -> list[str]:
+    """Validate Param Defaults JSON shape. Returns errors ([] = valid).
+
+    Strict shape::
+
+        { "<yml_param_name>": <any JSON value>, ... }
+
+    Top-level object. Keys non-empty strings. Values can be any JSON type
+    (string, number, boolean, null, list, object). Empty {} is valid.
+    Consumed by connectus/connectus_migration/connector_param_mapper.py
+    as the PARAM_DEFAULTS_JSON positional arg.
+    """
+    errors: list[str] = []
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError as e:
+        return [f"Invalid JSON: {e}"]
+    if not isinstance(payload, dict):
+        return [f"Expected a JSON object, got {type(payload).__name__}"]
+    for k in payload:
+        if not isinstance(k, str):
+            errors.append(f"Key {k!r} must be a string, got {type(k).__name__}")
+            continue
+        if k == "":
+            errors.append("Empty-string key is not allowed")
+    return errors
+
+
+# ---------------------------------------------------------------------------
+# Params to Capabilities
+# ---------------------------------------------------------------------------
+
+# Closed enum of capability keys (mirrors the constants in
+# connectus/connectus_migration/connector_param_mapper.py lines 13-18
+# plus the literal "general_configurations" used on line 141).
+_PARAMS_TO_CAPABILITIES_ALLOWED_KEYS: frozenset[str] = frozenset({
+    "general_configurations",
+    "Fetch Assets and Vulnerabilities",
+    "Fetch Issues",
+    "Log Collection",
+    "Fetch Secrets",
+    "Threat Intelligence & Enrichment",
+    "Automation",
+})
+
+
+def validate_params_to_capabilities(value: str) -> list[str]:
+    """Validate Params to Capabilities JSON shape. Returns errors ([] = valid).
+
+    Strict shape (bare capability dict, exactly as
+    connectus/connectus_migration/connector_param_mapper.py writes it)::
+
+        {
+          "general_configurations": ["param_id", ...],
+          "Fetch Issues": ["param_id", ...],
+          ... etc, capability key -> list of yml param ids ...
+        }
+
+    Top-level keys MUST be drawn from the closed enum
+    ``_PARAMS_TO_CAPABILITIES_ALLOWED_KEYS``. No keys are required
+    (empty {} is valid). Values are lists of non-empty unique strings.
+    """
+    errors: list[str] = []
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError as e:
+        return [f"Invalid JSON: {e}"]
+    if not isinstance(payload, dict):
+        return [f"Expected a JSON object, got {type(payload).__name__}"]
+
+    allowed = _PARAMS_TO_CAPABILITIES_ALLOWED_KEYS
+    for cap, params in payload.items():
+        if not isinstance(cap, str) or cap == "":
+            errors.append(f"Capability key {cap!r} must be a non-empty string")
+            continue
+        if cap not in allowed:
+            errors.append(
+                f"Unknown capability key {cap!r}; allowed keys are "
+                f"{sorted(allowed)}"
+            )
+            continue
+        if not isinstance(params, list):
+            errors.append(
+                f"capabilities[{cap!r}]: expected a list of param ids, "
+                f"got {type(params).__name__}"
+            )
+            continue
+        seen: set = set()
+        for i, p in enumerate(params):
+            if not isinstance(p, str):
+                errors.append(
+                    f"capabilities[{cap!r}][{i}]: param id must be a "
+                    f"string, got {type(p).__name__}"
+                )
+                continue
+            if p == "":
+                errors.append(
+                    f"capabilities[{cap!r}][{i}]: param id must be a "
+                    f"non-empty string"
+                )
+                continue
+            if p in seen:
+                errors.append(
+                    f"capabilities[{cap!r}]: duplicate param id {p!r}"
+                )
+                continue
+            seen.add(p)
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # Generic "any JSON" validator (used by the JSON-shaped data steps that
 # don't have a richer schema, e.g. "Params for test with default in code").
 # ---------------------------------------------------------------------------
@@ -185,6 +299,8 @@ ValidatorFn = Callable[[str], list[str]]
 _NAMED_VALIDATORS: dict[str, ValidatorFn] = {
     "auth_details": validate_auth_detail,
     "params_to_commands": validate_params_to_commands,
+    "param_defaults": validate_param_defaults,
+    "params_to_capabilities": validate_params_to_capabilities,
     "any_json": validate_any_json,
 }
 
