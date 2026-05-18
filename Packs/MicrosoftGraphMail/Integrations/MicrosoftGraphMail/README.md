@@ -794,6 +794,7 @@ Retrieves Mail Tips for the specified email address, including out-of-office sta
 | --- | --- | --- |
 | MSGraphMail.MailTips.emailAddress.name | String | The display name of the recipient. |
 | MSGraphMail.MailTips.emailAddress.address | String | The SMTP address of the recipient. |
+| MSGraphMail.MailTips.emailAddressValue | String | The email address of the recipient (flattened key used for context merging). |
 | MSGraphMail.MailTips.automaticReplies.message | String | The automatic reply message. |
 | MSGraphMail.MailTips.automaticReplies.messageLanguage.locale | String | The language locale \(BCP 47\) of the automatic reply message. |
 | MSGraphMail.MailTips.automaticReplies.messageLanguage.displayName | String | A friendly name representing the language of the automatic reply message. |
