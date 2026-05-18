@@ -6,7 +6,7 @@ script: ''
 type: python
 subtype: python3
 tags: []
-comment: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
+comment: Check test if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
 enabled: true
 args:
 - name: input
