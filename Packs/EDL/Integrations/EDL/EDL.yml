@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: 'How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute. Accepts nginx-native time values (e.g. `12h`, `30m`, `300s`, or a bare integer treated as seconds) or human-readable values (e.g. `12 hours`, `30 minutes`, `1 day`). Invalid values are rejected on **Test**. If using a bare integer, EDL will still set the HTTP `max-age` correctly, but the response header diagnostics may show a less precise human label.'
+- additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
   defaultvalue: 30 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -71,7 +71,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value. Accepts nginx-native time values (e.g. `12h`, `30m`, `300s`, or a bare integer treated as seconds) or human-readable values (e.g. `12 hours`, `30 minutes`, `1 day`). Invalid values are rejected on **Test**.'
+- additionalinfo: How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value.
   defaultvalue: 1h
   display: Cache Lock Timeout
   name: cache_lock_timeout
@@ -79,7 +79,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout. Accepts nginx-native time values (e.g. `12h`, `30m`, `300s`, or a bare integer treated as seconds) or human-readable values (e.g. `12 hours`, `30 minutes`, `1 day`). Invalid values are rejected on **Test**.'
+- additionalinfo: How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout.
   defaultvalue: 1h
   display: Cache Lock Age
   name: cache_lock_age
@@ -87,7 +87,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'The TTL for 404 responses in the cache. Accepts nginx-native time values (e.g. `12h`, `30m`, `300s`, or a bare integer treated as seconds) or human-readable values (e.g. `12 hours`, `30 minutes`, `1 day`). Invalid values are rejected on **Test**.'
+- additionalinfo: The TTL for 404 responses in the cache.
   defaultvalue: 1m
   display: Cache 404 TTL
   name: cache_404_ttl
@@ -95,7 +95,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'The default TTL for responses in the cache. Accepts nginx-native time values (e.g. `12h`, `30m`, `300s`, or a bare integer treated as seconds) or human-readable values (e.g. `12 hours`, `30 minutes`, `1 day`). Invalid values are rejected on **Test**.'
+- additionalinfo: The default TTL for responses in the cache.
   defaultvalue: 1m
   display: Cache Default TTL
   name: cache_default_ttl
