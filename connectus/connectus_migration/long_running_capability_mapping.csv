@@ -1,0 +1,33 @@
+pack,integration_id,display_name,yml_path,py_exists,has_long_running_dispatch,longRunningPort,coexisting_flags,suggested_capability,rationale
+Akamai_SIEM,Akamai_SIEM,Akamai WAF SIEM,Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml,true,true,false,isfetch;isfetchevents,Log Collection,"matched markers: Fetch Issues, Log Collection"
+AWS-SNS-Listener,AWSSNSListener,AWS-SNS-Listener,Packs/AWS-SNS-Listener/Integrations/AWSSNSListener/AWSSNSListener.yml,true,true,true,isFetchSamples,Automation,"matched markers: Fetch Issues, Webhook Receiver"
+CertStream,CertStream,Kali Dog Security CertStream,Packs/CertStream/Integrations/CertStream/CertStream.yml,true,true,false,,Fetch Issues,matched markers: Fetch Issues
+CommvaultSecurityIQ,CommvaultSecurityIQ,Commvault Cloud,Packs/CommvaultSecurityIQ/Integrations/CommvaultSecurityIQ/CommvaultSecurityIQ.yml,true,true,true,isfetch,Automation,"matched markers: Fetch Issues, Webhook Receiver"
+CrowdStrikeFalconStreamingV2,CrowdStrikeFalconStreamingV2,CrowdStrike Falcon Streaming v2,Packs/CrowdStrikeFalconStreamingV2/Integrations/CrowdStrikeFalconStreamingV2/CrowdStrikeFalconStreamingV2.yml,true,true,false,isFetchSamples,Fetch Issues,matched markers: Fetch Issues
+EDL,EDL,Generic Export Indicators Service,Packs/EDL/Integrations/EDL/EDL.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
+ExportIndicators,ExportIndicators,Export Indicators Service (Deprecated),Packs/ExportIndicators/Integrations/ExportIndicators/ExportIndicators.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
+GenericWebhook,GenericWebhook,Generic Webhook,Packs/GenericWebhook/Integrations/GenericWebhook/GenericWebhook.yml,true,true,true,isFetchSamples,Automation,"matched markers: Fetch Issues, Webhook Receiver"
+GenericWebhook_FormData,GenericWebhookFormData,Generic Webhook (Form Data),Packs/GenericWebhook_FormData/Integrations/GenericWebhookFormData/GenericWebhookFormData.yml,true,true,true,isFetchSamples,Automation,"matched markers: Fetch Issues, Webhook Receiver"
+GoogleChronicleBackstory,GoogleChronicleBackstoryStreamingAPI,Google SecOps Streaming API,Packs/GoogleChronicleBackstory/Integrations/GoogleChronicleBackstoryStreamingAPI/GoogleChronicleBackstoryStreamingAPI.yml,true,true,false,isFetchSamples,Fetch Issues,matched markers: Fetch Issues
+LookoutMobileEndpointSecurity,LookoutMobileEndpointSecurity,Lookout Mobile Endpoint Security,Packs/LookoutMobileEndpointSecurity/Integrations/LookoutMobileEndpointSecurity/LookoutMobileEndpointSecurity.yml,true,true,false,,Log Collection,matched markers: Log Collection
+Mattermost,MattermostV2,Mattermost v2,Packs/Mattermost/Integrations/MattermostV2/MattermostV2.yml,true,true,false,,Automation,"matched markers: Fetch Issues, Connection Health"
+MicrosoftTeams,MicrosoftTeams,Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.yml,true,true,true,isFetchSamples,Automation,"matched markers: Fetch Issues, Webhook Receiver"
+PingCastle,PingCastle,PingCastle,Packs/PingCastle/Integrations/PingCastle/PingCastle.yml,true,true,true,,Fetch Issues,matched markers: Fetch Issues
+ProofpointEmailSecurity,ProofpointEmailSecurityEventCollector,Proofpoint Email Security Event Collector,Packs/ProofpointEmailSecurity/Integrations/ProofpointEmailSecurityEventCollector/ProofpointEmailSecurityEventCollector.yml,true,true,false,isfetchevents,Log Collection,matched markers: Log Collection
+PublishList,PublishList,Publish List,Packs/PublishList/Integrations/PublishList/PublishList.yml,true,true,true,,Automation,matched markers: Indicator Export
+QRadar,QRadar_v3,IBM QRadar v3,Packs/QRadar/Integrations/QRadar_v3/QRadar_v3.yml,true,true,false,isFetchSamples;isremotesyncin,Fetch Issues,matched markers: Fetch Issues
+RetarusSecureEmailGateway,RetarusSecureEmailGateway,Retarus Secure Email Gateway,Packs/RetarusSecureEmailGateway/Integrations/RetarusSecureEmailGateway/RetarusSecureEmailGateway.yml,true,true,false,,Log Collection,matched markers: Log Collection
+SimpleAPIProxy,SimpleAPIProxy,Simple API Proxy,Packs/SimpleAPIProxy/Integrations/SimpleAPIProxy/SimpleAPIProxy.yml,true,true,true,,Automation,"matched markers: Webhook Receiver, API Proxy"
+Slack,SlackV3,Slack v3,Packs/Slack/Integrations/SlackV3/SlackV3.yml,true,true,false,isFetchSamples,Automation,"matched markers: Fetch Issues, Connection Health"
+Slack,SlackV3v2,Slack v3,Packs/Slack/Integrations/SlackV3v2/SlackV3v2.yml,true,true,false,isFetchSamples,Automation,"matched markers: Fetch Issues, Connection Health"
+SymantecCloudSecureWebGateway,SymantecCloudSecureWebGatewayEventCollector,Symantec Cloud Secure Web Gateway Event Collector,Packs/SymantecCloudSecureWebGateway/Integrations/SymantecCloudSecureWebGatewayEventCollector/SymantecCloudSecureWebGatewayEventCollector.yml,true,true,false,,Log Collection,matched markers: Log Collection
+SymantecEndpointSecurity,SymantecEndpointSecurity,Symantec Endpoint Security,Packs/SymantecEndpointSecurity/Integrations/SymantecEndpointSecurity/SymantecEndpointSecurity.yml,true,true,false,,Log Collection,matched markers: Log Collection
+Syslog,Syslogv2,Syslog v2,Packs/Syslog/Integrations/Syslogv2/Syslogv2.yml,true,true,true,isFetchSamples,Fetch Issues,matched markers: Fetch Issues
+TAXIIServer,TAXII2Server,TAXII2 Server,Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
+TAXIIServer,TAXIIServer,TAXII Server,Packs/TAXIIServer/Integrations/TAXIIServer/TAXIIServer.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
+UBIRCH,UBIRCH,UBIRCH,Packs/UBIRCH/Integrations/UBIRCH/UBIRCH.yml,true,true,false,,Automation,matched markers: Fetch Issues
+WebFileRepository,WebFileRepository,Web File Repository,Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository.yml,true,true,true,,Automation,dispatch present but no known capability markers matched
+Workday,WorkdayIAMEventsGenerator,Workday IAM Event Generator (Beta),Packs/Workday/Integrations/WorkdayIAMEventsGenerator/WorkdayIAMEventsGenerator.yml,true,true,true,,Automation,matched markers: Webhook Receiver
+Workday,WorkdaySignonEventGenerator,Workday Signon Event Generator (Beta),Packs/Workday/Integrations/WorkdaySignonEventGenerator/WorkdaySignonEventGenerator.yml,true,true,true,,Automation,matched markers: Webhook Receiver
+XsoarWebserver,XSOARWebServer,XSOAR-Web-Server,Packs/XsoarWebserver/Integrations/XSOARWebServer/XSOARWebServer.yml,true,true,true,,Automation,dispatch present but no known capability markers matched
+Zoom,Zoom,Zoom,Packs/Zoom/Integrations/Zoom/Zoom.yml,true,true,true,,Automation,matched markers: Webhook Receiver

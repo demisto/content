@@ -18,6 +18,7 @@ import logging
 import re
 from pathlib import Path
 from typing import Any
+from collections.abc import Callable
 
 import typer
 import yaml
@@ -160,6 +161,47 @@ def bump_minor_version(version: str) -> str:
             f"Invalid semver version '{version}'; all components must be integers."
         ) from exc
     return f"{major}.{minor + 1}.0"
+
+
+def deep_merge_dicts(base: dict, overrides: dict) -> dict:
+    """Deep-merge ``overrides`` into ``base``, returning a NEW dict.
+
+    Semantics (manual wins on conflict; siblings preserved):
+      - Two dicts at the same path → recurse into both, merging keys.
+      - Dict vs non-dict, or two non-dicts → ``overrides`` wins.
+      - Lists are treated as leaves: ``overrides`` replaces ``base`` entirely.
+      - Keys present only in ``base`` are kept untouched.
+      - Keys present only in ``overrides`` are added.
+
+    Does NOT mutate either input. Returns a new dict.
+
+    Examples:
+        deep_merge_dicts(
+            {"a": {"b": 1, "x": [1, 2]}, "c": "hello"},
+            {"a": {"c": 2, "x": [9]}, "d": "new"},
+        )
+        # → {"a": {"b": 1, "c": 2, "x": [9]}, "c": "hello", "d": "new"}
+    """
+    if not overrides:
+        return dict(base) if base else {}
+    if not base:
+        return dict(overrides)
+    result: dict = {}
+    all_keys = set(base) | set(overrides)
+    for key in all_keys:
+        if key in overrides and key in base:
+            base_val = base[key]
+            override_val = overrides[key]
+            if isinstance(base_val, dict) and isinstance(override_val, dict):
+                result[key] = deep_merge_dicts(base_val, override_val)
+            else:
+                # List or scalar conflict — overrides wins.
+                result[key] = override_val
+        elif key in overrides:
+            result[key] = overrides[key]
+        else:
+            result[key] = base[key]
+    return result
 
 
 def build_connector_yaml(connector_title: str, pack_tags: list[str]) -> dict:
@@ -619,6 +661,311 @@ def build_summary_yaml(connector_title: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# XSOAR param type → connectus field mapping
+# ---------------------------------------------------------------------------
+# One helper per XSOAR `type:` integer. Each emits a connectus-shaped field
+# dict with the deterministic extras that depend on the type alone (mask,
+# is_number_input, options.values, credentials split, default-value coercion).
+# Auth-name heuristics + name→metadata.auth.parameter mappings are NOT
+# applied here; they will be layered on by a follow-up helper.
+#
+# See connectus/connectus_migration/param_type_mapping.md for the full spec.
+# ---------------------------------------------------------------------------
+def _is_hidden_on_platform(yml_param: dict) -> bool:
+    """Return True if the XSOAR YML param is hidden on the Cortex Platform.
+
+    Mirrors the rule in
+    :func:`connector_param_mapper._collect_hidden_params` (line 354) — the
+    param is considered hidden-on-platform if EITHER:
+      - Its ``hidden`` field is ``True`` (boolean, hidden in all marketplaces)
+      - Its ``hidden`` field is a list containing the string ``"platform"``
+
+    Anything else (no ``hidden``, ``hidden: false``, or a list that does NOT
+    contain ``"platform"``) is visible.
+
+    NOTE: Semantics are intentionally identical to
+    ``connector_param_mapper._collect_hidden_params``. If that function's logic
+    ever changes, update this helper in lockstep.
+    """
+    hidden_value = yml_param.get("hidden")
+    return hidden_value is True or (
+        isinstance(hidden_value, list) and "platform" in hidden_value
+    )
+
+
+def _apply_common_field_metadata(field: dict, yml_param: dict) -> None:
+    """Layer the type-independent metadata (title, help_text, default_value,
+    required gates) onto an already-built connectus field dict.
+
+    Mutates ``field`` in place. Does NOT touch ``options.values`` or
+    ``options.mask`` etc. — those are type-specific and set by the per-type
+    helpers BEFORE this is called.
+    """
+    name = yml_param.get("name", "")
+    display = yml_param.get("display") or name
+    field.setdefault("title", display)
+
+    options = field.setdefault("options", {})
+
+    additional_info = yml_param.get("additionalinfo")
+    if additional_info:
+        options["description"] = additional_info
+
+    # Per-type coercion is handled by the caller BEFORE invoking this helper
+    # (so the value is already in the right shape). For types where coercion
+    # isn't needed, just pass through.
+    if (
+        "defaultvalue" in yml_param
+        and yml_param["defaultvalue"] is not None
+        and "default_value" not in options
+    ):
+        options["default_value"] = yml_param["defaultvalue"]
+
+    required = bool(yml_param.get("required"))
+    hidden = _is_hidden_on_platform(yml_param)
+    options["create_modifiers"] = {"required": required, "hidden": hidden}
+    options["edit_modifiers"] = {"required": required, "hidden": hidden}
+
+
+def _coerce_toggle_default(raw: Any) -> bool:
+    """Convert XSOAR's str/bool default for type 8 (boolean) into a Python bool."""
+    if isinstance(raw, str):
+        return raw.lower() == "true"
+    return bool(raw)
+
+
+def _coerce_multi_select_default(raw: Any) -> list:
+    """Convert XSOAR's CSV-string default for type 16 (multi-select) into a list of keys."""
+    if isinstance(raw, str):
+        return [s.strip() for s in raw.split(",") if s.strip()]
+    if isinstance(raw, list):
+        return raw
+    return [raw]
+
+
+# ---- Per-type mappers ------------------------------------------------------
+
+def _map_type_0(yml_param: dict) -> dict:
+    """XSOAR type 0 — Short text → connectus `input`."""
+    field = {"id": yml_param["name"], "field_type": "input"}
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_1(yml_param: dict) -> dict:
+    """XSOAR type 1 — Hidden short text (legacy) → connectus `input` with mask."""
+    field = {"id": yml_param["name"], "field_type": "input", "options": {"mask": True}}
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_4(yml_param: dict) -> dict:
+    """XSOAR type 4 — Encrypted → connectus `input` with mask."""
+    field = {"id": yml_param["name"], "field_type": "input", "options": {"mask": True}}
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_8(yml_param: dict) -> dict:
+    """XSOAR type 8 — Boolean → connectus `toggle`. Coerces default_value to bool."""
+    field = {"id": yml_param["name"], "field_type": "toggle"}
+    options = field.setdefault("options", {})
+    if "defaultvalue" in yml_param and yml_param["defaultvalue"] is not None:
+        options["default_value"] = _coerce_toggle_default(yml_param["defaultvalue"])
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_9(yml_param: dict) -> list[dict]:
+    """XSOAR type 9 — Credentials (compound) → 1 or 2 connectus `input` fields.
+
+    If the YAML carries ``hiddenusername: true``, only the password half is
+    emitted (the credentials store is being repurposed as a secret-only sink).
+    Otherwise both username + password fields are emitted.
+
+    Note: this helper does NOT set ``metadata.auth.parameter`` — that's
+    layered on by the auth-name-heuristics helper later in the migration
+    pipeline. We only emit the deterministic shape here.
+    """
+    name = yml_param.get("name", "")
+    display = yml_param.get("display") or name
+    display_password = yml_param.get("displaypassword") or display
+
+    fields: list[dict] = []
+
+    # Compute once and reuse for both halves so they stay in lockstep.
+    required = bool(yml_param.get("required"))
+    hidden = _is_hidden_on_platform(yml_param)
+
+    if not yml_param.get("hiddenusername"):
+        username_field = {
+            "id": f"{name}_username",
+            "title": display,
+            "field_type": "input",
+        }
+        # Required + hidden gates: same as parent.
+        username_field["options"] = {
+            "create_modifiers": {"required": required, "hidden": hidden},
+            "edit_modifiers": {"required": required, "hidden": hidden},
+        }
+        # additionalinfo (if any) goes on the username half.
+        additional_info = yml_param.get("additionalinfo")
+        if additional_info:
+            username_field["options"]["description"] = additional_info
+        fields.append(username_field)
+
+    password_field = {
+        "id": f"{name}_password" if not yml_param.get("hiddenusername") else name,
+        "title": display_password,
+        "field_type": "input",
+        "options": {"mask": True},
+    }
+    password_field["options"]["create_modifiers"] = {"required": required, "hidden": hidden}
+    password_field["options"]["edit_modifiers"] = {"required": required, "hidden": hidden}
+    fields.append(password_field)
+
+    return fields
+
+
+def _map_type_12(yml_param: dict) -> dict:
+    """XSOAR type 12 — Long text → connectus `text_area`."""
+    field = {"id": yml_param["name"], "field_type": "text_area"}
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _build_select_values(yml_param: dict, label_key: str = "value") -> list[dict]:
+    """Build connectus `options.values` from the YAML's `options:` list.
+
+    Each connectus item is `{key: ..., value/label: ...}` depending on the
+    target field type:
+    - select uses {key, value}  → label_key="value"
+    - multi_select uses {key, label} → label_key="label"
+    """
+    items = []
+    for v in yml_param.get("options", []) or []:
+        items.append({"key": v, label_key: v})
+    return items
+
+
+def _map_type_13(yml_param: dict) -> dict:
+    """XSOAR type 13 — Single-select (system catalogue) → connectus `select`."""
+    field = {
+        "id": yml_param["name"],
+        "field_type": "select",
+        "options": {"values": _build_select_values(yml_param, label_key="value")},
+    }
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_14(yml_param: dict) -> dict:
+    """XSOAR type 14 — Encrypted long text → connectus `text_area` with mask."""
+    field = {"id": yml_param["name"], "field_type": "text_area", "options": {"mask": True}}
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_15(yml_param: dict) -> dict:
+    """XSOAR type 15 — Single-select → connectus `select` with `{key, value}` items."""
+    field = {
+        "id": yml_param["name"],
+        "field_type": "select",
+        "options": {"values": _build_select_values(yml_param, label_key="value")},
+    }
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_16(yml_param: dict) -> dict:
+    """XSOAR type 16 — Multi-select → connectus `multi_select` with `{key, label}` items.
+
+    Coerces CSV string default → list of keys.
+    """
+    field = {
+        "id": yml_param["name"],
+        "field_type": "multi_select",
+        "options": {"values": _build_select_values(yml_param, label_key="label")},
+    }
+    if "defaultvalue" in yml_param and yml_param["defaultvalue"] is not None:
+        field["options"]["default_value"] = _coerce_multi_select_default(
+            yml_param["defaultvalue"]
+        )
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_17(yml_param: dict) -> dict:
+    """XSOAR type 17 — Date → connectus `input` (no native date picker)."""
+    field = {"id": yml_param["name"], "field_type": "input"}
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_18(yml_param: dict) -> dict:
+    """XSOAR type 18 — Grouped single-select → connectus `select` (categories flattened)."""
+    field = {
+        "id": yml_param["name"],
+        "field_type": "select",
+        "options": {"values": _build_select_values(yml_param, label_key="value")},
+    }
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_19(yml_param: dict) -> dict:
+    """XSOAR type 19 — Numeric/interval → connectus `input` with `is_number_input: true`."""
+    field = {
+        "id": yml_param["name"],
+        "field_type": "input",
+        "options": {"is_number_input": True},
+    }
+    _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+# Registry mapping XSOAR type integer → mapper function.
+MAPPERS: dict[int, Callable] = {
+    0: _map_type_0,
+    1: _map_type_1,
+    4: _map_type_4,
+    8: _map_type_8,
+    9: _map_type_9,
+    12: _map_type_12,
+    13: _map_type_13,
+    14: _map_type_14,
+    15: _map_type_15,
+    16: _map_type_16,
+    17: _map_type_17,
+    18: _map_type_18,
+    19: _map_type_19,
+}
+
+
+def map_xsoar_param_to_connectus_field(yml_param: dict) -> list[dict]:
+    """Public dispatcher: map an XSOAR YAML config param to one or more connectus field dicts.
+
+    Looks up the right `_map_type_<N>` helper from ``MAPPERS`` based on the
+    YAML's ``type`` integer. Raises ``ValueError`` for unknown types.
+
+    Returns a list — single-field types yield a one-element list; only
+    type 9 (credentials) returns a list with multiple entries.
+    """
+    xsoar_type = yml_param.get("type", 0)
+    mapper = MAPPERS.get(xsoar_type)
+    if mapper is None:
+        raise ValueError(
+            f"No connectus field mapper for XSOAR type {xsoar_type}. "
+            f"Param: {yml_param.get('name', '<unnamed>')}. "
+            f"Known types: {sorted(MAPPERS.keys())}"
+        )
+    result = mapper(yml_param)
+    if isinstance(result, dict):
+        return [result]
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Dispatch targets (stubs — per-file rules to be added later)
 # ---------------------------------------------------------------------------
 def create_manifest_from_scratch(
@@ -628,6 +975,13 @@ def create_manifest_from_scratch(
     connector_title: str,
     mapped_params: dict[str, Any],
     auth_methods: dict[str, Any],
+    manual_connector_fields: dict | None = None,
+    manual_handler_fields: dict | None = None,
+    manual_summary_fields: dict | None = None,
+    manual_capabilities_fields: dict | None = None,
+    manual_configurations_fields: dict | None = None,
+    manual_serializer_fields: dict | None = None,
+    manual_connection_fields: dict | None = None,
 ) -> None:
     """Create a brand-new connector folder from scratch.
 
@@ -641,12 +995,26 @@ def create_manifest_from_scratch(
         f"{len(auth_methods.get('auth_types', []))} auth_types"
     )
 
+    if manual_serializer_fields:
+        logger.info(
+            "[manifest_generator] manual_serializer_fields received with keys "
+            f"{list(manual_serializer_fields.keys())} but serializer.yaml is a "
+            "string stub — overrides will NOT be applied until serializer becomes dict-based."
+        )
+    if manual_connection_fields:
+        logger.info(
+            "[manifest_generator] manual_connection_fields received with keys "
+            f"{list(manual_connection_fields.keys())} but connection.yaml is not yet "
+            "implemented — overrides will NOT be applied until that file is built."
+        )
+
     # Create the connector directory if it doesn't exist
     connector_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate connector.yaml
     pack_tags = get_pack_tags(integration_path)
     connector_data = build_connector_yaml(connector_title, pack_tags)
+    connector_data = deep_merge_dicts(connector_data, manual_connector_fields or {})
     connector_yaml_path = connector_dir / "connector.yaml"
     with open(connector_yaml_path, "w") as fh:
         yaml.safe_dump(connector_data, fh)
@@ -660,6 +1028,7 @@ def create_manifest_from_scratch(
         mapped_params,
         auth_methods,
     )
+    handler_data = deep_merge_dicts(handler_data, manual_handler_fields or {})
     handler_id = handler_data["id"]
     handler_yaml_path = (
         connector_dir / "components" / "handlers" / handler_id / "handler.yaml"
@@ -674,6 +1043,7 @@ def create_manifest_from_scratch(
 
     # Generate summary.yaml (one per connector — only on from-scratch path)
     summary_data = build_summary_yaml(connector_title)
+    summary_data = deep_merge_dicts(summary_data, manual_summary_fields or {})
     summary_yaml_path = connector_dir / "summary.yaml"
     with open(summary_yaml_path, "w") as fh:
         yaml.safe_dump(summary_data, fh)
@@ -681,12 +1051,18 @@ def create_manifest_from_scratch(
 
     # Generate capabilities.yaml
     capabilities_data = build_capabilities_yaml(mapped_params)
+    capabilities_data = deep_merge_dicts(
+        capabilities_data, manual_capabilities_fields or {}
+    )
     capabilities_yaml_path = connector_dir / "capabilities.yaml"
     write_capabilities_yaml(capabilities_yaml_path, capabilities_data)
     logger.info(f"[manifest_generator] Generated {capabilities_yaml_path}")
 
     # Generate configurations.yaml (no schema directive)
     configurations_data = build_configurations_yaml(mapped_params)
+    configurations_data = deep_merge_dicts(
+        configurations_data, manual_configurations_fields or {}
+    )
     configurations_yaml_path = connector_dir / "configurations.yaml"
     with open(configurations_yaml_path, "w") as fh:
         yaml.safe_dump(configurations_data, fh)
@@ -703,6 +1079,13 @@ def add_handler_to_existing_connector(
     connector_title: str,
     mapped_params: dict[str, Any],
     auth_methods: dict[str, Any],
+    manual_connector_fields: dict | None = None,
+    manual_handler_fields: dict | None = None,
+    manual_summary_fields: dict | None = None,
+    manual_capabilities_fields: dict | None = None,
+    manual_configurations_fields: dict | None = None,
+    manual_serializer_fields: dict | None = None,
+    manual_connection_fields: dict | None = None,
 ) -> None:
     """Add a new handler under an existing connector and update shared files.
 
@@ -716,6 +1099,22 @@ def add_handler_to_existing_connector(
         f"[manifest_generator] auth_methods received with "
         f"{len(auth_methods.get('auth_types', []))} auth_types"
     )
+
+    if manual_serializer_fields:
+        logger.info(
+            "[manifest_generator] manual_serializer_fields received with keys "
+            f"{list(manual_serializer_fields.keys())} but serializer.yaml is a "
+            "string stub — overrides will NOT be applied until serializer becomes dict-based."
+        )
+    if manual_connection_fields:
+        logger.info(
+            "[manifest_generator] manual_connection_fields received with keys "
+            f"{list(manual_connection_fields.keys())} but connection.yaml is not yet "
+            "implemented — overrides will NOT be applied until that file is built."
+        )
+    # Note: manual_summary_fields is accepted for API uniformity but the
+    # append path does not touch summary.yaml.
+    _ = manual_summary_fields
 
     # Update connector.yaml: merge tags + bump version
     connector_yaml_path = connector_dir / "connector.yaml"
@@ -737,6 +1136,8 @@ def add_handler_to_existing_connector(
     logger.info(
         f"[manifest_generator] Bumped version: {current_version} → {new_version}"
     )
+
+    connector_data = deep_merge_dicts(connector_data, manual_connector_fields or {})
 
     with open(connector_yaml_path, "w") as fh:
         yaml.safe_dump(connector_data, fh)
@@ -813,6 +1214,7 @@ def add_handler_to_existing_connector(
         auth_methods,
         cap_name_to_handler_cap_id=cap_name_to_handler_cap_id,
     )
+    handler_data = deep_merge_dicts(handler_data, manual_handler_fields or {})
     write_handler_yaml(handler_yaml_path, handler_data)
     logger.info(f"[manifest_generator] Generated {handler_yaml_path}")
 
@@ -822,10 +1224,16 @@ def add_handler_to_existing_connector(
     logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
 
     # Write capabilities.yaml back (with schema directive).
+    capabilities_data = deep_merge_dicts(
+        capabilities_data, manual_capabilities_fields or {}
+    )
     write_capabilities_yaml(capabilities_yaml_path, capabilities_data)
     logger.info(f"[manifest_generator] Updated {capabilities_yaml_path}")
 
     # Write configurations.yaml back (no schema directive).
+    configurations_data = deep_merge_dicts(
+        configurations_data, manual_configurations_fields or {}
+    )
     with open(configurations_yaml_path, "w") as fh:
         yaml.safe_dump(configurations_data, fh)
     logger.info(f"[manifest_generator] Updated {configurations_yaml_path}")
@@ -869,6 +1277,47 @@ def generate_manifest(
         help="Root directory under which connector folders live. "
         "Defaults to <CWD>/connectors.",
     ),
+    manual_connector_fields: str = typer.Option(
+        "{}",
+        "--manual-connector-fields",
+        help="JSON string of manual overrides to deep-merge into connector.yaml.",
+    ),
+    manual_handler_fields: str = typer.Option(
+        "{}",
+        "--manual-handler-fields",
+        help="JSON string of manual overrides to deep-merge into handler.yaml.",
+    ),
+    manual_summary_fields: str = typer.Option(
+        "{}",
+        "--manual-summary-fields",
+        help="JSON string of manual overrides to deep-merge into summary.yaml.",
+    ),
+    manual_capabilities_fields: str = typer.Option(
+        "{}",
+        "--manual-capabilities-fields",
+        help="JSON string of manual overrides to deep-merge into capabilities.yaml.",
+    ),
+    manual_configurations_fields: str = typer.Option(
+        "{}",
+        "--manual-configurations-fields",
+        help="JSON string of manual overrides to deep-merge into configurations.yaml.",
+    ),
+    manual_serializer_fields: str = typer.Option(
+        "{}",
+        "--manual-serializer-fields",
+        help=(
+            "JSON string of manual overrides for serializer.yaml. "
+            "NOT YET APPLIED — serializer.yaml is currently a stub."
+        ),
+    ),
+    manual_connection_fields: str = typer.Option(
+        "{}",
+        "--manual-connection-fields",
+        help=(
+            "JSON string of manual overrides for connection.yaml. "
+            "NOT YET APPLIED — connection.yaml is not yet implemented."
+        ),
+    ),
 ) -> None:
     """Scaffold a new connector or add a handler to an existing one.
 
@@ -883,6 +1332,16 @@ def generate_manifest(
     integration_yml = load_integration_yml(integration_path)
     mapped_params_dict = parse_mapped_params(mapped_params)
     auth_methods_dict = parse_mapped_params(auth_methods)
+
+    manual_connector_fields_dict = parse_mapped_params(manual_connector_fields)
+    manual_handler_fields_dict = parse_mapped_params(manual_handler_fields)
+    manual_summary_fields_dict = parse_mapped_params(manual_summary_fields)
+    manual_capabilities_fields_dict = parse_mapped_params(manual_capabilities_fields)
+    manual_configurations_fields_dict = parse_mapped_params(
+        manual_configurations_fields
+    )
+    manual_serializer_fields_dict = parse_mapped_params(manual_serializer_fields)
+    manual_connection_fields_dict = parse_mapped_params(manual_connection_fields)
 
     slug = title_to_slug(connector_title)
     connector_dir = connectors_root / slug
@@ -901,6 +1360,13 @@ def generate_manifest(
             connector_title=connector_title,
             mapped_params=mapped_params_dict,
             auth_methods=auth_methods_dict,
+            manual_connector_fields=manual_connector_fields_dict,
+            manual_handler_fields=manual_handler_fields_dict,
+            manual_summary_fields=manual_summary_fields_dict,
+            manual_capabilities_fields=manual_capabilities_fields_dict,
+            manual_configurations_fields=manual_configurations_fields_dict,
+            manual_serializer_fields=manual_serializer_fields_dict,
+            manual_connection_fields=manual_connection_fields_dict,
         )
     else:
         create_manifest_from_scratch(
@@ -910,6 +1376,13 @@ def generate_manifest(
             connector_title=connector_title,
             mapped_params=mapped_params_dict,
             auth_methods=auth_methods_dict,
+            manual_connector_fields=manual_connector_fields_dict,
+            manual_handler_fields=manual_handler_fields_dict,
+            manual_summary_fields=manual_summary_fields_dict,
+            manual_capabilities_fields=manual_capabilities_fields_dict,
+            manual_configurations_fields=manual_configurations_fields_dict,
+            manual_serializer_fields=manual_serializer_fields_dict,
+            manual_connection_fields=manual_connection_fields_dict,
         )
 
 

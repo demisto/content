@@ -1273,3 +1273,279 @@ class TestHiddenParamFilter:
         assert "url" in all_params
 
         assert "Kept the following hidden params" not in caplog.text
+
+
+# ---------------------------------------------------------------------------
+# Long-running capability routing tests (INTEGRATION_TO_LONGRUNNING_CAPABILITY)
+# ---------------------------------------------------------------------------
+class TestLongRunningRouting:
+    """Tests for the long-running capability routing feature.
+
+    Verifies that when an integration declares ``script.longRunning: true`` AND
+    its ``commonfields.id`` is present in
+    ``INTEGRATION_TO_LONGRUNNING_CAPABILITY``:
+      - The suggested capability key is created in the result dict (Rule 7).
+      - The literal ``longRunningPort`` config param is routed there (Step 2.0).
+      - The ``long-running-execution`` command's params are routed there
+        (Step 2.3 via ``_resolve_target_capability``).
+
+    Also verifies that integrations NOT in the dict fall through to the existing
+    behavior (no change), and that integrations without ``longRunning: true``
+    ignore the dict entirely.
+    """
+
+    def _build_long_running_yml(
+        self,
+        integration_id: str,
+        long_running: bool = True,
+        configuration: list | None = None,
+    ) -> dict:
+        """Helper that builds a YML with ``commonfields.id`` and a
+        ``long-running-execution`` command."""
+        return {
+            "name": integration_id,
+            "commonfields": {"id": integration_id},
+            "configuration": configuration or [],
+            "script": {
+                "longRunning": long_running,
+                "commands": [{"name": "long-running-execution"}],
+            },
+        }
+
+    def test_long_running_id_in_dict_routes_port_and_command(self):
+        """
+        Given: An integration whose id (``Akamai WAF SIEM``) is in
+               ``INTEGRATION_TO_LONGRUNNING_CAPABILITY`` (suggested:
+               'Log Collection'), declares ``longRunning: true``, exposes a
+               ``longRunningPort`` config param, and has a
+               ``long-running-execution`` command with extra params.
+        When:  decide_capabilities + map_params_to_capabilities are called.
+        Then:  The suggested capability ('Log Collection') exists in the
+               result, ``longRunningPort`` is placed in it (Step 2.0), AND the
+               ``long-running-execution`` command's params are routed there
+               instead of 'Automation'.
+        """
+        yml = self._build_long_running_yml(
+            integration_id="Akamai WAF SIEM",
+            configuration=[{"name": "longRunningPort", "type": 0}],
+        )
+        capabilities = decide_capabilities(yml)
+        # Rule 7 must have created the Log Collection bucket
+        assert "Log Collection" in capabilities
+
+        command_params = {
+            "integration": "Akamai WAF SIEM",
+            "commands": {
+                "long-running-execution": ["listenerUrl", "certificate"],
+            },
+        }
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults={},
+            integration_yml=yml,
+        )
+
+        # Step 2.0 - longRunningPort routed to suggested capability
+        assert "longRunningPort" in result["Log Collection"]
+        # Step 2.3 - long-running-execution params routed to suggested capability
+        assert "listenerUrl" in result["Log Collection"]
+        assert "certificate" in result["Log Collection"]
+        # And NOT to Automation (which doesn't even exist in this minimal result)
+        assert "Automation" not in result or "listenerUrl" not in result.get(
+            "Automation", []
+        )
+
+    def test_long_running_id_not_in_dict_falls_through_to_automation(self):
+        """
+        Given: An integration whose id is NOT in
+               ``INTEGRATION_TO_LONGRUNNING_CAPABILITY`` but declares
+               ``longRunning: true``.
+        When:  decide_capabilities + map_params_to_capabilities are called.
+        Then:  No suggested-capability key is added (existing behavior). The
+               ``long-running-execution`` command's params land in 'Automation'
+               via the standard fallback. ``longRunningPort`` is NOT routed by
+               Step 2.0 (skipped due to no override).
+        """
+        yml = self._build_long_running_yml(
+            integration_id="SomeUnknownIntegration",
+            configuration=[{"name": "longRunningPort", "type": 0}],
+        )
+        capabilities = decide_capabilities(yml)
+        # No long-running-suggested capability added (only general + Automation
+        # from Rule 6, since long-running-execution is a non-excluded command).
+        assert "general_configurations" in capabilities
+        # Rule 6 adds Automation because long-running-execution doesn't match
+        # any excluded pattern.
+        assert "Automation" in capabilities
+
+        command_params = {
+            "integration": "SomeUnknownIntegration",
+            "commands": {
+                "long-running-execution": ["listenerUrl"],
+            },
+        }
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults={},
+            integration_yml=yml,
+        )
+        # Existing fallback: long-running-execution params land in Automation
+        assert "listenerUrl" in result["Automation"]
+        # longRunningPort is NOT auto-routed by Step 2.0 (no override)
+        assert "longRunningPort" not in result.get("Automation", [])
+
+    def test_long_running_port_absent_no_error(self):
+        """
+        Given: An integration in the dict (``Akamai WAF SIEM``) with
+               ``longRunning: true`` but NO ``longRunningPort`` config param.
+        When:  map_params_to_capabilities is called.
+        Then:  No error is raised; the suggested capability still receives the
+               ``long-running-execution`` command's params.
+        """
+        yml = self._build_long_running_yml(
+            integration_id="Akamai WAF SIEM",
+            configuration=[],  # no longRunningPort
+        )
+        capabilities = decide_capabilities(yml)
+        command_params = {
+            "integration": "Akamai WAF SIEM",
+            "commands": {"long-running-execution": ["listenerUrl"]},
+        }
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults={},
+            integration_yml=yml,
+        )
+        assert "Log Collection" in result
+        assert "listenerUrl" in result["Log Collection"]
+        # longRunningPort is not in any bucket since it's not in the YML
+        assert "longRunningPort" not in result["Log Collection"]
+
+    def test_long_running_port_in_param_defaults_still_routed(self):
+        """
+        Given: An integration in the dict (``Akamai WAF SIEM``) with
+               ``longRunning: true``, exposes ``longRunningPort``, AND
+               ``longRunningPort`` is also a key in ``param_defaults``.
+        When:  map_params_to_capabilities is called.
+        Then:  ``longRunningPort`` IS placed in the suggested long-running
+               capability (per the long-running spec — params owned by the
+               long-running flow are routed to the suggested capability
+               regardless of ``param_defaults``). The command's other params
+               are routed there too.
+        """
+        yml = self._build_long_running_yml(
+            integration_id="Akamai WAF SIEM",
+            configuration=[{"name": "longRunningPort", "type": 0}],
+        )
+        capabilities = decide_capabilities(yml)
+        command_params = {
+            "integration": "Akamai WAF SIEM",
+            "commands": {"long-running-execution": ["listenerUrl"]},
+        }
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults={"longRunningPort": 8080},  # external default
+            integration_yml=yml,
+        )
+        # longRunningPort is placed in the suggested capability (long-running
+        # spec wins over param_defaults override)
+        assert "longRunningPort" in result["Log Collection"]
+        # The command's other params are also routed there
+        assert "listenerUrl" in result["Log Collection"]
+        # And longRunningPort is NOT in general_configurations
+        assert "longRunningPort" not in result["general_configurations"]
+
+    def test_no_long_running_flag_dict_ignored(self):
+        """
+        Given: An integration whose id IS in the dict (``Akamai WAF SIEM``) but
+               does NOT declare ``longRunning: true`` (e.g., longRunning
+               flag absent or false).
+        When:  decide_capabilities + map_params_to_capabilities are called.
+        Then:  The dict is ignored entirely. No suggested-capability key added
+               by Rule 7; ``longRunningPort`` (if present) is not routed by
+               Step 2.0; the ``long-running-execution`` command (if present)
+               falls through to Automation.
+        """
+        yml = self._build_long_running_yml(
+            integration_id="Akamai WAF SIEM",
+            long_running=False,  # No long-running flag
+            configuration=[{"name": "longRunningPort", "type": 0}],
+        )
+        capabilities = decide_capabilities(yml)
+        # Rule 7 must NOT trigger
+        assert "Log Collection" not in capabilities
+
+        command_params = {
+            "integration": "Akamai WAF SIEM",
+            "commands": {"long-running-execution": ["listenerUrl"]},
+        }
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults={},
+            integration_yml=yml,
+        )
+        # No Log Collection bucket; long-running-execution falls through to
+        # Automation (which Rule 6 added because long-running-execution is a
+        # non-excluded command).
+        assert "Log Collection" not in result
+        assert "Automation" in result
+        assert "listenerUrl" in result["Automation"]
+        # longRunningPort not auto-routed (longRunning flag is false)
+        assert "longRunningPort" not in result["Automation"]
+
+    def test_long_running_param_pinned_to_suggested_capability_only(self):
+        """
+        Given: An integration in the dict (``Akamai WAF SIEM``) with
+               ``longRunning: true``. The ``longRunning`` param name is also
+               referenced by ``test-module`` and by another command's params —
+               adversarial inputs that try to land it in
+               ``general_configurations`` and/or another capability.
+        When:  decide_capabilities + map_params_to_capabilities are called.
+        Then:  ``longRunning`` ends up ONLY in the suggested long-running
+               capability (``Log Collection`` for Akamai WAF SIEM). It is NOT in
+               ``general_configurations`` and NOT in ``Automation``.
+        """
+        yml = self._build_long_running_yml(
+            integration_id="Akamai WAF SIEM",
+            configuration=[],
+        )
+        # Force Automation into the result by adding a non-excluded command
+        yml["script"]["commands"].append({"name": "akamai-do-something"})
+
+        capabilities = decide_capabilities(yml)
+        # Sanity: Rule 7 placed longRunning in Log Collection
+        assert "Log Collection" in capabilities
+        assert capabilities["Log Collection"] == ["longRunning"]
+
+        # Adversarial command_params: longRunning appears in test-module AND
+        # another command (Automation candidate)
+        command_params = {
+            "integration": "Akamai WAF SIEM",
+            "commands": {
+                "test-module": ["url", "longRunning"],
+                "akamai-do-something": ["longRunning", "someArg"],
+                "long-running-execution": ["listenerUrl"],
+            },
+        }
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults={},
+            integration_yml=yml,
+        )
+
+        # The hard requirement: longRunning lands ONLY in Log Collection
+        assert "longRunning" in result["Log Collection"]
+        assert "longRunning" not in result["general_configurations"]
+        assert "longRunning" not in result.get("Automation", [])
+
+        # And it appears exactly once across all capabilities
+        all_locations = [
+            cap for cap, params in result.items() if "longRunning" in params
+        ]
+        assert all_locations == ["Log Collection"]

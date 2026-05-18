@@ -24,6 +24,7 @@ from manifest_generator import (
     build_summary_yaml,
     bump_minor_version,
     create_manifest_from_scratch,
+    deep_merge_dicts,
     derive_handler_id,
     find_existing_handler_for_capability,
     get_pack_tags,
@@ -1996,3 +1997,215 @@ def test_append_capability_to_files_returns_correct_handler_cap_id_case3(
     assert cfg_data["configurations"] == [
         {"id": "fetch-issues", "configurations": [{"fields": [{"id": "p"}]}]}
     ]
+
+
+# ---------------------------------------------------------------------------
+# deep_merge_dicts (Group A — unit tests)
+# ---------------------------------------------------------------------------
+def test_deep_merge_empty_overrides_returns_base_copy() -> None:
+    base = {"a": 1, "b": {"c": 2}}
+    result = deep_merge_dicts(base, {})
+    assert result == {"a": 1, "b": {"c": 2}}
+    # Top-level should be a copy (different object)
+    assert result is not base
+
+
+def test_deep_merge_empty_base_returns_overrides_copy() -> None:
+    overrides = {"a": 1, "b": {"c": 2}}
+    result = deep_merge_dicts({}, overrides)
+    assert result == {"a": 1, "b": {"c": 2}}
+    assert result is not overrides
+
+
+def test_deep_merge_both_empty_returns_empty() -> None:
+    assert deep_merge_dicts({}, {}) == {}
+
+
+def test_deep_merge_disjoint_keys_combined() -> None:
+    assert deep_merge_dicts({"a": 1}, {"b": 2}) == {"a": 1, "b": 2}
+
+
+def test_deep_merge_scalar_conflict_overrides_wins() -> None:
+    assert deep_merge_dicts({"a": 1}, {"a": 2}) == {"a": 2}
+
+
+def test_deep_merge_nested_dict_siblings_preserved() -> None:
+    base = {"a": {"b": 1, "x": [1, 2]}, "c": "hello"}
+    overrides = {"a": {"c": 2, "x": [9]}, "d": "new"}
+    expected = {"a": {"b": 1, "c": 2, "x": [9]}, "c": "hello", "d": "new"}
+    assert deep_merge_dicts(base, overrides) == expected
+
+
+def test_deep_merge_lists_replaced_not_merged() -> None:
+    assert deep_merge_dicts({"a": [1, 2]}, {"a": [9]}) == {"a": [9]}
+
+
+def test_deep_merge_does_not_mutate_inputs() -> None:
+    base = {"a": {"b": 1, "x": [1, 2]}, "c": "hello"}
+    overrides = {"a": {"c": 2, "x": [9]}, "d": "new"}
+    base_snapshot = json.loads(json.dumps(base))
+    overrides_snapshot = json.loads(json.dumps(overrides))
+    _ = deep_merge_dicts(base, overrides)
+    assert base == base_snapshot
+    assert overrides == overrides_snapshot
+
+
+# ---------------------------------------------------------------------------
+# Manual override end-to-end (Group B)
+# ---------------------------------------------------------------------------
+def test_create_manifest_from_scratch_applies_manual_connector_fields(
+    tmp_path: Path,
+) -> None:
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": ["forensics"]}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"commonfields": {"id": "MyInt"}, "display": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+        manual_connector_fields={
+            "metadata": {"description": "MANUAL_DESC", "domain": "security"}
+        },
+    )
+
+    with open(connector_dir / "connector.yaml") as fh:
+        data = yaml.safe_load(fh)
+    metadata = data["metadata"]
+    # Manual overrides applied
+    assert metadata["description"] == "MANUAL_DESC"
+    assert metadata["domain"] == "security"
+    # Auto-built sibling preserved
+    assert metadata["title"] == "My Connector"
+    # Other auto fields still present
+    assert metadata["publisher"] == "Palo Alto Networks"
+    assert list(metadata["tags"]) == ["forensics"]
+
+
+def test_create_manifest_from_scratch_manual_handler_fields_replaces_list(
+    tmp_path: Path,
+) -> None:
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": ["forensics", "endpoint"]}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"commonfields": {"id": "MyInt"}, "display": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+        manual_handler_fields={"metadata": {"tags": ["MANUAL_TAG"]}},
+    )
+
+    handler_yaml_path = (
+        connector_dir
+        / "components"
+        / "handlers"
+        / "xsoar_myint"
+        / "handler.yaml"
+    )
+    assert handler_yaml_path.is_file()
+    with open(handler_yaml_path) as fh:
+        # Skip the schema directive line
+        first = fh.readline()
+        rest = fh.read()
+        if not first.startswith("# yaml-language-server"):
+            rest = first + rest
+    data = yaml.safe_load(rest)
+    # List replaced wholesale by manual override
+    assert list(data["metadata"]["tags"]) == ["MANUAL_TAG"]
+    # Sibling auto-built fields preserved
+    assert data["metadata"]["module"] == "xsoar"
+    assert data["metadata"]["version"] == "1.0.0"
+
+
+def test_add_handler_to_existing_connector_applies_manual_handler_fields(
+    tmp_path: Path,
+) -> None:
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": ["new"]}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+    _write_existing_connector_yaml(
+        connector_dir, version="1.0.0", tags=["existing"]
+    )
+
+    add_handler_to_existing_connector(
+        connector_dir=connector_dir,
+        integration_yml={"commonfields": {"id": "MyInt"}, "display": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+        manual_handler_fields={
+            "metadata": {"description": "MANUAL_HANDLER_DESC"}
+        },
+    )
+
+    handler_yaml_path = (
+        connector_dir
+        / "components"
+        / "handlers"
+        / "xsoar_myint"
+        / "handler.yaml"
+    )
+    assert handler_yaml_path.is_file()
+    with open(handler_yaml_path) as fh:
+        first = fh.readline()
+        rest = fh.read()
+        if not first.startswith("# yaml-language-server"):
+            rest = first + rest
+    data = yaml.safe_load(rest)
+    # Manual override applied
+    assert data["metadata"]["description"] == "MANUAL_HANDLER_DESC"
+    # Sibling auto-built fields preserved
+    assert data["metadata"]["module"] == "xsoar"
+    assert data["metadata"]["version"] == "1.0.0"
+
+
+def test_serializer_and_connection_manual_fields_logged_but_not_applied(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+
+    import logging as _logging
+
+    with caplog.at_level(_logging.INFO, logger="manifest_generator"):
+        create_manifest_from_scratch(
+            connector_dir=connector_dir,
+            integration_yml={"commonfields": {"id": "MyInt"}, "display": "MyInt"},
+            integration_path=integration_yml,
+            connector_title="My Connector",
+            mapped_params={},
+            auth_methods={},
+            manual_serializer_fields={"foo": "bar"},
+            manual_connection_fields={"baz": "qux"},
+        )
+
+    # INFO log messages emitted
+    log_messages = "\n".join(rec.getMessage() for rec in caplog.records)
+    assert "manual_serializer_fields received" in log_messages
+    assert "serializer.yaml is a string stub" in log_messages
+    assert "manual_connection_fields received" in log_messages
+    assert "connection.yaml is not yet" in log_messages
+
+    # serializer.yaml content is still the stub (overrides NOT applied)
+    serializer_yaml_path = (
+        connector_dir
+        / "components"
+        / "handlers"
+        / "xsoar_myint"
+        / "serializer.yaml"
+    )
+    assert serializer_yaml_path.is_file()
+    assert serializer_yaml_path.read_text() == SERIALIZER_PLACEHOLDER
