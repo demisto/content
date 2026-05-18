@@ -85,16 +85,18 @@ class Client:
                     in a list format. If article_id is empty, returns multiple articles from
                     the 'value' field of the response.
         """
-        odata_query = f"?$top={limit}&"
-        if odata:
-            odata_query += odata
+        odata_query = ""
 
         if not article_id:
+            odata_query = f"?$top={limit}&{odata}"
             response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/articles{odata_query}",
             )
             return response.get("value", [])
+
+        if odata:
+            odata_query += f"?{odata}"
 
         return [
             self.ms_client.http_request(
@@ -231,10 +233,11 @@ class Client:
             dict: A dictionary containing host information including ID, first/last seen timestamps,
                     registrar, and registrant details.
         """
+        odata_query = f"?{odata}" if odata else ""
 
         return self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}{odata}",
+            url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}{odata_query}",
         )
 
     def host_whois(self, host_id: str, whois_record_id: str, odata: str) -> dict:
@@ -252,15 +255,17 @@ class Client:
                     contact information (admin, technical, registrant), nameservers, and timestamps.
         """
 
+        odata_query = f"?{odata}" if odata else ""
+
         if host_id:
             return self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois{odata}",
+                url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois{odata_query}",
             )
 
         return self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata}",
+            url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata_query}",
         )
 
     def host_whois_history(self, host_id: str, whois_record_id: str, odata: str, limit: str) -> list:
@@ -280,19 +285,15 @@ class Client:
             list: A list of WHOIS history records containing registration details, contact information,
                     nameservers, and other domain registration data.
         """
-        odata_query = ""
+        odata_query = f"?$top={limit}&{odata}"
 
         if host_id:
-            odata_query += f"?$top={limit}&{odata}"
-
             response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois/history{odata_query}",
             )
 
             return response.get("value", [])
-
-        odata_query += f"?$top={limit}&{odata}"
 
         response = self.ms_client.http_request(
             method="GET",
@@ -314,10 +315,11 @@ class Client:
             dict: A dictionary containing host reputation information including reputation score,
                     classification, rules, and other reputation-related details.
         """
+        odata_query = f"?{odata}" if odata else ""
 
         return self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0//security/threatIntelligence/hosts/{host_id}/reputation{odata}",
+            url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/reputation{odata_query}",
         )
 
 

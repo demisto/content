@@ -383,6 +383,7 @@ Run any command supported in the API.
 | job-id | Job ID. | Optional |
 | query | Query string. | Optional |
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional |
+| newname | The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.| Optional |
 
 #### Context Output
 
@@ -5848,7 +5849,7 @@ Gets information from all PAN-OS systems in the topology.
 ### pan-os-platform-get-device-groups
 
 ***
-Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
+Gets operational information for all device groups in the Panorama topology, including group names, hierarchy, and associated firewalls. If no filter is provided, the command returns all device groups within the Panorama instance.
 
 #### Base Command
 
@@ -5858,7 +5859,7 @@ Gets the operational information of the device groups in the topology(only devic
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| device_filter_string | The Panorama hostname or serial number used to filter device groups. This command is specifically for Panorama and requires an exact match (substrings are not supported). | Optional |
 
 #### Context Output
 
@@ -9894,6 +9895,7 @@ Gathers the name, expiration date, and expiration status of certificates configu
 
 ***
 Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+When running from a Panorama instance, the `target` argument must be specified.
 
 #### Base Command
 
@@ -9903,7 +9905,7 @@ Checks for the latest available dynamic update versions and returns a list of la
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Mandatory for Panorama instances. | Optional |
 
 #### Context Output
 

@@ -1,5 +1,6 @@
 category: IT Services
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:

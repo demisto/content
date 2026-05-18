@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: CybelAngel
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -39,6 +40,8 @@ configuration:
   defaultvalue: 'false'
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: Event Types To Fetch
   name: event_types_to_fetch
   section: Collect
@@ -52,6 +55,8 @@ configuration:
   - Domain watchlist
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: The maximum number of reports per fetch
   name: max_fetch
   defaultvalue: "5000"
@@ -61,6 +66,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: The maximum number of Credential watchlist events per fetch
   name: max_fetch_creds
   defaultvalue: "50"
@@ -70,6 +77,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: The maximum number of Domain watchlist events  per fetch
   name: max_fetch_domain
   defaultvalue: "500"
@@ -79,6 +88,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
 display: CybelAngel
 name: CybelAngel Event Collector
@@ -107,9 +118,9 @@ script:
       description: 'Which events to fetch.'
       name: events_type_to_fetch
       predefined:
-        - 'Reports'
-        - 'Credential watchlist'
-        - 'Domain watchlist'
+      - 'Reports'
+      - 'Credential watchlist'
+      - 'Domain watchlist'
       defaultValue: 'Reports'
     description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
@@ -134,7 +145,7 @@ script:
       required: true
     - name: pdf
       description: 'If true, retrieves the report as a PDF file.'
-      defaultValue: False
+      defaultValue: false
       required: false
       auto: PREDEFINED
       predefined:
@@ -154,7 +165,7 @@ script:
       required: true
     - name: csv
       description: 'If true, retrieves the mirror report in CSV format.'
-      defaultValue: False
+      defaultValue: false
       required: false
       auto: PREDEFINED
       predefined:
@@ -244,13 +255,13 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
 fromversion: 8.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- marketplacev2
+- platform
 tests:
 - CybelAngel Test Playbook
 supportlevelheader: xsoar

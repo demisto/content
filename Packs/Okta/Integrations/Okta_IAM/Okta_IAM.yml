@@ -1,5 +1,6 @@
 category: Authentication & Identity Management
-sectionOrder:
+provider: Okta
+sectionorder:
 - Connect
 - Collect
 commonfields:

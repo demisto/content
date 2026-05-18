@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: SAP
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -86,3 +87,5 @@ script:
 fromversion: 8.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

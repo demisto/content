@@ -12,9 +12,9 @@ enabled: true
 args:
 - name: cmd
   default: true
-  description: Enter Command
+  description: Enter Command.
 - name: sysargs
-  description: enter sysargs
+  description: enter sysargs.
 outputs:
 - contextPath: CommandResults.Command
   description: This will contain the command line tool name and arguments that were ran.
@@ -22,6 +22,6 @@ outputs:
   description: This will have the full results as a single string of the results. You will need to parse the results of the command into the format you want. Try looking at commands like ExtractRegex or create your own follow on automation script that will parse the results into the format you would like.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (auto formatted)

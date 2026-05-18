@@ -245,9 +245,7 @@ tasks:
       id: 8457fd75-d770-4c23-8c2c-d32e3aa523d8
       version: -1
       name: Did we encounter an error?
-      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, it returns 'yes'
-        if one of the entries returned an error.
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, it returns 'yes' if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -279,8 +277,7 @@ tasks:
       id: bdc74c5f-447e-47bd-8111-c7e89194d74a
       version: -1
       name: Manually remove default VPC and its resources
-      description: Manually remove all existing resources from your default VPC network.  Then
-        delete the default network.
+      description: Manually remove all existing resources from your default VPC network.  Then delete the default network.
       type: regular
       iscommand: false
       brand: ""
@@ -384,9 +381,3 @@ inputs:
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

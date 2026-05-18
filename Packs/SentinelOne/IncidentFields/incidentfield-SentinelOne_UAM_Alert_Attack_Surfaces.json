@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SentinelOne Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sentineloneuamalertattacksurfaces",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sentineloneuamalertattacksurfaces",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SentinelOne UAM Alert Attack Surfaces",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

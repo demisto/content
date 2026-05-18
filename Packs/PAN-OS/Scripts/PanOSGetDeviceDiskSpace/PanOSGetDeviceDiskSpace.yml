@@ -19,7 +19,7 @@ commonfields:
 dependson:
   must:
   - '|||pan-os'
-dockerimage: demisto/python3:3.12.11.4095827
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 engineinfo: {}
 name: PAN-OS-GetDeviceDiskSpace
@@ -60,5 +60,7 @@ tests:
 fromversion: 6.10.0
 supportedModules:
 - agentix
+- xsiam
+- cloud_posture
 marketplaces:
 - platform

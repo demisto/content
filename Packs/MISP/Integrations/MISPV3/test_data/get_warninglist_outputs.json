@@ -1,0 +1,28 @@
+{
+    "ID": 1,
+    "Name": "Hello XSOAR!",
+    "Type": "string",
+    "Description": "The Quick Brown Fox Jumped Over The Lazy Dog",
+    "Version": 1,
+    "Enabled": false,
+    "Default": false,
+    "Category": "false_positive",
+    "Attributes": [
+        "attrib1",
+        "attrib2"
+    ],
+    "Entries": [
+        {
+            "ID": 12345,
+            "Value": "test",
+            "WarninglistID": 1,
+            "Comment": null
+        },
+        {
+            "ID": 56789,
+            "Value": "another-test",
+            "WarninglistID": 1,
+            "Comment": null
+        }
+    ]
+}

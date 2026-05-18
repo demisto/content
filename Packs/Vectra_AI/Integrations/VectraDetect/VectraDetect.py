@@ -22,7 +22,6 @@ import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-
 from CommonServerUserPython import *
 
 # Disable insecure warnings
@@ -33,9 +32,9 @@ urllib3.disable_warnings()
 
 TOTAL_RETRIES = 4
 STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500))  # type: ignore
-OK_CODES = (200, 201, 204)
+OK_CODES = (200, 201, 204, 401)
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
-PACK_VERSION = get_pack_version() or "2.0.0"
+PACK_VERSION = get_pack_version() or "2.1.0"
 UTM_PIVOT = f"?pivot=Vectra_AI-XSOAR-{PACK_VERSION}"
 DATE_FORMAT: str = "%Y-%m-%dT%H:%M:%S.000Z"
 USER_AGENT = f"Vectra_AI-XSOAR-{PACK_VERSION}"
@@ -43,6 +42,7 @@ MAX_RESULTS: int = 200
 DEFAULT_FIRST_FETCH: str = "7 days"
 DEFAULT_FETCH_ENTITY_TYPES: list = ["Hosts", "Accounts"]
 DEFAULT_MAX_FETCH: int = 50
+TAGS_REGEX = re.compile(r"^[\w:._ -]+$", re.U)
 
 ERRORS = {
     "REQUIRED_ARGUMENT": "Please provide valid value of the '{}'. It is required field.",
@@ -53,6 +53,9 @@ ERRORS = {
         "Invalid '{}' value provided. Please ensure it is one of the values from the following options: {}."
     ),
     "INVALID_SUPPORT_FOR_ARG": 'The argument "{}" must be set to "{}" when providing value for argument "{}".',
+    "INVALID_OBJECT": "Failed to parse {} object from response: {}",
+    "UNAUTHORIZED_REQUEST": "Status code: {}. Unauthorized request: {}.",
+    "GENERAL_AUTH_ERROR": "Status code: {}. Error occurred while creating an authorization token.",
 }
 
 ENDPOINTS = {
@@ -73,6 +76,8 @@ OUTPUT_PREFIXES = {
 NOTE_OUTPUT_KEY_FIELD = "note_id"
 
 API_VERSION_URL = "/api/v2.5"
+
+API_ENDPOINT_OAUTH_TOKEN = "/oauth2/token"
 
 API_ENDPOINT_ACCOUNTS = "/accounts"
 API_ENDPOINT_ASSIGNMENT = "/assignments"
@@ -112,6 +117,7 @@ BACK_IN_TIME_SEARCH_IN_MINUTES = "0"
 
 VALID_GROUP_TYPE = ["account", "host", "ip", "domain"]
 VALID_IMPORTANCE_VALUE = ["high", "medium", "low", "never_prioritize"]
+VALID_CLOSE_REASON = ["benign", "remediated"]
 
 MAX_MIRRORING_LIMIT = 5000
 ENTITY_TYPES_FOR_MIRRORING = ["host", "account"]
@@ -127,6 +133,7 @@ EMPTY_ASSIGNMENT = [
     }
 ]
 MIRROR_DIRECTION = {"Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+EARLY_EXPIRY_TIME = 300  # (in seconds)
 
 # ####     #### #
 # ## GLOBALS ## #
@@ -142,38 +149,233 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    Supports both API token and OAuth 2.0 authentication methods.
     """
 
-    def http_request(self, method, url_suffix, params=None, json_data=None, resp_type="json"):
+    def __init__(
+        self,
+        base_url: str,
+        verify: bool,
+        proxy: bool,
+        use_oauth: bool = False,
+        api_token: str = None,
+        client_id: str = None,
+        client_secret: str = None,
+        headers: dict = None,
+    ):
         """
-        Get http response based on url and given parameters.
+        Initializes the Client instance with authentication support.
 
-        :param method: Specify http methods.
-        :param url_suffix: Url encoded url suffix.
-        :param params: Parameters to submit with the http request.
+        Args:
+            base_url (str): The base URL for the API.
+            verify (bool): Whether to verify SSL certificates.
+            proxy (bool): Whether to use proxy.
+            use_oauth (bool): Whether to use OAuth 2.0 authentication (True) or API token (False).
+            api_token (str): API token for token-based authentication.
+            client_id (str): Client ID for OAuth authentication.
+            client_secret (str): Client secret for OAuth authentication.
+            headers (dict): Additional headers to include in requests.
+        """
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        self.use_oauth = use_oauth
+        self.api_token = api_token
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+    def _get_auth_headers(self) -> dict:
+        """
+        Get authentication headers based on the configured auth type.
+
+        Returns:
+            dict: Headers with appropriate authentication.
+        """
+        headers = {"User-Agent": USER_AGENT}
+
+        if self.use_oauth:
+            token = self._generate_tokens()
+            headers["Authorization"] = f"Bearer {token}"
+        elif not self.use_oauth and self.api_token:
+            headers["Authorization"] = f"token {self.api_token}"
+
+        return headers
+
+    def _generate_tokens(self, use_existing_token: bool = True) -> str:
+        """
+        Get an OAuth access token that was previously created if it is still valid,
+        else, generate a new authorization token from the client id and client secret.
+
+        Args:
+            use_existing_token: Use existing token if it is still valid.
+
+        Returns:
+            str: The access token.
+        """
+        integration_context: dict = get_integration_context()
+        previous_token: dict = integration_context.get("oauth_token", {})
+
+        # Check if there is existing valid authorization token.
+        if (
+            previous_token.get("access_token")
+            and use_existing_token
+            and previous_token.get("expire") > datetime.now(timezone.utc).timestamp()  # type: ignore
+        ):
+            demisto.debug("Got OAuth access token from the integration context.")
+            return previous_token.get("access_token")  # type: ignore
+
+        demisto.debug("Trying to generate a new OAuth access token.")
+        payload = "grant_type=client_credentials"
+        auth = requests.auth.HTTPBasicAuth(self.client_id, self.client_secret)  # type: ignore
+        headers = {"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"}
+
+        res = self._http_request(
+            method="POST",
+            url_suffix=API_ENDPOINT_OAUTH_TOKEN,
+            headers=headers,
+            data=payload,
+            auth=auth,
+            backoff_factor=BACKOFF_FACTOR,
+            status_list_to_retry=STATUS_CODE_TO_RETRY,
+            resp_type="response",
+            ok_codes=OK_CODES,
+            raise_on_status=True,
+        )
+        res_status_code = res.status_code
+        if res_status_code in [401]:
+            raise DemistoException(ERRORS["GENERAL_AUTH_ERROR"].format(res_status_code))
+
+        try:
+            res_json = res.json()
+        except ValueError as exception:
+            raise DemistoException(ERRORS["INVALID_OBJECT"].format("json", res.content), exception)
+
+        if res_json.get("access_token"):
+            # Calculate expiry time from expires_in (seconds) with early expiry buffer
+            expires_in_seconds = res_json.get("expires_in", 21600)  # Default to 6 hours
+            expiry_time = datetime.now(timezone.utc).timestamp() + expires_in_seconds - EARLY_EXPIRY_TIME  # 5 min buffer
+            demisto.debug(
+                "Setting the expiry time of the OAuth access token to " + timestamp_to_datestring(expiry_time * 1000, is_utc=True)
+            )
+            new_token = {"access_token": res_json.get("access_token"), "expire": expiry_time}
+            integration_context.update({"oauth_token": new_token})
+            set_integration_context(integration_context)
+
+            return res_json.get("access_token")
+
+        raise DemistoException("Failed to generate OAuth access token - no access_token in response")
+
+    def http_request(
+        self,
+        method,
+        url_suffix,
+        params=None,
+        status_list_to_retry=STATUS_CODE_TO_RETRY,
+        backoff_factor=BACKOFF_FACTOR,
+        retries=TOTAL_RETRIES,
+        internal_retries=3,
+        json_data=None,
+        resp_type="json",
+        **kwargs,
+    ):
+        """
+        Method to override private _http_request of BaseClient to handle specific status code.
+
+        :type method: ``str``
+        :param method: The HTTP method, for example: GET, POST, and so on.
+
+        :type url_suffix: ``str``
+        :param url_suffix: The API endpoint.
+
+        :type params: ``dict``
+        :param params: URL parameters to specify the query.
+
+        :type status_list_to_retry: ``iterable``
+        :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+
+        :type backoff_factor ``float``
+        :param backoff_factor: A backoff factor to apply between attempts
+
+        :type retries: ``int``
+        :param retries: How many retries should be made in case of a failure.
+
+        :type internal_retries: ``int``
+        :param internal_retries: How many retries should be made in case of an auth failure.
+
+        :type json_data: ``dict``
         :param json_data: Json data to submit with the http request.
+
+        :type resp_type: ``str``
         :param resp_type: Response type.
-        :return: http response.
+
+        :return: Response dict or response object.
+        :rtype: ``Optional[dict]`` or ``requests.Response``
         """
         demisto.debug(
             "Requesting Vectra Detect with method: "
             f"{method}, url_suffix: {url_suffix}, params: {params} and json_data: {json_data}"
         )
+
+        # Get authentication headers dynamically
+        headers = self._get_auth_headers()
         resp = self._http_request(
             method=method,
             url_suffix=url_suffix,
+            headers=headers,
             params=params,
             json_data=json_data,
-            retries=TOTAL_RETRIES,
-            status_list_to_retry=STATUS_CODE_TO_RETRY,
-            backoff_factor=BACKOFF_FACTOR,
-            raise_on_redirect=False,
-            raise_on_status=False,
-            resp_type=resp_type,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry,
+            backoff_factor=backoff_factor,
+            raise_on_status=True,
+            resp_type="response",
             ok_codes=OK_CODES,
-        )  # type: ignore
-        return resp
+            **kwargs,
+        )
+        resp_status_code = resp.status_code
+
+        # If authentication failure happens for OAuth.
+        if resp_status_code in [401]:
+            if self.use_oauth:
+                demisto.debug("Handling status code 401 by generating a new OAuth token.")
+                if internal_retries > 0:
+                    self._generate_tokens(use_existing_token=False)
+                    internal_retries = internal_retries - 1
+                    return self.http_request(
+                        method=method,
+                        url_suffix=url_suffix,
+                        params=params,
+                        status_list_to_retry=status_list_to_retry,
+                        backoff_factor=backoff_factor,
+                        retries=retries,
+                        internal_retries=internal_retries,
+                        json_data=json_data,
+                        resp_type=resp_type,
+                        **kwargs,
+                    )
+                try:
+                    err_msg = ERRORS["UNAUTHORIZED_REQUEST"].format(resp_status_code, str(resp.json()))
+                except ValueError:
+                    err_msg = ERRORS["UNAUTHORIZED_REQUEST"].format(resp_status_code, str(resp))
+                raise DemistoException(err_msg)
+            else:
+                raise DemistoException(ERRORS["UNAUTHORIZED_REQUEST"].format(resp_status_code, str(resp.json())))
+
+        try:
+            result = None
+            if resp_type == "json":
+                result = resp.json()
+            if resp_type == "content":
+                result = resp.content()
+            if resp_type == "response":
+                result = resp
+            if resp_type == "text":
+                result = resp.text
+        except ValueError as exception:
+            raise DemistoException(
+                ERRORS["INVALID_OBJECT"].format(resp_type, resp.content),  # type: ignore[str-bytes-safe]
+                exception,
+                resp,
+            )
+        return result
 
     def search_detections(
         self,
@@ -284,6 +486,8 @@ class Client(BaseClient):
         search_query_only: str = None,  # type: ignore
         page: int = None,
         max_results=None,  # type: ignore
+        order_field: str = "last_detection_timestamp",  # type: ignore
+        doc_modified_time=None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -295,7 +499,7 @@ class Client(BaseClient):
 
         # Default params
         demisto.debug("Forcing 'page', 'order_field' and 'page_size' query arguments")
-        query_params: dict[str, Any] = {"page": page if page else 1, "order_field": "last_detection_timestamp"}
+        query_params: dict[str, Any] = {"page": page if page else 1, "order_field": order_field}
         query_params["page_size"] = sanitize_max_results(max_results)
 
         params: dict[str, Any] = {}
@@ -328,6 +532,9 @@ class Client(BaseClient):
             # Last timestamp
             if last_timestamp:
                 params["last_timestamp"] = last_timestamp
+
+            if doc_modified_time:
+                params["doc_modified_time"] = doc_modified_time
 
             # State
             if state:
@@ -362,6 +569,8 @@ class Client(BaseClient):
         search_query_only: str = None,  # type: ignore
         page: int = None,
         max_results=None,  # type: ignore
+        order_field: str = "last_detection_timestamp",  # type: ignore
+        doc_modified_time=None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -373,7 +582,7 @@ class Client(BaseClient):
 
         # Default params
         demisto.debug("Forcing 'page', 'order_field' and 'page_size' query arguments")
-        query_params: dict[str, Any] = {"page": page if page else 1, "order_field": "last_detection_timestamp"}
+        query_params: dict[str, Any] = {"page": page if page else 1, "order_field": order_field}
         query_params["page_size"] = sanitize_max_results(max_results)
 
         params: dict[str, Any] = {}
@@ -406,6 +615,9 @@ class Client(BaseClient):
             # Last timestamp
             if last_timestamp:
                 params["last_timestamp"] = last_timestamp
+
+            if doc_modified_time:
+                params["doc_modified_time"] = doc_modified_time
 
             # State
             if state:
@@ -771,6 +983,37 @@ class Client(BaseClient):
         # Execute request
         return self.http_request(method="PATCH", url_suffix=API_ENDPOINT_DETECTIONS, json_data=json_payload)
 
+    def close_detections_by_ids(self, ids_list: list, reason: str):
+        """
+        Close a list of detections with a specified reason.
+
+        - params:
+            - ids_list: Vectra Detection IDs list.
+            - reason: The close reason (benign or remediated).
+        - returns:
+            Vectra API call result.
+        """
+
+        json_payload = {"detectionIdList": ids_list, "reason": reason}
+
+        # Execute request
+        return self.http_request(method="PATCH", url_suffix=f"{API_ENDPOINT_DETECTIONS}/close", json_data=json_payload)
+
+    def open_detections_by_ids(self, ids_list: list):
+        """
+        Open a detections by ID
+
+        - params:
+            - ids_list: Vectra Detection IDs list
+        - returns:
+            Vectra API call result
+        """
+
+        json_payload = {"detectionIdList": ids_list}
+
+        # Execute request
+        return self.http_request(method="PATCH", url_suffix=f"{API_ENDPOINT_DETECTIONS}/open", json_data=json_payload)
+
     def list_tags_request(self, entity_id: int = None, entity_type: str = None) -> dict:  # type: ignore
         """
         List tags for the specified entity.
@@ -1027,6 +1270,34 @@ class Client(BaseClient):
         )
 
         return self.http_request(method="GET", url_suffix=API_ENDPOINT_GROUPS, params=params)
+
+    def close_detection_by_id(self, id: str, reason: str):
+        """
+        Close a single detection by ID
+
+        - params:
+            - id: Vectra Detection ID
+            - reason: Close reason (benign or remediated)
+        - returns:
+            Vectra API call result
+        """
+        json_payload = {"reason": reason}
+
+        # Execute request
+        return self.http_request(method="PATCH", url_suffix=f"{API_ENDPOINT_DETECTIONS}/{id}/close", json_data=json_payload)
+
+    def open_detection_by_id(self, id: str):
+        """
+        Open a single detection by ID
+
+        - params:
+            - id: Vectra Detection ID
+        - returns:
+            Vectra API call result
+        """
+
+        # Execute request
+        return self.http_request(method="PATCH", url_suffix=f"{API_ENDPOINT_DETECTIONS}/{id}/open")
 
 
 # ####                 #### #
@@ -1411,6 +1682,10 @@ def build_search_query(object_type, params: dict) -> str:
             else:
                 attribute = "last_detection_timestamp"
 
+        if key == "doc_modified_time":
+            operator = ":>="
+            attribute = "_doc_modified_ts"
+
         # Append query
         # No need to add "AND" as implied
         query += f" {object_type}.{attribute}{operator}{value}"
@@ -1480,6 +1755,7 @@ def extract_account_data(account: dict[str, Any]) -> dict[str, Any]:
         "Type": account.get("account_type"),
         "URL": forge_entity_url("account", account.get("id")),
         "Username": account.get("name"),
+        "DocModifiedTimestamp": convert_date(account.get("_doc_modified_ts")),
     }
 
 
@@ -1555,6 +1831,7 @@ def extract_host_data(host: dict[str, Any]) -> dict[str, Any]:
         "SensorName": host.get("sensor_name"),
         "Severity": unify_severity(host.get("severity")),
         "URL": forge_entity_url("host", host.get("id")),
+        "DocModifiedTimestamp": convert_date(host.get("_doc_modified_ts")),
     }
 
 
@@ -1679,7 +1956,13 @@ def detection_to_incident(detection: dict):
     return incident, incident_last_run
 
 
-def host_to_incident(client: Client, host: dict, detection_category: str = "", detection_type: str = ""):
+def host_to_incident(
+    client: Client,
+    host: dict,
+    detection_category: str = "",
+    detection_type: str = "",
+    fetch_escalated_accounts_and_hosts: bool = False,
+):
     """
     Creates an incident of a Host.
 
@@ -1695,6 +1978,9 @@ def host_to_incident(client: Client, host: dict, detection_category: str = "", d
     :type detection_type: ``str``
     :param detection_type: The type of the detection.
 
+    :type fetch_escalated_accounts_and_hosts: ``bool``
+    :param fetch_escalated_accounts_and_hosts: Whether to fetch escalated accounts and hosts.
+
     :return: Incident representation of a Host.
     :rtype ``dict``
     """
@@ -1708,7 +1994,7 @@ def host_to_incident(client: Client, host: dict, detection_category: str = "", d
     detections = detections_data.get("results", [])
     for detection in detections:
         detection["url"] = forge_entity_url("detection", detection.get("id"))
-    demisto.debug(f'Found {len(detections)} detection(s) for the host with the ID: {host.get("id")}.')
+    demisto.debug(f"Found {len(detections)} detection(s) for the host with the ID: {host.get('id')}.")
     host.update({"detection_details": detections})
 
     response = client.list_assignments_request(hosts=host.get("id"), page_size=1)
@@ -1747,16 +2033,26 @@ def host_to_incident(client: Client, host: dict, detection_category: str = "", d
 
     incident_last_run = {
         "last_timestamp": dateparser.parse(
-            extracted_data.get("LastDetectionTimestamp"),  # type: ignore
+            (
+                extracted_data.get("DocModifiedTimestamp")  # type: ignore
+                if fetch_escalated_accounts_and_hosts
+                else extracted_data.get("LastDetectionTimestamp")
+            ),
             settings={"TO_TIMEZONE": "UTC"},
-        ).isoformat(),  # type: ignore
+        ).isoformat(),
         "id": extracted_data.get("ID"),
     }
 
     return incident, incident_last_run
 
 
-def account_to_incident(client: Client, account: dict, detection_category: str = "", detection_type: str = ""):
+def account_to_incident(
+    client: Client,
+    account: dict,
+    detection_category: str = "",
+    detection_type: str = "",
+    fetch_escalated_accounts_and_hosts: bool = False,
+):
     """
     Creates an incident of an Account.
 
@@ -1771,6 +2067,9 @@ def account_to_incident(client: Client, account: dict, detection_category: str =
 
     :type detection_type: ``str``
     :param detection_type: The type of the detection.
+
+    :type fetch_escalated_accounts_and_hosts: ``bool``
+    :param fetch_escalated_accounts_and_hosts: Whether to fetch escalated accounts and hosts.
 
     :return: Incident representation of a Account
     :rtype ``dict``
@@ -1841,9 +2140,13 @@ def account_to_incident(client: Client, account: dict, detection_category: str =
 
     incident_last_run = {
         "last_timestamp": dateparser.parse(
-            extracted_data.get("LastDetectionTimestamp"),  # type: ignore
+            (
+                extracted_data.get("DocModifiedTimestamp")  # type: ignore
+                if fetch_escalated_accounts_and_hosts
+                else extracted_data.get("LastDetectionTimestamp")
+            ),
             settings={"TO_TIMEZONE": "UTC"},
-        ).isoformat(),  # type: ignore
+        ).isoformat(),
         "id": account_id,
     }
 
@@ -2080,7 +2383,7 @@ def get_group_list_command_hr(groups: list):
                         members_list.append(str(member.get("uid")))  # type: ignore
                     elif member.get("id"):
                         members_list.append(  # type: ignore
-                            f'[{member.get("id")}]({forge_entity_url(group.get("type"), member.get("id"))})'
+                            f"[{member.get('id')}]({forge_entity_url(group.get('type'), member.get('id'))})"
                         )
                 members_hr = ", ".join(members_list)
 
@@ -2180,7 +2483,7 @@ def get_group_unassign_and_assign_command_hr(group: dict, changed_members: list,
 
         if ignored_members:
             return_warning(
-                f'The following account names were invalid: {", ".join(ignored_members)}',
+                f"The following account names were invalid: {', '.join(ignored_members)}",
                 exit=len(ignored_members) == len(changed_members),
             )
 
@@ -2363,15 +2666,73 @@ def add_notes_to_new_entries(notes: list, command_last_run_dt: datetime | None) 
         new_entry_notes.append(
             {
                 "Type": EntryType.NOTE,
-                "Contents": f'[Mirrored From Vectra]\n'
-                f'Added By: {note.get("created_by")}\n'
-                f'Added At: {note.get("date_created")} UTC\n'
-                f'Note: {note_info}',
+                "Contents": f"[Mirrored From Vectra]\n"
+                f"Added By: {note.get('created_by')}\n"
+                f"Added At: {note.get('date_created')} UTC\n"
+                f"Note: {note_info}",
                 "ContentsFormat": EntryFormat.MARKDOWN,
                 "Note": True,
             }
         )
     return new_entry_notes
+
+
+def add_refetch_id_to_integration_context(entity_id: str, entity_type: str):
+    """
+    Adds the entity ID and type to the integration context.
+    Args:
+        entity_id (str): The ID of the entity.
+        entity_type (str): The type of the entity.
+    """
+    if not entity_id or not entity_type:
+        raise ValueError("Both 'entity_id' and 'entity_type' arguments are required.")
+
+    if entity_type not in ENTITY_TYPES_FOR_MIRRORING:
+        raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(ENTITY_TYPES_FOR_MIRRORING)))
+
+    # Get current integration context
+    integration_context = get_integration_context()
+
+    entity_type = "Accounts" if entity_type == "account" else "Hosts"
+    # Initialize refetch_ids if it doesn't exist
+    if entity_type not in integration_context:
+        integration_context[entity_type] = {}
+
+    if "refetch_ids" not in integration_context[entity_type]:
+        integration_context[entity_type]["refetch_ids"] = []
+
+    # Create the refetch entry
+    refetch_entry = f"{entity_type}_{entity_id}"
+
+    demisto.debug(f"Adding entity id to the integration context: {refetch_entry}")
+
+    # Add to refetch list if not already present
+    if refetch_entry not in integration_context[entity_type]["refetch_ids"]:
+        integration_context[entity_type]["refetch_ids"].append(refetch_entry)
+
+        # Update integration context
+        set_integration_context(integration_context)
+
+    demisto.debug(f"Updated {entity_type} ids list in the integration context: {integration_context[entity_type]['refetch_ids']}")
+
+
+def get_valid_and_dropped_tags(tags: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Return (valid_tags, dropped_tags) using TAG_REGEX.fullmatch().
+
+    Note: does not strip/mutate inputs. If you want trimming, do it before calling.
+    """
+    valid: list[str] = []
+    invalid: list[str] = []
+    for t in tags:
+        if TAGS_REGEX.fullmatch(t):
+            valid.append(t)
+        else:
+            invalid.append(t)
+    if invalid:
+        demisto.debug(f"Dropping invalid tags which contains invalid characters: {invalid}")
+    demisto.debug(f"Provided Valid tags(s): {valid}")
+    return valid, invalid
 
 
 class VectraException(Exception):
@@ -2414,6 +2775,9 @@ def test_module(client: Client, integration_params: dict) -> str:
     except DemistoException as e:
         if "Invalid token" in str(e):
             message = "Authorization Error: make sure API Token is properly set"
+            demisto.debug(message)
+        elif "Error occurred while creating an authorization token" in str(e):
+            message = "Authorization Error: make sure Client ID and Client Secret are properly set"
             demisto.debug(message)
         elif "Verify that the server URL parameter is correct" in str(e):
             message = "Verify that the Vectra Server FQDN or IP is correct and that you have access to the server from your host"
@@ -2475,9 +2839,39 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
         # Forced to use "get" as this field wasn't present in the first version of this integration
         last_created_events = previous_last_run[entity_type].get("last_created_events", [])  # Retro-compat
 
+        integration_context = get_integration_context()
+        refetch_ids = integration_context.get(entity_type, {}).get("refetch_ids", [])
+
+        # Remove refetch IDs from already_fetched and create the removed_ids list
+        removed_ids = []
+        for refetch_id in refetch_ids:
+            if refetch_id in last_created_events:
+                removed_ids.append(refetch_id)
+                last_created_events.remove(refetch_id)
+
+        demisto.debug(f"Removed closed {entity_type} ids from last run checkpoint: {removed_ids}")
+
+        # Initialize entity_type in integration_context if it doesn't exist
+        if entity_type not in integration_context:
+            integration_context[entity_type] = {}
+
+        # Update integration context with empty refetch_ids
+        integration_context[entity_type]["refetch_ids"] = []
+
+        # Set the updated integration context
+        set_integration_context(integration_context)
+
         demisto.debug(f"{entity_type} - Last fetched incidentlast_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}")
 
         start_time = iso_date_to_vectra_start_time(last_fetched_timestamp, look_back)
+
+        order_field = "last_detection_timestamp"
+        last_detection_time, doc_modified_ts = start_time, None
+        fetch_escalated_accounts_and_hosts = integration_params.get("fetch_escalated_accounts_and_hosts", False)
+        if fetch_escalated_accounts_and_hosts:
+            last_detection_time = None
+            doc_modified_ts = start_time
+            order_field = "_doc_modified_ts"
 
         new_last_run[entity_type] = previous_last_run.get(entity_type, {})
         new_last_run[entity_type]["last_created_events"] = last_created_events
@@ -2486,14 +2880,18 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                 integration_params.get("accounts_fetch_query", ""), "linked_account", tags
             )
             api_response = client.search_accounts(
-                last_timestamp=start_time,
+                last_timestamp=last_detection_time,
+                doc_modified_time=doc_modified_ts,
                 search_query=accounts_fetch_query,
+                order_field=order_field,
             )
         elif entity_type == "Hosts":
             hosts_fetch_query = build_search_query_for_tags(integration_params.get("hosts_fetch_query", ""), "host", tags)
             api_response = client.search_hosts(
-                last_timestamp=start_time,
+                last_timestamp=last_detection_time,
+                doc_modified_time=doc_modified_ts,
                 search_query=hosts_fetch_query,
+                order_field=order_field,
             )
         elif entity_type == "Detections":
             api_response = client.search_detections(
@@ -2522,11 +2920,22 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                     )
                     break
 
+                incident_uid = f"{entity_type}_{event.get('id')}"
+                if incident_uid in last_created_events:
+                    demisto.debug(
+                        f"{entity_type} - Skipping object last_timestamp : {event.get('last_timestamp')} / ID : {event.get('id')}"
+                    )
+                    continue
+
                 incident_last_run = None
                 if entity_type == "Accounts":
-                    incident, incident_last_run = account_to_incident(client, event, detection_category, detection_type)
+                    incident, incident_last_run = account_to_incident(
+                        client, event, detection_category, detection_type, fetch_escalated_accounts_and_hosts
+                    )
                 elif entity_type == "Hosts":
-                    incident, incident_last_run = host_to_incident(client, event, detection_category, detection_type)
+                    incident, incident_last_run = host_to_incident(
+                        client, event, detection_category, detection_type, fetch_escalated_accounts_and_hosts
+                    )
                 elif entity_type == "Detections":
                     incident, incident_last_run = detection_to_incident(event)
                 else:
@@ -2536,15 +2945,6 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                 # Search this incident in the last_run, if it's in, skip it, if not create it
                 # Create incident UID and search for it
                 if incident_last_run is not None:
-                    incident_uid = f"{entity_type}_{incident_last_run.get('id')}"
-                    if incident_uid in last_created_events:
-                        demisto.debug(
-                            f"{entity_type} - Skipping object "
-                            f"last_timestamp : {incident_last_run.get('last_timestamp')} "
-                            f"/ ID : {incident_last_run.get('id')}"
-                        )
-                        continue
-
                     demisto.debug(
                         f"{entity_type} - New incident from object "
                         f"last_timestamp : {incident_last_run.get('last_timestamp')} "
@@ -2589,7 +2989,10 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
     """
     args = demisto.args()
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={"TIMEZONE": "UTC"}).strftime("%Y-%m-%dT%H%M")  # type: ignore
+    command_last_run_date = dateparser.parse(
+        command_args.last_update,
+        settings={"TIMEZONE": "UTC"},
+    ).strftime("%Y-%m-%dT%H%M")  # type: ignore
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
@@ -2605,7 +3008,7 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
                 # Extract the query parameters
                 query_params = parse_qs(parsed_url.query)
                 page = arg_to_number(query_params.get("page", [""])[0], arg_name="page")  # type: ignore
-                page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore[assignment]
+                page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore
                 query_string = query_params.get("query_string", [""])[0]  # type: ignore
             else:
                 query_string = "_doc_modified_ts:>=" + command_last_run_date
@@ -2660,6 +3063,7 @@ def get_remote_data_command(client: Client, integration_params: dict = {}) -> Ge
     """
     detection_category = integration_params.get("detection_category", "")
     detection_type = integration_params.get("detection_type", "").strip()
+    refetch_closed_incidents = argToBoolean(integration_params.get("refetch_closed_incidents", False))
     new_entries_to_return: list[dict] = []
 
     args = demisto.args()
@@ -2682,7 +3086,10 @@ def get_remote_data_command(client: Client, integration_params: dict = {}) -> Ge
     # Retrieve the latest entity data from the Vectra platform.
     if vectra_entity_type == "account":
         remote_incident_data = client.get_account_by_account_id(account_id=vectra_entity_id)
-        groups_response = client.list_group_request(group_type="account", account_names=[remote_incident_data.get("name")])  # type: ignore
+        groups_response = client.list_group_request(
+            group_type="account",
+            account_names=[remote_incident_data.get("name")],
+        )  # type: ignore
         remote_incident_data.update({"groups": groups_response.get("results", [])})
     else:
         remote_incident_data = client.get_host_by_host_id(host_id=vectra_entity_id)
@@ -2752,7 +3159,7 @@ def get_remote_data_command(client: Client, integration_params: dict = {}) -> Ge
 
     remote_incident_data.update({"assignment_details": assignment_details})
 
-    if detections:
+    if detections and not refetch_closed_incidents:
         reopen_in_xsoar(new_entries_to_return, entity_id_type)
 
     notes = remote_incident_data.get("notes", [])
@@ -2786,36 +3193,51 @@ def update_remote_system_command(client: Client) -> str:
     xsoar_incident_id = data.get("id", "")
     demisto.debug(f"XSOAR Incident ID: {xsoar_incident_id}")
     new_entries = parsed_args.entries or []
-    xsoar_tags: list = delta.get("tags", [])
+    xsoar_tags: list = delta.get("tags") or []
     mirror_entity_id = remote_entity_id.split("-")[0]
     remote_entity_type = remote_entity_id.split("-")[1]
+
+    params = demisto.params()
+    refetch_closed_incidents = argToBoolean(params.get("refetch_closed_incidents", False))
 
     # For notes
     if new_entries:
         for entry in new_entries:
             entry_id = entry.get("id")
-            demisto.debug(f'Sending the entry with ID: {entry_id} and Type: {entry.get("type")}')
+            demisto.debug(f"Sending the entry with ID: {entry_id} and Type: {entry.get('type')}")
             # Get note content and user
             entry_content = re.sub(r"([^\n])\n", r"\1\n\n", entry.get("contents", ""))
             entry_user = entry.get("user", "dbot") or "dbot"
 
             note_str = (
-                f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n"
-                f"Note: {entry_content}\n\n"
-                f"Added By: {entry_user}"
+                f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\nNote: {entry_content}\n\nAdded By: {entry_user}"
             )
             # API request for adding notes
             client.add_note_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, note=note_str)
 
     # For tags
     res = client.list_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type)
-    vectra_tags = res.get("tags")
+    vectra_tags = res.get("tags") or []
     if xsoar_tags or (not xsoar_tags and vectra_tags and "tags" in delta):
         demisto.debug(f"Sending the tags: {xsoar_tags}")
+        # Drop invalid tags that do not fully match the allowed pattern
+        if xsoar_tags:
+            valid_tags, dropped_tags = get_valid_and_dropped_tags(xsoar_tags)
+            xsoar_tags = valid_tags
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, tag_list=xsoar_tags)
 
     # For closing notes if the XSOAR incident is closed.
-    send_close_notes(client, data, xsoar_incident_id, remote_entity_id, remote_entity_type, mirror_entity_id, delta, parsed_args)
+    send_close_notes(
+        client,
+        data,
+        xsoar_incident_id,
+        remote_entity_id,
+        remote_entity_type,
+        mirror_entity_id,
+        delta,
+        refetch_closed_incidents,
+        parsed_args,
+    )
 
     return remote_entity_id
 
@@ -2828,6 +3250,7 @@ def send_close_notes(
     remote_entity_type: str,
     mirror_entity_id: int,
     delta: dict,
+    refetch_closed_incidents: bool,
     parsed_args: UpdateRemoteSystemArgs,
 ):
     """
@@ -2837,12 +3260,16 @@ def send_close_notes(
         data (dict): A dictionary of data from Vectra.
         xsoar_incident_id (str): The ID of the XSOAR incident.
         delta (dict): A dictionary of changes in the XSOAR incident.
+        refetch_closed_incidents (bool): A boolean to determine whether to refetch closed incidents.
     """
     delta_keys = delta.keys()
     closing_user_id = delta.get("closingUserId")
     if "closingUserId" in delta_keys and parsed_args.incident_changed:
         # For Closing notes
         if parsed_args.inc_status == IncidentStatus.DONE:
+            if refetch_closed_incidents:
+                add_refetch_id_to_integration_context(str(mirror_entity_id), remote_entity_type)
+
             close_notes = data.get("closeNotes", "")
             close_reason = data.get("closeReason", "")
             close_user_id = data.get("closingUserId", "")
@@ -3700,7 +4127,7 @@ def tag_list_command(client: Client, entity_type: str, args: dict) -> CommandRes
     ):
         message = "Something went wrong."
         if existing_tag_res.get("message"):
-            message += f' Message: {existing_tag_res.get("message")}.'
+            message += f" Message: {existing_tag_res.get('message')}."
         raise VectraException(message)
     tags_resp = existing_tag_res.get("tags", [])
 
@@ -3708,7 +4135,7 @@ def tag_list_command(client: Client, entity_type: str, args: dict) -> CommandRes
     if tags_resp and isinstance(tags_resp, list):
         tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
         if tags_resp:
-            tags_resp = f'**{"**, **".join(tags_resp)}**'
+            tags_resp = f"**{'**, **'.join(tags_resp)}**"
             human_readable = f"##### List of tags: {tags_resp}"
 
     existing_tag_res["ID"] = entity_id
@@ -3752,7 +4179,7 @@ def note_add_command(client: Client, entity_type: str, args: dict) -> CommandRes
         notes.update({f"{entity_type}_id": entity_id})
 
     human_readable = f"##### The note has been successfully added to the {entity_type}."
-    human_readable += f'\nReturned Note ID: **{notes["note_id"]}**'
+    human_readable += f"\nReturned Note ID: **{notes['note_id']}**"
 
     return CommandResults(
         outputs_prefix=output_prefix,
@@ -3906,6 +4333,67 @@ def markall_detections_asfixed_command(
         )
     else:
         command_result = CommandResults(readable_output="There are no active detections present.", raw_response={})
+
+    return command_result
+
+
+def markall_detections_asclosed_command(
+    client: Client,
+    entity_type: str,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    Marks all active detections of an account/host as closed.
+
+    - param:
+        - client: Vectra Client
+        - entity_type: The object to work with ("account" or "host")
+        - args: The arguments
+
+    - return:
+        CommandResults to be used in War Room.
+    """
+    entity_id = args.get(f"{entity_type}_id")
+
+    validate_positive_integer_arg(entity_id, arg_name=f"{entity_type}_id", required=True)
+
+    close_reason = args.get("close_reason", "").lower()
+    if not close_reason:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("close_reason"))
+    # Validate close_reason
+    if close_reason not in VALID_CLOSE_REASON:
+        raise ValueError('Invalid close_reason. Must be "benign" or "remediated".')
+
+    # Get account data
+    if entity_type == "account":
+        entity_data = client.get_account_by_account_id(account_id=str(entity_id))
+    else:
+        entity_data = client.get_host_by_host_id(host_id=str(entity_id))
+
+    # Extract active detection IDs
+    detections_ids = [
+        str(detection.get("detection_id"))
+        for detection in entity_data.get("detection_summaries")
+        if detection.get("state") == "active"
+    ]
+
+    if detections_ids:
+        api_response = client.close_detections_by_ids(ids_list=detections_ids, reason=close_reason)
+        if api_response.get("_meta", {}).get("level", "").lower() != "success":
+            res_message = api_response.get("_meta", {}).get("message", "")
+            message = "Something went wrong."
+            if res_message:
+                message += f" Message: {res_message}."
+            raise DemistoException(message)
+
+        # 404 API error will be raised by the Client class
+        hr_output = f"##### The active detections of the provided {entity_type} have been successfully closed as {close_reason}."
+        command_result = CommandResults(
+            readable_output=hr_output,
+            raw_response=api_response,
+        )
+    else:
+        command_result = CommandResults(readable_output="##### There are no active detections present.", raw_response={})
 
     return command_result
 
@@ -4093,6 +4581,86 @@ def vectra_group_assign_command(client: Client, args: dict[str, Any]):
     )
 
 
+def mark_detections_asclosed_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Mark the detection as closed by providing ID of detections and close reason in the argument.
+
+    - params:
+        - client: Vectra Client
+        - args: Command arguments
+    """
+
+    detection_ids = argToList(args.get("detection_ids"))
+    detection_ids = [detection_id.strip() for detection_id in detection_ids if detection_id.strip()]
+
+    # Validate detection ids
+    if not detection_ids:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("detection_ids"))
+    all(validate_positive_integer_arg(detection_id, arg_name="detection_ids") for detection_id in detection_ids)
+
+    close_reason = args.get("close_reason", "").lower()
+    if not close_reason:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("close_reason"))
+
+    # Validate close_reason
+    if close_reason not in VALID_CLOSE_REASON:
+        raise ValueError("Invalid close_reason. Must be 'benign' or 'remediated'.")
+
+    api_response = client.close_detections_by_ids(ids_list=detection_ids, reason=close_reason)
+    if api_response.get("_meta", {}).get("level", "").lower() == "success":
+        readable_output = f"##### The provided detection IDs have been successfully closed as {close_reason}."
+    else:
+        res_message = api_response.get("_meta", {}).get("message", "")
+        message = "Something went wrong."
+        if res_message:
+            message += f" Message: {res_message}."
+        raise DemistoException(message)
+
+    command_result = CommandResults(readable_output=readable_output, raw_response=api_response)
+
+    return command_result
+
+
+def mark_detections_asopen_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Open detection with provided detection IDs.
+
+    Args:
+        client (Client): An instance of the Client class.
+        args (Dict[str, Any]): The command arguments.
+
+    Raises:
+        ValueError: If detection_ids argument is missing or empty.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    # Get function arguments
+    detection_ids = argToList(args.get("detection_ids"))
+    detection_ids = [detection_id.strip() for detection_id in detection_ids if detection_id.strip()]
+
+    # Validate detection_ids
+    if not detection_ids:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("detection_ids"))
+    all(validate_positive_integer_arg(detection_id, arg_name="detection_ids") for detection_id in detection_ids)
+
+    # Call Vectra API to open detections
+    api_response = client.open_detections_by_ids(ids_list=detection_ids)
+
+    if api_response.get("_meta", {}).get("level", "").lower() == "success":
+        readable_output = "##### The provided detection IDs have been successfully re-opened."
+    else:
+        res_message = api_response.get("_meta", {}).get("message", "")
+        message = "Something went wrong."
+        if res_message:
+            message += f" Message: {res_message}."
+        raise DemistoException(message)
+
+    command_result = CommandResults(readable_output=readable_output, raw_response=api_response)
+
+    return command_result
+
+
 # ####           #### #
 # ## MAIN FUNCTION ## #
 
@@ -4111,13 +4679,39 @@ def main() -> None:  # pragma: no cover
     if not server_fqdn:  # Should be impossible thx to UI required settings control
         raise DemistoException("Missing integration setting : 'Server FQDN'")
 
-    credentials: dict | None = integration_params.get("credentials")
-    if not credentials:
-        raise DemistoException("Missing integration setting : 'Credentials' or 'API token'")
+    auth_type = integration_params.get("authentication_type", "API Token").lower()
+    use_oauth = auth_type == "oauth 2.0"
 
-    api_token: str | None = credentials.get("password")
-    if (api_token is None) or (api_token == ""):
-        raise DemistoException("Missing integration setting : 'Credentials password' or 'API token'")
+    credentials: dict | None = integration_params.get("credentials")
+    oauth_credentials: dict | None = integration_params.get("oauth_credentials")
+
+    # Handle different authentication types
+    api_token: str | None = None
+    client_id: str | None = None
+    client_secret: str | None = None
+
+    if use_oauth:
+        # OAuth 2.0 authentication
+        if not oauth_credentials:
+            raise DemistoException(
+                "Missing integration setting : 'OAuth 2.0 Credentials' are required for OAuth 2.0 authentication"
+            )
+
+        client_id = oauth_credentials.get("identifier", "").strip()
+        client_secret = oauth_credentials.get("password", "").strip()
+
+        if not client_id or not client_secret:
+            raise DemistoException(
+                "Missing integration setting : 'Client ID' and 'Client Secret' are required for OAuth 2.0 authentication"
+            )
+    else:
+        # API Token authentication (default)
+        if not credentials:
+            raise DemistoException("Missing integration setting : 'Credentials' or 'API token'")
+
+        api_token = credentials.get("password", "").strip()
+        if (api_token is None) or (api_token == ""):
+            raise DemistoException("Missing integration setting : 'Credentials password' or 'API token'")
 
     # Setting default settings for fetch mode
     if integration_params.get("isFetch"):
@@ -4139,11 +4733,16 @@ def main() -> None:  # pragma: no cover
 
     demisto.info(f"Command being called is {command}")
     try:
-        headers: dict = {"User-Agent": USER_AGENT, "Authorization": f"token {api_token}"}
-
-        # As the Client class inherits from BaseClient, SSL verification and system proxy are handled out of the box by it
-        # Passing ``verify_certificate`` and ``proxy``to the Client constructor
-        client = Client(proxy=use_proxy, verify=verify_certificate, headers=headers, base_url=api_base_url)
+        # Create client with appropriate authentication
+        client = Client(
+            base_url=api_base_url,
+            verify=verify_certificate,
+            proxy=use_proxy,
+            use_oauth=use_oauth,
+            api_token=api_token,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -4202,6 +4801,8 @@ def main() -> None:  # pragma: no cover
             return_results(note_list_command(client, entity_type="account", args=kwargs))
         elif command == "vectra-account-markall-detections-asfixed":
             return_results(markall_detections_asfixed_command(client, type="account", **kwargs))
+        elif command == "vectra-account-markall-detections-asclosed":
+            return_results(markall_detections_asclosed_command(client, entity_type="account", args=kwargs))
 
         # ## Hosts centric commands
         elif command == "vectra-host-describe":
@@ -4222,6 +4823,8 @@ def main() -> None:  # pragma: no cover
             return_results(note_list_command(client, entity_type="host", args=kwargs))
         elif command == "vectra-host-markall-detections-asfixed":
             return_results(markall_detections_asfixed_command(client, type="host", **kwargs))
+        elif command == "vectra-host-markall-detections-asclosed":
+            return_results(markall_detections_asclosed_command(client, entity_type="host", args=kwargs))
 
         # ## Detections centric commands
         elif command == "vectra-detection-describe":
@@ -4244,6 +4847,10 @@ def main() -> None:  # pragma: no cover
             return_results(note_remove_command(client, entity_type="detection", args=kwargs))
         elif command == "vectra-detection-note-list":
             return_results(note_list_command(client, entity_type="detection", args=kwargs))
+        elif command == "vectra-detections-mark-asclosed":
+            return_results(mark_detections_asclosed_command(client, args=kwargs))
+        elif command == "vectra-detections-mark-asopen":
+            return_results(mark_detections_asopen_command(client, args=kwargs))
 
         # ## Assignments / Assignment outcomes commands
         elif command == "vectra-assignment-describe":

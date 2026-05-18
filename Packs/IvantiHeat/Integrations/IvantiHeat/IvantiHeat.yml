@@ -1,4 +1,5 @@
 category: Case Management
+provider: Ivanti
 commonfields:
   id: Ivanti Heat
   version: -1
@@ -116,7 +117,7 @@ script:
       description: Incident owner email address.
       type: String
   - arguments:
-    - description: Business object ID to update
+    - description: Business object ID to update.
       name: rec-id
       required: true
     - description: Fields values in JSON format to update in the record, e.g., {"Priority":5}.
@@ -174,10 +175,10 @@ script:
       description: Incident owner email address.
       type: String
   - arguments:
-    - description: Business object ID
+    - description: Business object ID.
       name: rec-id
       required: true
-    - description: Type of object record
+    - description: Type of object record.
       name: object-type
       required: true
     description: Deletes a business object by record ID, such as a change, problem, or incident.

@@ -230,6 +230,8 @@ tasks:
       '#none#':
       - "74"
     scriptarguments:
+      execution-timeout:
+        simple: "120"
       htmlBody:
         complex:
           root: Email

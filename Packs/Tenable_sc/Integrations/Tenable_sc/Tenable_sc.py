@@ -51,10 +51,9 @@ class Client(BaseClient):
     ):
         if not proxy:
             try:
-                del os.environ["HTTP_PROXY"]
-                del os.environ["HTTPS_PROXY"]
-                del os.environ["http_proxy"]
-                del os.environ["https_proxy"]
+                # Remove proxy environment variables if they exist
+                for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+                    os.environ.pop(proxy_var, None)
             except Exception as e:
                 demisto.debug(f"encountered the following issue: {e}")
 
@@ -937,8 +936,8 @@ def get_server_url(url):
     Returns:
         str: The server url.
     """
-    url = re.sub("/[\/]+$/", "", url)
-    url = re.sub("\/$", "", url)
+    url = re.sub(r"/[\/]+$/", "", url)
+    url = re.sub(r"\/$", "", url)
     return url
 
 
@@ -1254,7 +1253,7 @@ def get_asset_command(client: Client, args: dict[str, Any]):
 
     for ip_list in ip_lists:
         # Extract IPs
-        ips += re.findall("[0-9]+(?:\.[0-9]+){3}", ip_list)
+        ips += re.findall(r"[0-9]+(?:\.[0-9]+){3}", ip_list)
 
     headers = ["ID", "Name", "Description", "Tag", "Created", "Modified", "Owner", "Group", "IPs"]
 

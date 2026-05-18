@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import json
 import uuid
 from datetime import datetime, timedelta
+import dateparser
 
 """Doppel for Cortex XSOAR (aka Demisto)
 
@@ -30,6 +31,10 @@ MIRROR_DIRECTION = {
 }
 DOPPEL_ALERT = "Doppel Alert"
 DOPPEL_INCIDENT = "Doppel Incident"
+DEFAULT_RETRY_TOTAL = 3
+DEFAULT_RETRY_BACKOFF_FACTOR = 2
+DEFAULT_RETRY_STATUS_LIST = [429, 500, 502, 503, 504]
+
 
 """ CLIENT CLASS """
 
@@ -44,9 +49,35 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, api_key):
-        super().__init__(base_url)
+    def __init__(
+        self,
+        base_url,
+        api_key,
+        user_api_key=None,
+        organization_code=None,
+        verify=None,
+        proxy=None,
+        retry_total=DEFAULT_RETRY_TOTAL,
+        retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
+        retry_status_list=DEFAULT_RETRY_STATUS_LIST,
+    ):
+        super().__init__(base_url, verify=verify, proxy=proxy)
+
         self._headers = {"accept": "application/json", "x-api-key": api_key}
+        if user_api_key:
+            self._headers["x-user-api-key"] = user_api_key
+        if organization_code:
+            self._headers["x-organization-code"] = organization_code
+
+        # Store retry configuration on the client and leverage BaseClient._http_request parameters
+        self._retries = retry_total
+        self._backoff_factor = retry_backoff_factor
+        self._status_list_to_retry = retry_status_list
+
+        demisto.debug(
+            f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
+            f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
+        )
 
     def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
@@ -66,7 +97,14 @@ class Client(BaseClient):
         if entity:
             params["entity"] = entity
 
-        response_content = self._http_request(method="GET", url_suffix="alert", params=params)
+        response_content = self._http_request(
+            method="GET",
+            url_suffix="alert",
+            params=params,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
     def update_alert(
@@ -102,10 +140,13 @@ class Client(BaseClient):
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment": comment}
 
         response_content = self._http_request(
-            method="PUT",  # Changed to PUT as per reference
+            method="PUT",
             full_url=api_url,
             params=params,
             json_data=payload,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
@@ -123,20 +164,40 @@ class Client(BaseClient):
 
         demisto.debug(f"API Request Params: {filtered_params}")
 
-        # Use params as query parameters, not json_data
-        response_content = self._http_request(method="GET", full_url=api_url, params=filtered_params)
+        response_content = self._http_request(
+            method="GET",
+            full_url=api_url,
+            params=filtered_params,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
     def create_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity},
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
     def create_abuse_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert/abuse"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity},
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
 
@@ -163,6 +224,10 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     # Truncate to microseconds since Python's datetime only supports up to 6 digits
     last_update_str = last_update_str[:26] + "Z"
     last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    if not last_update:
+        demisto.debug(f"Warning: Could not parse timestamp: {last_update_str}")
+        return None, []
+
     demisto.debug(f"Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}")
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
     demisto.debug(f"Received alert data for {doppel_alert_id}")
@@ -176,13 +241,12 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
             recent_audit_log_datetime_str = most_recent_audit_log["timestamp"]
             recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
             demisto.debug(f"The event was modified recently on {recent_audit_log_datetime}")
-            if recent_audit_log_datetime > last_update:
-                updated_doppel_alert["id"] = doppel_alert_id
-                entries: list = [
-                    {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
-                ]
-                demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
-                return updated_doppel_alert, entries
+            updated_doppel_alert["id"] = doppel_alert_id
+            entries: list = [
+                {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
+            ]
+            demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
+            return updated_doppel_alert, entries
     return None, []
 
 
@@ -505,6 +569,7 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
                 created_at_str = alert.get("created_at")
                 created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
                 alert.update(mirroring_object)
+
                 incident = {
                     "name": f"Doppel Incident {uuid.uuid4()}",
                     "type": DOPPEL_ALERT,
@@ -542,12 +607,33 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 
-def get_modified_remote_data_command(client: Client, args: dict[str, Any]):
-    demisto.debug("Command get-modified-remote-data is not implemented")
-    raise NotImplementedError(
-        'The command "get-modified-remote-data" is not implemented, \
-        as Doppel does provide the API to fetch updated alerts.'
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Checks for remote modifications since the last update timestamp
+    and returns a list of modified incident IDs.
+    """
+
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(  # type: ignore[union-attr]
+        DOPPEL_API_DATE_FORMAT
     )
+
+    query_params = {
+        "last_activity_timestamp": last_update,
+    }
+
+    try:
+        results = client.get_alerts(params=query_params)
+        alerts = results.get("alerts", [])
+
+        modified_incident_ids = [str(alert.get("id")) for alert in alerts if alert.get("id")]
+
+        demisto.debug(f"Found {len(modified_incident_ids)} modified remote incidents. Incidents: {modified_incident_ids}")
+        return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+    except Exception as e:
+        demisto.error(f"Error in get-modified-remote-data: {e}")
+        return GetModifiedRemoteDataResponse([])
 
 
 def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
@@ -666,6 +752,12 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
 def main() -> None:
     """Main function, parses params and runs command functions."""
     api_key = demisto.params().get("credentials", {}).get("password")
+    user_api_key = demisto.params().get("user_credentials", {}).get("password")
+    organization_code = demisto.params().get("organization_code")
+    verify = not demisto.params().get("insecure")
+    proxy = demisto.params().get("proxy")
+
+    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")
 
     # Get the service API URL
     base_url = urljoin(demisto.params()["url"], "/v1")
@@ -691,7 +783,14 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key)
+        client = Client(
+            base_url=base_url,
+            api_key=api_key,
+            user_api_key=user_api_key,
+            organization_code=organization_code,
+            verify=verify,
+            proxy=proxy,
+        )
 
         if current_command in supported_commands_test_module:
             # Calls test_module(client) without args

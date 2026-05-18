@@ -1,0 +1,123 @@
+{
+    "Content": {
+        "LatestAvailable": {
+            "version": "8987-9481",
+            "app-version": "8987-9481",
+            "filename": "panupv2-all-contents-8987-9481",
+            "size": "109",
+            "size-kb": "112260",
+            "released-on": "2025/06/10 16:26:28 PDT",
+            "release-notes": "https://fake-release-note-link",
+            "downloaded": "yes",
+            "current": "no",
+            "previous": "no",
+            "installing": "yes",
+            "features": "Apps, Threats",
+            "update-type": "Full",
+            "feature-desc": "Unknown",
+            "sha256": "fake-sha256-hash"
+        },
+        "CurrentlyInstalled": {
+            "version": "8987-9481",
+            "app-version": "8987-9481",
+            "filename": "panupv2-all-contents-8987-9481",
+            "size": "109",
+            "size-kb": "112260",
+            "released-on": "2025/06/10 16:26:28 PDT",
+            "release-notes": "https://fake-release-note-link",
+            "downloaded": "yes",
+            "current": "no",
+            "previous": "no",
+            "installing": "yes",
+            "features": "Apps, Threats",
+            "update-type": "Full",
+            "feature-desc": "Unknown",
+            "sha256": "fake-sha256-hash"
+        },
+        "IsUpToDate": true
+    },
+    "AntiVirus": {
+        "LatestAvailable": {
+            "version": "5212-5732",
+            "app-version": "5212-5732",
+            "filename": "panup-all-antivirus-5212-5732",
+            "size": "102",
+            "size-kb": "104745",
+            "released-on": "2025/06/11 04:00:51 PDT",
+            "release-notes": "https://fake-release-note-link",
+            "downloaded": "no",
+            "current": "no",
+            "previous": "no",
+            "installing": "no",
+            "features": "virus",
+            "update-type": "Full",
+            "feature-desc": "Unknown",
+            "sha256": "fake-sha256-hash"
+        },
+        "CurrentlyInstalled": {
+            "version": "5211-5731",
+            "app-version": "5211-5731",
+            "filename": "panup-all-antivirus-5211-5731",
+            "size": "102",
+            "size-kb": "104547",
+            "released-on": "2025/06/10 04:01:55 PDT",
+            "release-notes": "https://fake-release-note-link",
+            "downloaded": "yes",
+            "current": "yes",
+            "previous": "no",
+            "installing": "no",
+            "features": "virus",
+            "update-type": "Full",
+            "feature-desc": "Unknown",
+            "sha256": "fake-sha256-hash"
+        },
+        "IsUpToDate": false
+    },
+    "WILDFIRE": {
+        "LatestAvailable": {
+            "version": "An Error received from Panorama API: 'There is not wildfire license on the box.'"
+        },
+        "CurrentlyInstalled": {},
+        "IsUpToDate": false
+    },
+    "GP": {
+        "LatestAvailable": {
+            "version": "98-260",
+            "app-version": "98-260",
+            "filename": "panup-all-gp-98-260",
+            "size": "0",
+            "size-kb": "77",
+            "released-on": "2023/05/22 15:41:22 PDT",
+            "release-notes": "https://fake-release-note-link",
+            "downloaded": "yes",
+            "current": "yes",
+            "previous": "no",
+            "installing": "no",
+            "features": "GlobalProtectClientlessVPN",
+            "update-type": "Full",
+            "feature-desc": "Unknown",
+            "sha256": "fake-sha256-hash"
+        },
+        "CurrentlyInstalled": {
+            "version": "98-260",
+            "app-version": "98-260",
+            "filename": "panup-all-gp-98-260",
+            "size": "0",
+            "size-kb": "77",
+            "released-on": "2023/05/22 15:41:22 PDT",
+            "release-notes": "https://fake-release-note-link",
+            "downloaded": "yes",
+            "current": "yes",
+            "previous": "no",
+            "installing": "no",
+            "features": "GlobalProtectClientlessVPN",
+            "update-type": "Full",
+            "feature-desc": "Unknown",
+            "sha256": "fake-sha256-hash"
+        },
+        "IsUpToDate": true
+    },
+    "ContentTypesOutOfDate": {
+        "Count": 1
+    }
+}

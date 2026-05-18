@@ -1,8 +1,8 @@
 # Authentication
-You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
-## Authentication Based on Azure Active Directory Applications
+You can authenticate either by Entra ID applications or by Azure Managed Identities.
+## Authentication Based on Entra ID Applications
 
-Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an application to sign-in or delegate authentication. For more information, see the Microsoft identity platform overview.
+Microsoft integrations (Graph and Azure) in Cortex XSOAR use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an application to sign-in or delegate authentication. For more information, see the Microsoft identity platform overview.
 
 There are two application authentication methods available:
 

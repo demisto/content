@@ -11,7 +11,7 @@
         "external_link": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX123456123456",
         "first_seen": "20-12-2023 04:51:51 AM",
         "last_seen": "20-12-2023 04:51:51 AM",
-        "brand": "Mock Brand",
+        "brand": "RiskAssess Demo",
         "timestamp": 1703047911349,
         "screenshots": [
             {
@@ -32,7 +32,7 @@
         "external_link": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX123456654321",
         "first_seen": "20-12-2023 04:50:30 AM",
         "last_seen": "20-12-2023 04:50:30 AM",
-        "brand": "Mock Brand",
+        "brand": "RiskAssess Demo",
         "timestamp": 1703047830650,
         "screenshots": [
             {
@@ -53,7 +53,7 @@
         "external_link": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX987654",
         "first_seen": "20-12-2023 03:17:10 AM",
         "last_seen": "20-12-2023 03:17:10 AM",
-        "brand": "Mock Brand",
+        "brand": "RiskAssess Demo",
         "timestamp": 1703042231364,
         "screenshots": [
             {

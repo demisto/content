@@ -109,8 +109,7 @@ tasks:
       id: c63ad7ca-3d92-4db2-858b-a22fc1dc3f1c
       version: -1
       name: Print credential report
-      description: Outputs user's credential report, which contains access key attributes
-        and user login profile.
+      description: Outputs user's credential report, which contains access key attributes and user login profile.
       scriptName: Print
       type: regular
       iscommand: false
@@ -149,8 +148,7 @@ tasks:
       id: cd15e88c-60f8-48cc-8033-146dfc80950f
       version: -1
       name: List user access keys
-      description: Returns information about the access key IDs associated with the
-        specified IAM user.
+      description: Returns information about the access key IDs associated with the specified IAM user.
       script: '|||aws-iam-list-access-keys-for-user'
       type: regular
       iscommand: true
@@ -333,9 +331,3 @@ inputs:
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

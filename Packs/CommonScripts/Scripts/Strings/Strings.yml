@@ -8,23 +8,23 @@ subtype: python3
 tags:
 - server
 - file
-comment: Extract strings from a file with optional filter - similar to binutils strings command
+comment: Extract strings from a file with optional filter - similar to binutils strings command.
 system: true
 args:
 - name: entry
   required: true
   default: true
-  description: Entry ID of a file entry to retrieve strings from
+  description: Entry ID of a file entry to retrieve strings from.
 - name: chars
-  description: Number of consecutive characters to be considered a string - default is 4
+  description: Number of consecutive characters to be considered a string - default is 4.
 - name: size
-  description: Display first 'size' results - default is 1024
+  description: Display first 'size' results - default is 1024.
 - name: filter
-  description: Regex to filter the strings - compiled with ignore case
+  description: Regex to filter the strings - compiled with ignore case.
 scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (auto formatted)

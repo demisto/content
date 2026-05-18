@@ -1,5 +1,6 @@
 category: Email
-sectionOrder:
+provider: Thoma Bravo
+sectionorder:
 - Connect
 - Collect
 commonfields:

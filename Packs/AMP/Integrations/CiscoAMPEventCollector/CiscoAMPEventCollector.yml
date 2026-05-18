@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Cisco Systems
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -77,3 +78,5 @@ marketplaces:
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

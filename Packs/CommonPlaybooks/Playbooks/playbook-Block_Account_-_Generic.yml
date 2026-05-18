@@ -375,9 +375,3 @@ marketplaces:
 - marketplacev2
 - platform
 deprecated: true
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

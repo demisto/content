@@ -10,9 +10,6 @@ This is the modified version where a new command "akamai-update-network-list-ele
 | Client token | False |
 | Access token | False |
 | Client secret | False |
-| Client token | False |
-| Access token | False |
-| Client secret | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
@@ -20,230 +17,6 @@ This is the modified version where a new command "akamai-update-network-list-ele
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### akamai-get-network-lists
-
-***
-Returns a list of all network lists available for an authenticated user who belongs to a group.
-
-#### Base Command
-
-`akamai-get-network-lists`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| list_type | The network list type by which to filter the results. Possible values are: IP, GEO. | Optional |
-| search | The query by which to search for list names and list items. | Optional |
-| extended | When enabled, provides additional response data identifying who created and updated the list and when, and the network list’s deployment status in both STAGING and PRODUCTION environments. This data takes longer to provide. Possible values are: true, false. Default is true. | Optional |
-| include_elements | If enabled, the response list includes all items. For large network lists, this may slow responses and yield large response objects. The default false value when listing more than one network list omits the network list’s elements and only provides higher-level metadata. Possible values are: true, false. Default is false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.NetworkLists.Lists.Name | String | The network list name. |
-| Akamai.NetworkLists.Lists.Type | String | The network list type. |
-| Akamai.NetworkLists.Lists.UniqueID | String | The network list unique ID. |
-| Akamai.NetworkLists.Lists.ElementCount | String | The number of network list elements. |
-| Akamai.NetworkLists.Lists.CreateDate | Date | The network list creation date. |
-| Akamai.NetworkLists.Lists.CreatedBy | String | The network list creator. |
-| Akamai.NetworkLists.Lists.ExpeditedProductionActivationStatus | String | The expedited production activation status. |
-| Akamai.NetworkLists.Lists.ExpeditedStagingActivationStatus | String | The expedited staging activation status. |
-| Akamai.NetworkLists.Lists.ProductionActivationStatus | String | The production activation status. |
-| Akamai.NetworkLists.Lists.StagingActivationStatus | String | The staging activation status. |
-| Akamai.NetworkLists.Lists.UpdateDate | String | The date that the network list was updated. |
-| Akamai.NetworkLists.Lists.UpdatedBy | String | The last user that updated the network list. |
-| Akamai.NetworkLists.Lists.Elements | String | The elements in the network list. |
-
-### akamai-get-network-list-by-id
-
-***
-Gets a network list by the network list ID.
-
-#### Base Command
-
-`akamai-get-network-list-by-id`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_id | The network list ID. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.NetworkLists.Lists.Name | String | The network list name. |
-| Akamai.NetworkLists.Lists.Type | String | The network list type. |
-| Akamai.NetworkLists.Lists.UniqueID | String | The network list unique ID. |
-| Akamai.NetworkLists.Lists.ElementCount | Number | The number of network list elements. |
-| Akamai.NetworkLists.Lists.CreateDate | Date | The network list creation date. |
-| Akamai.NetworkLists.Lists.CreatedBy | String | The network list creator. |
-| Akamai.NetworkLists.Lists.ExpeditedProductionActivationStatus | String | The expedited production activation status. |
-| Akamai.NetworkLists.Lists.ExpeditedStagingActivationStatus | String | The expedited staging activation status. |
-| Akamai.NetworkLists.Lists.ProductionActivationStatus | String | The production activation status. |
-| Akamai.NetworkLists.Lists.StagingActivationStatus | String | The staging activation status. |
-| Akamai.NetworkLists.Lists.UpdateDate | String | The network list update date. |
-| Akamai.NetworkLists.Lists.UpdatedBy | String | The last user who updated the network list. |
-| Akamai.NetworkLists.Lists.Elements | String | The elements in the network list. |
-
-### akamai-create-network-list
-
-***
-Creates a new network list. Supports TXT file upload for elements.
-
-#### Base Command
-
-`akamai-create-network-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| list_name | The network list name. | Required |
-| list_type | The network list type. Possible values are: IP, GEO. | Required |
-| elements | The network list elements. | Optional |
-| entry_id | The War Room entry ID of the sample file. | Optional |
-| description | The network list description. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.NetworkLists.Lists.Name | String | The network list name. |
-| Akamai.NetworkLists.Lists.UniqueID | String | The network list ID. |
-| Akamai.NetworkLists.Lists.Type | String | The network list type. |
-| Akamai.NetworkLists.Lists.ElementCount | Number | The number of elements in the list. |
-| Akamai.NetworkLists.Lists.Elements | String | The elements in the list. |
-
-### akamai-delete-network-list
-
-***
-Deletes the specified network list.
-
-#### Base Command
-
-`akamai-delete-network-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_id | The ID of the network list to delete. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### akamai-activate-network-list
-
-***
-Activates a network list on the specified environment.
-
-#### Base Command
-
-`akamai-activate-network-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_ids | A comma-separated list of network list IDs to activate. For example: list (list1,list2). | Required |
-| env | The environment type to activate the network list. Possible values are: STAGING, PRODUCTION. | Required |
-| comment | A comment to be logged. | Optional |
-| notify | A comma-separated list of email addresses. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### akamai-add-elements-to-network-list
-
-***
-Adds elements to the specified network list.
-
-#### Base Command
-
-`akamai-add-elements-to-network-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_id | The ID of the network in which to add elements. | Required |
-| entry_id | The War Room entry ID of the sample file. | Optional |
-| elements | A comma-separated list of elements to add to the network list. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### akamai-remove-element-from-network-list
-
-***
-Removes elements from the specified network list.
-
-#### Base Command
-
-`akamai-remove-element-from-network-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_id | The ID of the network list from which to remove elements. | Required |
-| element | The element to remove from the network list. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### akamai-get-network-list-activation-status
-
-***
-Gets the activation status of the specified network list.
-
-#### Base Command
-
-`akamai-get-network-list-activation-status`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_ids | A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2). | Required |
-| env | The environment type. Possible values are: PRODUCTION, STAGING. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.NetworkLists.ActivationStatus.UniqueID | String | The network list ID. |
-| Akamai.NetworkLists.ActivationStatus.StagingStatus | String | The network list environment staging activation status. |
-| Akamai.NetworkLists.ActivationStatus.ProductionStatus | String | The network list environment activation production status. |
-
-### akamai-update-network-list-elements
-
-***
-Updates list elements of a network list.
-
-#### Base Command
-
-`akamai-update-network-list-elements`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| network_list_id | The ID of the network list to update. | Required |
-| elements | Comma-separated list of elements. Use BLANK to empty a list. | Required |
-
-#### Context Output
-
-There is no context output for this command.
 
 ### akamai-check-group
 
@@ -519,6 +292,254 @@ Get group.
 #### Context Output
 
 There is no context output for this command.
+
+### akamai-get-client-list
+
+***
+Get a client list.
+
+#### Base Command
+
+`akamai-get-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| client_list_id | An optional URL parameter to get a specific client list. | Optional |
+| name | Filters the output to show only lists that match a given name. | Optional |
+| include_items | Include items in the response. Possible values are: true, false. Default is false. | Optional |
+| include_deprecated | Include deprecated lists in the response. Possible values are: true, false. Default is false. | Optional |
+| search | Returns results that contain the specified substring in any client list or entry details. | Optional |
+| type_list | Filters the output to show only lists of the specified types. Repeat the parameter to filter by multiple types. Valid values: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH. Possible values are: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH, USER. | Optional |
+| include_network_list | Include network lists in the response. Possible values are: true, false. Default is false. | Optional |
+| page | Page number. Default is 0. | Optional |
+| page_size | Page size. Default is 50. | Optional |
+| limit | Limit. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | The client list. |
+
+### akamai-create-client-list
+
+***
+Creates a new client list.
+
+#### Base Command
+
+`akamai-create-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the new client list. | Required |
+| type | The type of client list. Possible values are: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH, USER. | Required |
+| contract_id | The contract ID. You can get this value by running the `akamai-get-contract-group` command. | Required |
+| group_id | The group ID. You can get this value by running the `akamai-get-contract-group` command. | Required |
+| notes | A description of the client list. | Optional |
+| tags | A list of tags to attach to the client list. | Optional |
+| entry_value | The value of a single entry in the client list. | Optional |
+| entry_description | A description of the entry. | Optional |
+| entry_expiration_date | The expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28). | Optional |
+| entry_tags | A list of tags attached to the entry. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | The client list that was created. |
+
+### akamai-deprecate-client-list
+
+***
+Deprecates a client list.
+
+#### Base Command
+
+`akamai-deprecate-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| client_list_id | The ID of the client list to be deprecated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### akamai-activate-client-list
+
+***
+Activates a client list.
+
+#### Base Command
+
+`akamai-activate-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | The ID of the client list to activate. | Required |
+| network_environment | The network environment where the list will be activated. Possible values are: STAGING, PRODUCTION. | Required |
+| comments | A description of the activation. | Optional |
+| notification_recipients | A list of email addresses to notify. | Optional |
+| siebel_ticket_id | A Siebel ticket ID. | Optional |
+| include_polling | Whether to poll deactivation status until completion. Possible values are: true, false. Default is true. | Optional |
+| interval | Interval in seconds between polling attempts. Default is 30. | Optional |
+| timeout | Timeout in seconds for polling. Default is 60. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Activation | unknown | The activation details. |
+
+### akamai-add-client-list-entry
+
+***
+Adds an entry to a client list.
+
+#### Base Command
+
+`akamai-add-client-list-entry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | The ID of the client list. | Required |
+| value | The value of the new entry. | Required |
+| description | A description of the new entry. | Optional |
+| expiration_date | The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28). | Optional |
+| tags | A list of tags for the new entry. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### akamai-remove-client-list-entry
+
+***
+Removes an entry from a client list.
+
+#### Base Command
+
+`akamai-remove-client-list-entry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | The ID of the client list. | Required |
+| value | A list of values to remove from the client list. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### akamai-get-contract-group
+
+***
+Get contract groups.
+
+#### Base Command
+
+`akamai-get-contract-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ContractGroup | unknown | The contract groups. |
+
+### akamai-update-client-list
+
+***
+Updates a client list.
+
+#### Base Command
+
+`akamai-update-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | The ID of the client list to update. | Required |
+| name | The new name of the client list. | Required |
+| notes | The new description of the client list. | Optional |
+| tags | The new tags for the client list. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | The updated client list. |
+
+### akamai-deactivate-client-list
+
+***
+Deactivates a client list.
+
+#### Base Command
+
+`akamai-deactivate-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | The ID of the client list to deactivate. | Required |
+| network_environment | The network environment where the list is deactivated. Possible values are: STAGING, PRODUCTION. | Required |
+| comments | A description for the deactivation. | Optional |
+| notification_recipients | A list of email addresses to notify. | Optional |
+| siebel_ticket_id | A Siebel ticket ID. | Optional |
+| include_polling | Whether to poll deactivation status until completion. Possible values are: true, false. Default is true. | Optional |
+| interval | Interval in seconds between polling attempts. Default is 30. | Optional |
+| timeout | Timeout in seconds for polling. Default is 180. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Activation | unknown | The deactivation details. |
+
+### akamai-update-client-list-entry
+
+***
+Updates an entry in a client list.
+
+#### Base Command
+
+`akamai-update-client-list-entry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | The ID of the client list. | Required |
+| value | The value of the entry to update. | Required |
+| description | The new description for the entry. | Optional |
+| expiration_date | The new expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28). | Optional |
+| tags | The new tags for the entry. | Optional |
+| is_override | Whether to override missing entries. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | The updated client list. |
 
 ### akamai-get-domains
 
@@ -1482,51 +1503,6 @@ Returns the certification/enrollment deployment status for specific a environmen
 | --- | --- | --- |
 | Akamai.Cps.Enrollments.Deployment | Dictionary | A collection of settings for the Akami CPS enrollments deployment. |
 
-#### Command example
-
-```!akamai-get-cps-enrollment-deployment enrollment_id=111111```
-
-#### Context Example
-
-```json
-{
-    "Akamai": {
-        "Cps": {
-            "Enrollments": {
-                "Deployment": {
-                    "ocspStapled": true,
-                    "ocspUris": ["http://ocsp.example.com"],
-                    "networkConfiguration": {
-                        "geography": "core",
-                        "mustHaveCiphers": "ak-akamai-2020q1",
-                        "ocspStapling": "not-set",
-                        "preferredCiphers": "ak-akamai-2020q1",
-                        "quicEnabled": false,
-                        "secureNetwork": "standard-tls",
-                        "sniOnly": true,
-                        "disallowedTlsVersions": [],
-                        "dnsNames": [
-                            "san2.example.com", "san1.example.com"
-                        ]},
-                    "primaryCertificate": {
-                        "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
-                        "expiry": "2021-06-10T12:00:00Z",
-                        "keyAlgorithm": "RSA",
-                        "signatureAlgorithm": "SHA-256",
-                        "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
-                    },
-                    "multiStackedCertificates": [
-                        {
-                            "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
-                            "expiry": "2021-06-10T12:00:00Z",
-                            "keyAlgorithm": "ECDSA",
-                            "signatureAlgorithm": "SHA-256",
-                            "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
-                        }]
-    }}}}
-}
-```
-
 ### akamai-list-cidr-blocks
 
 ***
@@ -1548,31 +1524,6 @@ List all CIDR blocks for all services you are subscribed to. To see additional C
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.CidrBlocks | List | A list of CIDR blocks. |
-
-#### Command example
-
-```!akamai-list-cidr-blocks last_action=add effective_date_gt=2021-02-21```
-
-#### Context Example
-
-```json
-{
-    "Akamai":{ 
-        "CdirBlocks": [{
-            "cidrId": 11111,
-            "serviceId": 9,
-            "serviceName": "PERF_ANALYTICS",
-            "cidr": "11.111.111.111",
-            "cidrMask": "/11",
-            "port": "11,111",
-            "creationDate": "2021-02-21",
-            "effectiveDate": "2021-02-21",
-            "changeDate": "2021-02-21",
-            "minIp": "11.111.111.111",
-            "maxIp": "11.111.111.111",
-            "lastAction": "add"}]
-}}
-```
 
 ### akamai-update-cps-enrollment
 
@@ -1604,23 +1555,6 @@ Updates an enrollment with changes. Response type will vary depending on the typ
 | --- | --- | --- |
 | Akamai.Enrollment.Changes | Dictionary | Akamai enrollment changes. |
 
-#### Command example
-
-```!akamai-update-cps-enrollment enrollment_id=111111 updates="{\"thirdParty\": {\"excludeSans\": \"false\"}}" deploy_not_after=2023-11-30T00:00:00Z deploy_not_before=2023-11-23T00:00:00Z```
-
-#### Context Example
-
-```json
-{
-  "Akamai":{
-      "Enrollment":{
-          "Changes": [{
-              "enrollment": "/cps/v2/enrollments/111111",
-              "id": "111111"
-            }]
-}}}
-```
-
 ### akamai-update-cps-enrollment-schedule
 
 ***
@@ -1646,24 +1580,6 @@ Updates the current deployment schedule.
 | --- | --- | --- |
 | Akamai.Enrollment.Changes | Dictionary | Akamai enrollment changes. |
 
-#### Command example
-
-```!akamai-update-cps-enrollment-schedule deploy_not_before=2023-11-30T00:00:00Z enrollment_path=/cps/v2/enrollments/111111/changes/1111111```
-
-#### Context Example
-
-```json
-{
-  "Akamai":{
-      "Enrollment":{
-          "Changes": [{
-              "change": "/cps/v2/enrollments/111111/changes/1111111",
-              "changeId": "1111111",
-              "id": "111111"
-            }]
-}}}
-```
-
 ### akamai-get-cps-change-status
 
 ***
@@ -1687,142 +1603,6 @@ Gets the status of a pending change.
 | --- | --- | --- |
 | Akamai.Enrollments.Change.Status | Dictionary | Akamai enrollments change status. |
 
-#### Command example
-
-```akamai-get-cps-change-status enrollment_path=/cps/v2/enrollments/111111/changes/1111111```
-
-#### Context Example
-
-```json
-{
-  "Akamai":{
-      "Enrollments":{
-          "Change":{
-              "Status": {
-                "allowedInput": [
-                  {
-                    "info": "/cps/v2/enrollments/111111/changes/1111111/input/info/third-party-csr",
-                    "requiredToProceed": true,
-                    "type": "third-party-certificate",
-                    "update": "/cps/v2/enrollments/111111/changes/1111111/input/update/third-party-cert-and-trust-chain"
-                  }
-                ],
-                "statusInfo": {
-                  "deploymentSchedule": {
-                    "notAfter": null,
-                    "notBefore": "2023-11-30T00:00:00Z"
-                  },
-                  "description": "Waiting for you to upload and submit your third party certificate and trust chain.",
-                  "error": null,
-                  "state": "awaiting-input",
-                  "status": "wait-upload-third-party"
-                }
-              }
-}}}}
-```
-
-### akamai-get-cps-enrollment-by-id
-
-***
-Get an enrollment in CPS by enrollment id
-
-#### Base Command
-
-`akamai-get-cps-enrollment-by-id`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| enrollment_id | Enrollment on which to perform the desired operation. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### akamai-cancel-cps-change
-
-***
-Cancels a pending change on CPS.
-
-#### Base Command
-
-`akamai-cancel-cps-change`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| change_id | The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required |
-| enrollment_id | Enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required |
-| change_path | Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from "list_enrollments_command". This should be the most common useage when generate RestAPI's URL. | Optional |
-| account_switch_key | For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### akamai-list-dns-zone-recordsets
-
-***
-Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
-
-#### Base Command
-
-`akamai-list-dns-zone-recordsets`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| zone | The name of the zone. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.EdgeDns.ZoneRecordSets | Dictionary | Dictionary of Edge DNS zone's recordsets |
-
-### akamai-list-dns-zones
-
-***
-List all zones that the current user has access to manage.
-
-#### Base Command
-
-`akamai-list-dns-zones`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.EdgeDns.Zones | Dictionary | Dictionary of Edge DNS zones. |
-
-### akamai-list-appsec-config
-
-***
-Lists available security configurations. Products: All
-
-#### Base Command
-
-`akamai-list-appsec-config`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.AppSecConfigAll | List | A list of dictionaries of all Application Security Configurations. |
-
 ### akamai-list-cps-active-certificates
 
 ***
@@ -1844,10 +1624,283 @@ Lists enrollments with active certificates. Note that the rate limit for this op
 | --- | --- | --- |
 | Akamai.Cps.Active.Certificates.Enrollments | Dictionary | A collection of Active Akami CPS enrollments. |
 
+### akamai-cancel-cps-change
+
+***
+Cancels a pending change on CPS.
+
+#### Base Command
+
+`akamai-cancel-cps-change`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| change_id | The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required |
+| enrollment_id | Enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required |
+| change_path | Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from "list_enrollments_command". This should be the most common usage when generating the RestAPI's URL. | Optional |
+| account_switch_key | For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### akamai-get-cps-enrollment-by-id
+
+***
+Get an enrollment in CPS by enrollment id.
+
+#### Base Command
+
+`akamai-get-cps-enrollment-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_id | Enrollment ID on which to perform the desired operation. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### akamai-list-appsec-config
+
+***
+Lists available security configurations. Products: All.
+
+#### Base Command
+
+`akamai-list-appsec-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.AppSecConfigAll | unknown | A list of dictionaries for all Akamai Security Configurations. |
+
+### akamai-list-dns-zones
+
+***
+List all zones that the current user has access to manage.
+
+#### Base Command
+
+`akamai-list-dns-zones`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.EdgeDns.Zones | Dictionary | A collection of Edge DNS zones. |
+
+### akamai-list-dns-zone-recordsets
+
+***
+Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
+
+#### Base Command
+
+`akamai-list-dns-zone-recordsets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| zone | The name of the zone. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.EdgeDns.ZoneRecordSets | Dictionary | A collection of Edge DNS zone's record sets. |
+
+### akamai-new-datastream
+
+***
+Creates a stream configuration. Within a stream configuration, you can select properties to monitor in the stream, data set fields to collect in logs, and a destination to send these log files to. Get the streamId value from the response to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL. Apart from the log and delivery frequency configurations, you can decide whether to activate the stream on making the request or later using the activate parameter. Note that only active streams collect and send logs to their destinations. NOTE: "SPLUNK" and "HTTPS" are the only two types tested.
+
+#### Base Command
+
+`akamai-new-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_name | The name of the stream. | Required |
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required |
+| contract_id | The unique identifier of the contract that has access to the product. | Optional |
+| properties | The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager. | Optional |
+| dataset_fields | The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. | Optional |
+| interval_in_seconds | The interval in seconds (30 or 60) after which the system bundles log lines into a file and sends it to a destination. Possible values are: 30, 60. | Optional |
+| log_format | The format in which you want to receive log files. STRUCTURED or JSON are the currently available formats. When the delimiter is present in the request, STRUCTURED format needs to be defined. | Optional |
+| field_delimiter | A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format. | Optional |
+| upload_file_prefix | The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character. | Optional |
+| upload_file_suffix | The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters. | Optional |
+| ca_cert | The certification authority (CA) certificate used to verify the origin server's certificate. If the certificate is not signed by a well-known certification authority, enter the CA certificate in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it in the response as true. | Optional |
+| client_cert | The PEM-formatted digital certificate you want to authenticate requests to your destination with. If you want to use mutual authentication, you need to provide both the client certificate and the client key. If you pass this member, the mTlsEnabled member replaces it in the response as true. | Optional |
+| client_key | The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. If you want to use mutual authentication, you need to provide both the client certificate and the client key. | Optional |
+| content_type | The type of the resource passed in the request's custom header. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional |
+| custom_header_name | A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional |
+| custom_header_value | The custom header's contents passed with the request that contains information about the client connection. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional |
+| compress_logs | Enables gzip compression for a log file sent to a destination. True by default. Possible values are: True, False. | Optional |
+| destination_type | The destination configuration in the stream to send logs. Note: "SPLUNK" and "HTTPS" are the only two types tested. Possible values are: HTTPS, SPLUNK. Default is SPLUNK. | Optional |
+| display_name | The name of the destination. | Optional |
+| endpoint | The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs. See Stream logs to Splunk. | Optional |
+| event_collector_token | The Event Collector token for your Splunk account. See View usage of Event Collector token in the Splunk documentation. | Optional |
+| tls_hostname | The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint URL. | Optional |
+| notification_emails | A list of e-mail addresses where you want to send notifications about activations and deactivations of the stream. You can omit this member and activate or deactivate the stream without notifications. | Optional |
+| collect_midgress | Indicates if you've opted to capture midgress traffic within the Akamai platform, such as between two edge servers. Possible values are: True, False. | Optional |
+| activate | Activates the stream at the time of the request, false by default. When Edit a stream or Patch a stream that is active, set this value to true. Possible values are: True, False. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream | unknown | Akamai DataStream. |
+
+### akamai-list-idam-properties
+
+***
+Lists the properties and includes for the current account.
+
+#### Base Command
+
+`akamai-list-idam-properties`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Idam.Properties | unknown | Akamai Properties of the current account via Identity Access Management. |
+
+### akamai-list-datastreams
+
+***
+Returns the latest versions of the stream configurations for all groups within the account.
+
+#### Base Command
+
+`akamai-list-datastreams`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreams | unknown | Akamai DataStreams. |
+
+### akamai-get-datastream
+
+***
+Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
+
+#### Base Command
+
+`akamai-get-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Uniquely identifies the stream. | Required |
+| version | Identifies the version of the stream. If omitted, the operation returns the latest version of the stream. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreamDetails | unknown | Akamai DataStream Details. |
+
+### akamai-list-datastream-groups
+
+***
+Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
+
+#### Base Command
+
+`akamai-list-datastream-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Uniquely identifies the contract that belongs to a group. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreamGroups | unknown | Akamai Groups within the contract. |
+
+### akamai-list-datastream-properties-bygroup
+
+***
+Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+#### Base Command
+
+`akamai-list-datastream-properties-bygroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream.Group | unknown | List of the Active Properties within the Group. |
+
+### akamai-delete-datastream
+
+***
+Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first. See Deactivate a stream.
+
+#### Base Command
+
+`akamai-delete-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Unique identifer of a stream. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream | unknown | Akamai DataStream. |
+
 ### akamai-patch-datastream
 
 ***
-Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request. For more infomation, refer to Akamai documentation: https://techdocs.akamai.com/datastream2/reference/patch-stream.
+Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request. See Patching streams for details.
 
 #### Base Command
 
@@ -1868,6 +1921,70 @@ Updates selected details of an existing stream. Running this operation using JSO
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.DataStream | unknown | Akamai DataStream. |
+
+### akamai-toggle-datastream
+
+***
+Activate/Deactivate the latest version of a DataStream.
+
+#### Base Command
+
+`akamai-toggle-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Uniquely identifies the stream. | Optional |
+| option | activate" or "deactivate. Possible values are: activate, deactivate. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream.Activation | unknown | Akamai DataStream Activation. |
+
+### akamai-get-client_lists
+
+***
+Get accessible client lists.
+
+#### Base Command
+
+`akamai-get-client_lists`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | Akamai ClientList. |
+
+### akamai-list-edgehostname
+
+***
+Lists all edge hostnames available under a contract.
+
+#### Base Command
+
+`akamai-list-edgehostname`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier of a contract. | Required |
+| group_id | Unique identifier of a group. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Edgehostname | unknown | Akamai Edgehostnames. |
 
 ### akamai-generic-api-call-command
 
@@ -1903,238 +2020,3 @@ Akamai Generic API Call.
 #### Context Output
 
 There is no context output for this command.
-
-### akamai-list-idam-properties
-
-***
-Lists the properties and includes for the current account.
-
-#### Base Command
-
-`akamai-list-idam-properties`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.Idam.Properties | unknown | Akamai Properties of the current account via Identity Access Management. |
-
-### akamai-get-datastream
-
-***
-Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
-
-#### Base Command
-
-`akamai-get-datastream`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| stream_id | Uniquely identifies the stream. | Required |
-| version | Identifies the version of the stream. If omitted, the operation returns the latest version of the stream. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStreamDetails | unknown | Akamai DataStream Details. |
-
-### akamai-list-datastream-properties-bygroup
-
-***
-Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
-
-#### Base Command
-
-`akamai-list-datastream-properties-bygroup`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStream.Group | unknown | List of the Active Properties within the Group. |
-
-### akamai-list-datastream-groups
-
-***
-Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
-
-#### Base Command
-
-`akamai-list-datastream-groups`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| contract_id | Uniquely identifies the contract that belongs to a group. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStreamGroups | unknown | Akamai Groups within the contract. |
-
-### akamai-get-client_lists
-
-***
-Get accessible client lists
-
-#### Base Command
-
-`akamai-get-client_lists`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.ClientList | unknown | Akamai ClientList. |
-
-### akamai-delete-datastream
-
-***
-Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first. See Deactivate a stream.
-
-#### Base Command
-
-`akamai-delete-datastream`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| stream_id | Unique identifer of a stream. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStream | unknown | Akamai DataStream. |
-
-### akamai-list-datastreams
-
-***
-Returns the latest versions of the stream configurations for all groups within the account.
-
-#### Base Command
-
-`akamai-list-datastreams`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStreams | unknown | Akamai DataStreams. |
-
-### akamai-toggle-datastream
-
-***
-Activate/Deactivate the latest version of a DataStream.
-
-#### Base Command
-
-`akamai-toggle-datastream`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| stream_id | Uniquely identifies the stream. | Optional |
-| option | "activate" or "deactivate". Possible values are: activate, deactivate. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStream.Activation | unknown | Akamai DataStream Activation. |
-
-### akamai-list-edgehostname
-
-***
-Lists all edge hostnames available under a contract.
-
-#### Base Command
-
-`akamai-list-edgehostname`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| contract_id | Unique identifier of a contract. | Required |
-| group_id | Unique identifier of a group. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.Edgehostname | unknown | Akamai Edgehostnames. |
-
-### akamai-new-datastream
-
-***
-Creates a stream configuration. Within a stream configuration, you can select properties to monitor in the stream, data set fields to collect in logs, and a destination to send these log files to. Get the streamId value from the response to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL. Apart from the log and delivery frequency configurations, you can decide whether to activate the stream on making the request or later using the activate parameter. Note that only active streams collect and send logs to their destinations. NOTE: "SPLUNK" and "HTTPS" are the only two types tested.
-
-#### Base Command
-
-`akamai-new-datastream`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| stream_name | The name of the stream. | Required |
-| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required |
-| contract_id | The unique identifier of the contract that has access to the product. | Optional |
-| properties | The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager. | Optional |
-| dataset_fields | The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. | Optional |
-| interval_in_seconds | The interval in seconds (30 or 60) after which the system bundles log lines into a file and sends it to a destination. Possible values are: 30, 60. | Optional |
-| log_format | The format in which you want to receive log files. STRUCTURED or JSON are the currently available formats. When the delimiter is present in the request, STRUCTURED format needs to be defined. | Optional |
-| field_delimiter | A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format. | Optional |
-| upload_file_prefix | The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions. | Optional |
-| upload_file_suffix | The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions. | Optional |
-| ca_cert | The certification authority (CA) certificate used to verify the origin server's certificate. If the certificate is not signed by a well-known certification authority, enter the CA certificate in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it in the response as true. | Optional |
-| client_cert | The PEM-formatted digital certificate you want to authenticate requests to your destination with. If you want to use mutual authentication, you need to provide both the client certificate and the client key. If you pass this member, the mTlsEnabled member replaces it in the response as true. | Optional |
-| client_key | The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. If you want to use mutual authentication, you need to provide both the client certificate and the client key. | Optional |
-| content_type | The type of the resource passed in the request's custom header. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional |
-| custom_header_name | A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional |
-| custom_header_value | The custom header's contents passed with the request that contains information about the client connection. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional |
-| compress_logs | Enables gzip compression for a log file sent to a destination. True by default. Possible values are: True, False. | Optional |
-| destination_type | The destination configuration in the stream to send logs. See Destinations for details and features available for each destination. Note: "SPLUNK" and "HTTPS" are the only two types tested. Possible values are: HTTPS, SPLUNK. Default is SPLUNK. | Optional |
-| display_name | The name of the destination. | Optional |
-| endpoint | The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs. See Stream logs to Splunk. | Optional |
-| event_collector_token | The Event Collector token for your Splunk account. See View usage of Event Collector token in the Splunk documentation. | Optional |
-| tls_hostname | The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint URL. | Optional |
-| notification_emails | A list of e-mail addresses where you want to send notifications about activations and deactivations of the stream. You can omit this member and activate or deactivate the stream without notifications. | Optional |
-| collect_midgress | Indicates if you've opted to capture midgress traffic within the Akamai platform, such as between two edge servers. Possible values are: True, False. | Optional |
-| activate | Activates the stream at the time of the request, false by default. When Edit a stream or Patch a stream that is active, set this value to true. Possible values are: True, False. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStream | unknown | Akamai DataStream. |

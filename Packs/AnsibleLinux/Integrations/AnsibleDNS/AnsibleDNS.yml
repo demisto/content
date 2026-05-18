@@ -1,4 +1,5 @@
 category: IT Services
+provider: IBM
 commonfields:
   id: AnsibleDNS
   version: -1
@@ -43,7 +44,7 @@ configuration:
   options:
   - tcp
   - udp
-description: Manage DNS records using NSUpdate
+description: Manage DNS records using NSUpdate.
 display: Ansible DNS
 fromversion: 6.0.0
 name: AnsibleDNS
@@ -74,28 +75,28 @@ script:
     name: dns-nsupdate
     outputs:
     - contextPath: DNS.Nsupdate.changed
-      description: If module has modified record
+      description: If module has modified record.
       type: string
     - contextPath: DNS.Nsupdate.record
-      description: DNS record
+      description: DNS record.
       type: string
     - contextPath: DNS.Nsupdate.ttl
-      description: DNS record TTL
+      description: DNS record TTL.
       type: number
     - contextPath: DNS.Nsupdate.type
-      description: DNS record type
+      description: DNS record type.
       type: string
     - contextPath: DNS.Nsupdate.value
-      description: DNS record value(s)
+      description: DNS record value(s).
       type: unknown
     - contextPath: DNS.Nsupdate.zone
-      description: DNS record zone
+      description: DNS record zone.
       type: string
     - contextPath: DNS.Nsupdate.dns_rc
-      description: dnspython return code
+      description: dnspython return code.
       type: number
     - contextPath: DNS.Nsupdate.dns_rc_str
-      description: dnspython return code (string representation)
+      description: dnspython return code (string representation).
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

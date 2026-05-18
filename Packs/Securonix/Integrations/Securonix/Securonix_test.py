@@ -544,6 +544,12 @@ def test_module(mocker):
             EXPECTED_LIST_ACTIVITY_NO_DATA,
         ),
         (
+            list_activity_data,
+            {"from": "01/12/2024 10:00:00", "query": 'hostname = "HOST.com"', "to": "01/15/2024 12:01:00", "max": "100"},
+            RESPONSE_LIST_ACTIVITY,
+            EXPECTED_LIST_ACTIVITY,
+        ),
+        (
             get_incident_attachments,
             {"incident_id": "test_id"},
             get_mock_attachment_response(),
@@ -1235,3 +1241,21 @@ def test_list_violation_data_command_for_invalid_arguments(mock_client, max, err
         list_violation_data(mock_client, args)
 
     assert str(error.value) == err_msg
+
+
+@pytest.mark.parametrize(
+    "max_value,expected_error",
+    [
+        ("-1", MESSAGE["INVALID_MAX_VALUE"]),
+        ("0", MESSAGE["INVALID_MAX_VALUE"]),
+        ("10001", MESSAGE["INVALID_MAX_VALUE"]),
+    ],
+)
+def test_list_activity_data_invalid_max_parameter(mock_client, max_value, expected_error):
+    """Test case to verify that ValueError is raised for invalid max parameter values."""
+    args = {"from": "01/12/2024 10:00:00", "to": "01/15/2024 12:01:00", "query": 'hostname = "HOST.com"', "max": max_value}
+
+    with pytest.raises(ValueError) as error:
+        list_activity_data(mock_client, args)
+
+    assert str(error.value) == expected_error

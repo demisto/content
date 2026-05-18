@@ -1,0 +1,28 @@
+commonfields:
+  id: VectraXDRGenerateMailBody
+  version: -1
+name: VectraXDRGenerateMailBody
+script: ''
+type: python
+tags: []
+comment: Generate an email body based on the detection assessment for MDR escalation process.
+enabled: true
+args:
+- name: body_content
+  required: true
+  description: Please provide the content needed to generate the email body.
+  isArray: true
+  type: unknown
+outputs:
+- contextPath: VectraXDRMailBody
+  description: Email body generated based on the detection assessment.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.11.4508456
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -32,7 +32,9 @@
                 "width": 100,
                 "height": 250,
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"40205\")\r\n| alter _user=arrayindex(regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), 0)\r\n| comp count(_instanceId ) as _count by _user\r\n| fields _count, _user\r\n\r\n| view graph type = pie subtype = full xaxis = _user yaxis = _count ",
-                "time_frame": { "relativeTime": 86400000 },
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
                 "viewOptions": {
                   "type": "pie",
                   "commands": [
@@ -74,7 +76,9 @@
                 "width": 100,
                 "height": 845,
                 "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"40205\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=\"High\",\r\n    _user=arrayindex(regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), 0)\r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`",
-                "time_frame": { "relativeTime": 86400000 },
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
                 "viewOptions": {
                   "type": "table",
                   "commands": []
@@ -85,12 +89,17 @@
         }
       ],
       "default_template_id": 1,
-      "time_frame": { "relativeTime": 86400000 },
+      "time_frame": {
+        "relativeTime": 86400000
+      },
       "global_id": "c5e709240d634a42ad404f34a972f6bb",
       "time_offset": 10800,
       "metadata": "{\"params\": []}"
     }
   ],
   "fromVersion": "8.9.0",
-  "widgets_data": []
+  "widgets_data": [],
+  "supportedModules": [
+    "xsiam"
+  ]
 }

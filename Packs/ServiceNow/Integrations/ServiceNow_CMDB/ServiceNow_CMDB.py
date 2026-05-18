@@ -33,17 +33,20 @@ class Client:
 
     def __init__(
         self,
-        credentials: dict,
+        username: str = "",
+        password: str = "",
         use_oauth: bool = False,
         client_id: str = "",
         client_secret: str = "",
         url: str = "",
         verify: bool = False,
         proxy: bool = False,
+        jwt_params: dict = None,
     ):
         """
         Args:
-            - credentials: the username and password given by the user.
+            - username: the username for authentication.
+            - password: the password for authentication.
             - client_id: the client id of the application of the user.
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
@@ -55,8 +58,10 @@ class Client:
         """
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         self.use_oauth = use_oauth
+        self.use_jwt = bool(jwt_params)
         self.snow_client: ServiceNowClient = ServiceNowClient(
-            credentials=credentials,
+            username=username,
+            password=password,
             use_oauth=use_oauth,
             client_id=client_id,
             client_secret=client_secret,
@@ -64,6 +69,7 @@ class Client:
             verify=verify,
             proxy=proxy,
             headers=headers,
+            jwt_params=jwt_params,
         )
 
     def records_list(self, class_name, params=None):
@@ -467,12 +473,6 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth:
-        return_error(
-            "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-cmdb-oauth-login "
-            "command followed by the !servicenow-cmdb-oauth-test command to test the instance."
-        )
 
     try:
         client.records_list(class_name="cmdb_ci_linux_server")
@@ -545,38 +545,73 @@ def main() -> None:
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     client_id = client_secret = ""
-    credentials = params.get("credentials", {})
     use_oauth = params.get("use_oauth", False)
+    use_jwt = params.get("use_jwt", False)
+    jwt_params = {}
 
-    if use_oauth:
-        client_id = credentials.get("identifier")
-        client_secret = credentials.get("password")
+    basic_auth_creds = params.get("basic_credentials", {})
+    username = basic_auth_creds.get("identifier", "")
+    password = basic_auth_creds.get("password", "")
 
-    client = Client(
-        credentials=credentials,
-        use_oauth=use_oauth,
-        client_id=client_id,
-        client_secret=client_secret,
-        url=url,
-        verify=verify,
-        proxy=proxy,
-    )
+    oauth_creds = params.get("credentials", {})
 
-    commands = {
-        "servicenow-cmdb-oauth-login": login_command,
-        "servicenow-cmdb-oauth-test": oauth_test_module,
-        "servicenow-cmdb-records-list": records_list_command,
-        "servicenow-cmdb-record-get-by-id": get_record_command,
-        "servicenow-cmdb-record-create": create_record_command,
-        "servicenow-cmdb-record-update": update_record_command,
-        "servicenow-cmdb-record-add-relations": add_relation_command,
-        "servicenow-cmdb-record-delete-relations": delete_relation_command,
-    }
-
-    command = demisto.command()
-
-    demisto.debug(f"Command being called is {command}")
     try:
+        # use jwt only with OAuth
+        if use_jwt and use_oauth:
+            raise ValueError("Please choose only one authentication method (OAuth or JWT).")
+
+        elif use_jwt:
+            use_oauth = True
+
+        if use_oauth:
+            client_id = oauth_creds.get("identifier", "")
+            client_secret = oauth_creds.get("password", "")
+        else:
+            # if username/password are empty - fallback to legacy which populates the oath credentials
+            if not username or not password:
+                demisto.debug("Using legacy parameters for username and password")
+                username = oauth_creds.get("identifier", "")
+                password = oauth_creds.get("password", "")
+
+        if use_jwt:
+            if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
+                raise Exception("When using JWT, fill private key, kid and sub fields")
+            jwt_params = {
+                "private_key": params.get("private_key", {}).get("password"),
+                "kid": params.get("kid"),
+                "sub": params.get("sub"),
+                "iss": params.get("iss", client_id),
+                "aud": client_id,
+            }
+
+        client = Client(
+            username=username,
+            password=password,
+            use_oauth=use_oauth,
+            client_id=client_id,
+            client_secret=client_secret,
+            url=url,
+            verify=verify,
+            proxy=proxy,
+            jwt_params=jwt_params,
+        )
+
+        commands = {
+            "servicenow-cmdb-oauth-login": login_command,
+            "servicenow-cmdb-oauth-test": oauth_test_module,
+            "servicenow-cmdb-records-list": records_list_command,
+            "servicenow-cmdb-record-get-by-id": get_record_command,
+            "servicenow-cmdb-record-create": create_record_command,
+            "servicenow-cmdb-record-update": update_record_command,
+            "servicenow-cmdb-record-add-relations": add_relation_command,
+            "servicenow-cmdb-record-delete-relations": delete_relation_command,
+        }
+
+    except Exception as e:
+        return_error(f"Error:\n{e!s}")
+    try:
+        command = demisto.command()
+        demisto.debug(f"Command being called is {command}")
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)

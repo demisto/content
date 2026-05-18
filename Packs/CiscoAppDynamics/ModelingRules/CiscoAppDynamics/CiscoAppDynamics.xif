@@ -1,0 +1,12 @@
+[MODEL: dataset=cisco_appdynamics_raw]
+alter
+    xdm.target.resource.id = to_string(objectId),
+    xdm.target.resource.value = changes,
+	xdm.source.user.username = userName,
+	xdm.target.resource.name = objectName,
+	xdm.target.resource.type = objectType,
+	xdm.event.description = description,
+	xdm.target.application.name = applicationName,
+	xdm.observer.type = securityProviderType,
+	xdm.event.outcome_reason = action,
+	xdm.event.outcome = if(action ~= "LOGIN_FAILED|LOGOUT_FAILED", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS);

@@ -137,4 +137,4 @@ Sends a HTTP request with advanced capabilities
 
 ### Human Readable Output
 
->Sent a GET request to https://test.jamfcloud.com/JSSResource/computers/id/1/subset/General
+>Sent a GET request to <https://test.jamfcloud.com/JSSResource/computers/id/1/subset/General>

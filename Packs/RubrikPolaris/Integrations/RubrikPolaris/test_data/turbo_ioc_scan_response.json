@@ -1,0 +1,14 @@
+{
+    "raw_response": {
+        "data": {
+            "startTurboThreatHunt": {
+                "huntId": "000000000-0000-0000-0000-000000001",
+                "__typename": "StartTurboThreatHuntReply"
+            }
+        }
+    },
+    "outputs": {
+        "huntId": "000000000-0000-0000-0000-000000001",
+        "__typename": "StartTurboThreatHuntReply"
+    }
+}

@@ -221,7 +221,7 @@ NUMBER_OF_MESSAGES = """query {{
 """
 
 FETCH_WITHOUT_EVENTS = """query {{
-  phisherMessages(all: false, page: 1, per: {}, query: {}) {{
+  phisherMessages(all: false, page: 1, per: {}, query: {}, sortField: REPORTED_AT, sortDirection: ASCENDING) {{
     nodes {{
       actionStatus
       attachments(status: UNKNOWN) {{
@@ -400,7 +400,7 @@ def test_module(client: Client) -> str:
 
     try:
         _, incidents = fetch_incidents(
-            client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, max_fetch=fetch_limit
+            client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, max_fetch=fetch_limit, look_back=0
         )
 
         if incidents:
@@ -634,7 +634,13 @@ def phisher_delete_tags_command(client: Client, args: dict) -> str:
         return "The tags weren't deleted - check the ID"
 
 
-def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int) -> tuple[str, list]:
+def fetch_incidents(
+    client: Client,
+    last_run: dict,
+    first_fetch_time: str,
+    max_fetch: int,
+    look_back: int = 0,
+) -> tuple[dict, list]:
     """
     fetch_incidents is being called from the fetch_incidents_command function.
     it checks the last message fetch, checking number of new events, and getting all messages
@@ -646,17 +652,24 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
 
     args:
         client (Client): Phisher client
-        last_run (Dict): dict containing the time of the last fetched message
+        last_run (Dict): SDK lookback last-run object {time, limit, found_incident_ids}
         first_fetch_time (String): the first fetch parameter from integration instance for the first fetch
         max_fetch (Int): maximum number for each fetch
+        look_back (Int): minutes to look back to recover late-indexed messages (EIR-14074)
 
     returns:
-        next_run: timestamp of the last message fetched so next fetch will know from where to start
+        next_run: updated last-run dict for the SDK lookback pattern
         incidents: list of incidents to be written to XSOAR
     """
-    last_time = last_run.get("last_fetch", first_fetch_time)
-    query = f'" reported_at:[{last_time} TO *]"'
-    limit = calculate_number_of_events(client, query)
+    max_fetch = int(max_fetch)
+    limit = last_run.get("limit", max_fetch)
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=first_fetch_time,
+        look_back=look_back,
+        date_format=DATE_FORMAT,
+    )
+    query = f'" reported_at:{{{start_fetch_time} TO {end_fetch_time}}}"'
     incidents = []
     # create request
     payload_init = FETCH_WITHOUT_EVENTS.format(limit, query)
@@ -665,23 +678,42 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     # get all messages
     items = client.phisher_gql_request(req)
     messages = items.get("data", {}).get("phisherMessages", {}).get("nodes", [])
-    # check if they need to be fetched
-    message_index = 0
-    for message in reversed(messages):
+    for message in messages:
         events = message.get("events", {})
         creation_time = get_created_time(events)
-        message["created at"] = arg_to_datetime(creation_time).isoformat()  # type: ignore
-        message.pop("events")
-        incident = {"name": message.get("subject"), "occurred": message.get("created at"), "rawJSON": json.dumps(message)}
+        # cursor field must stay in DATE_FORMAT for the SDK lookback helpers
+        message["created_at_cursor"] = creation_time if creation_time else start_fetch_time
+        message["created at"] = arg_to_datetime(creation_time).isoformat() if creation_time else start_fetch_time  # type: ignore
+        message.pop("events", None)
 
-        # Update last run and add incident if the incident is newer than last fetch
-        last_time = message["created at"]
+    messages_filtered = filter_incidents_by_duplicates_and_limit(
+        incidents_res=messages,
+        last_run=last_run,
+        fetch_limit=max_fetch,
+        id_field="id",
+    )
+
+    for message in messages_filtered:
+        incident = {
+            "dbotMirrorId": message.get("id"),
+            "name": message.get("subject"),
+            "occurred": message.get("created at"),
+            "rawJSON": json.dumps(message),
+        }
         incidents.append(incident)
-        message_index += 1
-        if message_index == max_fetch:
-            break
 
-    next_run = last_time
+    next_run = update_last_run_object(
+        last_run=last_run,
+        incidents=messages_filtered,
+        fetch_limit=max_fetch,
+        start_fetch_time=start_fetch_time,
+        end_fetch_time=end_fetch_time,
+        look_back=look_back,
+        created_time_field="created_at_cursor",
+        id_field="id",
+        date_format=DATE_FORMAT,
+        increase_last_run_time=False,
+    )
     return next_run, incidents
 
 
@@ -694,13 +726,19 @@ def fetch_incidents_command(client: Client) -> None:
     """
     first_fetch_time = client.first_fetch_time
     fetch_limit = arg_to_number(client.max_fetch)
+    look_back = arg_to_number(demisto.params().get("look_back")) or 0
+    last_run = demisto.getLastRun() or {}
+    # migrate legacy lastRun shape {"last_fetch": <iso>} to SDK lookback shape
+    if "time" not in last_run and last_run.get("last_fetch"):
+        last_run = {"time": last_run["last_fetch"], "found_incident_ids": {}}
     next_run, incidents = fetch_incidents(
         client=client,
-        last_run=demisto.getLastRun(),
+        last_run=last_run,
         first_fetch_time=first_fetch_time,
         max_fetch=fetch_limit,  # type: ignore
+        look_back=look_back,
     )
-    demisto.setLastRun({"last_fetch": next_run})
+    demisto.setLastRun(next_run)
     demisto.incidents(incidents)
 
 

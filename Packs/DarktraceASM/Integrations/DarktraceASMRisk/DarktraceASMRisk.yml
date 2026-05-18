@@ -4,6 +4,7 @@ commonfields:
 name: Darktrace ASM
 display: Darktrace ASM
 category: Network Security
+provider: Darktrace
 description: 'This pack includes configurations to combine the world-class threat
   detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing
   security teams to monitor their attack surface for risks, high-impact vulnerabilities
@@ -295,7 +296,7 @@ script:
       description: All tags assigned to asset.
     description: Unassign an existing tag to a Darktrace ASM Asset within the Darktrace
       UI.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   subtype: python3

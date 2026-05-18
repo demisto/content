@@ -4,7 +4,8 @@ commonfields:
 name: PacketMail
 display: PacketMail.net
 category: Data Enrichment & Threat Intelligence
-description: Intel look up for IPS
+provider: Wireless Innovation
+description: Intel look up for IPS.
 configuration:
 - display: URL
   name: url
@@ -44,14 +45,14 @@ script:
     arguments:
     - name: ip
       required: true
-      description: The ip to check on
+      description: The ip to check on.
     outputs:
     - contextPath: IP.Address
-      description: IP Address
+      description: IP Address.
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+      description: For malicious IPs, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IPs, the reason for the vendor to make the decision.
     description: Get intel from PacketMail.net on IPs
 tests:
 - no test

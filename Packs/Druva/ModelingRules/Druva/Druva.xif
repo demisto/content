@@ -10,8 +10,8 @@ alter
     severity_str = rtrim(to_string(severity), ".0"),
     inSyncDataSourceID_str = to_string(inSyncDataSourceID)
 | alter
-    xdm.source.ipv4 = if(incidr(ip, "0.0.0.0/0"), ip),
-    xdm.source.ipv6 = arrayindex(regextract(ip, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.source.ipv4 = if(is_ipv4(ip), ip),
+    xdm.source.ipv6 = if(is_ipv6(ip), ip),
     xdm.event.id  = rtrim(to_string(eventID), ".0"),
     xdm.target.host.os = if(clientOS = "", null, clientOS),
     xdm.event.type = eventType,

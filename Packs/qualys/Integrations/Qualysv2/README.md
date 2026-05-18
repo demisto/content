@@ -17139,7 +17139,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-1879"
                         }
                     },
-                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by Apple Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 6s and later, iPad Pro (all models), iPad Air 2 and later, iPad 5th generation and later, iPad mini 4 and later, and iPod touch (7th generation)",
+                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by TestFruit Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 6s and later, iPad Pro (all models), iPad Air 2 and later, iPad 5th generation and later, iPad mini 4 and later, and iPod touch (7th generation)",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -17192,7 +17192,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-1879"
                         }
                     },
-                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by Apple Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 5s, iPhone 6, iPhone 6 Plus, iPad Air, iPad mini 2, iPad mini 3, and iPod touch (6th generation)",
+                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by TestFruit Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 5s, iPhone 6, iPhone 6 Plus, iPad Air, iPad mini 2, iPad mini 3, and iPod touch (6th generation)",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {

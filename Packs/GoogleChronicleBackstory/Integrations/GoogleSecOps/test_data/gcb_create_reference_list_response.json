@@ -1,0 +1,18 @@
+{
+    "name": "projects/dummy_project_id/locations/us/instances/dummy_instance_id/referenceLists/dummy_reference_list_name",
+    "displayName": "dummy_reference_list_name",
+    "revisionCreateTime": "2025-07-14T07:50:45.350943Z",
+    "description": "monitoring domain",
+    "entries": [
+        {
+            "value": "L1"
+        },
+        {
+            "value": "L2"
+        },
+        {
+            "value": "L3"
+        }
+    ],
+    "syntaxType": "REFERENCE_LIST_SYNTAX_TYPE_PLAIN_TEXT_STRING"
+}

@@ -39,11 +39,11 @@ Authentication options depend on the product and version.
 
 | **Product** | **Authentication required** | **Authentication options** |
 | --- | --- | --- |
-| Cortex XSOAR 8 Cloud tenant | Yes                          | - Basic authentication (username and password) <br><br> - Header-based authentication (encoded username and password)  |
-| Cortex XSIAM tenant | Yes  | - Basic authentication (username and password) <br><br> - Header-based authentication (encoded username and password) |
-| Cortex XSOAR 8 On-prem | No | - Basic authentication (username and password) <br><br> - Header-based authentication (encoded username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.9/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). |
-| Cortex XSOAR 6.x | No| - Basic authentication (username and password) <br><br> - Header-based authentication (encoded username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 6.x, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).  |
-| Engines (Cortex XSOAR 8 Cloud, Cortex XSOAR 8 On-Prem, Cortex XSIAM, Cortex 6.x) | No | - Basic authentication (username and password) <br><br> - Header-based authentication (encoded username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for engines, see [Configure an engine to use custom certificates](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Configure-an-engine-to-use-custom-certificates). |
+| Cortex XSOAR 8 Cloud tenant | Yes                          | - Basic authentication (username and password)  |
+| Cortex XSIAM tenant | Yes  | - Basic authentication (username and password) |
+| Cortex XSOAR 8 On-prem | No | - Basic authentication (username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.10/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). |
+| Cortex XSOAR 6.x | No| - Basic authentication (username and password) <br><br> - Header-based authentication using `_header:<HEADER-NAME>` syntax <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 6.x, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).  |
+| Engines (Cortex XSOAR 8 Cloud, Cortex XSOAR 8 On-Prem, Cortex XSIAM, Cortex 6.x) | No | - Basic authentication (username and password) <br><br> - Header-based authentication using `_header:<HEADER-NAME>` syntax (Cortex XSOAR 6.x only) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for engines, see [Configure an engine to use custom certificates](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Configure-an-engine-to-use-custom-certificates). |
 
 ## Determine the webhook URL
 
@@ -81,16 +81,25 @@ The Generic Webhook integration accepts POST HTTP queries, with the following op
 
 ### Examples
 
-Triggers the webhook using cURL:<br><br>
+Basic authentication can be used in three ways with the same username/password configured in the integration:
+
+Using -u flag:<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
-The request payload does not have to contain the fields mentioned above, and may include any JSON fields and values:<br><br>
+Using Authorization header (where the header value is base64 encoded username:password):<br>
+`curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MTIzOjEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
+**Note**: `MTIzOjEyMw==` is Base64 encoded username:password example.
+
+Or embedding credentials directly in the URL:<br>
+`curl -X POST https://username:password@ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
+
+The request payload does not have to contain the fields mentioned above, and may include any JSON fields and values:<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
-Multiple incidents, alerts, or issues can be created in one request by sending an array as the request body:<br><br>
+Multiple incidents, alerts, or issues can be created in one request by sending an array as the request body:<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
 
-Using an authorization header instead of a username and password. In this example, the username in the integration instance is set to _header:Authorization and the password in the integration instance is set to  Basic MYIvOkEyMw== :<br><br>
+Using custom header authentication (Cortex XSOAR 6.x only). In this example, the username in the integration instance is set to _header:Authorization and the password in the integration instance is set to  `Basic MYIvOkEyMw==` :<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MYIvOkEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}' -v`
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
@@ -106,7 +115,7 @@ The payload can then be mapped. For more information see:
 
 ## Authorization headers
 
-We recommend using header authentication to validate the requests sent from your third-party service, to prevent the unauthorized creation of incidents/alerts/issues. When using authorization headers, set the username field in the integration to _header:&lt;HEADER-NAME&gt; and provide the header value in the password field.
+For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents. Set the username field in the integration to `_header:<HEADER-NAME>` and provide the header value in the password field.
 Example: If the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
 
 ### Troubleshooting authorization headers

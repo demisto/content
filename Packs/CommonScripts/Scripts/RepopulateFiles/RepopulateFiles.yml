@@ -6,67 +6,67 @@ script: ''
 type: python
 tags:
 - Utility
-comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
+comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key.
 enabled: true
 outputs:
 - contextPath: File.Name
-  description: Filename
+  description: Filename.
 - contextPath: File.Type
-  description: File type
+  description: File type.
 - contextPath: File.Size
-  description: File size
+  description: File size.
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: MD5 hash of the file.
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: SHA1 hash of the file.
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: SHA256 hash of the file.
 - contextPath: File.SHA512
-  description: SHA512 hash of the file
+  description: SHA512 hash of the file.
 - contextPath: File.EntryID
-  description: EntryID of the file
+  description: EntryID of the file.
 - contextPath: File.Info
-  description: File information
+  description: File information.
 - contextPath: File.Extension
-  description: File extension
+  description: File extension.
 - contextPath: File.SSDeep
-  description: SSDeep hash of the file
+  description: SSDeep hash of the file.
 - contextPath: AttachmentFile.Name
-  description: Filename of incident attachments
+  description: Filename of incident attachments.
 - contextPath: AttachmentFile.Type
-  description: File type of incident attachments
+  description: File type of incident attachments.
 - contextPath: AttachmentFile.Size
-  description: File size of incident attachments
+  description: File size of incident attachments.
 - contextPath: AttachmentFile.MD5
-  description: MD5 hash of the file of incident attachments
+  description: MD5 hash of the file of incident attachments.
 - contextPath: AttachmentFile.SHA1
-  description: SHA1 hash of the file of incident attachments
+  description: SHA1 hash of the file of incident attachments.
 - contextPath: AttachmentFile.SHA256
-  description: SHA256 hash of the file of incident attachments
+  description: SHA256 hash of the file of incident attachments.
 - contextPath: AttachmentFile.SHA512
-  description: SHA512 hash of the file of incident attachments
+  description: SHA512 hash of the file of incident attachments.
 - contextPath: AttachmentFile.EntryID
-  description: EntryID of the file of incident attachments
+  description: EntryID of the file of incident attachments.
 - contextPath: AttachmentFile.Info
-  description: File information of incident attachments
+  description: File information of incident attachments.
 - contextPath: AttachmentFile.Extension
-  description: File extension of incident attachments
+  description: File extension of incident attachments.
 - contextPath: AttachmentFile.SSDeep
-  description: SSDeep hash of the file of incident attachments
+  description: SSDeep hash of the file of incident attachments.
 - contextPath: AttachmentFile.Attachment.description
-  description: File description
+  description: File description.
 - contextPath: AttachmentFile.Attachment.name
-  description: File name
+  description: File name.
 - contextPath: AttachmentFile.Attachment.path
-  description: File path
+  description: File path.
 - contextPath: AttachmentFile.Attachment.showMediaFile
-  description: showMediaFile
+  description: showMediaFile.
 - contextPath: AttachmentFile.Attachment.type
-  description: File content type
+  description: File content type.
 scripttarget: 0
 subtype: python3
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (auto formatted)

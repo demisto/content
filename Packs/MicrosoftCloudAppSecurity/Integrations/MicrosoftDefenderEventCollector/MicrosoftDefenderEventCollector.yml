@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -126,3 +127,5 @@ marketplaces:
 - platform
 tests:
 - No Tests
+supportedModules:
+- xsiam

@@ -4,6 +4,7 @@ commonfields:
 name: TruSTAR v2
 display: TruSTAR v2 (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: Cisco Systems
 description: Deprecated. Not supported since TrueSTAR was acquired by Splunk, No available replacement.
 configuration:
 - display: Server URL (e.g. https://api.trustar.co)
@@ -932,7 +933,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/trustar:20.2.0.72496
+  dockerimage: demisto/trustar:20.2.0.2058885
 fromversion: 5.0.0
 tests:
 - TruSTAR v2-Test

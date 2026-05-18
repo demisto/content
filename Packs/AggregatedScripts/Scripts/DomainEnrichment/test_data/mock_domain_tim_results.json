@@ -1,0 +1,98 @@
+{
+    "pages": [
+      {
+        "iocs": [
+          {
+            "value": "example.com",
+            "score": 3,
+            "manuallyEditedFields": ["Score"],
+            "modifiedTime": "2025-09-01T00:00:00Z",
+            "CustomFields": {
+              "detectionengines": 70,
+              "positivedetections": 37,
+              "score": 3
+            },
+            "insightCache": {
+              "scores": {
+                "brand1": {
+                  "score": 2,
+                  "reliability": "High",
+                  "context": {
+                    "Domain(val.Name && val.Name == obj.Name)": [
+                      {
+                        "Name": "example.com",
+                        "Brand": "brand1",
+                        "DetectionEngines": 60,
+                        "PositiveDetections": 5,
+                        "Score": 2
+                      }
+                    ]
+                  }
+                },
+                "brand2": {
+                  "score": 3,
+                  "reliability": "Medium",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "example.com",
+                        "Vendor": "brand2",
+                        "Score": 3
+                      }
+                    ],
+                    "Domain(val.Name && val.Name == obj.Name)": [
+                      {
+                        "Name": "example.com",
+                        "Brand": "brand2",
+                        "DetectionEngines": 70,
+                        "PositiveDetections": 37,
+                        "Score": 3
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "value": "example2.com",
+            "score": 1,
+            "modifiedTime": "2025-08-20T00:00:00Z",
+            "CustomFields": {
+              "name": "example2.com",
+              "detectionengines": 10,
+              "positivedetections": 1,
+              "score": 1
+            },
+            "insightCache": {
+              "scores": {
+                "brand3": {
+                  "score": 1,
+                  "reliability": "Low",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "example2.com",
+                        "Vendor": "brand3",
+                        "Score": 1
+                      }
+                    ],
+                    "Domain(val.Name && val.Name == obj.Name)": [
+                      {
+                        "Name": "example2.com",
+                        "Brand": "brand3",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 1,
+                        "Score": 1
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  

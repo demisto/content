@@ -1,8 +1,8 @@
 {
     "name": "Splunk",
-    "description": "Run queries on Splunk servers.",
+    "description": "Fetch events as incidents and search Splunk",
     "support": "xsoar",
-    "currentVersion": "3.2.19",
+    "currentVersion": "4.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,10 @@
     "categories": [
         "Analytics & SIEM"
     ],
+    "defaultDataSource": "SplunkPy",
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Splunk"],
     "dependencies": {
         "CommonScripts": {
             "mandatory": true,
@@ -52,10 +53,11 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "cloud_posture",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

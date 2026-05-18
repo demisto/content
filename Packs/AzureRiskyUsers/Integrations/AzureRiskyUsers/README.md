@@ -11,7 +11,7 @@ The application must have the following permissions:
 - *IdentityRiskEvent.ReadWrite.All*
 - *IdentityRiskyUser.Read.All*
 - *IdentityRiskyUser.ReadWrite.All*
-- *User.Read*
+- *User.Read.All*
 
 In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
 
@@ -54,11 +54,14 @@ In order to connect to the Azure Risky Users using the Cortex XSOAR Azure App wi
 
 At end of the process you'll see a message that you've logged in successfully.
 
-## Configure AzureRiskyUsers on Cortex XSOAR
+## Configure AzureRiskyUsers on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureRiskyUsers.
-3. Click **Add instance** to create and configure a new integration instance.
+1. Navigate to one of the following:
+   - Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances
+   - Cortex XSOAR 6: Settings > Integrations
+   - Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations
+3. Search for AzureRiskyUsers.
+4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
@@ -70,11 +73,11 @@ At end of the process you'll see a message that you've logged in successfully.
     | Use system proxy | False |
     | Trust any certificate | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-risky-users-auth-test
@@ -557,3 +560,147 @@ Read the properties and relationships of a riskDetection object.
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Ip Address|Detection Timing Type|Last Updated Date Time|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 6565 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
+
+### azure-risky-users-confirm-safe
+
+***
+Confirms user(s) as safe (post-investigation).
+
+#### Base Command
+
+`azure-risky-users-confirm-safe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureRiskyUsers.Remediation.UserID | String | The ID of the user. |
+| AzureRiskyUsers.Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| AzureRiskyUsers.Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| AzureRiskyUsers.Remediation.RiskState | String | The new risk state of the user. |
+
+#### Command Example
+
+```!azure-risky-users-confirm-safe user=user_id_1,name2@test.com,name3@test.com```
+
+#### Context Example
+
+```json
+{
+    "AzureRiskyUsers": {
+        "Remediation": [
+            {
+                "UserID": "user_id_1",
+                "UserPrincipalName": "",
+                "Success": true,
+                "RiskState": "confirmedSafe"
+            },
+            {
+                "UserID": "user_id_2",
+                "UserPrincipalName": "name2@test.com",
+                "Success": true,
+                "RiskState": "confirmedSafe"
+            },
+            {
+                "UserID": "user_id_3",
+                "UserPrincipalName": "name3@test.com",
+                "Success": false,
+                "RiskState": ""
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Successfully confirmed users as safe
+>
+> |UserID|UserPrincipalName|Success|RiskState|
+> |---|---|---|---|
+> | user_id_1 |  | true | confirmedSafe |
+> | user_id_2 | name2@test.com | true | confirmedSafe |
+
+> ### Unable to confirm users as safe
+>
+> |User|Error|
+> |---|---|
+> | name3@test.com | Error: confirmation failed. |
+
+### azure-risky-users-confirm-compromise
+
+***
+Confirms user(s) as compromised.
+
+#### Base Command
+
+`azure-risky-users-confirm-compromise`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as compromised. Results may not be immediately visible due to processing delays in Azure. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureRiskyUsers.Remediation.UserID | String | The ID of the user. |
+| AzureRiskyUsers.Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| AzureRiskyUsers.Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| AzureRiskyUsers.Remediation.RiskState | String | The new risk state of the user. |
+
+#### Command Example
+
+```!azure-risky-users-confirm-compromise user=user_id_1,name2@test.com,name3@test.com```
+
+#### Context Example
+
+```json
+{
+    "AzureRiskyUsers": {
+        "Remediation": [
+            {
+                "UserID": "user_id_1",
+                "UserPrincipalName": "",
+                "Success": true,
+                "RiskState": "confirmedCompromised"
+            },
+            {
+                "UserID": "user_id_2",
+                "UserPrincipalName": "name2@test.com",
+                "Success": true,
+                "RiskState": "confirmedCompromised"
+            },
+            {
+                "UserID": "user_id_3",
+                "UserPrincipalName": "name3@test.com",
+                "Success": false,
+                "RiskState": ""
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Successfully confirmed users as compromised
+>
+> |UserID|UserPrincipalName|Success|RiskState|
+> |---|---|---|---|
+> | user_id_1 |  | true | confirmedCompromised |
+> | user_id_2 | name2@test.com | true | confirmedCompromised |
+
+> ### Unable to confirm users as compromised
+>
+> |User|Error|
+> |---|---|
+> | name3@test.com | Error: confirmation failed. |

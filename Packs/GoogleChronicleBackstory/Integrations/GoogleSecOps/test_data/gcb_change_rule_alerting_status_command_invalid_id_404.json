@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 404,
+        "message": "rule with ID dummy could not be found",
+        "status": "NOT_FOUND"
+    }
+}

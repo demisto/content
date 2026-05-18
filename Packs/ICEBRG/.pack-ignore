@@ -1,6 +1,8 @@
 [file:Icebrg.yml]
 ignore=IN126
 
+[file:README.md]
+ignore=RM110
 
 [file:Icebrg_image.png]
 ignore=IM111

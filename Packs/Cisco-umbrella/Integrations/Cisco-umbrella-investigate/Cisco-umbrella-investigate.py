@@ -927,6 +927,15 @@ def get_domain_security_score_command(
     )
 
 
+def convert_risk_score_to_int(risk_score) -> int | None:
+    try:
+        risk_score = int(risk_score)
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"Failed to cast risk score: {risk_score} as an integer. Defaulting to None. Got error: {e}")
+        risk_score = None
+    return risk_score
+
+
 def get_domain_risk_score_command(
     client: Client,
     args: dict[str, Any],
@@ -946,9 +955,11 @@ def get_domain_risk_score_command(
         domain,
     )
     data = res
+    risk_score = data.get("risk_score")
+
     outputs = {
         "name": domain,
-        "risk_score": data.get("risk_score"),
+        "risk_score": risk_score,
         "Indicator": [
             {
                 "indicator": indicator.get("indicator"),
@@ -969,7 +980,7 @@ def get_domain_risk_score_command(
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(risk_score=arg_to_number(data.get("risk_score"))),
+                score=calculate_domain_dbot_score(risk_score=convert_risk_score_to_int(risk_score)),
                 reliability=client.reliability,
             ),
         ),
@@ -1250,10 +1261,8 @@ def get_domain_who_is_command(client: Client, args: dict[str, Any]) -> CommandRe
         domain,
     )
     whois_data = whois_res
-    security_res = client.get_domain_security_score(
-        domain,
-    )
-    security_data = security_res
+    risk_score_res = client.get_domain_risk_score(domain)
+    risk_score = risk_score_res.get("risk_score")
 
     outputs = {
         "name": domain,
@@ -1280,7 +1289,6 @@ def get_domain_who_is_command(client: Client, args: dict[str, Any]) -> CommandRe
             ],
         },
     }
-    secure_rank = security_data.get("securerank2")
     return CommandResults(
         outputs=outputs,
         outputs_key_field="name",
@@ -1311,7 +1319,7 @@ def get_domain_who_is_command(client: Client, args: dict[str, Any]) -> CommandRe
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(secure_rank=arg_to_number(secure_rank)),
+                score=calculate_domain_dbot_score(risk_score=convert_risk_score_to_int(risk_score)),
                 reliability=client.reliability,
             ),
         ),
@@ -1688,12 +1696,14 @@ def domain_command(
             domain,
         )
         security_data = security_res
+
         risk_score = risk_score_data.get("risk_score")
+
         dbot_score = Common.DBotScore(
             integration_name=INDICATOR_VENDOR,
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
-            score=calculate_domain_dbot_score(risk_score=arg_to_number(risk_score)),
+            score=calculate_domain_dbot_score(risk_score=convert_risk_score_to_int(risk_score)),
             reliability=client.reliability,
             malicious_description=f"Malicious domain found with risk score {risk_score}",
         )
@@ -1804,14 +1814,30 @@ def test_module(client: Client, api_key: str, api_secret: str) -> str:
         return "ok"
     except DemistoException as err:
         demisto.debug(str(err))
-        return f"Error: {get_request_error_message(err.res.json())}"
+        return f"Error: {get_request_error_message(err)}"
 
 
 # HELPER COMMANDS
 
 
-def get_request_error_message(error_data: dict[str, Any]) -> str:
-    return error_data.get("errorMessage") or error_data.get("message") or str(json.dumps(error_data))
+def get_request_error_message(err) -> str:
+    if not hasattr(err, "res") or err.res is None:
+        demisto.debug("The error does not have a response object")
+        return str(err)
+
+    if hasattr(err.res, "json"):
+        demisto.debug("The error type is: JSON with error dict")
+        try:
+            error_dict = err.res.json()
+            return error_dict.get("errorMessage") or error_dict.get("message") or str(json.dumps(error_dict))
+        except (ValueError, json.JSONDecodeError):
+            demisto.debug("Failed to parse JSON response, falling back to text")
+
+    if hasattr(err.res, "text"):
+        demisto.debug("The error type is: Text response")
+        return f"HTTP {err.res.status_code}: {err.res.text or err.res.reason}"
+
+    return str(err)
 
 
 def parse_domain_history(data: list[dict[str, Any]]):
@@ -1973,7 +1999,7 @@ def main() -> None:
                 execution_metrics.general_error += 1
             elif err.res.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
                 execution_metrics.quota_error += 1
-            cr = CommandResults(readable_output=get_request_error_message(err.res.json()))
+            cr = CommandResults(readable_output=get_request_error_message(err))
             return_results(append_metrics(execution_metrics, [cr]))
         else:
             return_results(CommandResults(readable_output=str(err)))

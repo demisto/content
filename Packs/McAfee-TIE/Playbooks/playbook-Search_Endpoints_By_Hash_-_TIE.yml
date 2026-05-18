@@ -451,8 +451,7 @@ view: |-
 inputs:
 - key: Hash
   value:
-    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
-      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a, b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
   required: false
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).

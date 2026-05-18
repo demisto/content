@@ -1,0 +1,11 @@
+{
+    "GravityZone.Command.ProcessTreeForHash(val.EndpointID && val.EndpointID == obj.EndpointID)": [
+        {
+            "EndpointID": "ENDPOINT_ID",
+            "Cmdline": "C:\\WINDOWS\\Explorer.EXE",
+            "ParentPID": 5180,
+            "Path": "C:\\Windows\\explorer.exe",
+            "PID": 5212
+        }
+    ]
+}

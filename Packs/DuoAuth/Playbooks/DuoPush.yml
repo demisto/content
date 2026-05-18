@@ -1,0 +1,929 @@
+description: Send Duo Push message to enrolled user.
+id: 'DuoPush'
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - Username
+  - Pushinfo
+  - TryAgain
+  name: General (Inputs group)
+inputs:
+- description: Enrolled user in Duo
+  key: Username
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Message to user in Duo
+  key: Pushinfo
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Try sending message Again for 1 more time, default is False.
+  key: TryAgain
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "False"
+name: DuoPush
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8dab6fac-14b5-49f8-8fd5-aeb3357f78a8
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8dab6fac-14b5-49f8-8fd5-aeb3357f78a8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      pushinfo:
+        simple: ${inputs.Pushinfo}
+      username:
+        simple: ${inputs.Username}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send push message to Duo user.
+      id: 90b65a2c-82d3-4c7d-87af-716139962507
+      iscommand: true
+      name: Send Duo Push
+      script: '|||duoauth-push-notification'
+      type: regular
+      version: -1
+    taskid: 90b65a2c-82d3-4c7d-87af-716139962507
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: allow
+      label: allow
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: deny
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Message
+          operator: isNotEqualString
+          right:
+            value:
+              simple: Login timed out.
+      label: deny
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: deny
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Message
+          operator: isEqualString
+          right:
+            value:
+              simple: Login timed out.
+      label: timed out
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      allow:
+      - "3"
+      deny:
+      - "8"
+      timed out:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      id: c1240b8e-33e5-452a-86bb-5c27ad916cae
+      iscommand: false
+      name: User Activity
+      type: condition
+      version: -1
+    taskid: c1240b8e-33e5-452a-86bb-5c27ad916cae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUser
+      value:
+        simple: Allow
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9303df75-4831-480d-8869-fddd8d2bed74
+      iscommand: false
+      name: Set DuoUser Status Respond Allow
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9303df75-4831-480d-8869-fddd8d2bed74
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.TryAgain
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.TryAgain
+          operator: isEqualString
+          right:
+            value:
+              simple: "False"
+      label: "no"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 893deefd-cc5a-4b3c-89b8-80371040af08
+      iscommand: false
+      name: Try Again for 1 more time?
+      type: condition
+      version: -1
+    taskid: 893deefd-cc5a-4b3c-89b8-80371040af08
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1070
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "21"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: DuoAuth
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      id: 4a06429c-c320-46fb-892a-edd9f507d292
+      iscommand: false
+      name: Is DuoAuth available?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 4a06429c-c320-46fb-892a-edd9f507d292
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Duo Status
+      output:
+        simple: ${DuoUser}
+    - incidentfield: Duo Message
+      output:
+        simple: ${DuoUserMessage}
+    - incidentfield: Duo Status 2
+      output:
+        simple: ${DuoUserSecond}
+    - incidentfield: Duo Message 2
+      output:
+        simple: ${DuoUserSecondMessage}
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Custom mapping of Duo Status/Message 1 and 2 is over!
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 903f24b9-9c31-4455-824c-5594afd1083b
+      iscommand: false
+      name: Custom mapping of Duo Status/Message 1 and 2
+      script: Print
+      type: regular
+      version: -1
+    taskid: 903f24b9-9c31-4455-824c-5594afd1083b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1945
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUser
+      value:
+        simple: Deny
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a31e1d5c-b5a3-4edf-874a-89fbb2adc04c
+      iscommand: false
+      name: Set DuoUser Status Respond Deny
+      script: Set
+      type: regular
+      version: -1
+    taskid: a31e1d5c-b5a3-4edf-874a-89fbb2adc04c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUser
+      value:
+        simple: Timed Out
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 1d140c87-3ab4-4425-89a6-569b62ba886a
+      iscommand: false
+      name: Set DuoUser Respond Timed Out
+      script: Set
+      type: regular
+      version: -1
+    taskid: 1d140c87-3ab4-4425-89a6-569b62ba886a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 720
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      pushinfo:
+        simple: ${inputs.Pushinfo}
+      username:
+        simple: ${inputs.Username}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send push message to Duo user.
+      id: 69e02339-60b4-49c4-8c22-8fe110cf0892
+      iscommand: true
+      name: Send Duo Push
+      script: '|||duoauth-push-notification'
+      type: regular
+      version: -1
+    taskid: 69e02339-60b4-49c4-8c22-8fe110cf0892
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1245
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: allow
+      label: allow
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: deny
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Message
+          operator: isNotEqualString
+          right:
+            value:
+              simple: Login timed out.
+      label: deny
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: deny
+      - - left:
+            iscontext: true
+            value:
+              simple: DuoAuth.PushNotification.Message
+          operator: isEqualString
+          right:
+            value:
+              simple: Login timed out.
+      label: timed out
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      allow:
+      - "12"
+      deny:
+      - "13"
+      timed out:
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      id: 9aaf66fb-092d-4b4e-8565-9b94eeab2fdb
+      iscommand: false
+      name: User Activity
+      type: condition
+      version: -1
+    taskid: 9aaf66fb-092d-4b4e-8565-9b94eeab2fdb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1420
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserSecond
+      value:
+        simple: Allow
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e5c41034-88a9-46b7-8f72-27495d6fd120
+      iscommand: false
+      name: Set DuoUserSecond Respond Allow
+      script: Set
+      type: regular
+      version: -1
+    taskid: e5c41034-88a9-46b7-8f72-27495d6fd120
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1595
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserSecond
+      value:
+        simple: Deny
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 556eb9b0-d6ba-4856-8d99-073558e9059f
+      iscommand: false
+      name: Set DuoUserSecond Respond Deny
+      script: Set
+      type: regular
+      version: -1
+    taskid: 556eb9b0-d6ba-4856-8d99-073558e9059f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1595
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserSecond
+      value:
+        simple: Timed Out
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: cf7c031f-e0ec-4bd2-8d1e-136742764133
+      iscommand: false
+      name: Set DuoUserSecond Respond Timed Out
+      script: Set
+      type: regular
+      version: -1
+    taskid: cf7c031f-e0ec-4bd2-8d1e-136742764133
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1595
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserMessage
+      value:
+        simple: Success. Activity is confirmed.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 68df4f81-a048-41c4-821e-f1f8cbb8bd2a
+      iscommand: false
+      name: Set DuoUserMessage Respond Allow
+      script: Set
+      type: regular
+      version: -1
+    taskid: 68df4f81-a048-41c4-821e-f1f8cbb8bd2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserMessage
+      value:
+        simple: Activity is denied.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 257b26d5-2420-47dc-87a8-9d3672879c4c
+      iscommand: false
+      name: Set DuoUserMessage Respond Deny
+      script: Set
+      type: regular
+      version: -1
+    taskid: 257b26d5-2420-47dc-87a8-9d3672879c4c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserMessage
+      value:
+        simple: No answer. Push timed out.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 16f23f70-0c14-47d5-8eec-7655aed070db
+      iscommand: false
+      name: Set DuoUserMessage Respond Timed Out
+      script: Set
+      type: regular
+      version: -1
+    taskid: 16f23f70-0c14-47d5-8eec-7655aed070db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 895
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserSecondMessage
+      value:
+        simple: Success. Activity is confirmed.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e00db7ca-800c-40ee-88c9-452fb3fb8009
+      iscommand: false
+      name: Set DuoUserSecondMessage Respond Allow
+      script: Set
+      type: regular
+      version: -1
+    taskid: e00db7ca-800c-40ee-88c9-452fb3fb8009
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1770
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserSecondMessage
+      value:
+        simple: Activity is denied.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ad68dcb9-d48b-4424-854b-7d93af065d43
+      iscommand: false
+      name: Set DuoUserSecondMessage Respond Deny
+      script: Set
+      type: regular
+      version: -1
+    taskid: ad68dcb9-d48b-4424-854b-7d93af065d43
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1770
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DuoUserSecondMessage
+      value:
+        simple: No answer. Push timed out.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a097a3d0-0bce-4952-8b5c-9bdbf08b6ca5
+      iscommand: false
+      name: Set DuoUserSecondMessage Respond Timed Out
+      script: Set
+      type: regular
+      version: -1
+    taskid: a097a3d0-0bce-4952-8b5c-9bdbf08b6ca5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1770
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df69cb13-368c-462b-8eca-4dc163d1b513
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: df69cb13-368c-462b-8eca-4dc163d1b513
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2120
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2130,
+        "width": 2120,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The argument `assigned_user_pretty_name` has been removed from the `xdr-update-incident` command, since it is no longer supported by the API."
+}

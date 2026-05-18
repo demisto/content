@@ -1,10 +1,8 @@
-from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+from copy import deepcopy
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -29,7 +27,15 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
-COMMAND_DATA_KEYS = ["failed_files", "retention_date", "retrieved_files", "standard_output", "command_output", "execution_status"]
+COMMAND_DATA_KEYS = [
+    "failed_files",
+    "retention_date",
+    "retrieved_files",
+    "standard_output",
+    "command",
+    "command_output",
+    "execution_status",
+]
 EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
     "endpoint_id",
     "command",
@@ -57,7 +63,7 @@ class Client(CoreClient):
         Performs basic get request to get item samples
         """
         try:
-            self.get_endpoints(limit=1)
+            self.list_users()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -73,13 +79,21 @@ class Client(CoreClient):
             "email": email,
         }
 
-        reply = demisto._apiCall(method="POST", name="wfReportIncorrectVerdict", params=None, data=json.dumps(request_data))
+        reply = demisto._apiCall(
+            method="POST",
+            name="wfReportIncorrectVerdict",
+            params=None,
+            data=json.dumps(request_data),
+        )
 
         return reply
 
     def get_prevalence(self, request_data: dict):
         reply = self._http_request(
-            method="POST", json_data={"request_data": request_data}, headers=self._headers, url_suffix="/analytics_apis/"
+            method="POST",
+            json_data={"request_data": request_data},
+            headers=self._headers,
+            url_suffix="/analytics_apis/",
         )
         return reply
 
@@ -94,7 +108,10 @@ class Client(CoreClient):
 
     def create_indicator_rule_request(self, request_data: Union[dict, str], suffix: str):
         reply = self._http_request(
-            method="POST", json_data={"request_data": request_data, "validate": True}, headers=self._headers, url_suffix=suffix
+            method="POST",
+            json_data={"request_data": request_data, "validate": True},
+            headers=self._headers,
+            url_suffix=suffix,
         )
         return reply
 
@@ -232,7 +249,9 @@ def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     reason = args.get("reason")
     email = args.get("email")
     new_verdict = arg_to_int(
-        arg=args.get("new_verdict"), arg_name='Failed to parse "new_verdict". Must be a number.', required=True
+        arg=args.get("new_verdict"),
+        arg_name='Failed to parse "new_verdict". Must be a number.',
+        required=True,
     )
 
     response = client.report_incorrect_wildfire(file_hash, new_verdict, reason, email)
@@ -355,7 +374,13 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
 
     if dt:
         # check if the input matches a relative time format:
-        if bool(re.match(r"^\s*\d+\s+(minutes|hours|days|weeks|months|years)\s*$", expiration, flags=re.IGNORECASE)):
+        if bool(
+            re.match(
+                r"^\s*\d+\s+(minutes|hours|days|weeks|months|years)\s*$",
+                expiration,
+                flags=re.IGNORECASE,
+            )
+        ):
             # Using dt that takes relative time and converts it into datetime (if its relative then in the past)
             now = date_to_timestamp(get_current_time())
             # the dt is a time in the past
@@ -408,7 +433,13 @@ def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> d
 
     # Attach vendor only if name exists
     if vendor_name:
-        field_map["vendors"] = [{"vendor_name": vendor_name, "reliability": vendor_reliability, "reputation": vendor_reputation}]
+        field_map["vendors"] = [
+            {
+                "vendor_name": vendor_name,
+                "reliability": vendor_reliability,
+                "reputation": vendor_reputation,
+            }
+        ]
 
     return field_map
 
@@ -433,10 +464,11 @@ def core_execute_command_reformat_readable_output(script_res: list) -> str:
             for key in EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS:
                 reformatted_result[key] = res.get(key)
             # remove the underscore prefix from the command name
-            reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
+            if isinstance(reformatted_result["command"], str):
+                reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
             reformatted_results.append(reformatted_result)
     return tableToMarkdown(
-        f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
+        f"Script Execution Results for Action ID: {script_res[0].outputs['action_id']}",
         reformatted_results,
         EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS,
         removeNull=True,
@@ -454,9 +486,12 @@ def core_execute_command_reformat_command_data(result: dict) -> dict:
     Returns:
         dict: all relevant command data from the result
     """
-    reformatted_command = {"command": result["command"].removeprefix("_")}  # remove the underscore prefix from the command name
+    reformatted_command = {}
     for key in COMMAND_DATA_KEYS:
         reformatted_command[key] = result.get(key)
+    reformatted_command["command"] = (
+        result["command"].removeprefix("_") if isinstance(result.get("command"), str) else None
+    )  # remove the underscore prefix from the command name
     return reformatted_command
 
 
@@ -480,22 +515,21 @@ def core_execute_command_reformat_outputs(script_res: list) -> list:
                 new_results[endpoint_id]["executed_command"].append(core_execute_command_reformat_command_data(res))
                 # the context output include for each result a field with the name of each command, we want to remove it
                 command_name = res.get("command")
-                new_results[endpoint_id].pop(command_name)
+                new_results[endpoint_id].pop(command_name, None)
             else:
                 # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
                 # relocate all the data related to the command to be under executed_command
                 reformatted_res = deepcopy(res)
                 reformatted_res["executed_command"] = [core_execute_command_reformat_command_data(res)]
                 # remove from reformatted_res all the data we put under executed_command
-                command_name = reformatted_res.pop("command")
-                reformatted_res.pop(command_name)
+                command_name = reformatted_res.pop("command", None)
+                reformatted_res.pop(command_name, None)
                 for key in COMMAND_DATA_KEYS:
-                    reformatted_res.pop(key)
+                    reformatted_res.pop(key, None)
                 new_results[endpoint_id] = reformatted_res
     # reformat new_results from {"endpoint_id_1": {values_1}, "endpoint_id_2": {values_2}}
     # to [{values_1}, {values_2}] (values include the endpoint_id)
-    reformatted_results = [new_results[i] for i in new_results]
-    return reformatted_results
+    return list(new_results.values())
 
 
 def core_execute_command_reformat_args(args: dict) -> dict:
@@ -513,7 +547,10 @@ def core_execute_command_reformat_args(args: dict) -> dict:
     if not commands:
         raise DemistoException("'command' is a required argument.")
     # the value of script_uid is the Unique identifier of execute_commands script.
-    reformatted_args = args | {"is_core": True, "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf"}
+    reformatted_args = args | {
+        "is_core": True,
+        "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf",
+    }
     is_raw_command = argToBoolean(args.get("is_raw_command", False))
     commands_list = [commands] if is_raw_command else argToList(commands, args.get("command_separator", ","))
     if args.get("command_type") == "powershell":
@@ -610,7 +647,11 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
                 " 'indicator', 'type', and 'severity' are required arguments."
             )
         # Build payload from individual arguments
-        ioc_payload = {"indicator": indicator, "type": indicator_type, "severity": severity}
+        ioc_payload = {
+            "indicator": indicator,
+            "type": indicator_type,
+            "severity": severity,
+        }
         parsed_expiration_date = parse_expiration_date(expiration_date)
         ioc_payload["expiration_date"] = parsed_expiration_date
         ioc_payload["comment"] = comment
@@ -620,7 +661,11 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
 
         if vendor_name:
             ioc_payload["vendors"] = [
-                {"vendor_name": vendor_name, "reliability": vendor_reliability, "reputation": vendor_reputation}
+                {
+                    "vendor_name": vendor_name,
+                    "reliability": vendor_reliability,
+                    "reputation": vendor_reputation,
+                }
             ]
         input_format = "JSON"
 
@@ -682,7 +727,11 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
             alerts.append(alert_with_events)
 
     readable_output = tableToMarkdown(
-        "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+        "Contributing events",
+        alerts,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        is_auto_json_transform=True,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -720,7 +769,11 @@ def polling_block_ip_status(args, client) -> PollResult:
         demisto.debug(f"polled action status:{status}, with message:{message}")
         if status == "Success":
             results.append(
-                {"ip_address": polled_action["ip_address"], "endpoint_id": polled_action["endpoint_id"], "reason": "Success"}
+                {
+                    "ip_address": polled_action["ip_address"],
+                    "endpoint_id": polled_action["endpoint_id"],
+                    "reason": "Success",
+                }
             )
 
         elif status == "Failure":
@@ -805,6 +858,74 @@ def is_ip_list_valid(ip_list: list[str]):
             raise DemistoException(f"ip address {ip_address} is invalid")
 
 
+def is_valid_tag(tag: str) -> bool:
+    return len(tag) < 64
+
+
+def filter_invalid_tags(tags: List[str]) -> List[str]:
+    invalid_tags = [tag for tag in tags if not is_valid_tag(tag)]
+    tags[:] = [tag for tag in tags if is_valid_tag(tag)]
+    return invalid_tags
+
+
+def update_endpoints_tags_command(client: Client, args: dict) -> List[CommandResults]:
+    """
+    Update endpoint tags for specified endpoints.
+
+    Args:
+        args (dict): Command arguments including:
+            - endpoint_ids (list): List of endpoint IDs to update
+            - tags_to_add (list): List of tags to remove from the endpoints.
+            - tags_to_remove (list): List of tags to add to the endpoints.
+    """
+
+    endpoint_ids = argToList(args.get("endpoint_ids", []))
+    tags_to_add = argToList(args.get("tags_to_add", []))
+    tags_to_remove = argToList(args.get("tags_to_remove", []))
+    if not tags_to_add and not tags_to_remove:
+        raise DemistoException("At least one tag to add or remove must be specified.")
+
+    demisto.debug(f"Updating tags for endpoints: {endpoint_ids}, adding: {tags_to_add}, removing: {tags_to_remove}")
+
+    invalid_tags: List[str] = filter_invalid_tags(tags_to_add)
+    invalid_tags.extend(filter_invalid_tags(tags_to_remove))
+
+    for tag in tags_to_add:
+        add_tag_to_endpoints_command(client, {"endpoint_ids": endpoint_ids, "tag": tag})
+
+    for tag in tags_to_remove:
+        remove_tag_from_endpoints_command(client, {"endpoint_ids": endpoint_ids, "tag": tag})
+
+    command_results = []
+
+    if tags_to_add or tags_to_remove:
+        success_message = (
+            f"Successfully updated tags for endpoint(s) {endpoint_ids}."
+            + (f" Added tags: {tags_to_add}" if tags_to_add else "")
+            + (f" Removed tags: {tags_to_remove}" if tags_to_remove else "")
+            + "."
+        )
+        command_results.append(
+            CommandResults(
+                readable_output=success_message,
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTags.SuccessMessage",
+                outputs=success_message,
+            )
+        )
+    if invalid_tags:
+        failure_message = f"Invalid tags detected: {', '.join(invalid_tags)}. Tags must be less than 64 characters long."
+        command_results.append(
+            CommandResults(
+                readable_output=failure_message,
+                entry_type=4,
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTags.FailureMessage",
+                outputs=failure_message,
+            )
+        )
+
+    return command_results
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -824,7 +945,11 @@ def main():  # pragma: no cover
         if not all((api_key, api_key_id, url)):
             raise DemistoException("Please provide the following parameters: Server URL, API Key, API Key ID")
 
-        headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
+        headers = {
+            "Content-Type": "application/json",
+            "x-xdr-auth-id": str(api_key_id),
+            "Authorization": api_key,
+        }
         add_sensitive_log_strs(api_key)
     else:
         url = "/api/webapp/"
@@ -923,7 +1048,10 @@ def main():  # pragma: no cover
             return_results(allowlist_files_command(client, args))
 
         elif command == "core-quarantine-files" or command == "core-quarantine-files-quick-action":
-            polling_args = {**args, "endpoint_id": argToList(args.get("endpoint_id_list"))[0]}
+            polling_args = {
+                **args,
+                "endpoint_id": argToList(args.get("endpoint_id_list"))[0],
+            }
             return_results(
                 run_polling_command(
                     client=client,
@@ -1127,10 +1255,10 @@ def main():  # pragma: no cover
 
         elif command == "core-add-endpoint-tag":
             return_results(add_tag_to_endpoints_command(client, args))
-
         elif command == "core-remove-endpoint-tag":
             return_results(remove_tag_from_endpoints_command(client, args))
-
+        elif command == "core-update-endpoint-tags":
+            return_results(update_endpoints_tags_command(client, args))
         elif command == "core-list-users":
             return_results(list_users_command(client, args))
 

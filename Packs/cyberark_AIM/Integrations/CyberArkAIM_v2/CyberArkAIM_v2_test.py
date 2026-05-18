@@ -70,6 +70,11 @@ def test_cyberark_aim_commands(command, get_credentials_res, context, mocker):
                     "password": "password2",
                     "name": "name2",
                 },
+                {
+                    "user": "username3",
+                    "password": "password3",
+                    "name": "name3",
+                },
             ],
         ),
     ],
@@ -83,7 +88,8 @@ def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
     - Running fetch-credentials process
     Then
     - Ensure that the credentials returned to demisto are: [(username1,password1,name1)]
-    - Ensure that all credentials were returned to demisto: [(username1,password1,name1),(username2,password2,name2)]
+    - Ensure that all credentials were returned to demisto:
+        [(username1,password1,name1),(username2,password2,name2),(username3,password3,name3)]
     """
     client = Client(
         server_url="https://api.cyberark.com/",
@@ -92,7 +98,7 @@ def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
         app_id="app",
         folder="Root",
         safe="safe1",
-        credentials_object="name1,name2",
+        credentials_object="name1,name2,name3",
         username="",
         password="",
         cert_text="",

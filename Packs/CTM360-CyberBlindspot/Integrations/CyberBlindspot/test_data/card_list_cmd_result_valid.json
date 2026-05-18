@@ -1,6 +1,7 @@
 [
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "cbs_coa": "",
             "cbs_module": "compromised_cards",
             "cbs_updated_date": "2023-12-20T04:51:51+00:00",
@@ -16,11 +17,12 @@
         "externallink": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1E202F49&selectedSearchField=leak_id",
         "name": "LC-A1E202F49",
         "occurred": "2023-12-20T04:51:51+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"Compromised Card 0123456789012345\", \"occurred\": \"2023-12-20T04:51:51+00:00\", \"severity\": 3, \"CustomFields\": {\"cbs_coa\": \"\", \"cbs_module\": \"compromised_cards\", \"cbs_timestamp\": 1735107419000, \"cbs_updated_date\": \"2023-12-20T04:51:51+00:00\"}}",
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"Compromised Card 0123456789012345\", \"occurred\": \"2023-12-20T04:51:51+00:00\", \"severity\": 3, \"CustomFields\": {\"brand\": \"RiskAssess Demo\",\"cbs_coa\": \"\", \"cbs_module\": \"compromised_cards\", \"cbs_timestamp\": 1735107419000, \"cbs_updated_date\": \"2023-12-20T04:51:51+00:00\"}}",
         "severity": 3
     },
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "cbs_coa": "",
             "cbs_module": "compromised_cards",
             "cbs_updated_date": "2024-12-20T09:16:59+00:00",
@@ -36,11 +38,12 @@
         "externallink": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1R252F49&selectedSearchField=leak_id",
         "name": "LC-A1R252F49",
         "occurred": "2024-12-20T09:16:59+00:00",
-        "rawJson": "{\"externalstatus\": \"New\", \"name\": \"Compromised Card 0123456798012345\", \"occurred\": \"2024-12-20T09:16:59+00:00\", \"severity\": 2, \"CustomFields\": {\"cbs_coa\": \"\", \"cbs_module\": \"compromised_cards\", \"cbs_timestamp\": 1735107419000, \"cbs_updated_date\": \"2024-12-20T09:16:59+00:00\"}}",
+        "rawJson": "{\"externalstatus\": \"New\", \"name\": \"Compromised Card 0123456798012345\", \"occurred\": \"2024-12-20T09:16:59+00:00\", \"severity\": 2, \"CustomFields\": {\"brand\": \"RiskAssess Demo\",\"cbs_coa\": \"\", \"cbs_module\": \"compromised_cards\", \"cbs_timestamp\": 1735107419000, \"cbs_updated_date\": \"2024-12-20T09:16:59+00:00\"}}",
         "severity": 2
     },
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "cbs_coa": "",
             "cbs_module": "compromised_cards",
             "cbs_updated_date": "2024-11-15T09:16:59+00:00",
@@ -56,7 +59,7 @@
         "externallink": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1CV42F49&selectedSearchField=leak_id",
         "name": "LC-A1CV42F49",
         "occurred": "2024-11-15T09:16:59+00:00",
-        "rawJson": "{\"externalstatus\": \"New\", \"name\": \"Compromised Card 0123456789013245\", \"occurred\": \"2024-11-15T09:16:59+00:00\", \"severity\": 3, \"CustomFields\": {\"cbs_coa\": \"\", \"cbs_module\": \"compromised_cards\", \"cbs_timestamp\": 1735107419000, \"cbs_updated_date\": \"2024-11-15T09:16:59+00:00\"}}",
+        "rawJson": "{\"externalstatus\": \"New\", \"name\": \"Compromised Card 0123456789013245\", \"occurred\": \"2024-11-15T09:16:59+00:00\", \"severity\": 3, \"CustomFields\": {\"brand\": \"RiskAssess Demo\",\"cbs_coa\": \"\", \"cbs_module\": \"compromised_cards\", \"cbs_timestamp\": 1735107419000, \"cbs_updated_date\": \"2024-11-15T09:16:59+00:00\"}}",
         "severity": 3
     }
 ]

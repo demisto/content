@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: EclecticIQ
 commonfields:
   id: EclecticIQ Intelligence Center v3
   version: -1
@@ -765,7 +766,7 @@ script:
   - arguments: []
     name: eclecticiq-get-indicators
     description: Get last block of Indicators from configured to fetch Outgoing feed.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   isFetchSamples: true
   runonce: false

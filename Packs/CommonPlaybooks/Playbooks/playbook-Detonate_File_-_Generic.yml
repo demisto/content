@@ -505,12 +505,12 @@ tasks:
     task:
       id: 4643aaf7-5f3b-4851-8773-b74b87e18603
       version: -1
-      name: Detonate File - MetaDefender Sandbox
-      description: Detonates a file using the MetaDefender Sandbox Integration. Returns relevant reports to the War Room and file reputations to the context data.
-      script: metadefender-sandbox-scan-file
+      name: Detonate File - MetaDefender Aether
+      description: Detonates a file using the MetaDefender Aether Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      script: metadefender-aether-scan-file
       type: regular
       iscommand: true
-      brand: MetaDefender Sandbox
+      brand: MetaDefender Aether
     nexttasks:
       '#none#':
       - "3"
@@ -757,7 +757,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -768,7 +768,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
@@ -789,7 +789,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -800,7 +800,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
@@ -821,7 +821,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -863,11 +863,6 @@ tasks:
           left:
             value:
               simple: inputs.anyrun_os
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.incident
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -988,14 +983,7 @@ inputs:
     simple: windows
   required: false
   description: 'Specify ANY.RUN operation system type. Supports: windows, linux, android'
-  playbookInputQuery: null
-- key: incident
-  value:
-    simple: ${incident}
-  required: false
-  description: Information about the active incident where the found indicators will
-    be linked
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - EntryID
@@ -1004,7 +992,6 @@ inputSections:
   description: Generic group for inputs
 - inputs:
   - anyrun_os
-  - incident
   name: ANY.RUN
   description: ANY.RUN group for inputs
 outputs:
@@ -2478,9 +2465,3 @@ tests:
 - Detonate File - Generic Test
 contentitemexportablefields:
   contentitemfields: {}
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

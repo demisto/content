@@ -4,13 +4,17 @@ import re
 import dateparser
 import pytest
 from CloudflareZeroTrustEventCollector import (
+    ACCOUNT_AUDIT_TYPE,
+    ACCESS_AUTHENTICATION_TYPE,
     AuthTypes,
     Client,
     calculate_fetch_dates,
     DATE_FORMAT,
     DemistoException,
     fetch_events,
+    format_events,
     get_events_command,
+    generate_event_id_if_not_exists,
     handle_duplicates,
     prepare_next_run,
     SignalTimeoutError,
@@ -181,6 +185,66 @@ def test_prepare_next_run():
 
     assert latest_time == "2024-01-01T12:00:00Z"
     assert latest_ids == ["2", "1"]
+
+
+def test_generate_event_id_if_not_exists():
+    """
+    Given: Two events (one with an `id` field and one without).
+    When: Calling `generate_event_id_if_not_exists`.
+    Then: Ensure the `id` is preserved for the first event and generated for the second.
+    """
+    original_event_id = "187d944c61940c77"
+
+    test_events = [
+        {  # With ID
+            "id": original_event_id,
+            "when": "2025-01-01T05:20:00.12345Z",
+            "ip_address": "1.2.3.4",
+            "user_email": "user@example.com",
+            "action": "logout",
+        },
+        {  # Without ID
+            "action": "login",
+            "allowed": True,
+            "connection": "saml",
+            "user_email": "user@example.com",
+            "created_at": "2025-01-01T05:20:00.12345Z",
+        },
+    ]
+    generate_event_id_if_not_exists(test_events)
+
+    assert test_events[0]["id"] == original_event_id
+    assert test_events[1]["id"] == "ffc4ff957a3d1a39ebc27580b26e7b135d0b2b511f0d786da257ed9a607d7b57"
+
+
+@pytest.mark.parametrize(
+    "event, event_type, expected_time",
+    [
+        pytest.param(
+            {"id": "A", "created_at": "2025-01-01T05:20:24.12345Z"},
+            ACCOUNT_AUDIT_TYPE,
+            "2025-01-01T05:20:24Z",
+            id="Account audit event with `created_id` field",
+        ),
+        pytest.param(
+            {"when": "2025-01-01T23:03:12.12345Z"},
+            ACCESS_AUTHENTICATION_TYPE,
+            "2025-01-01T23:03:12Z",
+            id="Access authentication event with `when` field",
+        ),
+    ],
+)
+def test_format_events(event: dict, event_type: str, expected_time: str):
+    """
+    Given: An event of a specific type.
+    When: Calling `format_events`.
+    Then: Ensure the event has the correct `_time` and `SOURCE_LOG_TYPE` values.
+    """
+    events = [event]
+    format_events(event_type, events)
+
+    assert events[0]["_time"] == expected_time
+    assert events[0]["SOURCE_LOG_TYPE"] == event_type
 
 
 def test_handle_duplicates():

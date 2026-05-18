@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Open Source
+sectionorder:
 - Connect
 - Collect
 commonfields:

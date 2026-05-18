@@ -25,7 +25,7 @@ runonce: false
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
-dockerimage: demisto/pysigma:1.0.0.117232
+dockerimage: demisto/pysigma:1.0.0.4905038
 timeout: 1200
 tests:
 - No tests (auto formatted)

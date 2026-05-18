@@ -28,7 +28,7 @@ RECO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEMISTO_INFORMATIONAL = 0.5
 RECO_API_TIMEOUT_IN_SECONDS = 180  # Increase timeout for RECO API
 RECO_ACTIVE_INCIDENTS_VIEW = "active_incidents_view"
-RECO_ACTIVE_ALERTS_VIEW = "alerts"
+ALERT_VIEW_WITH_SHARED_STATUS = "ALERT_VIEW_WITH_SHARED_STATUS"
 RECO_TIMELINE_EVENT_TYPE = "TIMELINE_EVENT_TYPE_USER_COMMENT"
 CREATED_AT_FIELD = "created_at"
 STEP_FETCH = "fetch"
@@ -56,7 +56,10 @@ class RecoClient(BaseClient):
             base_url,
             verify=verify,
             proxy=proxy,
-            headers={"Authorization": f"Bearer {api_token}"},
+            headers={
+                "Authorization": f"Bearer {api_token}",
+                "User-Agent": f"xsoar/{get_pack_version()}",
+            },
         )
 
     def get_alerts(
@@ -80,7 +83,8 @@ class RecoClient(BaseClient):
         alerts: list[dict[str, Any]] = []
         params: dict[str, Any] = {
             "getTableRequest": {
-                "tableName": RECO_ACTIVE_ALERTS_VIEW,
+                "tableName": ALERT_VIEW_WITH_SHARED_STATUS,
+                "scope": "data",
                 "pageSize": limit,
                 "fieldFilters": {
                     "relationship": FILTER_RELATIONSHIP_AND,
@@ -95,7 +99,7 @@ class RecoClient(BaseClient):
             )
         if source:
             params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
-                {"field": "data_source", "stringEquals": {"value": source}}
+                {"field": "short_extraction_source", "stringEquals": {"value": source}}
             )
         if before:
             params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
@@ -159,17 +163,14 @@ class RecoClient(BaseClient):
         demisto.info("Update incident timeline, enter")
         try:
             response = self._http_request(
-                method="PUT",
-                url_suffix=f"/incident-timeline/{incident_id}",
+                method="POST",
+                url_suffix="/share-service/share-comment",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
                 data=json.dumps(
                     {
-                        "event": {
-                            "eventType": RECO_TIMELINE_EVENT_TYPE,
-                            "eventTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            "title": "Comment added by XSOAR",
-                            "content": comment,
-                        }
+                        "content": comment,
+                        "entityId": incident_id,  # alert_id
+                        "entityType": "alert",
                     }
                 ),
             )
@@ -1107,6 +1108,7 @@ def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) ->
 def map_reco_score_to_demisto_score(
     reco_score: int,
 ) -> int | float:  # pylint: disable=E1136
+    """Map Reco numeric risk score (10-40) to Demisto severity."""
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
     # demisto_low = 1  (commented because of linter issues)
@@ -1114,7 +1116,7 @@ def map_reco_score_to_demisto_score(
     demisto_high = 3
     demisto_critical = 4
 
-    # LHS is Reco score
+    # Reco API returns risk_level in range 10-40. Normalize to tier keys.
     MAPPING = {
         40: demisto_critical,
         30: demisto_high,
@@ -1122,8 +1124,8 @@ def map_reco_score_to_demisto_score(
         10: demisto_informational,
         0: demisto_informational,
     }
-
-    return MAPPING[reco_score]
+    tier = min(40, max(0, (reco_score // 10) * 10))
+    return MAPPING.get(tier, demisto_informational)
 
 
 def map_reco_alert_score_to_demisto_score(
@@ -1145,6 +1147,29 @@ def map_reco_alert_score_to_demisto_score(
     }
 
     return MAPPING[reco_score]
+
+
+def _reco_risk_to_demisto_severity(raw_risk: Any) -> int | float:
+    """Normalize Reco risk_level to Demisto severity. Accepts int, str numbers ('10', '30'), or str labels ('HIGH', 'LOW')."""
+    if raw_risk is None:
+        return map_reco_score_to_demisto_score(10)
+    if isinstance(raw_risk, int):
+        risk_level = min(40, max(10, raw_risk))
+        return map_reco_score_to_demisto_score(risk_level)
+    if isinstance(raw_risk, str):
+        stripped = raw_risk.strip().upper()
+        if stripped in ("CRITICAL", "HIGH", "MEDIUM", "LOW"):
+            return map_reco_alert_score_to_demisto_score(stripped)
+        try:
+            risk_level = min(40, max(10, int(raw_risk)))
+            return map_reco_score_to_demisto_score(risk_level)
+        except (TypeError, ValueError):
+            pass
+    try:
+        risk_level = min(40, max(10, int(raw_risk)))
+        return map_reco_score_to_demisto_score(risk_level)
+    except (TypeError, ValueError):
+        return map_reco_score_to_demisto_score(10)
 
 
 def parse_incidents_objects(
@@ -1453,16 +1478,19 @@ def fetch_incidents(
 
 
 def parse_alerts_to_incidents(alerts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Map alert rows (ALERT_VIEW_WITH_SHARED_STATUS uses snake_case) to XSOAR incidents."""
     alerts_as_incidents = []
     for alert in alerts:
+        alert_dict = parse_table_row_to_dict(alert.get("cells", {})) if alert.get("cells") else alert
+        occurred = alert_dict.get("created_at") or alert_dict.get("createdAt", "")
+        raw_risk = alert_dict.get("risk_level") or alert_dict.get("riskLevel")
         incident = {
-            "name": alert.get("description", ""),
-            "occurred": alert.get("createdAt", ""),
-            "dbotMirrorId": alert.get("id", ""),
+            "name": alert_dict.get("description", ""),
+            "occurred": occurred,
+            "dbotMirrorId": alert_dict.get("id", ""),
             "rawJSON": json.dumps(alert),
-            "severity": map_reco_alert_score_to_demisto_score(reco_score=alert.get("riskLevel", DEMISTO_INFORMATIONAL)),
+            "severity": _reco_risk_to_demisto_severity(raw_risk),
         }
-
         alerts_as_incidents.append(incident)
     return alerts_as_incidents
 
@@ -1599,11 +1627,21 @@ def main() -> None:  # pragma: no cover
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == "reco-update-incident-timeline":
-            incident_id = demisto.args()["incident_id"]
+        elif command == "reco-add-comment-to-alert":
+            incident_id = demisto.args()["alert_id"]
             response = reco_client.update_reco_incident_timeline(
                 incident_id=incident_id,
                 comment=demisto.args()["comment"],
+            )
+            return_results(
+                CommandResults(
+                    raw_response=response,
+                    readable_output=f"Commented added to alert {incident_id}",
+                )
+            )
+        elif command == "reco-update-incident-timeline":
+            response = reco_client.update_reco_incident_timeline(
+                incident_id=demisto.args()["incident_id"], comment=demisto.args()["comment"]
             )
             return_results(
                 CommandResults(

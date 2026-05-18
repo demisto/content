@@ -591,7 +591,7 @@ async def handle_fetch_and_send_all_events(
 async def get_events_command_async(
     client: Client, args: dict[str, Any], last_run: dict, send_to_xsiam: bool = False
 ) -> CommandResults:
-    limit = arg_to_number(args.get("limit")) or MAX_EVENTS_PAGE_SIZE
+    limit = arg_to_number(args.get("limit")) or 10
     events, _ = await handle_fetch_and_send_all_events(client=client, last_run=last_run, limit=limit, send_to_xsiam=send_to_xsiam)
 
     for event in events:

@@ -1,4 +1,5 @@
 import mimetypes
+import os
 import re
 from collections.abc import Callable, Iterable
 from urllib.parse import quote
@@ -11,9 +12,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-import jwt
-from datetime import datetime, timedelta, UTC
-import uuid
+from datetime import datetime, UTC
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -27,12 +26,17 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 DATE_FORMAT_OPTIONS = {
     "MM-dd-yyyy": "%m-%d-%Y %H:%M:%S",
     "MM/dd/yyyy": "%m/%d/%Y %H:%M:%S",
+    "MM/dd/yy": "%m/%d/%y %H:%M:%S",
     "dd/MM/yyyy": "%d/%m/%Y %H:%M:%S",
+    "dd/MM/yy": "%d/%m/%y %H:%M:%S",
     "dd-MM-yyyy": "%d-%m-%Y %H:%M:%S",
     "dd.MM.yyyy": "%d.%m.%Y %H:%M:%S",
     "yyyy-MM-dd": "%Y-%m-%d %H:%M:%S",
+    "yyyy/MM/dd": "%Y/%m/%d %H:%M:%S",
+    "yyyy.MM.dd": "%Y.%m.%d %H:%M:%S",
     "mmm-dd-yyyy": "%b-%d-%Y %H:%M:%S",
     "yyyy-MMM-dd": "%Y-%b-%d %H:%M:%S",
+    "dd-MMM-yyyy": "%d-%b-%Y %H:%M:%S",
 }
 
 TICKET_STATES = {
@@ -405,7 +409,6 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
         priority = ticket.get("priority", "")
         if priority:
             hr["Priority"] = TICKET_PRIORITY.get(priority, priority)
-
         state = ticket.get("state", "")
         if state:
             mapped_state = state
@@ -680,7 +683,8 @@ class Client(BaseClient):
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(
-                credentials=oauth_params.get("credentials", {}),
+                username=username,
+                password=password,
                 use_oauth=self.use_oauth,
                 client_id=oauth_params.get("client_id", ""),
                 client_secret=oauth_params.get("client_secret", ""),
@@ -688,73 +692,11 @@ class Client(BaseClient):
                 verify=oauth_params.get("verify", False),
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
+                jwt_params=jwt_params,
             )
-            if jwt_params:
-                self.jwt_params = jwt_params
-                self.snow_client.set_jwt(self.create_jwt())
+
         else:
             self._auth = (self._username, self._password)
-
-    def check_private_key(self, private_key) -> str:
-        """_summary_
-
-        Args:
-            private_key (Dict): The user Private key, inside of a dictionary
-            since the private key type is 9.
-        Raises:
-            ValueError: : If the private key format (PEM) is incorrect, a ValueError will be raised.
-        Returns:
-            str: key without whitespaces and invalid characters
-        """
-        # Define the start and end markers
-        start_marker = "-----BEGIN PRIVATE KEY-----"
-        end_marker = "-----END PRIVATE KEY-----"
-        if isinstance(private_key, dict):
-            private_key = private_key.get("password")
-
-        if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
-            raise ValueError("Invalid private key format")
-        # Remove the markers and replace whitespaces with '\n'
-        key_content = (
-            private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
-        )
-        # Reattach the markers
-        processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
-        return processed_key
-
-    def create_jwt(self):
-        """
-        This function generate the JWT from the use credential
-
-        Returns:
-            JWT token
-        """
-        # Private key (PEM format)
-        private_key = self.check_private_key(self.jwt_params["private_key"])
-
-        # Header
-        header = {
-            "alg": "RS256",  # Signing algorithm
-            "typ": "JWT",  # Token type
-            "kid": self.jwt_params.get("kid"),  # From ServiceNow (see Jwt Verifier Maps )
-        }
-        self.exp_time = datetime.now(UTC) + timedelta(hours=1)  # Expiry time 1 hour
-        # Payload
-        payload = {
-            "sub": self.jwt_params.get("sub"),  # Subject (e.g., user ID)
-            "aud": self.snow_client.client_id,  # serviceNow client_id
-            "iss": self.snow_client.client_id,  # can be serviceNow client_id
-            "iat": datetime.now(UTC),  # Issued at
-            "exp": self.exp_time,
-            "jti": str(uuid.uuid4()),  # Unique JWT ID
-        }
-        try:
-            # Generate the JWT
-            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
-        except Exception:
-            # Generate again if failed
-            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
-        return jwt_token
 
     def generic_request(
         self,
@@ -799,6 +741,10 @@ class Client(BaseClient):
 
         # The attachments table does not support v2 api version
         if get_attachments:
+            url = url.replace("/v2", "/v1")
+
+        # The Service Catalog order_now endpoint does not support v2 api version
+        if sc_api and path.endswith("/order_now"):
             url = url.replace("/v2", "/v1")
 
         return url
@@ -1282,18 +1228,23 @@ class Client(BaseClient):
         """
         return self.send_request(f"servicecatalog/items/{id_}", "GET", sc_api=True)
 
-    def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
+    def create_item_order(self, id_: str, quantity: str, variables: dict = {}, no_validation: bool = False) -> dict:
         """Create item order in the service catalog by sending a POST request to the Service Catalog API.
 
         Args:
         id_: item id
         quantity: order quantity
         variables: order variables
+        no_validation: if True, sets sysparm_no_validation=true to bypass ServiceNow form validation.
+            Useful when catalog items have required attachments or custom validation that cannot be
+            satisfied at order-creation time. The attachment can be uploaded separately afterwards.
 
         Returns:
             Response from API.
         """
-        body = {"sysparm_quantity": quantity, "variables": variables}
+        body: dict = {"sysparm_quantity": quantity, "variables": variables}
+        if no_validation:
+            body["sysparm_no_validation"] = "true"
         return self.send_request(f"servicecatalog/items/{id_}/order_now", "POST", body=body, sc_api=True)
 
     def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
@@ -1562,7 +1513,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_ticket_command(client: Client, args: dict) -> CommandResults:
     """Delete a ticket.
 
     Args:
@@ -1570,14 +1521,28 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
         args: Usually demisto.args()
 
     Returns:
-        Demisto Outputs.
+        CommandResults object.
     """
     ticket_id = str(args.get("id", ""))
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
 
-    return f"Ticket with ID {ticket_id} was successfully deleted.", {}, result, True
+    demisto.debug(f"Ticket deletion result: {result}")
+    is_success = result == ""
+
+    if is_success:
+        human_readable = f"Ticket with ID {ticket_id} was successfully deleted from {ticket_type} table."
+    else:
+        human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="ServiceNow.Ticket",
+        outputs_key_field="ID",
+        outputs={"ID": ticket_id, "DeleteMessage": human_readable},
+        raw_response=result,
+    )
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -1751,7 +1716,7 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     file_name = args.get("file_name")
     if not file_name:
         file_data = demisto.getFilePath(file_id)
-        file_name = file_data.get("name")
+        file_name = os.path.basename(file_data.get("name") or "")
 
     result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
 
@@ -1777,7 +1742,7 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     return human_readable, entry_context, result, True
 
 
-def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict[Any, Any], dict, bool]:
     """Deletes an attachment file.
     Note: This function exclusively returns 404 error responses,
     while all other types of errors are managed within the send_request function.
@@ -1960,12 +1925,18 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
 
+            human_readable = (
+                f"Type: {note.get('element')}\nCreated By: "
+                f"{note.get('sys_created_by')}\nCreated On: "
+                f"{note.get('sys_created_on')}\n{note.get('value')}"
+            )
             entries.append(
                 {
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
-                    "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    "HumanReadable": human_readable,
+                    "Contents": human_readable,
+                    "created": note.get("sys_created_on", ""),
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -2517,8 +2488,9 @@ def create_order_item_command(client: Client, args: dict) -> tuple[Any, dict[Any
     id_ = str(args.get("id", ""))
     quantity = str(args.get("quantity", "1"))
     variables = split_fields(str(args.get("variables", "")))
+    no_validation = argToBoolean(args.get("no_validation", False))
 
-    result = client.create_item_order(id_, quantity, variables)
+    result = client.create_item_order(id_, quantity, variables, no_validation)
     if not result or "result" not in result:
         return "Order item was not created.", {}, {}, True
     order_item = result.get("result", {})
@@ -2799,12 +2771,6 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     """
     Test the instance configurations when using basic authorization.
     """
-    # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth and not client.use_jwt:
-        raise Exception(
-            "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login "
-            "command followed by the !servicenow-oauth-test command to test the instance."
-        )
 
     if client._version == "v2" and client.get_attachments:
         raise DemistoException("Retrieving incident attachments is not supported when using the V2 API.")
@@ -3219,9 +3185,8 @@ def pre_process_parsed_args(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemote
     return parsed_args
 
 
-def modify_closure_delta(
+def add_default_closure_fields_to_delta(
     delta: dict,
-    state: str,
     close_code: str = "Resolved by caller",
     close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state.",
 ):
@@ -3239,13 +3204,12 @@ def modify_closure_delta(
     Returns:
         The modified delta dictionary.
     """
-    delta.setdefault("state", state)
     delta.setdefault("close_code", close_code)
     delta.setdefault("close_notes", close_notes)
     return delta
 
 
-def pre_process_close_incident_args(
+def set_state_according_to_closure_case_and_ticket_type(
     parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
 ) -> UpdateRemoteSystemArgs:
     """
@@ -3260,15 +3224,18 @@ def pre_process_close_incident_args(
     Returns:
         UpdateRemoteSystemArgs: The pre-processed parsed arguments.
     """
-    if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
-        demisto.debug("Closing incident by closure case")
-        if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get("state") == "3":
+    if parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug("Modifying incident status by closure case")
+        if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            demisto.debug("Setting state to 3 for sc_task, sc_req_item, SIR_INCIDENT and closing case.")
             parsed_args.delta["state"] = "3"
         # These ticket types are closed by changing their state.
-        if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":
-            parsed_args.delta = modify_closure_delta(parsed_args.delta, "7")
-        elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "6":
-            parsed_args.delta = modify_closure_delta(parsed_args.delta, "6")
+        if closure_case == "closed" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 7 for incident and closing case closed.")
+            parsed_args.delta["state"] = "7"  # Closing incident ticket.
+        elif closure_case == "resolved" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 6 for incident and closing case resolved.")
+            parsed_args.delta["state"] = "6"  # resolving incident ticket.
         if close_custom_state:  # Closing by custom state
             demisto.debug(f"Closing by custom state = {close_custom_state}")
             parsed_args.delta["state"] = close_custom_state
@@ -3276,7 +3243,7 @@ def pre_process_close_incident_args(
 
 
 def update_incident_closure_fields(
-    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, close_custom_state: Optional[str]
+    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, is_custom_close: bool
 ) -> dict:
     """
     Handle closing fields of an incident.
@@ -3288,12 +3255,12 @@ def update_incident_closure_fields(
         parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
         fields (dict): The fields to update.
         ticket_type (str): The type of the ticket.
-        close_custom_state (Optional[str]): The custom state to use if given.
+        is_custom_close (Optional[str]):  Whether the incident is closed by a custom state.
 
     Returns:
         dict: The fields to update, excluding "closed_at" and "resolved_at".
     """
-    if parsed_args.delta.get("state") == "7 - Closed" and not close_custom_state:
+    if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
         fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
 
     excluded_fields = {"closed_at", "resolved_at"}
@@ -3324,6 +3291,34 @@ def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ti
     return result
 
 
+def set_default_fields(
+    parsed_args: UpdateRemoteSystemArgs, ticket_type: str, close_custom_state: Optional[str]
+) -> UpdateRemoteSystemArgs:
+    """
+    Set default closure fields of an incident if missing.
+
+    If the incident state is 7 (closed) or 6 (resolved), or the custom state is given and the ticket type is incident,
+    add default values for the close_code and close_notes fields
+    if they are missing in the delta dictionary.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments, containing the delta and other information.
+        ticket_type(str): The type of the ticket to update.
+        close_custom_state (Optional[str]): The custom state to use when closing the ticket.
+
+    Returns:
+        UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
+    """
+    state = parsed_args.delta.get("state")
+    if (state in {"7", "6"}) or (ticket_type == "incident" and close_custom_state and state == close_custom_state):
+        demisto.debug(
+            f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
+            f"closure fields if missing"
+        )
+        parsed_args.delta = add_default_closure_fields_to_delta(parsed_args.delta)
+    return parsed_args
+
+
 def update_remote_system_on_incident_change(
     client: Client,
     parsed_args: UpdateRemoteSystemArgs,
@@ -3343,18 +3338,19 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
+    is_custom_close: bool = bool((parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state)
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-    parsed_args = pre_process_close_incident_args(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_default_fields(parsed_args, ticket_type, close_custom_state)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
     demisto.debug(f"all fields= {fields}")
     if closure_case:
-        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, close_custom_state)
-
+        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, is_custom_close)
     demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
     result = client.update(ticket_type, ticket_id, fields)
 
     # Handle case of custom state doesn't exist, reverting to the original close state
-    if close_custom_state and demisto.get(result, "result.state") != close_custom_state:
+    if is_custom_close and demisto.get(result, "result.state") != close_custom_state:
         result = handle_missing_custom_state(client, fields, ticket_id, ticket_type)
 
     demisto.info(f"Ticket Update result {result}")
@@ -3382,7 +3378,7 @@ def update_remote_system_with_entries(client, entries, params, ticket_id, ticket
         # Mirroring files as entries
         if is_entry_type_mirror_supported(entry.get("type")):
             path_res = demisto.getFilePath(entry.get("id"))
-            full_file_name = path_res.get("name")
+            full_file_name = os.path.basename(path_res.get("name") or "")
             file_name, file_extension = os.path.splitext(full_file_name)
             if not file_extension:
                 file_extension = ""
@@ -3515,7 +3511,9 @@ def get_modified_remote_data_command(
 ) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
-    assert parsed_date is not None, f"could not parse {remote_args.last_update}"
+    if parsed_date is None:
+        demisto.debug(f"Could not parse lastUpdate='{remote_args.last_update}', falling back to epoch (1970-01-01 00:00:00)")
+        parsed_date = datetime(1970, 1, 1, tzinfo=UTC)
     last_update = parsed_date.strftime(DATE_FORMAT)
 
     demisto.debug(f"Running get-modified-remote-data command. Last update is: {last_update}")
@@ -3791,20 +3789,22 @@ def main():
     use_oauth = params.get("use_oauth", False)
     use_jwt = params.get("use_jwt", False)
     oauth_params = {}
-
     # use jwt only with OAuth
     if use_jwt and use_oauth:
         raise ValueError("Please choose only one authentication method (OAuth or JWT)")
     elif use_jwt:
         use_oauth = True
-    jwt_params = {}
+    jwt_params: dict = {}
+    basic_auth_creds = params.get("basic_credentials", {})
+    username = basic_auth_creds.get("identifier", "")
+    password = basic_auth_creds.get("password", "")
+
+    oauth_creds = params.get("credentials", {})
+
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        username = ""
-        password = ""
-        client_id = params.get("credentials", {}).get("identifier")
-        client_secret = params.get("credentials", {}).get("password")
+        client_id = oauth_creds.get("identifier", "")
+        client_secret = oauth_creds.get("password", "")
         oauth_params = {
-            "credentials": {"identifier": username, "password": password},
             "client_id": client_id,
             "client_secret": client_secret,
             "url": params.get("url"),
@@ -3815,16 +3815,21 @@ def main():
         }
         if use_jwt:
             if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
-                raise Exception("When using JWT, fill private key, kid and sub fields")
+                raise Exception("When using JWT, fill private key, kid and sub fields.")
             jwt_params = {
-                "private_key": params.get("private_key"),
+                "private_key": params.get("private_key", {}).get("password"),
                 "kid": params.get("kid"),
                 "sub": params.get("sub"),
+                "iss": params.get("iss", client_id),
+                "aud": client_id,
             }
 
     else:  # use basic authentication
-        username = params.get("credentials", {}).get("identifier")
-        password = params.get("credentials", {}).get("password")
+        # if are none - fallback to legacy which populates the oauth credentials
+        if not username or not password:
+            demisto.debug("Using legacy parameters for username and password")
+            username = oauth_creds.get("identifier", "")
+            password = oauth_creds.get("password", "")
 
     version = params.get("api_version")
 
@@ -3916,7 +3921,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
             "servicenow-add-comment": add_comment_command,
@@ -3944,6 +3948,8 @@ def main():
             demisto.incidents(incidents)
         elif command == "servicenow-get-ticket":
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-delete-ticket":
+            return_results(delete_ticket_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":

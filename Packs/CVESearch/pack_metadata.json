@@ -2,7 +2,7 @@
     "name": "CVE Search (Deprecated)",
     "description": "Deprecated. Use CIRCL instead.",
     "support": "xsoar",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.22",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,10 +25,6 @@
     ],
     "hidden": true,
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix"
     ]
 }

@@ -1,0 +1,115 @@
+{
+    "raw_response": {
+        "data": {
+            "threatMonitoringMatchedFiles": {
+                "edges": [
+                    {
+                        "cursor": "dummy-cursor-0",
+                        "node": {
+                            "filepath": "/dummy/path/file1.txt",
+                            "detectedTime": "2025-01-01T00:00:00.000Z",
+                            "fileName": "file1.txt",
+                            "fileSize": 1234,
+                            "matchedSnapshotDate": "2025-01-02T00:00:00.000Z",
+                            "matchedSnapshotFid": "dummy-snapshot-fid-1",
+                            "isMatchedSnapshotExpired": false,
+                            "isFirstObservedSnapshotExpired": false,
+                            "matchType": "DUMMY_TYPE",
+                            "isQuarantinedInFirstObservedSnapshot": true,
+                            "objectFid": "dummy-object-id",
+                            "firstObservedSnapshotFid": "dummy-first-snapshot-fid-1",
+                            "firstObservedSnapshotDate": "2025-01-02T00:00:00.000Z",
+                            "objectType": "DummyObjectType",
+                            "objectName": "dummy-object-name-1",
+                            "matchId": 1111,
+                            "__typename": "FileMatch"
+                        },
+                        "__typename": "FileMatchEdge"
+                    },
+                    {
+                        "cursor": "dummy-cursor-1",
+                        "node": {
+                            "filepath": "/dummy/path/file2.txt",
+                            "detectedTime": "2025-01-03T00:00:00.000Z",
+                            "fileName": "file2.txt",
+                            "fileSize": 5678,
+                            "matchedSnapshotDate": "2025-01-04T00:00:00.000Z",
+                            "matchedSnapshotFid": "dummy-snapshot-fid-2",
+                            "isMatchedSnapshotExpired": true,
+                            "isFirstObservedSnapshotExpired": true,
+                            "matchType": "DUMMY_TYPE",
+                            "isQuarantinedInFirstObservedSnapshot": false,
+                            "objectFid": "dummy-object-id",
+                            "firstObservedSnapshotFid": "dummy-first-snapshot-fid-2",
+                            "firstObservedSnapshotDate": "2025-01-04T00:00:00.000Z",
+                            "objectType": "DummyObjectType",
+                            "objectName": "dummy-object-name-2",
+                            "matchId": 2222,
+                            "__typename": "FileMatch"
+                        },
+                        "__typename": "FileMatchEdge"
+                    }
+                ],
+                "count": 99,
+                "pageInfo": {
+                    "startCursor": "dummy-start-cursor",
+                    "endCursor": "dummy-end-cursor",
+                    "hasNextPage": true,
+                    "hasPreviousPage": false,
+                    "__typename": "PageInfo"
+                },
+                "__typename": "FileMatchConnection"
+            }
+        }
+    },
+    "outputs": {
+        "RubrikPolaris.ThreatMonitoringFile(val.matchId == obj.matchId)": [
+            {
+                "filepath": "/dummy/path/file1.txt",
+                "detectedTime": "2025-01-01T00:00:00.000Z",
+                "fileName": "file1.txt",
+                "fileSize": 1234,
+                "matchedSnapshotDate": "2025-01-02T00:00:00.000Z",
+                "matchedSnapshotFid": "dummy-snapshot-fid-1",
+                "isMatchedSnapshotExpired": false,
+                "isFirstObservedSnapshotExpired": false,
+                "matchType": "DUMMY_TYPE",
+                "isQuarantinedInFirstObservedSnapshot": true,
+                "objectFid": "dummy-object-id",
+                "firstObservedSnapshotFid": "dummy-first-snapshot-fid-1",
+                "firstObservedSnapshotDate": "2025-01-02T00:00:00.000Z",
+                "objectType": "DummyObjectType",
+                "objectName": "dummy-object-name-1",
+                "matchId": 1111,
+                "__typename": "FileMatch"
+            },
+            {
+                "filepath": "/dummy/path/file2.txt",
+                "detectedTime": "2025-01-03T00:00:00.000Z",
+                "fileName": "file2.txt",
+                "fileSize": 5678,
+                "matchedSnapshotDate": "2025-01-04T00:00:00.000Z",
+                "matchedSnapshotFid": "dummy-snapshot-fid-2",
+                "isMatchedSnapshotExpired": true,
+                "isFirstObservedSnapshotExpired": true,
+                "matchType": "DUMMY_TYPE",
+                "isQuarantinedInFirstObservedSnapshot": false,
+                "objectFid": "dummy-object-id",
+                "firstObservedSnapshotFid": "dummy-first-snapshot-fid-2",
+                "firstObservedSnapshotDate": "2025-01-04T00:00:00.000Z",
+                "objectType": "DummyObjectType",
+                "objectName": "dummy-object-name-2",
+                "matchId": 2222,
+                "__typename": "FileMatch"
+            }
+        ],
+        "RubrikPolaris.PageToken.ThreatMonitoringFile(val.name == obj.name)": {
+            "startCursor": "dummy-start-cursor",
+            "endCursor": "dummy-end-cursor",
+            "hasNextPage": true,
+            "hasPreviousPage": false,
+            "name": "rubrik-threat-monitoring-matched-file-list",
+            "total_matched_count": 99
+        }
+    }
+}

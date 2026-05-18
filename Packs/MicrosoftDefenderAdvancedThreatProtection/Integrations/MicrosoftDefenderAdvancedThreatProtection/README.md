@@ -35,7 +35,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ---
 
-Microsoft integrations (Graph and Azure) in Cortex use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
+Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
 
 Two application authentication methods are available:
 
@@ -2093,6 +2093,9 @@ Machine.StopAndQuarantine
 | machine_id | The ID of the machine. When providing multiple values, each value is checked for the same hash.                                           | Required |
 | file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each value is checked for the same machine_id.  | Required |
 | comment | The comment to associate with the action.                                                                                                | Required |
+| polling | Whether to poll for the action status.                                                                                                  | Optional |
+| timeout_in_seconds | The timeout in seconds for the polling.                                                                                                  | Optional |
+| interval_in_seconds | The interval in seconds between polling.                                                                                                  | Optional |
 
 ##### Context Output
 
@@ -3273,7 +3276,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
 | MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. |
-| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. |
+| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Entra ID tenant ID of submitting client. |
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
 | MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: "unknown", "adversary", "capability", "infrastructure", "victim". |
@@ -5278,7 +5281,9 @@ Gets a result file for a specified action.
 >
 ### microsoft-atp-advanced-hunting-lateral-movement-evidence
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
 
 #### Base Command
@@ -5433,7 +5438,9 @@ Detects evidence of attempted lateral movement. When you select a “query_purpo
 
 ### microsoft-atp-advanced-hunting-persistence-evidence
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
 
 #### Base Command
@@ -5662,7 +5669,9 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 
 ### microsoft-atp-advanced-hunting-process-details
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Detects process details. When you select a “query_purpose” argument, a designated query template is used.
 
 #### Base Command
@@ -5764,7 +5773,9 @@ Detects process details. When you select a “query_purpose” argument, a desig
 
 ### microsoft-atp-advanced-hunting-network-connections
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
 
 #### Base Command
@@ -5841,7 +5852,9 @@ Detects network connections. When you select a “query_purpose” argument, a d
 
 ### microsoft-atp-advanced-hunting-cover-up
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Detects cover up actions. When you select a “query_purpose” argument, a designated query template is used.
 
 #### Base Command
@@ -6115,7 +6128,9 @@ Detects cover up actions. When you select a “query_purpose” argument, a desi
 
 ### microsoft-atp-advanced-hunting-file-origin
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 How did the file get on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
 
 #### Base Command
@@ -6147,7 +6162,9 @@ How did the file get on the machine. Possible details are "dropped_file" - Was t
 
 ### microsoft-atp-advanced-hunting-privilege-escalation
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Is there evidence for privilege escalation.
 
 #### Base Command
@@ -6175,7 +6192,9 @@ Is there evidence for privilege escalation.
 
 ### microsoft-atp-advanced-hunting-tampering
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis)
 ---
+
 Detect if there was any evidence of MSDE agent/sensor manipulation.
 
 #### Base Command
@@ -7441,3 +7460,100 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### file
+
+***
+Checks the file reputation of the specified hash.
+
+#### Base Command
+
+`file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. |
+| MicrosoftATP.File.MD5 | String | The MD5 hash of the file. |
+| MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. |
+| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across the organization. |
+| MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. |
+| MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. |
+| MicrosoftATP.File.Size | Number | The size of the file. |
+| MicrosoftATP.File.FileType | String | The type of the file. |
+| MicrosoftATP.File.IsPeFile | Boolean | True if the file is portable executable, False otherwise. |
+| MicrosoftATP.File.FilePublisher | String | The file's publisher. |
+| MicrosoftATP.File.FileProductName | String | The file product name. |
+| MicrosoftATP.File.Signer | String | The file signer. |
+| MicrosoftATP.File.Issuer | String | The file issuer. |
+| MicrosoftATP.File.SignerHash | String | The hash of the signing certificate. |
+| MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. |
+| MicrosoftATP.File.DeterminationValue | String | The file determination value. |
+| MicrosoftATP.File.DeterminationType | String | The file determination type. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type. |
+| File.Size | Number | The file size. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+
+#### Command example
+
+```!file file="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"```
+
+#### Context Example
+
+```json
+{
+    "MicrosoftATP": {
+        "File": {
+            "Sha1": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "MD5": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "Sha256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "GlobalPrevalence": 1,
+            "GlobalFirstObserved": "2022-01-01T00:00:00Z",
+            "GlobalLastObserved": "2022-01-01T00:00:00Z",
+            "Size": 123456,
+            "FileType": "PE",
+            "IsPeFile": true,
+            "FilePublisher": "Microsoft Corporation",
+            "FileProductName": "Microsoft Windows",
+            "Signer": "Microsoft Corporation",
+            "Issuer": "Microsoft Corporation",
+            "SignerHash": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "IsValidCertificate": true,
+            "DeterminationValue": "Malicious",
+            "DeterminationType": "MachineLearning",
+        }
+    },
+    "File": {
+        "SHA1": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "SHA256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "Type": "PE",
+        "Size": 123456,
+    },
+    "DBotScore": {
+        "Indicator": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "Type": "hash",
+        "Vendor": "Microsoft Defender ATP",
+        "Score": 3
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP File
+>
+>| SHA1 | MD5 | SHA256 | GlobalPrevalence | GlobalFirstObserved | GlobalLastObserved | Size | FileType | IsPeFile | FilePublisher | FileProductName | Signer | Issuer | SignerHash | IsValidCertificate | DeterminationValue | DeterminationType |
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | 1 | 2022-01-01T00:00:00Z | 2022-01-01T00:00:00Z | 123456 | PE | true | Microsoft Corporation | Microsoft Windows | Microsoft Corporation | Microsoft Corporation | 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | true | Malicious | MachineLearning |

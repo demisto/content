@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Sysdig
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -172,6 +173,7 @@ marketplaces:
 - xsoar
 - marketplacev2
 - xsoar_saas
+- platform
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Logsign
 commonfields:
   id: LogsignSiem
   version: -1
@@ -98,7 +99,7 @@ script:
     - contextPath: LogsignSiem.Count
       description: Count number returned as the result of the query.
       type: Number
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

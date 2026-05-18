@@ -1,0 +1,12 @@
+{
+    "data": {
+        "id": "test_task_id",
+        "file_type": "test_file_type",
+        "md5": "00112233445566778899aabbccddeeff",
+        "crc32": "test_crc32",
+        "sha256": "0011223344556677889900112233445566778899001122334455667788990011",
+        "sha512": "test_sha512",
+        "Parent": "test_parent",
+        "source_url": "http://test.example.com"
+    }
+}

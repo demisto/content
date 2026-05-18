@@ -157,3 +157,6 @@ outputs:
   type: string
 tests:
 - No tests
+supportedModules:
+- agentix
+- xsiam

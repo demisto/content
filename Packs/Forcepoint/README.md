@@ -5,6 +5,8 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
+Make sure you use Forcepoint API version 8.5.7 or later.
+
 You need to configure Forcepoint NGFW to forward Syslog messages in CEF format.
 
 Open Forcepoint NGFW interface, and follow these instructions;

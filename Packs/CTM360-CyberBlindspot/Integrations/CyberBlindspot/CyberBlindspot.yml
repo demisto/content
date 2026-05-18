@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: CTM360
+sectionorder:
 - Connect
 - Collect
 commonfields:

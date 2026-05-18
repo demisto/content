@@ -1,0 +1,31 @@
+{
+    "GoogleChronicleBackstory.DataTable(val.displayName == obj.displayName)": {
+        "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table",
+        "displayName": "test_table",
+        "description": "Table for testing",
+        "createTime": "2025-08-13T07:26:56.704838492Z",
+        "updateTime": "1970-01-01T00:00:00Z",
+        "columnInfo": [
+            {
+                "originalColumn": "column_1",
+                "columnType": "STRING"
+            },
+            {
+                "columnIndex": 1,
+                "originalColumn": "column_2",
+                "columnType": "REGEX"
+            },
+            {
+                "columnIndex": 2,
+                "originalColumn": "column_3",
+                "columnType": "CIDR"
+            },
+            {
+                "columnIndex": 3,
+                "originalColumn": "column_4",
+                "columnType": "entity.ip.address"
+            }
+        ],
+        "dataTableUuid": "00000000000000000000000000000001"
+    }
+}

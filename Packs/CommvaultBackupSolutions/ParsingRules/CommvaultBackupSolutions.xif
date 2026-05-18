@@ -1,0 +1,44 @@
+[Rule: commvault_backupsolution_UTC_Timestamp_extraction]
+alter
+	tmp_get_UTC_Timestamp_len = len(to_string(UTC_Timestamp)),
+	tmp_get_UTC_Timestamp_INTcast = to_integer(UTC_Timestamp)
+| alter
+    tmp_set_UTC_Timestamp = if(
+        tmp_get_UTC_Timestamp_len = 10, to_timestamp(tmp_get_UTC_Timestamp_INTcast, "SECONDS"),
+        tmp_get_UTC_Timestamp_len = 13, to_timestamp(tmp_get_UTC_Timestamp_INTcast, "MILLIS"),
+        tmp_get_UTC_Timestamp_len = 16, to_timestamp(tmp_get_UTC_Timestamp_INTcast, "MICROS"),
+		tmp_get_UTC_Timestamp_len = 19, to_timestamp(floor(divide(tmp_get_UTC_Timestamp_INTcast, 1000)), "MICROS")
+    );
+
+
+[INGEST:vendor = "commvault", product = "backupsolution", target_dataset = "commvault_backupsolution_raw", no_hit = keep]
+// Alert
+filter alert_id != null and (alerttime != null or UTC_Timestamp != null)
+| alter
+	tmp_get_alerttime =	replex(arrayindex(regextract(to_string(alerttime), "\d{1,2}\s+\w{3}\s+\d{4}\s+\d{2}:\d{2}:\d{2}"), 0),"\s+", " ")			// Example: 5 Nov 2024 11:38:41
+| call commvault_backupsolution_UTC_Timestamp_extraction
+| alter
+	tmp_set_alerttime = parse_timestamp("%e %h %Y %X", tmp_get_alerttime, "+00:00")
+| alter
+	_time = coalesce(tmp_set_alerttime, tmp_set_UTC_Timestamp)
+| fields -tmp*;
+
+
+// Event
+filter event_id != null and event_date != null
+| alter
+	tmp_get_event_date = replex(arrayindex(regextract(to_string(event_date), "\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4}"), 0), "\s+", " ")		// Example: Feb 18 04:00:05 2025
+| call commvault_backupsolution_UTC_Timestamp_extraction
+| alter
+	tmp_set_event_date = parse_timestamp("%h %e %X %Y", tmp_get_event_date, "+00:00")
+| alter
+	_time = coalesce(tmp_set_event_date, tmp_set_UTC_Timestamp)
+| fields -tmp*;
+
+
+// Audit
+filter opid != null and UTC_Timestamp != null
+| call commvault_backupsolution_UTC_Timestamp_extraction
+| alter
+    _time = tmp_set_UTC_Timestamp
+| fields -tmp*;

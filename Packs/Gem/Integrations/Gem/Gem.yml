@@ -1,5 +1,6 @@
 category: Cloud Services
-sectionOrder:
+provider: Wiz
+sectionorder:
   - Connect
   - Collect
 commonfields:

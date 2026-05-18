@@ -1,0 +1,35 @@
+{
+    "referenceLists": [
+        {
+            "name": "dummy_name",
+            "displayName": "A",
+            "revisionCreateTime": "2025-07-14T07:50:45.350943Z",
+            "description": "monitoring domain",
+            "entries": [
+                {
+                    "value": "lines2"
+                }
+            ],
+            "syntaxType": "REFERENCE_LIST_SYNTAX_TYPE_PLAIN_TEXT_STRING",
+            "scopeInfo": {
+                "referenceListScope": {}
+            }
+        },
+        {
+            "name": "dummy_name",
+            "displayName": "AAAAAA",
+            "revisionCreateTime": "2025-07-22T07:22:19.247551Z",
+            "description": "Description",
+            "entries": [
+                {
+                    "value": "0.0.0.1/24"
+                }
+            ],
+            "syntaxType": "REFERENCE_LIST_SYNTAX_TYPE_CIDR",
+            "scopeInfo": {
+                "referenceListScope": {}
+            }
+        }
+    ],
+    "nextPageToken": "dummy_token"
+}

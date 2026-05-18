@@ -1,0 +1,89 @@
+[MODEL: dataset = "nvidia_doca_argus_raw"]
+alter
+    event_name = activity_data -> name,
+    device_id = workload_information -> unique_identifier,
+    blue_interfaces_blob = json_extract(bluefield_system_information, "$.bluefield_networking_interfaces"),
+    process_details = json_extract(activity_data, "$.process_details"),
+    network_details = json_extract(activity_data, "$.network_connection_details")
+| alter 
+    interfaces_blob = to_json_string(arraycreate(blue_interfaces_blob,workload_information)),
+    process_name = process_details -> process_name,
+    process_command_line_arguments = process_details -> process_command_line_arguments,
+    process_hash_sha256 = process_details -> process_hash_sha256,
+    process_hash_md5 = process_details -> process_hash_md5,
+    process_execution_path = process_details -> process_execution_path,
+    protocol = network_details -> protocol,
+    source_ip_address = network_details -> source_ip_address,
+    source_port = network_details -> source_port,
+    destination_ip_address = network_details -> destination_ip_address,
+    workload_network_interface_ipv6_address = regextract(to_string(network_details -> workload_network_interface_ipv6_address[]), "::1|[0-9a-fA-F]{1,4}::[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"),
+    destination_port = network_details -> destination_port
+| alter
+    ipv4_list = regextract(interfaces_blob, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+    ipv6_list = regextract(interfaces_blob, "::1|[0-9a-fA-F]{1,4}::[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"),
+    mac_list = regextract(interfaces_blob, "([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})")
+| alter
+    xdm.event.type = message_type,
+    xdm.alert.severity = if(message_type = "ALERT",severity,null),
+    xdm.event.log_level = if(severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL , severity = "WARNING", XDM_CONST.LOG_LEVEL_WARNING , severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL), 
+    xdm.event.operation = if(
+    event_name = "Process_Created", XDM_CONST.OPERATION_TYPE_PROCESS_CREATE,
+    event_name = "Process_Terminated", XDM_CONST.OPERATION_TYPE_PROCESS_TERMINATE,
+    event_name = "File_Descriptor_Open", XDM_CONST.OPERATION_TYPE_FILE_OPEN,
+    event_name in ("File_Descriptor_File_Content_Change", "New_File_Mapped"), XDM_CONST.OPERATION_TYPE_FILE_WRITE,
+    event_name in ("Foreign_Library_Loaded", "Foreign_Library_Loaded_File_Size_Mismatch"), XDM_CONST.OPERATION_TYPE_IMAGE_LOAD,
+    event_name in (
+        "Foreign_Binary_Executed", 
+        "Binary_Executed_Not_as_Intended", 
+        "Shell_Command_Executed", 
+        "Reverse_Shell_Detected",
+        "Service_Initialization_Started",
+        "Service_Runtime_Failure"
+    ), XDM_CONST.OPERATION_TYPE_EXECUTION,
+    event_name in (
+        "Network_Connection_Created", 
+        "Thread_Created", 
+        "Container_Started", 
+        "Process_Memory_Created",
+        "New_Executable_Anonymous_Memory_Mapped"
+    ), XDM_CONST.OPERATION_TYPE_CREATE,
+    event_name in (
+        "Network_Connection_Terminated", 
+        "Thread_Terminated", 
+        "Container_Terminated", 
+        "Process_Memory_Terminated",
+        "Service_Gracefully_Shutdown"
+    ),XDM_CONST.OPERATION_TYPE_DELETE,
+    event_name in (
+        "Executable_Permissions_Added", 
+        "Executable_Permissions_Removed", 
+        "TCP_Network_Connection_State_Change",
+        "Shell_History_Disabled",
+        "Shell_History_Cleared",
+        "File_Descriptor_Close", 
+        "File_Unmapped"
+    ), XDM_CONST.OPERATION_TYPE_UPDATE,
+    event_name in (
+        "OS_Identifier_Found",
+        "OS_Identifier_Discovery_Extended",
+        "TCP_Network_Connections_Status"
+    ), XDM_CONST.OPERATION_TYPE_READ,null),
+    xdm.event.description = activity_data,
+    xdm.source.host.device_id = device_id,
+    xdm.source.host.ipv4_addresses = ipv4_list,
+    xdm.source.ipv4 = to_string(source_ip_address),
+    xdm.source.host.ipv6_addresses = ipv6_list,
+    xdm.source.ipv6 = to_string(workload_network_interface_ipv6_address),
+    xdm.source.host.mac_addresses = mac_list,
+    xdm.source.process.executable.filename = process_name,
+    xdm.source.process.executable.path = process_execution_path,
+    xdm.source.process.executable.sha256 = process_hash_sha256,
+    xdm.source.process.executable.md5 = process_hash_md5,
+    xdm.source.process.command_line = process_command_line_arguments,
+    xdm.network.ip_protocol = if(protocol = "HOPOPT", XDM_CONST.IP_PROTOCOL_HOPOPT, protocol = "ICMP",XDM_CONST.IP_PROTOCOL_ICMP, protocol = "IGMP",XDM_CONST.IP_PROTOCOL_IGMP, protocol = "GGP",XDM_CONST.IP_PROTOCOL_GGP, protocol = "IP",XDM_CONST.IP_PROTOCOL_IP, protocol = "ST",XDM_CONST.IP_PROTOCOL_ST, protocol = "TCP",XDM_CONST.IP_PROTOCOL_TCP, protocol = "CBT",XDM_CONST.IP_PROTOCOL_CBT, protocol = "EGP",XDM_CONST.IP_PROTOCOL_EGP, protocol = "IGP",XDM_CONST.IP_PROTOCOL_IGP, protocol = "BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, protocol = "NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, protocol = "PUP",XDM_CONST.IP_PROTOCOL_PUP, protocol = "ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, protocol = "EMCON",XDM_CONST.IP_PROTOCOL_EMCON, protocol = "XNET",XDM_CONST.IP_PROTOCOL_XNET, protocol = "CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, protocol = "UDP",XDM_CONST.IP_PROTOCOL_UDP, protocol = "MUX",XDM_CONST.IP_PROTOCOL_MUX, protocol = "DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, protocol = "HMP",XDM_CONST.IP_PROTOCOL_HMP, protocol = "PRM",XDM_CONST.IP_PROTOCOL_PRM, protocol = "XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, protocol = "TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, protocol = "TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, protocol = "LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, protocol = "LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, protocol = "RDP",XDM_CONST.IP_PROTOCOL_RDP, protocol = "IRTP",XDM_CONST.IP_PROTOCOL_IRTP, protocol = "ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, protocol = "NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, protocol = "MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, protocol = "MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, protocol = "DCCP",XDM_CONST.IP_PROTOCOL_DCCP, protocol = "3PC",XDM_CONST.IP_PROTOCOL_3PC, protocol = "IDPR",XDM_CONST.IP_PROTOCOL_IDPR, protocol = "XTP",XDM_CONST.IP_PROTOCOL_XTP, protocol = "DDP",XDM_CONST.IP_PROTOCOL_DDP, protocol = "IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, protocol = "TP",XDM_CONST.IP_PROTOCOL_TP, protocol = "IL",XDM_CONST.IP_PROTOCOL_IL, protocol = "IPV6",XDM_CONST.IP_PROTOCOL_IPV6, protocol = "SDRP",XDM_CONST.IP_PROTOCOL_SDRP, protocol = "IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, protocol = "IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, protocol = "IDRP",XDM_CONST.IP_PROTOCOL_IDRP, protocol = "RSVP",XDM_CONST.IP_PROTOCOL_RSVP, protocol = "GRE",XDM_CONST.IP_PROTOCOL_GRE, protocol = "DSR",XDM_CONST.IP_PROTOCOL_DSR, protocol = "BNA",XDM_CONST.IP_PROTOCOL_BNA, protocol = "ESP",XDM_CONST.IP_PROTOCOL_ESP, protocol = "AH",XDM_CONST.IP_PROTOCOL_AH, protocol = "I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, protocol = "SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, protocol = "NARP",XDM_CONST.IP_PROTOCOL_NARP, protocol = "MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, protocol = "TLSP",XDM_CONST.IP_PROTOCOL_TLSP, protocol = "SKIP",XDM_CONST.IP_PROTOCOL_SKIP, protocol = "IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, protocol = "IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, protocol = "IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, protocol = "CFTP",XDM_CONST.IP_PROTOCOL_CFTP, protocol = "SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, protocol = "KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, protocol = "RVD",XDM_CONST.IP_PROTOCOL_RVD, protocol = "IPPC",XDM_CONST.IP_PROTOCOL_IPPC, protocol = "SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, protocol = "VISA",XDM_CONST.IP_PROTOCOL_VISA, protocol = "IPCV",XDM_CONST.IP_PROTOCOL_IPCV, protocol = "CPNX",XDM_CONST.IP_PROTOCOL_CPNX, protocol = "CPHB",XDM_CONST.IP_PROTOCOL_CPHB, protocol = "WSN",XDM_CONST.IP_PROTOCOL_WSN, protocol = "PVP",XDM_CONST.IP_PROTOCOL_PVP, protocol = "BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, protocol = "SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, protocol = "WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, protocol = "WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, protocol = "ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, protocol = "VMTP",XDM_CONST.IP_PROTOCOL_VMTP, protocol = "SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, protocol = "VINES",XDM_CONST.IP_PROTOCOL_VINES, protocol = "TTP",XDM_CONST.IP_PROTOCOL_TTP, protocol = "NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, protocol = "DGP",XDM_CONST.IP_PROTOCOL_DGP, protocol = "TCF",XDM_CONST.IP_PROTOCOL_TCF, protocol = "EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, protocol = "OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, protocol = "SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, protocol = "LARP",XDM_CONST.IP_PROTOCOL_LARP, protocol = "MTP",XDM_CONST.IP_PROTOCOL_MTP, protocol = "AX25",XDM_CONST.IP_PROTOCOL_AX25, protocol = "IPIP",XDM_CONST.IP_PROTOCOL_IPIP, protocol = "MICP",XDM_CONST.IP_PROTOCOL_MICP, protocol = "SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, protocol = "ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, protocol = "ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, protocol = "GMTP",XDM_CONST.IP_PROTOCOL_GMTP, protocol = "IFMP",XDM_CONST.IP_PROTOCOL_IFMP, protocol = "PNNI",XDM_CONST.IP_PROTOCOL_PNNI, protocol = "PIM",XDM_CONST.IP_PROTOCOL_PIM, protocol = "ARIS",XDM_CONST.IP_PROTOCOL_ARIS, protocol = "SCPS",XDM_CONST.IP_PROTOCOL_SCPS, protocol = "QNX",XDM_CONST.IP_PROTOCOL_QNX, protocol = "AN",XDM_CONST.IP_PROTOCOL_AN, protocol = "IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, protocol = "SNP",XDM_CONST.IP_PROTOCOL_SNP, protocol = "COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, protocol = "IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, protocol = "VRRP",XDM_CONST.IP_PROTOCOL_VRRP, protocol = "PGM",XDM_CONST.IP_PROTOCOL_PGM, protocol = "L2TP",XDM_CONST.IP_PROTOCOL_L2TP, protocol = "DDX",XDM_CONST.IP_PROTOCOL_DDX, protocol = "IATP",XDM_CONST.IP_PROTOCOL_IATP, protocol = "STP",XDM_CONST.IP_PROTOCOL_STP, protocol = "SRP",XDM_CONST.IP_PROTOCOL_SRP, protocol = "UTI",XDM_CONST.IP_PROTOCOL_UTI, protocol = "SMP",XDM_CONST.IP_PROTOCOL_SMP, protocol = "SM",XDM_CONST.IP_PROTOCOL_SM, protocol = "PTP",XDM_CONST.IP_PROTOCOL_PTP, protocol = "ISIS",XDM_CONST.IP_PROTOCOL_ISIS, protocol = "FIRE",XDM_CONST.IP_PROTOCOL_FIRE, protocol = "CRTP",XDM_CONST.IP_PROTOCOL_CRTP, protocol = "CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, protocol = "SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, protocol = "IPLT",XDM_CONST.IP_PROTOCOL_IPLT, protocol = "SPS",XDM_CONST.IP_PROTOCOL_SPS, protocol = "PIPE",XDM_CONST.IP_PROTOCOL_PIPE, protocol = "SCTP",XDM_CONST.IP_PROTOCOL_SCTP, protocol = "FC",XDM_CONST.IP_PROTOCOL_FC, protocol = "RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, protocol = "MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, protocol = "UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, protocol = "MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, protocol = "MANET",XDM_CONST.IP_PROTOCOL_MANET, protocol = "HIP",XDM_CONST.IP_PROTOCOL_HIP, protocol = "SHIM6",XDM_CONST.IP_PROTOCOL_SHIM6, protocol = "WESP",XDM_CONST.IP_PROTOCOL_WESP, protocol = "ROHC",XDM_CONST.IP_PROTOCOL_ROHC, protocol = "RESERVED",XDM_CONST.IP_PROTOCOL_RESERVED,to_string(protocol)),
+    xdm.source.port = to_integer(source_port),
+    xdm.target.port = to_integer(destination_port),
+    xdm.target.ipv4 = if(is_ipv4(destination_ip_address),destination_ip_address,null),
+    xdm.target.ipv6 = if(is_ipv6(destination_ip_address),destination_ip_address,null),
+    xdm.event.operation_sub_type = event_name,
+    xdm.event.id = message_id;

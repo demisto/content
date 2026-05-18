@@ -374,7 +374,7 @@ Return a list of all IRIS DFIR cases
             "client_name": "CERT-EU",
             "opened_by": "nouser2",
             "opened_by_user_id": 1,
-            "owner": "Natasha Carl",
+            "owner": "Natasha Testman",
             "owner_id": 2,
             "state_id": 4,
             "state_name": "Containment"
@@ -648,7 +648,7 @@ Return a list of all IRIS DFIR cases
 >| 4 |  | virus id 2244<br/><br/>testing 123<br/><br/>machine 10.0.0.1 | 20 | #20 - virus id 2244 | 11/22/2023 | CERT-EU-55 | 6e71ba63-ad61-4c7e-8b4e-10f16a65cb36 | malicious-code:virus | 4 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 3 | Opened |
 >| 4 |  | rootkit blabla<br/><br/>machine.dark.local malware baisfldasnfadsf | 19 | #19 - rootkit blabla | 09/29/2023 | CERT--EU-444 | a48eed36-cc03-4a42-a13b-3af41a76dccb | malicious-code:rootkit | 10 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 3 | Opened |
 >| 4 | 09/28/2023 | Phishing EU member<br/><br/>blabla | 18 | #18 - Phishing EU member | 09/28/2023 | CERT-EU-77 | a9803459-461b-4442-a11e-b6440a91cd85 | fraud:phishing | 30 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 9 | Closed |
->| 4 |  | Phishing EU official<br/><br/>test ticket !!! | 17 | #17 - #17 case custom attrib test | 08/09/2023 | soc_id_demo | c034f0fa-d19c-480a-8b1d-045b558915d0 | abusive-content:harmful-speech | 2 | CERT-EU | nouser2 | 1 | Natasha Carl | 2 | 4 | Containment |
+>| 4 |  | Phishing EU official<br/><br/>test ticket !!! | 17 | #17 - #17 case custom attrib test | 08/09/2023 | soc_id_demo | c034f0fa-d19c-480a-8b1d-045b558915d0 | abusive-content:harmful-speech | 2 | CERT-EU | nouser2 | 1 | Natasha Testman | 2 | 4 | Containment |
 >| 4 | 09/25/2023 | spam test ticket<br/><br/>blah | 16 | #16 - spam test ticket | 07/13/2023 | CERT-EU-21 | 71636b85-ef58-4d45-a5bf-faa2ac00031a | abusive-content:spam | 1 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 9 | Closed |
 >| 4 |  | dark.local<br/><br/>testing notes | 15 | #15 - Virus detected on VM dark.local | 07/13/2023 | CERT-EU-20 | 94e4a63a-3c8b-4a4e-ae02-b32c0c1b6386 | malicious-code:virus | 4 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 2 | In progress |
 >| 4 |  | ROOTKIT TEST<br/><br/>THIS IS A TEST FORM | 13 | #13 - ROOTKIT TEST | 06/08/2023 | CERT-EU-19 | 6f8a72b5-2c82-4654-b84a-e8e10e9299de | malicious-code:rootkit | 10 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 3 | Opened |

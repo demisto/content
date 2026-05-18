@@ -1,0 +1,58 @@
+{
+    "DBotScore": {
+        "Indicator": "0.0.0.1",
+        "Reliability": "B - Usually reliable",
+        "Score": 3,
+        "Type": "ip",
+        "Vendor": "Google SecOps"
+    },
+    "GoogleChronicleBackstory.IP(val.IoCQueried && val.IoCQueried == obj.IoCQueried)": {
+        "IoCQueried": "0.0.0.1",
+        "Sources": [
+            {
+                "Address": [
+                    {
+                        "IpAddress": "0.0.0.1",
+                        "Port": [
+                            80
+                        ]
+                    }
+                ],
+                "Category": "Blocked",
+                "ConfidenceScore": "High",
+                "FirstAccessedTime": "1970-01-01T00:00:00Z",
+                "LastAccessedTime": "9999-12-31T23:59:59Z",
+                "Severity": "High"
+            },
+            {
+                "Address": [
+                    {
+                        "Domain": "test.com",
+                        "Port": [
+                            44902,
+                            65178
+                        ]
+                    },
+                    {
+                        "IpAddress": "4.3.2.1",
+                        "Port": [
+                            80
+                        ]
+                    }
+                ],
+                "Category": "Blocked",
+                "ConfidenceScore": 70,
+                "FirstAccessedTime": "1970-01-01T00:00:00Z",
+                "LastAccessedTime": "2025-02-18T15:35:11Z",
+                "Severity": "Low"
+            }
+        ]
+    },
+    "IP(val.Address && val.Address == obj.Address)": {
+        "Address": "0.0.0.1",
+        "Malicious": {
+            "Description": "Found in malicious data set",
+            "Vendor": "Google SecOps"
+        }
+    }
+}

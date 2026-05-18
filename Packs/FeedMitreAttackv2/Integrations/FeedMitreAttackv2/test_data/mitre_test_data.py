@@ -817,7 +817,7 @@ ATTACK_PATTERNS = [
         "kill_chain_phases": [{"kill_chain_name": "mitre-attack", "phase_name": "reconnaissance"}],
         "x_mitre_platforms": ["PRE"],
         "x_mitre_domains": ["enterprise-attack"],
-        "x_mitre_contributors": ["Jan Petrov, Citi", "Elvis Veliz, Citi", "Richard Julian, Citi"],
+        "x_mitre_contributors": ["Jan Testmanov, Citi", "Elvin Testman, Citi", "Richard Julian, Citi"],
         "x_mitre_version": "1.0",
         "x_mitre_detection": "Monitor for suspicious network traffic that could be indicative of scanning.",
         "x_mitre_data_sources": ["Network Traffic: Network Traffic Content"],

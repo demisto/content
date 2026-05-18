@@ -186,14 +186,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Analyst Alert
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -338,14 +338,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Analyst Alert
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -416,9 +416,7 @@ tasks:
       id: e4e146e3-6cff-4796-8740-20bdcc5c8bba
       version: -1
       name: Is Error?
-      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -550,9 +548,7 @@ tasks:
       id: 14550d6b-210f-48de-818b-ff2673b3ba69
       version: -1
       name: Is Error?
-      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -608,14 +604,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Analyst Alert
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -756,15 +752,14 @@ inputs:
   value: {}
   required: true
   description: Array of URL required to be blocked.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URLBlockList
   value:
     simple: Blocked URLs for Default Policy
   required: false
-  description: "The given URL will  be added to the following URL Group. \nThis parameter
-    can be changed as required."
-  playbookInputQuery: null
+  description: "The given URL will  be added to the following URL Group. \nThis parameter can be changed as required."
+  playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
 tests:
- -  No tests
+- No tests

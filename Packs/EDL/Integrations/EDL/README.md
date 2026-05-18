@@ -19,9 +19,10 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 ***Important Notes:***
 
 - EDL is designed to spawn on two processes: NGNIX and Python. NGNIX is the process that listens on the configured port, while the Python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the NGNIX process will listen on port 9009 and Python on port 9010. When running without --network=host, the Python port is not exposed to the machine.
-- If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
-- When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
-- Note: After a successful configuration of an instance, if the 'test button' is clicked again, it may result in a failure due to an incorrect assumption that the port is already in use. Nevertheless, it is important to highlight that despite this issue, the instance will continue to function correctly.
+- If you frequently use different queries for the same EDL instance through the *q* inline argument, use separate EDL instances (one per query) and set a default query for each to improve performance.
+- When using the *q* inline argument, the number of exported indicators is limited to 100,000 for performance reasons. To export more than 100,000 indicators, create a new integration instance with the desired Indicator Query and List Size.
+- Note: After successfully configuring an instance, clicking the 'Test' button again may display a failure because the system incorrectly assumes the port is in use. Despite this message, the instance continues to function correctly.
+- When the integration is configured with ***Update list on demand only***, the indicator list refreshes based on the value set in the ***Refresh Rate*** parameter.
 
 ## Troubleshooting
 
@@ -97,6 +98,10 @@ or
 | Exclude top level domainGlobs        | Option to remove top level domainGlobs from the list. For example - \*.com.                                                                                                                                                                                     | False         |
 | Advanced: NGINX Global Directives  | NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support. | False        |
 | Advanced: NGINX Server Conf        | NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.                                                                  | False        |
+| Cache Lock Timeout                | How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value. Default is 1h.                                                                                                                                                                                                                      | False        |
+| Cache Lock Age                    | How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout. Default is 1h.                                                                                                                                                                                                                          | False        |
+| Cache 404 TTL                     | The TTL for 404 responses in the cache.                                                                                                                                                                                                              | False        |
+| Cache Default TTL                 | The default TTL for responses in the cache.                                                                                                                                                                                                          | False        |
 | Advanced: NGINX Read Timeout       | NGNIX read timeout in seconds.                                                                                                                                                                                                                       | False        |
 | Advanced: use legacy queries       | When enabled, the integration queries the server using full queries. Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you've encountered log errors in the form of: 'msgpack: invalid code.'                             | False        |
 
@@ -240,7 +245,7 @@ Updates values stored in the List (only available On-Demand).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query used to retrieve indicators from the system. Leave empty to use the query from the integration parameters.  | Optional |
+| query | The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators. | Required |
 | format | The output format. | Optional |
 | edl_size | The maximum number of entries in the output. If no value is provided, uses the value specified in the List Size parameter configured in the instance configuration. | Optional |
 | print_indicators | If set to true, prints the indicators that were saved to the export indicators service. | Required |

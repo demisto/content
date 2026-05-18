@@ -1,12 +1,13 @@
 commonfields:
   id: Awake Security
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Awake Security
 display: Awake Security
 category: Network Security
+provider: Arista Networks
 description: Network Traffic Analysis.
 detaileddescription: ""
 configuration:

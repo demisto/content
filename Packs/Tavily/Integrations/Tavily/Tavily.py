@@ -8,24 +8,16 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class TavilyExtractClient(BaseClient):
-
     def __init__(self, api_key, url="https://api.tavily.com", proxy: bool = False, verify: bool = False):
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         super().__init__(base_url=url, verify=verify, headers=headers, proxy=proxy)
 
     def extract(self, url: str, extract_depth: str = "basic", include_images: bool = False) -> dict:
+        payload = {"urls": [url], "extract_depth": extract_depth, "include_images": include_images}
 
-        payload = {
-            "urls": [url],
-            "extract_depth": extract_depth,
-            "include_images": include_images
-        }
-
-        response = self._http_request("POST", url_suffix="extract", json_data=payload, headers=self._headers,
-                                      resp_type='response')
+        response = self._http_request(
+            "POST", url_suffix="extract", json_data=payload, headers=self._headers, resp_type="response"
+        )
 
         if response.status_code == 200:
             return response.json()
@@ -44,8 +36,12 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
             "URL": results[0].get("url"),
             "Content": results[0].get("raw_content", "No content found."),
         }
-        return CommandResults(outputs=output, readable_output=f"Successfully extracted the content from {args['url']}",
-                              outputs_prefix="Tavily", outputs_key_field="URL")
+        return CommandResults(
+            outputs=output,
+            readable_output=f"Successfully extracted the content from {args['url']}",
+            outputs_prefix="Tavily",
+            outputs_key_field="URL",
+        )
 
     return CommandResults(readable_output=f"There are no results for the given url {args['url']}")
 
@@ -55,7 +51,7 @@ def test_module(client: TavilyExtractClient) -> str:
     Sanity test with Google
     """
     client.extract("google.com", extract_depth="basic", include_images=False)
-    return 'ok'
+    return "ok"
 
 
 def main():  # pragma: no cover
@@ -74,7 +70,7 @@ def main():  # pragma: no cover
         demisto.debug(f"{client}")
         if command == "test-module":
             return_results(test_module(client=client))
-        elif command == 'tavily-extract':
+        elif command == "tavily-extract":
             return_results(extarct_command(client=client, args=args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")

@@ -26,6 +26,9 @@ ignore=GR103
 ignore=GR103
 [file:HealthCheckGetLargestInputsAndOutputsInIncidents.yml]
 ignore=GR103
-
 [file:HealthCheck.yml]
 ignore=GR107
+[file:layoutscontainer-System_Diagnostics_and_Health_Check-v8.json]
+ignore=GR105
+[file:layoutscontainer-System_Diagnostics_and_Health_Check.json]
+ignore=GR105

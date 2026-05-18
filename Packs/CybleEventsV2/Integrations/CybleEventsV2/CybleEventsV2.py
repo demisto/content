@@ -3,16 +3,16 @@ from typing import Any
 
 """ IMPORTS """
 import requests
-from datetime import datetime, timedelta
 import pytz
 import urllib3
 import dateparser
 import json
 from collections.abc import Sequence
-
+from datetime import datetime, timedelta
+import concurrent.futures
+import time
 from dateutil.parser import parse as parse_date
 
-import concurrent.futures
 
 UTC = pytz.UTC
 
@@ -24,6 +24,8 @@ urllib3.disable_warnings()
 MAX_ALERTS = None
 LIMIT_EVENT_ITEMS = 200
 MAX_RETRIES = 3
+# Fetch-incidents: backoff after each failed services or alerts API attempt (1 try + 5 retries).
+FETCH_INCIDENT_RETRY_BACKOFF_SECONDS = (5, 10, 20, 20, 20)
 MAX_THREADS = 1
 MIN_MINUTES_TO_FETCH = 10
 DEFAULT_REQUEST_TIMEOUT = 600
@@ -308,25 +310,39 @@ class Client(BaseClient):
 
         if not url or not alerts_api_key:
             raise ValueError("Missing required URL or API key in input_params.")
-        try:
-            demisto.debug(f"[get_data] final payload is: {payload_json}")
-            response = self.make_request(url, alerts_api_key, "POST", payload_json)
+
+        backoffs = FETCH_INCIDENT_RETRY_BACKOFF_SECONDS
+        for attempt in range(len(backoffs) + 1):
+            try:
+                demisto.debug(f"[get_data] final payload is: {payload_json}")
+                response = self.make_request(url, alerts_api_key, "POST", payload_json)
+            except Exception as request_error:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"HTTP request failed for service '{service}': {str(request_error)}") from request_error
+
             demisto.debug(f"[get_data] Response status code: {response.status_code}")
+            if response.status_code != 200:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(
+                    f"Failed to fetch data from {service}. Status code: {response.status_code}, Response text: {response.text}"
+                )
 
-        except Exception as request_error:
-            raise Exception(f"HTTP request failed for service '{service}': {str(request_error)}")
+            try:
+                json_response = response.json()
+            except ValueError as json_error:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Invalid JSON response from {service}: {str(json_error)}") from json_error
 
-        if response.status_code != 200:
-            raise Exception(
-                f"Failed to fetch data from {service}. Status code: {response.status_code}, Response text: {response.text}"
-            )
-
-        try:
-            json_response = response.json()
             demisto.debug(f"[get_data] JSON response received with keys: {list(json_response.keys())}")
             return json_response
-        except ValueError as json_error:
-            raise Exception(f"Invalid JSON response from {service}: {str(json_error)}")
+
+        return {}  # pragma: no cover
 
     def get_all_services(self, api_key, url):
         """
@@ -336,21 +352,41 @@ class Client(BaseClient):
         :param ew: An event writer object for logging
         :return: A list of service dictionaries, or an empty list if the request fails
         """
-        try:
-            url = url + "/services"
-            response = self.make_request(url, api_key)
+        services_url = url + "/services"
+        backoffs = FETCH_INCIDENT_RETRY_BACKOFF_SECONDS
+        for attempt in range(len(backoffs) + 1):
+            try:
+                demisto.debug(f"[get_all_services] url: {services_url}")
+                response = self.make_request(services_url, api_key)
+            except Exception as e:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Failed to get services: {str(e)}") from e
+
+            demisto.debug(f"[get_all_services] status code: {response.status_code}")
             if response.status_code != 200:
-                raise Exception(f"Wrong status code: {response.status_code}")
-            response = response.json()
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Failed to get services: Wrong status code: {response.status_code}")
 
-            if "data" in response and isinstance(response["data"], Sequence):
-                demisto.debug(f"Received services: {json.dumps(response['data'], indent=2)}")
-                return response["data"]
+            try:
+                parsed = response.json()
+            except Exception as e:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Failed to get services: {str(e)}") from e
 
-            else:
-                raise Exception("Wrong Format for services response")
-        except Exception as e:
-            raise Exception(f"Failed to get services: {str(e)}")
+            if "data" in parsed and isinstance(parsed["data"], Sequence):
+                demisto.debug(f"Received services: {json.dumps(parsed['data'], indent=2)}")
+                return parsed["data"]
+
+            # Valid HTTP + JSON but unexpected shape: do not retry (not a transient error).
+            raise Exception("Failed to get services: Wrong Format for services response")
+
+        return []  # pragma: no cover
 
     def insert_data_in_cortex(self, service, input_params, is_update):
         """
@@ -698,23 +734,29 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
         return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
-def test_response(client, method, base_url, token):
+def check_response(client, method, url, token):
     """
-    Test the integration state
+    check the integration state
     """
     try:
-        # The test mocks this specific endpoint
-        url_suffix = "/y/tpi/cortex/alerts"
-        headers = {"Authorization": f"Bearer {token}"}
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
-        response = client._http_request(method=method, url_suffix=url_suffix, headers=headers)
+        demisto.debug(f"[check_response] Calling: {url} with method {method}")
 
+        # Make direct GET request to the service endpoint
+        response = client._http_request(method=method, full_url=url, headers=headers)
+
+        demisto.debug(f"[check_response] Raw response: {json.dumps(response, indent=2)}")
+
+        # If we got any valid JSON back, assume the connection is successful
         if response:
             return "ok"
         else:
+            demisto.debug("[check_response] Empty or invalid response received.")
             raise Exception("failed to connect")
+
     except Exception as e:
-        demisto.error(f"Failed to connect: {e}")
+        demisto.error(f"[check_response] Failed to connect: {str(e)}")
         raise Exception("failed to connect")
 
 
@@ -1401,7 +1443,7 @@ def main():
 
         if demisto.command() == "test-module":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            return_results(test_response(client, "POST", url, token))
+            return_results(check_response(client, "GET", url, token))
 
         elif demisto.command() == "fetch-incidents":
             last_run = demisto.getLastRun()

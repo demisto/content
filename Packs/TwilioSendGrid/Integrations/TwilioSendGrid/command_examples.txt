@@ -1,0 +1,14 @@
+# Test module
+!twilio-sendgrid-get-events should_push_events=false limit=1
+
+# Get events from the last 7 days (display only, don't push to XSIAM)
+!twilio-sendgrid-get-events from_date="7 days" limit=100 should_push_events=false
+
+# Get events from a specific date range
+!twilio-sendgrid-get-events from_date="2024-01-15T00:00:00Z" to_date="2024-01-16T00:00:00Z" limit=500 should_push_events=false
+
+# Get recent events and push to XSIAM
+!twilio-sendgrid-get-events from_date="1 hour" limit=50 should_push_events=true
+
+# Get events from the last 3 days with maximum limit
+!twilio-sendgrid-get-events from_date="3 days" limit=1000 should_push_events=false

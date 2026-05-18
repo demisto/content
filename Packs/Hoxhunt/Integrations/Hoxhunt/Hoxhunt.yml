@@ -4,6 +4,7 @@ commonfields:
 name: Hoxhunt
 display: Hoxhunt (Deprecated)
 category: Email
+provider: Hoxhunt
 description: "Deprecated. Use Hoxhunt V2 instead."
 configuration:
 - display: Server URL (e.g. https://api.hoxhunt.com/graphql-external)
@@ -173,7 +174,7 @@ script:
       description: Incident state information.
       type: string
     description: Updates Incident state.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   subtype: python3

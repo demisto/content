@@ -1,5 +1,6 @@
 category: Vulnerability Management
-sectionOrder:
+provider: Palo Alto Networks
+sectionorder:
 - Connect
 - Collect
 commonfields:

@@ -1,0 +1,80 @@
+{
+   "aruba_central_raw":{
+      "gid": {
+         "type":"int",
+         "is_array":false
+      },
+      "classification": {
+         "type":"string",
+         "is_array":false
+      },
+      "description": {
+         "type":"string",
+         "is_array":false
+      },
+      "id": {
+         "type":"string",
+         "is_array":false
+      },
+      "ip_addr": {
+         "type":"string",
+         "is_array":false
+      },
+      "target": {
+         "type":"string",
+         "is_array":false
+      },
+      "user": {
+         "type":"string",
+         "is_array":false
+      },      
+      "event_type": {
+         "type":"string",
+         "is_array":false
+      },
+      "event_uuid": {
+         "type":"string",
+         "is_array":false
+      },
+      "level": {
+         "type":"string",
+         "is_array":false
+      },
+      "client_mac": {
+         "type":"string",
+         "is_array":false
+      },
+      "group_name": {
+         "type":"string",
+         "is_array":false
+      },
+      "hostname": {
+         "type":"string",
+         "is_array":false
+      },
+      "bssid": {
+         "type":"string",
+         "is_array":false
+      },
+      "device_mac": {
+         "type":"string",
+         "is_array":false
+      },
+      "device_serial": {
+         "type":"string",
+         "is_array":false
+      },
+      "device_type": {
+         "type":"string",
+         "is_array":false
+      },
+      "ts": {
+         "type":"int",
+         "is_array":false
+      },
+      "timestamp": {
+         "type":"int",
+         "is_array":false
+      }
+   }
+}

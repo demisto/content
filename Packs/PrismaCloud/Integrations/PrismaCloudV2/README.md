@@ -1124,6 +1124,7 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 | search_id | Search ID. Can be used to rerun the same search. | Optional |
 | sort_direction | The direction to sort the results by. Both sort direction and field must be specified if sorting. Possible values are: asc, desc. Default is desc. | Optional |
 | sort_field | The field to sort the results by. Both sort direction and field must be specified if sorting. Possible values are: id, time, apiName, customerId, insertTs, json, cloudAccount, cloudRegion, stateId. Default is insertTs. | Optional |
+| heuristic_search | Enable heuristic search optimization for faster results. Default is true. | Optional |
 
 #### Context Output
 

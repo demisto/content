@@ -1,5 +1,6 @@
 category: Forensics & Malware Analysis
-sectionOrder:
+provider: AnyRun
+sectionorder:
 - Connect
 commonfields:
   id: ANY.RUN Cloud Sandbox
@@ -10,23 +11,16 @@ configuration:
   required: true
   type: 9
   section: Connect
-- display: Server's FQDN
-  additionalinfo: Go to Settings & Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard.
-  name: soar_fqdn
-  required: true
-  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
   section: Connect
-- display: XSOAR API-KEY ID
-  additionalinfo: In the API Keys table, locate the ID field. Note your corresponding ID number
-  name: soar_api_key_id
-  required: true
-  type: 0
+- display: Use system proxy settings
+  name: proxy
+  type: 8
   section: Connect
-- display: XSOAR API-KEY
-  name: soar_api_key
-  required: true
-  type: 4
-  section: Connect
+  required: false
 description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
 display: ANY.RUN Cloud Sandbox
 name: ANY.RUN Cloud Sandbox
@@ -276,11 +270,15 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Operation system.'
+    - auto: PREDEFINED
+      description: 'Operation system. Possible values: ubuntu, debian.'
       name: env_os
       defaultValue: 'ubuntu'
       required: false
       type: String
+      predefined:
+        - 'ubuntu'
+        - 'debian'
     - description: 'Network connection state.'
       name: opt_network_connect
       defaultValue: 'True'
@@ -361,7 +359,7 @@ script:
       required: false
       type: String
     name: anyrun-detonate-file-linux
-    description: 'Perform File analysis using Ubuntu VM.'
+    description: 'Perform File analysis using Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileLinux.TaskID
       description: 'Task UUID.'
@@ -376,11 +374,15 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Operation system.'
+    - auto: PREDEFINED
+      description: 'Operation system. Possible values: ubuntu, debian.'
       name: env_os
       defaultValue: 'ubuntu'
       required: false
       type: String
+      predefined:
+        - 'ubuntu'
+        - 'debian'
     - description: 'Network connection state.'
       name: opt_network_connect
       defaultValue: 'True'
@@ -447,7 +449,7 @@ script:
       required: false
       type: String
     name: anyrun-detonate-url-linux
-    description: 'Perform URL analysis using Ubuntu VM.'
+    description: 'Perform URL analysis using Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlLinux.TaskID
       description: 'Task UUID.'
@@ -715,13 +717,12 @@ script:
       - 'summary'
       - 'html'
       - 'ioc'
-    - description: 'XSOAR Related icnident info.'
-      name: incident_info
-      required: true
-      type: Unknown
     name: anyrun-get-analysis-report
     description: 'Returns the analysis report summary.'
     outputs:
+    - contextPath: ANYRUN.IOCs
+      description: 'A comma-separated string of IOC values from the report.'
+      type: String
     - contextPath: ANYRUN.SandboxAnalysis.mitre.name
       description: 'MITRE Technic text description.'
       type: String
@@ -1152,7 +1153,7 @@ script:
       description: "Network connections count."
       type: String
     - contextPath: ANYRUN.SandboxAnalysis.counters.network.http
-      description: "Network networks count."
+      description: "Network HTTP count."
       type: String
     - contextPath: ANYRUN.SandboxAnalysis.counters.processes.malicious
       description: "Malicious processes count."
@@ -1449,7 +1450,7 @@ script:
     - contextPath: ANYRUN.SandboxAnalysisReportVerdict
       description: "The analysis verdict."
       type: String
-  dockerimage: demisto/anyrun-sdk:1.0.0.3970895
+  dockerimage: demisto/anyrun-sdk:1.0.0.6667586
   subtype: python3
   runonce: false
   script: '-'

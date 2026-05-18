@@ -2,7 +2,7 @@
     "name": "JuniperSRX",
     "description": "Modeling Rules for the JuniperSRX logs collector",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,10 +21,7 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

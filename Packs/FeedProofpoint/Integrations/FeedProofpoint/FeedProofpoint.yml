@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Thoma Bravo
+sectionorder:
 - Connect
 - Collect
 commonfields:

@@ -1,0 +1,164 @@
+{
+ "detections": [
+  {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_dummy_detection_id",
+     "ruleId": "ru_dummy_rule_id",
+     "ruleVersion": "ru_dummy_rule_id@v_version_id",
+     "alertState": "ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "0.0.0.0"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.128428Z",
+   "id": "de_dummy_detection_id",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:58:06.804Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "0.0.0.0"
+         ],
+         "mac": [
+          "00:00:00:00:00:00"
+         ]
+        },
+        "target": {
+         "ip": [
+          "0.0.0.1"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "test.com",
+            "type": 1
+           }
+          ],
+          "answers": [
+           {
+            "name": "test1.com",
+            "type": 1,
+            "ttl": 11111,
+            "data": "4.3.2.1"
+           }
+          ],
+          "response": true
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  },
+  {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_dummy_detection_id",
+     "ruleId": "ru_dummy_rule_id",
+     "ruleVersion": "ru_dummy_rule_id@v_version_id",
+     "alertState": "NOT_ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "0.0.0.1"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.383774Z",
+   "id": "de_dummy_detection_id",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T03:00:11.500Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:44.752710Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "0.0.0.1"
+         ],
+         "mac": [
+          "00:00:00:00:00:00"
+         ]
+        },
+        "target": {
+         "ip": [
+          "0.0.0.1"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "test1.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  }
+ ],
+ "nextPageToken": "foobar_page_token"
+}

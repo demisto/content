@@ -1,5 +1,6 @@
 category: Database
-sectionOrder:
+provider: Snowflake
+sectionorder:
 - Connect
 - Collect
 commonfields:

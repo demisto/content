@@ -348,17 +348,18 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
     return_outputs(readable, entry_context, res)
 
 
-def create_dbot_context(indicator, ind_type, ind_score):
+def create_dbot_context(indicator, ind_type, ind_score, ind_status):
     """This function converts a TQ scoring value of an indicator into a DBot score.
     The default score mapping function is: -1 -> 0, [0,3] -> 1, [4,7] -> 2, [8,10] -> 3.
 
     If threshold parameter is set manually, it overrides the default function definition for a
-    malicious indicator, such that TQ score >= threshold iff the DBot score == 3.
+    malicious indicator, such that TQ score >= threshold if the DBot score == 3.
 
     Args:
         indicator (str): The indicator name
         ind_type (str): The indicator type
         ind_score (int): The indicator TQ score
+        ind_status (str): The indicator status
 
     Returns:
         (dict). The indicator's DBotScore.
@@ -373,7 +374,9 @@ def create_dbot_context(indicator, ind_type, ind_score):
         "Reliability": demisto.params().get("integrationReliability"),
     }
 
-    if ind_score >= THRESHOLD:
+    if ind_status and ind_status.lower() == "whitelisted":
+        ret["Score"] = 1
+    elif ind_score >= THRESHOLD:
         ret["Score"] = 3
     else:
         ret["Score"] = dbot_score_map[ind_score]
@@ -388,9 +391,10 @@ def get_tq_score_from_response(score_data):
         # score will be max(gen_score, manual_score)
         gen_score = str(score_data.get("generated_score"))
         manual_score = score_data.get("manual_score", 0.0)
-        if manual_score is None:
-            manual_score = -1
-        return max(float(gen_score), float(manual_score))
+
+        if manual_score:
+            return float(manual_score)
+        return float(gen_score)
     else:
         # score is already defined as a number
         return float(score_data)
@@ -577,7 +581,9 @@ def get_malicious_data(tq_score):
 
 
 def set_indicator_entry_context(indicator_type, indicator, generic_context):
-    dbot_context = create_dbot_context(indicator.get("Value"), indicator_type, indicator.get("TQScore", -1))
+    dbot_context = create_dbot_context(
+        indicator.get("Value"), indicator_type, indicator.get("TQScore", -1), indicator.get("Status")
+    )
 
     indicator_type = INDICATOR_TYPES.get(indicator_type) or indicator_type
     generic_context_path = outputPaths.get(indicator_type, "Indicator(val.ID && val.ID == obj.ID)")
@@ -814,7 +820,7 @@ def search_by_id_command():
     if obj_type == "indicator":
         indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(data["Type"])
         if indicator_type is not None:
-            ec["DBotScore"] = create_dbot_context(data["Value"], indicator_type, data.get("TQScore", -1))
+            ec["DBotScore"] = create_dbot_context(data["Value"], indicator_type, data.get("TQScore", -1), data.get("Status"))
 
     readable_title = f"Search results for {obj_type} with ID {obj_id}"
     readable = build_readable(readable_title, obj_type, data)

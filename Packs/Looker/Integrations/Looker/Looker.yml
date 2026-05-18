@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Google
 commonfields:
   id: Looker
   version: -1
@@ -102,13 +103,13 @@ script:
     - description: Name of the view or explore. Can be found in the explore's URL.
       name: view
       required: true
-    - description: 'List of fields to display. (Field name format: "object_name.field_name")'
+    - description: 'List of fields to display. (Field name format: "object_name.field_name").'
       isArray: true
       name: fields
     - description: 'Filters for the query, passed as a semicolon-separated list with the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
       isArray: true
       name: filters
-    - description: 'List of pivots. (Field name format: "object_name.field_name")'
+    - description: 'List of pivots. (Field name format: "object_name.field_name").'
       isArray: true
       name: pivots
     - description: 'Sorting for the query results. (Field name format: "object_name.field_name").'
@@ -155,7 +156,7 @@ script:
       required: true
     - description: Description of the look.
       name: look_description
-    - description: ID of the space that will contain the look
+    - description: ID of the space that will contain the look.
       name: look_space_id
       required: true
     description: Creates a look from a query.

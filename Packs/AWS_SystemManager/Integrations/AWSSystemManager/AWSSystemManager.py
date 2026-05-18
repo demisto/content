@@ -313,7 +313,7 @@ def convert_datetime_to_iso(response) -> dict[str, Any]:
         raise TypeError(f"Type {type(obj)} is not serializable.")
 
     # json.dumps(default=): If specified, default should be a function that
-    # gets called for objects that can’t otherwise be serialized.
+    # gets called for objects that can't otherwise be serialized.
     # It should return a JSON encodable version of the object or raise a TypeError. If not specified, TypeError is raised.
     return json.loads(json.dumps(response, default=_datetime_to_string))
 

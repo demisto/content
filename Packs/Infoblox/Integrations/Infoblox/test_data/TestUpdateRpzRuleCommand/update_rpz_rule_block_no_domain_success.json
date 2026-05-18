@@ -1,0 +1,13 @@
+{
+    "result": {
+        "_ref": "record:rpz:cname/1234:blocked.test.com/default",
+        "name": "blocked.test.com",
+        "rp_zone": "test.com",
+        "comment": "Block domain completely",
+        "canonical": "",
+        "disable": false,
+        "view": "default",
+        "zone": "test.com",
+        "type": "record:rpz:cname"
+    }
+}

@@ -1,5 +1,6 @@
 category: Network Security
-sectionOrder:
+provider: Zero Networks
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -96,3 +97,5 @@ tests:
 marketplaces:
 - marketplacev2
 - platform
+supportedModules:
+- xsiam

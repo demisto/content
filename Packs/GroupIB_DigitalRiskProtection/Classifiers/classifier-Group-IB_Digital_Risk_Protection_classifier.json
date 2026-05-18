@@ -1,0 +1,16 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Group-IB Digital Risk Protection (classifier)",
+    "keyTypeMap": {
+        "violation/list": "GIB DRP Violation"
+    },
+    "name": "Group-IB Digital Risk Protection (classifier)",
+    "transformer": {
+        "complex": null,
+        "simple": "gibType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

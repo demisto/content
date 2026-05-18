@@ -1,8 +1,9 @@
 category: Case Management
+provider: Broadcom
 commonfields:
   id: Symantec MSS
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

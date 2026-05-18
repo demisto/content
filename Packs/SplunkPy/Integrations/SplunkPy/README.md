@@ -1,10 +1,10 @@
 Use the SplunkPy integration to:
 
-- Fetch events (logs) from within Cortex XSOAR
-- Push events from Cortex XSOAR to SplunkPy
-- Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
+- Fetch events (logs) from within Cortex XSOAR/XSIAM
+- Push events from Cortex XSOAR/XSIAM to SplunkPy
+- Fetch SplunkPy ES notable events as Cortex XSOAR/XSIAM incidents.
 
-This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.2.0.
+This integration was integrated and tested with Splunk Enterprise v9.4.3 and Enterprise Security v8.1.0.
 
 ## Use Cases
 
@@ -239,13 +239,17 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 
 - As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
-- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
+- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
+- **Splunk ES 8+ Upgrade Limitations**: After upgrading to Splunk Enterprise Security version 8 and later, the following comment handling limitations apply:
+  1. **Comment Updates/Deletions** - Editing or deleting existing comments will NOT trigger mirroring to XSOAR. Changes will only appear in the Splunk Comments field when another notable field (status, owner, etc.) is modified.
+  2. **Pre-Migration Comments** - Splunk comments created before migration will NO LONGER appear in the Splunk Comments field in the incident layout. However, these comments can still be viewed in the War Room using the `notes` filter or more specifically using the `tags` filter with the unique tag for comments reflected from Splunk (default: "FROM SPLUNK").
+  3. **XSOAR-Originated Comments** - War Room notes updated in Splunk as comments via mirror-out and comments added to a notable from `splunk-notable-event-edit` command will appear in Splunk UI but will NOT reflect in XSOAR Splunk Comments field. These comments can be viewed in the War Room using the `notes` filter.  
 
 ### Incident Mirroring
 
 **Important Notes***
 
-- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
+- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server, meaning only one instance per Splunk server can be configured to perform mirroring-in.
 - This feature is available from Cortex XSOAR version 6.0.0.
 - This feature is supported by Splunk Enterprise Security only.
 - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
@@ -1257,6 +1261,26 @@ Creates the KV store collection transform.
 
 There is no context output for this command.
 
+### splunk-job-share
+
+***
+Change job settings to share its results to all Splunk users, and change its TTL.
+
+#### Base Command
+
+`splunk-job-share`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sid | Comma-separated list of job IDs to share. | Required |
+| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Additional Information
 
 To get the HEC token
@@ -1306,6 +1330,17 @@ Under **Used for communication between Cortex XSOAR and customer resources**. Ch
 
 ### Fetch Issues
 
-If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
+- To ensure that drilldown enrichment works correctly, you need to include | expandtoken in your fetch query.
+This command replaces token names (such as $info_min_time$) with their actual field values from the notable, ensuring that the drilldown search queries run in the proper format.
+- If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
+
+### Large Search Results
+
+Commands that return large data (such as `splunk-search`) can cause performance issues in playbooks.
+
+**Recommendation**: Limit results to approximately **30,000** events, depending on the data size. You can do this through one of the following:
+
+- Use the `event_limit` argument (where available).
+- Append `| head 30000` directly to your Splunk query.
