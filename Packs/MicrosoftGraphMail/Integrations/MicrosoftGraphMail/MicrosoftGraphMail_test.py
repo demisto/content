@@ -2327,7 +2327,7 @@ def test_get_mailtips_happy(mocker):
     Then:
       - POST goes to /users/{email_address}/getMailTips.
       - Body contains EmailAddresses=[email_address] and the full
-        ALL_MAIL_TIPS_OPTIONS string.
+        mailTipsOptions string.
       - outputs is a LIST of one item; @odata.* keys stripped.
     """
     client = self_deployed_client()
@@ -2346,7 +2346,12 @@ def test_get_mailtips_happy(mocker):
     assert mocked.call_count == 1
     sent_body = mocked.last_request.json()
     assert sent_body.get("EmailAddresses") == [email_address]
-    assert sent_body.get("MailTipsOptions") == ALL_MAIL_TIPS_OPTIONS
+    expected_mail_tips_options = (
+        "automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,"
+        "totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,"
+        "recipientScope,recipientSuggestions"
+    )
+    assert sent_body.get("MailTipsOptions") == expected_mail_tips_options
     # Sanity-check a few discrete options are present in the option string.
     for opt in ("automaticReplies", "mailboxFullStatus", "recipientSuggestions"):
         assert opt in sent_body["MailTipsOptions"]

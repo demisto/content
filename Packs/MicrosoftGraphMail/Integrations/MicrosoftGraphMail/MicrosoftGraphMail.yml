@@ -1159,7 +1159,7 @@ script:
       name: display_name
       required: true
     - defaultValue: "1"
-      description: The order in which the rule is executed among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. Defaults to 1, meaning the rule runs first in line.
+      description: The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1.
       name: sequence
     - description: |-
         A JSON string of the messageRuleActions object describing actions to take when the rule's conditions are fulfilled.
@@ -1222,7 +1222,7 @@ script:
       required: true
     - description: The new display name of the rule.
       name: display_name
-    - description: The order in which the rule is executed among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first.
+    - description: The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1.
       name: sequence
     - auto: PREDEFINED
       description: Indicates whether the rule is enabled to be applied to messages.

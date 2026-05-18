@@ -1112,7 +1112,11 @@ class MsGraphMailBaseClient(MicrosoftClient):
         suffix = f"/users/{email_address}/getMailTips"
         body = {
             "EmailAddresses": [email_address],
-            "MailTipsOptions": ALL_MAIL_TIPS_OPTIONS,
+            "MailTipsOptions": (
+                "automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,"
+                "totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,"
+                "recipientScope,recipientSuggestions"
+            ),
         }
         return self.http_request("POST", suffix, json_data=body)
 
@@ -2288,13 +2292,6 @@ def send_email_command(client: MsGraphMailBaseClient, args):
             )
         )
     return results
-
-
-ALL_MAIL_TIPS_OPTIONS: str = (
-    "automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,"
-    "totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,"
-    "recipientScope,recipientSuggestions"
-)
 
 
 def parse_json_arg(value, arg_name: str):

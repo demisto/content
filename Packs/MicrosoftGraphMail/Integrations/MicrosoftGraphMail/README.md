@@ -825,7 +825,7 @@ Creates a new mailbox rule in the user's Inbox folder. If the is_enabled argumen
 | --- | --- | --- |
 | user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required |
 | display_name | The display name of the rule. | Required |
-| sequence | The order in which the rule is executed among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. Defaults to 1, meaning the rule runs first in line. | Optional |
+| sequence | The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1. Default is 1. | Optional |
 | actions | A JSON string of the messageRuleActions object describing actions to take when the rule's conditions are fulfilled.<br/>Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}.<br/>For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions. | Required |
 | conditions | A JSON string of the messageRulePredicates object describing conditions that, when fulfilled, trigger the rule's actions.<br/>Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}.<br/>For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates. | Optional |
 | exceptions | A JSON string of the messageRulePredicates object describing exception conditions for the rule.<br/>Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}.<br/>For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates. | Optional |
@@ -861,7 +861,7 @@ Updates an existing mailbox rule in the user's Inbox folder by ID. Only the supp
 | user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required |
 | rule_id | The ID of the rule to update. | Required |
 | display_name | The new display name of the rule. | Optional |
-| sequence | The order in which the rule is executed among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. | Optional |
+| sequence | The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1. | Optional |
 | is_enabled | Indicates whether the rule is enabled to be applied to messages. Possible values are: true, false. | Optional |
 | actions | A JSON string of the messageRuleActions object describing actions to take when the rule's conditions are fulfilled. Replaces the rule's existing actions.<br/>Example: {\"markImportance\":\"high\",\"stopProcessingRules\":true}.<br/>For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions. | Optional |
 | conditions | A JSON string of the messageRulePredicates object describing conditions that, when fulfilled, trigger the rule's actions. Replaces the rule's existing conditions.<br/>Example: {\"senderContains\":[\"adele\"]}.<br/>For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates. | Optional |
