@@ -167,9 +167,7 @@ def _validate_allowed(values: list[str], allowed: set[str], arg_name: str) -> li
     """Raise if any item in ``values`` is not part of ``allowed``."""
     invalid = [v for v in values if v not in allowed]
     if invalid:
-        raise DemistoException(
-            f"Invalid value(s) for {arg_name!r}: {invalid}. Allowed: {sorted(allowed)}."
-        )
+        raise DemistoException(f"Invalid value(s) for {arg_name!r}: {invalid}. Allowed: {sorted(allowed)}.")
     return values
 
 
@@ -200,21 +198,13 @@ def build_filters_body(
     if incident_id_filters:
         filters["incident_id_filters"] = list(incident_id_filters)
     if source_filters:
-        filters["source_filters"] = _validate_allowed(
-            list(source_filters), SOURCE_FILTERS_ALLOWED, "source_filters"
-        )
+        filters["source_filters"] = _validate_allowed(list(source_filters), SOURCE_FILTERS_ALLOWED, "source_filters")
     if other_filters:
-        filters["other_filters"] = _validate_allowed(
-            list(other_filters), OTHER_FILTERS_ALLOWED, "other_filters"
-        )
+        filters["other_filters"] = _validate_allowed(list(other_filters), OTHER_FILTERS_ALLOWED, "other_filters")
     if verdict_filters:
-        filters["verdict_filters"] = _validate_allowed(
-            list(verdict_filters), VERDICT_FILTERS_ALLOWED, "verdict_filters"
-        )
+        filters["verdict_filters"] = _validate_allowed(list(verdict_filters), VERDICT_FILTERS_ALLOWED, "verdict_filters")
     if disposition:
-        filters["disposition"] = _validate_allowed(
-            list(disposition), DISPOSITION_ALLOWED, "disposition"
-        )
+        filters["disposition"] = _validate_allowed(list(disposition), DISPOSITION_ALLOWED, "disposition")
     if confidence_filters:
         filters["confidence_filters"] = _validate_allowed(
             list(confidence_filters), CONFIDENCE_FILTERS_ALLOWED, "confidence_filters"
@@ -242,7 +232,7 @@ def _coerce_int_arg(value: Any, default: int, name: str) -> int:
 # ----------------------------------------------------------------------------- #
 
 
-def test_module(client: Client, params: dict[str, Any]) -> str:
+def test_module_command(client: Client, params: dict[str, Any]) -> str:
     """Validate connectivity and (when fetching) the configured state filter."""
     if argToBoolean(params.get("isFetch", False)):
         states = argToList(params.get("fetch_states") or [])
@@ -397,7 +387,7 @@ def _build_incident(enriched: dict[str, Any], list_entry: dict[str, Any]) -> dic
         "name": f"Proofpoint CTR Incident {summary.get('displayId') or summary.get('id')}",
         "occurred": occurred,
         "rawJSON": json.dumps({**list_entry, **enriched}),
-        "dbotMirrorId": str(summary.get("id") or list_entry.get("id") or ""),
+        "dbotMirrorId": str(list_entry.get("id") or summary.get("id") or ""),
     }
 
 
@@ -533,7 +523,7 @@ def main() -> None:  # pragma: no cover - exercised indirectly by tests
     demisto.debug(f"Proofpoint CTR: command={command}")
     try:
         if command == "test-module":
-            return_results(test_module(client, params))
+            return_results(test_module_command(client, params))
         elif command == "fetch-incidents":
             next_last_run, incidents = fetch_incidents(client, params, demisto.getLastRun() or {})
             demisto.setLastRun(next_last_run)

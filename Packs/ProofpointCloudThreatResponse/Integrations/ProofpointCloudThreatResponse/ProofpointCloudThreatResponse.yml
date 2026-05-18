@@ -211,7 +211,6 @@ script:
       description: The activities associated with the incident.
       type: Unknown
   dockerimage: demisto/python3:3.11.10.115186
-  defaultmapperin: Proofpoint Cloud Threat Response - Incoming Mapper
   isfetch: true
   runonce: false
   script: '-'
