@@ -27,7 +27,7 @@ configuration:
   defaultvalue: 'true'
   hidden: true
   name: feedIncremental
-  section: Connect
+  section: Collect
   type: 8
   required: false
 - display: Trust any certificate (not secure)
