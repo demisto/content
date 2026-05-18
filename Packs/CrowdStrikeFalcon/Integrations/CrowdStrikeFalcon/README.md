@@ -134,25 +134,7 @@ For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
 ### Indicator of Attack (IOA) Fetch Query
 
-The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
-
-Using multiple values for the same parameter is not supported.
-
-Available parameters:
-
-- `cloud_provider` (required by every query)
-- `account_id`
-- `aws_account_id`
-- `azure_subscription_id`
-- `azure_tenant_id`
-- `severity`
-- `region`
-- `service`
-- `state`
-
-For example: `cloud_provider=aws&region=eu-west-2`
-
-For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).
 
 ## Fetch Assets
 
