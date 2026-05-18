@@ -108,12 +108,12 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 - If the **The minimum severity of incidents to fetch** integration parameter is set to a value other than `None`, incidents with a severity lower than the specified value will not be mirrored, even if their severity is changed in *Microsoft Sentinel* to a higher severity.
 - When closing an incident in Cortex XSOAR, the *Closing Reason* must be provided, otherwise the incident cannot be closed in *Microsoft Sentinel*.
 
-**look-back parameter note** (see [Look-back](https://xsoar.pan.dev/docs/integrations/fetch-incidents-lookback)):
-In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing
-the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
-If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
-Note that using a look-back value that is very large (more than an hour) can lead to an increase in the memory usage of the system in some cases, and it is highly unrecommended.
-If there is a need to fetch incidents that require a long look-back to get fetched (for tracking issues, for example), use the mirroring feature and filter the results using the relevant tags instead of using the look-back feature. You can create a custom mapper and track the relevant fields.
+**Look-back Note**:
+
+- Increasing the **look-back** parameter value after the initial fetch may result in duplicate incidents during the first run following the change. To avoid duplicates, ensure the lookback value is not increased once the integration is active.
+    For more information, see [fetch-incidents-lookback](https://xsoar.pan.dev/docs/integrations/fetch-incidents-lookback).
+- Using a large lookback value (greater than one hour) may increase memory usage and is not recommended.
+    For tracking issues or scenarios requiring a large lookback window, it is recommended to use the mirroring feature with relevant tag filtering instead of the lookback parameter. You can configure a custom mapper to track specific fields.
 
 ## Commands
 
