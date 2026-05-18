@@ -478,9 +478,8 @@ def fetch_incidents(
             continue
 
         incident = {
-            "name": alert.get("description"),
-            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "rawJSON": json.dumps(alert),
+            "occurred": incident_created_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "severity": {"Low": 1, "Medium": 2, "High": 3}.get(alert.get("severity", ""), 0),
         }
 
         incidents.append(incident)

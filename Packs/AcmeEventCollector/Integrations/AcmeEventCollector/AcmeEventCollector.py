@@ -71,7 +71,6 @@ def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
 
     deduped: list[dict] = []
     for event in events:
-        del event['_time']
         event['source_log_type'] = 'Acme'
         event_id = str(event.get("id", ""))
         if event_id and event_id in seen_ids:
