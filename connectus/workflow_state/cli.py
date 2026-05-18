@@ -55,6 +55,8 @@ from workflow_state.types import Step
 from workflow_state.validators import (
     get_named_validator,
     validate_auth_detail,
+    validate_param_defaults,
+    validate_params_to_capabilities,
     validate_params_to_commands,
 )
 
@@ -272,6 +274,30 @@ def cmd_set_params_to_commands(args: list[str]) -> None:
                     print(f"ERROR: {e.message}")
                     sys.exit(1)
     _set_json_data_step(args, "Params to Commands", "set-params-to-commands")
+
+
+def cmd_set_param_defaults(args: list[str]) -> None:
+    if len(args) >= 2:
+        raw = " ".join(args[1:])
+        schema_errors = validate_param_defaults(raw)
+        if schema_errors:
+            print("ERROR: Param Defaults does not match the required schema.")
+            for err in schema_errors:
+                print(f"  - {err}")
+            sys.exit(1)
+    _set_json_data_step(args, "Param Defaults", "set-param-defaults")
+
+
+def cmd_set_params_to_capabilities(args: list[str]) -> None:
+    if len(args) >= 2:
+        raw = " ".join(args[1:])
+        schema_errors = validate_params_to_capabilities(raw)
+        if schema_errors:
+            print("ERROR: Params to Capabilities does not match the required schema.")
+            for err in schema_errors:
+                print(f"  - {err}")
+            sys.exit(1)
+    _set_json_data_step(args, "Params to Capabilities", "set-params-to-capabilities")
 
 
 # (Removed 2026-05) ``set-params-for-test`` and ``set-shared-params``:
@@ -1129,7 +1155,7 @@ def cmd_next(args: list[str]) -> None:
 # Help & main dispatch
 # ---------------------------------------------------------------------------
 
-_DOC = """Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 14-STEP MODEL)
+_DOC = """Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 16-STEP MODEL)
 
 This script manages the workflow tracking columns in the CSV. The shape
 of the workflow (steps, columns, markers) is declared in
@@ -1158,6 +1184,8 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "set-assignee": cmd_set_assignee,
     "set-auth": cmd_set_auth,
     "set-params-to-commands": cmd_set_params_to_commands,
+    "set-param-defaults": cmd_set_param_defaults,
+    "set-params-to-capabilities": cmd_set_params_to_capabilities,
     "set-verify-placement": cmd_set_verify_placement,
     "markpass": cmd_markpass,
     "skip": cmd_skip,
@@ -1208,4 +1236,6 @@ __all__ = sorted({
     "_git_user_name",
     "validate_auth_detail",
     "validate_params_to_commands",
+    "validate_param_defaults",
+    "validate_params_to_capabilities",
 })

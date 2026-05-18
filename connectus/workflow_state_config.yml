@@ -8,7 +8,7 @@
 schema_version: 1
 
 # Identity / metadata columns — present in the CSV but NOT part of the
-# 14-step workflow. Never cleared by cascade reset. Order matters: this
+# 16-step workflow. Never cleared by cascade reset. Order matters: this
 # is the leftmost prefix of the CSV header.
 identity_columns:
   - {"name": "Integration ID", "description": "Unique human-readable id; primary key for find_row()."}
@@ -79,6 +79,22 @@ steps:
     flag_values: ["connection", "configuration", "none"]
     default: "connection"
     description: "Verify the location of the test/verify button in the UI: 'connection' (per-connection), 'configuration' (per-integration), or 'none'. Defaults to 'connection' on read when unset; details to be filled in later."
+
+  - name: "Param Defaults"
+    kind: data
+    optional: false
+    setter: set-param-defaults
+    json_schema: {"validator": "param_defaults"}
+    preserve_on_reset: false
+    description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument."
+
+  - name: "Params to Capabilities"
+    kind: data
+    optional: false
+    setter: set-params-to-capabilities
+    json_schema: {"validator": "params_to_capabilities"}
+    preserve_on_reset: false
+    description: "Bare capability dict produced by connectus/connectus_migration/connector_param_mapper.py. Top-level keys are capability names (closed enum) plus 'general_configurations'; each value is a flat list of YML config param ids. See column-schemas.md for the schema."
 
   - name: "generated manifest"
     kind: checkpoint
