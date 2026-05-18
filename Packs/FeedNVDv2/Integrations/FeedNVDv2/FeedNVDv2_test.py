@@ -15,6 +15,7 @@ from FeedNVDv2 import (
     build_indicators,
     calculate_dbotscore,
     cves_to_war_room,
+    fetch_indicators_command,
     get_cvss_version_and_score,
     manual_get_indicators_command,
     parse_cpe_command,
@@ -296,9 +297,10 @@ def test_resolve_auto_fetch_window_first_run(client):
     """
     with patch("FeedNVDv2.demisto") as demisto_mock:
         demisto_mock.getLastRun.return_value = {}
-        start_date, use_pub_date = _resolve_auto_fetch_window(client)
+        start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
         assert start_date is not None
         assert use_pub_date is True
+        assert resume_ids == []
 
 
 def test_resolve_auto_fetch_window_resume(client):
@@ -318,9 +320,10 @@ def test_resolve_auto_fetch_window_resume(client):
             "resumeFrom": "2024-03-01T00:00:00Z",
             "usePubDate": True,
         }
-        start_date, use_pub_date = _resolve_auto_fetch_window(client)
+        start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
         assert start_date == parse("2024-03-01T00:00:00Z")
         assert use_pub_date is True
+        assert resume_ids == []
 
 
 def test_ingest_batch_creates_indicators(client):
@@ -729,3 +732,214 @@ def test_include_rejected_true_omits_no_rejected_param(client):
     # params is the second positional argument → call_args.args[1]
     params: dict = mock_get_cves.call_args.args[1]
     assert "noRejected" not in params, "noRejected should be absent when include_rejected=True"
+
+
+# --- Same-timestamp dedup tests (XSUP-68648) ---
+
+
+def _make_raw_cve(cve_id: str, last_modified: str, published: str | None = None) -> dict:
+    """Helper: build a minimal raw CVE wrapper for dedup tests."""
+    return {
+        "cve": {
+            "id": cve_id,
+            "descriptions": [{"lang": "en", "value": f"Test {cve_id}"}],
+            "lastModified": last_modified,
+            "published": published or last_modified,
+            "weaknesses": [],
+            "references": [],
+            "configurations": [],
+            "metrics": {},
+        }
+    }
+
+
+def test_resolve_auto_fetch_window_returns_resume_ids(client):
+    """
+    Given:
+        lastRun data with resumeFrom, usePubDate, and resumeIds.
+
+    When:
+        _resolve_auto_fetch_window is called.
+
+    Then:
+        Returns the resume_ids from lastRun so they can be used for dedup.
+    """
+    with patch("FeedNVDv2.demisto") as demisto_mock:
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": "2024-01-01T00:00:00Z",
+            "resumeFrom": "2024-01-01T00:00:00Z",
+            "usePubDate": False,
+            "resumeIds": ["CVE-2024-0001", "CVE-2024-0002"],
+        }
+        start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
+        assert resume_ids == ["CVE-2024-0001", "CVE-2024-0002"]
+        assert use_pub_date is False
+
+
+def test_fetch_indicators_skips_already_processed_cves_on_resume(client):
+    """
+    Given:
+        A resume scenario where lastRun contains resumeIds with CVE IDs
+        already processed at the boundary timestamp.
+
+    When:
+        fetch_indicators_command runs and the API returns the same CVEs again.
+
+    Then:
+        The already-processed CVEs are filtered out and not re-ingested.
+    """
+    boundary_ts = "2024-06-01T12:00:00Z"
+    # CVEs at the boundary timestamp — 2 already processed, 1 new
+    cves = [
+        _make_raw_cve("CVE-2024-0001", boundary_ts),
+        _make_raw_cve("CVE-2024-0002", boundary_ts),
+        _make_raw_cve("CVE-2024-0003", boundary_ts),
+    ]
+
+    with patch("FeedNVDv2.demisto") as demisto_mock, \
+         patch("FeedNVDv2.retrieve_cves", return_value=cves), \
+         patch("FeedNVDv2._ingest_batch", return_value=1) as mock_ingest:
+
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": boundary_ts,
+            "resumeFrom": boundary_ts,
+            "usePubDate": False,
+            "resumeIds": ["CVE-2024-0001", "CVE-2024-0002"],
+        }
+        demisto_mock.params.return_value = {}
+
+        fetch_indicators_command(client)
+
+        # _ingest_batch should receive only the 1 new CVE (CVE-2024-0003)
+        ingested_cves = mock_ingest.call_args[0][1]
+        ingested_ids = [c["cve"]["id"] for c in ingested_cves]
+        assert "CVE-2024-0001" not in ingested_ids, "Already-processed CVE should be skipped"
+        assert "CVE-2024-0002" not in ingested_ids, "Already-processed CVE should be skipped"
+        assert "CVE-2024-0003" in ingested_ids, "New CVE should be ingested"
+
+
+def test_fetch_indicators_saves_resume_ids_on_budget_exhaustion(client):
+    """
+    Given:
+        A fetch where the API call budget is exhausted and all CVEs
+        share the same lastModified timestamp.
+
+    When:
+        fetch_indicators_command persists progress.
+
+    Then:
+        The lastRun includes resumeIds with all CVE IDs at the boundary
+        timestamp, preventing re-ingestion on the next cycle.
+    """
+    boundary_ts = "2024-06-01T12:00:00Z"
+    cves = [
+        _make_raw_cve("CVE-2024-0001", boundary_ts),
+        _make_raw_cve("CVE-2024-0002", boundary_ts),
+        _make_raw_cve("CVE-2024-0003", boundary_ts),
+    ]
+
+    # Use a very small max_indicators to force budget exhaustion
+    client.max_indicators = 2000
+
+    with patch("FeedNVDv2.demisto") as demisto_mock, \
+         patch("FeedNVDv2.retrieve_cves", return_value=cves) as mock_retrieve, \
+         patch("FeedNVDv2._ingest_batch", return_value=3), \
+         patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run:
+
+        demisto_mock.getLastRun.return_value = {}
+        demisto_mock.params.return_value = {}
+
+        # Make retrieve_cves consume the entire budget (remaining_calls[0] → 0)
+        def exhaust_budget(*args, remaining_calls=None, **kwargs):
+            if remaining_calls is not None:
+                remaining_calls[0] = 0
+            return cves
+
+        mock_retrieve.side_effect = exhaust_budget
+
+        fetch_indicators_command(client)
+
+        # Verify set_feed_last_run was called with resumeIds
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "resumeIds" in last_run_arg, "resumeIds should be saved when budget is exhausted"
+        assert set(last_run_arg["resumeIds"]) == {"CVE-2024-0001", "CVE-2024-0002", "CVE-2024-0003"}
+        assert last_run_arg["resumeFrom"] == boundary_ts
+
+
+def test_fetch_indicators_accumulates_resume_ids_when_timestamp_unchanged(client):
+    """
+    Given:
+        A resume scenario where the timestamp hasn't advanced (same as start_date)
+        and there are already some processed IDs from the previous run.
+
+    When:
+        fetch_indicators_command runs and finds more CVEs at the same timestamp.
+
+    Then:
+        The new CVE IDs are accumulated with the previous ones in resumeIds.
+    """
+    boundary_ts = "2024-06-01T12:00:00Z"
+    # Previous run already processed CVE-0001 and CVE-0002
+    previous_ids = ["CVE-2024-0001", "CVE-2024-0002"]
+    # This run finds CVE-0003 (new) at the same timestamp
+    cves = [
+        _make_raw_cve("CVE-2024-0003", boundary_ts),
+    ]
+
+    client.max_indicators = 2000
+
+    with patch("FeedNVDv2.demisto") as demisto_mock, \
+         patch("FeedNVDv2.retrieve_cves") as mock_retrieve, \
+         patch("FeedNVDv2._ingest_batch", return_value=1), \
+         patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run:
+
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": boundary_ts,
+            "resumeFrom": boundary_ts,
+            "usePubDate": False,
+            "resumeIds": previous_ids,
+        }
+        demisto_mock.params.return_value = {}
+
+        def exhaust_budget(*args, remaining_calls=None, **kwargs):
+            if remaining_calls is not None:
+                remaining_calls[0] = 0
+            return cves
+
+        mock_retrieve.side_effect = exhaust_budget
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "resumeIds" in last_run_arg
+        # Should contain both previous and new IDs
+        assert set(last_run_arg["resumeIds"]) == {"CVE-2024-0001", "CVE-2024-0002", "CVE-2024-0003"}
+
+
+def test_fetch_indicators_clears_resume_ids_when_timestamp_advances(client):
+    """
+    Given:
+        A fetch where the API returns CVEs with a newer timestamp than
+        the resume point.
+
+    When:
+        fetch_indicators_command completes without exhausting the budget.
+
+    Then:
+        The lastRun does NOT contain resumeIds (clean state, no dedup needed).
+    """
+    with patch("FeedNVDv2.demisto") as demisto_mock, \
+         patch("FeedNVDv2.retrieve_cves", return_value=[]), \
+         patch("FeedNVDv2._ingest_batch", return_value=0), \
+         patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run:
+
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": "2024-01-01T00:00:00Z",
+        }
+        demisto_mock.params.return_value = {}
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        # When budget is NOT exhausted, no resumeIds should be saved
+        assert "resumeIds" not in last_run_arg

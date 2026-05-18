@@ -663,28 +663,28 @@ def _ensure_utc(dt: datetime) -> datetime:
     return dt
 
 
-def _resolve_auto_fetch_window(client: Client) -> tuple[datetime, bool]:
-    """Determine the start date and query mode for the automated fetch.
+def _resolve_auto_fetch_window(client: Client) -> tuple[datetime, bool, list[str]]:
+    """Determine the start date, query mode, and already-processed IDs for the fetch.
 
     Returns:
-        A tuple of ``(start_date, use_pub_date)``.  ``use_pub_date``
-        is ``True`` for first-fetch (query by publish date) and
-        ``False`` for incremental runs (query by last-modified date).
+        ``(start_date, use_pub_date, resume_ids)`` where ``resume_ids``
+        lists CVE IDs already ingested at ``start_date`` (for dedup on resume).
     """
     last_run_data = demisto.getLastRun()
     if last_run_data:
         resume_date = last_run_data.get("resumeFrom")
         if resume_date:
             use_pub_date = last_run_data.get("usePubDate", False)
-            demisto.debug(f"Resuming previous fetch from {resume_date}")
-            return _ensure_utc(parse(resume_date)), use_pub_date  # type: ignore[arg-type]
-        return _ensure_utc(parse(last_run_data.get("lastRun", ""))), False  # type: ignore[arg-type]
+            resume_ids: list[str] = last_run_data.get("resumeIds", [])
+            demisto.debug(f"Resuming from {resume_date}, {len(resume_ids)} dedup IDs")
+            return _ensure_utc(parse(resume_date)), use_pub_date, resume_ids  # type: ignore[arg-type]
+        return _ensure_utc(parse(last_run_data.get("lastRun", ""))), False, []  # type: ignore[arg-type]
 
     # First run
     first_fetch: tuple[Any, Any] = parse_date_range(client.first_fetch, DATE_FORMAT)
     start_date: datetime = _ensure_utc(parse(first_fetch[0]))  # type: ignore[arg-type]
     demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
-    return start_date, True
+    return start_date, True, []
 
 
 def _ingest_batch(
@@ -784,7 +784,7 @@ def fetch_indicators_command(client: Client) -> None:
     layers so every ``get_cves`` call decrements it, regardless
     of which 120-day window or severity sub-query triggered it.
     """
-    start_date, use_pub_date = _resolve_auto_fetch_window(client)
+    start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
     demisto.debug(f"Auto-fetch: start_date={start_date}, use_pub_date={use_pub_date}, max_indicators={client.max_indicators}")
     end_date = datetime.now(timezone.utc)
 
@@ -799,6 +799,7 @@ def fetch_indicators_command(client: Client) -> None:
     last_completed_end: datetime = start_date
     last_raw_cves: list[dict] = []
     window_start: datetime | None = start_date
+    processed_ids_at_boundary: set[str] = set(resume_ids)
 
     while window_start:
         # Stop if the call budget is already exhausted.
@@ -818,6 +819,13 @@ def fetch_indicators_command(client: Client) -> None:
         )
         raw_cves = retrieve_cves(client, window_start, window_end, use_pub_date=use_pub_date, remaining_calls=remaining_calls)
 
+        # Skip CVEs already ingested at the boundary timestamp (dedup on resume).
+        if processed_ids_at_boundary and raw_cves:
+            before = len(raw_cves)
+            raw_cves = [cve for cve in raw_cves if cve.get("cve", {}).get("id", "") not in processed_ids_at_boundary]
+            if (skipped := before - len(raw_cves)):
+                demisto.debug(f"Dedup: skipped {skipped} already-processed CVEs.")
+
         created = _ingest_batch(client, raw_cves)
         total_created += created
         last_raw_cves = raw_cves
@@ -832,31 +840,33 @@ def fetch_indicators_command(client: Client) -> None:
 
         window_start = window_end
 
-    # Persist progress
     if remaining_calls[0] <= 0:
-        # Resume from the last CVE's date to ensure continuity.
-        # For publication-based queries (first-fetch), we use the last CVE's
-        # 'published' date to avoid skipping entries. For incremental
-        # updates, we use 'lastModified' to avoid re-processing.
+        date_field = "published" if use_pub_date else "lastModified"
         resume_point = last_completed_end.strftime(DATE_FORMAT)
         if last_raw_cves:
-            last_cve = last_raw_cves[-1].get("cve", {})
-            if use_pub_date:
-                cve_date = last_cve.get("published", "")
-            else:
-                cve_date = last_cve.get("lastModified", "")
+            cve_date = last_raw_cves[-1].get("cve", {}).get(date_field, "")
             if cve_date:
                 resume_point = cve_date
+
+        # Collect IDs at the boundary timestamp so they're skipped on next resume.
+        new_resume_ids: list[str] = [
+            cve.get("cve", {}).get("id", "")
+            for cve in last_raw_cves
+            if cve.get("cve", {}).get(date_field, "") == resume_point and cve.get("cve", {}).get("id")
+        ]
+        # Accumulate with previous IDs if timestamp hasn't advanced.
+        if resume_ids and resume_point == start_date.strftime(DATE_FORMAT):
+            new_resume_ids = list(set(resume_ids) | set(new_resume_ids))
+
         set_feed_last_run(
             {
                 "lastRun": resume_point,
                 "resumeFrom": resume_point,
                 "usePubDate": use_pub_date,
+                "resumeIds": new_resume_ids,
             }
         )
-        demisto.debug(
-            f"Fetch limit reached after {total_created} indicators. " f"Will resume from {resume_point} on next interval."
-        )
+        demisto.debug(f"Budget exhausted after {total_created} indicators. Resume from {resume_point}, {len(new_resume_ids)} dedup IDs.")
     else:
         set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT)})
 
