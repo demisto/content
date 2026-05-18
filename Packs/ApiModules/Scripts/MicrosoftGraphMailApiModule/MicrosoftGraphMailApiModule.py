@@ -2447,7 +2447,7 @@ def get_mailbox_settings_command(client: MsGraphMailBaseClient, args: dict) -> C
     readable_output = tableToMarkdown(
         f"Mailbox settings for user {user_id}",
         outputs,
-        headers=["userID", "timeZone", "dateFormat", "userPurpose", "archiveFolder"],
+        headers=["userId", "timeZone", "dateFormat", "userPurpose", "archiveFolder"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
