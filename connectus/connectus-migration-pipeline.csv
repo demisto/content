@@ -261,18 +261,7 @@ GitLabv2,Packs/GitLab/Integrations/GitLabv2/GitLabv2.yml,GitLab,,,,,,,,,,,,,,,,
 Github Event Collector,Packs/GitHub/Integrations/GitHubEventCollector/GitHubEventCollector.yml,Microsoft GitHub,,,,,,,,,,,,,,,,
 Github Feed,Packs/FeedGitHub/Integrations/FeedGitHub/FeedGitHub.yml,Microsoft GitHub,,,,,,,,,,,,,,,,
 Gmail,Packs/Gmail/Integrations/Gmail/Gmail.yml,Google Google Workspace,,,,,,,,,,,,,,,,
-Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml,Google Google Workspace,juschwartz,"{""auth_types"":[{""type"":""OAuth2AuthCode"",""name"":""google_oauth"",""xsoar_params"":[""auth_code_creds.password"",""credentials.identifier"",""credentials.password""]}],""config"":""REQUIRED(google_oauth)"",""other_connection"":[""email"",""insecure"",""proxy"",""redirect_uri""]}","{""integration"":""Gmail Single User"",""commands"":{""fetch-incidents"":[""fetch_limit"",""fetch_time"",""legacy_name"",""query"",""send_as""],""gmail-auth-link"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""],""gmail-auth-test"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""],""gmail-get-attachments"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""],""gmail-get-incidents"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""],""reply-mail"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""],""send-mail"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""],""test-module"":[""fetch_limit"",""fetch_time"",""legacy_name"",""send_as""]}}",connection,{},"{
-  ""general_configurations"": [
-    ""fetch_limit"",
-    ""legacy_name"",
-    ""fetch_time"",
-    ""send_as""
-  ],
-  ""Fetch Issues"": [
-    ""query""
-  ],
-  ""Automation"": []
-}",✅,,,,,,,,,
+Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml,Google Google Workspace,,,,,,,,,,,,,,,,
 Google Apigee,Packs/GoogleApigee/Integrations/GoogleApigeeEventCollector/GoogleApigeeEventCollector.yml,Google Google Workspace,,,,,,,,,,,,,,,,
 Google BigQuery,Packs/GoogleBigQuery/Integrations/GoogleBigQuery/GoogleBigQuery.yml,Google GCP,,,,,,,,,,,,,,,,
 Google Cloud Compute,Packs/GoogleCloudCompute/Integrations/GoogleCloudCompute/GoogleCloudCompute.yml,Google GCP,,,,,,,,,,,,,,,,
