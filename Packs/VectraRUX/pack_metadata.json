@@ -42,5 +42,50 @@
         "platform"
     ],
     "devEmail": [],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": [
+        "cloud_appsec",
+        "xsiam",
+        "tim",
+        "email_security"
+    ],
+    "dependencies": {
+        "Vectra_AI": {
+            "mandatory": false,
+            "display_name": "Vectra AI"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "VectraXDR": {
+            "mandatory": false,
+            "display_name": "Vectra XDR"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        }
+    },
+    "displayedImages": [
+        "Vectra_AI",
+        "Phishing",
+        "VectraXDR",
+        "FiltersAndTransformers",
+        "CommonScripts",
+        "CommonTypes",
+        "CoreAlertFields"
+    ]
 }

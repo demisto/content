@@ -9,7 +9,6 @@
     "closeForm": false,
     "editForm": true,
     "required": false,
-    "runScriptAfterUpdate": false,
     "neverSetAsRequired": false,
     "isReadOnly": true,
     "useAsKpi": false,

@@ -22,7 +22,7 @@ ignore=IF115
 [file:incidentfield-Vectra-RUX-Detection-ID.json]
 ignore=IF115
 
-[file:incidentfield-Vectra-RUX-Entity-Unresolved-Priority-status.json]
+[file:incidentfield-Vectra-RUX-Entity-Unresolved-Priority-Status.json]
 ignore=IF115
 
 [file:incidentfield-Vectra-RUX-Investigation-Status.json]
@@ -69,6 +69,9 @@ ignore=IF115
 
 [file:incidentfield-Vectra-RUX-Entity-Privilege-Category.json]
 ignore=IF115
+
+[file:VectraRUXEventsDetections.yml]
+ignore=BA129
 
 [known_words]
 Vectra

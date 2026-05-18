@@ -131,6 +131,7 @@ configuration:
   section: Connect
 description: This integration allows the security operations center to create and manage incidents based on Vectra Events Detections.
 display: Vectra RUX - Network Detection & Response
+provider: Vectra AI
 name: VectraRUXEventsDetections
 defaultmapperin: Vectra RUX - Incoming Mapper
 script:
