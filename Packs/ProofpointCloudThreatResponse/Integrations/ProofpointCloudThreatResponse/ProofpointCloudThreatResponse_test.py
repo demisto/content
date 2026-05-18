@@ -2,12 +2,13 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from ProofpointCloudThreatResponse import (
-    AUTH_URL,
     Client,
+    ProofpointCTRAuthHandler,
     build_filters_body,
     fetch_incidents,
     format_ctr_date,
@@ -27,24 +28,22 @@ def _load(name: str) -> dict:
 
 
 @pytest.fixture()
-def _clear_context(mocker):
-    """Reset the integration_context between tests."""
-    mocker.patch(
-        "ProofpointCloudThreatResponse.get_integration_context",
-        return_value={},
-    )
-    mocker.patch("ProofpointCloudThreatResponse.set_integration_context")
+def _patch_context(mocker):
+    """Patch context-store I/O so the auth handler never hits the runtime."""
+    mocker.patch.object(ProofpointCTRAuthHandler, "_load_token_from_context")
+    mocker.patch.object(ProofpointCTRAuthHandler, "_save_token_to_context")
 
 
 @pytest.fixture()
-def client(_clear_context) -> Client:
-    return Client(
-        base_url=BASE_URL,
-        client_id="id",
-        client_secret="secret",
-        verify=False,
-        proxy=False,
-    )
+def client(_patch_context, mocker) -> Client:
+    """Return a Client whose ``_http_request`` is mock-able per test."""
+    # Avoid initializing the underlying ContentClient (httpx etc.) - we mock the
+    # I/O surface exposed by Client.list_incidents / Client.get_incident.
+    mocker.patch("ProofpointCloudThreatResponse.ContentClient.__init__", return_value=None)
+    instance = Client.__new__(Client)
+    # Provide just enough state for the test:
+    instance.timeout = 60.0  # type: ignore[attr-defined]
+    return instance
 
 
 # --------------------------------------------------------------------------- helpers
@@ -93,44 +92,38 @@ def test_build_filters_body_validates_allowed_values():
 # --------------------------------------------------------------------------- auth
 
 
-def test_client_token_request_called_once_per_run(client: Client, mocker, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json=_load("incidents_list.json"))
+def test_auth_handler_rejects_empty_credentials():
+    from ProofpointCloudThreatResponse import ProofpointCTRAuthHandler
 
-    set_ctx = mocker.patch("ProofpointCloudThreatResponse.set_integration_context")
-
-    client.list_incidents(build_filters_body(start_row=0, end_row=10))
-    # set_integration_context should be called once after a fresh token retrieval
-    assert set_ctx.call_count == 1
+    with pytest.raises(Exception, match="Client ID"):
+        ProofpointCTRAuthHandler(client_id="", client_secret="x")
+    with pytest.raises(Exception, match="Client Secret"):
+        ProofpointCTRAuthHandler(client_id="x", client_secret="")
 
 
-def test_client_token_cached_when_not_expired(mocker, requests_mock):
+def test_auth_handler_token_validity(mocker):
     import time as _time
 
-    mocker.patch(
-        "ProofpointCloudThreatResponse.get_integration_context",
-        return_value={
-            "access_token": "cached",
-            "token_expires_at": int(_time.time()) + 3600,
-        },
-    )
-    set_ctx = mocker.patch("ProofpointCloudThreatResponse.set_integration_context")
-    auth_mock = requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json={"incidents": []})
+    mocker.patch.object(ProofpointCTRAuthHandler, "_load_token_from_context")
+    handler = ProofpointCTRAuthHandler(client_id="id", client_secret="secret")
 
-    c = Client(BASE_URL, "id", "secret", verify=False, proxy=False)
-    c.list_incidents(build_filters_body(start_row=0, end_row=1))
+    handler._access_token = "abc"
+    handler._expires_at = int(_time.time()) + 3600
+    assert handler._token_is_valid() is True
 
-    assert auth_mock.called is False
-    assert set_ctx.called is False
+    handler._expires_at = int(_time.time()) - 1
+    assert handler._token_is_valid() is False
+
+    handler._access_token = None
+    handler._expires_at = int(_time.time()) + 3600
+    assert handler._token_is_valid() is False
 
 
 # --------------------------------------------------------------------------- commands
 
 
-def test_list_incidents_command_builds_output(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json=_load("incidents_list.json"))
+def test_list_incidents_command_builds_output(client: Client, mocker):
+    mocker.patch.object(Client, "list_incidents", return_value=_load("incidents_list.json"))
 
     result = proofpoint_ctr_incidents_list_command(
         client,
@@ -142,24 +135,22 @@ def test_list_incidents_command_builds_output(client: Client, requests_mock):
     assert "Suspicious login attempt" in result.readable_output
 
 
-def test_list_incidents_rejects_invalid_filter(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
+def test_list_incidents_rejects_invalid_filter(client: Client):
     with pytest.raises(Exception, match="other_filters"):
         proofpoint_ctr_incidents_list_command(client, {"other_filters": "bogus"})
 
 
-def test_get_incident_command_iterates_ids(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/tric/incidents/aaa",
-        json=_load("incident_get.json"),
-    )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/tric/incidents/bbb",
-        json=_load("incident_get.json"),
-    )
+def test_get_incident_command_iterates_ids(client: Client, mocker):
+    calls: list[str] = []
+
+    def _fake_get(self, incident_id: str) -> dict[str, Any]:
+        calls.append(incident_id)
+        return _load("incident_get.json")
+
+    mocker.patch.object(Client, "get_incident", _fake_get)
 
     result = proofpoint_ctr_incident_get_command(client, {"incident_id": "aaa,bbb"})
+    assert calls == ["aaa", "bbb"]
     assert len(result.outputs) == 2
     assert result.outputs[0]["summary"]["displayId"] == 781
 
@@ -172,9 +163,8 @@ def test_get_incident_requires_id(client: Client):
 # --------------------------------------------------------------------------- test_module
 
 
-def test_test_module_ok(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json={"incidents": []})
+def test_test_module_ok(client: Client, mocker):
+    mocker.patch.object(Client, "list_incidents", return_value={"incidents": []})
     assert run_test_module(client, {"isFetch": False}) == "ok"
 
 
@@ -194,17 +184,9 @@ def test_test_module_requires_state_when_fetching(client: Client):
 # --------------------------------------------------------------------------- fetch
 
 
-def test_fetch_incidents_first_run(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json=_load("incidents_list.json"))
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/tric/incidents/440def43-c322-42ba-a6d6-a2306128ea3b",
-        json=_load("incident_get.json"),
-    )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/tric/incidents/550def43-c322-42ba-a6d6-a2306128ea3c",
-        json=_load("incident_get.json"),
-    )
+def test_fetch_incidents_first_run(client: Client, mocker):
+    mocker.patch.object(Client, "list_incidents", return_value=_load("incidents_list.json"))
+    mocker.patch.object(Client, "get_incident", return_value=_load("incident_get.json"))
 
     next_run, incidents = fetch_incidents(
         client,
@@ -222,13 +204,9 @@ def test_fetch_incidents_first_run(client: Client, requests_mock):
     assert "last_fetched_ids" in next_run
 
 
-def test_fetch_incidents_dedupes_seen_ids(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json=_load("incidents_list.json"))
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/tric/incidents/550def43-c322-42ba-a6d6-a2306128ea3c",
-        json=_load("incident_get.json"),
-    )
+def test_fetch_incidents_dedupes_seen_ids(client: Client, mocker):
+    mocker.patch.object(Client, "list_incidents", return_value=_load("incidents_list.json"))
+    mocker.patch.object(Client, "get_incident", return_value=_load("incident_get.json"))
 
     next_run, incidents = fetch_incidents(
         client,
@@ -260,15 +238,14 @@ def test_fetch_incidents_rejects_both_states(client: Client):
         )
 
 
-def test_fetch_incidents_caps_max_fetch(client: Client, requests_mock):
-    requests_mock.post(AUTH_URL, json=_load("token_response.json"))
+def test_fetch_incidents_caps_max_fetch(client: Client, mocker):
     captured: dict = {}
 
-    def _matcher(request, _context):
-        captured.update(request.json())
+    def _capture(self, body):
+        captured.update(body)
         return {"incidents": []}
 
-    requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json=_matcher)
+    mocker.patch.object(Client, "list_incidents", _capture)
 
     fetch_incidents(
         client,

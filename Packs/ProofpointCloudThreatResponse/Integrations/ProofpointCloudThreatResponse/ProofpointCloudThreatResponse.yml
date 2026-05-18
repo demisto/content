@@ -210,7 +210,7 @@ script:
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/fastapi:0.125.0.7178097
   isfetch: true
   runonce: false
   script: '-'
