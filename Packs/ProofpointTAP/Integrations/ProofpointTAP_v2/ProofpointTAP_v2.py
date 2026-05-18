@@ -83,12 +83,6 @@ def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     # Shift start backward to catch late-indexed events
     effective_start = last_fetch - timedelta(minutes=look_back_minutes) if look_back_minutes > 0 else last_fetch
 
-    # # Clamp to 7-day API limit
-    # seven_days_ago = now - timedelta(days=7) + timedelta(minutes=1)
-    # if effective_start < seven_days_ago:
-    #     effective_start = seven_days_ago
-    #     demisto.debug(f"Clamped effective_start to 7-day limit: {effective_start}")
-
     # Guard against invalid intervals
     if effective_start >= now:
         demisto.debug(f"Skipping fetch. {effective_start=} >= {now=}")
@@ -698,9 +692,13 @@ def fetch_incidents(
 
                 # Determine occurred time
                 if time_field:
-                    occurred = raw_event[time_field]
+                    occurred = raw_event.get(time_field, "")
                 else:
-                    occurred = max(raw_event["threatTime"], raw_event["clickTime"])
+                    # Safely pick the latest of threatTime / clickTime, ignoring missing values
+                    candidate_times = [t for t in (raw_event.get("threatTime"), raw_event.get("clickTime")) if t]
+                    occurred = max(candidate_times) if candidate_times else ""
+                if not occurred:
+                    demisto.debug(f"Event {dedup_key} ({response_key}) is missing an occurred time; using empty value")
 
                 # Build incident
                 incident = _build_incident(raw_event, event_type_label, occurred, raw_json_encoding)
