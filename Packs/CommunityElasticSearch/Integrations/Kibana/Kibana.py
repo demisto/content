@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 
 """Parameters"""
 PARAMS = demisto.params()
