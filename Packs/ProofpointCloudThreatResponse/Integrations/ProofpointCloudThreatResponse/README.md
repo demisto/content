@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of Proofpoint Cloud T
 
 ## Configure Proofpoint Cloud Threat Response in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The base URL of the Proofpoint Cloud Threat Response API. | True |
@@ -36,32 +35,32 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start of the time range filter. Accepts a free text date (e.g., `3 days`, `2024-11-26T16:18:07Z`). | Optional | 
-| end_time | The end of the time range filter. Accepts a free text date. Defaults to now when omitted. | Optional | 
-| incident_id_filters | A comma-separated list of incident `displayId` values (numeric). For example, `781,782`. | Optional | 
-| source_filters | Filter incidents by source. Possible values are: abuse_mailbox, tap, smart_search, message_csv_upload. | Optional | 
-| other_filters | Filter incidents by state or VAP. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API. Possible values are: open_incidents, closed_incidents, vap. | Optional | 
-| verdict_filters | Filter incidents by verdict. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional | 
-| disposition | Filter incidents by disposition. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional | 
-| confidence_filters | Filter incidents by confidence level. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional | 
-| limit | The maximum number of incidents to return. Default is 50. Default is 50. | Optional | 
+| start_time | The start of the time range filter. Accepts a free text date (e.g., `3 days`, `2024-11-26T16:18:07Z`). | Optional |
+| end_time | The end of the time range filter. Accepts a free text date. Defaults to now when omitted. | Optional |
+| incident_id_filters | A comma-separated list of incident `displayId` values (numeric). For example, `781,782`. | Optional |
+| source_filters | Filter incidents by source. Possible values are: abuse_mailbox, tap, smart_search, message_csv_upload. | Optional |
+| other_filters | Filter incidents by state or VAP. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API. Possible values are: open_incidents, closed_incidents, vap. | Optional |
+| verdict_filters | Filter incidents by verdict. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional |
+| disposition | Filter incidents by disposition. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional |
+| confidence_filters | Filter incidents by confidence level. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional |
+| limit | The maximum number of incidents to return. Default is 50. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Incident.id | String | The internal UUID of the incident. | 
-| ProofPointCloud.Incident.displayId | Number | The numeric display ID of the incident. | 
-| ProofPointCloud.Incident.title | String | The incident title. | 
-| ProofPointCloud.Incident.state | String | The state of the incident \(open/closed\). | 
-| ProofPointCloud.Incident.createdAt | Date | The creation timestamp of the incident. | 
-| ProofPointCloud.Incident.updatedAt | Date | The last update timestamp of the incident. | 
-| ProofPointCloud.Incident.messageCount | Number | The number of messages associated with the incident. | 
-| ProofPointCloud.Incident.assignedTeamName | String | The name of the team the incident is assigned to. | 
-| ProofPointCloud.Incident.sourceTypes | Unknown | The list of source types that produced the incident. | 
-| ProofPointCloud.Incident.dispositions | Unknown | The list of dispositions assigned to the incident. | 
-| ProofPointCloud.Incident.clearConfidences | Unknown | The list of confidence values for the incident. | 
-| ProofPointCloud.Incident.sourcesData | Unknown | The raw sources data array for the incident. | 
+| ProofPointCloud.Incident.id | String | The internal UUID of the incident. |
+| ProofPointCloud.Incident.displayId | Number | The numeric display ID of the incident. |
+| ProofPointCloud.Incident.title | String | The incident title. |
+| ProofPointCloud.Incident.state | String | The state of the incident \(open/closed\). |
+| ProofPointCloud.Incident.createdAt | Date | The creation timestamp of the incident. |
+| ProofPointCloud.Incident.updatedAt | Date | The last update timestamp of the incident. |
+| ProofPointCloud.Incident.messageCount | Number | The number of messages associated with the incident. |
+| ProofPointCloud.Incident.assignedTeamName | String | The name of the team the incident is assigned to. |
+| ProofPointCloud.Incident.sourceTypes | Unknown | The list of source types that produced the incident. |
+| ProofPointCloud.Incident.dispositions | Unknown | The list of dispositions assigned to the incident. |
+| ProofPointCloud.Incident.clearConfidences | Unknown | The list of confidence values for the incident. |
+| ProofPointCloud.Incident.sourcesData | Unknown | The raw sources data array for the incident. |
 
 ### proofpoint-ctr-incident-get
 
@@ -76,20 +75,20 @@ Returns full details for a specific Proofpoint Cloud Threat Response incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | A comma-separated list of incident UUIDs (e.g., `440def43-c322-42ba-a6d6-a2306128ea3b`). | Required | 
+| incident_id | A comma-separated list of incident UUIDs (e.g., `440def43-c322-42ba-a6d6-a2306128ea3b`). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Incident.summary.id | String | The internal UUID of the incident. | 
-| ProofPointCloud.Incident.summary.displayId | Number | The numeric display ID of the incident. | 
-| ProofPointCloud.Incident.summary.title | String | The incident title. | 
-| ProofPointCloud.Incident.summary.state | String | The state of the incident. | 
-| ProofPointCloud.Incident.summary.createdAt | Date | The creation timestamp of the incident. | 
-| ProofPointCloud.Incident.summary.updatedAt | Date | The last update timestamp of the incident. | 
-| ProofPointCloud.Incident.summary.priority | String | The priority of the incident. | 
-| ProofPointCloud.Incident.summary.messageCount | Number | The number of messages associated with the incident. | 
-| ProofPointCloud.Incident.summary.assignedTeamName | String | The name of the team the incident is assigned to. | 
-| ProofPointCloud.Incident.summary.assignedApplicationUserName | String | The user the incident is assigned to. | 
-| ProofPointCloud.Incident.activities | Unknown | The activities associated with the incident. | 
+| ProofPointCloud.Incident.summary.id | String | The internal UUID of the incident. |
+| ProofPointCloud.Incident.summary.displayId | Number | The numeric display ID of the incident. |
+| ProofPointCloud.Incident.summary.title | String | The incident title. |
+| ProofPointCloud.Incident.summary.state | String | The state of the incident. |
+| ProofPointCloud.Incident.summary.createdAt | Date | The creation timestamp of the incident. |
+| ProofPointCloud.Incident.summary.updatedAt | Date | The last update timestamp of the incident. |
+| ProofPointCloud.Incident.summary.priority | String | The priority of the incident. |
+| ProofPointCloud.Incident.summary.messageCount | Number | The number of messages associated with the incident. |
+| ProofPointCloud.Incident.summary.assignedTeamName | String | The name of the team the incident is assigned to. |
+| ProofPointCloud.Incident.summary.assignedApplicationUserName | String | The user the incident is assigned to. |
+| ProofPointCloud.Incident.activities | Unknown | The activities associated with the incident. |
