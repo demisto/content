@@ -102,9 +102,10 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {  # core-get-issues response
-                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
-            },
+            [  # core-get-issues response
+                {"issue_fields": {"internal_id": "123"}},
+                {"issue_fields": {"internal_id": "456"}},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
         ]
@@ -116,8 +117,14 @@ class TestSetIndicator:
         assert results[0].outputs["Value"] == "1.1.1.1"
 
         # Verify associateIndicatorsToAlert was called for each issue
-        mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "123", "indicatorsValues": "1.1.1.1"})
-        mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "456", "indicatorsValues": "1.1.1.1"})
+        mock_execute.assert_any_call(
+            "associateIndicatorsToAlert",
+            {"issueId": "123", "indicatorsValues": "1.1.1.1"},
+        )
+        mock_execute.assert_any_call(
+            "associateIndicatorsToAlert",
+            {"issueId": "456", "indicatorsValues": "1.1.1.1"},
+        )
 
     @patch("SetIndicatorAgentix.execute_command")
     @patch("SetIndicatorAgentix.argToList")
@@ -128,9 +135,7 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {  # core-get-issues response - only issue 123 exists
-                "alerts": [{"alert_fields": {"internal_id": "123"}}]
-            },
+            [{"issue_fields": {"internal_id": "123"}}],  # core-get-issues response - only issue 123 exists
             {},  # associateIndicatorsToAlert for issue 123
         ]
 
@@ -162,9 +167,10 @@ class TestSetIndicator:
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
             {},  # setIndicator response
-            {  # core-get-issues response
-                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
-            },
+            [  # core-get-issues response
+                {"issue_fields": {"internal_id": "123"}},
+                {"issue_fields": {"internal_id": "456"}},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
         ]
@@ -189,9 +195,10 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
-            {  # core-get-issues response - only 123 and 456 exist
-                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
-            },
+            [  # core-get-issues response - only 123 and 456 exist
+                {"issue_fields": {"internal_id": "123"}},
+                {"issue_fields": {"internal_id": "456"}},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
         ]
@@ -215,7 +222,7 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {"alerts": []},  # core-get-issues response - no issues found
+            [],  # core-get-issues response - no issues found
         ]
 
         results = set_indicator_if_exist(args)
@@ -254,9 +261,7 @@ class TestSetIndicator:
 
             mock_execute.side_effect = [
                 {"data": [{"value": "example.com"}]},  # findIndicators response
-                {  # core-get-issues response
-                    "alerts": [{"alert_fields": {"internal_id": "123"}}]
-                },
+                [{"issue_fields": {"internal_id": "123"}}],  # core-get-issues response
                 {},  # associateIndicatorsToAlert response
             ]
 
@@ -269,7 +274,12 @@ class TestSetIndicator:
     @patch("SetIndicatorAgentix.execute_command")
     def test_multiple_properties_update(self, mock_execute):
         """Test updating multiple properties without related issues"""
-        args = {"value": "1.1.1.1", "type": "IP", "verdict": "malicious", "tags": "botnet,malware"}
+        args = {
+            "value": "1.1.1.1",
+            "type": "IP",
+            "verdict": "malicious",
+            "tags": "botnet,malware",
+        }
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
@@ -294,7 +304,7 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {},  # core-get-issues response without alerts key
+            [],  # core-get-issues response - no issues found
         ]
 
         results = set_indicator_if_exist(args)
@@ -312,12 +322,7 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
-            {  # core-get-issues response with malformed alert
-                "alerts": [
-                    {"alert_fields": {}}  # Missing internal_id
-                ]
-            },
-            None,
+            [{"issue_fields": {}}],  # core-get-issues response with malformed issue (missing internal_id)
         ]
 
         results = set_indicator_if_exist(args)
