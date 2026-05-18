@@ -1,0 +1,30 @@
+{
+    "issueId": "ISS-2026-1430",
+    "status": "open",
+    "applicationId": "1-1",
+    "title": "CVEs in yaml 1",
+    "ruleId": "library-vulnerability",
+    "applicationName": "Test_App",
+    "applicationLanguage": "",
+    "httpRoute": "/payments",
+    "currentIncidentId": "INC-2026-269",
+    "incidentCount": 0,
+    "observationCount": 7,
+    "attackCount": 0,
+    "exploitedAttackCount": 0,
+    "suspiciousAttackCount": 0,
+    "blockedAttackCount": 0,
+    "cvssScore": "7.0",
+    "cvssVector": "CVSS:4.0/AV:N/AC:L",
+    "createdAt": "2026-03-24T16:29:38.106Z",
+    "lastAttackedAt": "2026-03-18T11:46:55.910Z",
+    "lastObservationAt": "2026-03-24T16:29:38.106Z",
+    "deploymentTier": [
+        "DEVELOPMENT"
+    ],
+    "lastAttackIdRef": {
+        "appId": "1-1",
+        "attackId": "2-2"
+    },
+    "summary": "suspicious value accessing the application through the HTTP Request Parameter SUBMIT\n' or 112=112--"
+}

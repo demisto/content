@@ -1,0 +1,33 @@
+{
+    "id": "incident_contrastsecurityincidentstatus",
+    "version": -1,
+    "modified": "2026-04-01T09:32:14.014404461Z",
+    "name": "Contrast Security Incident Status",
+    "ownerOnly": false,
+    "description": "The current state of the incident in the Contrast Security platform.",
+    "cliName": "contrastsecurityincidentstatus",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

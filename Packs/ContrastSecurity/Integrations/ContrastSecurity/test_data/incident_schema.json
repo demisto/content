@@ -1,0 +1,63 @@
+{
+    "organizationUuid": "11111111-2222-3333-4444-555555555555",
+    "url": "https://example.com/incidents/INC-0000-00001",
+    "productName": "DemoProduct",
+    "incidentId": "INC-0000-00001",
+    "incidentName": "Sample SQL Injection on \"/test-endpoint\"",
+    "createdTime": "2026-01-01T10:00:00.000Z",
+    "updatedTime": "2026-01-02T12:00:00.000Z",
+    "alertType": "incident_updated",
+    "alertReason": "Sample Alert Reason",
+    "status": "OPEN",
+    "summary": "This is a dummy summary describing a sample SQL injection vulnerability for testing purposes.",
+    "score": 5.0,
+    "severity": "MEDIUM",
+    "relatedRules": [
+        "sample-rule"
+    ],
+    "relatedApplications": [
+        "demo-app"
+    ],
+    "recommendedActions": [
+        "Validate user input",
+        "Use parameterized queries"
+    ],
+    "recommendedRunbooks": [
+        "https://example.com/runbooks/sample-runbook-1",
+        "https://example.com/runbooks/sample-runbook-2"
+    ],
+    "eventType": "contrast_security_incidentalert",
+    "source": "demo-source",
+    "timestamp": "2026-01-02T12:05:00.000Z",
+    "httpSourceIp": [
+        {
+            "blocked": true,
+            "ipAddress": "192.168.1.10",
+            "count": "1"
+        },
+        {
+            "blocked": false,
+            "ipAddress": "10.0.0.5",
+            "count": "2"
+        },
+        {
+            "blocked": true,
+            "ipAddress": "172.16.0.3",
+            "count": "1"
+        }
+    ],
+    "servers": [
+        {
+            "hostname": "demo-server-1",
+            "environment": "DEV",
+            "id": "aaaa1111-bbbb-2222-cccc-3333dddd4444",
+            "operatingSystem": "Linux"
+        },
+        {
+            "hostname": "demo-server-2",
+            "environment": "QA",
+            "id": "eeee5555-ffff-6666-gggg-7777hhhh8888",
+            "operatingSystem": "Windows"
+        }
+    ]
+}

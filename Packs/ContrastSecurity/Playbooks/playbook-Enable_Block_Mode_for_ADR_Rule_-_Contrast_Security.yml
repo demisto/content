@@ -1,0 +1,547 @@
+id: Enable Block Mode for ADR Rule - Contrast Security
+version: -1
+name: Enable Block Mode for ADR Rule - Contrast Security
+description: This playbook enables block mode for a specific ADR rule associated with a Contrast Security incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 798a59a9-b5bf-4325-8d68-ba61d3e28b09
+    type: start
+    task:
+      id: 798a59a9-b5bf-4325-8d68-ba61d3e28b09
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a2b26417-b245-498a-88e3-241e69ba5136
+    type: condition
+    task:
+      id: a2b26417-b245-498a-88e3-241e69ba5136
+      version: -1
+      name: Is ContrastSecurity integration enabled?
+      description: Checks whether ContrastSecurity integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ContrastSecurity
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a9732aa3-649c-4391-83f5-3bd1f74856ba
+    type: regular
+    task:
+      id: a9732aa3-649c-4391-83f5-3bd1f74856ba
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: rule_data,incident_id,rule_name_list
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 42822ccf-1073-47cb-85c8-0501af295f15
+    type: title
+    task:
+      id: 42822ccf-1073-47cb-85c8-0501af295f15
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 560114c2-4d42-4f35-819a-4c8b71035f83
+    type: regular
+    task:
+      id: 560114c2-4d42-4f35-819a-4c8b71035f83
+      version: -1
+      name: Get Rule names from Context Data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: rule_name_list
+      value:
+        complex:
+          root: incident
+          accessor: contrastsecurityrules
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ''
+              remove_keys: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ab4601fd-d907-40e2-8d49-c8373b210ba6
+    type: condition
+    task:
+      id: ab4601fd-d907-40e2-8d49-c8373b210ba6
+      version: -1
+      name: Check if the incident ID and rule name are available in the input
+      description: Check if the incident ID and rule name are available in the input data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.incident_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.rule_names
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: be53a009-983a-4772-8b47-d1d4df2f23be
+    type: regular
+    task:
+      id: be53a009-983a-4772-8b47-d1d4df2f23be
+      version: -1
+      name: War Room Entry for Enabled Blocked Mode for Rule
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - note
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: rule_data
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: ConcatFormat
+            args:
+              ctx_data:
+                value:
+                  simple: .
+                iscontext: true
+              ctx_inc:
+                value:
+                  simple: incident
+                iscontext: true
+              ctx_inputs:
+                value:
+                  simple: inputs
+                iscontext: true
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: "Updated ADR Policy Rules\n\nIncident ID: ${incident_id}\nRule Name: "
+              suffix:
+                value:
+                  simple: |2-
+
+                    Development Mode: ${inputs.dev_mode}
+                    QA Mode: ${inputs.qa_mode}
+                    Production Mode: ${inputs.prod_mode}
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 930
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9cf47518-cbc7-4f30-80f9-be57373f2218
+    type: condition
+    task:
+      id: 9cf47518-cbc7-4f30-80f9-be57373f2218
+      version: -1
+      name: Check if rules are available in the context data
+      description: Check if rules are available in the context data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: rule_name_list
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6756135e-c223-4858-8a71-4bce4f6511ee
+    type: regular
+    task:
+      id: 6756135e-c223-4858-8a71-4bce4f6511ee
+      version: -1
+      name: Enable Block Mode for ADR Rule
+      description: Configure ADR Policy for a Contrast Security Incident.
+      script: '|||contrastsecurity-adrpolicy-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      dev_mode:
+        simple: ${inputs.dev_mode}
+      extend-context:
+        simple: rule_data=Rules.rule::incident_id=id
+      incident_id:
+        complex:
+          root: inputs.incident_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.contrastsecurityincidentid
+                iscontext: true
+      prod_mode:
+        simple: ${inputs.prod_mode}
+      qa_mode:
+        simple: ${inputs.qa_mode}
+      rule_name:
+        complex:
+          root: inputs.rule_name
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: rule_name_list
+                iscontext: true
+      rule_names:
+        complex:
+          root: inputs.rule_names
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: rule_name_list
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f0af56f2-feeb-4591-8d77-d9b80509e86d
+    type: regular
+    task:
+      id: f0af56f2-feeb-4591-8d77-d9b80509e86d
+      version: -1
+      name: ADR Rules Not Found from Context Data
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: 'No ADR rules found in the playbook input or context for the Contrast Security incident ID: ${incident.contrastsecurityincidentid}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.57,
+      "1_5_#default#": 0.53,
+      "7_10_yes": 0.67,
+      "7_6_#default#": 0.63,
+      "9_10_yes": 0.6,
+      "9_11_#default#": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1540,
+        "width": 990,
+        "x": 320,
+        "y": -370
+      }
+    }
+  }
+inputs:
+- key: rule_names
+  value: {}
+  required: false
+  description: Specify the ADR rule name to configure. Supports comma-separated values.
+  playbookInputQuery:
+- key: incident_id
+  value: {}
+  required: false
+  description: 'Specify the ID of the Incident. '
+  playbookInputQuery:
+- key: dev_mode
+  value:
+    simple: Monitor
+  required: false
+  description: 'Specify the Blocking mode for the Development environment. Possible values are: Off, Monitor, Block, Block at perimeter.'
+  playbookInputQuery:
+- key: qa_mode
+  value:
+    simple: Monitor
+  required: false
+  description: 'Specify the Blocking mode for the QA environment. Possible values are: Off, Monitor, Block, Block at perimeter.'
+  playbookInputQuery:
+- key: prod_mode
+  value:
+    simple: Monitor
+  required: false
+  description: 'Specify the Blocking mode for the Production environment. Possible values are: Off, Monitor, Block, Block at perimeter.'
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - rule_names
+  - incident_id
+  - dev_mode
+  - qa_mode
+  - prod_mode
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

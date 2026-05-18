@@ -1,0 +1,50 @@
+[
+    {
+        "issueId": "ISS-2026-1430",
+        "status": "open",
+        "applicationId": "1-1",
+        "title": "CVEs in yaml 1",
+        "ruleId": "library-vulnerability",
+        "applicationName": "Test_App",
+        "applicationLanguage": "",
+        "httpRoute": "",
+        "incidentCount": 0,
+        "observationCount": 7,
+        "attackCount": 0,
+        "exploitedAttackCount": 0,
+        "suspiciousAttackCount": 0,
+        "blockedAttackCount": 0,
+        "cvssScore": "7.0",
+        "cvssVector": "CVSS:4.0/AV:N/AC:L",
+        "createdAt": "2026-03-24T16:29:38.106Z",
+        "lastObservationAt": "2026-03-24T16:29:38.106Z",
+        "deploymentTier": [
+            "DEVELOPMENT"
+        ],
+        "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-1430"
+    },
+    {
+        "issueId": "ISS-2026-1431",
+        "status": "open",
+        "applicationId": "2-2",
+        "title": "CVEs in tomcat-embed-websocket 9.0.75",
+        "ruleId": "library-vulnerability",
+        "applicationName": "Test_App2",
+        "applicationLanguage": "",
+        "httpRoute": "",
+        "incidentCount": 0,
+        "observationCount": 23,
+        "attackCount": 0,
+        "exploitedAttackCount": 0,
+        "suspiciousAttackCount": 0,
+        "blockedAttackCount": 0,
+        "cvssScore": "8.8",
+        "cvssVector": "CVSS:4.0/AV:N/AC:L/AT:N",
+        "createdAt": "2026-03-24T16:29:38.106Z",
+        "lastObservationAt": "2026-03-24T16:29:38.106Z",
+        "deploymentTier": [
+            "DEVELOPMENT"
+        ],
+        "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-1431"
+    }
+]

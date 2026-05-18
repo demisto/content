@@ -1,0 +1,4 @@
+### Contrast Security Issue
+|Issue ID|Title|Summary|Status|Application Name|Application ID|Rule ID|CVSS Score|CVSS Vector|Current Incident ID|Incident Count|Created At|Last Attacked At|Last Attack ID Ref|Last Observation At|Attack Count|Blocked Attack Count|Exploited Attack Count|Observation Count|Suspicious Attack Count|Deployment Tier|HTTP Route|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [ISS-2026-1430](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-1430) | CVEs in yaml 1 | suspicious value accessing the application through the HTTP Request Parameter SUBMIT<br>' or 112=112-- | open | Test_App | 1-1 | library-vulnerability | 7.0 | CVSS:4.0/AV:N/AC:L | INC-2026-269 | 0 | 2026-03-24T16:29:38.106Z | 2026-03-18T11:46:55.910Z | ***appId***: 1-1<br>***attackId***: 2-2 | 2026-03-24T16:29:38.106Z | 0 | 0 | 0 | 7 | 0 | ***values***: DEVELOPMENT | /payments |

@@ -1,0 +1,33 @@
+{
+    "id": "incident_contrastsecurityrecommendedactions",
+    "version": -1,
+    "modified": "2026-04-24T10:35:10.438425457Z",
+    "name": "Contrast Security Recommended Actions",
+    "ownerOnly": false,
+    "description": "The recommended actions provided by the Contrast Security platform.",
+    "cliName": "contrastsecurityrecommendedactions",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,8 @@
+!contrastsecurity-incident-comment-add comment="comment text" incident_id=INC-2026-1111
+!contrastsecurity-incident-status-update incident_id=INC-2026-80 status=Closed close_reason="Benign True Positive"
+!contrastsecurity-ip-block incident_id=INC-2026-80 ip_addresses="10.50.4.3,10.1.0.50" expiration_date="2 minutes"
+!contrastsecurity-adrpolicy-update incident_id="INC-2026-80" dev_mode="Monitor" prod_mode="Monitor" qa_mode="Monitor" rule_names="sql-injection"
+!contrastsecurity-issue-list page=1 page_size=10 sort_by=cvss_score sort_order=Desc
+!contrastsecurity-issue-get issue_id=ISS-2026-1326
+!contrastsecurity-issue-comment-add comment="this is test comment for issue" issue_id=ISS-2026-100
+!contrastsecurity-issue-status-update issue_id=ISS-2026-100 status=Closed

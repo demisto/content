@@ -1,0 +1,15 @@
+{
+  "incidentId": "INC-2026-252",
+  "status": "open",
+  "name": "SQL Injection on \"/WebGoat/attack\"",
+  "lastAttackedAt": "2026-03-09T22:52:12.131Z",
+  "score": "10.0",
+  "severity": "CRITICAL",
+  "assignedUserId": "8dc795ca-547f-41f0-8b4c-19afdbe42342",
+  "assignedUserName": "xsoar admin",
+  "createdAt": "2026-03-09T22:51:48.765Z",
+  "closedAt": null,
+  "runbooks": [
+    "https://github.com/Contrast-Security-OSS/adr-runbooks/blob/main/_incident-runbooks/sql-injection.md"
+  ]
+}

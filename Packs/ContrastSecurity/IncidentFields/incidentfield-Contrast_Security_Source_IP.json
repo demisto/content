@@ -1,0 +1,79 @@
+{
+    "id": "incident_contrastsecuritysourceip",
+    "version": -1,
+    "modified": "2026-04-23T21:00:21.037608834+05:30",
+    "name": "Contrast Security Source IP",
+    "ownerOnly": false,
+    "description": "The IP addresses from which an attack event originated.",
+    "cliName": "contrastsecuritysourceip",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "ipAddress",
+            "displayName": "IP Address",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 194,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "blocked",
+            "displayName": "Blocked",
+            "type": "boolean",
+            "orgType": "boolean",
+            "required": false,
+            "script": "",
+            "width": 120,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "count",
+            "displayName": "Count",
+            "type": "number",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "width": 122,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

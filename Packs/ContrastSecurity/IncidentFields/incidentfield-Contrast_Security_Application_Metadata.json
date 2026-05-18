@@ -1,0 +1,33 @@
+{
+    "id": "incident_contrastsecurityapplicationmetadata",
+    "version": -1,
+    "modified": "2026-04-23T16:35:02Z",
+    "name": "Contrast Security Application Metadata",
+    "ownerOnly": false,
+    "description": "Provides key details about an application in Contrast Security.",
+    "cliName": "contrastsecurityapplicationmetadata",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

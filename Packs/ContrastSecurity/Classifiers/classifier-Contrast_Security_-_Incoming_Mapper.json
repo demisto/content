@@ -1,0 +1,464 @@
+{
+    "description": "Map incoming Contrast Security JSON data to XSOAR fields.",
+    "feed": false,
+    "id": "Contrast Security - Incoming Mapper",
+    "mapping": {
+        "Contrast Security Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Contrast Security Alert Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertReason",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Alert Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertType",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Applications": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedApplications",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Contrast Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Created At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Product Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "productName",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Recommended Actions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "recommendedActions",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Recommended Runbooks": {
+                    "complex": {
+                        "filters": [],
+                        "root": "recommendedRunbooks",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Rules": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedRules",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Servers": {
+                    "complex": {
+                        "filters": [],
+                        "root": "servers",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Source IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "httpSourceIp",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Updated At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updatedTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security organizationUuid": {
+                    "complex": {
+                        "filters": [],
+                        "root": "organizationUuid",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventType",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentName",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "CRITICAL,HIGH,MEDIUM,LOW,NOTE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "4,3,2,1,0.5"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Contrast Security Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Contrast Security Alert Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertReason",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Alert Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertType",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Application ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Application Language": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationLanguage",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Application Metadata": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationMetadata",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Application Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationName",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Associated incidents": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedIncidents",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Closed At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closedTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Contrast Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Created At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Environments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "environments",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security HTTP Route": {
+                    "complex": {
+                        "filters": [],
+                        "root": "httpRoute",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue CVSS Vector": {
+                    "complex": {
+                        "filters": [],
+                        "root": "cvssVector",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "issueId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Last Observed At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastObserved",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Product Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "productName",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Rule ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ruleId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Updated At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updateTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security organizationUuid": {
+                    "complex": {
+                        "filters": [],
+                        "root": "organizationUuid",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventType",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "In,Out,Both"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ",Out,Out"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "issueId",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "CRITICAL,HIGH,MEDIUM,LOW,NOTE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "4,3,2,1,0.5"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Contrast Security - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

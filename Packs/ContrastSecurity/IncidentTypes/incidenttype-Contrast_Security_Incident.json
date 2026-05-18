@@ -1,0 +1,38 @@
+{
+    "id": "Contrast Security Incident",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Contrast Security Incident",
+    "prevName": "Contrast Security Incident",
+    "color": "#C9C598",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Contrast Security Incident",
+    "playbookId": "Incident Response - Contrast Security",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "contrastsecuritysourceip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ipRep"
+                ]
+            }
+        }
+    },
+    "fromVersion": "6.10.0"
+}

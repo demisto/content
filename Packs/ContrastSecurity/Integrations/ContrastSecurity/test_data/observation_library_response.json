@@ -1,0 +1,42 @@
+{
+    "issueId": "ISS-2026-2",
+    "type": "LIBRARY",
+    "eventTime": "2024-01-20T14:20:00.000Z",
+    "applicationId": "12345678-1234-1234-1234-123456789012",
+    "applicationName": "test-app-service",
+    "applicationLanguage": null,
+    "teamserverAuthorizationFailure": false,
+    "vulnEventId": null,
+    "eventStory": null,
+    "eventRecommendation": null,
+    "attackInsightsResponseDto": null,
+    "sastResult": null,
+    "summary": null,
+    "stackTrace": null,
+    "observationId": "test-obs-wkmsdkw",
+    "scaLibraryResponseDto": {
+        "releaseDate": "2023-08-14T09:30:45Z",
+        "licenses": ["Unknown"],
+        "vulnerabilities": [
+            {
+                "name": "CVE-XXXX-1111",
+                "description": "Dummy vulnerability description for testing purposes. This is a sample vulnerability entry used in test data.",
+                "epssScore": 0.05,
+                "epssPercentile": 50.0,
+                "cisa": false
+            },
+            {
+                "name": "CVE-XXXX-2222",
+                "description": "Another dummy vulnerability description for testing. This entry is used to validate the library response handling.",
+                "epssScore": 0.02,
+                "epssPercentile": 30.0,
+                "cisa": false
+            }
+        ],
+        "version": "2.3.7",
+        "closestStableVersion": "3.1.6",
+        "latestStableVersion": "3.1.8",
+        "packageUrl": null,
+        "dependency": null
+    }
+}

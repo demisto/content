@@ -1,0 +1,13 @@
+[
+  {
+    "id": "test-incident-id",
+    "Rules": [
+      {
+        "devMode": "MONITORING",
+        "prodMode": "MONITORING",
+        "qaMode": "MONITORING",
+        "rule": "SECURITY_RULE"
+      }
+    ]
+  }
+]

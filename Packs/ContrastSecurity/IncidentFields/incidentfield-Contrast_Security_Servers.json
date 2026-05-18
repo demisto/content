@@ -1,0 +1,92 @@
+{
+    "id": "incident_contrastsecurityservers",
+    "version": -1,
+    "modified": "2026-04-23T21:00:07.813050947+05:30",
+    "name": "Contrast Security Servers",
+    "ownerOnly": false,
+    "description": "The name of the servers associated with the application.",
+    "cliName": "contrastsecurityservers",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "hostname",
+            "displayName": "Hostname",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 185,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "id",
+            "displayName": "Server ID",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 189,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "environment",
+            "displayName": "Environment",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 189,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "operatingSystem",
+            "displayName": "Operating System",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

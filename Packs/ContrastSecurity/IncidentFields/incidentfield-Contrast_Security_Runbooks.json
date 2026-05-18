@@ -1,0 +1,33 @@
+{
+    "id": "incident_contrastsecurityrecommendedrunbooks",
+    "version": -1,
+    "modified": "2026-04-03T05:23:07.714263724Z",
+    "name": "Contrast Security Recommended Runbooks",
+    "ownerOnly": false,
+    "description": "Predefined response steps or guidance provided by the Contrast Security platform to help investigate and remediate the incident.",
+    "cliName": "contrastsecurityrecommendedrunbooks",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Contrast Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

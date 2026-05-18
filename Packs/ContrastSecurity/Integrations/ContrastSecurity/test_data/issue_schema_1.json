@@ -1,0 +1,34 @@
+{
+    "alertReason": "Issue Updated",
+    "alertType": "issue_updated",
+    "applicationId": "dummy-app-id-002",
+    "applicationLanguage": "Python",
+    "applicationMetadata": {
+        "metadata": "dummy-metadata-value-2",
+        "testkey": "dummy-test-value-2"
+    },
+    "applicationName": "DUMMY_APPLICATION_002",
+    "closedTime": null,
+    "createdTime": "2026-03-25T14:20:10.123Z",
+    "cvssVector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N/E:U",
+    "description": "This is a dummy description for testing purposes. Insecure configuration detected in authentication module.",
+    "environments": [
+        "STAGING"
+    ],
+    "eventType": "contrast_security_issuealert",
+    "httpRoute": "/api/dummy/auth",
+    "issueId": "ISS-2025-2",
+    "lastObserved": "2026-03-25T14:20:10.123Z",
+    "organizationUuid": "dummy-org-uuid-002",
+    "productName": "ContrastADR",
+    "relatedIncidents": ["INC-DUMMY-002"],
+    "ruleId": "dummy-rule-id-002",
+    "score": 3.2,
+    "severity": "MEDIUM",
+    "source": "contrast-security-adr",
+    "status": "open",
+    "timestamp": "2026-03-25T14:20:15.223983009Z",
+    "title": "Dummy Issue Title - Insecure Configuration Settings",
+    "updateTime": "2026-03-25T14:21:00.000Z",
+    "url": "https://dummy.contrast.com/issues/ISS-2025-2"
+}

@@ -1,0 +1,122 @@
+{
+  "SINGLE_ISSUE_DATA": [
+    {
+      "cvssScore": 9.5,
+      "title": "SQL Injection",
+      "issueId": "issue-123",
+      "status": "VERIFIED",
+      "applicationName": "MyApp",
+      "observationCount": 3,
+      "lastAttackedAt": "2026-05-01T10:00:00Z",
+      "lastObservationAt": "2026-05-01T11:00:00Z",
+      "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "ruleId": "rule-456",
+      "deploymentTier": ["Production", "Staging"],
+      "issueLink": "https://example.com/issues/issue-123"
+    }
+  ],
+  "PAGE1_RESULT": [
+    {
+      "Contents": {
+        "content": [
+          {
+            "cvssScore": 9.5,
+            "title": "Issue 1",
+            "issueId": "issue-1",
+            "status": "VERIFIED",
+            "applicationName": "MyApp",
+            "observationCount": 1,
+            "lastAttackedAt": "2026-05-01T10:00:00Z",
+            "lastObservationAt": "2026-05-01T11:00:00Z",
+            "cvssVector": "CVSS:3.1/AV:N/AC:L",
+            "ruleId": "rule-1",
+            "deploymentTier": ["Production"]
+          }
+        ],
+        "page": {"totalPages": 2, "totalElements": 2}
+      }
+    }
+  ],
+  "PAGE2_RESULT": [
+    {
+      "Contents": {
+        "content": [
+          {
+            "cvssScore": 8.0,
+            "title": "Issue 2",
+            "issueId": "issue-2",
+            "status": "VERIFIED",
+            "applicationName": "MyApp",
+            "observationCount": 1,
+            "lastAttackedAt": "2026-05-01T12:00:00Z",
+            "lastObservationAt": "2026-05-01T13:00:00Z",
+            "cvssVector": "CVSS:3.1/AV:N/AC:L",
+            "ruleId": "rule-2",
+            "deploymentTier": []
+          }
+        ],
+        "page": {"totalPages": 2, "totalElements": 2}
+      }
+    }
+  ],
+  "SETINCIDENT_RESULT": [{"Type": "note", "Contents": {}}],
+  "SINGLE_PAGE_RESULT": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-1", "title": "Test Issue"}],
+        "page": {"totalPages": 1, "totalElements": 1}
+      }
+    }
+  ],
+  "EMPTY_CONTENT_RESULT": [
+    {"Contents": {"content": [], "page": {"totalPages": 1, "totalElements": 0}}}
+  ],
+  "LARGE_PAGINATION_RESULT": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-1"}],
+        "page": {"totalPages": 100, "totalElements": 10000}
+      }
+    }
+  ],
+  "TWO_ISSUES_RESULT": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-1"}, {"issueId": "issue-2"}],
+        "page": {"totalPages": 1, "totalElements": 2}
+      }
+    }
+  ],
+  "FINAL_PAGE_RESULT": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-final"}],
+        "page": {"totalPages": 3, "totalElements": 250}
+      }
+    }
+  ],
+  "PAGE1_MULTI": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-1"}],
+        "page": {"totalPages": 3, "totalElements": 3}
+      }
+    }
+  ],
+  "PAGE2_MULTI": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-2"}],
+        "page": {"totalPages": 3, "totalElements": 3}
+      }
+    }
+  ],
+  "PAGE3_MULTI": [
+    {
+      "Contents": {
+        "content": [{"issueId": "issue-3"}],
+        "page": {"totalPages": 3, "totalElements": 3}
+      }
+    }
+  ]
+}

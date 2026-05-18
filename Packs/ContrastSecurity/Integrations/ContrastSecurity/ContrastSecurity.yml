@@ -1,0 +1,800 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+- Result
+commonfields:
+  id: ContrastSecurity
+  version: -1
+configuration:
+- name: engine_placeholder
+  type: 23
+  section: Connect
+  hidden:
+  - xsoar_on_prem
+- additionalinfo: A Cortex XSOAR integration instance that runs continuously, listening on a specified port to receive real-time events such as webhooks from Contrast Security.
+  display: Long running instance
+  name: longRunning
+  type: 8
+  section: Connect
+  required: false
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the **Test** button more than once, a failure may occur mistakenly indicating that the port is already in use."
+  display: Listening Port
+  name: longRunningPort
+  type: 0
+  section: Connect
+  required: false
+- additionalinfo: Username and password are required for webhook authentication. Required when "Long running instance" is enabled.
+  display: Webhook Username
+  displaypassword: Webhook Password
+  name: webhook_credentials
+  type: 9
+  section: Connect
+  required: false
+- display: Event Type
+  name: event_type
+  type: 16
+  section: Connect
+  required: false
+  additionalinfo: Select event type to fetch from Contrast Security platform. Contrast Security recommends selecting "Contrast Incident" as the event type to fetch via webhook.
+  options:
+  - Contrast Incident
+  - Contrast Issue
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- display: Contrast Security Server URL
+  name: server_url
+  type: 0
+  section: Connect
+  required: true
+  additionalinfo: Server URL of the Contrast Security platform.
+- display: Contrast Security Username (Email)
+  displaypassword: Contrast Security Service Key
+  name: credentials
+  type: 9
+  section: Connect
+  required: true
+  additionalinfo: Username used for Contrast Security platform. Email address is used as the username for Contrast Security platform.
+- displaypassword: Contrast Security API Key
+  name: api_credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+  additionalinfo: API key used for secure communication with Contrast Security platform.
+- display: Contrast Security Organization ID
+  name: organization_id
+  type: 0
+  section: Connect
+  required: true
+  additionalinfo: The organization ID used for the Contrast Security platform.
+- display: Certificate (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
+  name: certificate
+  type: 12
+  section: Connect
+  advanced: true
+  required: false
+- display: Private Key (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR or Cortex XSIAM server.
+  name: key
+  type: 14
+  section: Connect
+  advanced: true
+  required: false
+- display: Incident Mirroring Direction
+  name: incident_mirror_direction
+  additionalinfo: The mirroring direction in which to mirror the incident details.
+  type: 15
+  section: Connect
+  required: false
+  options:
+  - Outgoing
+  - Incoming
+  - Incoming And Outgoing
+- display: Issue Mirroring Direction
+  name: issue_mirror_direction
+  additionalinfo: The mirroring direction in which to mirror the Issue details.
+  type: 15
+  section: Connect
+  required: false
+  options:
+  - Outgoing
+- display: Mirror Tag for Notes
+  name: note_tag
+  additionalinfo: Tag value used to mirror XSOAR notes back to Contrast Security as issue or incident comments.
+  type: 0
+  section: Connect
+  required: false
+  defaultvalue: note
+- additionalinfo: "If selected, closed incidents will be reopened in XSOAR when the incident status in Contrast Security Incident changes to 'Open'.\n\nNote: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  display: Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident
+  name: reopen_closed_incident
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- additionalinfo: "If selected, active incidents will be closed in XSOAR when the incident status in Contrast Security Incident changes to 'Closed'.\n\nNote: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  display: Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident
+  name: close_active_incident
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- display: Store sample events for mapping
+  additionalinfo: Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
+  name: store_samples
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+- display: After adding the Contrast Security Webhook settings, a unique link will be generated below.
+  section: Result
+  name: resultLink
+  type: 22
+  hidden:
+  - xsoar_on_prem
+description: This integration enables real-time ingestion of Contrast Security incidents and issues into XSOAR via a webhook.
+name: ContrastSecurity
+display: Contrast Security
+defaultmapperin: Contrast Security - Incoming Mapper
+defaultclassifier: Contrast Security - Classifier
+script:
+  commands: 
+  - name: contrastsecurity-incident-comment-add
+    description: Add a comment to a Contrast Security Incident.
+    arguments:
+    - name: incident_id
+      description: "Specify the ID of the Incident."
+      required: true
+    - name: comment
+      description: Comment text to add to the incident.
+      required: true
+    outputs:
+    - contextPath: ContrastSecurity.IncidentComment.incident_id
+      description: The ID of the incident the comment was added to.
+      type: String
+    - contextPath: ContrastSecurity.IncidentComment.commentId
+      description: Unique identifier of the comment.
+      type: String
+    - contextPath: ContrastSecurity.IncidentComment.userId
+      description: Unique identifier of the user who made the comment.
+      type: String
+    - contextPath: ContrastSecurity.IncidentComment.userUid
+      description: Email address of the user who made the comment.
+      type: String
+    - contextPath: ContrastSecurity.IncidentComment.commentText
+      description: The actual comment text content.
+      type: String
+    - contextPath: ContrastSecurity.IncidentComment.createdTime
+      description: Timestamp when the comment was created.
+      type: Date
+    - contextPath: ContrastSecurity.IncidentComment.lastUpdatedTime
+      description: Timestamp when the comment was last updated.
+      type: Date
+  - name: contrastsecurity-incident-status-update
+    description: Update the status of a Contrast Security Incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Specify the ID of the Incident.
+    - name: status
+      required: true
+      description: Specify status of the Incident.
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - Closed
+    - name: close_reason
+      required: false
+      description: Specify the reason for closing the incident. Required when status is set to "Closed".
+      auto: PREDEFINED
+      predefined:
+      - True Positive
+      - False Positive
+      - Benign True Positive
+      - Other
+    outputs:
+    - contextPath: ContrastSecurity.Incident.id
+      description: Unique identifier of the incident.
+      type: String
+    - contextPath: ContrastSecurity.Incident.status
+      description: Updated status of the incident.
+      type: String
+    - contextPath: ContrastSecurity.Incident.close_reason
+      description: Reason for closing the incident (if applicable).
+      type: String
+  - name: contrastsecurity-ip-block
+    description: Block an IP address for a Contrast Security Incident.
+    arguments:
+    - name: incident_id
+      description: Specify the ID of the Incident.
+      required: true
+    - name: ip_addresses
+      description: Specify the IP address to block. Supports comma-separated values.
+      required: true
+    - name: expiration_date
+      description: "Specify the IP address expiration duration time.If no expiration date is provided, the IP addresses will be blocked for Forever.\n\n Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
+      required: false
+    outputs:
+    - contextPath: ContrastSecurity.Incident.id
+      description: The ID of the Contrast Security incident.
+      type: String
+    - contextPath: ContrastSecurity.Incident.IpAddresses.expiration_date
+      description: IP expiration duration time.
+      type: Date
+    - contextPath: ContrastSecurity.Incident.IpAddresses.ips
+      description: List of blocked IP addresses.
+      type: List
+  - name: contrastsecurity-adrpolicy-update
+    description: Configure ADR Policy for a Contrast Security Incident.
+    arguments:
+    - name: incident_id
+      description: "Specify the ID of the Incident."
+      required: true
+    - name: rule_names
+      description: Specify the ADR rule name to configure. Supports comma-separated values.
+      required: true
+    - name: dev_mode
+      description: Specify the Blocking mode for the Development environment.
+      defaultValue: 'Monitor'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Block at perimeter
+      - Off
+      - Monitor
+      - Block
+    - name: qa_mode
+      description: Specify the Blocking mode for the QA environment.
+      defaultValue: 'Monitor'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Block at perimeter
+      - Off
+      - Monitor
+      - Block
+    - name: prod_mode
+      description: Specify the Blocking mode for the Production environment.
+      defaultValue: 'Monitor'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Block at perimeter
+      - Off
+      - Monitor
+      - Block
+    outputs:
+    - contextPath: ContrastSecurity.Incident.id
+      description: The ID of the Contrast Security incident.
+      type: String
+    - contextPath: ContrastSecurity.Incident.Rules.rule
+      description: The rule name of the Contrast Security incident.
+      type: String
+    - contextPath: ContrastSecurity.Incident.Rules.devMode
+      description: Development environment block mode for provided rule.
+      type: String
+    - contextPath: ContrastSecurity.Incident.Rules.qaMode
+      description: The blocking mode for the QA environment.
+      type: String
+    - contextPath: ContrastSecurity.Incident.Rules.prodMode
+      description: Production environment block mode for provided rule.
+      type: String
+  - name: contrastsecurity-issue-get
+    description: Get a specific Contrast Security Issue by ID.
+    arguments:
+    - name: issue_id
+      description: "Specify the ID of the Issue. Note: Use contrastsecurity-issue-list to retrieve the Issue ID."
+      required: true
+    outputs:
+    - contextPath: ContrastSecurity.Issues.issueId
+      description: Unique identifier for the issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.status
+      description: Current status of the issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.applicationId
+      description: Unique identifier of the application.
+      type: String
+    - contextPath: ContrastSecurity.Issues.title
+      description: Title of the vulnerability issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.ruleId
+      description: Vulnerability rule identifier (e.g., SQL Injection).
+      type: String
+    - contextPath: ContrastSecurity.Issues.applicationName
+      description: Name of the affected application.
+      type: String
+    - contextPath: ContrastSecurity.Issues.applicationLanguage
+      description: Programming language of the application.
+      type: String
+    - contextPath: ContrastSecurity.Issues.httpRoute
+      description: Affected HTTP route where the issue is found.
+      type: String
+    - contextPath: ContrastSecurity.Issues.currentIncidentId
+      description: Current associated incident ID.
+      type: String
+    - contextPath: ContrastSecurity.Issues.incidentCount
+      description: Total number of incidents related to the issue.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.observationCount
+      description: Number of observations recorded for the issue.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.attackCount
+      description: Total number of attacks detected.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.exploitedAttackCount
+      description: Number of successfully exploited attacks.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.suspiciousAttackCount
+      description: Number of suspicious attacks detected.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.blockedAttackCount
+      description: Number of blocked attacks.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.cvssScore
+      description: CVSS score indicating severity.
+      type: String
+    - contextPath: ContrastSecurity.Issues.cvssVector
+      description: CVSS vector string providing scoring details.
+      type: String
+    - contextPath: ContrastSecurity.Issues.createdAt
+      description: Timestamp when the issue was created.
+      type: Date
+    - contextPath: ContrastSecurity.Issues.closedAt
+      description: Timestamp when the issue was closed (if applicable).
+      type: Date
+    - contextPath: ContrastSecurity.Issues.lastAttackedAt
+      description: Timestamp of the last detected attack.
+      type: Date
+    - contextPath: ContrastSecurity.Issues.lastObservationAt
+      description: Timestamp of the last observation.
+      type: Date
+    - contextPath: ContrastSecurity.Issues.deploymentTier
+      description: Deployment environment tier (e.g., Development, Production).
+      type: Unknown
+    - contextPath: ContrastSecurity.Issues.vulnEventId
+      description: Unique identifier for the vulnerability event.
+      type: String
+    - contextPath: ContrastSecurity.Issues.lastAttackIdRef.appId
+      description: Application ID associated with the last attack.
+      type: String
+    - contextPath: ContrastSecurity.Issues.lastAttackIdRef.attackId
+      description: Unique identifier of the last attack.
+      type: String
+    - contextPath: ContrastSecurity.Issues.summary
+      description: Summary/description of the detected attack or issue.
+      type: String
+  - name: contrastsecurity-issue-list
+    description: List Contrast Security Issues with provided filter parameters.
+    arguments:
+    - name: incident_id
+      description: Specify the ID of the Incident to retrieve issues for a specific incident. If not provided, retrieves all issues.
+      required: false
+    - name: page_size
+      description: Number of results to return per page. Maximum value is 100.
+      defaultValue: '50'
+      required: false
+    - name: sort_by
+      description: Specify the field used to sort the Issues.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - cvss_score
+      - issue_id
+      - title
+      - status
+      - service_name
+      - created_at
+      - last_observation_at
+      - observation_count
+    - name: sort_order
+      description: Specify the order used to sort the Issues.
+      defaultValue: Asc
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Asc
+      - Desc
+    - name: page
+      description: Page number for pagination.
+      defaultValue: '0'
+      required: false
+    outputs:
+    - contextPath: ContrastSecurity.Issues.issueId
+      description: Unique identifier for the issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.status
+      description: Current status of the issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.applicationId
+      description: Unique identifier of the application.
+      type: String
+    - contextPath: ContrastSecurity.Issues.title
+      description: Title of the vulnerability issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.ruleId
+      description: Vulnerability rule identifier (e.g., SQL Injection).
+      type: String
+    - contextPath: ContrastSecurity.Issues.applicationName
+      description: Name of the affected application.
+      type: String
+    - contextPath: ContrastSecurity.Issues.applicationLanguage
+      description: Programming language of the application.
+      type: String
+    - contextPath: ContrastSecurity.Issues.httpRoute
+      description: Affected HTTP route where the issue is found.
+      type: String
+    - contextPath: ContrastSecurity.Issues.currentIncidentId
+      description: Current associated incident ID.
+      type: String
+    - contextPath: ContrastSecurity.Issues.incidentCount
+      description: Total number of incidents related to the issue.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.observationCount
+      description: Number of observations recorded for the issue.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.attackCount
+      description: Total number of attacks detected.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.exploitedAttackCount
+      description: Number of successfully exploited attacks.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.suspiciousAttackCount
+      description: Number of suspicious attacks detected.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.blockedAttackCount
+      description: Number of blocked attacks.
+      type: Number
+    - contextPath: ContrastSecurity.Issues.cvssScore
+      description: CVSS score indicating severity.
+      type: String
+    - contextPath: ContrastSecurity.Issues.cvssVector
+      description: CVSS vector string providing scoring details.
+      type: String
+    - contextPath: ContrastSecurity.Issues.createdAt
+      description: Timestamp when the issue was created.
+      type: Date
+    - contextPath: ContrastSecurity.Issues.closedAt
+      description: Timestamp when the issue was closed (if applicable).
+      type: Date
+    - contextPath: ContrastSecurity.Issues.lastAttackedAt
+      description: Timestamp of the last detected attack.
+      type: Date
+    - contextPath: ContrastSecurity.Issues.lastObservationAt
+      description: Timestamp of the last observation.
+      type: Date
+    - contextPath: ContrastSecurity.Issues.deploymentTier
+      description: Deployment environment tier (e.g., Development, Production).
+      type: List
+    - contextPath: ContrastSecurity.Issues.issueLink
+      description: Direct link to the issue in the Contrast Security platform.
+      type: String
+  - name: contrastsecurity-issue-comment-add
+    description: Add a comment to a Contrast Security Issue.
+    arguments:
+    - name: issue_id
+      description: Specify the ID of the Issue.
+      required: true
+    - name: comment
+      description: Comment text to add to the issue.
+      required: true
+    outputs:
+    - contextPath: ContrastSecurity.IssueComment.issue_id
+      description: The ID of the issue the comment was added to.
+      type: String
+    - contextPath: ContrastSecurity.IssueComment.commentId
+      description: Unique identifier of the comment.
+      type: String
+    - contextPath: ContrastSecurity.IssueComment.userId
+      description: Unique identifier of the user who made the comment.
+      type: String
+    - contextPath: ContrastSecurity.IssueComment.userUid
+      description: Email address of the user who made the comment.
+      type: String
+    - contextPath: ContrastSecurity.IssueComment.commentText
+      description: The actual comment text content.
+      type: String
+    - contextPath: ContrastSecurity.IssueComment.createdTime
+      description: Timestamp when the comment was created.
+      type: Date
+    - contextPath: ContrastSecurity.IssueComment.lastUpdatedTime
+      description: Timestamp when the comment was last updated.
+      type: Date
+  - name: contrastsecurity-issue-status-update
+    description: Update the status of a Contrast Security Issue.
+    arguments:
+    - name: issue_id
+      required: true
+      description: Specify the ID of the Issue.
+    - name: status
+      required: true
+      description: Specify status of the Issue.
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - Closed
+    outputs:
+    - contextPath: ContrastSecurity.Issues.id
+      description: Unique identifier of the issue.
+      type: String
+    - contextPath: ContrastSecurity.Issues.status
+      description: Updated status of the issue.
+      type: String
+  - name: contrastsecurity-observation-get
+    description: Get a specific Contrast Security Observation by ID.
+    arguments:
+    - name: observation_id
+      description: "Specify the ID of the observation."
+      required: true
+    outputs:
+    - contextPath: ContrastSecurity.Observations.teamserverAuthorizationFailure
+      description: Indicates if TeamServer authorization failed.
+      type: Boolean
+    - contextPath: ContrastSecurity.Observations.vulnEventId
+      description: Vulnerability event ID.
+      type: String
+    - contextPath: ContrastSecurity.Observations.eventStory
+      description: Story describing the event.
+      type: String
+    - contextPath: ContrastSecurity.Observations.eventRecommendation
+      description: Recommended action for the event.
+      type: String
+    - contextPath: ContrastSecurity.Observations.issueId
+      description: Unique identifier for the issue.
+      type: String
+    - contextPath: ContrastSecurity.Observations.type
+      description: Type of observation (LIBRARY, ATTACK, SAST).
+      type: String
+    - contextPath: ContrastSecurity.Observations.eventTime
+      description: Timestamp when the observation event occurred.
+      type: Date
+    - contextPath: ContrastSecurity.Observations.applicationId
+      description: Unique identifier of the affected application.
+      type: String
+    - contextPath: ContrastSecurity.Observations.applicationName
+      description: Name of the affected application.
+      type: String
+    - contextPath: ContrastSecurity.Observations.applicationLanguage
+      description: Programming language of the application.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.releaseDate
+      description: Release date of the library.
+      type: Date
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.version
+      description: Version of the library.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.closestStableVersion
+      description: Closest stable version available.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.latestStableVersion
+      description: Latest stable version available.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.licenses
+      description: Licenses associated with the library.
+      type: List
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.packageUrl
+      description: Package URL of the library.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.dependency
+      description: Dependency information for the library.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.vulnerabilities.name
+      description: CVE name of the vulnerability.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.vulnerabilities.description
+      description: Description of the vulnerability.
+      type: String
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.vulnerabilities.epssScore
+      description: EPSS score for the vulnerability.
+      type: Number
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.vulnerabilities.epssPercentile
+      description: EPSS percentile for the vulnerability.
+      type: Number
+    - contextPath: ContrastSecurity.Observations.scaLibraryResponseDto.vulnerabilities.cisa
+      description: Whether the vulnerability is tracked by CISA.
+      type: Boolean
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.incidentId
+      description: Incident ID for the attack.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.summary
+      description: Summary of the attack observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.recommendedActions
+      description: Recommended actions to address the attack.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackValueContextText
+      description: Context information about the attack value.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.vectorAnalysisContextText
+      description: Context text describing the vector analysis.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.vectorAnalysisCodeText
+      description: Code related to the vector analysis.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.requestDetails
+      description: Details of the HTTP request that triggered the attack.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.ruleUuid
+      description: UUID of the security rule related to the attack.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.url
+      description: URL where the attack was detected.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.codeLocation.file
+      description: Source file where the vulnerability exists.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.codeLocation.method
+      description: Method where the vulnerability exists.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.codeLocation.stack
+      description: Stack trace of the code location.
+      type: List
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackPayload.value
+      description: Actual attack payload value.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackPayload.attackerInput.name
+      description: Name of the attacker input field.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackPayload.attackerInput.inputType
+      description: Type of attacker input.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackPayload.attackerInput.confirmedAttack
+      description: Whether the attack was confirmed.
+      type: Boolean
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackPayload.attackerInput.effectiveAttack
+      description: Whether the attack was effective.
+      type: Boolean
+    - contextPath: ContrastSecurity.Observations.attackInsightsResponseDto.attackPayload.attackerInput.applicableAttack
+      description: Whether the attack is applicable.
+      type: Boolean
+    - contextPath: ContrastSecurity.Observations.sastResult
+      description: SAST analysis result.
+      type: String
+    - contextPath: ContrastSecurity.Observations.summary
+      description: Summary of the observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.stackTrace.description
+      description: Detailed description of the stack trace associated with the observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.stackTrace.type
+      description: The category or classification of the stack trace (e.g., error, warning).
+      type: String
+  - name: contrastsecurity-incident-observation-list
+    description: List Contrast Security incident Observations with provided filters.
+    arguments:
+    - name: incident_id
+      description: Specify the ID of the Incident.
+      required: true
+    - name: page_size
+      description: Number of results to return per page. Maximum value is 1000.
+      defaultValue: '10'
+      required: false
+    - name: next_page_cursor
+      description: Cursor token to get the next page of Observations.
+      required: false
+    - name: sort_by
+      description: Specify the field used to sort the Observations.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - http_source_ip
+      - http_route
+      - rule_id
+      - service_name
+      - server_name
+      - event_time
+      - attack_event_result
+      - attack_event_value
+    - name: sort_order
+      description: Specify the order used to sort the Observations.
+      defaultValue: Asc
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Asc
+      - Desc
+    outputs:
+    - contextPath: ContrastSecurity.Observations.observationId
+      description: Unique identifier of the observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.observationOrigin
+      description: Origin of the observation (VULNERABILITY, ATTACK_EVENT, etc.).
+      type: String
+    - contextPath: ContrastSecurity.Observations.title
+      description: Title of the observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.httpSourceIp
+      description: Source IP of the HTTP request.
+      type: String
+    - contextPath: ContrastSecurity.Observations.result
+      description: Result of the observation (e.g., EXPLOITED, NOT_EXPLOITED).
+      type: String
+    - contextPath: ContrastSecurity.Observations.issueId
+      description: Associated issue ID.
+      type: String
+    - contextPath: ContrastSecurity.Observations.httpRoute
+      description: HTTP route where the observation was detected.
+      type: String
+    - contextPath: ContrastSecurity.Observations.attackValue
+      description: Attack payload value.
+      type: String
+    - contextPath: ContrastSecurity.Observations.dataType
+      description: Type of observation data (ATTACK, LIBRARY, VULNERABILITY, etc.).
+      type: String
+    - contextPath: ContrastSecurity.Observations.ruleId
+      description: Rule ID associated with the observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.ruleName
+      description: Rule name associated with the observation.
+      type: String
+    - contextPath: ContrastSecurity.Observations.detectedTime
+      description: Timestamp when the observation was detected.
+      type: Date
+    - contextPath: ContrastSecurity.Observations.severity
+      description: Severity level of the observation (CRITICAL, HIGH, MEDIUM, LOW).
+      type: String
+    - contextPath: ContrastSecurity.Observations.score
+      description: Risk score of the observation.
+      type: Number
+    - contextPath: ContrastSecurity.Observations.applicationId
+      description: Application ID where the observation was detected.
+      type: String
+    - contextPath: ContrastSecurity.Observations.applicationName
+      description: Application name where the observation was detected.
+      type: String
+    - contextPath: ContrastSecurity.Observations.applicationLanguage
+      description: Programming language of the affected application.
+      type: String
+    - contextPath: ContrastSecurity.Observations.serverId
+      description: Server ID where the observation was detected.
+      type: String
+    - contextPath: ContrastSecurity.Observations.serverName
+      description: Server name where the observation was detected.
+      type: String
+    - contextPath: ContrastSecurity.Observations.serviceInstanceId
+      description: Service instance ID.
+      type: String
+    - contextPath: ContrastSecurity.Observations.serviceVersion
+      description: Version of the service.
+      type: String
+    - contextPath: ContrastSecurity.Observations.deploymentTier
+      description: Deployment tier of the application (DEVELOPMENT, PRODUCTION, etc.).
+      type: String
+  dockerimage: demisto/fastapi:0.125.0.7704170
+  longRunning: true
+  longRunningPort: true
+  script: '-'
+  subtype: python3
+  type: python
+  isFetchSamples: true
+  isremotesyncin: true
+  isremotesyncout: true
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false
+fromversion: 6.10.0
+tests:
+- No tests

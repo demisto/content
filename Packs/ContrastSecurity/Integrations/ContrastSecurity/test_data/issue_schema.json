@@ -1,0 +1,34 @@
+{
+    "alertReason": "Issue Created",
+    "alertType": "issue_created",
+    "applicationId": "dummy-app-id-001",
+    "applicationLanguage": "Java",
+    "applicationMetadata": {
+        "metadata": "dummy-metadata-value",
+        "testkey": "dummy-test-value"
+    },
+    "applicationName": "DUMMY_APPLICATION_001",
+    "closedTime": null,
+    "createdTime": "2026-03-24T16:29:14.261Z",
+    "cvssVector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/VC:N/VI:L/VA:N/SC:N/SI:L/SA:N/E:U",
+    "description": "This is a dummy description for testing purposes. Weak cryptographic implementation detected.",
+    "environments": [
+        "DEVELOPMENT"
+    ],
+    "eventType": "contrast_security_issuealert",
+    "httpRoute": "/api/dummy/endpoint",
+    "issueId": "ISS-2025-1",
+    "lastObserved": "2026-03-24T16:29:14.261Z",
+    "organizationUuid": "dummy-org-uuid-001",
+    "productName": "ContrastADR",
+    "relatedIncidents": ["INC-DUMMY-001"],
+    "ruleId": "dummy-rule-id-001",
+    "score": 1.7,
+    "severity": "LOW",
+    "source": "contrast-security-adr",
+    "status": "open",
+    "timestamp": "2026-03-24T16:29:19.446983009Z",
+    "title": "Dummy Issue Title - Weak Cryptographic Algorithm",
+    "updateTime": "2026-03-24T16:30:00.000Z",
+    "url": "https://dummy.contrast.com/issues/ISS-2025-1"
+}

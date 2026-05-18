@@ -1,0 +1,808 @@
+id: Incident Response - Contrast Security
+version: -1
+name: Incident Response - Contrast Security
+description: This master playbook handles all incident-related use cases by blocking source IPs and enabling the selected blocking mode for the specified ADR rules.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48cb98c7-e155-41f3-8857-eebed53e66bb
+    type: start
+    task:
+      id: 48cb98c7-e155-41f3-8857-eebed53e66bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7317334d-9065-4825-b749-3479d5ee6fc9
+    type: condition
+    task:
+      id: 7317334d-9065-4825-b749-3479d5ee6fc9
+      version: -1
+      name: Is ContrastSecurity integration enabled?
+      description: Checks whether ContrastSecurity integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ContrastSecurity
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 92b1b11d-92cb-499a-bb58-9db8580afe05
+    type: condition
+    task:
+      id: 92b1b11d-92cb-499a-bb58-9db8580afe05
+      version: -1
+      name: Check incident ID available in Context data
+      description: Check Incident ID available in Context data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+      - "8"
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: contrastsecurityincidentid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 53396817-7fb8-4ca5-84da-1e4e5656ed87
+    type: playbook
+    task:
+      id: 53396817-7fb8-4ca5-84da-1e4e5656ed87
+      version: -1
+      name: Block IP - Contrast Security
+      description: This playbook blocks IP addresses related to a Contrast Security incident based on the provided expiration time.
+      playbookName: Block IP - Contrast Security
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expiration_date:
+        complex:
+          root: Selection of IP Addresses to Block.Answers
+          accessor: "1"
+      incident_id:
+        complex:
+          root: incident
+          accessor: contrastsecurityincidentid
+      ip_addresses:
+        complex:
+          root: Selection of IP Addresses to Block.Answers
+          accessor: "0"
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ''
+              remove_keys: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2b14786d-6b69-4917-b34e-9e9d79b468b0
+    type: playbook
+    task:
+      id: 2b14786d-6b69-4917-b34e-9e9d79b468b0
+      version: -1
+      name: Enable Block Mode for ADR Rule - Contrast Security
+      description: This playbook enables block mode for a specific ADR rule associated with a Contrast Security incident.
+      playbookName: Enable Block Mode for ADR Rule - Contrast Security
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      dev_mode:
+        complex:
+          root: Selection of ADR Rule and Rule Blocking Mode.Answers
+          accessor: "1"
+      incident_id:
+        complex:
+          root: incident
+          accessor: contrastsecurityincidentid
+      prod_mode:
+        complex:
+          root: Selection of ADR Rule and Rule Blocking Mode.Answers
+          accessor: "3"
+      qa_mode:
+        complex:
+          root: Selection of ADR Rule and Rule Blocking Mode.Answers
+          accessor: "2"
+      rule_names:
+        complex:
+          root: Selection of ADR Rule and Rule Blocking Mode.Answers
+          accessor: "0"
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ''
+              remove_keys: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 986870a2-8351-4774-8c4c-e807959b19c6
+    type: title
+    task:
+      id: 986870a2-8351-4774-8c4c-e807959b19c6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0f0ddccc-eef4-4cce-9826-a6851d5a5a66
+    type: collection
+    task:
+      id: 0f0ddccc-eef4-4cce-9826-a6851d5a5a66
+      version: -1
+      name: Select the ADR rule to enable block mode
+      description: User input for selecting rules to enable, along with the chosen blocking mode.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Select the ADR rule to enable block mode
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select ADR Rules
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${incident.contrastsecurityrules}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Block mode will be enabled for the selected rules. If you do not want to enable block mode for these rules, click the Submit Answers button.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Select the Blocking mode for the Development environment.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Monitor
+        - simple: Block
+        - simple: Block at perimeter
+        - simple: "Off"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If no blocking mode is selected, the default mode is Monitor.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Select the Blocking mode for the QA environment.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Monitor
+        - simple: Block
+        - simple: Block at perimeter
+        - simple: "Off"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If no blocking mode is selected, the default mode is Monitor.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Select the Blocking mode for the Production environment.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Monitor
+        - simple: Block
+        - simple: Block at perimeter
+        - simple: "Off"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If no blocking mode is selected, the default mode is Monitor.
+        readonly: false
+      title: Selection of ADR Rule and Rule Blocking Mode
+      description: For the selected ADR rule, the specified blocking mode will be applied across the development, QA, and production environments.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 044843f9-0c08-457c-aa7a-e1cf5df30769
+    type: condition
+    task:
+      id: 044843f9-0c08-457c-aa7a-e1cf5df30769
+      version: -1
+      name: Check if the user selected any ADR rules
+      description: Check if the user selected any ADR rules
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Selection of ADR Rule and Rule Blocking Mode.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fde02d62-25ff-4010-a754-56b834eda952
+    type: collection
+    task:
+      id: fde02d62-25ff-4010-a754-56b834eda952
+      version: -1
+      name: Select the IP to block
+      description: User input for selecting IPs to block along with expiration time.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Select the IP to block
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select IPs to Block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: incident
+            accessor: contrastsecuritysourceip
+            transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: ipAddress
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Selected IPs will be blocked. If you do not want to block them, click the Submit Answers button.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the expiration duration for the IP address
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'If no expiration date is provided, the IP addresses will be blocked for Forever. Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z.'
+        readonly: false
+      title: Selection of IP Addresses to Block
+      description: Selected IPs will be blocked.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0a5dc892-4c97-4c10-8d85-7acdb1dd188a
+    type: condition
+    task:
+      id: 0a5dc892-4c97-4c10-8d85-7acdb1dd188a
+      version: -1
+      name: Check if the user selected any IP address
+      description: Check if the user selected any IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Selection of IP Addresses to Block.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 93a21f1f-2599-41e0-a742-a41299281fea
+    type: regular
+    task:
+      id: 93a21f1f-2599-41e0-a742-a41299281fea
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Selection of ADR Rule and Rule Blocking Mode,Selection of IP Addresses to Block,Comment for Incident Related Issues
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 577ab1de-b37b-481f-becc-6d4bc392a83c
+    type: regular
+    task:
+      id: 577ab1de-b37b-481f-becc-6d4bc392a83c
+      version: -1
+      name: Retrieve Contrast Security Incident Related Issues
+      description: Display Contrast Security incident issues in a table format.
+      scriptName: ContrastSecurityDisplayIncidentIssues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      incident_id:
+        simple: ${incident.contrastsecurityincidentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bf27d2d9-d2aa-48fe-8605-91af3158a462
+    type: playbook
+    task:
+      id: bf27d2d9-d2aa-48fe-8605-91af3158a462
+      version: -1
+      name: Issue Prioritization - Contrast Security
+      description: This playbook adds prioritization comments to issues related to the Contrast Security incident.
+      playbookName: Issue Prioritization - Contrast Security
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        complex:
+          root: Comment for Incident Related Issues.Answers
+          accessor: "0"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 375d09eb-9386-4f59-90a7-1c46dbab3a54
+    type: collection
+    task:
+      id: 375d09eb-9386-4f59-90a7-1c46dbab3a54
+      version: -1
+      name: Specify the message to add as a Issue comment
+      description: Provide the message to be sent as a comment on the contrast security incident-related issues.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Provide the message to be sent as a comment on the contrast security incident-related issues.
+      body:
+        simple: Provide the message to be sent as a comment on the contrast security incident-related issues.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the message to add as a comment
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If no message is provided, a default message will be added as the issue comment.
+        readonly: false
+      title: Comment for Incident Related Issues
+      description: Provide the message to be sent as a comment on the incident-related issues. If no message is provided, a default message will be added as the issue comment.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_10_yes": 0.55,
+      "1_5_#default#": 0.29,
+      "2_5_#default#": 0.11,
+      "2_6_yes": 0.76,
+      "7_5_#default#": 0.41,
+      "9_5_#default#": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1400,
+        "x": 180,
+        "y": -120
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

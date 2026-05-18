@@ -1,0 +1,55 @@
+{
+    "issueId": "ISS-2026-2",
+    "type": "ATTACK",
+    "eventTime": "2024-01-15T10:30:00.000Z",
+    "applicationId": "12345678-1234-1234-1234-123456789012",
+    "applicationName": "test-app-service",
+    "applicationLanguage": null,
+    "teamserverAuthorizationFailure": false,
+    "observationId": "A-D-b78412a9-2a35-4683-1777670053",
+    "vulnEventId": null,
+    "eventStory": null,
+    "eventRecommendation": null,
+    "attackInsightsResponseDto": {
+        "incidentId": null,
+        "summary": "Contrast observed an XML external entity being declared in the prolog of the following XML document:\n<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> <!DOCTYPE root [<!ENTITY xxe SYSTEM \"file:///dummy/path\">",
+        "recommendedActions": "We did not block this attack because blocking was not enabled for test-app-service in development.\nAdd an exclusion for this attack event.",
+        "attackValueContextText": "Contrast observed an XML external entity being declared in the prolog of the following XML document:",
+        "vectorAnalysisContextText": "The XML parser would have resolved the following resources and placed them into the XML document",
+        "vectorAnalysisCodeText": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> <!DOCTYPE root [<!ENTITY xxe SYSTEM \"file:///dummy/path\">",
+        "requestDetails": "POST /api/process http/1.1\nAccept: text/plain, application/json\nHost: localhost:8080\nUser-Agent: Java/11.0.0",
+        "ruleUuid": "xxe",
+        "attackPayload": {
+            "attackerInput": {
+                "confirmedAttack": true,
+                "effectiveAttack": true,
+                "applicableAttack": false,
+                "patternsMatched": [""],
+                "name": "XML Prolog",
+                "inputType": "UNKNOWN",
+                "documentType": "NORMAL",
+                "documentPath": ""
+            },
+            "value": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> <!DOCTYPE root [<!ENTITY xxe SYSTEM \"file:///dummy/path\">"
+        },
+        "codeLocation": {
+            "file": "sample.py",
+            "method": "parse_xml()",
+            "stack": [
+                {
+                    "type": "frameSink",
+                    "description": "/app/sample.py.parse_xml(sample.py:100)"
+                },
+                {
+                    "type": "frameCustom",
+                    "description": "/app/sample.py.handle_request(sample.py:200)"
+                }
+            ]
+        },
+        "url": "/api/test"
+    },
+    "sastResult": null,
+    "summary": null,
+    "stackTrace": null,
+    "scaLibraryResponseDto": null
+}
