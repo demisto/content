@@ -416,8 +416,6 @@ def main(
         command_params=COMMAND_PARAMS_AKAMAI_SIEM,
         param_defaults=PARAM_DEFAULTS_AKAMAI_SIEM,
         output_json_path=akamai_siem_mapping,
-        manual_command_to_capability_json={"longRunning": ["Log Collection"]}
-        
     )
 
     print("\n=== Step 4/4: Akamai WAF SIEM — manifest_generator (append handler) ===")

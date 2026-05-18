@@ -25,6 +25,64 @@ COMMAND_TO_CAPABILITY: dict[str, str] = {
     "fetch-assets": FETCH_ASSETS_CAPABILITIES,
 }
 
+# Source of truth for routing the long-running parameter (longRunningPort) and the
+# `long-running-execution` command (plus its params from command_params) to the
+# correct capability. Keys are the integration's ``commonfields.id`` (the exact
+# id field inside the YML — NOT the folder name). Sourced from
+# long_running_capability_mapping.csv and verified against each YML's actual id.
+# Integration ids missing from this dict fall through to the existing routing
+# rules (likely landing in Automation).
+#
+# Note: SlackV3 and SlackV3v2 both have ``commonfields.id: SlackV3``, so a single
+# entry covers both. Both map to AUTOMATION_CAPABILITY anyway, so the dedup is
+# semantically lossless.
+INTEGRATION_TO_LONGRUNNING_CAPABILITY: dict[str, str] = {
+    "Akamai WAF SIEM": FETCH_EVENTS_CAPABILITIES,
+    "AWS-SNS-Listener": AUTOMATION_CAPABILITY,
+    "Kali Dog Security CertStream": FETCH_ISSUES_CAPABILITIES,
+    "CommvaultSecurityIQ": AUTOMATION_CAPABILITY,
+    "CrowdStrike Falcon Streaming v2": FETCH_ISSUES_CAPABILITIES,
+    "EDL": FETCH_INDICATORS_CAPABILITIES,
+    "ExportIndicators": FETCH_INDICATORS_CAPABILITIES,
+    "Generic Webhook": AUTOMATION_CAPABILITY,
+    "Generic Webhook (Form Data)": AUTOMATION_CAPABILITY,
+    "Google Chronicle Backstory Streaming API": FETCH_ISSUES_CAPABILITIES,
+    "LookoutMobileEndpointSecurity": FETCH_EVENTS_CAPABILITIES,
+    "MattermostV2": AUTOMATION_CAPABILITY,
+    "Microsoft Teams": AUTOMATION_CAPABILITY,
+    "PingCastle": FETCH_ISSUES_CAPABILITIES,
+    "Proofpoint Email Security Event Collector": FETCH_EVENTS_CAPABILITIES,
+    "Publish List": AUTOMATION_CAPABILITY,
+    "QRadar v3": FETCH_ISSUES_CAPABILITIES,
+    "Retarus Secure Email Gateway": FETCH_EVENTS_CAPABILITIES,
+    "Simple API Proxy": AUTOMATION_CAPABILITY,
+    "SlackV3": AUTOMATION_CAPABILITY,  # Also covers SlackV3v2 (same commonfields.id)
+    "Symantec Cloud Secure Web Gateway Event Collector": FETCH_EVENTS_CAPABILITIES,
+    "Symantec Endpoint Security": FETCH_EVENTS_CAPABILITIES,
+    "Syslog v2": FETCH_ISSUES_CAPABILITIES,
+    "TAXII2 Server": FETCH_INDICATORS_CAPABILITIES,
+    "TAXII Server": FETCH_INDICATORS_CAPABILITIES,
+    "UBIRCH": AUTOMATION_CAPABILITY,
+    "Web File Repository": AUTOMATION_CAPABILITY,
+    "Workday_IAM_Event_Generator": AUTOMATION_CAPABILITY,
+    "WorkdaySignonEventGenerator": AUTOMATION_CAPABILITY,
+    "XSOAR-Web-Server": AUTOMATION_CAPABILITY,
+    "Zoom": AUTOMATION_CAPABILITY,
+}
+
+LONG_RUNNING_EXECUTION_COMMAND = "long-running-execution"
+LONG_RUNNING_PORT_PARAM = "longRunningPort"
+LONG_RUNNING_FLAG_PARAM = "longRunning"
+
+# Params that must be routed ONLY to the long-running suggested capability
+# (per INTEGRATION_TO_LONGRUNNING_CAPABILITY). They are placed by Rule 7 in
+# `decide_capabilities` and are guarded against the rest of the pipeline:
+#   - `_handle_test_module`, `_single_capability_shortcut`,
+#     `_multi_capability_mapping` skip them (won't re-add them anywhere else)
+#   - `_deduplicate` exempts them (won't move them to `general_configurations`
+#     even if they appear elsewhere — Rule 7 is authoritative)
+PINNED_LONG_RUNNING_PARAMS: frozenset[str] = frozenset({LONG_RUNNING_FLAG_PARAM})
+
 EXCLUDED_AUTOMATION_PATTERNS: list[str] = [
     "get-indicators",
     "get-events",
@@ -129,6 +187,18 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
             result[AUTOMATION_CAPABILITY] = []
             break
 
+    # Rule 7 - Long-running suggested capability
+    # If the integration declares longRunning AND its id is in the
+    # INTEGRATION_TO_LONGRUNNING_CAPABILITY override dict, ensure the suggested
+    # capability key exists in result so Step 2 has a target to route to.
+    if script.get("longRunning") is True:
+        integration_id: str = (integration_yml.get("commonfields") or {}).get("id", "")
+        suggested = INTEGRATION_TO_LONGRUNNING_CAPABILITY.get(integration_id, "")
+        if suggested not in result:
+            result[suggested] = ["longRunning"]
+        elif "longRunning" not in result[suggested]:
+            result[suggested].append("longRunning")
+
     return result
 
 
@@ -150,6 +220,9 @@ def _handle_test_module(
     test_module_params: list[str] = commands_section.get("test-module", []) or []
     general_set: set = set(result["general_configurations"])
     for param in test_module_params:
+        if param in PINNED_LONG_RUNNING_PARAMS:
+            # Pinned params are owned by Rule 7 — never add to general_configurations
+            continue
         if param not in param_defaults and param not in general_set:
             result["general_configurations"].append(param)
             general_set.add(param)
@@ -182,7 +255,6 @@ def _apply_manual_mapping(
         return handled_commands
 
     commands_section: dict = command_params.get("commands") or {}
-    placed_per_cap: dict[str, set] = {}
     for cmd_name, capability_list in manual_command_to_capability.items():
         # Ensure each capability exists.
         for cap in capability_list:
@@ -194,14 +266,6 @@ def _apply_manual_mapping(
         for cmd_params in commands_section.values():
             if cmd_name in cmd_params:
                 cmd_params.remove(cmd_name)
-        # params = commands_section.get(cmd_name) or []
-        # for cap in capability_list:
-        #     cap_set = placed_per_cap.setdefault(cap, set(result[cap]))
-        #     for param in params:
-        #         if param not in cap_set:
-        #             result[cap].append(param)
-        #             cap_set.add(param)
-        # handled_commands.add(cmd_name)
     return handled_commands
 
 
@@ -219,6 +283,10 @@ def _single_capability_shortcut(
         cap for cap in result if cap != "general_configurations"
     )
     already_placed = set(result["general_configurations"])
+    # Pinned long-running params are routed by Rule 7 only — exclude them from
+    # the target capability list (they are already placed in the suggested
+    # capability, which may or may not be the same as target_capability).
+    already_placed |= PINNED_LONG_RUNNING_PARAMS
     seen: set = set()
     commands_section: dict = command_params.get("commands") or {}
     for cmd_name, params in commands_section.items():
@@ -231,20 +299,31 @@ def _single_capability_shortcut(
             result[target_capability].append(param)
 
 
-def _resolve_target_capability(cmd_name: str, result: dict[str, list[str]]) -> str:
+def _resolve_target_capability(
+    cmd_name: str,
+    result: dict[str, list[str]],
+    integration_id: str = "",
+) -> str:
     """Decide which capability a command's params should be routed to.
 
     Resolution order:
-    1. Exact match in ``COMMAND_TO_CAPABILITY`` (e.g. ``"fetch-events"`` →
+    1. Long-running override: if ``cmd_name == "long-running-execution"`` AND
+       ``integration_id`` is in ``INTEGRATION_TO_LONGRUNNING_CAPABILITY`` →
+       return the suggested capability from the dict.
+    2. Exact match in ``COMMAND_TO_CAPABILITY`` (e.g. ``"fetch-events"`` →
        ``"Log Collection"``).
-    2. Substring routing:
+    3. Substring routing:
        - If ``"get-events"`` in command name AND ``"Log Collection"`` exists
          in the capabilities → ``"Log Collection"``.
        - If ``"get-indicators"`` in command name AND
          ``"Threat Intelligence & Enrichment"`` exists in the capabilities →
          ``"Threat Intelligence & Enrichment"``.
-    3. Fallback: ``"Automation"``.
+    4. Fallback: ``"Automation"``.
     """
+    if cmd_name == LONG_RUNNING_EXECUTION_COMMAND:
+        suggested = INTEGRATION_TO_LONGRUNNING_CAPABILITY.get(integration_id)
+        if suggested:
+            return suggested
     if cmd_name in COMMAND_TO_CAPABILITY:
         return COMMAND_TO_CAPABILITY[cmd_name]
     if "get-events" in cmd_name and FETCH_EVENTS_CAPABILITIES in result:
@@ -258,6 +337,7 @@ def _multi_capability_mapping(
     result: dict[str, list[str]],
     command_params: dict,
     handled_commands: set | None = None,
+    integration_id: str = "",
 ) -> None:
     """
     command_params structure- {integration: '', commands: {command: [params]}}
@@ -265,6 +345,9 @@ def _multi_capability_mapping(
     (or ``Automation``).  Skips test-module (handled in 2.1) and any command
     already routed by manual mapping (Step 2.1.5).  Warns if the target
     capability is missing from the result mapping.
+
+    ``integration_id`` is forwarded to ``_resolve_target_capability`` so the
+    long-running override can take effect for ``long-running-execution``.
 
     Uses a ``placed_per_cap`` dict-of-sets for O(1) per-capability dedup
     instead of scanning ``result[target]`` linearly on every check.
@@ -275,10 +358,13 @@ def _multi_capability_mapping(
     for cmd_name, params in commands_section.items():
         if cmd_name == "test-module" or cmd_name in handled_commands:
             continue
-        target = _resolve_target_capability(cmd_name, result)
+        target = _resolve_target_capability(cmd_name, result, integration_id)
         if target in result:
             cap_set = placed_per_cap.setdefault(target, set(result[target]))
             for param in params or []:
+                if param in PINNED_LONG_RUNNING_PARAMS:
+                    # Pinned params are owned by Rule 7 — never auto-routed here.
+                    continue
                 if param not in cap_set:
                     result[target].append(param)
                     cap_set.add(param)
@@ -295,16 +381,34 @@ def _deduplicate(result: dict[str, list[str]]) -> None:
     ``general_configurations`` plus another capability) into
     ``general_configurations`` exactly once.
 
+    Pinned long-running params (``PINNED_LONG_RUNNING_PARAMS``) are EXEMPT:
+    they are owned by Rule 7 and must remain only in the suggested long-running
+    capability. If they accidentally appear elsewhere, they are stripped from
+    every other capability rather than moved to ``general_configurations``.
+
     Uses a snapshot ``general_set`` for O(1) membership lookup at the final
     insertion step instead of an O(n) list scan per duplicate.
     """
+    # Pin-correction pass: ensure pinned params live in exactly one capability
+    # (the long-running suggested capability), never in general_configurations
+    # or other capabilities they may have ended up in.
+    for capability in list(result.keys()):
+        if capability == "general_configurations":
+            result[capability] = [
+                p for p in result[capability] if p not in PINNED_LONG_RUNNING_PARAMS
+            ]
+
     # Count occurrences of every param across all keys.
     occurrences: dict[str, int] = {}
     for params in result.values():
         for param in params:
             occurrences[param] = occurrences.get(param, 0) + 1
 
-    duplicated = {p for p, count in occurrences.items() if count >= 2}
+    duplicated = {
+        p
+        for p, count in occurrences.items()
+        if count >= 2 and p not in PINNED_LONG_RUNNING_PARAMS
+    }
     if not duplicated:
         return
 
@@ -405,6 +509,49 @@ def _filter_hidden_params(
         )
 
 
+def _route_long_running_param(
+    result: dict[str, list[str]],
+    integration_yml: dict | None,
+    param_defaults: dict,
+    integration_id: str,
+) -> None:
+    """Step 2.0 — Route the literal ``longRunningPort`` config param to the
+    suggested long-running capability for this integration.
+
+    Pre-conditions for routing:
+      - ``integration_yml`` is provided and declares ``script.longRunning: true``
+      - ``integration_id`` is present in ``INTEGRATION_TO_LONGRUNNING_CAPABILITY``
+      - The integration's YAML configuration contains a param named
+        ``longRunningPort`` that is NOT in ``param_defaults`` (defaults override
+        keeps general-configurations behavior).
+
+    The suggested capability key is expected to already exist in ``result``
+    (created by ``decide_capabilities``'s Rule 7); a defensive check creates it
+    if missing. The append is dedup-safe.
+
+    All other long-running-related config params (listener URL, certificate,
+    etc.) intentionally fall through to the standard flow.
+    """
+    if integration_yml is None or not integration_id:
+        return
+    script: dict = integration_yml.get("script") or {}
+    if script.get("longRunning") is not True:
+        return
+    suggested = INTEGRATION_TO_LONGRUNNING_CAPABILITY.get(integration_id)
+    if not suggested:
+        return
+    has_long_running_port = any(
+        p.get("name") == LONG_RUNNING_PORT_PARAM
+        for p in (integration_yml.get("configuration") or [])
+    )
+    if not has_long_running_port:
+        return
+    if suggested not in result:
+        result[suggested] = []
+    if LONG_RUNNING_PORT_PARAM not in result[suggested]:
+        result[suggested].append(LONG_RUNNING_PORT_PARAM)
+
+
 def is_single_capability(results):
     return len(results) == 2
 
@@ -420,11 +567,19 @@ def map_params_to_capabilities(
     derived from the supplied ``command_params`` and ``param_defaults`` JSON
     inputs. ``manual_command_to_capability`` (optional) overrides automatic
     routing for any listed commands. ``integration_yml`` (optional) enables
-    Step 2.6 — filtering out params hidden on the Cortex Platform."""
+    Step 2.0 (long-running param routing) and Step 2.6 (filtering out params
+    hidden on the Cortex Platform)."""
     manual_command_to_capability = manual_command_to_capability or {}
+    integration_id: str = ""
+    if integration_yml is not None:
+        integration_id = (integration_yml.get("commonfields") or {}).get("id", "")
 
     # Work on a fresh dict so the caller's data is untouched.
     result: dict[str, list[str]] = {k: list(v) for k, v in capabilities.items()}
+
+    # Step 2.0 (NEW) - route the longRunningPort config param to the suggested
+    # long-running capability (if applicable).
+    _route_long_running_param(result, integration_yml, param_defaults, integration_id)
 
     # Step 2.1
     _handle_test_module(result, command_params, param_defaults)
@@ -438,8 +593,11 @@ def map_params_to_capabilities(
         # Step 2.2 - single-capability shortcut (skip 2.3)
         _single_capability_shortcut(result, command_params, handled_commands)
     else:
-        # Step 2.3 - multi-capability mapping
-        _multi_capability_mapping(result, command_params, handled_commands)
+        # Step 2.3 - multi-capability mapping (forwards integration_id so the
+        # long-running-execution command is routed by the override dict)
+        _multi_capability_mapping(
+            result, command_params, handled_commands, integration_id
+        )
 
     # Step 2.4 - deduplicate
     _deduplicate(result)
