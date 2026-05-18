@@ -1,3 +1,10 @@
+sectionorder:
+- Connect
+- Collect
+- Optimize
+- Mirroring
+- Result
+- Agentic Assistant
 category: Vulnerability Management
 provider: Cohesity
 commonfields:
@@ -122,20 +129,20 @@ script:
   - arguments:
     - description: The alert ID to suppress.
       name: alert_id
-      required: true
+      required: false
     description: Ignore detected anomalous object by suppressing the alert.
     name: cohesity-helios-ignore-anomalous-object
   - arguments:
     - description: The alert ID to restore the latest clean snapshot for.
       name: alert_id
-      required: true
+      required: false
     description: Restore the latest clean snapshot for the given object using incidence details.
     name: cohesity-helios-restore-latest-clean-snapshot
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.9022922
 marketplaces:
 - xsoar
 - marketplacev2
