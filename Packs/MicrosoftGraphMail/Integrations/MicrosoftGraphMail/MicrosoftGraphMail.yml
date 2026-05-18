@@ -1183,7 +1183,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Creates a new mailbox rule in the user's Inbox folder. If the is_enabled argument is not supplied, the rule is created disabled per the Microsoft Graph API default.
+    description: Creates a new mailbox rule in the user's Inbox folder. If the is_enabled argument is not supplied, the rule is created disabled per the Microsoft Graph API default. If no sequence is provided, the rule is created with sequence 1, meaning it will run first in line.
     name: msgraph-mail-create-rule
     outputs:
     - contextPath: MSGraphMail.Rule.id

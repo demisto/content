@@ -813,7 +813,7 @@ Retrieves Mail Tips for the specified email address, including out-of-office sta
 ### msgraph-mail-create-rule
 
 ***
-Creates a new mailbox rule in the user's Inbox folder. If the is_enabled argument is not supplied, the rule is created disabled per the Microsoft Graph API default.
+Creates a new mailbox rule in the user's Inbox folder. If the is_enabled argument is not supplied, the rule is created disabled per the Microsoft Graph API default. If no sequence is provided, the rule is created with sequence 1, meaning it will run first in line.
 
 #### Base Command
 

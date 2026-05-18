@@ -2282,13 +2282,6 @@ def test_update_rule_empty_body_guard():
     assert str(exc_info.value).startswith("At least one updatable field must be provided")
 
 
-# Note: We intentionally do NOT test for client-side sequence validation
-# on update either; Graph rejects invalid sequence values server-side.
-
-
-# ---------- get_mailbox_settings_command (T11) ----------
-
-
 def test_get_settings_happy(mocker):
     """
     Given:
@@ -2323,9 +2316,6 @@ def test_get_settings_happy(mocker):
     # @odata.* keys stripped
     for k in result.outputs:
         assert not k.startswith("@odata")
-
-
-# ---------- get_mail_tips_command (T12-T13) ----------
 
 
 def test_get_mailtips_happy(mocker):
@@ -2384,9 +2374,6 @@ def test_get_mailtips_missing_email_address():
     with pytest.raises(DemistoException) as exc_info:
         get_mail_tips_command(client, {})
     assert "email_address" in str(exc_info.value)
-
-
-# ---------- parse_json_arg helper (T14) ----------
 
 
 @pytest.mark.parametrize(
