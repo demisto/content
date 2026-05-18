@@ -2290,19 +2290,11 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     return results
 
 
-# All mailTipsType flag values (per Microsoft Graph mailTipsType enum docs).
-ALL_MAIL_TIPS_OPTIONS = [
-    "automaticReplies",
-    "mailboxFullStatus",
-    "customMailTip",
-    "externalMemberCount",
-    "totalMemberCount",
-    "maxMessageSize",
-    "deliveryRestriction",
-    "moderationStatus",
-    "recipientScope",
-    "recipientSuggestions",
-]
+ALL_MAIL_TIPS_OPTIONS: str = (
+    "automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,"
+    "totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,"
+    "recipientScope,recipientSuggestions"
+)
 
 
 def parse_json_arg(value, arg_name: str):
@@ -2452,23 +2444,10 @@ def get_mailbox_settings_command(client: MsGraphMailBaseClient, args: dict) -> C
     # Synthesize a key field — Graph does not return an 'id' on this endpoint.
     outputs["userId"] = user_id
 
-    # Build a flat readable summary of the top-level scalar fields.
-    flat_summary = {
-        "User ID": user_id,
-        "Time Zone": outputs.get("timeZone"),
-        "Date Format": outputs.get("dateFormat"),
-        "Time Format": outputs.get("timeFormat"),
-        "Language": (outputs.get("language") or {}).get("displayName"),
-        "User Purpose": outputs.get("userPurpose"),
-        "Automatic Replies Status": (outputs.get("automaticRepliesSetting") or {}).get("status"),
-        "Delegate Meeting Delivery": outputs.get("delegateMeetingMessageDeliveryOptions"),
-        "Archive Folder": outputs.get("archiveFolder"),
-    }
-
     readable_output = tableToMarkdown(
         f"Mailbox settings for user {user_id}",
-        flat_summary,
-        headers=list(flat_summary.keys()),
+        outputs,
+        headers=["userID","timeZone","dateFormat","userPurpose","archiveFolder"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -2502,7 +2481,6 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
     table_rows = []
     for tip in outputs:
         addr_obj = tip.get("emailAddress") or {}
-        auto_replies = tip.get("automaticReplies") or {}
         err = tip.get("error") or {}
         table_rows.append(
             {
@@ -2510,7 +2488,6 @@ def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandR
                 "Display Name": addr_obj.get("name"),
                 "Mailbox Full": tip.get("mailboxFull"),
                 "Recipient Scope": tip.get("recipientScope"),
-                "Auto-Reply Message": (auto_replies.get("message") or "").strip()[:120] or None,
                 "Total Members": tip.get("totalMemberCount"),
                 "External Members": tip.get("externalMemberCount"),
                 "Max Message Size (bytes)": tip.get("maxMessageSize"),
