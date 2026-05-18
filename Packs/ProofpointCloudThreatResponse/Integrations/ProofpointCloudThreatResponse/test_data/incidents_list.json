@@ -1,0 +1,32 @@
+{
+    "incidents": [
+        {
+            "id": "440def43-c322-42ba-a6d6-a2306128ea3b",
+            "displayId": 781,
+            "title": "Suspicious login attempt",
+            "state": "open",
+            "createdAt": "2024-11-26 16:18:07",
+            "updatedAt": "2024-11-26 16:19:07",
+            "messageCount": 3,
+            "assignedTeamName": "Tier 1",
+            "sourceTypes": ["abuse_mailbox"],
+            "sourcesData": [{"name": "abuse_mailbox", "type": "abuse_mailbox"}],
+            "dispositions": ["phish"],
+            "clearConfidences": ["confidence_high"]
+        },
+        {
+            "id": "550def43-c322-42ba-a6d6-a2306128ea3c",
+            "displayId": 782,
+            "title": "Manual review required",
+            "state": "closed",
+            "createdAt": "2024-11-26 16:18:08",
+            "updatedAt": "2024-11-26 16:20:07",
+            "messageCount": 1,
+            "assignedTeamName": "Tier 2",
+            "sourceTypes": ["tap"],
+            "sourcesData": [{"name": "tap", "type": "tap"}],
+            "dispositions": ["malware"],
+            "clearConfidences": ["confidence_medium"]
+        }
+    ]
+}

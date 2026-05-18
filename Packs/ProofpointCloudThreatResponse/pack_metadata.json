@@ -1,0 +1,30 @@
+{
+    "name": "Proofpoint Cloud Threat Response",
+    "description": "Proofpoint Cloud Threat Response (CTR) is the cloud-based alternative to TRAP (Threat Response Auto-Pull). This pack fetches CTR incidents into XSOAR for case management and exposes commands to list and retrieve incident details.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-05-18T00:00:00Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
+    "keywords": [
+        "Proofpoint",
+        "Cloud Threat Response",
+        "CTR",
+        "TRAP"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

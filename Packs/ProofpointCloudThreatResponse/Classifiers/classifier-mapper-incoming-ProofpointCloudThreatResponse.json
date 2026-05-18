@@ -1,0 +1,247 @@
+{
+    "description": "Maps incoming Proofpoint Cloud Threat Response incident fields to Cortex XSOAR Common Type fields.",
+    "feed": false,
+    "id": "Proofpoint Cloud Threat Response - Incoming Mapper",
+    "mapping": {
+        "Cloud Threat Response Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "External ID": {
+                    "simple": "summary.id"
+                },
+                "External System ID": {
+                    "simple": "summary.displayId"
+                },
+                "External Status": {
+                    "simple": "summary.state"
+                },
+                "External Last Updated Time": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "getField",
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "updated_at"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "Max"
+                            }
+                        ]
+                    }
+                },
+                "Source Urgency": {
+                    "simple": "summary.priority"
+                },
+                "Alert Source": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "incident_creation"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "activity_details.source_name"
+                    }
+                },
+                "Assigned User": {
+                    "simple": "summary.assignedApplicationUserName"
+                },
+                "Source Create Time": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "incident_creation"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "created_at"
+                    }
+                },
+                "Occurred": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "incident_creation"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "occurred_at"
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "incident_creation"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "cause_type"
+                    }
+                },
+                "Source Priority": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "incident_creation"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "activity_details.initial_priority"
+                    }
+                },
+                "Alert Action": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "quarantine"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "activity_details.quarantine_attempts.disposition"
+                    }
+                },
+                "Source Status": {
+                    "complex": {
+                        "root": "activities",
+                        "filters": [
+                            [
+                                {
+                                    "operator": "isEqualString",
+                                    "left": {
+                                        "value": {
+                                            "simple": "type"
+                                        },
+                                        "iscontext": true
+                                    },
+                                    "right": {
+                                        "value": {
+                                            "simple": "quarantine"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "accessor": "activity_details.quarantine_attempts.state"
+                    }
+                },
+                "uuid": {
+                    "simple": "id"
+                },
+                "title": {
+                    "simple": "title"
+                },
+                "state": {
+                    "simple": "state"
+                },
+                "starttime": {
+                    "simple": "createdAt"
+                },
+                "lastupdatetime": {
+                    "simple": "updatedAt"
+                },
+                "teamname": {
+                    "simple": "assignedTeamName"
+                },
+                "alertsource": {
+                    "simple": "sourcesData.name"
+                },
+                "verdict": {
+                    "simple": "dispositions"
+                },
+                "externalconfidence": {
+                    "simple": "clearConfidences"
+                }
+            }
+        }
+    },
+    "name": "Proofpoint Cloud Threat Response - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

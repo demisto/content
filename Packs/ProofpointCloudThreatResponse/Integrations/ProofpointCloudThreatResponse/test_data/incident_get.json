@@ -1,0 +1,38 @@
+{
+    "summary": {
+        "id": "440def43-c322-42ba-a6d6-a2306128ea3b",
+        "displayId": 781,
+        "title": "Suspicious login attempt",
+        "state": "open",
+        "createdAt": "2024-11-26 16:18:07",
+        "updatedAt": "2024-11-26 16:19:07",
+        "priority": "high",
+        "messageCount": 3,
+        "assignedTeamName": "Tier 1",
+        "assignedApplicationUserName": "analyst@example.com"
+    },
+    "activities": [
+        {
+            "type": "incident_creation",
+            "created_at": "2024-11-26 16:18:07",
+            "occurred_at": "2024-11-26 16:18:00",
+            "updated_at": "2024-11-26 16:18:07",
+            "cause_type": "system",
+            "causing_user_name": null,
+            "activity_details": {
+                "source_name": "abuse_mailbox",
+                "initial_priority": "high"
+            }
+        },
+        {
+            "type": "quarantine",
+            "created_at": "2024-11-26 16:18:30",
+            "updated_at": "2024-11-26 16:18:30",
+            "activity_details": {
+                "quarantine_attempts": [
+                    {"disposition": "phish", "state": "succeeded"}
+                ]
+            }
+        }
+    ]
+}

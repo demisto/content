@@ -1,0 +1,222 @@
+category: Case Management
+commonfields:
+  id: Proofpoint Cloud Threat Response
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://threatprotection-api.proofpoint.com
+  type: 0
+  required: true
+  additionalinfo: The base URL of the Proofpoint Cloud Threat Response API.
+- displaypassword: Client Secret
+  display: Client ID
+  name: credentials
+  type: 9
+  required: true
+  additionalinfo: The Client ID and Client Secret generated from your Proofpoint Threat Response account (API Key Management).
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: Cloud Threat Response Incident
+  type: 13
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: '50'
+  type: 0
+  required: false
+  additionalinfo: The maximum number of incidents to fetch each interval. Default and maximum is 200.
+- display: Fetch delta (minutes)
+  name: fetch_delta
+  defaultvalue: '1'
+  type: 0
+  required: false
+  additionalinfo: An additional buffer (in minutes) subtracted from the start of each fetch window to mitigate clock drift and ensure no incidents are missed.
+- display: Fetch incidents with specific states
+  name: fetch_states
+  defaultvalue: open_incidents
+  type: 15
+  required: false
+  options:
+  - open_incidents
+  - closed_incidents
+  additionalinfo: Must be set when fetch is enabled. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR for case management, and exposes commands to list and retrieve incident details.
+display: Proofpoint Cloud Threat Response
+name: Proofpoint Cloud Threat Response
+script:
+  commands:
+  - name: proofpoint-ctr-incidents-list
+    description: Returns a list of Proofpoint Cloud Threat Response incidents matching the supplied filters.
+    arguments:
+    - name: start_time
+      description: The start of the time range filter. Accepts a free text date (e.g., `3 days`, `2024-11-26T16:18:07Z`).
+    - name: end_time
+      description: The end of the time range filter. Accepts a free text date. Defaults to now when omitted.
+    - name: incident_id_filters
+      description: A comma-separated list of incident `displayId` values (numeric). For example, `781,782`.
+      isArray: true
+    - name: source_filters
+      description: Filter incidents by source.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - abuse_mailbox
+      - tap
+      - smart_search
+      - message_csv_upload
+    - name: other_filters
+      description: Filter incidents by state or VAP. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - open_incidents
+      - closed_incidents
+      - vap
+    - name: verdict_filters
+      description: Filter incidents by verdict.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - verdict_failed
+      - verdict_low_risk
+      - verdict_manual_review
+      - verdict_threat
+    - name: disposition
+      description: Filter incidents by disposition.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - bulk
+      - clean
+      - impostor
+      - in_progress
+      - internal
+      - low_risk
+      - malware
+      - manual_review
+      - not_set
+      - phish
+      - scam
+      - simulated_phish
+      - spam
+      - suspicious
+      - tap_false_positive
+      - toad
+      - vendor
+    - name: confidence_filters
+      description: Filter incidents by confidence level.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - confidence_high
+      - confidence_medium
+      - confidence_low
+    - name: limit
+      description: The maximum number of incidents to return. Default is 50.
+      defaultValue: '50'
+    outputs:
+    - contextPath: ProofPointCloud.Incident.id
+      description: The internal UUID of the incident.
+      type: String
+    - contextPath: ProofPointCloud.Incident.displayId
+      description: The numeric display ID of the incident.
+      type: Number
+    - contextPath: ProofPointCloud.Incident.title
+      description: The incident title.
+      type: String
+    - contextPath: ProofPointCloud.Incident.state
+      description: The state of the incident (open/closed).
+      type: String
+    - contextPath: ProofPointCloud.Incident.createdAt
+      description: The creation timestamp of the incident.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.updatedAt
+      description: The last update timestamp of the incident.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.messageCount
+      description: The number of messages associated with the incident.
+      type: Number
+    - contextPath: ProofPointCloud.Incident.assignedTeamName
+      description: The name of the team the incident is assigned to.
+      type: String
+    - contextPath: ProofPointCloud.Incident.sourceTypes
+      description: The list of source types that produced the incident.
+      type: Unknown
+    - contextPath: ProofPointCloud.Incident.dispositions
+      description: The list of dispositions assigned to the incident.
+      type: Unknown
+    - contextPath: ProofPointCloud.Incident.clearConfidences
+      description: The list of confidence values for the incident.
+      type: Unknown
+    - contextPath: ProofPointCloud.Incident.sourcesData
+      description: The raw sources data array for the incident.
+      type: Unknown
+  - name: proofpoint-ctr-incident-get
+    description: Returns full details for a specific Proofpoint Cloud Threat Response incident.
+    arguments:
+    - name: incident_id
+      description: A comma-separated list of incident UUIDs (e.g., `440def43-c322-42ba-a6d6-a2306128ea3b`).
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: ProofPointCloud.Incident.summary.id
+      description: The internal UUID of the incident.
+      type: String
+    - contextPath: ProofPointCloud.Incident.summary.displayId
+      description: The numeric display ID of the incident.
+      type: Number
+    - contextPath: ProofPointCloud.Incident.summary.title
+      description: The incident title.
+      type: String
+    - contextPath: ProofPointCloud.Incident.summary.state
+      description: The state of the incident.
+      type: String
+    - contextPath: ProofPointCloud.Incident.summary.createdAt
+      description: The creation timestamp of the incident.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.summary.updatedAt
+      description: The last update timestamp of the incident.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.summary.priority
+      description: The priority of the incident.
+      type: String
+    - contextPath: ProofPointCloud.Incident.summary.messageCount
+      description: The number of messages associated with the incident.
+      type: Number
+    - contextPath: ProofPointCloud.Incident.summary.assignedTeamName
+      description: The name of the team the incident is assigned to.
+      type: String
+    - contextPath: ProofPointCloud.Incident.summary.assignedApplicationUserName
+      description: The user the incident is assigned to.
+      type: String
+    - contextPath: ProofPointCloud.Incident.activities
+      description: The activities associated with the incident.
+      type: Unknown
+  dockerimage: demisto/python3:3.11.10.115186
+  defaultmapperin: Proofpoint Cloud Threat Response - Incoming Mapper
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
