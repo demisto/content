@@ -1,6 +1,17 @@
 Cisco Umbrella is a cloud security platform providing the first line of defense against internet threats. It uses DNS-layer security to block malicious requests before a connection is established, offering protection against malware, ransomware, phishing, and more. It offers real-time reporting, integrates with other Cisco solutions for layered security, and uses machine learning to uncover and predict threats.
 This integration was tested with version 2 of Cisco Umbrella Cloud Security
 
+## Prerequisites
+
+Create an Umbrella API key with the following **Policies** scopes:
+
+- **Destination Lists** – Read / Write
+- **Destinations** – Read / Write
+
+A key with only **Read** permissions will allow `umbrella-destination-lists-list` and `umbrella-destinations-list` to succeed, but write-style commands (e.g., `umbrella-destination-add`, `umbrella-destination-delete`, `umbrella-destination-list-create`, `umbrella-destination-list-delete`) will return `403 - Forbidden Access Forbidden`. Grant **Write** on the Destination Lists / Destinations scopes to use those commands.
+
+For the full list of Umbrella API OAuth scopes, see the official Cisco documentation: [Umbrella API OAuth scopes](https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/).
+
 ## Configure Cisco Umbrella Cloud Security v2 in Cortex
 
 | **Parameter** | **Required** |

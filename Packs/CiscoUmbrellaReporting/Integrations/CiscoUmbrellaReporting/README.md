@@ -4,13 +4,25 @@ Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a b
 
 The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs. This integration was integrated and tested with version v2 of Cisco-umbrella-reporting.
 
+## Prerequisites
+
+Create an Umbrella API key with the following **Reports** scopes (read-only is sufficient):
+
+- **Reports / Aggregations** – Read
+- **Reports / Utilities** – Read
+
+In the current Umbrella admin console, the dedicated "Umbrella Reporting" key type has been replaced by **Umbrella API keys with scoped permissions**. Granting the **Reports** scopes above is the equivalent of the previous "Reporting v2" key.
+If the key is missing any of the required Reports scopes, the integration test and reporting commands will fail with an authorization error returned by Cisco Umbrella (typically HTTP 401 / 403).
+
+For the full list of Umbrella API OAuth scopes, see the official Cisco documentation: [Umbrella API OAuth scopes](https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/).
+
 ## Configure Cisco Umbrella Reporting in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API URL | Cisco Umbrella Reporting API base URL. | True |
-| API Key | API Key | True |
-| API Secret | API Secret | True |
+| API URL | Cisco Umbrella Reporting API base URL (e.g., `https://api.umbrella.com`). | True |
+| API Key | Umbrella API Key with the Reports scopes listed above. | True |
+| API Secret | Umbrella API Secret. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 

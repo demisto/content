@@ -30,6 +30,14 @@ INVALID_ORG_ID_ERROR_MSG = "Authorization Error: The provided Organization ID is
 INVALID_CREDENTIALS_ERROR_MSG = (
     "Authorization Error: The provided credentials for Cisco Umbrella Reporting are"
     " invalid. Please provide a valid Client ID and Client Secret."
+    " Also verify that the API key has the required 'Reports' scopes (Aggregations - Read"
+    " and Utilities - Read). For details, see:"
+    " https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/"
+)
+FORBIDDEN_ERROR_MSG = (
+    "Authorization Error: The provided Cisco Umbrella API key is missing the required scopes."
+    " Ensure the key has the 'Reports' scopes enabled (Aggregations - Read and Utilities - Read)."
+    " For details, see: https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/"
 )
 
 ACTIVITY_TRAFFIC_TYPE_DICT = {
@@ -284,8 +292,22 @@ def cisco_umbrella_access_token_error_handler(response: requests.Response):
     """
     if response.status_code == 401:
         raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
+    elif response.status_code == 403:
+        raise DemistoException(FORBIDDEN_ERROR_MSG)
     elif response.status_code >= 400:
-        raise DemistoException("Error: something went wrong, please try again.")
+        # Surface as much detail as possible to help the user diagnose the issue
+        # (e.g., missing API scopes, wrong base URL, expired key).
+        try:
+            response_body = response.text
+        except Exception:
+            response_body = ""
+        raise DemistoException(
+            f"Failed to authenticate to Cisco Umbrella (HTTP {response.status_code})."
+            f" Response: {response_body}."
+            " Verify the API URL, API Key/Secret, and that the API key has the required"
+            " 'Reports' scopes (Aggregations - Read and Utilities - Read)."
+            " For details, see: https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/"
+        )
 
 
 def cisco_umbrella_error_handler(response: requests.Response):
@@ -297,12 +319,25 @@ def cisco_umbrella_error_handler(response: requests.Response):
          DemistoException
     """
     if response.status_code >= 400:
-        error_message = response.json().get("data", {}).get("error")
+        # Handle explicit 401/403 statuses with actionable messages regardless of body shape
+        if response.status_code == 401:
+            raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
+        if response.status_code == 403:
+            raise DemistoException(FORBIDDEN_ERROR_MSG)
+
+        # Best-effort extraction of the API error message; some responses may not be JSON.
+        try:
+            error_message = response.json().get("data", {}).get("error") or ""
+        except (ValueError, AttributeError):
+            error_message = response.text or ""
+
         if "invalid organization" in error_message:
             raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
         elif "unauthorized" in error_message:
             raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
-        raise DemistoException(error_message)
+        elif "forbidden" in error_message.lower():
+            raise DemistoException(FORBIDDEN_ERROR_MSG)
+        raise DemistoException(error_message or f"Cisco Umbrella Reporting API request failed (HTTP {response.status_code}).")
 
 
 def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bool:
