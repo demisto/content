@@ -28,7 +28,7 @@ from SymantecICDM import (
 BASE_RELIABILITY = DBotScoreReliability.B
 
 FREEZE_TIME = "2026-04-18T03:00:00Z"
-DATE_TIME = datetime(2026, 4, 18, 3, 0, 0, tzinfo=timezone.utc)
+DATE_TIME = datetime.strptime(FREEZE_TIME, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 AN_HOUR_AGO = DATE_TIME - timedelta(hours=1)
 TWO_MONTHS_AGO = DATE_TIME - timedelta(days=60)
 
