@@ -15127,3 +15127,1385 @@ def test_eks_update_access_entry_command_outputs_key_field(mocker):
     assert result.outputs_key_field == ["clusterName", "principalArn"]
     assert result.outputs["clusterName"] == "prod-cluster"
     assert result.outputs["principalArn"] == "arn:aws:iam::123456789012:role/admin-role"
+
+
+def test_add_tags_to_resource_command_success(mocker):
+    """
+    Given: A mocked SSM client and valid resource_type, resource_id, and tags args.
+    When: add_tags_to_resource_command is called.
+    Then: It should call add_tags_to_resource with all expected kwargs and return a success readable_output.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.add_tags_to_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123", "tags": "key=Env,value=Prod"}
+
+    result = SSM.add_tags_to_resource_command(mock_client, args)
+
+    assert "Tags were successfully added to the SSM resource 'mi-123'" in result.readable_output
+    mock_client.add_tags_to_resource.assert_called_once()
+    call_kwargs = mock_client.add_tags_to_resource.call_args[1]
+    assert call_kwargs["ResourceType"] == "ManagedInstance"
+    assert call_kwargs["ResourceId"] == "mi-123"
+    assert call_kwargs["Tags"] == [{"Key": "Env", "Value": "Prod"}]
+
+
+def test_add_tags_to_resource_command_error_response(mocker):
+    """
+    Given: A mocked SSM client returning a non-OK HTTP status.
+    When: add_tags_to_resource_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import SSM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.add_tags_to_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123", "tags": "key=Env,value=Prod"}
+
+    SSM.add_tags_to_resource_command(mock_client, args)
+
+    mock_handle_error.assert_called_once()
+
+
+def test_add_tags_to_resource_command_multiple_tags(mocker):
+    """
+    Given: A mocked SSM client and multiple tags in the args.
+    When: add_tags_to_resource_command is called.
+    Then: It should pass all tags to add_tags_to_resource.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.add_tags_to_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "resource_type": "Document",
+        "resource_id": "doc-456",
+        "tags": "key=Owner,value=Team;key=Env,value=Staging",
+    }
+
+    result = SSM.add_tags_to_resource_command(mock_client, args)
+
+    assert "Tags were successfully added to the SSM resource 'doc-456'" in result.readable_output
+    call_kwargs = mock_client.add_tags_to_resource.call_args[1]
+    assert len(call_kwargs["Tags"]) == 2
+
+
+def test_remove_tags_from_resource_command_success(mocker):
+    """
+    Given: A mocked SSM client and valid resource_type, resource_id, and tag_keys args.
+    When: remove_tags_from_resource_command is called.
+    Then: It should call remove_tags_from_resource and return a success readable_output.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.remove_tags_from_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123", "tag_keys": "Env,Owner"}
+
+    result = SSM.remove_tags_from_resource_command(mock_client, args)
+
+    assert "Tags were successfully removed from the SSM resource 'mi-123'" in result.readable_output
+    mock_client.remove_tags_from_resource.assert_called_once()
+    call_kwargs = mock_client.remove_tags_from_resource.call_args[1]
+    assert call_kwargs["ResourceType"] == "ManagedInstance"
+    assert "Env" in call_kwargs["TagKeys"]
+
+
+def test_remove_tags_from_resource_command_error_response(mocker):
+    """
+    Given: A mocked SSM client returning a non-OK HTTP status.
+    When: remove_tags_from_resource_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import SSM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.remove_tags_from_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123", "tag_keys": "Env"}
+
+    SSM.remove_tags_from_resource_command(mock_client, args)
+
+    mock_handle_error.assert_called_once()
+
+
+def test_list_tags_for_resource_command_success(mocker):
+    """
+    Given: A mocked SSM client returning a list of tags for a resource.
+    When: list_tags_for_resource_command is called.
+    Then: It should return CommandResults with the tag list and correct outputs_prefix.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_tags_for_resource.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "TagList": [{"Key": "Env", "Value": "Prod"}, {"Key": "Owner", "Value": "Team"}],
+    }
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123"}
+
+    result = SSM.list_tags_for_resource_command(mock_client, args)
+
+    assert result.outputs_prefix == "AWS.SSM.Tags"
+    assert result.outputs_key_field == "ResourceId"
+    assert result.outputs["ResourceId"] == "mi-123"
+    assert len(result.outputs["TagList"]) == 2
+    assert "Env" in result.readable_output
+
+
+def test_list_tags_for_resource_command_no_tags(mocker):
+    """
+    Given: A mocked SSM client returning an empty tag list.
+    When: list_tags_for_resource_command is called.
+    Then: It should return a readable_output indicating no tags were found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_tags_for_resource.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "TagList": [],
+    }
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123"}
+
+    result = SSM.list_tags_for_resource_command(mock_client, args)
+
+    assert "No tags found for SSM resource 'mi-123'" in result.readable_output
+
+
+def test_list_tags_for_resource_command_error_response(mocker):
+    """
+    Given: A mocked SSM client returning a non-OK HTTP status.
+    When: list_tags_for_resource_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import SSM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.list_tags_for_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"resource_type": "ManagedInstance", "resource_id": "mi-123"}
+
+    SSM.list_tags_for_resource_command(mock_client, args)
+
+    mock_handle_error.assert_called_once()
+
+
+def test_inventory_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning inventory entities.
+    When: inventory_list_command is called with no filters.
+    Then: It should return CommandResults with entities and correct context path.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_inventory.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entities": [
+            {
+                "Id": "i-abc123",
+                "Data": {
+                    "AWS:InstanceInformation": {
+                        "TypeName": "AWS:InstanceInformation",
+                        "SchemaVersion": "1.0",
+                        "CaptureTime": "2024-01-01T00:00:00Z",
+                        "Content": [{"PlatformType": "Linux"}],
+                    }
+                },
+            }
+        ],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.inventory_list_command(mock_client, args)
+
+    assert "AWS SSM Inventory" in result.readable_output
+    assert "i-abc123" in result.readable_output
+    assert "AWS:InstanceInformation" in result.readable_output
+
+
+def test_inventory_list_command_no_entities(mocker):
+    """
+    Given: A mocked SSM client returning an empty Entities list.
+    When: inventory_list_command is called.
+    Then: It should return a readable_output indicating no inventory entities found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_inventory.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entities": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.inventory_list_command(mock_client, args)
+
+    assert "No inventory entities found" in result.readable_output
+
+
+def test_inventory_list_command_with_filters(mocker):
+    """
+    Given: A mocked SSM client and filter args using the key/values/type format.
+    When: inventory_list_command is called with filters.
+    Then: It should pass the correct Key/Type/Values filter structure to get_inventory.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_inventory.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entities": [{"Id": "i-abc123", "Data": {}}],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "filters": "key=AWS:InstanceInformation.PlatformType,values=Linux,type=Equal",
+    }
+
+    SSM.inventory_list_command(mock_client, args)
+
+    call_kwargs = mock_client.get_inventory.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["Filters"][0]["Key"] == "AWS:InstanceInformation.PlatformType"
+    assert call_kwargs["Filters"][0]["Type"] == "Equal"
+    assert "Linux" in call_kwargs["Filters"][0]["Values"]
+
+
+def test_inventory_list_command_aggregator_expression(mocker):
+    """
+    Given: A mocked SSM client and aggregator_expression arg.
+    When: inventory_list_command is called.
+    Then: It should pass the correct Aggregators structure to get_inventory.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_inventory.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entities": [{"Id": "i-abc123", "Data": {}}],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "aggregator_expression": "AWS:InstanceInformation.PlatformType",
+    }
+
+    SSM.inventory_list_command(mock_client, args)
+
+    call_kwargs = mock_client.get_inventory.call_args[1]
+    assert "Aggregators" in call_kwargs
+    assert call_kwargs["Aggregators"][0]["Expression"] == "AWS:InstanceInformation.PlatformType"
+
+
+def test_inventory_list_command_validation_error_groups_without_expression(mocker):
+    """
+    Given: aggregator_groups provided without aggregator_expression.
+    When: inventory_list_command is called.
+    Then: It should raise a ValueError before making any API call.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "aggregator_groups": '[{"Name": "G1", "Filters": [{"Key": "k", "Type": "Exists", "Values": ["v"]}]}]',
+    }
+
+    with pytest.raises(ValueError, match="aggregator_expression is required"):
+        SSM.inventory_list_command(mock_client, args)
+
+    mock_client.get_inventory.assert_not_called()
+
+
+def test_associations_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning a list of associations.
+    When: associations_list_command is called with no filters.
+    Then: It should return CommandResults with associations and correct context path.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Associations": [
+            {"AssociationId": "assoc-1", "Name": "AWS-RunShellScript", "AssociationVersion": "1"},
+        ],
+        "NextToken": "tok-1",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.associations_list_command(mock_client, args)
+
+    assert "AWS SSM Associations" in result.readable_output
+    assert "assoc-1" in result.readable_output
+    assert result.outputs["AWS.SSM(true)"]["AssociationsNextToken"] == "tok-1"
+
+
+def test_associations_list_command_no_results(mocker):
+    """
+    Given: A mocked SSM client returning an empty Associations list.
+    When: associations_list_command is called.
+    Then: It should return a readable_output indicating no associations found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Associations": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.associations_list_command(mock_client, args)
+
+    assert "No SSM associations found" in result.readable_output
+
+
+def test_associations_list_command_with_filter(mocker):
+    """
+    Given: A mocked SSM client and a filters arg in key=<key>,value=<value> format.
+    When: associations_list_command is called.
+    Then: It should pass the correct AssociationFilterList with lowercase key/value to list_associations.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Associations": [{"AssociationId": "assoc-1", "Name": "doc"}],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "filters": "key=AssociationId,value=assoc-1"}
+
+    SSM.associations_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_associations.call_args[1]
+    filter_list = call_kwargs.get("AssociationFilterList", [])
+    assert any(f["key"] == "AssociationId" and f["value"] == "assoc-1" for f in filter_list)
+
+
+def test_associations_list_command_no_filter_args_omits_filter_list(mocker):
+    """
+    Given: A mocked SSM client and no filter args.
+    When: associations_list_command is called.
+    Then: AssociationFilterList should not be passed to list_associations.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Associations": [{"AssociationId": "assoc-1", "Name": "doc"}],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    SSM.associations_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_associations.call_args[1]
+    assert "AssociationFilterList" not in call_kwargs
+
+
+def test_association_get_command_success_by_id(mocker):
+    """
+    Given: A mocked SSM client and association_id arg.
+    When: association_get_command is called.
+    Then: It should return CommandResults with the association and correct outputs_prefix.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_association.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationDescription": {
+            "AssociationId": "assoc-1",
+            "Name": "AWS-RunShellScript",
+            "AssociationVersion": "1",
+        },
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "association_id": "assoc-1"}
+
+    result = SSM.association_get_command(mock_client, args)
+
+    assert result.outputs_prefix == "AWS.SSM.Associations"
+    assert result.outputs_key_field == "AssociationId"
+    assert result.outputs["AssociationId"] == "assoc-1"
+
+
+def test_association_get_command_success_by_instance_and_document(mocker):
+    """
+    Given: A mocked SSM client and instance_id + document_name args (no association_id).
+    When: association_get_command is called.
+    Then: It should call describe_association with InstanceId and Name.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_association.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationDescription": {"AssociationId": "assoc-2", "Name": "MyDoc"},
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "instance_id": "i-abc", "document_name": "MyDoc"}
+
+    result = SSM.association_get_command(mock_client, args)
+
+    call_kwargs = mock_client.describe_association.call_args[1]
+    assert call_kwargs["InstanceId"] == "i-abc"
+    assert call_kwargs["Name"] == "MyDoc"
+    assert result.outputs["AssociationId"] == "assoc-2"
+
+
+def test_association_get_command_missing_required_args(mocker):
+    """
+    Given: No association_id and no instance_id/document_name.
+    When: association_get_command is called.
+    Then: It should raise a DemistoException.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Must provide either association_id"):
+        SSM.association_get_command(mock_client, args)
+
+    mock_client.describe_association.assert_not_called()
+
+
+def test_association_get_command_no_association_found(mocker):
+    """
+    Given: A mocked SSM client returning an empty AssociationDescription.
+    When: association_get_command is called.
+    Then: It should return a readable_output indicating no association found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_association.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationDescription": {},
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "association_id": "assoc-999"}
+
+    result = SSM.association_get_command(mock_client, args)
+
+    assert "No association found" in result.readable_output
+
+
+def test_association_versions_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning association versions.
+    When: association_versions_list_command is called.
+    Then: It should return CommandResults with versions nested under AWS.SSM.Associations.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_association_versions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationVersions": [
+            {"AssociationId": "assoc-1", "AssociationVersion": "1", "Name": "AWS-RunShellScript"},
+            {"AssociationId": "assoc-1", "AssociationVersion": "2", "Name": "AWS-RunShellScript"},
+        ],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "association_id": "assoc-1"}
+
+    result = SSM.association_versions_list_command(mock_client, args)
+
+    assert "AWS SSM Association Versions" in result.readable_output
+    dt_key = "AWS.SSM.Associations(val.AssociationId && val.AssociationId == obj.AssociationId)"
+    assert result.outputs[dt_key]["AssociationId"] == "assoc-1"
+    assert len(result.outputs[dt_key]["Versions"]) == 2
+
+
+def test_association_versions_list_command_no_versions(mocker):
+    """
+    Given: A mocked SSM client returning an empty AssociationVersions list.
+    When: association_versions_list_command is called.
+    Then: It should return a readable_output indicating no versions found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_association_versions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationVersions": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "association_id": "assoc-1"}
+
+    result = SSM.association_versions_list_command(mock_client, args)
+
+    assert "No versions found for association 'assoc-1'" in result.readable_output
+
+
+def test_association_versions_list_command_with_next_token(mocker):
+    """
+    Given: A mocked SSM client returning versions with a NextToken.
+    When: association_versions_list_command is called.
+    Then: The AssociationVersionNextToken should be stored in context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_association_versions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationVersions": [{"AssociationId": "assoc-1", "AssociationVersion": "1"}],
+        "NextToken": "next-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "association_id": "assoc-1"}
+
+    result = SSM.association_versions_list_command(mock_client, args)
+
+    assert result.outputs["AWS.SSM.Associations(true)"]["AssociationVersionNextToken"] == "next-tok"
+
+
+def test_documents_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning a list of documents.
+    When: documents_list_command is called.
+    Then: It should return CommandResults with documents and correct context path.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_documents.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "DocumentIdentifiers": [
+            {"Name": "AWS-RunShellScript", "Owner": "Amazon", "DocumentType": "Command"},
+        ],
+        "NextToken": "doc-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.documents_list_command(mock_client, args)
+
+    assert "AWS SSM Documents" in result.readable_output
+    assert "AWS-RunShellScript" in result.readable_output
+    assert result.outputs["AWS.SSM(true)"]["DocumentsNextToken"] == "doc-tok"
+
+
+def test_documents_list_command_no_documents(mocker):
+    """
+    Given: A mocked SSM client returning an empty DocumentIdentifiers list.
+    When: documents_list_command is called.
+    Then: It should return a readable_output indicating no documents found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_documents.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "DocumentIdentifiers": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.documents_list_command(mock_client, args)
+
+    assert "No SSM documents found" in result.readable_output
+
+
+def test_documents_list_command_with_filters(mocker):
+    """
+    Given: A mocked SSM client and filters arg.
+    When: documents_list_command is called.
+    Then: It should pass the correct Key/Values filter structure to list_documents.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_documents.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "DocumentIdentifiers": [{"Name": "MyDoc", "Owner": "self", "DocumentType": "Command"}],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "filters": "name=Owner,values=self",
+    }
+
+    SSM.documents_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_documents.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["Filters"][0]["Key"] == "Owner"
+    assert "self" in call_kwargs["Filters"][0]["Values"]
+
+
+def test_document_describe_command_success(mocker):
+    """
+    Given: A mocked SSM client returning a document description.
+    When: document_describe_command is called.
+    Then: It should return CommandResults with the document and correct outputs_prefix.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_document.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Document": {
+            "Name": "AWS-RunShellScript",
+            "Owner": "Amazon",
+            "DocumentType": "Command",
+            "DocumentVersion": "1",
+            "Status": "Active",
+        },
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "document_name": "AWS-RunShellScript"}
+
+    result = SSM.document_describe_command(mock_client, args)
+
+    assert result.outputs_prefix == "AWS.SSM.Documents"
+    assert result.outputs_key_field == "Name"
+    assert result.outputs["Name"] == "AWS-RunShellScript"
+    mock_client.describe_document.assert_called_once_with(Name="AWS-RunShellScript")
+
+
+def test_document_describe_command_no_document(mocker):
+    """
+    Given: A mocked SSM client returning an empty Document dict.
+    When: document_describe_command is called.
+    Then: It should return a readable_output indicating no document found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_document.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Document": {},
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "document_name": "NonExistent"}
+
+    result = SSM.document_describe_command(mock_client, args)
+
+    assert "No document found with name 'NonExistent'" in result.readable_output
+
+
+def test_document_describe_command_with_optional_args(mocker):
+    """
+    Given: A mocked SSM client and optional document_version and version_name args.
+    When: document_describe_command is called.
+    Then: It should pass DocumentVersion and VersionName to describe_document.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_document.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Document": {"Name": "MyDoc", "DocumentVersion": "2", "VersionName": "v2-release"},
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "document_name": "MyDoc",
+        "document_version": "2",
+        "version_name": "v2-release",
+    }
+
+    SSM.document_describe_command(mock_client, args)
+
+    call_kwargs = mock_client.describe_document.call_args[1]
+    assert call_kwargs["DocumentVersion"] == "2"
+    assert call_kwargs["VersionName"] == "v2-release"
+
+
+def test_automation_execution_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning automation executions.
+    When: automation_execution_list_command is called.
+    Then: It should return CommandResults with executions and correct context path.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_automation_executions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AutomationExecutionMetadataList": [
+            {
+                "AutomationExecutionId": "exec-1",
+                "DocumentName": "AWS-StartEC2Instance",
+                "AutomationExecutionStatus": "Success",
+            }
+        ],
+        "NextToken": "exec-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.automation_execution_list_command(mock_client, args)
+
+    assert "AWS SSM Automation Executions" in result.readable_output
+    assert "exec-1" in result.readable_output
+    assert result.outputs["AWS.SSM(true)"]["AutomationExecutionsNextToken"] == "exec-tok"
+
+
+def test_automation_execution_list_command_no_executions(mocker):
+    """
+    Given: A mocked SSM client returning an empty AutomationExecutionMetadataList.
+    When: automation_execution_list_command is called.
+    Then: It should return a readable_output indicating no executions found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_automation_executions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AutomationExecutionMetadataList": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.automation_execution_list_command(mock_client, args)
+
+    assert "No SSM automation executions found" in result.readable_output
+
+
+def test_automation_execution_list_command_with_filters(mocker):
+    """
+    Given: A mocked SSM client and filters arg.
+    When: automation_execution_list_command is called.
+    Then: It should pass the correct Key/Values filter structure to describe_automation_executions.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_automation_executions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AutomationExecutionMetadataList": [
+            {"AutomationExecutionId": "exec-1", "DocumentName": "doc", "AutomationExecutionStatus": "Success"}
+        ],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "filters": "name=ExecutionStatus,values=Success",
+    }
+
+    SSM.automation_execution_list_command(mock_client, args)
+
+    call_kwargs = mock_client.describe_automation_executions.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["Filters"][0]["Key"] == "ExecutionStatus"
+
+
+def test_automation_execution_run_command_first_execution(mocker):
+    """
+    Given: No execution_id in args (first run) and a mocked SSM client with all supported arguments.
+    When: automation_execution_run_command is called.
+    Then: It should call start_automation_execution with all expected kwargs and return a PollResult
+          with continue_to_poll=True and the execution_id stored in scheduled_command args.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.start_automation_execution.return_value = {"AutomationExecutionId": "exec-abc"}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "document_name": "AWS-StartEC2Instance",
+        "document_version": "$LATEST",
+        "parameters": "key=InstanceId,values=i-1234567890abcdef0",
+        "mode": "Auto",
+        "client_token": "my-idempotency-token",
+        "max_concurrency": "10",
+        "max_errors": "5",
+        "target_parameter_name": "InstanceId",
+        "targets": "key=resource-groups:Name,values=my-group",
+        "target_locations": "key=Accounts,value=123456789012",
+        "target_locations_url": "https://s3.amazonaws.com/my-bucket/locations.json",
+        "target_maps": "key=InstanceId,values=i-abc123",
+        "alarm_names": "MyAlarm",
+        "alarm_ignore_poll_failure": "true",
+        "tags": "key=Owner,value=team",
+    }
+
+    result = SSM.automation_execution_run_command(args, mock_client)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._args["execution_id"] == "exec-abc"
+    mock_client.start_automation_execution.assert_called_once()
+
+    call_kwargs = mock_client.start_automation_execution.call_args[1]
+    assert call_kwargs["DocumentName"] == "AWS-StartEC2Instance"
+    assert call_kwargs["DocumentVersion"] == "$LATEST"
+    assert call_kwargs["Parameters"] == {"InstanceId": ["i-1234567890abcdef0"]}
+    assert call_kwargs["Mode"] == "Auto"
+    assert call_kwargs["ClientToken"] == "my-idempotency-token"
+    assert call_kwargs["MaxConcurrency"] == "10"
+    assert call_kwargs["MaxErrors"] == "5"
+    assert call_kwargs["TargetParameterName"] == "InstanceId"
+    assert call_kwargs["Targets"] == [{"Key": "resource-groups:Name", "Values": ["my-group"]}]
+    assert call_kwargs["TargetLocationsURL"] == "https://s3.amazonaws.com/my-bucket/locations.json"
+    assert call_kwargs["AlarmConfiguration"]["Alarms"] == [{"Name": "MyAlarm"}]
+    assert call_kwargs["AlarmConfiguration"]["IgnorePollAlarmFailure"] is True
+    assert call_kwargs["Tags"] == [{"Key": "Owner", "Value": "team"}]
+
+
+def test_automation_execution_run_command_polling_in_progress(mocker):
+    """
+    Given: An execution_id in args and a non-terminal status from AWS.
+    When: automation_execution_run_command is called.
+    Then: It should call get_automation_execution and return a PollResult with continue_to_poll=True.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_automation_execution.return_value = {
+        "AutomationExecution": {"AutomationExecutionId": "exec-abc", "AutomationExecutionStatus": "InProgress"}
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "execution_id": "exec-abc"}
+
+    result = SSM.automation_execution_run_command(args, mock_client)
+
+    assert result.scheduled_command is not None
+    mock_client.get_automation_execution.assert_called_once_with(AutomationExecutionId="exec-abc")
+
+
+def test_automation_execution_run_command_polling_terminal_success(mocker):
+    """
+    Given: An execution_id in args and a terminal 'Success' status from AWS.
+    When: automation_execution_run_command is called.
+    Then: It should return a PollResult with continue_to_poll=False and the final outputs.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_automation_execution.return_value = {
+        "AutomationExecution": {
+            "AutomationExecutionId": "exec-abc",
+            "AutomationExecutionStatus": "Success",
+            "DocumentName": "AWS-StartEC2Instance",
+        }
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "execution_id": "exec-abc"}
+
+    result = SSM.automation_execution_run_command(args, mock_client)
+
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "AWS.SSM.AutomationExecutions"
+    assert "exec-abc" in result.readable_output
+
+
+def test_automation_execution_run_command_target_locations_empty_when_no_arg(mocker):
+    """
+    Given: No target_locations arg.
+    When: automation_execution_run_command is called (first run).
+    Then: TargetLocations should NOT be passed to start_automation_execution.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.start_automation_execution.return_value = {"AutomationExecutionId": "exec-xyz"}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "document_name": "AWS-StartEC2Instance"}
+
+    SSM.automation_execution_run_command(args, mock_client)
+
+    call_kwargs = mock_client.start_automation_execution.call_args[1]
+    assert "TargetLocations" not in call_kwargs
+
+
+def test_automation_execution_cancel_command_first_run(mocker):
+    """
+    Given: first_run=True (default) and a mocked SSM client.
+    When: automation_execution_cancel_command is called.
+    Then: It should call stop_automation_execution and return a PollResult with continue_to_poll=True.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "automation_execution_id": "exec-abc",
+        "first_run": "true",
+    }
+
+    result = SSM.automation_execution_cancel_command(args, mock_client)
+
+    # PollResult with continue_to_poll=True — scheduled_command is set
+    assert result.scheduled_command is not None
+    mock_client.stop_automation_execution.assert_called_once_with(AutomationExecutionId="exec-abc")
+
+
+def test_automation_execution_cancel_command_polling_not_terminal(mocker):
+    """
+    Given: first_run=False and a non-terminal status from AWS.
+    When: automation_execution_cancel_command is called.
+    Then: It should return a PollResult with continue_to_poll=True.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_automation_execution.return_value = {"AutomationExecution": {"AutomationExecutionStatus": "Cancelling"}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "automation_execution_id": "exec-abc",
+        "first_run": "false",
+    }
+
+    result = SSM.automation_execution_cancel_command(args, mock_client)
+
+    assert result.scheduled_command is not None
+    mock_client.get_automation_execution.assert_called_once_with(AutomationExecutionId="exec-abc")
+
+
+def test_automation_execution_cancel_command_polling_terminal(mocker):
+    """
+    Given: first_run=False and a terminal 'Cancelled' status from AWS.
+    When: automation_execution_cancel_command is called.
+    Then: It should return a PollResult with continue_to_poll=False.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_automation_execution.return_value = {"AutomationExecution": {"AutomationExecutionStatus": "Cancelled"}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "automation_execution_id": "exec-abc",
+        "first_run": "false",
+    }
+
+    result = SSM.automation_execution_cancel_command(args, mock_client)
+
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is None
+    assert "Cancelled" in result.readable_output
+
+
+def test_command_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning a list of commands.
+    When: command_list_command is called.
+    Then: It should return CommandResults with commands and correct context path.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Commands": [
+            {"CommandId": "cmd-1", "DocumentName": "AWS-RunShellScript", "Status": "Success"},
+        ],
+        "NextToken": "cmd-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.command_list_command(mock_client, args)
+
+    assert "AWS SSM Commands" in result.readable_output
+    assert "cmd-1" in result.readable_output
+    assert result.outputs["AWS.SSM(true)"]["CommandNextToken"] == "cmd-tok"
+
+
+def test_command_list_command_no_commands(mocker):
+    """
+    Given: A mocked SSM client returning an empty Commands list with no NextToken.
+    When: command_list_command is called.
+    Then: It should return a readable_output indicating no commands found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Commands": [],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.command_list_command(mock_client, args)
+
+    assert "No SSM commands found" in result.readable_output
+
+
+def test_command_list_command_empty_page_retry_success(mocker):
+    """
+    Given: A mocked SSM client returning empty Commands + NextToken on first call,
+           then real commands on the retry call.
+    When: command_list_command is called.
+    Then: It should transparently retry and return the commands from the second call.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.side_effect = [
+        {
+            "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+            "Commands": [],
+            "NextToken": "retry-tok",
+        },
+        {
+            "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+            "Commands": [{"CommandId": "cmd-2", "DocumentName": "doc", "Status": "Success"}],
+        },
+    ]
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.command_list_command(mock_client, args)
+
+    assert mock_client.list_commands.call_count == 2
+    assert "cmd-2" in result.readable_output
+
+
+def test_command_list_command_with_command_id_filter(mocker):
+    """
+    Given: A mocked SSM client and command_id arg.
+    When: command_list_command is called.
+    Then: It should pass CommandId to list_commands.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Commands": [{"CommandId": "cmd-1", "DocumentName": "doc", "Status": "Success"}],
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "command_id": "cmd-1"}
+
+    SSM.command_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_commands.call_args[1]
+    assert call_kwargs["CommandId"] == "cmd-1"
+
+
+def test_command_cancel_command_first_run(mocker):
+    """
+    Given: first_run=True (default) and a mocked SSM client.
+    When: command_cancel_command is called.
+    Then: It should call cancel_command and return a PollResult with continue_to_poll=True and response=None.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "command_id": "cmd-abc",
+        "first_run": "true",
+    }
+
+    result = SSM.command_cancel_command(args, mock_client)
+
+    assert result.scheduled_command is not None
+    mock_client.cancel_command.assert_called_once_with(CommandId="cmd-abc")
+
+
+def test_command_cancel_command_polling_not_terminal(mocker):
+    """
+    Given: first_run=False and a non-terminal status from AWS.
+    When: command_cancel_command is called.
+    Then: It should return a PollResult with continue_to_poll=True.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {"Commands": [{"Status": "Cancelling"}]}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "command_id": "cmd-abc",
+        "first_run": "false",
+    }
+
+    result = SSM.command_cancel_command(args, mock_client)
+
+    assert result.scheduled_command is not None
+    mock_client.list_commands.assert_called_once_with(CommandId="cmd-abc")
+
+
+def test_command_cancel_command_polling_terminal(mocker):
+    """
+    Given: first_run=False and a terminal 'Cancelled' status from AWS.
+    When: command_cancel_command is called.
+    Then: It should return a PollResult with continue_to_poll=False.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {"Commands": [{"Status": "Cancelled"}]}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "command_id": "cmd-abc",
+        "first_run": "false",
+    }
+
+    result = SSM.command_cancel_command(args, mock_client)
+
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is None
+    assert "Cancelled" in result.readable_output
+
+
+def test_command_cancel_command_with_instance_ids(mocker):
+    """
+    Given: first_run=True and instance_ids arg.
+    When: command_cancel_command is called.
+    Then: It should pass InstanceIds to cancel_command.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "command_id": "cmd-abc",
+        "instance_ids": "i-111,i-222",
+        "first_run": "true",
+    }
+
+    SSM.command_cancel_command(args, mock_client)
+
+    call_kwargs = mock_client.cancel_command.call_args[1]
+    assert "i-111" in call_kwargs["InstanceIds"]
+    assert "i-222" in call_kwargs["InstanceIds"]
+
+
+def test_associations_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=1, and next_token args.
+    When: associations_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_associations, and
+          AssociationsNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Associations": [{"AssociationId": "assoc-1", "Name": "doc"}],
+        "NextToken": "next-assoc-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "1", "next_token": "prev-tok"}
+
+    result = SSM.associations_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_associations.call_args[1]
+    assert call_kwargs["MaxResults"] == 1
+    assert call_kwargs["NextToken"] == "prev-tok"
+    assert result.outputs["AWS.SSM(true)"]["AssociationsNextToken"] == "next-assoc-tok"
+
+
+def test_association_versions_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=1, and next_token args.
+    When: association_versions_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_association_versions, and
+          AssociationVersionNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_association_versions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationVersions": [{"AssociationId": "assoc-1", "AssociationVersion": "1"}],
+        "NextToken": "next-ver-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "association_id": "assoc-1",
+        "limit": "1",
+        "next_token": "prev-ver-tok",
+    }
+
+    result = SSM.association_versions_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_association_versions.call_args[1]
+    assert call_kwargs["MaxResults"] == 1
+    assert call_kwargs["NextToken"] == "prev-ver-tok"
+    assert result.outputs["AWS.SSM.Associations(true)"]["AssociationVersionNextToken"] == "next-ver-tok"
+
+
+def test_documents_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=1, and next_token args.
+    When: documents_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_documents, and
+          DocumentsNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_documents.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "DocumentIdentifiers": [{"Name": "MyDoc", "Owner": "self", "DocumentType": "Command"}],
+        "NextToken": "next-doc-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "1", "next_token": "prev-doc-tok"}
+
+    result = SSM.documents_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_documents.call_args[1]
+    assert call_kwargs["MaxResults"] == 1
+    assert call_kwargs["NextToken"] == "prev-doc-tok"
+    assert result.outputs["AWS.SSM(true)"]["DocumentsNextToken"] == "next-doc-tok"
+
+
+def test_automation_execution_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=1, and next_token args.
+    When: automation_execution_list_command is called.
+    Then: MaxResults and NextToken are forwarded to describe_automation_executions, and
+          AutomationExecutionsNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_automation_executions.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AutomationExecutionMetadataList": [
+            {"AutomationExecutionId": "exec-1", "DocumentName": "doc", "AutomationExecutionStatus": "Success"}
+        ],
+        "NextToken": "next-exec-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "1", "next_token": "prev-exec-tok"}
+
+    result = SSM.automation_execution_list_command(mock_client, args)
+
+    call_kwargs = mock_client.describe_automation_executions.call_args[1]
+    assert call_kwargs["MaxResults"] == 1
+    assert call_kwargs["NextToken"] == "prev-exec-tok"
+    assert result.outputs["AWS.SSM(true)"]["AutomationExecutionsNextToken"] == "next-exec-tok"
+
+
+def test_command_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=1, and next_token args.
+    When: command_list_command is called.
+    Then: MaxResults and NextToken are forwarded to list_commands, and
+          CommandNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Commands": [{"CommandId": "cmd-1", "DocumentName": "doc", "Status": "Success"}],
+        "NextToken": "next-cmd-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "1", "next_token": "prev-cmd-tok"}
+
+    result = SSM.command_list_command(mock_client, args)
+
+    call_kwargs = mock_client.list_commands.call_args[1]
+    assert call_kwargs["MaxResults"] == 1
+    assert call_kwargs["NextToken"] == "prev-cmd-tok"
+    assert result.outputs["AWS.SSM(true)"]["CommandNextToken"] == "next-cmd-tok"
+
+
+def test_inventory_list_command_pagination(mocker):
+    """
+    Given: A mocked SSM client, limit=1, and next_token args.
+    When: inventory_list_command is called.
+    Then: MaxResults and NextToken are forwarded to get_inventory, and
+          InventoryNextToken is extracted from the response into context.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.get_inventory.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entities": [{"Id": "i-abc123", "Data": {}}],
+        "NextToken": "next-inv-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "1", "next_token": "prev-inv-tok"}
+
+    result = SSM.inventory_list_command(mock_client, args)
+
+    call_kwargs = mock_client.get_inventory.call_args[1]
+    assert call_kwargs["MaxResults"] == 1
+    assert call_kwargs["NextToken"] == "prev-inv-tok"
+    assert result.outputs["AWS.SSM(true)"]["InventoryNextToken"] == "next-inv-tok"
