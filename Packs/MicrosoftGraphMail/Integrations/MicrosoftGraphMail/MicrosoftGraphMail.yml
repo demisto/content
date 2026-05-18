@@ -1162,28 +1162,28 @@ script:
       description: The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1.
       name: sequence
     - description: |-
-        A JSON string of the messageRuleActions object describing actions to take when the rule's conditions are fulfilled.
+        The actions to perform when the rule conditions are met, in JSON format. For a list of the available fields, 
+        see: https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.
         Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}.
-        For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.
       name: actions
       required: true
     - description: |-
-        A JSON string of the messageRulePredicates object describing conditions that, when fulfilled, trigger the rule's actions.
+        The conditions that trigger the rule's actions, in JSON format. For a list of the available fields, 
+        see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
         Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}.
-        For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
       name: conditions
     - description: |-
-        A JSON string of the messageRulePredicates object describing exception conditions for the rule.
+        The exception conditions for the rule, in JSON format. Replaces existing rule exceptions.
+        For a list of the available fields, see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
         Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}.
-        For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
       name: exceptions
     - auto: PREDEFINED
-      description: Indicates whether the rule is enabled to be applied to messages. If not provided, the rule is created with isEnabled set to false (disabled) per the Microsoft Graph API default.
+      description: Whether the rule is enabled to be applied to messages. Default is false (disabled).
       name: is_enabled
       predefined:
       - 'true'
       - 'false'
-    description: Creates a new mailbox rule in the user's Inbox folder. If the is_enabled argument is not supplied, the rule is created disabled per the Microsoft Graph API default. If no sequence is provided, the rule is created with sequence 1, meaning it will run first in line.
+    description: Creates a new mailbox rule in the user's Inbox folder. By default, rules are created as disabled and if no sequence is defined, assigned to the first position in the sequence.
     name: msgraph-mail-create-rule
     outputs:
     - contextPath: MSGraphMail.Rule.id
@@ -1193,25 +1193,25 @@ script:
       description: The display name of the rule.
       type: String
     - contextPath: MSGraphMail.Rule.sequence
-      description: Indicates the order in which the rule is executed among other rules.
+      description: The order in which the rule is executed relative to other rules.
       type: Number
     - contextPath: MSGraphMail.Rule.isEnabled
-      description: Indicates whether the rule is enabled to be applied to messages.
+      description: Whether the rule is enabled to be applied to messages.
       type: Boolean
     - contextPath: MSGraphMail.Rule.isReadOnly
-      description: Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.
+      description: Whether the rule is read-only and cannot be modified or deleted by the rule's REST API.
       type: Boolean
     - contextPath: MSGraphMail.Rule.hasError
-      description: Indicates whether the rule is in an error condition.
+      description: Whether the rule is in an error condition.
       type: Boolean
     - contextPath: MSGraphMail.Rule.conditions
-      description: Conditions that when fulfilled will trigger the rule's actions.
+      description: The conditions that trigger the rule's actions.
       type: Unknown
     - contextPath: MSGraphMail.Rule.actions
-      description: Actions to be taken on a message when the corresponding conditions, if any, are fulfilled.
+      description: The actions to perform on a message when the rule conditions are met.
       type: Unknown
     - contextPath: MSGraphMail.Rule.exceptions
-      description: Exception conditions for the rule.
+      description: The exception conditions for the rule.
       type: Unknown
   - arguments:
     - description: 'The ID or User Principal Name (UPN) of the user that owns the mailbox.'
@@ -1225,25 +1225,25 @@ script:
     - description: The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1.
       name: sequence
     - auto: PREDEFINED
-      description: Indicates whether the rule is enabled to be applied to messages.
+      description: Whether the rule is enabled to be applied to messages.
       name: is_enabled
       predefined:
       - 'true'
       - 'false'
     - description: |-
-        A JSON string of the messageRuleActions object describing actions to take when the rule's conditions are fulfilled. Replaces the rule's existing actions.
-        Example: {\"markImportance\":\"high\",\"stopProcessingRules\":true}.
-        For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.
+        The actions to perform when the rule conditions are met, in JSON format. For a list of the available fields, 
+        see: https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.
+        Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}.
       name: actions
     - description: |-
-        A JSON string of the messageRulePredicates object describing conditions that, when fulfilled, trigger the rule's actions. Replaces the rule's existing conditions.
-        Example: {\"senderContains\":[\"adele\"]}.
-        For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
+        The conditions that trigger the rule's actions, in JSON format. For a list of the available fields, 
+        see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
+        Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}.
       name: conditions
     - description: |-
-        A JSON string of the messageRulePredicates object describing exception conditions for the rule. Replaces the rule's existing exceptions.
+        The exception conditions for the rule, in JSON format. Replaces existing rule exceptions.
+        For a list of the available fields, see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
         Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}.
-        For all available fields see https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.
       name: exceptions
     description: Updates an existing mailbox rule in the user's Inbox folder by ID. Only the supplied fields are sent in the PATCH body; other fields remain unchanged.
     name: msgraph-mail-update-rule
@@ -1255,25 +1255,25 @@ script:
       description: The display name of the rule.
       type: String
     - contextPath: MSGraphMail.Rule.sequence
-      description: Indicates the order in which the rule is executed among other rules.
+      description: The order in which the rule is executed relative to other rules.
       type: Number
     - contextPath: MSGraphMail.Rule.isEnabled
-      description: Indicates whether the rule is enabled to be applied to messages.
+      description: Whether the rule is enabled to be applied to messages.
       type: Boolean
     - contextPath: MSGraphMail.Rule.isReadOnly
-      description: Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.
+      description: Whether the rule is read-only and cannot be modified or deleted by the rule's REST API.
       type: Boolean
     - contextPath: MSGraphMail.Rule.hasError
-      description: Indicates whether the rule is in an error condition.
+      description: Whether the rule is in an error condition.
       type: Boolean
     - contextPath: MSGraphMail.Rule.conditions
-      description: Conditions that when fulfilled will trigger the rule's actions.
+      description: The conditions that trigger the rule's actions.
       type: Unknown
     - contextPath: MSGraphMail.Rule.actions
-      description: Actions to be taken on a message when the corresponding conditions, if any, are fulfilled.
+      description: The actions to perform on a message when the rule conditions are met.
       type: Unknown
     - contextPath: MSGraphMail.Rule.exceptions
-      description: Exception conditions for the rule.
+      description: The exception conditions for the rule.
       type: Unknown
   - arguments:
     - description: The ID or User Principal Name (UPN) of the user that owns the mailbox.
@@ -1292,7 +1292,7 @@ script:
       description: The date format for the user's mailbox.
       type: String
     - contextPath: MSGraphMail.MailboxSettings.delegateMeetingMessageDeliveryOptions
-      description: 'Indicates how meeting requests, updates, and responses are delivered when the user is a delegate. Possible values: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+      description: 'The delivery method for meeting requests, updates, and responses are delivered when the user is a delegate. Possible values: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
       type: String
     - contextPath: MSGraphMail.MailboxSettings.timeFormat
       description: The time format for the user's mailbox.
@@ -1304,10 +1304,10 @@ script:
       description: 'The purpose of the mailbox. Possible values: unknown, user, linked, shared, room, equipment, others.'
       type: String
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.status
-      description: 'Status of the automatic-replies (out-of-office) feature. Possible values: disabled, alwaysEnabled, scheduled.'
+      description: 'The status of the automatic reply (out-of-office) feature. Possible values: disabled, alwaysEnabled, scheduled.'
       type: String
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.externalAudience
-      description: 'The audience that will receive external replies. Possible values: none, contactsOnly, all.'
+      description: 'The audience that receives the external replies. Possible values: none, contactsOnly, all.'
       type: String
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.internalReplyMessage
       description: The automatic reply sent to senders within the user's organization.
@@ -1316,25 +1316,25 @@ script:
       description: The automatic reply sent to senders outside the user's organization. Sent only if externalAudience is contactsOnly or all.
       type: String
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledStartDateTime.dateTime
-      description: The start date and time at which automatic replies are sent (ISO 8601).
+      description: The start date and time automatic replies are sent (ISO 8601 format, for example 2020-01-01T00:11:22Z)).
       type: Date
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledStartDateTime.timeZone
-      description: The time zone of scheduledStartDateTime.
+      description: The time zone of the scheduledStartDateTime.
       type: String
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledEndDateTime.dateTime
-      description: The end date and time at which automatic replies are sent (ISO 8601).
+      description: The end date and time automatic replies are sent (ISO 8601 format, for example 2020-01-01T00:11:22Z)).
       type: Date
     - contextPath: MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledEndDateTime.timeZone
-      description: The time zone of scheduledEndDateTime.
+      description: The time zone of the scheduledEndDateTime.
       type: String
     - contextPath: MSGraphMail.MailboxSettings.language.locale
       description: The language locale (BCP 47 culture name). For example, en-US.
       type: String
     - contextPath: MSGraphMail.MailboxSettings.language.displayName
-      description: A friendly name representing the language. For example, "English (United States)".
+      description: The display name of the language. For example, "English (United States)".
       type: String
     - contextPath: MSGraphMail.MailboxSettings.workingHours.daysOfWeek
-      description: 'The days of the week on which the user works. Possible values: sunday, monday, tuesday, wednesday, thursday, friday, saturday.'
+      description: 'The days of the week the user works. Possible values: sunday, monday, tuesday, wednesday, thursday, friday, saturday.'
       type: Unknown
     - contextPath: MSGraphMail.MailboxSettings.workingHours.startTime
       description: The time of day the user starts work.
@@ -1368,10 +1368,10 @@ script:
       description: The language locale (BCP 47) of the automatic reply message.
       type: String
     - contextPath: MSGraphMail.MailTips.automaticReplies.messageLanguage.displayName
-      description: A friendly name representing the language of the automatic reply message.
+      description: The display name of the language for the automatic reply message.
       type: String
     - contextPath: MSGraphMail.MailTips.mailboxFull
-      description: The mailbox full status of the recipient.
+      description: Whether the recipient mailbox is full.
       type: Boolean
     - contextPath: MSGraphMail.MailTips.customMailTip
       description: A custom Mail Tip that has been configured for the recipient.
@@ -1392,16 +1392,16 @@ script:
       description: 'The scope of the recipient. Possible values: none, internal, external, externalPartner, externalNonPartner.'
       type: String
     - contextPath: MSGraphMail.MailTips.recipientSuggestions
-      description: Recipients suggested based on previous contexts where they appear in the same message.
+      description: The recipients identified from previous contexts who appeared in the same message.
       type: Unknown
     - contextPath: MSGraphMail.MailTips.maxMessageSize
-      description: The maximum message size that has been configured for the recipient's organization or mailbox.
+      description: The maximum message size configured for the recipient's organization or mailbox.
       type: Number
     - contextPath: MSGraphMail.MailTips.error.code
-      description: If the Mail Tips lookup for this recipient failed, the error code returned by the service.
+      description: The error code returned if the Mail Tips lookup for the recipient fails.
       type: String
     - contextPath: MSGraphMail.MailTips.error.message
-      description: If the Mail Tips lookup for this recipient failed, the human-readable error message.
+      description: The human-readable error message returned if the Mail Tips lookup for the recipient fails.
       type: String
   dockerimage: demisto/crypto:1.0.0.7323034
   isfetch: true
