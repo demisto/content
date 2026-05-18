@@ -97,12 +97,14 @@ def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: dict[str, Any]) -> list[dict
 # Demisto helpers
 # ---------------------------
 
+
 def socfw_get_error(res):
     # Renamed from get_error to avoid shadowing CommonServerPython.get_error
     try:
         return res[0].get("Contents") or res[0].get("HumanReadable") or str(res[0])
     except Exception:
         return str(res)
+
 
 def socfw_is_error(res0):
     # Renamed from is_error to avoid shadowing CommonServerPython.is_error
