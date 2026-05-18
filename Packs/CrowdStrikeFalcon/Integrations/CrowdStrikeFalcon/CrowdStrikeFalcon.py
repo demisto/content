@@ -428,7 +428,7 @@ class IncidentType(Enum):
     LEGACY_ENDPOINT_DETECTION = "ldt"
     ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ":ind:"  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = "iom_configurations"
-    IOA = "cloud-ioa"
+    IOA_TYPE_TAG = "cloud-ioa"
     ON_DEMAND = "ods"
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
@@ -3681,7 +3681,7 @@ def fetch_items(command="fetch-incidents"):
             look_back=look_back,
             fetch_query=params.get("ioa_fetch_query", ""),
             detections_type=IOA_DETECTION,
-            product_type=IncidentType.IOA.value,
+            product_type=IncidentType.IOA_TYPE_TAG.value,
             detection_name_prefix=IOA_FETCH_TYPE,
             start_time_key="created_timestamp",
             is_fetch_events=False,
@@ -5047,7 +5047,7 @@ def fetch_detections_by_product_type(
     product_type_to_clauses: dict[str, tuple[str | None, str | None]] = {
         IncidentType.ON_DEMAND.value: (None, IncidentType.ON_DEMAND.value),
         IncidentType.OFP.value: (None, IncidentType.OFP.value),
-        IncidentType.IOA.value: ("fcs", IncidentType.IOA.value),
+        IncidentType.IOA_TYPE_TAG.value: ("fcs", IncidentType.IOA_TYPE_TAG.value),
     }
     product_clause_value, type_clause_value = product_type_to_clauses.get(product_type, (product_type, None))
     filter_clauses: list[str] = []

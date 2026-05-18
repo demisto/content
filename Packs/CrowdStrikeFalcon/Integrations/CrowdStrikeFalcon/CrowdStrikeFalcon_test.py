@@ -6038,22 +6038,6 @@ class TestIOAFetch:
         "status": "new",
     }
 
-    SECOND_IOA_SAMPLE_ALERT = {
-        "composite_id": "20879a8064904ecfbb62c118a6a19411:fcs:ioa-211:11111111-2222-3333-4444-555555555555",
-        "created_timestamp": "2026-04-20T22:50:16.583865066Z",
-        "updated_timestamp": "2026-04-20T22:50:16.583865066Z",
-        "id": "fcs:ioa-211:11111111-2222-3333-4444-555555555555",
-        "product": "fcs",
-        "type": "cloud-ioa",
-        "severity": 30,
-        "severity_name": "Low",
-        "name": "Another IOA",
-        "display_name": "Another IOA",
-        "cloud_provider": "aws",
-        "cloud_account_id": "537409938058",
-        "status": "new",
-    }
-
     @staticmethod
     def _build_query_response(composite_ids):
         return {
