@@ -18,7 +18,6 @@ from MicrosoftGraphFiles import (
     get_site_id_from_site_name,
     list_drive_content_command,
     list_drives_in_site_command,
-    list_sensitivity_labels_command,
     list_sharepoint_sites_command,
     list_site_permissions_command,
     parse_key_to_context,
@@ -55,7 +54,7 @@ CLIENT_MOCKER = MsGraphClient(
     auth_id="auth_id",
     enc_key="enc_key",
     app_name="app_name",
-    ok_codes=(200, 204, 201),
+    ok_codes=(200, 201, 202, 204),
     base_url="https://graph.microsoft.com/v1.0/",
     verify="use_ssl",
     proxy="proxy",
@@ -69,7 +68,7 @@ CLIENT_MOCKER_AUTH_CODE = MsGraphClient(
     auth_id="auth_id",
     enc_key="enc_key",
     app_name="app_name",
-    ok_codes=(200, 204, 201),
+    ok_codes=(200, 201, 202, 204),
     base_url="https://graph.microsoft.com/v1.0/",
     verify="use_ssl",
     proxy="proxy",
@@ -531,9 +530,10 @@ json_response = {
 
 
 class MockedResponse:
-    def __init__(self, status_code, json):
+    def __init__(self, status_code, json, headers=None):
         self.status_code = status_code
         self.json_response = json
+        self.headers = headers or {}
 
     def json(self):
         return self.json_response
@@ -1065,79 +1065,6 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
 # Sensitivity-label commands
 # ---------------------------------------------------------------------------
 
-SENSITIVITY_LABELS_RAW_RESPONSE = {
-    "@odata.context": "https://graph.microsoft.com/beta/$metadata#security/informationProtection/sensitivityLabels",
-    "value": [
-        {
-            "id": "label-id-1",
-            "name": "Confidential",
-            "displayName": "Confidential",
-            "description": "Internal company data",
-            "color": "#ff0000",
-            "isActive": True,
-            "sensitivity": 3,
-            "tooltip": "Use for confidential content",
-            "parent": {"id": "parent-label-id"},
-        },
-        {
-            "id": "label-id-2",
-            "name": "Public",
-            "displayName": "Public",
-            "description": "Public data",
-            "color": "#00ff00",
-            "isActive": True,
-            "sensitivity": 1,
-            "tooltip": "Public content",
-            "parent": {},
-        },
-    ],
-}
-
-
-def test_list_sensitivity_labels_command_happy_path(mocker: MockerFixture) -> None:
-    """
-    Given:
-        - A successful Microsoft Graph response containing two sensitivity labels.
-    When:
-        - Running the list_sensitivity_labels_command.
-    Then:
-        - The command returns CommandResults with both labels under the
-          MsGraphFiles.SensitivityLabel context path, including the parent.id field
-          for the label that has a parent.
-    """
-    http_mock = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=SENSITIVITY_LABELS_RAW_RESPONSE)
-    result = list_sensitivity_labels_command(CLIENT_MOCKER, {})
-
-    assert http_mock.call_count == 1
-    call_kwargs = http_mock.call_args.kwargs
-    assert call_kwargs["method"] == "GET"
-    assert call_kwargs["full_url"].endswith("/beta/security/informationProtection/sensitivityLabels")
-
-    assert result.outputs_prefix == "MsGraphFiles.SensitivityLabel"
-    assert result.outputs_key_field == "id"
-    assert isinstance(result.outputs, list)
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["id"] == "label-id-1"
-    assert result.outputs[0]["displayName"] == "Confidential"
-    assert result.outputs[0]["parent"] == {"id": "parent-label-id"}
-    assert result.outputs[1]["id"] == "label-id-2"
-    assert result.outputs[1]["parent"] is None
-
-
-def test_list_sensitivity_labels_command_respects_limit(mocker: MockerFixture) -> None:
-    """
-    Given:
-        - A Graph response with two labels and a `limit` argument of 1.
-    When:
-        - Running the list_sensitivity_labels_command.
-    Then:
-        - Only the first label is returned in the outputs.
-    """
-    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=SENSITIVITY_LABELS_RAW_RESPONSE)
-    result = list_sensitivity_labels_command(CLIENT_MOCKER, {"limit": "1"})
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["id"] == "label-id-1"
-
 
 @pytest.mark.parametrize(
     "object_type, expected_uri_part",
@@ -1161,7 +1088,7 @@ def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_t
     http_mock = mocker.patch.object(
         CLIENT_MOCKER.ms_client,
         "http_request",
-        return_value={"extractedSensitivityLabel": []},
+        return_value={"value": {"labels": []}},
     )
     object_type_id_map = {
         "drives": "drive-1",
@@ -1184,13 +1111,15 @@ def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_t
 def test_extract_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
     """
     Given:
-        - A Graph response containing a single extracted sensitivity label.
+        - A Graph response containing a single extracted sensitivity label
+          under the documented `value.labels[]` shape.
     When:
         - Running the extract_sensitivity_label_command.
     Then:
-        - The outputs include the label GUID and the assignment method.
+        - The outputs include the flat label GUID and assignment method (from the first
+          entry) plus the full `labels` array.
     """
-    response = {"extractedSensitivityLabel": [{"sensitivityLabelId": "label-guid-1", "assignmentMethod": "standard"}]}
+    response = {"value": {"labels": [{"sensitivityLabelId": "label-guid-1", "assignmentMethod": "standard"}]}}
     mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
     result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
@@ -1200,24 +1129,26 @@ def test_extract_sensitivity_label_command_happy_path(mocker: MockerFixture) -> 
         "itemId": "i1",
         "sensitivityLabelId": "label-guid-1",
         "assignmentMethod": "standard",
+        "labels": [{"sensitivityLabelId": "label-guid-1", "assignmentMethod": "standard"}],
     }
 
 
 def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture) -> None:
     """
     Given:
-        - A Graph response with an empty `extractedSensitivityLabel` array,
-          meaning the drive item has no sensitivity label assigned.
+        - A Graph response with an empty `value.labels` array, meaning the drive item
+          has no sensitivity label assigned.
     When:
         - Running the extract_sensitivity_label_command.
     Then:
         - The command does NOT raise an error.
-        - The outputs contain empty strings for `sensitivityLabelId` and `assignmentMethod`.
+        - The outputs contain empty strings for `sensitivityLabelId` and `assignmentMethod`,
+          and an empty list for `labels`.
     """
     mocker.patch.object(
         CLIENT_MOCKER.ms_client,
         "http_request",
-        return_value={"extractedSensitivityLabel": []},
+        return_value={"value": {"labels": []}},
     )
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
     result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
@@ -1226,6 +1157,39 @@ def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture) ->
         "itemId": "i1",
         "sensitivityLabelId": "",
         "assignmentMethod": "",
+        "labels": [],
+    }
+
+
+def test_extract_sensitivity_label_command_multiple_labels(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - A Graph response containing multiple sensitivity labels assigned to the
+          drive item under `value.labels[]`.
+    When:
+        - Running the extract_sensitivity_label_command.
+    Then:
+        - The full labels[] array is preserved in the outputs.
+        - The flat `sensitivityLabelId` and `assignmentMethod` fields reflect the first
+          entry only (preserving the documented backward-compatible contract).
+    """
+    labels = [
+        {"sensitivityLabelId": "label-guid-1", "assignmentMethod": "standard"},
+        {"sensitivityLabelId": "label-guid-2", "assignmentMethod": "privileged"},
+    ]
+    mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value={"value": {"labels": labels}},
+    )
+    args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
+    result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    assert result.outputs == {
+        "itemId": "i1",
+        "sensitivityLabelId": "label-guid-1",
+        "assignmentMethod": "standard",
+        "labels": labels,
     }
 
 
@@ -1278,22 +1242,27 @@ def test_sensitivity_label_commands_missing_required_args(command: Callable, arg
 def test_apply_sensitivity_label_uri_branching(mocker: MockerFixture, object_type: str, expected_uri_part: str) -> None:
     """
     Given:
-        - A request to apply a sensitivity label for each supported object_type.
+        - A request to apply a sensitivity label for each supported object_type. Microsoft
+          Graph treats assignSensitivityLabel as a long-running operation, returning 202
+          Accepted with a Location header that points to an operations URL.
     When:
         - Running the apply_sensitivity_label_command.
     Then:
         - The Graph URL uses the correct drive-prefix branching for each object_type.
         - The request body contains sensitivityLabelId, assignmentMethod, and justificationText.
     """
-    http_mock = mocker.patch.object(
-        CLIENT_MOCKER.ms_client, "http_request", return_value=MockedResponse(status_code=200, json={})
-    )
     object_type_id_map = {
         "drives": "drive-1",
         "users": "user-1",
         "sites": "site-1",
         "groups": "group-1",
     }
+    location_header = f"https://graph.microsoft.com/v1.0/drives/{object_type_id_map[object_type]}/operations/op-1"
+    http_mock = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value=MockedResponse(status_code=202, json={}, headers={"Location": location_header}),
+    )
     args = {
         "object_type": object_type,
         "object_type_id": object_type_id_map[object_type],
@@ -1316,16 +1285,22 @@ def test_apply_sensitivity_label_uri_branching(mocker: MockerFixture, object_typ
 def test_apply_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
     """
     Given:
-        - A successful 200 OK response from Microsoft Graph for the assignSensitivityLabel call.
+        - A successful 202 Accepted response from Microsoft Graph for the
+          assignSensitivityLabel call, including a Location response header pointing to
+          the long-running operation status URL.
     When:
         - Running the apply_sensitivity_label_command with a non-default assignment_method
           and justification_text.
     Then:
-        - The outputs include result=SUCCESS and the HTTP status code.
+        - The outputs include result=SUCCESS, the HTTP status code (202), and the
+          operationLocation URL extracted from the Location header.
         - The request body uses the user-supplied assignment_method and justification_text.
     """
+    location_header = "https://graph.microsoft.com/v1.0/drives/d1/operations/op-123"
     http_mock = mocker.patch.object(
-        CLIENT_MOCKER.ms_client, "http_request", return_value=MockedResponse(status_code=200, json={})
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value=MockedResponse(status_code=202, json={}, headers={"Location": location_header}),
     )
     args = {
         "object_type": "drives",
@@ -1342,7 +1317,8 @@ def test_apply_sensitivity_label_command_happy_path(mocker: MockerFixture) -> No
         "itemId": "i1",
         "sensitivityLabelId": "label-guid-1",
         "result": "SUCCESS",
-        "httpStatusCode": 200,
+        "httpStatusCode": 202,
+        "operationLocation": location_header,
     }
     sent_body = http_mock.call_args.kwargs["json_data"]
     assert sent_body["assignmentMethod"] == "privileged"

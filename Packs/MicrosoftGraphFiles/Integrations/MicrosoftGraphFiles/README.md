@@ -1015,39 +1015,10 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
-### msgraph-list-sensitivity-labels
-
-***
-Retrieves sensitivity labels available in the tenant from Microsoft Information Protection.
-
-#### Base Command
-
-`msgraph-list-sensitivity-labels`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of labels to return. Default is 50. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.SensitivityLabel.id | String | The sensitivity label GUID. | 
-| MsGraphFiles.SensitivityLabel.name | String | The internal name of the sensitivity label. | 
-| MsGraphFiles.SensitivityLabel.displayName | String | The user-facing display name of the sensitivity label. | 
-| MsGraphFiles.SensitivityLabel.description | String | The tenant-defined description of the sensitivity label. | 
-| MsGraphFiles.SensitivityLabel.color | String | Optional UI hex color associated with the label. | 
-| MsGraphFiles.SensitivityLabel.isActive | Boolean | Whether the label is currently active. | 
-| MsGraphFiles.SensitivityLabel.sensitivity | Number | Numeric sensitivity ranking \(lower value indicates lower sensitivity\). | 
-| MsGraphFiles.SensitivityLabel.tooltip | String | The tooltip text shown to users. | 
-| MsGraphFiles.SensitivityLabel.parent.id | String | The parent label GUID. Populated when the label is a sub-label. | 
-
 ### msgraph-extract-sensitivity-label
 
 ***
-Retrieves the sensitivity label currently assigned to a drive item. If the item has no sensitivity label assigned, the sensitivityLabelId and assignmentMethod outputs are returned as empty strings.
+Retrieves the sensitivity label currently assigned to a drive item. If the item has no sensitivity label assigned, the sensitivityLabelId and assignmentMethod outputs are returned as empty strings and labels as an empty list.
 
 #### Base Command
 
@@ -1066,13 +1037,14 @@ Retrieves the sensitivity label currently assigned to a drive item. If the item 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraphFiles.ExtractedSensitivityLabel.itemId | String | Echo of the requested drive item ID. | 
-| MsGraphFiles.ExtractedSensitivityLabel.sensitivityLabelId | String | The currently assigned sensitivity label GUID. Empty string if no label is assigned. | 
-| MsGraphFiles.ExtractedSensitivityLabel.assignmentMethod | String | The assignment method recorded on the label. One of standard, privileged, or auto. Empty string if no label is assigned. | 
+| MsGraphFiles.ExtractedSensitivityLabel.sensitivityLabelId | String | The currently assigned sensitivity label GUID, taken from the first entry of the labels array. Empty string if no label is assigned. | 
+| MsGraphFiles.ExtractedSensitivityLabel.assignmentMethod | String | The assignment method recorded on the first label entry. One of standard, privileged, or auto. Empty string if no label is assigned. | 
+| MsGraphFiles.ExtractedSensitivityLabel.labels | Unknown | All sensitivity labels assigned to the drive item, as returned by Microsoft Graph. | 
 
 ### msgraph-apply-sensitivity-label
 
 ***
-Assigns a sensitivity label to a drive item. On success, returns SUCCESS and the HTTP status code returned by Microsoft Graph. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
+Assigns a sensitivity label to a drive item. On success, returns SUCCESS, the HTTP status code returned by Microsoft Graph, and the Location header URL for polling the long-running operation. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
 
 #### Base Command
 
@@ -1085,7 +1057,7 @@ Assigns a sensitivity label to a drive item. On success, returns SUCCESS and the
 | object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The ID of the drive item to assign the sensitivity label to. | Required | 
-| sensitivity_label_id | The GUID of the sensitivity label to assign. Use the msgraph-list-sensitivity-labels command to retrieve available label IDs. | Required | 
+| sensitivity_label_id | The GUID of the sensitivity label to assign. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet. | Required | 
 | assignment_method | Assignment method recorded on Microsoft Graph.<br/>standard: a user-driven assignment.<br/>privileged: overrides existing user-applied labels.<br/>auto: recorded as a system-driven assignment. Possible values are: standard, privileged, auto. Default is standard. | Optional | 
 | justification_text | Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label. Default is Applied via Cortex XSOAR. | Optional | 
 
@@ -1097,4 +1069,5 @@ Assigns a sensitivity label to a drive item. On success, returns SUCCESS and the
 | MsGraphFiles.AppliedSensitivityLabel.sensitivityLabelId | String | Echo of the assigned sensitivity label GUID. | 
 | MsGraphFiles.AppliedSensitivityLabel.result | String | SUCCESS on a 2xx response from Microsoft Graph. | 
 | MsGraphFiles.AppliedSensitivityLabel.httpStatusCode | Number | The HTTP status code returned by Microsoft Graph. | 
+| MsGraphFiles.AppliedSensitivityLabel.operationLocation | String | URL returned in the Location header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to monitor its completion status. | 
 
