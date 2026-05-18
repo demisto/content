@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Indicator of Attack (IOA) filter query now uses FQL"
+}

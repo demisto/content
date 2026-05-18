@@ -113,7 +113,7 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
+  additionalinfo: "Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html)."
   hidden:
   - marketplacev2
   - platform

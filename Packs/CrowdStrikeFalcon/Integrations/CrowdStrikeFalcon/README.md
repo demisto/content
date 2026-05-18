@@ -11,17 +11,18 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
 | Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
 | Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Mobile Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOM filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOA filter query | In the query parameter format: 'cloud_provider=aws&amp;amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html\#keyword-arguments-13 | False |
-| Detections from On-Demand Scans filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| OFP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Third Party Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM automated leads fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM cases fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM incidents fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| IDP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Mobile Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOM filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOA filter query | Indicator of Attack \(IOA\) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: \`cloud_provider:'aws'\`. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Detections from On-Demand Scans filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| OFP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Third Party Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM automated leads fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM cases fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM incidents fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Recon filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | Fetch incidents |  | False |
 | Fetch events |  | False |
 | Incident type |  | False |

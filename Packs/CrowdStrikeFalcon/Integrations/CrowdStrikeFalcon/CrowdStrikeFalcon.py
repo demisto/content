@@ -42,6 +42,7 @@ NGSIEM_INCIDENT = "ngsiem_incident"
 NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
 NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
+IOA_DETECTION = "ioa_detection"
 RECON_NOTIFICATION = "Recon notifications"
 
 # Fetch type names as they appear in the .yml instance configurations
@@ -427,7 +428,7 @@ class IncidentType(Enum):
     LEGACY_ENDPOINT_DETECTION = "ldt"
     ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ":ind:"  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = "iom_configurations"
-    IOA_EVENTS = "ioa_events"
+    IOA = "cloud-ioa"
     ON_DEMAND = "ods"
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
@@ -1002,6 +1003,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
         NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+        IOA_FETCH_TYPE,
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -1013,6 +1015,10 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
+    elif detection_type == IOA_FETCH_TYPE:
+        incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
+        incident_context["severity"] = severity_string_to_int(detection.get("severity_name"))
+        incident_context["last_updated"] = detection.get("updated_timestamp")
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
@@ -3433,53 +3439,6 @@ def fetch_iom_incidents(iom_last_run):
     return iom_incidents, iom_last_run
 
 
-def fetch_ioa_incidents(ioa_last_run):
-    demisto.debug("Fetching Indicator of Attack incidents")
-    demisto.debug(f"{ioa_last_run=}")
-    fetch_query = demisto.params().get("ioa_fetch_query", "")
-    validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-
-    last_fetch_event_ids, ioa_next_token, last_date_time_since, _ = get_current_fetch_data(
-        last_run_object=ioa_last_run,
-        date_format=DATE_FORMAT,
-        last_date_key="last_date_time_since",
-        next_token_key="ioa_next_token",
-        last_fetched_ids_key="last_event_ids",
-    )
-    ioa_fetch_query = create_ioa_query(
-        is_paginating=bool(ioa_next_token),
-        configured_fetch_query=fetch_query,
-        last_fetch_query=ioa_last_run.get("last_fetch_query", ""),
-        last_date_time_since=last_date_time_since,
-    )
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    ioa_events, ioa_new_next_token = ioa_events_pagination(
-        ioa_fetch_query=ioa_fetch_query, ioa_next_token=ioa_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=1000
-    )
-    demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
-
-    ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
-        fetched_data=ioa_events,
-        last_date=last_date_time_since,
-        last_fetched_ids=last_fetch_event_ids,
-        date_key="event_created",
-        id_key="event_id",
-        date_format=DATE_FORMAT,
-        is_paginating=bool(ioa_new_next_token or ioa_next_token),
-        to_incident_context=ioa_event_to_incident,
-        incident_type="ioa_events",
-    )
-
-    ioa_last_run = {
-        "ioa_next_token": ioa_new_next_token,
-        "last_date_time_since": new_date_time_since,
-        "last_fetch_query": ioa_fetch_query,
-        "last_event_ids": ioa_event_ids or last_fetch_event_ids,
-    }
-
-    return ioa_incidents, ioa_last_run
-
-
 def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fetch_events=False) -> None:
     """
     Safely set the specific sub last_run dictionary in the main last_run list.
@@ -3717,7 +3676,16 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
         demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
 
-        fetched_ioa_incidents, ioa_last_run = fetch_ioa_incidents(ioa_last_run)
+        fetched_ioa_incidents, ioa_last_run = fetch_detections_by_product_type(
+            ioa_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ioa_fetch_query", ""),
+            detections_type=IOA_DETECTION,
+            product_type=IncidentType.IOA.value,
+            detection_name_prefix=IOA_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False,
+        )
         items.extend(fetched_ioa_incidents)
 
     if not is_fetch_events and NGSIEM_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -5072,9 +5040,23 @@ def fetch_detections_by_product_type(
 
     fetch_limit = current_fetch_info.get("limit") or fetch_limit
 
-    filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
-        filter = filter.replace("product:", "type:")
+    # Build the base product/type filter clauses.
+    # Most product types (e.g. idp, mobile, ngsiem, xdr, automated-lead, thirdparty) map to a single
+    # `product:'<value>'` clause. ON_DEMAND ('ods') and OFP ('ofp') need `type:'<value>'` instead.
+    # IOA needs a compound `product:'fcs'+type:'cloud-ioa'` selector.
+    product_type_to_clauses: dict[str, tuple[str | None, str | None]] = {
+        IncidentType.ON_DEMAND.value: (None, IncidentType.ON_DEMAND.value),
+        IncidentType.OFP.value: (None, IncidentType.OFP.value),
+        IncidentType.IOA.value: ("fcs", IncidentType.IOA.value),
+    }
+    product_clause_value, type_clause_value = product_type_to_clauses.get(product_type, (product_type, None))
+    filter_clauses: list[str] = []
+    if product_clause_value:
+        filter_clauses.append(f"product:'{product_clause_value}'")
+    if type_clause_value:
+        filter_clauses.append(f"type:'{type_clause_value}'")
+    filter_clauses.append(f"created_timestamp:>'{start_fetch_time}'")
+    filter = "+".join(filter_clauses)
 
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
@@ -5599,187 +5581,6 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     """
     added_datetime = safe_strptime(date, date_format) + timedelta(seconds=seconds_to_add)
     return added_datetime.strftime(date_format)
-
-
-def create_ioa_query(is_paginating: bool, last_fetch_query: str, configured_fetch_query: str, last_date_time_since: str) -> str:
-    """Retrieve the IOA query that will be used in the current fetch round.
-
-    Args:
-        is_paginating (bool): Whether we are doing pagination or not.
-        last_fetch_query (str): The last fetch query that was used in the previous round.
-        configured_fetch_query (str): The fetched query configured by the user.
-        last_date_time_since (str): The last date time since.
-
-    Raises:
-        DemistoException: If paginating and last fetch query is an empty string.
-
-    Returns:
-        str: The IOA query that will be used in the current fetch.
-    """
-    fetch_query = configured_fetch_query
-    if is_paginating:
-        # If entered here, that means we are currently doing pagination, and we need to use the
-        # same fetch query as the previous round
-        fetch_query = last_fetch_query
-        if not fetch_query:
-            raise DemistoException("Last fetch query must not be empty when doing pagination")
-        demisto.debug(f"Doing pagination, using the same query as the previous round. Query is {fetch_query}")
-    else:
-        # If entered here, that means we aren't doing pagination, and we need to use the latest
-        # date_time_since time
-        fetch_query = f"{fetch_query}&date_time_since={last_date_time_since}"
-        demisto.debug(f"Not doing pagination. Query is {fetch_query}")
-    return fetch_query
-
-
-def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict[str, Any]:
-    """Create an incident from an IOA event.
-
-    Args:
-        ioa_event (dict[str, Any]): An IOA event.
-        incident_type (str): The incident type.
-
-    Returns:
-        dict[str, Any]: An incident from an IOA event.
-    """
-    resource = demisto.get(ioa_event, "aggregate.resource", {})
-    id = resource.get("id", [])
-    uuid = resource.get("uuid", [])
-    incident_metadata = assign_params(
-        mirror_direction=MIRROR_DIRECTION,
-        mirror_instance=INTEGRATION_INSTANCE,
-        extracted_account_id=demisto.get(ioa_event, "cloud_account_id.aws_account_id")
-        or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
-        extracted_uuid=uuid[0] if uuid else None,
-        extracted_resource_id=id[0] if id else None,
-        incident_type=incident_type,
-    )
-    incident_context = {
-        "name": f'IOA Event ID: {ioa_event.get("event_id")}',
-        "rawJSON": json.dumps(ioa_event | incident_metadata),
-    }
-    return incident_context
-
-
-def ioa_events_pagination(
-    ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None, fetch_limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
-    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found
-    by the API.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        api_limit (int): The API limit
-        ioa_next_token (str | None): The IOA next token to start the pagination from.
-        fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next
-        token that will be used in the next fetch run.
-    """
-    total_incidents_count = 0
-    ioa_new_next_token = ioa_next_token
-    fetched_ioa_events: list[dict[str, Any]] = []
-    continue_pagination = True
-    while continue_pagination:
-        demisto.debug(
-            f"Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},{fetch_limit=}"
-        )
-        ioa_events, ioa_new_next_token = get_ioa_events(
-            ioa_fetch_query=ioa_fetch_query,
-            ioa_next_token=ioa_new_next_token,
-            limit=min(api_limit, fetch_limit - total_incidents_count),
-        )
-        fetched_ioa_events.extend(ioa_events)
-        total_incidents_count += len(ioa_events)
-        demisto.debug(f"Results of IOA pagination: {total_incidents_count=}, {ioa_new_next_token=}")
-        if (ioa_new_next_token is None) or (total_incidents_count >= fetch_limit):
-            demisto.debug("Number of incidents reached the fetching limit, or there are no more results, stopping pagination")
-            # If the number of fetched incidents reaches the fetching limit, or there are no more results to be fetched
-            # (by checking the next token variable), then we should stop the pagination process
-            continue_pagination = False
-    return fetched_ioa_events, ioa_new_next_token
-
-
-def get_ioa_events(
-    ioa_fetch_query: str, ioa_next_token: str | None, limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """Do a single API call to receive IOA events.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        ioa_next_token (int | None): The next token to be used as part of the pagination process.
-        limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the
-        next token that will be used in the next API call.
-    """
-    # The API does not support a `query` parameter, rather a set of query params
-    if ioa_next_token:
-        ioa_fetch_query = f"{ioa_fetch_query}&next_token={ioa_next_token}"
-    ioa_fetch_query = f"{ioa_fetch_query}&limit={limit}"
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    raw_response = http_request(method="GET", url_suffix=f"/detects/entities/ioa/v1?{ioa_fetch_query}")
-    events = demisto.get(raw_response, "resources.events", [])
-    pagination_obj = demisto.get(raw_response, "meta.pagination", {})
-    demisto.debug(f"{pagination_obj=}")
-    next_token = pagination_obj.get("next_token")
-    if next_token:
-        # If next_token has a value, that means more pagination is needed, and the next run should use it
-        demisto.debug("next_token has a value, more pagination is needed for the next run")
-        return events, next_token
-    else:
-        demisto.debug("next_token is None, no pagination is needed for the next run")
-        # If it is None, that means no more pagination is required, therefore,
-        # the next token for the next run should be None
-        return events, None
-
-
-def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
-    """Validate the IOA fetch query.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-
-    Raises:
-        DemistoException: If the param cloud_provider is not part of the query.
-        DemistoException: If an unsupported parameter has been entered.
-        DemistoException: If the value of a parameter is an empty string.
-        DemistoException: If a query section has a wrong format
-    """
-    demisto.debug(f"Validating IOA {ioa_fetch_query=}")
-    if "cloud_provider" not in ioa_fetch_query:
-        raise DemistoException("A cloud provider is required as part of the IOA fetch query. Options are: aws, azure")
-    # The following parameters are also supported by the API: 'date_time_since', 'next_token', 'limit', but we don't
-    # allow them to be as part of the original fetch query, since they are used by the fetching mechanism, internally
-    supported_params = (
-        "cloud_provider",
-        "account_id",
-        "aws_account_id",
-        "azure_subscription_id",
-        "azure_tenant_id",
-        "severity",
-        "region",
-        "service",
-        "state",
-    )
-    # The query has a format of 'param1=val1&param2=val2'
-    for section in ioa_fetch_query.split("&"):
-        param_and_value = section.split("=")
-        # Since each section should have a format of 'param1=val1', then when splitting by '=', we should get
-        # a list of length 2, where the first element holds the parameter that we want to validate
-        if param_and_value and len(param_and_value) == 2:
-            if param_and_value[0] not in supported_params:
-                raise DemistoException(
-                    f"An unsupported parameter has been entered, {param_and_value[0]}."
-                    f"Use the following parameters: {supported_params}"
-                )
-            if param_and_value[1] == "":
-                raise DemistoException(f"The value of the parameter {param_and_value[0]} cannot be an empty string")
-        else:
-            raise DemistoException(f'Query section "{section}" does not match the parameter=value format')
 
 
 def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | None = None) -> str:
