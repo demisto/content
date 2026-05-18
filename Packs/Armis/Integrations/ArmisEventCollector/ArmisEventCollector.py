@@ -23,10 +23,8 @@ MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
-JSONDECODE_MAX_RETRIES = 3  # Per Armis recommendation for transient nginx malformed JSON
-# Bound how long the main thread waits for the background enrichment to finish. If exceeded,
-# we ship alerts without enrichment instead of blowing the 5-min Docker timeout (graceful
-# degrade, same philosophy as the per-batch fallback inside _bulk_fetch_entities_by_id).
+JSONDECODE_MAX_RETRIES = 3  # Retries on transient nginx malformed JSON (Armis-recommended)
+# Max wait for background enrichment before shipping alerts unenriched (avoids 5-min Docker timeout).
 ENRICHMENT_WAIT_TIMEOUT_SECONDS = 180
 
 
@@ -201,9 +199,19 @@ class Client(BaseClient):
         verify=False,
         proxy=False,
     ):
-        # context_manager is REQUIRED — main() always builds one, and refresh_access_token,
-        # auth-retry, and IntegrationContextManager-based locking all depend on it. Tests that
-        # used to pass it positionally still work because we moved it before the kw-args.
+        """Initialize the client.
+
+        Args:
+            base_url: Armis API base URL.
+            api_key: Armis API secret key (used to mint access tokens).
+            access_token: Existing access token from integration context (may be None or stale;
+                the constructor will refresh it as needed).
+            context_manager: Required. Coordinates the shared access token + locks across worker
+                threads. Required because refresh_access_token, the auth-error retry path, and
+                multi-threaded token coordination all depend on it.
+            verify: Whether to verify TLS certificates.
+            proxy: Whether to honour system proxy settings.
+        """
         self._api_key = api_key
         self._context_manager = context_manager
         self._access_token = None  # Initialize to prevent AttributeError in refresh_access_token
@@ -225,20 +233,13 @@ class Client(BaseClient):
         Armis tokens have a fixed 30-minute TTL (confirmed by Armis).
         We proactively refresh at 25 minutes to avoid mid-cycle 401 errors.
 
-        The freshness decision is made entirely from `demisto.getIntegrationContext()`
-        (`token_generated_at`), so the actual token string is not needed as a parameter.
-
-        If no timestamp is available (e.g., first run, or upgrade from a version that did not
-        save token_generated_at), we treat the token as stale and force a refresh. This is
-        safer than a live API ping which can succeed for a token that is seconds from expiry.
-
         Returns:
             bool: True if the token is still fresh (< 25 min old), False if it needs refresh.
         """
         integration_context = demisto.getIntegrationContext()
         token_generated_at_str = integration_context.get("token_generated_at")
         if not token_generated_at_str:
-            # No timestamp - force refresh (safer than trusting the existing token)
+            # No timestamp - force refresh
             safe_debug("No token_generated_at in integration context - forcing refresh")
             return False
         try:
@@ -246,10 +247,6 @@ class Client(BaseClient):
         except Exception as ex:
             safe_debug(f"Could not parse token_generated_at '{token_generated_at_str}': {_safe_error_str(ex)} - forcing refresh")
             return False
-        # Normalize: tokens written by current code are tz-aware UTC; tokens written by older
-        # versions of this integration (or by a manual edit) may be naive. Treat naive as UTC.
-        if token_generated_at.tzinfo is None:
-            token_generated_at = token_generated_at.replace(tzinfo=timezone.utc)
         age_seconds = (datetime.now(timezone.utc) - token_generated_at).total_seconds()
         is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
         safe_debug(
@@ -262,18 +259,6 @@ class Client(BaseClient):
 
         This method only updates the client's in-memory state with the provided token; it
         does NOT acquire a new token and does NOT persist anything to integration context.
-        Callers must therefore pass a non-empty token that they obtained via
-        ``refresh_access_token`` / ``IntegrationContextManager.get_access_token`` (those paths
-        own the timestamp persistence).
-
-        Thread-safety: assigns to ``self._headers`` and ``self._access_token`` without an
-        explicit lock. Safe because all callers invoke it from coordinated paths that have
-        already serialized token-refresh decisions:
-          - ``__init__``: runs before any worker thread is spawned.
-          - ``_handle_auth_error_and_retry``: the fresh token has just been obtained either
-            from ``IntegrationContextManager`` (its own lock) or via ``refresh_access_token``
-            (which holds ``_token_refresh_lock`` end-to-end).
-        Worst-case interleaving therefore reassigns the same fresh token, which is benign.
 
         Args:
             access_token (str): The access token to apply. Must be non-empty.
@@ -294,9 +279,6 @@ class Client(BaseClient):
         with self._context_manager.acquire_token_refresh_lock():
             # Double-check: another thread might have refreshed while we were waiting.
             # Use timestamp-based freshness (_is_token_still_fresh) instead of a live API ping
-            # (is_valid_access_token used in older revisions) — the live ping can return success
-            # for a token that is within seconds of expiring, which then 401s a few seconds
-            # later mid-fetch.
             current_token = self._context_manager.get_access_token()
             if current_token and current_token != self._access_token and self._is_token_still_fresh():
                 # Token was updated by another thread and is still fresh per our timestamp
@@ -371,8 +353,7 @@ class Client(BaseClient):
         """
         integration_context = demisto.getIntegrationContext()
         token_generated_at = integration_context.get("token_generated_at", "unknown")
-        # Cast to str for mypy: the truthiness check above already guards against None,
-        # but mypy doesn't narrow self._access_token (declared Optional) across the boolean.
+        # Cast to str for mypy
         token_prefix = str(self._access_token)[:8] if self._access_token else "None"
         safe_debug(
             f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}. "
@@ -421,11 +402,7 @@ class Client(BaseClient):
         for attempt in range(1, JSONDECODE_MAX_RETRIES + 1):
             backoff = 2 ** (attempt - 1)  # 1s, 2s, 4s
             safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES}, backing off {backoff}s")
-            # Intentional: simple exponential-backoff sleep between retries on transient
-            # malformed-JSON responses from Armis (nginx-side parse errors). There is no event
-            # loop to yield to in this single-threaded fetch path, so a blocking sleep is the
-            # right primitive. The xsoar-lint "no sleep" rule (E9003) is suppressed below for
-            # the same reason — Armis explicitly recommends a small backoff between retries.
+            # Armis recommends a small backoff between retries.
             time.sleep(backoff)  # pylint: disable=E9003
             try:
                 raw_response = self._do_search_request(params)
@@ -833,14 +810,11 @@ def _bulk_fetch_entities_by_id(
 
     for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
         chunk = ids[offset : offset + BULK_ENRICHMENT_BATCH_SIZE]
-        # No timeFrame: per Armis (Sefi Maman, 2026-05-11) it is not required when
-        # the query specifies explicit IDs (UUID:... or deviceId:...).
         aql = f"in:{entity_type} {aql_field}:{','.join(chunk)}"  # noqa: E231
         batch_start = datetime.now()
         try:
             # Use MAX_PAGE_SIZE (10K) for the response page size: we only send 1000 IDs per batch,
-            # so we should never get back more than that. The 10K headroom protects us from
-            # silent truncation if a single ID happens to map to multiple entities.
+            # so we should never get back more than that.
             results = client.fetch_by_ids_in_aql_query(aql_query=aql, order_by=order_by, length=MAX_PAGE_SIZE)
             if len(results) > BULK_ENRICHMENT_BATCH_SIZE:
                 demisto.error(
@@ -896,7 +870,7 @@ def _attach_enrichment(
 def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
     """Bulk-enrich alerts with their related Activities and Devices.
 
-    Replaces the previous N+1 per-alert loop. Pattern recommended by Armis (Sefi Maman):
+    Pattern recommended by Armis:
     use the activityUUIDs/deviceIds arrays already on each alert, dedupe across the page,
     and bulk-fetch in chunks of BULK_ENRICHMENT_BATCH_SIZE.
 
@@ -944,17 +918,14 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
 
 
 def _wait_for_enrichment(future, executor, timeout_seconds: int = ENRICHMENT_WAIT_TIMEOUT_SECONDS) -> None:
-    """Block until the background enrichment task completes (bounded) and tear down its executor.
+    """Wait (bounded) for the background enrichment task and tear down its executor.
 
-    Safe to call with ``(None, None)`` if no enrichment was scheduled (e.g., no Alerts in cycle).
+    No-op when ``future`` is None (no Alerts were fetched this cycle).
 
-    Failure modes (all graceful-degrade — alerts ship without enrichment instead of losing the cycle):
-      * The enrichment raises -> logged, suppressed.
-      * The enrichment exceeds ``timeout_seconds`` -> logged, the executor is shut down without
-        waiting, and the enrichment thread is left to either finish naturally and be GC'd or be
-        torn down with the integration container. This is the same philosophy as the per-batch
-        fallback inside ``_bulk_fetch_entities_by_id``: we'd rather ship partial data than blow
-        the 5-minute Docker timeout that would lose ALL events in the cycle.
+    On exception or timeout we log and ship alerts unenriched — partial data is preferred
+    over blowing the 5-minute Docker timeout and losing the entire cycle. On timeout the
+    executor is shut down with ``wait=False``; the enrichment thread is left to finish on
+    its own or be torn down with the container.
     """
     tname = threading.current_thread().name
     if future is None:
@@ -1072,10 +1043,7 @@ def fetch_events(
     safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 
     # Handle Alerts: fetch them first (sequential), then run bulk enrichment IN PARALLEL with
-    # the standalone Activities/Devices fetches below. This is the biggest single optimisation
-    # available — bulk enrichment dominates cycle time (~3-4 min) and previously blocked the
-    # cycle. Running it concurrently with the other workers keeps total cycle time ≈ max(workers)
-    # instead of sum, which is what lets us fit inside the 5-minute Docker timeout.
+    # the standalone Activities/Devices fetches below.
     enrichment_future = None
     enrichment_executor = None
     if "Alerts" in event_types_to_fetch:
@@ -1108,7 +1076,6 @@ def fetch_events(
 
     # Use multithreading only if it's beneficial: more than one event type AND the caller is the
     # periodic ``fetch-events`` command (manual ``armis-get-events`` always passes False).
-    # ``not context_manager`` is a defensive guard — in production it is always set.
     if not use_multithreading or len(event_types_to_fetch) == 1 or not context_manager:
         # Fallback to sequential processing
         safe_debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
@@ -1344,7 +1311,6 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
 
     try:
-        # Multithreading is always on; the context manager is required for thread-safe operations.
         context_manager = IntegrationContextManager()
 
         client = Client(
