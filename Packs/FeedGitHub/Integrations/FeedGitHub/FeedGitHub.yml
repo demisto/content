@@ -25,11 +25,11 @@ configuration:
   required: false
 - display: Incremental Feed
   defaultvalue: 'true'
-  hidden: true
   name: feedIncremental
   section: Collect
   type: 8
   required: false
+  additionalinfo: When enabled (default), only new/modified files since the last fetch are reported (legacy behavior). Disable to fetch the full current set on every cycle so the "When removed from the feed" (suddenDeath) expiration policy can expire indicators removed from the source.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -136,20 +136,23 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: ''
+- display: Feed Expiration Policy
   name: feedExpirationPolicy
   type: 17
   required: false
+  additionalinfo: Controls when indicators expire. Choose "suddenDeath" together with disabling the *Incremental Feed* option to expire indicators that were removed from the source repository.
   options:
   - never
   - interval
   - indicatorType
+  - suddenDeath
   section: Collect
   advanced: true
-- display: ''
+- display: Feed Expiration Interval
   name: feedExpirationInterval
   type: 1
   required: false
+  additionalinfo: Only used when *Feed Expiration Policy* is set to "interval". Ignored for the "suddenDeath", "never" and "indicatorType" policies.
   section: Collect
   advanced: true
 - display: Tags
