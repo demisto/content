@@ -1165,7 +1165,7 @@ def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str
     )
 
     return CommandResults(
-        outputs_prefix=f"{INTEGRATION_NAME}.ExtractedSensitivityLabel",
+        outputs_prefix="MsGraphFiles.ExtractedSensitivityLabel",
         outputs_key_field="itemId",
         outputs=outputs,
         readable_output=readable_output,
@@ -1230,7 +1230,7 @@ def apply_sensitivity_label_command(client: MsGraphClient, args: dict[str, str])
     )
 
     return CommandResults(
-        outputs_prefix=f"{INTEGRATION_NAME}.AppliedSensitivityLabel",
+        outputs_prefix="MsGraphFiles.AppliedSensitivityLabel",
         outputs_key_field="itemId",
         outputs=outputs,
         readable_output=readable_output,
