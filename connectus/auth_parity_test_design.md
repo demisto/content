@@ -28,7 +28,7 @@
 
 ## Purpose
 
-Verify that for each non-interpolated connection declared in an
+Verify that for each **non-interpolated** connection declared in an
 integration's `Auth Details`, the secret values end up in the **same
 place** on every outgoing HTTP request regardless of whether they were
 supplied the "old way" (via [`demisto.params()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9736) →
@@ -44,13 +44,70 @@ field, basic-auth slot, bearer-token slot, cookie, or URL-userinfo
 position — byte-for-byte on the sentinel value, modulo the
 canonicalization rules in [§4](#4-the-parity-comparison).
 
+### Scope: interpolated connections are NOT in this flow
+
+> **Hard rule:** interpolated connections (`"interpolated": true` on
+> an `auth_types[]` entry) are **explicitly out of scope** for this
+> test and MUST NOT be exercised.
+
+Interpolated connections have their values templated at runtime by
+the manifest generator — there is no user-supplied secret flowing
+through `demisto.params()` and there is no UCP injection path to
+compare against. There is nothing to grep for and nothing to diff.
+The "old path" and "new path" do not meaningfully exist for these
+entries.
+
+This has two consequences the harness MUST enforce:
+
+1. **Per-connection skip.** Any individual `auth_types[]` entry with
+   `interpolated: true` is reported as
+   `"status": "skipped_interpolated"` and **no run is attempted** for
+   it. No sentinels are generated, no proxy session is opened, no
+   integration code is loaded on its behalf.
+2. **All-interpolated short-circuit ⇒ step is migrated.** If
+   **every** `auth_types[]` entry is interpolated, the parity
+   question is vacuous: there is no legacy-vs-UCP code path to
+   compare because there is no integration-resident auth code in the
+   picture at all. We can safely treat step #11 (`auth parity test
+   passes`) as **migrated**. The tool emits `ERROR_ALL_INTERPOLATED`
+   (exit 12) with a message the migration skill recognizes as "this
+   step is effectively migrated — just `markpass` step #11". See
+   [§5.5](#55-error-codes--hard-errors) and
+   [§5.6](#56-skill-error-handling).
+
+### What a parity FAILURE means (and the "interpolated as last resort" escape hatch)
+
+A reported `fail` from this test is a **strong signal** that the
+integration's auth code is genuinely diverging between the legacy
+path and the UCP injection path. The expected response, in order of
+preference:
+
+1. **Fix the integration code.** Adjust the integration so that the
+   UCP injection path lands the secret in the same wire location as
+   the legacy path. This is the correct outcome the overwhelming
+   majority of the time.
+2. **Fix the UCP shape / `_apply_ucp_*` override.** If the mismatch
+   is in CommonServerPython's injection mapping for this auth type,
+   fix it there.
+3. **Last resort — and only with explicit reviewer sign-off:** mark
+   the offending `auth_types[]` entry as `"interpolated": true`. This
+   is an escape hatch, not a routine fix; it means "we are giving up
+   on automated parity verification for this connection and handing
+   it to the manifest-generated runtime template instead."
+
+When the skill takes path (3), it MUST reset workflow state back to
+the `Auth Details` step (#5) so the downstream steps that depend on
+auth details — manifest generation in particular — are re-run from
+the corrected auth shape. The exact reset procedure is documented in
+[§5.6](#56-skill-error-handling).
+
 ### Non-goals
 
 | # | Non-goal | Why |
 |---|----------|-----|
 | 1 | Checking parameter correctness / coverage | That is [`check_command_params.py`](connectus/check_command_params.py:1)'s job. |
 | 2 | Checking that the API actually accepts the request | The test only inspects the **request** side; responses are canned. |
-| 3 | Validating `interpolated: true` connections | Interpolated connections have their values templated at runtime by the manifest generator — there is no user-supplied secret to compare. The parity test emits `ERROR_ALL_INTERPOLATED` when every connection is interpolated, or `"skipped_interpolated"` per-connection when only some are (see [§5.5](#55-error-codes--hard-errors)). |
+| 3 | Validating `interpolated: true` connections | **Explicitly out of scope — see the "Scope" section above.** Interpolated connections have their values templated at runtime by the manifest generator; there is no user-supplied secret flowing through `demisto.params()` and no UCP injection path to compare. The harness MUST NOT generate sentinels, open a proxy session, or load integration code for an interpolated entry. The tool emits `ERROR_ALL_INTERPOLATED` (treated by the skill as "step migrated, `markpass`") when every connection is interpolated, or `"skipped_interpolated"` per-connection when only some are (see [§5.5](#55-error-codes--hard-errors)). |
 | 4 | Validating `other_connection` values (URL, proxy, insecure, …) | Only auth secrets (values declared in `auth_types[].xsoar_params`) are in scope. Connection metadata is orthogonal. |
 | 5 | Non-Python integrations or integrations without `BaseClient` | **Hard error, not a skip.** The tool emits `ERROR_NON_PYTHON` or `ERROR_NO_BASECLIENT` and exits immediately. The migration skill must mark the affected connections as `"interpolated": true` and re-run `set-auth`. See [§5.5](#55-error-codes--hard-errors). |
 
@@ -573,9 +630,13 @@ The workflow interaction is:
      `python3 connectus/workflow_state.py markpass "<id>" "auth parity test passes"`
    - **No** → investigate failures, fix code, re-run.
 
-Step #12 (`requires auth parity test`) must already be `YES` for step
-#13 to be meaningful. If it is `NO` or `N/A`, step #13 is auto-`N/A`
-and the parity test is not run.
+> **Schema note (2026-05):** the `requires auth parity test` gate
+> column was removed; step #11 (`auth parity test passes`) is
+> unconditional. The harness still short-circuits via
+> `ERROR_ALL_INTERPOLATED` when every connection is interpolated —
+> the skill treats that exit code as "step migrated, `markpass`",
+> which is the modern equivalent of the old `requires auth parity
+> test = NO` branch.
 
 ### 5.5 Error codes — hard errors
 
@@ -592,7 +653,7 @@ a non-zero process exit code.
 |------------|-----------|-----------|---------------|
 | `ERROR_NON_PYTHON` | `10` | YML `script.type` is not `python` / `python3`, or the integration directory contains no `.py` file (only `.js` or `.ps1`). | `"Auth parity test only supports Python integrations. This integration is <language>. Mark its auth as interpolated if it cannot use BaseClient injection."` |
 | `ERROR_NO_BASECLIENT` | `11` | The integration is Python but its `.py` file does not import or instantiate `BaseClient` (or a subclass). Detection: statically check whether the source contains `class <Name>(BaseClient)`, `BaseClient(`, or `from CommonServerPython import ... BaseClient`. | `"Auth parity test requires BaseClient usage. This integration does not use BaseClient. Mark its auth as interpolated if it cannot use BaseClient injection."` |
-| `ERROR_ALL_INTERPOLATED` | `12` | Every `auth_types[]` entry in `Auth Details` has `"interpolated": true`. | `"All auth types are interpolated. Auth parity test is not applicable — interpolated connections are handled by infrastructure, not integration code."` |
+| `ERROR_ALL_INTERPOLATED` | `12` | Every `auth_types[]` entry in `Auth Details` has `"interpolated": true`. | `"All auth types are interpolated. Auth parity test is not applicable — interpolated connections are handled by infrastructure, not integration code. Step #11 (auth parity test passes) is effectively migrated — markpass."` |
 | `ERROR_CONNECTION_INTERPOLATED` | `13` | A specific connection name was requested via `--connection <name>` but that connection has `"interpolated": true`. | `"Connection '<name>' is interpolated. Auth parity test only applies to non-interpolated connections. Remove the interpolated flag or skip this connection."` |
 | `ERROR_INTEGRATION_REJECTS_HTTP` | `14` | The integration code checks that the URL starts with `https://` and rejects `http://`, causing the proxy-redirected URL to fail. Detected when the old run crashes with an error message containing `http://` or `https` and `scheme`/`protocol`. | `"Integration rejects HTTP URLs. Auth parity test requires BaseClient URL rewriting to http://. Mark its auth as interpolated if it cannot use BaseClient injection."` |
 
@@ -625,34 +686,119 @@ encounters these error codes, it must react as follows:
 
 #### `ERROR_NON_PYTHON` or `ERROR_NO_BASECLIENT` or `ERROR_INTEGRATION_REJECTS_HTTP`
 
-1. **Reset the workflow** back to the `Auth Details` step.
+These three errors mean "this integration cannot be exercised by the
+parity harness at all." The harness has no way to verify the legacy
+vs UCP wire output, so the affected connections must be treated as
+**non-testable** and re-classified as interpolated so the
+manifest-generator path takes over.
+
+This is the **"interpolated as last resort"** path described in the
+Purpose section — it is not the routine response to a parity
+mismatch. It only fires when the harness itself cannot run.
+
+Skill procedure:
+
+1. **Reset workflow state** back to the `Auth Details` step (#5)
+   using
+   `python3 connectus/workflow_state.py reset "<id>" "Auth Details"`
+   (or the equivalent `goto`/rewind verb in the current CLI). The
+   reset is **required** because changing auth details invalidates
+   every downstream step that consumes them — manifest generation,
+   the parity test itself, etc. The skill must not attempt to
+   `markpass` step #11 on top of stale downstream state.
 2. **Re-run `set-auth`** with all `auth_types[]` entries for the
    affected connections changed to `"interpolated": true`.
 3. **Re-run manifest generation** (since auth details changed).
+4. **Continue the workflow from step #5 forward.** When the parity
+   step (#11) is reached again, it will short-circuit on
+   `ERROR_ALL_INTERPOLATED` (assuming all entries are now
+   interpolated) and `markpass` cleanly.
 
 The error messages are designed to be parseable by the skill — they
 contain the literal string `"Mark its auth as interpolated"` as a
 signal. The skill should pattern-match on this substring to trigger
 the interpolation-and-retry flow.
 
-#### `ERROR_ALL_INTERPOLATED`
+#### `ERROR_ALL_INTERPOLATED` — the "step is migrated" signal
 
-The skill should recognize this integration doesn't need auth parity
-testing and mark the checkpoint as passed (or N/A):
+This error code is the harness's way of telling the skill **"step
+#11 is effectively migrated, just `markpass` it."** It is not a
+failure. It means every `auth_types[]` entry is interpolated, so
+there is no integration-resident auth code left to compare against
+the UCP injection path — the parity question is vacuous and the
+checkpoint is satisfied by definition.
+
+Skill procedure:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<id>" "auth parity test passes"
 ```
 
-This is not a failure — it means the integration's auth is fully
-handled by infrastructure and there is no user-supplied secret to
-compare.
+No reset, no re-run, no investigation. Move on to the next step.
 
 #### `ERROR_CONNECTION_INTERPOLATED`
 
 The skill should remove that connection from the test invocation and
 retry with only non-interpolated connections. If no non-interpolated
-connections remain after removal, treat as `ERROR_ALL_INTERPOLATED`.
+connections remain after removal, treat as `ERROR_ALL_INTERPOLATED`
+(i.e. `markpass` step #11).
+
+#### `fail` verdict on a non-interpolated connection (the normal failure)
+
+A `fail` from a connection that actually ran is the test working as
+intended. The skill must **not** immediately reach for the
+`interpolated: true` escape hatch. The correct order is:
+
+1. Read the `diagnostics.<connection>.<command>.diffs` and
+   `request_set_diff` blocks to localize the mismatch.
+2. Attempt a code fix in the integration (or the relevant
+   `_apply_ucp_*` mapping in CommonServerPython).
+3. Re-run the parity test.
+4. **Only if a code fix is genuinely infeasible** — e.g. the auth
+   shape cannot be expressed through the standard UCP injection
+   path and the integration owner declines to refactor — fall back
+   to marking the offending entry as `"interpolated": true`. This
+   triggers the same reset-to-Auth-Details flow described above.
+   This branch should be rare and should be called out explicitly in
+   review.
+
+### 5.7 Pre-emptive interpolation at the `Auth Details` step
+
+The skill should not wait for the parity step (#11) to discover that
+an integration is fundamentally untestable. At the **`Auth Details`
+step (#5)** the skill already knows enough to short-circuit the
+parity test entirely by classifying everything as interpolated up
+front:
+
+> **Rule for the `Auth Details` step:** if the integration is
+> **non-Python** *or* does **not use `BaseClient`** (statically
+> detectable from the YML `script.type` and a grep of the `.py`
+> source for `BaseClient`), the skill should default **every**
+> `auth_types[]` entry to `"interpolated": true`. Manifest
+> generation then templates the values at runtime and step #11
+> short-circuits to `markpass` via `ERROR_ALL_INTERPOLATED`.
+
+Detection (mirrors the harness's own checks in [§5.5](#55-error-codes--hard-errors)):
+
+| Trigger | How the skill detects it at step #5 |
+|---------|--------------------------------------|
+| Non-Python integration | YML `script.type` ∉ {`python`, `python3`} |
+| Python without `BaseClient` | `.py` source contains no `class <Name>(BaseClient)`, no `BaseClient(`, and no `BaseClient` symbol imported from `CommonServerPython` |
+| HTTPS-only enforcement (likely `ERROR_INTEGRATION_REJECTS_HTTP` candidate) | `.py` source rejects URLs not starting with `https://` |
+
+Rationale: these are the exact conditions under which the parity
+harness will later refuse to run. Discovering them at step #5
+instead of step #11 avoids an unnecessary
+reset-to-`Auth Details`-and-retry cycle. The harness still emits
+`ERROR_NON_PYTHON` / `ERROR_NO_BASECLIENT` /
+`ERROR_INTEGRATION_REJECTS_HTTP` as a backstop, but in the happy
+path the skill prevents those errors from ever being reached.
+
+This is a **default**, not a hard requirement — if a reviewer
+explicitly wants to attempt non-interpolated auth on a non-Python or
+non-BaseClient integration (e.g. because it is being migrated to
+BaseClient as part of the same change), they can override the
+default and let the parity step fail naturally.
 
 ---
 
