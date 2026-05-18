@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: AlienVault OTX v2
+  id: AlienVault OTX v2 test
   version: -1
 configuration:
 - defaultvalue: https://otx.alienvault.com
@@ -92,8 +92,8 @@ configuration:
   advanced: true
   required: false
 description: Query Indicators of Compromise in AlienVault OTX.
-display: AlienVault OTX v2
-name: AlienVault OTX v2
+display: AlienVault OTX v2 test
+name: AlienVault OTX v2 test
 script:
   commands:
   - arguments:

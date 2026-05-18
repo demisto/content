@@ -73,13 +73,14 @@ class Client(BaseClient):
             Response JSON
         """
         # The service endpoint to request from
+        demisto.debug(f"in query with section: {section}, sub section: {sub_section}, params: {params}")
         if section == "pulses":
             suffix = f"{section}/{argument}"
         elif argument and sub_section:
             suffix = f"indicators/{section}/{argument}/{sub_section}"
         else:
             suffix = f"{section}/{sub_section}"
-        demisto.debug(f"The url is {suffix=}")
+        demisto.debug(f"The url is {suffix=}, sub_section is: {sub_section}")
         # Send a request using our http_request wrapper
         try:
             if sub_section == "passive_dns":
@@ -116,6 +117,9 @@ class Client(BaseClient):
                 raise
         except requests.exceptions.ReadTimeout as e:
             demisto.debug("A ReadTimeout error was raised.")
+            if argument in ["microsoft.com", "google.com"]:
+                demisto.debug(f"heavy domain to retrieve its passive dns, skipping {argument}")
+                return {}
             if self.should_error:
                 raise e
             return_warning(f"A ReadTimeout was raised {str(e)}", exit=True)
@@ -249,7 +253,7 @@ def relationships_manager(
         "display_name",
         FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),
     )
-
+    demisto.debug("in relations manager")
     if client.max_indicator_relationships > 0:
         limit = str(client.max_indicator_relationships)
         _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, limit)
@@ -468,6 +472,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     Returns:
         List of CommandResults
     """
+    demisto.debug("in domain command")
     domains_list: list = argToList(domain)
 
     title = f"{INTEGRATION_NAME} - Results for Domain query"
@@ -475,7 +480,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
 
     for domain in domains_list:
         raw_response = client.query(section="domain", argument=domain)
-
+        demisto.debug(f"raw response is: {raw_response}")
         if raw_response and raw_response != 404:
             relationships = relationships_manager(
                 client,
@@ -870,6 +875,7 @@ def alienvault_get_passive_dns_data_by_indicator_command(
     Returns:
         Outputs
     """
+    demisto.debug("in the command")
     if indicator_type == "IP":
         indicator_type = "IPv4"
     params = {}
