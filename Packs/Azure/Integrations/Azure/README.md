@@ -1936,64 +1936,19 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.VirtualMachines.type | String | The type of the resource. |
-| Azure.Compute.VirtualMachines.location | String | The location of the resource. |
-| Azure.Compute.VirtualMachines.tags | Unknown | The tags of the resource. |
-| Azure.Compute.VirtualMachines.id | String | The ID of the resource. |
-| Azure.Compute.VirtualMachines.name | String | The name of the resource. |
-| Azure.Compute.VirtualMachines.etag | String | The ETag of the virtual machine, used to prevent overwriting concurrent updates. |
-| Azure.Compute.VirtualMachines.extendedLocation | Unknown | The extended location of the Virtual Machine. |
-| Azure.Compute.VirtualMachines.identity | Unknown | The identity of the virtual machine, if configured. |
-| Azure.Compute.VirtualMachines.managedBy | Unknown | MThe ARM resource ID of the Virtual Machine Scale Set \(VMSS\) that manages the virtual machine, if applicable. Used for internal resource group delete optimization. |
-| Azure.Compute.VirtualMachines.placement | Unknown | The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01. |
-| Azure.Compute.VirtualMachines.plan | Unknown | Information about the marketplace image used to create the virtual machine. |
-| Azure.Compute.VirtualMachines.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
-| Azure.Compute.VirtualMachines.zones | Unknown. | The availability zones. |
-| Azure.Compute.VirtualMachines.properties.vmId | String | The unique ID of the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.availabilitySet | String | The availability set that the virtual machine is in. |
-| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | The hardware settings for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.storageProfile | Unknown | The storage settings for the virtual machine disks. |
-| Azure.Compute.VirtualMachines.properties.osProfile | Unknown | The operating system settings for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.networkProfile | Unknown | The network interfaces of the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.provisioningState | String | The provisioning state, which only appears in the response. |
-| Azure.Compute.VirtualMachines.properties.additionalCapabilities | Unknown | Additional capabilities enabled or disabled on the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.securityProfile | Unknown | The security settings for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | Unknown | The boot diagnostic settings state. |
-| Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet | Unknown | The virtual machine scale set that the virtual machine is in. |
-| Azure.Compute.VirtualMachines.properties.proximityPlacementGroup | Unknown | The proximity placement group that the virtual machine is in. |
-| Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy | Unknown | The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.priority | String | The priority for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.evictionPolicy | String | The eviction policy for the virtual machine. |
-| Azure.Compute.VirtualMachines.properties.billingProfile | Unknown | The billing related details of a Azure Spot virtual machine. |
-| Azure.Compute.VirtualMachines.properties.host | Unknown | The host that the virtual machine is in. |
-| Azure.Compute.VirtualMachines.properties.hostGroup | Unknown | The host group that the virtual machine is in. |
-| Azure.Compute.VirtualMachines.properties.licenseType | String | The license type for bringing your own license scenario. |
-| Azure.Compute.VirtualMachines.properties.extensionsTimeBudget | String | The time alloted for all extensions to start. |
-| Azure.Compute.VirtualMachines.properties.platformFaultDomain | Number | The fault domain that the virtual machine is in. |
-| Azure.Compute.VirtualMachines.properties.scheduledEventsProfile | Unknown | The scheduled event related configurations. |
-| Azure.Compute.VirtualMachines.properties.userData | String | The user data for the VM, which must be base-64 encoded. |
-| Azure.Compute.VirtualMachines.properties.capacityReservation | Unknown | The capacity reservation related details of a virtual machine. |
-| Azure.Compute.VirtualMachines.properties.applicationProfile | Unknown | The gallery applications that should be made available to the VM/VMSS. |
-| Azure.Compute.VirtualMachines.properties.timeCreated | Date | The time when the virtual machine was created. |
-| Azure.Compute.VirtualMachines.plan.name | String | The plan name. |
-| Azure.Compute.VirtualMachines.plan.publisher | String | The publisher of the plan. |
-| Azure.Compute.VirtualMachines.plan.product | String | The product of the plan. |
-| Azure.Compute.VirtualMachines.plan.promotionCode | String | The promotion code of the plan. |
-| Azure.Compute.VirtualMachines.resources.properties | Unknown | The properties of the resource. |
-| Azure.Compute.VirtualMachines.resources.id | String | The ID of the resource. |
-| Azure.Compute.VirtualMachines.resources.name | String | The name of the resource. |
-| Azure.Compute.VirtualMachines.resources.type | String | The type of the resource. |
-| Azure.Compute.VirtualMachines.resources.location | String | The location of the resource. |
-| Azure.Compute.VirtualMachines.resources.tags | Unknown | The tags of the resource. |
-| Azure.Compute.VirtualMachines.identity.principalId | String | The principal ID of the identity. |
-| Azure.Compute.VirtualMachines.identity.tenantId | String | The tenant ID of the identity. |
-| Azure.Compute.VirtualMachines.identity.type | String | The type of the identity. |
-| Azure.Compute.VirtualMachines.identity.userAssignedIdentities | String | The list of user assigned identities associated with the virtual machine. |
-| Azure.Compute.VirtualMachines.zones | String | The zones of the virtual machine. |
-| Azure.Compute.VirtualMachines.extendedLocation.name | String | The name of the extended location. |
-| Azure.Compute.VirtualMachines.extendedLocation.type | String | The type of the extended location. |
-| Azure.Compute.VirtualMachines.properties.instanceView | Unknown | The virtual machine instance view. |
-| Azure.Compute.VirtualMachinesNextToken | String | The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs. |
+| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. |
+| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. |
+| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. |
+| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
+| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | Specifies the hardware settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
+| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
+| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
+| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
+| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. |
+| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
 
 ### azure-vn-security-group-create
 
