@@ -2675,6 +2675,7 @@ Runs commands on one or more managed nodes.
 | max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%. Default is 50. | Optional |
 | max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%. Default is 0. | Optional |
 | polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Default is 30. | Optional |
 
 #### Context Output
 
@@ -5399,3 +5400,628 @@ Updates the configuration for a Lambda function. Requires the lambda:UpdateFunct
 | AWS.Lambda.FunctionConfig.ConfigSha256 | String | The SHA256 hash of the function configuration. |
 | AWS.Lambda.FunctionConfig.DurableConfig | Unknown | The function’s durable execution configuration settings, if the function is configured for durability. |
 | AWS.Lambda.FunctionConfig.TenancyConfig | Unknown | The function’s tenant isolation configuration settings. Determines whether the Lambda function runs on a shared or dedicated infrastructure per unique tenant. |
+
+### aws-ssm-tag-add
+
+***
+Adds or overwrites one or more tags for the specified resource. Required IAM Permission: ssm:AddTagsToResource.
+
+#### Base Command
+
+`aws-ssm-tag-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| resource_type | The type of resource to tag. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required |
+| resource_id | The ID of the resource to tag. | Required |
+| tags | A semicolon-separated list of tags in the format key=&lt;key&gt;,value=&lt;value&gt;. For example: key=Owner,value=SysAdmin;key=Env,value=Prod. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ssm-tag-remove
+
+***
+Removes tag keys from the specified resource. Required IAM Permission: ssm:RemoveTagsFromResource.
+
+#### Base Command
+
+`aws-ssm-tag-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| resource_type | The type of resource from which to remove tags. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required |
+| resource_id | The ID of the resource from which to remove tags. | Required |
+| tag_keys | A comma-separated list of tag keys to remove from the resource. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ssm-tags-list
+
+***
+Returns a list of the tags assigned to the specified resource. Required IAM Permission: ssm:ListTagsForResource.
+
+#### Base Command
+
+`aws-ssm-tags-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| resource_type | The type of resource for which to list tags. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required |
+| resource_id | The ID of the resource for which to list tags. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Tags.ResourceId | String | The ID of the resource. |
+| AWS.SSM.Tags.TagList.Key | String | The key of the tag. |
+| AWS.SSM.Tags.TagList.Value | String | The value of the tag. |
+
+### aws-ssm-inventory-list
+
+***
+Queries SSM inventory information for managed nodes. Required IAM Permission: ssm:GetInventory.
+
+#### Base Command
+
+`aws-ssm-inventory-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' in the format key=&lt;key&gt;,values=&lt;values&gt;,type=&lt;type&gt;. The type must be one of: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists. For example: key=AWS:InstanceInformation.PlatformType,values=Linux,type=Equal. | Optional |
+| result_attributes | A comma-separated list of inventory type names to return. For example: AWS:InstanceInformation,AWS:Application. If not specified, all inventory types are returned. | Optional |
+| aggregator_expression | The inventory type name to aggregate inventory data by. For example: AWS:InstanceInformation.PlatformType. | Optional |
+| aggregator_groups | A JSON string specifying one or more groups to further refine aggregated inventory data within the aggregator_expression scope. Requires aggregator_expression. Cannot be combined with inventory_aggregator. Each group must have a Name and Filters. For example: [{"Name": "WindowsGroup", "Filters": [{"Key": "AWS:InstanceInformation.PlatformType", "Type": "Equal", "Values": ["Windows"]}]}]. | Optional |
+| inventory_aggregator | A nested aggregator expression to further group inventory data within the primary aggregator. For example: AWS:InstanceInformation.AgentType. | Optional |
+| limit | The maximum number of items to return for this call. The minimum is 1 and the maximum is 50. Default is 50. | Optional |
+| next_token | The token for the next set of items to return. Use AWS.SSM.InventoryNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Inventory.Id | String | The inventory result entity ID. For example, for managed node inventory it is the managed node ID. |
+| AWS.SSM.Inventory.TypeName | String | The name of the inventory result item type. |
+| AWS.SSM.Inventory.SchemaVersion | String | The schema version for the inventory result item. |
+| AWS.SSM.Inventory.CaptureTime | String | The time inventory item data was captured. |
+| AWS.SSM.Inventory.Content.InstanceId | String | The managed node ID. |
+| AWS.SSM.Inventory.Content.ComputerName | String | The fully qualified host name of the managed node. |
+| AWS.SSM.Inventory.Content.PlatformType | String | The operating system platform type. |
+| AWS.SSM.Inventory.Content.PlatformName | String | The name of the operating system platform running on the managed node. |
+| AWS.SSM.Inventory.Content.PlatformVersion | String | The version of the OS platform running on the managed node. |
+| AWS.SSM.Inventory.Content.AgentType | String | The type of SSM agent running on the instance. |
+| AWS.SSM.Inventory.Content.AgentVersion | String | The version of the SSM agent running on the instance. |
+| AWS.SSM.Inventory.Content.IpAddress | String | The IP address of the managed node. |
+| AWS.SSM.Inventory.Content.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. |
+| AWS.SSM.Inventory.Content.InstanceStatus | String | The status of the managed node. |
+| AWS.SSM.InventoryNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-ssm-associations-list
+
+***
+Returns all State Manager associations in the current AWS account and Region. An association is a binding between a document and a set of targets with a schedule. Required IAM Permission: ssm:ListAssociations.
+
+#### Base Command
+
+`aws-ssm-associations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' in the format key=&lt;key&gt;,value=&lt;value&gt;. Valid filter keys: AssociationId, AssociationStatusName, AssociationName, InstanceId, LastExecutedBefore, LastExecutedAfter, Name, ResourceGroupName. For example: key=AssociationStatusName,value=Success. | Optional |
+| limit | The maximum number of items to return for this call. The minimum is 1 and the maximum is 50. Default is 50. | Optional |
+| next_token | The token for the next set of items to return. Use AWS.SSM.AssociationsNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Associations.Name | String | The name of the SSM document. |
+| AWS.SSM.Associations.AssociationId | String | The ID created by the system when creating an association. |
+| AWS.SSM.Associations.AssociationName | String | The association name. |
+| AWS.SSM.Associations.AssociationVersion | String | The association version. |
+| AWS.SSM.Associations.InstanceId | String | The managed node ID. |
+| AWS.SSM.Associations.DocumentVersion | String | The version of the document used in the association. |
+| AWS.SSM.Associations.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.Associations.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.Associations.LastExecutionDate | String | The date on which the association was last run. |
+| AWS.SSM.Associations.Overview.Status | String | The status of the association. Status can be: Pending, Success, or Failed. |
+| AWS.SSM.Associations.Overview.DetailedStatus | String | A detailed status of the association. |
+| AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount | Unknown | The number of targets for the association status. |
+| AWS.SSM.Associations.ScheduleExpression | String | A cron expression that specifies a schedule when the association runs. |
+| AWS.SSM.Associations.ScheduleOffset | Number | The number of days to wait after the scheduled day to run an association. |
+| AWS.SSM.Associations.Duration | Number | The number of hours an association can run on specified targets. When the cutoff time is reached, running associations are canceled and no pending executions are started on the remaining targets. |
+| AWS.SSM.Associations.TargetMaps | Unknown | A key-value mapping of document parameters to target resources. Targets and TargetMaps cannot be specified together. |
+| AWS.SSM.AssociationsNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-ssm-association-get
+
+***
+Describes the association for the specified target or managed node. Must provide either association_id, or both instance_id and document_name. Required IAM Permission: ssm:DescribeAssociation.
+
+#### Base Command
+
+`aws-ssm-association-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| association_id | The association ID for which information is requested. | Optional |
+| instance_id | The managed node ID. Required together with document_name if association_id is not provided. | Optional |
+| document_name | The name of the SSM document. Required together with instance_id if association_id is not provided. | Optional |
+| association_version | The association version to retrieve. To view the latest version, either specify $LATEST or omit this parameter. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Associations.Name | String | The name of the SSM document. |
+| AWS.SSM.Associations.AssociationId | String | The association ID. |
+| AWS.SSM.Associations.AssociationName | String | The association name. |
+| AWS.SSM.Associations.AssociationVersion | String | The association version. |
+| AWS.SSM.Associations.AssociationDispatchAssumeRole | String | A role used by association to take actions on your behalf. |
+| AWS.SSM.Associations.InstanceId | String | The managed node ID. |
+| AWS.SSM.Associations.DocumentVersion | String | The document version. |
+| AWS.SSM.Associations.Duration | Number | The number of hours an association can run on specified targets. When the cutoff time is reached, running associations are canceled and no pending executions are started on the remaining targets. |
+| AWS.SSM.Associations.AutomationTargetParameterName | String | How the automation will branch out. Required for associations that use an Automation runbook with rate controls. |
+| AWS.SSM.Associations.Parameters | Unknown | A description of the parameters for a document. |
+| AWS.SSM.Associations.Date | Date | The date when the association was made. |
+| AWS.SSM.Associations.LastUpdateAssociationDate | Date | The date when the association was last updated. |
+| AWS.SSM.Associations.LastExecutionDate | Date | The date on which the association was last run. |
+| AWS.SSM.Associations.LastSuccessfulExecutionDate | Date | The last date on which the association was successfully run. |
+| AWS.SSM.Associations.Status | Unknown | The status object containing Date, Name, Message, and AdditionalInfo fields. |
+| AWS.SSM.Associations.Overview.Status | String | The status of the association. Status can be: Pending, Success, or Failed. |
+| AWS.SSM.Associations.Overview.DetailedStatus | String | A detailed status of the association. |
+| AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount | Unknown | The number of targets for the association status. |
+| AWS.SSM.Associations.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.Associations.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.Associations.ScheduleExpression | String | A cron expression that specifies a schedule when the association runs. |
+| AWS.SSM.Associations.ScheduleOffset | Number | The number of days to wait after the scheduled day to run an association. |
+| AWS.SSM.Associations.OutputLocation.S3Location | Unknown | The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix. |
+| AWS.SSM.Associations.MaxErrors | String | The number of errors allowed before the system stops sending requests to run the association on additional targets. |
+| AWS.SSM.Associations.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. |
+| AWS.SSM.Associations.ComplianceSeverity | String | The severity level that is assigned to the association. |
+| AWS.SSM.Associations.SyncCompliance | String | The mode for generating association compliance. AUTO or MANUAL. |
+| AWS.SSM.Associations.ApplyOnlyAtCronInterval | Boolean | When true, the association runs only according to the schedule and not immediately after creation. |
+| AWS.SSM.Associations.CalendarNames | String | The names or ARNs of the Change Calendar type documents the associations are gated under. |
+| AWS.SSM.Associations.TargetLocations | Unknown | The location object containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, ExecutionRoleName, and TargetLocationAlarmConfiguration. |
+| AWS.SSM.Associations.TargetMaps | List | A key-value mapping of document parameters to target resources. |
+| AWS.SSM.Associations.AlarmConfiguration | Unknown | The alarm configuration object containing IgnorePollAlarmFailure and Alarms fields. |
+| AWS.SSM.Associations.TriggeredAlarms.Name | String | The CloudWatch alarm that was invoked during the association. |
+| AWS.SSM.Associations.TriggeredAlarms.State | String | The state of the CloudWatch alarm. |
+
+### aws-ssm-association-versions-list
+
+***
+Retrieves all versions of an association for a specific association ID. Required IAM permission: ssm:ListAssociationVersions.
+
+#### Base Command
+
+`aws-ssm-association-versions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| association_id | The association ID for which to view all versions. | Required |
+| limit | The maximum number of items to return for this call. The minimum is 1 and the maximum is 50. Default is 50. | Optional |
+| next_token | The token for the next set of items to return. Use AWS.SSM.Associations.AssociationVersionNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Associations.AssociationId | String | The ID of the association. |
+| AWS.SSM.Associations.Versions.AssociationId | String | The ID created by the system when the association was created. |
+| AWS.SSM.Associations.Versions.AssociationVersion | String | The association version. |
+| AWS.SSM.Associations.Versions.CreatedDate | Date | The date the association version was created. |
+| AWS.SSM.Associations.Versions.Name | String | The name specified when the association was created. |
+| AWS.SSM.Associations.Versions.AssociationDispatchAssumeRole | String | A role used by association to take actions on your behalf. |
+| AWS.SSM.Associations.Versions.AssociationName | String | The name specified for the association version when the association version was created. |
+| AWS.SSM.Associations.Versions.DocumentVersion | String | The version of an SSM document used when the association version was created. |
+| AWS.SSM.Associations.Versions.Duration | Number | The number of hours an association can run on specified targets. When the cutoff time is reached, running associations are canceled and no pending executions are started on the remaining targets. |
+| AWS.SSM.Associations.Versions.Parameters | Unknown | The parameters specified when the association version was created. |
+| AWS.SSM.Associations.Versions.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.Associations.Versions.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.Associations.Versions.ScheduleExpression | String | The cron or rate schedule specified for the association when the association version was created. |
+| AWS.SSM.Associations.Versions.ScheduleOffset | Number | The number of days to wait after the scheduled day to run an association. |
+| AWS.SSM.Associations.Versions.OutputLocation.S3Location | Unknown | The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix. |
+| AWS.SSM.Associations.Versions.MaxErrors | String | The number of errors allowed before the system stops sending requests to run the association on additional targets. |
+| AWS.SSM.Associations.Versions.MaxConcurrency | String | The maximum number of targets allowed to run the association at the same time. |
+| AWS.SSM.Associations.Versions.ComplianceSeverity | String | The severity level that is assigned to the association. |
+| AWS.SSM.Associations.Versions.SyncCompliance | String | The mode for generating association compliance. AUTO or MANUAL. |
+| AWS.SSM.Associations.Versions.ApplyOnlyAtCronInterval | Boolean | When true, the association runs only according to the schedule and not immediately after creation. |
+| AWS.SSM.Associations.Versions.CalendarNames | String | The names or ARNs of the Change Calendar type documents the associations are gated under. |
+| AWS.SSM.Associations.Versions.TargetLocations | Unknown | The location object containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, ExecutionRoleName, and TargetLocationAlarmConfiguration. |
+| AWS.SSM.Associations.Versions.TargetMaps | List | A key-value mapping of document parameters to target resources. |
+| AWS.SSM.Associations.AssociationVersionNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-ssm-documents-list
+
+***
+Returns all Systems Manager (SSM) documents in the current AWS account and Region. Required IAM Permission: ssm:ListDocuments.
+
+#### Base Command
+
+`aws-ssm-documents-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | A semicolon-separated list of filters in the format name=&lt;key&gt;,values=&lt;value1&gt;,&lt;value2&gt;. Valid filter keys: Name, Owner, PlatformTypes, DocumentType, TargetType, SchemaVersion, DocumentFormat. For example: name=Owner,values=Amazon;name=DocumentType,values=Command. | Optional |
+| limit | The maximum number of documents to return. Minimum 1, maximum 50. Default is 50. | Optional |
+| next_token | The token for the next set of items to return. Received from a previous call. Use AWS.SSM.DocumentsNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Documents.Name | String | The name of the SSM document. |
+| AWS.SSM.Documents.CreatedDate | String | The date the SSM document was created. |
+| AWS.SSM.Documents.DisplayName | String | An optional field specifying a user-defined, friendly name for the SSM document. |
+| AWS.SSM.Documents.Owner | String | The AWS user that created the document. |
+| AWS.SSM.Documents.VersionName | String | An optional field specifying the version of the artifact associated with the document. |
+| AWS.SSM.Documents.PlatformTypes | String | The operating system platform. |
+| AWS.SSM.Documents.DocumentVersion | String | The document version. |
+| AWS.SSM.Documents.DocumentType | String | The document type. |
+| AWS.SSM.Documents.SchemaVersion | String | The schema version. |
+| AWS.SSM.Documents.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). |
+| AWS.SSM.Documents.Requires.RequireType | String | The document type of the required SSM document. |
+| AWS.SSM.Documents.Requires.Version | String | The document version required by the current document. |
+| AWS.SSM.Documents.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. |
+| AWS.SSM.Documents.DocumentFormat | String | The document format, either JSON or YAML. |
+| AWS.SSM.Documents.TargetType | String | The target type which defines the kinds of resources the document can run on. |
+| AWS.SSM.Documents.Tags.Key | String | The name of the tag. |
+| AWS.SSM.Documents.Tags.Value | String | The value of the tag. |
+| AWS.SSM.Documents.ReviewStatus | String | The current status of a document review. |
+| AWS.SSM.Documents.Author | String | The user in the organization who created the document. |
+| AWS.SSM.DocumentsNextToken | String | The token to use when requesting the next set of items. Empty string if no additional items exist. |
+
+### aws-ssm-document-describe
+
+***
+Describes the specified SSM document. Required IAM Permission: ssm:DescribeDocument.
+
+#### Base Command
+
+`aws-ssm-document-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| document_name | The name of the SSM document. | Required |
+| document_version | The document version for which you want information. Can be a specific version or $DEFAULT or $LATEST. | Optional |
+| version_name | An optional field specifying the version of the artifact associated with the document. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Documents.Name | String | The name of the SSM document. |
+| AWS.SSM.Documents.DisplayName | String | An optional field specifying a user-defined, friendly name for the SSM document. |
+| AWS.SSM.Documents.VersionName | String | The version of the artifact associated with the document. |
+| AWS.SSM.Documents.CreatedDate | String | The date the document was created. |
+| AWS.SSM.Documents.Status | String | The status of the SSM document. |
+| AWS.SSM.Documents.StatusInformation | String | A message returned by AWS that explains the Status value. |
+| AWS.SSM.Documents.DocumentVersion | String | The document version. |
+| AWS.SSM.Documents.DocumentType | String | The type of document. |
+| AWS.SSM.Documents.DocumentFormat | String | The document format, either JSON or YAML. |
+| AWS.SSM.Documents.ReviewStatus | String | The current status of a document review. |
+| AWS.SSM.Documents.Requires.Name | String | The name of the required SSM document. The name can be an Amazon Resource Name \(ARN\). |
+| AWS.SSM.Documents.Requires.RequireType | String | The document type of the required SSM document. |
+| AWS.SSM.Documents.Requires.Version | String | The document version required by the current document. |
+| AWS.SSM.Documents.Requires.VersionName | String | An optional field specifying the version of the artifact associated with the document. |
+| AWS.SSM.Documents.Owner | String | The AWS user that created the document. |
+| AWS.SSM.Documents.Author | String | The user in your organization who created the document. |
+| AWS.SSM.Documents.Description | String | A description of the document. |
+| AWS.SSM.Documents.Hash | String | The Sha256 or Sha1 hash created by the system when the document was created. |
+| AWS.SSM.Documents.HashType | String | The hash type of the document. Valid values include Sha256 or Sha1. |
+| AWS.SSM.Documents.SchemaVersion | String | The schema version. |
+| AWS.SSM.Documents.DefaultVersion | String | The default version. |
+| AWS.SSM.Documents.LatestVersion | String | The latest version of the document. |
+| AWS.SSM.Documents.ApprovedVersion | String | The version of the document currently approved for use in the organization. |
+| AWS.SSM.Documents.PendingReviewVersion | String | The version of the document that is currently under review. |
+| AWS.SSM.Documents.PlatformTypes | Unknown | A list of OS platforms compatible with this SSM document. |
+| AWS.SSM.Documents.TargetType | String | The target type which defines the kinds of resources the document can run on. |
+| AWS.SSM.Documents.Tags.Key | String | The key of the tag. |
+| AWS.SSM.Documents.Tags.Value | String | The value of the tag. |
+| AWS.SSM.Documents.AttachmentsInformation.Name | String | The name of the attachment. |
+| AWS.SSM.Documents.Parameters.Name | String | The name of the parameter. |
+| AWS.SSM.Documents.Parameters.Type | String | The type of parameter. Valid values include String or StringList. |
+| AWS.SSM.Documents.Parameters.Description | String | A description of what the parameter does, how to use it, the default value, and whether or not the parameter is optional. |
+| AWS.SSM.Documents.Parameters.DefaultValue | String | If specified, the default values for the parameters. |
+| AWS.SSM.Documents.ReviewInformation.ReviewedTime | Date | The time that the reviewer took action on the document review request. |
+| AWS.SSM.Documents.ReviewInformation.Reviewer | String | The reviewer of the document. |
+| AWS.SSM.Documents.ReviewInformation.Status | String | The current status of the document review request. |
+| AWS.SSM.Documents.Category | Unknown | The classification of a document to help you identify and categorize its use. |
+| AWS.SSM.Documents.CategoryEnum | Unknown | The value that identifies a document's category. |
+
+### aws-ssm-automation-executions-list
+
+***
+Provides details about all active and terminated Automation executions. Required IAM Permission: ssm:DescribeAutomationExecutions.
+
+#### Base Command
+
+`aws-ssm-automation-executions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' in the format name=&lt;key&gt;,values=&lt;value1&gt;,&lt;value2&gt;. Valid filter keys: DocumentNamePrefix, ExecutionStatus, ExecutionId, ParentExecutionId, CurrentAction, StartTimeBefore, StartTimeAfter, AutomationType, TagKey. | Optional |
+| limit | The maximum number of items to return for this call. The minimum is 1 and the maximum is 50. Default is 50. | Optional |
+| next_token | The token for the next set of items to return. Use AWS.SSM.AutomationExecutionsNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.AutomationExecutions.AutomationExecutionId | String | The execution ID. |
+| AWS.SSM.AutomationExecutions.DocumentName | String | The name of the Automation runbook used during execution. |
+| AWS.SSM.AutomationExecutions.DocumentVersion | String | The document version used during the execution. |
+| AWS.SSM.AutomationExecutions.AutomationExecutionStatus | String | The status of the execution. |
+| AWS.SSM.AutomationExecutions.ExecutionStartTime | Date | The time the execution started. |
+| AWS.SSM.AutomationExecutions.ExecutionEndTime | Date | The time the execution finished. |
+| AWS.SSM.AutomationExecutions.ExecutedBy | String | The IAM role ARN of the user who ran the Automation. |
+| AWS.SSM.AutomationExecutions.LogFile | String | An S3 bucket where execution information is stored. |
+| AWS.SSM.AutomationExecutions.Outputs | Unknown | The list of execution outputs as defined in the Automation runbook. |
+| AWS.SSM.AutomationExecutions.Mode | String | The Automation execution mode. |
+| AWS.SSM.AutomationExecutions.ParentAutomationExecutionId | String | The execution ID of the parent automation. |
+| AWS.SSM.AutomationExecutions.CurrentStepName | String | The name of the step that is currently running. |
+| AWS.SSM.AutomationExecutions.CurrentAction | String | The action of the step that is currently running. |
+| AWS.SSM.AutomationExecutions.FailureMessage | String | A message describing why an execution has failed, if the status is set to Failed. |
+| AWS.SSM.AutomationExecutions.TargetParameterName | String | The parameter name used as the target resource for the rate-controlled execution. |
+| AWS.SSM.AutomationExecutions.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.AutomationExecutions.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.AutomationExecutions.ResolvedTargets | Unknown | A list of resolved targets in the rate control execution, containing ParameterValues and Truncated fields. |
+| AWS.SSM.AutomationExecutions.MaxConcurrency | String | The MaxConcurrency value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecutions.MaxErrors | String | The MaxErrors value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecutions.Target | String | The target of the execution. |
+| AWS.SSM.AutomationExecutions.TargetLocationsURL | String | A publicly accessible URL for a file that contains the TargetLocations body. |
+| AWS.SSM.AutomationExecutions.TargetMaps | List | A key-value mapping of document parameters to target resources. |
+| AWS.SSM.AutomationExecutions.AutomationType | String | Use this filter with DescribeAutomationExecutions. Specify either Local or CrossAccount. |
+| AWS.SSM.AutomationExecutions.AlarmConfiguration | Unknown | The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields. |
+| AWS.SSM.AutomationExecutions.TriggeredAlarms | Unknown | The CloudWatch alarm that was invoked by the automation, containing Name and State fields. |
+| AWS.SSM.AutomationExecutions.AutomationSubtype | String | The subtype of the Automation operation. |
+| AWS.SSM.AutomationExecutions.ScheduledTime | Date | The date and time the Automation operation is scheduled to start. |
+| AWS.SSM.AutomationExecutions.Runbooks | Unknown | Information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields. |
+| AWS.SSM.AutomationExecutions.OpsItemId | String | The ID of an OpsItem that is created to represent a Change Manager change request. |
+| AWS.SSM.AutomationExecutions.AssociationId | String | The ID of a State Manager association used in the Automation operation. |
+| AWS.SSM.AutomationExecutions.ChangeRequestName | String | The name of the Change Manager change request. |
+| AWS.SSM.AutomationExecutionsNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-ssm-automation-execution-run
+
+***
+Initiates execution of an Automation runbook and polls until the execution reaches a terminal state. Required IAM Permissions: ssm:StartAutomationExecution, ssm:GetAutomationExecution.
+
+#### Base Command
+
+`aws-ssm-automation-execution-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| document_name | The name of the SSM Automation runbook to run. | Required |
+| document_version | The version of the Automation runbook to use in this execution. | Optional |
+| parameters | The key-value map of execution parameters in the format key=&lt;key1&gt;,values=&lt;value1&gt;,&lt;value2&gt;;key=&lt;key2&gt;,values=&lt;value3&gt;. | Optional |
+| mode | The execution mode of the automation. Valid values are Auto and Interactive. Possible values are: Auto, Interactive. Default is Auto. | Optional |
+| client_token | The unique, case-insensitive, user-provided idempotency token used to ensure the request is processed only once. The token must follow the UUID format and cannot be reused. | Optional |
+| max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. | Optional |
+| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. | Optional |
+| target_parameter_name | The name of the parameter used as the target resource for the rate-controlled execution. | Optional |
+| targets | A semicolon-separated list of key-value mapping to target resources in the format key=&lt;key&gt;,values=&lt;value1&gt;,&lt;value2&gt;. For example: key=tag:Env,values=prod. | Optional |
+| target_locations | A semicolon-separated list of target location entries in the format key=&lt;field&gt;,value=&lt;value&gt;. Supported fields: Accounts, Regions, ExecutionRoleName, TargetLocationMaxConcurrency, TargetLocationMaxErrors. For example: key=Accounts,value=123456789012;key=Regions,value=us-east-1. | Optional |
+| target_locations_url | A publicly accessible URL for a file that contains the TargetLocations body. Use this parameter if you want to specify a large number of targets without providing them inline. | Optional |
+| target_maps | A semicolon-separated list of key-value maps in the format key=&lt;key1&gt;,values=&lt;value1&gt;,&lt;value2&gt;;key=&lt;key2&gt;,values=&lt;value3&gt;. Each entry maps document parameters to target resources. | Optional |
+| alarm_names | A comma-separated list of CloudWatch alarm names to apply to the automation execution. | Optional |
+| alarm_ignore_poll_failure | Whether the automation continues to run even if CloudWatch alarm status cannot be retrieved. Possible values are: true, false. Default is false. | Optional |
+| tags | A semicolon-separated list of optional metadata to assign to the execution in the format key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Default is 30. | Optional |
+| polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.AutomationExecutions.AutomationExecutionId | String | The execution ID. |
+| AWS.SSM.AutomationExecutions.DocumentName | String | The name of the Automation runbook used during execution. |
+| AWS.SSM.AutomationExecutions.DocumentVersion | String | The document version used during the execution. |
+| AWS.SSM.AutomationExecutions.ExecutionStartTime | Date | The time the execution started. |
+| AWS.SSM.AutomationExecutions.ExecutionEndTime | Date | The time the execution finished. |
+| AWS.SSM.AutomationExecutions.AutomationExecutionStatus | String | The status of the execution. |
+| AWS.SSM.AutomationExecutions.StepExecutions | Unknown | A list of details about the current state of all steps that comprise an execution, containing StepName, Action, StepStatus, Inputs, Outputs, StepExecutionId, and other fields. |
+| AWS.SSM.AutomationExecutions.StepExecutionsTruncated | Boolean | Whether the response contains the full list of the Automation step executions. |
+| AWS.SSM.AutomationExecutions.Parameters | Unknown | The key-value map of execution parameters supplied when calling StartAutomationExecution. |
+| AWS.SSM.AutomationExecutions.Outputs | Unknown | The list of execution outputs as defined in the Automation runbook. |
+| AWS.SSM.AutomationExecutions.FailureMessage | String | A message describing why an execution has failed, if the status is set to Failed. |
+| AWS.SSM.AutomationExecutions.Mode | String | The Automation execution mode. |
+| AWS.SSM.AutomationExecutions.ParentAutomationExecutionId | String | The execution ID of the parent automation. |
+| AWS.SSM.AutomationExecutions.ExecutedBy | String | The IAM role ARN of the user who ran the Automation. |
+| AWS.SSM.AutomationExecutions.CurrentStepName | String | The name of the step that is currently running. |
+| AWS.SSM.AutomationExecutions.CurrentAction | String | The action of the step that is currently running. |
+| AWS.SSM.AutomationExecutions.TargetParameterName | String | The parameter name used as the target resource for the rate-controlled execution. |
+| AWS.SSM.AutomationExecutions.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.AutomationExecutions.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.AutomationExecutions.ResolvedTargets | Unknown | A list of resolved targets in the rate control execution, containing ParameterValues and Truncated fields. |
+| AWS.SSM.AutomationExecutions.MaxConcurrency | String | The MaxConcurrency value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecutions.MaxErrors | String | The MaxErrors value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecutions.Target | String | The target of the execution. |
+| AWS.SSM.AutomationExecutions.TargetLocations | Unknown | The combination of AWS regions and/or AWS accounts where you want to run the Automation, containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, and ExecutionRoleName fields. |
+| AWS.SSM.AutomationExecutions.ProgressCounters | Unknown | An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields. |
+| AWS.SSM.AutomationExecutions.TargetLocationsURL | String | Specify a publicly accessible URL for a file that contains the TargetLocations body. Currently, only files in presigned Amazon S3 buckets are supported. |
+| AWS.SSM.AutomationExecutions.AlarmConfiguration | Unknown | The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields. |
+| AWS.SSM.AutomationExecutions.TriggeredAlarms | Unknown | The CloudWatch alarm that was invoked by the automation, containing Name and State fields. |
+| AWS.SSM.AutomationExecutions.AutomationSubtype | String | The subtype of the Automation operation. |
+| AWS.SSM.AutomationExecutions.ScheduledTime | String | The date and time the Automation operation is scheduled to start. |
+| AWS.SSM.AutomationExecutions.Runbooks | Unknown | The information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields. |
+| AWS.SSM.AutomationExecutions.OpsItemId | String | The ID of an OpsItem that is created to represent a Change Manager change request. |
+| AWS.SSM.AutomationExecutions.AssociationId | String | The ID of a State Manager association used in the Automation operation. |
+| AWS.SSM.AutomationExecutions.ChangeRequestName | String | The name of the Change Manager change request. |
+
+### aws-ssm-automation-execution-cancel
+
+***
+Stop an Automation that is currently running and polls until the cancellation is confirmed. Required IAM Permissions: ssm:StopAutomationExecution, ssm:GetAutomationExecution.
+
+#### Base Command
+
+`aws-ssm-automation-execution-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| automation_execution_id | The execution ID of the Automation to stop. | Required |
+| type | The stop request type. Valid values are Cancel and Complete. The default value is Cancel. Possible values are: Cancel, Complete. Default is Cancel. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Default is 30. | Optional |
+| polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.AutomationExecutions.AutomationExecutionId | String | The execution ID. |
+| AWS.SSM.AutomationExecutions.DocumentName | String | The name of the Automation runbook used during execution. |
+| AWS.SSM.AutomationExecutions.DocumentVersion | String | The document version used during the execution. |
+| AWS.SSM.AutomationExecutions.ExecutionStartTime | Date | The time the execution started. |
+| AWS.SSM.AutomationExecutions.ExecutionEndTime | Date | The time the execution finished. |
+| AWS.SSM.AutomationExecutions.AutomationExecutionStatus | String | The status of the execution after cancellation. |
+| AWS.SSM.AutomationExecutions.StepExecutions | Unknown | A list of details about the current state of all steps that comprise an execution, containing StepName, Action, StepStatus, Inputs, Outputs, StepExecutionId, and other fields. |
+| AWS.SSM.AutomationExecutions.StepExecutionsTruncated | Boolean | Whether the response contains the full list of the Automation step executions. |
+| AWS.SSM.AutomationExecutions.Parameters | Unknown | The key-value map of execution parameters supplied when calling StartAutomationExecution. |
+| AWS.SSM.AutomationExecutions.Outputs | Unknown | The list of execution outputs as defined in the Automation runbook. |
+| AWS.SSM.AutomationExecutions.FailureMessage | String | A message describing why an execution has failed, if the status is set to Failed. |
+| AWS.SSM.AutomationExecutions.Mode | String | The Automation execution mode. |
+| AWS.SSM.AutomationExecutions.ExecutedBy | String | The IAM role ARN of the user who ran the Automation. |
+| AWS.SSM.AutomationExecutions.CurrentStepName | String | The name of the step that is currently running. |
+| AWS.SSM.AutomationExecutions.CurrentAction | String | The action of the step that is currently running. |
+| AWS.SSM.AutomationExecutions.TargetParameterName | String | The parameter name used as the target resource for the rate-controlled execution. |
+| AWS.SSM.AutomationExecutions.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.AutomationExecutions.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.AutomationExecutions.MaxConcurrency | String | The MaxConcurrency value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecutions.MaxErrors | String | The MaxErrors value specified by the user when starting the automation. |
+| AWS.SSM.AutomationExecutions.Target | String | The target of the execution. |
+| AWS.SSM.AutomationExecutions.ProgressCounters | Unknown | An aggregate of step execution statuses displayed in the AWS console for a multi-Region and multi-account Automation execution, containing TotalSteps, SuccessSteps, FailedSteps, CancelledSteps, and TimedOutSteps fields. |
+| AWS.SSM.AutomationExecutions.AlarmConfiguration | Unknown | The details for the CloudWatch alarm applied to your automation, containing IgnorePollAlarmFailure and Alarms fields. |
+| AWS.SSM.AutomationExecutions.TriggeredAlarms | Unknown | The CloudWatch alarm that was invoked by the automation, containing Name and State fields. |
+
+### aws-ssm-commands-list
+
+***
+Lists the commands requested by users of the AWS account. Required IAM Permission: ssm:ListCommands.
+
+#### Base Command
+
+`aws-ssm-commands-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| command_id | If provided, lists only the specified command. | Optional |
+| instance_id | Lists commands issued against this managed node ID. | Optional |
+| filters | A semicolon-separated list of filters in the format key=&lt;key&gt;,value=&lt;value&gt;. Valid filter keys: InvokedAfter, InvokedBefore, Status, ExecutionStage, DocumentName. For example: key=Status,value=Success. | Optional |
+| limit | The maximum number of items to return for this call. The minimum is 1 and the maximum is 50. Default is 50. | Optional |
+| next_token | The token for the next set of items to return. Use AWS.SSM.CommandNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Command.CommandId | String | A unique identifier for this command. |
+| AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. |
+| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. |
+| AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. |
+| AWS.SSM.Command.ExpiresAfter | Date | The command expiration time, after which the status for all InProgress, Pending, or Delayed invocations changes to DeliveryTimedOut. |
+| AWS.SSM.Command.Parameters | Unknown | The parameter values to be inserted in the document when running the command. |
+| AWS.SSM.Command.InstanceIds | Unknown | The managed node IDs against which this command was requested. |
+| AWS.SSM.Command.Targets.Key | String | The user-defined criteria for sending commands that target managed nodes. |
+| AWS.SSM.Command.Targets.Values | String | The user-defined values that map to the key. |
+| AWS.SSM.Command.RequestedDateTime | Date | The date and time the command was requested. |
+| AWS.SSM.Command.Status | String | The status of the command. |
+| AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. |
+| AWS.SSM.Command.OutputS3Region | String | The Amazon Web Services region of the S3 bucket. |
+| AWS.SSM.Command.OutputS3BucketName | String | The name of the S3 bucket where command execution responses should be stored. |
+| AWS.SSM.Command.OutputS3KeyPrefix | String | The directory structure within the S3 bucket where the responses should be stored. |
+| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. |
+| AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. |
+| AWS.SSM.Command.TargetCount | Number | The number of targets for the command. |
+| AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. |
+| AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. |
+| AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. |
+| AWS.SSM.Command.ServiceRole | String | The IAM service role that run command uses to act on your behalf when sending notifications about command status changes. |
+| AWS.SSM.Command.NotificationConfig | Unknown | The configurations for sending notifications about command status changes, containing NotificationArn, NotificationEvents, and NotificationType fields. |
+| AWS.SSM.Command.CloudWatchOutputConfig | Unknown | CloudWatch Logs configuration for the command, containing CloudWatchLogGroupName and CloudWatchOutputEnabled fields. |
+| AWS.SSM.Command.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. |
+| AWS.SSM.Command.AlarmConfiguration | Unknown | The details for the CloudWatch alarm applied to your command, containing IgnorePollAlarmFailure and Alarms fields. |
+| AWS.SSM.Command.TriggeredAlarms | Unknown | The CloudWatch alarm that was invoked by the command, containing Name and State fields. |
+| AWS.SSM.CommandNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-ssm-command-cancel
+
+***
+Attempts to cancel the command specified and optionally polls until the cancellation is confirmed. Required IAM Permissions: ssm:CancelCommand, ssm:ListCommands.
+
+#### Base Command
+
+`aws-ssm-command-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| command_id | The ID of the command you want to cancel. | Required |
+| instance_ids | A comma-separated list of managed node IDs on which you want to cancel the command. If not provided, the command is canceled on every node on which it was requested. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Default is 30. | Optional |
+| polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

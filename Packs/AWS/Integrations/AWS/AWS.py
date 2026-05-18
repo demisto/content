@@ -43,6 +43,7 @@ TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "doesn't count against the parent command's max-errors limit, "
     "but does contribute to whether the parent command status is Success or Failed.",
     "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
+    "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
 }
 
 
@@ -355,10 +356,10 @@ def parse_key_1_value_to_dict(key_value_str: str) -> dict:
 
 def parse_name_value_type_format_filter(filter_string: str | None):
     """
-    Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
+    Parses a list representation of key, values and type with the form of 'key=<key>,values=<values>,type=<type>'.
     You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
     Args:
-        filter_string: The name and values list
+        filter_string: The key, values and type list
     Returns:
         A list of dicts with the form {"Key": <key>, "Values": [<value>], "Type": <type>}
     """
@@ -378,7 +379,7 @@ def parse_name_value_type_format_filter(filter_string: str | None):
         if match_filter is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided "
-                "like so: name=<name>,values=<values>,type=<type>;name=<name>,values=<value1>,<value2>,type=<type>..."
+                "like so: key=<key>,values=<values>,type=<type>;key=<key>,values=<value1>,<value2>,type=<type>..."
             )
         demisto.debug(
             f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
@@ -8143,7 +8144,7 @@ class SSM:
         """
         Runs commands on one or more managed nodes.
         Args:
-            client: The AWS ACM boto3 client used to perform the update request.
+            client: The AWS SSM boto3 client used to perform the request.
             args (dict): A dictionary containing the command arguments.
 
         Returns:
@@ -8214,6 +8215,867 @@ class SSM:
                 outputs_prefix="AWS.SSM.Command",
                 outputs_key_field="CommandId",
             ),
+        )
+
+    @staticmethod
+    def add_tags_to_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or overwrites one or more tags for the specified SSM resource.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): A dictionary containing the resource type, resource ID, and tags to add.
+
+        Returns:
+            CommandResults: A success message indicating the tags were added.
+        """
+        resource_id = args.get("resource_id")
+        kwargs = {
+            "ResourceType": args.get("resource_type"),
+            "ResourceId": resource_id,
+            "Tags": parse_tag_field(args.get("tags")),
+        }
+        print_debug_logs(client, f"add_tags_to_resource {kwargs=}")
+
+        response = client.add_tags_to_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Tags were successfully added to the SSM resource '{resource_id}'.",
+        )
+
+    @staticmethod
+    def remove_tags_from_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Removes one or more tags from the specified SSM resource.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): A dictionary containing the resource type, resource ID, and tag keys to remove.
+
+        Returns:
+            CommandResults: A success message indicating the tags were removed.
+        """
+        kwargs = {
+            "ResourceType": args.get("resource_type"),
+            "ResourceId": args.get("resource_id"),
+            "TagKeys": argToList(args.get("tag_keys")),
+        }
+        print_debug_logs(client, f"remove_tags_from_resource {kwargs=}")
+
+        response = client.remove_tags_from_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Tags were successfully removed from the SSM resource '{args.get('resource_id')}'.",
+        )
+
+    @staticmethod
+    def list_tags_for_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns a list of the tags assigned to the specified SSM resource.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including resource_type and resource_id.
+
+        Returns:
+            CommandResults: An object containing the tag list for the specified resource.
+        """
+        resource_id = args.get("resource_id")
+        kwargs = {
+            "ResourceType": args.get("resource_type"),
+            "ResourceId": resource_id,
+        }
+        print_debug_logs(client, f"list_tags_for_resource {kwargs=}")
+
+        response = client.list_tags_for_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        tag_list = response.get("TagList", [])
+        if not tag_list:
+            return CommandResults(readable_output=f"No tags found for SSM resource '{resource_id}'.")
+
+        outputs = {"ResourceId": resource_id, "TagList": tag_list}
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Tags",
+            outputs_key_field="ResourceId",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                f"Tags for SSM resource '{resource_id}'",
+                tag_list,
+                headers=["Key", "Value"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def inventory_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Queries SSM inventory information for managed nodes.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including optional filters (key/values/type format),
+                result_attributes, aggregator_expression, aggregator_groups (JSON),
+                inventory_aggregator, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing inventory entities with their data.
+        """
+        aggregator_groups_raw = args.get("aggregator_groups")
+        aggregator_expression = args.get("aggregator_expression")
+        inventory_aggregator = args.get("inventory_aggregator")
+        result_attributes = argToList(args.get("result_attributes"))
+
+        if aggregator_groups_raw and inventory_aggregator:
+            raise ValueError(
+                "The arguments aggregator_groups and inventory_aggregator cannot be used together. "
+                "Use aggregator_groups to define groups within the aggregator, "
+                "or inventory_aggregator to define a nested sub-aggregator expression."
+            )
+        if aggregator_groups_raw and not aggregator_expression:
+            raise ValueError(
+                "The argument aggregator_expression is required when using aggregator_groups. "
+                "Groups must be nested inside a parent aggregator that has an Expression."
+            )
+
+        # GetInventory Filters use Key/Type/Values — parsed directly from the triple-format filter string
+        inventory_filters = parse_name_value_type_format_filter(args.get("filters"))
+
+        # Build aggregator — Groups must live in a nested sub-aggregator under Expression.
+        # AWS enforces: Groups cannot coexist with Expression in the same aggregator object.
+        if aggregator_groups_raw:
+            try:
+                aggregator_groups = json.loads(aggregator_groups_raw)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"aggregator_groups must be a valid JSON string: {e}") from e
+            aggregator = {
+                "Expression": aggregator_expression,
+                "Aggregators": [{"Groups": aggregator_groups}],
+            }
+        else:
+            aggregator = remove_empty_elements(
+                {
+                    "Expression": aggregator_expression,
+                    "Aggregators": [{"Expression": inventory_aggregator}] if inventory_aggregator else None,
+                }
+            )
+
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "Filters": inventory_filters,
+                "ResultAttributes": [{"TypeName": t} for t in result_attributes],
+                "Aggregators": [aggregator] if aggregator else None,
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM inventory with {kwargs=}")
+
+        response = client.get_inventory(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        entities = response.get("Entities", [])
+
+        if not entities:
+            return CommandResults(readable_output="No inventory entities found.")
+
+        outputs = {
+            "AWS.SSM.Inventory(val.Id && val.Id == obj.Id)": entities,
+            "AWS.SSM(true)": {"InventoryNextToken": response.get("NextToken")},
+        }
+
+        table_rows = []
+        for entity in entities:
+            row: Dict[str, Any] = {"Id": entity.get("Id")}
+            first_entry: Dict[str, Any] = next(iter(entity.get("Data", {}).values()), {})
+            row["TypeName"] = first_entry.get("TypeName")
+            row["SchemaVersion"] = first_entry.get("SchemaVersion")
+            row["CaptureTime"] = first_entry.get("CaptureTime")
+            row["Content"] = first_entry.get("Content")
+            table_rows.append(row)
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Inventory",
+                table_rows,
+                headers=["Id", "TypeName", "SchemaVersion", "CaptureTime", "Content"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def associations_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns all State Manager associations in the current AWS account and Region.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including optional filters
+                (semicolon-separated list in the format key=<key>,value=<value>),
+                limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM associations with their
+                status, schedule, and target information.
+        """
+
+        raw_filters = parse_tag_field(args.get("filters"))
+        association_filter_list = [{"key": f["Key"], "value": f["Value"]} for f in raw_filters]
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "AssociationFilterList": association_filter_list,
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM associations with parameters: {kwargs}")
+
+        response = client.list_associations(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        associations = response.get("Associations", [])
+
+        if not associations:
+            return CommandResults(readable_output="No SSM associations found.")
+
+        outputs = {
+            "AWS.SSM.Associations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
+            "AWS.SSM(true)": {"AssociationsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS SSM Associations",
+                associations,
+                headers=[
+                    "Name",
+                    "AssociationId",
+                    "AssociationName",
+                    "AssociationVersion",
+                    "LastExecutionDate",
+                    "ScheduleExpression",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def association_get_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the association for the specified target or managed node.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments. Must provide either association_id,
+                or both instance_id and document_name.
+
+        Returns:
+            CommandResults: Results containing the association description.
+        """
+        association_id = args.get("association_id")
+        instance_id = args.get("instance_id")
+        document_name = args.get("document_name")
+
+        if not (association_id or (instance_id and document_name)):
+            raise DemistoException("Must provide either association_id, or both instance_id and document_name.")
+
+        kwargs = remove_empty_elements(
+            {
+                "AssociationId": association_id,
+                "AssociationVersion": args.get("association_version"),
+                "InstanceId": instance_id,
+                "Name": document_name,
+            }
+        )
+        print_debug_logs(client, f"Describing SSM association with parameters: {kwargs}")
+
+        response = client.describe_association(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        association = response.get("AssociationDescription", {})
+
+        if not association:
+            return CommandResults(readable_output="No association found.")
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Associations",
+            outputs_key_field="AssociationId",
+            outputs=association,
+            readable_output=tableToMarkdown(
+                "AWS SSM Association",
+                association,
+                headers=[
+                    "Name",
+                    "AssociationId",
+                    "AssociationName",
+                    "AssociationVersion",
+                    "DocumentVersion",
+                    "Date",
+                    "LastExecutionDate",
+                    "ScheduleExpression",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def association_versions_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves all versions of an association for a specific association ID.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including association_id (required),
+                and optional limit and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of association versions.
+        """
+        kwargs: Dict[str, Any] = {
+            "AssociationId": args.get("association_id"),
+        }
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM association versions with parameters: {kwargs}")
+
+        response = client.list_association_versions(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        association_versions = response.get("AssociationVersions", [])
+
+        if not association_versions:
+            return CommandResults(readable_output=f"No versions found for association '{args.get('association_id')}'.")
+
+        association_id = args.get("association_id")
+        outputs = {
+            "AWS.SSM.Associations(val.AssociationId && val.AssociationId == obj.AssociationId)": {
+                "AssociationId": association_id,
+                "Versions": association_versions,
+            },
+            "AWS.SSM.Associations(true)": {"AssociationVersionNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Association Versions",
+                association_versions,
+                headers=[
+                    "AssociationId",
+                    "AssociationVersion",
+                    "Name",
+                    "AssociationName",
+                    "CreatedDate",
+                    "DocumentVersion",
+                    "ScheduleExpression",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def documents_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns all SSM documents in the current AWS account and Region.
+
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including optional filters, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM documents with pagination token.
+        """
+        raw_filters = parse_filter_field(args.get("filters"))
+        kwargs = remove_empty_elements(
+            {
+                "Filters": [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters],
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM documents with parameters: {kwargs}")
+
+        response = client.list_documents(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        documents = response.get("DocumentIdentifiers", [])
+
+        if not documents:
+            return CommandResults(readable_output="No SSM documents found.")
+
+        outputs = {
+            "AWS.SSM.Documents(val.Name && val.Name == obj.Name)": documents,
+            "AWS.SSM(true)": {"DocumentsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Documents",
+                documents,
+                headers=[
+                    "Name",
+                    "Owner",
+                    "DocumentVersion",
+                    "DocumentType",
+                    "PlatformTypes",
+                    "CreatedDate",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def document_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the specified SSM document.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including document_name, and optional document_version and version_name.
+
+        Returns:
+            CommandResults: Results containing the SSM document description.
+        """
+        kwargs = remove_empty_elements(
+            {
+                "Name": args.get("document_name"),
+                "DocumentVersion": args.get("document_version"),
+                "VersionName": args.get("version_name"),
+            }
+        )
+        print_debug_logs(client, f"Describing SSM document with {kwargs=}")
+
+        response = client.describe_document(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        document = response.get("Document", {})
+
+        if not document:
+            return CommandResults(readable_output=f"No document found with name '{args.get('document_name')}'.")
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Documents",
+            outputs_key_field="Name",
+            outputs=document,
+            readable_output=tableToMarkdown(
+                "AWS SSM Document",
+                document,
+                headers=[
+                    "Name",
+                    "Owner",
+                    "DocumentVersion",
+                    "DocumentType",
+                    "PlatformTypes",
+                    "CreatedDate",
+                    "Status",
+                    "Description",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def automation_execution_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the executions of SSM automation workflows.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including optional filters, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of automation executions with pagination token.
+        """
+        # remap Name→Key
+        raw_filters = parse_filter_field(args.get("filters"))
+        automation_filters = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters]
+
+        kwargs = remove_empty_elements({"Filters": automation_filters})
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM automation executions with {kwargs=}")
+
+        response = client.describe_automation_executions(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        executions = response.get("AutomationExecutionMetadataList", [])
+
+        if not executions:
+            return CommandResults(readable_output="No SSM automation executions found.")
+
+        outputs = {
+            "AWS.SSM.AutomationExecutions("
+            "val.AutomationExecutionId && val.AutomationExecutionId == obj.AutomationExecutionId)": executions,
+            "AWS.SSM(true)": {"AutomationExecutionsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Automation Executions",
+                executions,
+                headers=[
+                    "AutomationExecutionId",
+                    "DocumentName",
+                    "DocumentVersion",
+                    "ExecutionStartTime",
+                    "ExecutionEndTime",
+                    "AutomationExecutionStatus",
+                    "Mode",
+                    "ExecutedBy",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-automation-execution-run",
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        requires_polling_arg=False,
+    )
+    def automation_execution_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+        """
+        Initiates or polls the status of an SSM automation execution.
+        Args:
+            args (dict): Command arguments including document_name, and optional parameters, mode, document_version,
+                max_concurrency, max_errors, target_parameter_name, target_key, target_values, tags, client_token,
+                and execution_id (hidden, used for polling).
+            client: The AWS SSM boto3 client used to perform the request.
+
+        Returns:
+            PollResult: An object containing the results of the command and whether to continue polling.
+        """
+        execution_id = args.get("execution_id")
+
+        if not execution_id:
+            # First execution — start the automation
+            targets = parse_target_field(args.get("targets"))
+
+            # Build AlarmConfiguration from flat args — only when alarm_names are provided
+            alarm_names = argToList(args.get("alarm_names"))
+            alarm_configuration = (
+                {
+                    "Alarms": [{"Name": name} for name in alarm_names],
+                    "IgnorePollAlarmFailure": arg_to_bool_or_none(args.get("alarm_ignore_poll_failure")),
+                }
+                if alarm_names
+                else None
+            )
+
+            # Build TargetLocations from tag-style flat arg
+            raw_target_locations = parse_tag_field(args.get("target_locations"))
+            target_locations = [{loc["Key"]: loc["Value"] for loc in raw_target_locations}]
+
+            # Build TargetMaps from key-values format
+            target_maps_str: str = args.get("target_maps") or ""
+            raw_target_maps = parse_key_values_2_dict(target_maps_str) if target_maps_str else {}
+            target_maps = [{k: v} for k, v in raw_target_maps.items()] or None
+
+            parameters_str: str = args.get("parameters") or ""
+            parameters = parse_key_values_2_dict(parameters_str) if parameters_str else None
+            kwargs = remove_empty_elements(
+                {
+                    "DocumentName": args.get("document_name"),
+                    "DocumentVersion": args.get("document_version"),
+                    "Mode": args.get("mode", "Auto"),
+                    "ClientToken": args.get("client_token"),
+                    "MaxConcurrency": args.get("max_concurrency"),
+                    "MaxErrors": args.get("max_errors"),
+                    "TargetParameterName": args.get("target_parameter_name"),
+                    "Parameters": parameters,
+                    "Tags": parse_tag_field(args.get("tags")) if args.get("tags") else None,
+                    "Targets": targets,
+                    "TargetLocations": target_locations,
+                    "TargetLocationsURL": args.get("target_locations_url"),
+                    "TargetMaps": target_maps,
+                    "AlarmConfiguration": alarm_configuration,
+                }
+            )
+            # Redact Parameters from debug log as they may contain sensitive data
+            safe_kwargs = {k: v for k, v in kwargs.items() if k != "Parameters"}
+            print_debug_logs(client, f"Starting SSM automation execution with {safe_kwargs=}")
+
+            response = client.start_automation_execution(**kwargs)
+            execution_id = response.get("AutomationExecutionId", "")
+            args["execution_id"] = execution_id
+            demisto.debug(f"[ssm] aws-ssm-automation-execution-run: started execution_id={execution_id}")
+
+            return PollResult(
+                partial_result=CommandResults(
+                    readable_output=f"Automation execution {execution_id} started successfully.",
+                ),
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+            )
+
+        # Polling — check status
+        demisto.debug(f"[ssm] aws-ssm-automation-execution-run: polling execution_id={execution_id}")
+        automation_response = client.get_automation_execution(AutomationExecutionId=execution_id)
+        automation = serialize_response_with_datetime_encoding(automation_response.get("AutomationExecution", {}))
+        status = automation.get("AutomationExecutionStatus", "")
+        demisto.debug(f"[ssm] aws-ssm-automation-execution-run: execution_id={execution_id} status={status}")
+
+        if status in TERMINAL_COMMAND_STATUSES:
+            if failure_message := automation.get("FailureMessage"):
+                readable_output = f"Automation execution {execution_id} failed: {failure_message}"
+            else:
+                readable_output = f"Automation execution {execution_id} status: {status}. {TERMINAL_COMMAND_STATUSES[status]}"
+            return PollResult(
+                response=CommandResults(
+                    outputs_prefix="AWS.SSM.AutomationExecutions",
+                    outputs_key_field="AutomationExecutionId",
+                    outputs=automation,
+                    readable_output=readable_output,
+                    raw_response=automation,
+                ),
+                continue_to_poll=False,
+            )
+
+        return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-automation-execution-cancel",
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        requires_polling_arg=False,
+    )
+    def automation_execution_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+        """
+        Cancels an SSM automation execution and polls until the cancellation is confirmed.
+        Args:
+            args (dict): Command arguments including automation_execution_id, optional type (Cancel or Complete),
+                and first_run (hidden, used for polling state).
+            client: The AWS SSM boto3 client used to perform the request.
+
+        Returns:
+            PollResult: An object containing the results of the command and whether to continue polling.
+        """
+        automation_execution_id = args.get("automation_execution_id", "")
+
+        if not argToBoolean(args.get("first_run", True)):
+            # Polling — check cancellation status
+            automation_response = client.get_automation_execution(AutomationExecutionId=automation_execution_id)
+            automation = serialize_response_with_datetime_encoding(automation_response.get("AutomationExecution", {}))
+            status = automation.get("AutomationExecutionStatus", "")
+            demisto.debug(f"[ssm] aws-ssm-automation-execution-cancel: {automation_execution_id=} {status=}")
+
+            if status in TERMINAL_COMMAND_STATUSES:
+                return PollResult(
+                    response=CommandResults(
+                        outputs_prefix="AWS.SSM.AutomationExecutions",
+                        outputs_key_field="AutomationExecutionId",
+                        outputs=automation,
+                        readable_output=f"Automation execution {automation_execution_id} status: {status}. "
+                        f"{TERMINAL_COMMAND_STATUSES[status]}",
+                        raw_response=automation,
+                    ),
+                    continue_to_poll=False,
+                )
+            return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
+
+        # Initial execution — send cancel
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "AutomationExecutionId": automation_execution_id,
+                "Type": args.get("type"),
+            }
+        )
+        print_debug_logs(client, f"Stopping SSM automation execution with {kwargs=}")
+
+        client.stop_automation_execution(**kwargs)
+        args["first_run"] = False
+
+        return PollResult(
+            response=None,
+            partial_result=CommandResults(
+                readable_output=f"Cancellation request sent for automation execution '{automation_execution_id}'.",
+            ),
+            continue_to_poll=True,
+            args_for_next_run=args,
+        )
+
+    @staticmethod
+    def command_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the commands requested by users of the AWS account.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including optional command_id, instance_id, filters, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM commands with pagination token.
+        """
+        raw_filters = parse_tag_field(args.get("filters"))
+        command_filters = [{"key": f["Key"], "value": f["Value"]} for f in raw_filters]
+
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "CommandId": args.get("command_id"),
+                "InstanceId": args.get("instance_id"),
+                "Filters": command_filters,
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM commands with {kwargs=}")
+
+        response = client.list_commands(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        commands = response.get("Commands", [])
+        if not commands:
+            # AWS SSM ListCommands has a known pagination quirk: when called without a NextToken,
+            # it may return an empty Commands list alongside a new NextToken.
+            # We transparently retry once with the returned token so the caller always receives actual results when they exist.
+            if retry_token := response.get("NextToken"):
+                demisto.debug(
+                    "[SSM] command_list_command: received empty Commands with a NextToken — retrying with the new token."
+                )
+                kwargs["NextToken"] = retry_token
+                response = client.list_commands(**kwargs)
+
+                if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                    AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+                response = serialize_response_with_datetime_encoding(response)
+                print_debug_logs(client, f"Retry {response=}")
+                commands = response.get("Commands", [])
+
+            if not commands:
+                return CommandResults(readable_output="No SSM commands found.")
+
+        outputs = {
+            "AWS.SSM.Command(val.CommandId && val.CommandId == obj.CommandId)": commands,
+            "AWS.SSM(true)": {"CommandNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Commands",
+                commands,
+                headers=[
+                    "CommandId",
+                    "DocumentName",
+                    "Status",
+                    "RequestedDateTime",
+                    "Comment",
+                    "TargetCount",
+                    "CompletedCount",
+                    "ErrorCount",
+                    "DeliveryTimedOutCount",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-command-cancel",
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        requires_polling_arg=False,
+    )
+    def command_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+        """
+        Cancels the specified SSM command and polls until the cancellation is confirmed.
+        Args:
+            args (dict): Command arguments including command_id, optional instance_ids,
+                and first_run (hidden, used for polling state).
+            client: The AWS SSM boto3 client used to perform the request.
+
+        Returns:
+            PollResult: An object containing the results of the command and whether to continue polling.
+        """
+        command_id = args.get("command_id", "")
+
+        if not argToBoolean(args.get("first_run", True)):
+            # Polling — check command status
+            response_list = client.list_commands(CommandId=command_id)
+            status = response_list.get("Commands", [{}])[0].get("Status", "")
+            demisto.debug(f"[ssm] aws-ssm-command-cancel: command_id={command_id} status={status}")
+
+            if status in TERMINAL_COMMAND_STATUSES:
+                return PollResult(
+                    response=CommandResults(
+                        readable_output=f"Command {command_id} status: {status}. {TERMINAL_COMMAND_STATUSES[status]}",
+                    ),
+                    continue_to_poll=False,
+                )
+            return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
+
+        # Initial execution — send cancel
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "CommandId": command_id,
+                "InstanceIds": argToList(args.get("instance_ids")) or None,
+            }
+        )
+        print_debug_logs(client, f"Cancelling SSM command with {kwargs=}")
+
+        client.cancel_command(**kwargs)
+        args["first_run"] = False
+
+        return PollResult(
+            response=None,
+            partial_result=CommandResults(
+                readable_output=f"Cancellation request sent for command '{command_id}'.",
+            ),
+            continue_to_poll=True,
+            args_for_next_run=args,
         )
 
 
@@ -8383,9 +9245,23 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-fleets-describe": EC2.describe_fleets_command,
     "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
     "aws-ec2-fleet-modify": EC2.modify_fleet_command,
+    "aws-ssm-association-versions-list": SSM.association_versions_list_command,
+    "aws-ssm-association-get": SSM.association_get_command,
+    "aws-ssm-associations-list": SSM.associations_list_command,
+    "aws-ssm-inventory-list": SSM.inventory_list_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
     "aws-redshift-cluster-modify": Redshift.modify_cluster_command,
+    "aws-ssm-tag-add": SSM.add_tags_to_resource_command,
+    "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
+    "aws-ssm-documents-list": SSM.documents_list_command,
+    "aws-ssm-document-describe": SSM.document_describe_command,
+    "aws-ssm-automation-executions-list": SSM.automation_execution_list_command,
+    "aws-ssm-automation-execution-run": SSM.automation_execution_run_command,
+    "aws-ssm-automation-execution-cancel": SSM.automation_execution_cancel_command,
+    "aws-ssm-commands-list": SSM.command_list_command,
+    "aws-ssm-command-cancel": SSM.command_cancel_command,
+    "aws-ssm-tags-list": SSM.list_tags_for_resource_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
     "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
@@ -8400,6 +9276,21 @@ COMMANDS_MAPPING: dict[str, Callable] = {
 }
 
 REQUIRED_ACTIONS: list[str] = [
+    "ssm:ListAssociationVersions",
+    "ssm:DescribeAssociation",
+    "ssm:ListAssociations",
+    "ssm:GetInventory",
+    "ssm:AddTagsToResource",
+    "ssm:RemoveTagsFromResource",
+    "ssm:ListTagsForResource",
+    "ssm:ListDocuments",
+    "ssm:DescribeDocument",
+    "ssm:DescribeAutomationExecutions",
+    "ssm:StartAutomationExecution",
+    "ssm:GetAutomationExecution",
+    "ssm:StopAutomationExecution",
+    "ssm:ListCommands",
+    "ssm:CancelCommand",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
