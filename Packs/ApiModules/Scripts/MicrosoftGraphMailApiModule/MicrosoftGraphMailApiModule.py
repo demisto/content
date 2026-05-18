@@ -144,8 +144,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 file_data, file_size, uploaded_file_name = GraphMailUtils.read_file(attach_id)
             except Exception as e:
                 demisto.debug(
-                    f"send-mail: Failed to read file with ID '{attach_id}'. "
-                    f"Skipping this attachment. Error: {str(e)}"
+                    f"send-mail: Failed to read file with ID '{attach_id}'. " f"Skipping this attachment. Error: {str(e)}"
                 )
                 # Skip this attachment if we can't read it - this can happen if the ID is invalid
                 continue
