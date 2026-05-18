@@ -1,0 +1,82 @@
+name: ServiceNow MCP
+display: ServiceNow MCP
+description: Use this integration to connect securely with a ServiceNow Model Context Protocol (MCP) server and access its tools in real time.
+category: Case Management
+provider: ServiceNow
+sectionorder:
+- Connect
+commonfields:
+  id: ServiceNow MCP
+  version: -1
+configuration:
+  - name: instance
+    section: Connect
+    display: ServiceNow Instance
+    type: 0
+    required: true
+    additionalinfo: |
+      The ServiceNow instance subdomain (e.g., 'dev12345' for `https://dev12345.service-now.com`).
+  - name: server_name
+    section: Connect
+    display: MCP Server Name
+    type: 0
+    defaultvalue: sn_mcp_server_default
+    additionalinfo: |
+      The name of the MCP server on the ServiceNow instance. Defaults to the preconfigured Quickstart Server `sn_mcp_server_default`.
+  - name: oauth_credentials
+    type: 9
+    display: Client ID
+    displaypassword: Client Secret
+    section: Connect
+    required: true
+    additionalinfo: |
+      The Client ID and Client Secret from the OAuth Inbound Integration created on the ServiceNow instance.
+  - name: auth_code
+    type: 9
+    displaypassword: Authorization code
+    hiddenusername: true
+    section: Connect
+    additionalinfo: |
+      Authorization code returned after running the `!servicenow-mcp-generate-login-url` command and authenticating.
+  - name: redirect_uri
+    section: Connect
+    display: Redirect URI
+    type: 0
+    advanced: true
+    defaultvalue: https://oproxy.demisto.ninja/authcode
+    additionalinfo: |
+      The redirect URI registered in the ServiceNow OAuth Inbound Integration. Must match the URI configured on the ServiceNow side.
+  - name: insecure
+    section: Connect
+    display: Trust any certificate (not secure)
+    type: 8
+    advanced: true
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the ServiceNow MCP server.
+    name: list-tools
+    hidden: true
+    outputs: []
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+      required: true
+    - name: arguments
+      description: Parameters for the tool execution.
+    description: Calls a specific tool on the MCP server with optional input parameters.
+    name: call-tool
+    hidden: true
+    outputs: []
+  - description: Test the authentication configuration with the MCP server.
+    name: servicenow-mcp-auth-test
+  - description: Generate an authentication login URL.
+    name: servicenow-mcp-generate-login-url
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/mcp:1.0.0.6978288
+  mcp: true
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)
