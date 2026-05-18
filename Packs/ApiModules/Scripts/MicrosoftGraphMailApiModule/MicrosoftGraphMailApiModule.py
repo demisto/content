@@ -2308,11 +2308,11 @@ ALL_MAIL_TIPS_OPTIONS = [
 def parse_json_arg(value, arg_name: str):
     """Parse a JSON-string CLI arg into a Python object, raising a clear error on JSON parse failure.
 
-    None/empty values return None — required-ness is enforced at the YAML layer.
+    None/empty values return None.
     """
     if value is None or value == "":
         return None
-    if isinstance(value, (dict, list)):  # already parsed
+    if isinstance(value, dict | list):
         return value
     try:
         return json.loads(value)
@@ -2402,13 +2402,11 @@ def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
     conditions = parse_json_arg(args.get("conditions"), "conditions")
     exceptions = parse_json_arg(args.get("exceptions"), "exceptions")
     is_enabled = arg_to_bool_or_none(args.get("is_enabled"))
-    is_read_only = arg_to_bool_or_none(args.get("is_read_only"))
 
     body = assign_params(
         displayName=args.get("display_name"),
         sequence=sequence,
         isEnabled=is_enabled,
-        isReadOnly=is_read_only,
         actions=actions,
         conditions=conditions,
         exceptions=exceptions,
@@ -2417,7 +2415,7 @@ def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandRes
     if not body:
         raise DemistoException(
             "At least one updatable field must be provided "
-            "(display_name, sequence, is_enabled, is_read_only, actions, conditions, exceptions)."
+            "(display_name, sequence, is_enabled, actions, conditions, exceptions)."
         )
 
     response = client.update_message_rule(user_id, rule_id, body)

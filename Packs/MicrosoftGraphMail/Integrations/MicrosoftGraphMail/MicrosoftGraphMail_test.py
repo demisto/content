@@ -2245,7 +2245,6 @@ def test_update_rule_happy_all_fields(mocker):
         "display_name": "all",
         "sequence": 5,
         "is_enabled": "true",
-        "is_read_only": "false",
         "actions": json.dumps(actions),
         "conditions": json.dumps(conditions),
         "exceptions": json.dumps(exceptions),
@@ -2261,7 +2260,7 @@ def test_update_rule_happy_all_fields(mocker):
     assert sent_body["displayName"] == "all"
     assert sent_body["sequence"] == 5
     assert sent_body["isEnabled"] is True
-    assert sent_body["isReadOnly"] is False
+    assert "isReadOnly" not in sent_body
     assert sent_body["actions"] == actions
     assert sent_body["conditions"] == conditions
     assert sent_body["exceptions"] == exceptions

@@ -1230,12 +1230,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      description: 'Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.'
-      name: is_read_only
-      predefined:
-      - 'true'
-      - 'false'
     - description: |-
         A JSON string of the messageRuleActions object describing actions to take when the rule's conditions are fulfilled. Replaces the rule's existing actions.
         Example: {\"markImportance\":\"high\",\"stopProcessingRules\":true}.
