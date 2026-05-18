@@ -266,7 +266,7 @@ Must be valid JSON. Required before `generated manifest` can be marked passed.
 
 ---
 
-## `Param Defaults`
+## `Params for test with default in code`
 
 Plain JSON object mapping YML param name → its default value. Values can
 be any JSON type (string, number, boolean, null, list, object) — whatever
@@ -313,7 +313,7 @@ Setter:
 ([`cmd_set_param_defaults`](workflow_state/cli.py:1)).
 Must be valid JSON.
 
-> **Reset semantics.** `Param Defaults` is **wiped** by every reset path
+> **Reset semantics.** `Params for test with default in code` is **wiped** by every reset path
 > (`reset`, `set-auth`, `fail`, `reset-to`). It does NOT carry
 > `preserve_on_reset: true`. Today only `Params to Commands` retains
 > that flag.
@@ -400,7 +400,7 @@ Positional arguments (in order):
    [`Params to Commands`](#params-to-commands) cell, e.g.
    `python3 connectus/workflow_state.py show-step "<Integration ID>" "Params to Commands"`.
 2. `PARAM_DEFAULTS_JSON` — pull from this integration's
-   [`Param Defaults`](#param-defaults) cell.
+   [`Params for test with default in code`](#params-for-test-with-default-in-code) cell.
 3. `INTEGRATION_YML_PATH` — the integration's YML manifest path; resolve
    via `python3 connectus/workflow_state.py files "<Integration ID>"`.
 4. `MANUAL_COMMAND_TO_CAPABILITY_JSON` (OPTIONAL, defaults to `'{}'`) —
@@ -418,7 +418,7 @@ Canonical invocation:
 ```bash
 python3 connectus/connectus_migration/connector_param_mapper.py \
   '<COMMAND_PARAMS_JSON from Params to Commands cell>' \
-  '<PARAM_DEFAULTS_JSON from Param Defaults cell>' \
+  '<PARAM_DEFAULTS_JSON from Params for test with default in code cell>' \
   '<INTEGRATION_YML_PATH from workflow_state.py files>' \
   '{}' \
   -o connectus/connectus_migration/_<integration>_param_mapping.json

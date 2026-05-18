@@ -80,13 +80,13 @@ steps:
     default: "connection"
     description: "Verify the location of the test/verify button in the UI: 'connection' (per-connection), 'configuration' (per-integration), or 'none'. Defaults to 'connection' on read when unset; details to be filled in later."
 
-  - name: "Param Defaults"
+  - name: "Params for test with default in code"
     kind: data
     optional: false
     setter: set-param-defaults
     json_schema: {"validator": "param_defaults"}
     preserve_on_reset: false
-    description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument."
+    description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument, and consumed by check_auth_parity.py as the first-precedence source of non-auth required param values."
 
   - name: "Params to Capabilities"
     kind: data

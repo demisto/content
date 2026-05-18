@@ -281,11 +281,11 @@ def cmd_set_param_defaults(args: list[str]) -> None:
         raw = " ".join(args[1:])
         schema_errors = validate_param_defaults(raw)
         if schema_errors:
-            print("ERROR: Param Defaults does not match the required schema.")
+            print("ERROR: Params for test with default in code does not match the required schema.")
             for err in schema_errors:
                 print(f"  - {err}")
             sys.exit(1)
-    _set_json_data_step(args, "Param Defaults", "set-param-defaults")
+    _set_json_data_step(args, "Params for test with default in code", "set-param-defaults")
 
 
 def cmd_set_params_to_capabilities(args: list[str]) -> None:

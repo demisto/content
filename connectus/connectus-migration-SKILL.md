@@ -13,7 +13,7 @@ The CSV has two kinds of columns (see [`connectus/Readme.md`](Readme.md) for ful
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
 - **Workflow columns** (16, managed by the state machine — CSV total is 19):
-  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Param Defaults`, `Params to Capabilities` (5).
+  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params to Capabilities` (5).
   - **Workflow flag** (1): `verify button placement` (enum `connection|configuration|none`, default `connection` on read).
   - **Workflow checkpoints** (10, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
 
@@ -129,6 +129,75 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (the historical `Params for test with default in code` and `Params same in other handlers` columns were removed in 2026-05; today only `Params to Commands` carries `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
+
+## Interaction Policy
+
+This section defines the **only** points at which the skill must pause for
+user input. Everything not listed here runs straight through without
+asking — including file reads (`files`, `status`, `show-step`,
+`auth-params`, reading YML / Python / README / description),
+[`check_command_params.py`](check_command_params.py) analyzer runs,
+`markpass`, `skip`, `pre-commit`, `format`, `validate`, test execution,
+shadowed-command tests, parity tests, and any other read-only or
+derivable operation.
+
+### Pause-and-confirm checkpoints (the only ones)
+
+Pause before executing any of the **4 JSON-write CLI calls** that persist
+workflow-data columns to the CSV. For each, present the payload and the
+evidence behind it, then wait for the user to reply **yes** (apply),
+**no** (revise / abort), or **edit** (user supplies a modified JSON
+which is then applied verbatim).
+
+| # | CLI verb | Column written | What to show before asking |
+|---|---|---|---|
+| 1 | `set-auth` | `Auth Details` | The full JSON payload; a concise bullet list of source-code evidence per `auth_types[]` entry (which YML param + which code site justifies the type); the `config` expression and why; the `other_connection` list. Note that this call resets the workflow + wipes Params columns. |
+| 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. |
+| 3 | `set-param-defaults` | `Param Defaults` | The full JSON payload; for each entry, the YML default it overrides and the reason. |
+| 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
+
+### Run-through (do NOT ask) operations
+
+For clarity, these run without prompting even though they mutate state:
+
+- `markpass`, `skip`, `fail`, `reset-to`, `reset` — workflow-checkpoint
+  bookkeeping. (Rationale: these reflect verification work the skill has
+  already done; the JSON writes above are the substantive decisions.)
+- `set-assignee`, `set-assignee-by-connector` — ownership writes.
+  (Rationale: these are negotiated up front in the batch-flow ownership
+  step, which has its own explicit prompts already.)
+- All read-only CLI verbs (`status`, `show-step`, `list`, `list-by-connector`,
+  `list-connectors`, `next`, `dashboard`, `files`, `auth-params`).
+- All analyzer runs, formatter runs, test runs, pre-commit / validate.
+- All file reads, greps, code edits, and test-file authorship.
+
+### Order-of-work prompts (batch flows only)
+
+In addition to the 4 JSON writes above, the [Assignee batch flow](#assignee-batch-flow)
+and [Connector batch flow](#connector-batch-flow) explicitly require a
+user prompt in the specific ambiguous-ordering cases enumerated in
+[Order-of-work disambiguation](#order-of-work-disambiguation). Those
+prompts stand — this section does NOT override them. When the order is
+"obvious" by the rules in that section, proceed silently.
+
+### User-overrides to this policy
+
+Users can widen or narrow the pause list per-session by saying so
+explicitly. Common overrides:
+
+- *"don't ask, just do it"* / *"no confirmations"* / *"run the whole thing"* →
+  skip the 4 JSON-write prompts for the remainder of the session; still
+  honor the order-of-work prompts.
+- *"ask before every CLI call"* → pause on every state-mutating verb
+  (including `markpass`, `set-assignee`, `fail`, `reset-to`, `reset`),
+  not just the 4 JSON writes.
+- *"also confirm before rewinds"* → add `fail`, `reset-to`, `reset` to
+  the pause list.
+- *"also confirm before commits / PRs"* → if/when the workflow reaches
+  git-commit or PR-creation steps, pause first.
+
+If the user gives a session-level override, honor it for the rest of
+that session and do not re-prompt about it.
 
 ## Linked Files
 
@@ -1129,7 +1198,7 @@ This step is a `flag`, not a `data` column — the input is the bare enum
 string (no JSON wrapping). See
 [`connectus/column-schemas.md`](column-schemas.md) §`verify button placement`.
 
-### Step 4a: Set `Param Defaults` (data column)
+### Step 4a: Set `Params for test with default in code` (data column)
 
 Set the JSON object mapping YML param name → default value. This cell
 feeds the next step (`Params to Capabilities`) by becoming the
@@ -1154,9 +1223,9 @@ python3 connectus/workflow_state.py set-param-defaults "QRadar v3" '{"fetch_limi
 Validator reference:
 [`validate_param_defaults()`](workflow_state/validators.py:147) — enforces
 top-level object, non-empty string keys, any JSON value. Full schema in
-[`column-schemas.md`](column-schemas.md) §`Param Defaults`.
+[`column-schemas.md`](column-schemas.md) §`Params for test with default in code`.
 
-> **Reset semantics.** `Param Defaults` is NOT preserved on any reset
+> **Reset semantics.** `Params for test with default in code` is NOT preserved on any reset
 > path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
 > `Params to Commands` carries `preserve_on_reset: true` today.
 
@@ -1183,8 +1252,8 @@ immediately.
 # 1. Params to Commands cell (already set in Step 2)
 python3 connectus/workflow_state.py show-step "<Integration ID>" "Params to Commands"
 
-# 2. Param Defaults cell (just set in Step 4a)
-python3 connectus/workflow_state.py show-step "<Integration ID>" "Param Defaults"
+# 2. Params for test with default in code cell (just set in Step 4a)
+python3 connectus/workflow_state.py show-step "<Integration ID>" "Params for test with default in code"
 
 # 3. Integration YML path
 python3 connectus/workflow_state.py files "<Integration ID>"
@@ -1200,7 +1269,7 @@ the four positionals come straight after the script path:
 ```bash
 python3 connectus/connectus_migration/connector_param_mapper.py \
   '<COMMAND_PARAMS_JSON from Params to Commands cell>' \
-  '<PARAM_DEFAULTS_JSON from Param Defaults cell>' \
+  '<PARAM_DEFAULTS_JSON from Params for test with default in code cell>' \
   '<INTEGRATION_YML_PATH from workflow_state.py files>' \
   '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
   -o connectus/connectus_migration/_<integration>_param_mapping.json

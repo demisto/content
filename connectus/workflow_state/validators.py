@@ -143,11 +143,11 @@ def validate_params_to_commands(value: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Param Defaults
+# Params for test with default in code
 # ---------------------------------------------------------------------------
 
 def validate_param_defaults(value: str) -> list[str]:
-    """Validate Param Defaults JSON shape. Returns errors ([] = valid).
+    """Validate ``Params for test with default in code`` JSON shape. Returns errors ([] = valid).
 
     Strict shape::
 
