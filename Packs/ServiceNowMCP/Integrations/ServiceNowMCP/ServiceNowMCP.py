@@ -14,35 +14,35 @@ SERVER_NAME = "ServiceNow MCP"
 DEFAULT_MCP_SERVER_NAME = "sn_mcp_server_default"
 
 
-def build_servicenow_urls(instance: str, server_name: str) -> tuple[str, str, str]:
-    """Builds the ServiceNow MCP server URL and OAuth authorization/token endpoints from the instance subdomain.
+def build_servicenow_urls(instance_url: str, server_name: str) -> tuple[str, str, str]:
+    """Builds the ServiceNow MCP server URL and OAuth authorization/token endpoints from the instance URL.
 
     Args:
-        instance: The ServiceNow instance subdomain (e.g., 'dev12345').
+        instance_url: The full ServiceNow instance URL (e.g., 'https://dev12345.service-now.com').
         server_name: The name of the MCP server on the instance.
 
     Returns:
         A tuple of (base_url, authorization_endpoint, token_endpoint).
     """
-    instance = instance.strip().rstrip("/")
+    instance_url = instance_url.strip().rstrip("/")
     server_name = (server_name or DEFAULT_MCP_SERVER_NAME).strip()
 
-    base_url = f"https://{instance}.service-now.com/sncapps/mcp-server/mcp/{server_name}"
-    authorization_endpoint = f"https://{instance}.service-now.com/oauth_auth.do"
-    token_endpoint = f"https://{instance}.service-now.com/oauth_token.do"
+    base_url = f"{instance_url}/sncapps/mcp-server/mcp/{server_name}"
+    authorization_endpoint = f"{instance_url}/oauth_auth.do"
+    token_endpoint = f"{instance_url}/oauth_token.do"
     return base_url, authorization_endpoint, token_endpoint
 
 
-def validate_required_params(instance: str, client_id: str, client_secret: str) -> None:
+def validate_required_params(instance_url: str, client_id: str, client_secret: str) -> None:
     """Validates that required parameters are present.
 
     Args:
-        instance: The ServiceNow instance subdomain.
+        instance_url: The full ServiceNow instance URL.
         client_id: The OAuth Client ID.
         client_secret: The OAuth Client Secret.
     """
-    if not instance:
-        raise ValueError("ServiceNow Instance must be provided (e.g., 'dev12345').")
+    if not instance_url:
+        raise ValueError("ServiceNow Instance URL must be provided (e.g., 'https://dev12345.service-now.com').")
     if not all((client_id, client_secret)):
         raise ValueError("Client ID and Client Secret are required for OAuth authentication.")
 
@@ -54,7 +54,7 @@ async def main() -> None:  # pragma: no cover
 
     client = None
     try:
-        instance = params.get("instance", "")
+        instance_url = params.get("instance_url", "")
         server_name = params.get("server_name", "")
         client_id = params.get("oauth_credentials", {}).get("identifier")
         client_secret = params.get("oauth_credentials", {}).get("password")
@@ -62,9 +62,9 @@ async def main() -> None:  # pragma: no cover
         redirect_uri = params.get("redirect_uri", "") or REDIRECT_URI
         verify: bool = not argToBoolean(params.get("insecure", False))
 
-        validate_required_params(instance, client_id, client_secret)
+        validate_required_params(instance_url, client_id, client_secret)
 
-        base_url, authorization_endpoint, token_endpoint = build_servicenow_urls(instance, server_name)
+        base_url, authorization_endpoint, token_endpoint = build_servicenow_urls(instance_url, server_name)
 
         client = Client(
             base_url=base_url,

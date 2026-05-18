@@ -9,13 +9,13 @@ commonfields:
   id: ServiceNow MCP
   version: -1
 configuration:
-  - name: instance
+  - name: instance_url
     section: Connect
-    display: ServiceNow Instance
+    display: ServiceNow Instance URL
     type: 0
     required: true
     additionalinfo: |
-      The ServiceNow instance subdomain (e.g., 'dev12345' for `https://dev12345.service-now.com`).
+      The ServiceNow instance URL (e.g., `https://dev12345.service-now.com`).
   - name: server_name
     section: Connect
     display: MCP Server Name

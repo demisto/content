@@ -9,6 +9,3 @@ Connects to a ServiceNow MCP server to automatically discover tools and expose t
 ## Tools
 
 Tool availability depends on the permissions granted to the user and the MCP server configuration on the ServiceNow instance.
-The list below reflects the tools available with the preconfigured Quickstart Server and may change.
-
-`Look up Incident Records`  `Case summarization`

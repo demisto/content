@@ -5,7 +5,7 @@ This integration was integrated and tested with the latest version of ServiceNow
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| ServiceNow Instance | The ServiceNow instance subdomain \(e.g., 'dev12345' for \`https://dev12345.service-now.com\`\).<br/> | True |
+| ServiceNow Instance URL | The ServiceNow instance URL \(e.g., \`https://dev12345.service-now.com\`\).<br/> | True |
 | MCP Server Name | The name of the MCP server on the ServiceNow instance. Defaults to the preconfigured Quickstart Server \`sn_mcp_server_default\`.<br/> |  |
 | Client ID | The Client ID and Client Secret from the OAuth Inbound Integration created on the ServiceNow instance.<br/> | True |
 | Client Secret |  | True |
@@ -17,44 +17,6 @@ This integration was integrated and tested with the latest version of ServiceNow
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### list-tools
-
-***
-Retrieves a list of available tools in the ServiceNow MCP server.
-
-#### Base Command
-
-`list-tools`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
-### call-tool
-
-***
-Calls a specific tool on the MCP server with optional input parameters.
-
-#### Base Command
-
-`call-tool`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name of the tool to call. | Required |
-| arguments | Parameters for the tool execution. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
 
 ### servicenow-mcp-auth-test
 

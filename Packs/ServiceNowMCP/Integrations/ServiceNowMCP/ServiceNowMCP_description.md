@@ -1,4 +1,4 @@
-## ServiceNowMCP Integration
+## ServiceNow MCP
 
 This integration connects securely with a ServiceNow Model Context Protocol (MCP) server, allowing you to access its tools in real time.
 
@@ -12,7 +12,7 @@ This integration connects securely with a ServiceNow Model Context Protocol (MCP
 
 ## Configuration
 
-1. Enter your **ServiceNow Instance** subdomain (e.g., `dev12345` for `https://dev12345.service-now.com`).
+1. Enter your **ServiceNow Instance** URL (e.g., `https://dev12345.service-now.com`).
 2. Enter the **MCP Server Name** (defaults to `sn_mcp_server_default` for the Quickstart Server).
 3. Enter the **Client ID** and **Client Secret** from the OAuth Inbound Integration.
 4. Save the integration instance.

@@ -6,7 +6,7 @@ from ServiceNowMCP import main, build_servicenow_urls, validate_required_params,
 
 
 VALID_PARAMS = {
-    "instance": "dev12345",
+    "instance_url": "https://dev12345.service-now.com",
     "server_name": "sn_mcp_server_default",
     "oauth_credentials": {"identifier": "test_client_id", "password": "test_client_secret"},
     "auth_code": {"password": "test_auth_code"},
@@ -19,31 +19,33 @@ class TestBuildServiceNowUrls:
     """Unit tests for build_servicenow_urls."""
 
     def test_build_urls_with_explicit_server_name(self):
-        """Given: A ServiceNow instance and explicit server name.
+        """Given: A full ServiceNow instance URL and explicit server name.
         When: build_servicenow_urls is called.
         Then: Correct base_url, authorization_endpoint, and token_endpoint are returned.
         """
-        base_url, auth_endpoint, token_endpoint = build_servicenow_urls("dev12345", "my_server")
+        base_url, auth_endpoint, token_endpoint = build_servicenow_urls("https://dev12345.service-now.com", "my_server")
 
         assert base_url == "https://dev12345.service-now.com/sncapps/mcp-server/mcp/my_server"
         assert auth_endpoint == "https://dev12345.service-now.com/oauth_auth.do"
         assert token_endpoint == "https://dev12345.service-now.com/oauth_token.do"
 
     def test_build_urls_with_empty_server_name_uses_default(self):
-        """Given: A ServiceNow instance and an empty server name.
+        """Given: A full ServiceNow instance URL and an empty server name.
         When: build_servicenow_urls is called.
         Then: The default Quickstart server name is used in the base URL.
         """
-        base_url, _, _ = build_servicenow_urls("dev12345", "")
+        base_url, _, _ = build_servicenow_urls("https://dev12345.service-now.com", "")
 
         assert base_url == f"https://dev12345.service-now.com/sncapps/mcp-server/mcp/{DEFAULT_MCP_SERVER_NAME}"
 
     def test_build_urls_strips_whitespace_and_trailing_slash(self):
-        """Given: An instance string with surrounding whitespace and a trailing slash.
+        """Given: An instance URL with surrounding whitespace and a trailing slash.
         When: build_servicenow_urls is called.
-        Then: The URLs are built with the cleaned instance value.
+        Then: The URLs are built with the cleaned instance URL.
         """
-        base_url, auth_endpoint, token_endpoint = build_servicenow_urls("  dev12345/  ", "  custom_server  ")
+        base_url, auth_endpoint, token_endpoint = build_servicenow_urls(
+            "  https://dev12345.service-now.com/  ", "  custom_server  "
+        )
 
         assert base_url == "https://dev12345.service-now.com/sncapps/mcp-server/mcp/custom_server"
         assert auth_endpoint == "https://dev12345.service-now.com/oauth_auth.do"
@@ -58,14 +60,14 @@ class TestValidateRequiredParams:
         When: validate_required_params is called.
         Then: No exception is raised.
         """
-        validate_required_params("dev12345", "cid", "csecret")
+        validate_required_params("https://dev12345.service-now.com", "cid", "csecret")
 
     def test_missing_instance_raises(self):
-        """Given: The instance parameter is missing.
+        """Given: The instance URL is missing.
         When: validate_required_params is called.
         Then: A ValueError is raised mentioning the instance requirement.
         """
-        with pytest.raises(ValueError, match="ServiceNow Instance"):
+        with pytest.raises(ValueError, match="ServiceNow Instance URL"):
             validate_required_params("", "cid", "csecret")
 
     def test_missing_client_id_raises(self):
@@ -74,7 +76,7 @@ class TestValidateRequiredParams:
         Then: A ValueError is raised mentioning OAuth credentials.
         """
         with pytest.raises(ValueError, match="Client ID and Client Secret"):
-            validate_required_params("dev12345", "", "csecret")
+            validate_required_params("https://dev12345.service-now.com", "", "csecret")
 
     def test_missing_client_secret_raises(self):
         """Given: The Client Secret is missing.
@@ -82,7 +84,7 @@ class TestValidateRequiredParams:
         Then: A ValueError is raised mentioning OAuth credentials.
         """
         with pytest.raises(ValueError, match="Client ID and Client Secret"):
-            validate_required_params("dev12345", "cid", "")
+            validate_required_params("https://dev12345.service-now.com", "cid", "")
 
 
 class TestMain:
@@ -323,7 +325,7 @@ class TestMain:
         Then: validate_required_params raises ValueError and return_error is called.
         """
         params = dict(VALID_PARAMS)
-        params["instance"] = ""
+        params["instance_url"] = ""
 
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "args", return_value={})
