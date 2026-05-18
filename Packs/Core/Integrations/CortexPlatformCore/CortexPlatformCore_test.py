@@ -737,7 +737,8 @@ def test_search_assets_command_success(mocker):
     WHEN:
         search_assets_command is called.
     THEN:
-        Asset group IDs are resolved, filter is created, and assets are searched successfully.
+        Asset group IDs are resolved, filter is created, and assets are searched successfully
+        via get_webapp_data with the UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS table.
     """
     from CortexPlatformCore import Client, search_assets_command
 
@@ -746,20 +747,36 @@ def test_search_assets_command_success(mocker):
     # Mock get_asset_group_ids_from_names
     mock_get_asset_group_ids = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[1, 2])
 
-    # Mock client.search_assets
+    # Mock client.get_webapp_data (replaces the old client.search_assets)
     mock_reply = {
-        "data": [
-            {"xdm.asset.id": "asset-1", "xdm.asset.name": "Server-1", "xdm.asset.type.name": "server"},
-            {"xdm.asset.id": "asset-2", "xdm.asset.name": "Server-2", "xdm.asset.type.name": "server"},
+        "DATA": [
+            {"xdm__asset__id": "asset-1", "xdm__asset__name": "Server-1", "xdm__asset__type__name": "server"},
+            {"xdm__asset__id": "asset-2", "xdm__asset__name": "Server-2", "xdm__asset__type__name": "server"},
         ]
     }
     expected_reply = [
-        {"id": "asset-1", "name": "Server-1", "type.name": "server"},
-        {"id": "asset-2", "name": "Server-2", "type.name": "server"},
+        {
+            "id": "asset-1",
+            "name": "Server-1",
+            "type__name": "server",
+            "related_issues.critical_issues": [],
+            "related_issues.issues_breakdown": [],
+            "related_cases.critical_cases": [],
+            "related_cases.cases_breakdown": [],
+        },
+        {
+            "id": "asset-2",
+            "name": "Server-2",
+            "type__name": "server",
+            "related_issues.critical_issues": [],
+            "related_issues.issues_breakdown": [],
+            "related_cases.critical_cases": [],
+            "related_cases.cases_breakdown": [],
+        },
     ]
-    mock_search_assets = mocker.patch.object(
+    mock_get_webapp_data = mocker.patch.object(
         mock_client,
-        "search_assets",
+        "get_webapp_data",
         return_value={"reply": mock_reply},
     )
 
@@ -776,40 +793,40 @@ def test_search_assets_command_success(mocker):
 
     assert len(result.outputs) == 2
     assert result.outputs == expected_reply
-    mock_search_assets.assert_called_once()
+    mock_get_webapp_data.assert_called_once()
     mock_get_asset_group_ids.assert_called_once_with(mock_client, ["Production Servers", "Development Workstations"])
 
-    filter_arg = mock_search_assets.call_args[0][0]
+    # The filter is passed inside the request_data dict under filter_data.filter.
+    request_data_arg = mock_get_webapp_data.call_args[0][0]
+    from CortexPlatformCore import ASSETS_TABLE
+
+    assert request_data_arg["table_name"] == ASSETS_TABLE
+    filter_arg = request_data_arg["filter_data"]["filter"]
     expected_filter = {
         "AND": [
             {
                 "OR": [
                     {
-                        "SEARCH_FIELD": "xdm.asset.name",
+                        "SEARCH_FIELD": "xdm__asset__name",
                         "SEARCH_TYPE": "CONTAINS",
                         "SEARCH_VALUE": "Server-1",
                     },
                     {
-                        "SEARCH_FIELD": "xdm.asset.name",
+                        "SEARCH_FIELD": "xdm__asset__name",
                         "SEARCH_TYPE": "CONTAINS",
                         "SEARCH_VALUE": "Server-2",
                     },
                 ]
             },
             {
-                "SEARCH_FIELD": "xdm.asset.type.name",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "server",
-            },
-            {
                 "OR": [
                     {
-                        "SEARCH_FIELD": "xdm.asset.tags",
+                        "SEARCH_FIELD": "xdm__asset__tags",
                         "SEARCH_TYPE": "JSON_WILDCARD",
                         "SEARCH_VALUE": {"tag1": "value1"},
                     },
                     {
-                        "SEARCH_FIELD": "xdm.asset.tags",
+                        "SEARCH_FIELD": "xdm__asset__tags",
                         "SEARCH_TYPE": "JSON_WILDCARD",
                         "SEARCH_VALUE": {"tag2": "value2"},
                     },
@@ -818,25 +835,114 @@ def test_search_assets_command_success(mocker):
             {
                 "OR": [
                     {
-                        "SEARCH_FIELD": "xdm.asset.group_ids",
+                        "SEARCH_FIELD": "xdm__asset__group_ids",
                         "SEARCH_TYPE": "ARRAY_CONTAINS",
                         "SEARCH_VALUE": 1,
                     },
                     {
-                        "SEARCH_FIELD": "xdm.asset.group_ids",
+                        "SEARCH_FIELD": "xdm__asset__group_ids",
                         "SEARCH_TYPE": "ARRAY_CONTAINS",
                         "SEARCH_VALUE": 2,
                     },
                 ]
+            },
+            {
+                "SEARCH_FIELD": "xdm__asset__type__name",
+                "SEARCH_TYPE": "CONTAINS",
+                "SEARCH_VALUE": "server",
             },
         ]
     }
 
     assert filter_arg == expected_filter
 
-    # Check other parameters
-    assert mock_search_assets.call_args[0][1] == 0  # page_number
-    assert mock_search_assets.call_args[0][2] == 50  # page_size
+    # Check pagination parameters are passed correctly via filter_data.paging.
+    paging = request_data_arg["filter_data"]["paging"]
+    assert paging["from"] == 0  # page_number=0 → start_page=0
+    assert paging["to"] == 50  # page_size=50 → limit=50
+
+
+def _get_request_data_from_webapp_call(mock_get_webapp_data) -> dict:
+    """Helper to extract the full request_data dict from a get_webapp_data mock call."""
+    return mock_get_webapp_data.call_args[0][0]
+
+
+def _get_filter_from_webapp_call(mock_get_webapp_data) -> dict:
+    """Helper to extract the filter dict from a get_webapp_data mock call."""
+    return _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["filter"]
+
+
+def test_search_assets_asset_type_contains_only():
+    """
+    GIVEN:
+        Asset types that are all non-WILDCARD.
+    WHEN:
+        search_assets_command builds the filter.
+    THEN:
+        A CONTAINS AND entry is added for the asset types field with the original values.
+    """
+    from CortexPlatformCore import Client, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"asset_types": "Endpoint,Virtual Machine"})
+
+    filter_arg = _get_filter_from_webapp_call(mock_get_webapp_data)
+    and_list = filter_arg["AND"]
+    contains_entries = [
+        b
+        for b in and_list
+        if b.get("SEARCH_TYPE") == "CONTAINS"
+        and b.get("SEARCH_FIELD") == "xdm__asset__type__name"
+        or "OR" in b
+        and any(c.get("SEARCH_TYPE") == "CONTAINS" and c.get("SEARCH_FIELD") == "xdm__asset__type__name" for c in b.get("OR", []))
+    ]
+    assert len(contains_entries) == 1
+    block = contains_entries[0]
+    conditions = block.get("OR", [block])
+    assert [c["SEARCH_VALUE"] for c in conditions] == ["Endpoint", "Virtual Machine"]
+    for c in conditions:
+        assert c["SEARCH_TYPE"] == "CONTAINS"
+
+
+def test_search_assets_asset_type_empty():
+    """
+    GIVEN:
+        No asset types provided.
+    WHEN:
+        search_assets_command builds the filter.
+    THEN:
+        No asset type entries appear in the filter AND list.
+    """
+    from CortexPlatformCore import Client, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {})
+
+    filter_arg = _get_filter_from_webapp_call(mock_get_webapp_data)
+    # With no asset types, the filter should be empty or have no asset type entries.
+    and_list = filter_arg.get("AND", []) if filter_arg else []
+    asset_type_entries = [
+        b
+        for b in and_list
+        if b.get("SEARCH_FIELD") == "xdm__asset__type__name"
+        or "OR" in b
+        and any(c.get("SEARCH_FIELD") == "xdm__asset__type__name" for c in b.get("OR", []))
+    ]
+    assert asset_type_entries == []
 
 
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
@@ -3682,6 +3788,11 @@ def test_normalize_and_filter_appsec_issue():
             "xdm.repository.name": "my-app",
             "xdm.repository.organization": "my-org",
             "xdm.vulnerability.cvss_score": 9.5,
+            "xdm.vulnerability.fix_versions": ["1.2.3.4"],
+        },
+        "cas_issues_extended_fields": {
+            "package_version": "2.4.0",
+            "repository_is_public": True,
         },
         "cas_sla_status": "IN_SLA",
         "extra_field": "should be removed",
@@ -3698,6 +3809,9 @@ def test_normalize_and_filter_appsec_issue():
     assert normalized_issue["cvss_score"] == 9.5
     assert normalized_issue["is_fixable"] is True
     assert normalized_issue["sla_status"] == "On Track"
+    assert normalized_issue["package_version"] == "2.4.0"
+    assert normalized_issue["fix_versions"] == ["1.2.3.4"]
+    assert normalized_issue["repository_is_public"] is True
     assert "extra_field" not in normalized_issue
 
 
@@ -4049,20 +4163,23 @@ def test_run_playbook_command_empty_response_success():
     When:
         The run_playbook_command function is called.
     Then:
-        The function should return a successful result with appropriate readable output.
+        The function should return a successful result with a descriptive message in result output.
     """
     from CortexPlatformCore import run_playbook_command
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "test_playbook_123", "name": "Test Playbook"},
+    ]
 
-    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+    args = {"playbook": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "executed successfully" in result.readable_output
-    assert "test_playbook_123" in result.readable_output
-    assert "issue_1, issue_2" in result.readable_output
+    assert "executed successfully" in result.outputs["result"]
+    assert "test_playbook_123" in result.outputs["result"]
+    assert "issue_1, issue_2" in result.outputs["result"]
 
 
 def test_run_playbook_command_multiple_errors_response():
@@ -4072,7 +4189,7 @@ def test_run_playbook_command_multiple_errors_response():
     When:
         The run_playbook_command function is called.
     Then:
-        A ValueError should be raised containing all error messages for the issues.
+        The result output field contains all error messages for the failing issues.
     """
     from CortexPlatformCore import run_playbook_command
 
@@ -4082,24 +4199,27 @@ def test_run_playbook_command_multiple_errors_response():
         "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
         "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
     }
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "multi_fail_playbook", "name": "Multi Fail Playbook"},
+    ]
 
-    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+    args = {"playbook": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
 
-    with pytest.raises(ValueError) as exc_info:
-        run_playbook_command(mock_client, args)
+    result = run_playbook_command(mock_client, args)
 
-    error_message = str(exc_info.value)
+    assert result.outputs["result"] is not None
+    error_message = result.outputs["result"]
     assert "multi_fail_playbook" in error_message
     assert (
-        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for issue issue_1, couldn't find issue"
         in error_message
     )
     assert (
-        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for issue issue_2, "
         "failed creating investigation playbook" in error_message
     )
     assert (
-        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for issue issue_3, "
         "failed creating investigation playbook" in error_message
     )
 
@@ -4117,12 +4237,15 @@ def test_run_playbook_command_string_issue_ids():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "test_playbook", "name": "Test Playbook"},
+    ]
 
-    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+    args = {"playbook": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "issue_1, issue_2, issue_3" in result.readable_output
+    assert "issue_1, issue_2, issue_3" in result.outputs["result"]
     mock_client.run_playbook.assert_called_once()
 
 
@@ -4139,12 +4262,182 @@ def test_run_playbook_command_client_call_parameters():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "param_test_playbook", "name": "Param Test Playbook"},
+    ]
 
-    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+    args = {"playbook": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
 
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_run_playbook_command_by_name_resolves_to_id():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument containing a playbook name.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The playbook name is resolved to its ID and client.run_playbook is called with the resolved ID.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+        {"id": "uuid-def-456", "name": "Another Playbook"},
+    ]
+
+    args = {"playbook": "My Custom Playbook", "issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["issue_1"], "uuid-abc-123")
+    assert "executed successfully" in result.outputs["result"]
+    assert "My Custom Playbook" in result.outputs["result"]
+
+
+def test_run_playbook_command_by_id_when_no_name_match():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument that matches a known ID (not a name).
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The value is recognised as a known ID and passed directly to client.run_playbook.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "some-direct-uuid-id", "name": "My Custom Playbook"},
+    ]
+
+    args = {"playbook": "some-direct-uuid-id", "issue_ids": ["issue_1"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["issue_1"], "some-direct-uuid-id")
+
+
+def test_run_playbook_command_unknown_playbook_returns_error_in_result():
+    """
+    Given:
+        A mock client with playbooks metadata and a 'playbook' argument that matches neither a name nor a known ID.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A CommandResults is returned with the error message in the 'result' output field.
+        client.run_playbook is never called.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+    ]
+
+    args = {"playbook": "nonexistent-playbook", "issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "not found" in result.outputs["result"].lower()
+    assert "nonexistent-playbook" in result.outputs["result"]
+    mock_client.run_playbook.assert_not_called()
+
+
+def test_run_playbook_command_no_playbook_arg_returns_error_in_result():
+    """
+    Given:
+        A mock client and args with no 'playbook' argument (empty string default).
+    When:
+        The run_playbook_command function is called.
+    Then:
+        resolve_playbook_id raises DemistoException which is caught and returned
+        as a CommandResults with the error in the 'result' output field.
+        client.run_playbook is never called.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
+    ]
+
+    args = {"issue_ids": ["issue_1"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "not found" in result.outputs["result"].lower()
+    mock_client.run_playbook.assert_not_called()
+
+
+def test_resolve_playbook_id_not_found_raises():
+    """
+    Given:
+        A mock client that returns playbooks metadata that does not contain the requested value.
+    When:
+        resolve_playbook_id is called with a value matching neither a name nor a known ID.
+    Then:
+        A DemistoException is raised with a 'not found' message.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "known-id", "name": "Known Playbook"},
+    ]
+
+    with pytest.raises(Exception) as exc_info:
+        resolve_playbook_id(mock_client, "nonexistent")
+
+    assert "not found" in str(exc_info.value).lower()
+
+
+def test_resolve_playbook_id_direct_id_match():
+    """
+    Given:
+        A mock client with playbooks metadata and a value that matches a known playbook ID (not a name).
+    When:
+        resolve_playbook_id is called with that ID.
+    Then:
+        The ID is returned as-is.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "known-uuid-123", "name": "Some Playbook"},
+    ]
+
+    result = resolve_playbook_id(mock_client, "known-uuid-123")
+
+    assert result == "known-uuid-123"
+
+
+def test_resolve_playbook_id_name_match():
+    """
+    Given:
+        A mock client with playbooks metadata containing a unique name.
+    When:
+        resolve_playbook_id is called with that name.
+    Then:
+        The corresponding ID is returned.
+    """
+    from CortexPlatformCore import resolve_playbook_id
+
+    mock_client = Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "resolved-id", "name": "My Playbook"},
+    ]
+
+    result = resolve_playbook_id(mock_client, "My Playbook")
+
+    assert result == "resolved-id"
 
 
 def test_get_endpoint_support_file_command_success(mocker):
@@ -5424,7 +5717,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
         assert len(call_args[0][1]) == 2  # readable_recommendations
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5463,6 +5763,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
             "severity",
             "description",
             "remediation",
+            "network_reachability",
             "existing_code_block",
             "suggested_code_block",
             "playbook_suggestions",
@@ -5523,7 +5824,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         # Should only have base headers
         call_args = mock_table_to_markdown.call_args
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5606,7 +5914,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         # Should include headers for the types that exist
         call_args = mock_table_to_markdown.call_args
         headers = call_args[1]["headers"]
-        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation", "network_reachability"]
 
         assert all(h in headers for h in base_headers)
         assert "existing_code_block" in headers
@@ -6174,25 +6482,34 @@ def test_core_list_endpoints_command_error_handling(mocker):
 
 
 def test_normalize_key_with_xdm_asset_prefix():
-    """Test normalization of keys with 'xdm.asset.' prefix."""
+    """Test normalization of keys with 'xdm__asset__' double-underscore prefix."""
     from CortexPlatformCore import normalize_key
 
-    assert normalize_key("xdm.asset.name") == "name"
-    assert normalize_key("xdm.asset.id") == "id"
-    assert normalize_key("xdm.asset.type") == "type"
+    assert normalize_key("xdm__asset__name") == "name"
+    assert normalize_key("xdm__asset__id") == "id"
+    assert normalize_key("xdm__asset__type") == "type"
 
-    assert normalize_key("xdm.asset.type.name") == "type.name"
-    assert normalize_key("xdm.asset.group.id") == "group.id"
-    assert normalize_key("xdm.asset.provider.region") == "provider.region"
+    assert normalize_key("xdm__asset__type__name") == "type__name"
+    assert normalize_key("xdm__asset__group__id") == "group__id"
+    assert normalize_key("xdm__asset__provider__region") == "provider__region"
+
+    # dot-notation keys are NOT stripped — returned unchanged
+    assert normalize_key("xdm.asset.name") == "xdm.asset.name"
+    assert normalize_key("xdm.asset.type.name") == "xdm.asset.type.name"
 
 
 def test_normalize_key_with_xdm_prefix():
-    """Test normalization of keys with 'xdm.' prefix (but not 'xdm.asset.')."""
+    """Test normalization of keys with 'xdm__' double-underscore prefix (but not 'xdm__asset__')."""
     from CortexPlatformCore import normalize_key
 
-    assert normalize_key("xdm.source.ip") == "source.ip"
-    assert normalize_key("xdm.target.host") == "target.host"
-    assert normalize_key("xdm.event.type") == "event.type"
+    assert normalize_key("xdm__source__ip") == "source__ip"
+    assert normalize_key("xdm__target__host") == "target__host"
+    assert normalize_key("xdm__event__type") == "event__type"
+
+    # dot-notation keys are NOT stripped — returned unchanged
+    assert normalize_key("xdm.source.ip") == "xdm.source.ip"
+    assert normalize_key("xdm.target.host") == "xdm.target.host"
+    assert normalize_key("xdm.event.type") == "xdm.event.type"
 
 
 def test_normalize_key_without_prefix():
@@ -8742,9 +9059,9 @@ def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
 def test_validate_custom_fields_success(mocker):
     """
     GIVEN:
-        Valid custom fields and client with metadata.
+        Valid custom fields with CLI names and client with metadata.
     WHEN:
-        validate_custom_fields is called.
+        validate_custom_fields is called with CLI names.
     THEN:
         All fields are returned as valid and no error messages.
     """
@@ -8752,18 +9069,20 @@ def test_validate_custom_fields_success(mocker):
 
     client = Client(base_url="", headers={})
 
-    # Mock metadata response
+    # Mock metadata response — CLI name is the machine name users pass
     metadata_response = {
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_NAME": "Field 1",
+                    "CUSTOM_FIELD_CLI_NAME": "field1",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_NAME": "Field 2",
+                    "CUSTOM_FIELD_CLI_NAME": "field2",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8783,7 +9102,7 @@ def test_validate_custom_fields_success(mocker):
 def test_validate_custom_fields_system_field(mocker):
     """
     GIVEN:
-        Custom fields containing a system field.
+        Custom fields containing a system field (looked up by CLI name).
     WHEN:
         validate_custom_fields is called.
     THEN:
@@ -8797,13 +9116,15 @@ def test_validate_custom_fields_system_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_NAME": "System Field",
+                    "CUSTOM_FIELD_CLI_NAME": "system_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "System Field",
                     "CUSTOM_FIELD_IS_SYSTEM": True,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_NAME": "Custom Field",
+                    "CUSTOM_FIELD_CLI_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8839,7 +9160,8 @@ def test_validate_custom_fields_non_existent_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_NAME": "Existing Field",
+                    "CUSTOM_FIELD_CLI_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8856,6 +9178,44 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+    assert "CLI/machine name" in error_messages
+
+
+def test_validate_custom_fields_cli_name_lookup(mocker):
+    """
+    GIVEN:
+        A custom field with display name "ServiceNow Ticket ID" and CLI name "servicenowticketid".
+        User passes the CLI name (machine name) as the field key.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is matched by CLI name and accepted as valid.
+        This is the scenario from XSUP-67819.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_CLI_NAME": "servicenowticketid",
+                    "CUSTOM_FIELD_PRETTY_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"servicenowticketid": "SN12345"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"servicenowticketid": "SN12345"}
+    assert not error_messages
 
 
 def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
@@ -8875,7 +9235,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8911,7 +9272,8 @@ def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8946,7 +9308,8 @@ def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_NAME": "Single Field",
+                    "CUSTOM_FIELD_CLI_NAME": "single_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "shortText",
@@ -8999,7 +9362,8 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_NAME": "My Field",
+                    "CUSTOM_FIELD_CLI_NAME": "my_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "My Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": field_type,
