@@ -518,12 +518,12 @@ The following sections list the changes in this version.
 
 #### The following commands were removed in this version
 
-* *umbrella-get-destination-lists* - this command was replaced by *umbrella-destination-lists-list*.
-* *umbrella-add-domain* - this command was replaced by *umbrella-destination-add*.
-* *umbrella-remove-domain* - this command was replaced by *umbrella-destination-delete*.
-* *umbrella-get-destination-domain* - this command was replaced by *umbrella-destinations-list*.
-* *umbrella-get-destination-domains* - this command was replaced by *umbrella-destinations-list*.
-* *umbrella-search-destination-domains* - this command was replaced by *umbrella-destinations-list*.
+- *umbrella-get-destination-lists* - this command was replaced by *umbrella-destination-lists-list*.
+- *umbrella-add-domain* - this command was replaced by *umbrella-destination-add*.
+- *umbrella-remove-domain* - this command was replaced by *umbrella-destination-delete*.
+- *umbrella-get-destination-domain* - this command was replaced by *umbrella-destinations-list*.
+- *umbrella-get-destination-domains* - this command was replaced by *umbrella-destinations-list*.
+- *umbrella-search-destination-domains* - this command was replaced by *umbrella-destinations-list*.
 
 ### Arguments
 
@@ -531,31 +531,31 @@ The following sections list the changes in this version.
 
 In the *umbrella-get-destination-lists* command:
 
-* *orgId* - this argument was removed.
+- *orgId* - this argument was removed.
 In the *umbrella-add-domain* command:
-* *orgId* - this argument was removed.
+- *orgId* - this argument was removed.
 In the *umbrella-remove-domain* command:
-* *orgId* - this argument was removed.
+- *orgId* - this argument was removed.
 In the *umbrella-get-destination-domain* command:
-* *orgId* - this argument was removed.
+- *orgId* - this argument was removed.
 In the *umbrella-get-destination-domains* command:
-* *orgId* - this argument was removed.
+- *orgId* - this argument was removed.
 In the *umbrella-search-destination-domains* command:
-* *orgId* - this argument was removed.
+- *orgId* - this argument was removed.
 
 #### The behavior of the following arguments was changed
 
 In the *umbrella-add-domain* command:
 
-* *destId* - this argument was replaced by *destination_list_id*.
-* *domains* - this argument was replaced by *destinations*.
+- *destId* - this argument was replaced by *destination_list_id*.
+- *domains* - this argument was replaced by *destinations*.
 In the *umbrella-remove-domain* command:
-* *destId* - this argument was replaced by *destination_list_id*.
-* *domainIds* - this argument was replaced by *destination_ids*.
+- *destId* - this argument was replaced by *destination_list_id*.
+- *domainIds* - this argument was replaced by *destination_ids*.
 In the *umbrella-get-destination-domain* command:
-* *destId* - this argument was replaced by *destination_list_id*.
+- *destId* - this argument was replaced by *destination_list_id*.
 In the *umbrella-get-destination-domains* command:
-* *destId* - this argument was replaced by *destination_list_id*.
+- *destId* - this argument was replaced by *destination_list_id*.
 In the *umbrella-search-destination-domains* command:
-* *destId* - this argument was replaced by *destination_list_id*.
-* *domains* - this argument was replaced by *destinations*.
+- *destId* - this argument was replaced by *destination_list_id*.
+- *domains* - this argument was replaced by *destinations*.
