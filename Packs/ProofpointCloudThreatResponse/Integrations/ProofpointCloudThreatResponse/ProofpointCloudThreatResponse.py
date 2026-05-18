@@ -232,7 +232,7 @@ def _coerce_int_arg(value: Any, default: int, name: str) -> int:
 # ----------------------------------------------------------------------------- #
 
 
-def test_module_command(client: Client, params: dict[str, Any]) -> str:
+def run_test_module(client: Client, params: dict[str, Any]) -> str:
     """Validate connectivity and (when fetching) the configured state filter."""
     if argToBoolean(params.get("isFetch", False)):
         states = argToList(params.get("fetch_states") or [])
@@ -477,13 +477,14 @@ def fetch_incidents(
 
     # Persist only IDs that share the latest second to keep the dedupe set small.
     cutoff_iso = format_ctr_date(latest_created_at)
-    next_last_fetched_ids = [
-        inc.get("id")
-        for inc in raw_incidents
-        if inc.get("id") and inc.get("createdAt") and inc.get("createdAt").startswith(cutoff_iso)
-    ]
+    next_last_fetched_ids: list[str] = []
+    for inc in raw_incidents:
+        inc_id = inc.get("id")
+        created_at_str = inc.get("createdAt") or ""
+        if inc_id and created_at_str.startswith(cutoff_iso):
+            next_last_fetched_ids.append(str(inc_id))
     if not next_last_fetched_ids:
-        next_last_fetched_ids = processed_ids[-MAX_PAGE_SIZE:]
+        next_last_fetched_ids = list(processed_ids[-MAX_PAGE_SIZE:])
 
     next_last_run = {
         "last_fetch": format_ctr_date(latest_created_at),
@@ -523,7 +524,7 @@ def main() -> None:  # pragma: no cover - exercised indirectly by tests
     demisto.debug(f"Proofpoint CTR: command={command}")
     try:
         if command == "test-module":
-            return_results(test_module_command(client, params))
+            return_results(run_test_module(client, params))
         elif command == "fetch-incidents":
             next_last_run, incidents = fetch_incidents(client, params, demisto.getLastRun() or {})
             demisto.setLastRun(next_last_run)

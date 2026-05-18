@@ -14,7 +14,7 @@ from ProofpointCloudThreatResponse import (
     parse_ctr_date,
     proofpoint_ctr_incident_get_command,
     proofpoint_ctr_incidents_list_command,
-    test_module_command,
+    run_test_module,
 )
 
 TEST_DATA = Path(__file__).parent / "test_data"
@@ -60,7 +60,8 @@ def test_format_ctr_date_strips_timezone():
 def test_parse_ctr_date_handles_freetext():
     parsed = parse_ctr_date("2024-11-26 16:18:07")
     assert parsed is not None
-    assert parsed.year == 2024 and parsed.month == 11
+    assert parsed.year == 2024
+    assert parsed.month == 11
 
 
 def test_build_filters_body_omits_empty_filters():
@@ -174,11 +175,11 @@ def test_get_incident_requires_id(client: Client):
 def test_test_module_ok(client: Client, requests_mock):
     requests_mock.post(AUTH_URL, json=_load("token_response.json"))
     requests_mock.post(f"{BASE_URL}/api/v1/tric/incidents", json={"incidents": []})
-    assert test_module_command(client, {"isFetch": False}) == "ok"
+    assert run_test_module(client, {"isFetch": False}) == "ok"
 
 
 def test_test_module_rejects_both_states(client: Client):
-    msg = test_module_command(
+    msg = run_test_module(
         client,
         {"isFetch": True, "fetch_states": "open_incidents,closed_incidents"},
     )
@@ -186,7 +187,7 @@ def test_test_module_rejects_both_states(client: Client):
 
 
 def test_test_module_requires_state_when_fetching(client: Client):
-    msg = test_module_command(client, {"isFetch": True, "fetch_states": ""})
+    msg = run_test_module(client, {"isFetch": True, "fetch_states": ""})
     assert "must select at least one" in msg
 
 
