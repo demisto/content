@@ -2675,7 +2675,6 @@ Runs commands on one or more managed nodes.
 | max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%. Default is 50. | Optional |
 | max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%. Default is 0. | Optional |
 | polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
-| interval_in_seconds | The interval in seconds between polling attempts. Default is 30. | Optional |
 
 #### Context Output
 
