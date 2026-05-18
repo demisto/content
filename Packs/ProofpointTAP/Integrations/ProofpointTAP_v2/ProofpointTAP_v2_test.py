@@ -108,6 +108,7 @@ MOCK_BLOCKED_MESSAGE = {
 }
 
 MOCK_PERMITTED_CLICK = {
+    "id": "click-permitted-1",
     "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
     "classification": "MALWARE",
     "clickIP": "192.0.2.1",
@@ -124,6 +125,7 @@ MOCK_PERMITTED_CLICK = {
 }
 
 MOCK_BLOCKED_CLICK = {
+    "id": "click-blocked-1",
     "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
     "classification": "MALWARE",
     "clickIP": "192.0.2.2",
@@ -147,6 +149,13 @@ MOCK_ALL_EVENTS = {
     "clicksBlocked": [MOCK_BLOCKED_CLICK],
     "messagesBlocked": [MOCK_BLOCKED_MESSAGE],
 }
+
+# Additional "new event" mocks for the look-back + dedup tests.
+# These are derived from the existing mocks above by copying them and overriding
+# only the dedup-key field (GUID for messages, id for clicks). They represent
+# genuinely new events that should NOT collide with the previously-seen IDs.
+MOCK_NEW_DELIVERED_MESSAGE = {**MOCK_DELIVERED_MESSAGE, "GUID": "9999", "messageID": "9999@evil.zz"}
+MOCK_NEW_BLOCKED_CLICK = {**MOCK_BLOCKED_CLICK, "id": "click-blocked-NEW"}
 
 
 def get_mocked_time():
@@ -391,6 +400,293 @@ def test_fetch_with_look_back_buffer(requests_mock, mocker):
     assert len(incidents) == 4
     # Verify checkpoint is set to the end of the last interval (current time)
     assert next_run["last_fetch"] == expected_end_time
+
+
+# ---------------------------------------------------------------------------
+# Look-back + Deduplication tests
+# ---------------------------------------------------------------------------
+# The integration tracks already-seen events in `last_run["seen_ids"]` as a
+# dict {dedup_key: interval_end_str}. Dedup keys per event type:
+#   - messagesDelivered -> "GUID"
+#   - messagesBlocked   -> "GUID"
+#   - clicksPermitted   -> "id"
+#   - clicksBlocked     -> "id"
+# ---------------------------------------------------------------------------
+
+
+def test_dedup_filters_already_seen_incidents_in_lookback_window(requests_mock, mocker):
+    """
+    Given:
+     - last_run.seen_ids contains all four event IDs from a previous fetch,
+       and look_back_minutes=2 so the previous window is rescanned.
+     - The API returns the exact same events again because of the overlap.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - All already-seen events are filtered; zero incidents are produced.
+     - The seen_ids dedup state is preserved (not lost) in next_run.
+     - last_fetch advances to the end of the last fetched interval.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+    interval_end_seen = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    # API returns the same events that were already fetched previously.
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    # Previously-seen IDs (mapped to the interval end in which they were first seen,
+    # which must be within the lookback window so they are not pruned).
+    seen_ids = {
+        MOCK_DELIVERED_MESSAGE["GUID"]: interval_end_seen,
+        MOCK_BLOCKED_MESSAGE["GUID"]: interval_end_seen,
+        MOCK_PERMITTED_CLICK["id"]: interval_end_seen,
+        MOCK_BLOCKED_CLICK["id"]: interval_end_seen,
+    }
+
+    next_run, incidents, remained = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(seen_ids)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # All four events were already seen -> filtered out
+    assert incidents == []
+    assert remained == []
+    # Dedup state is retained in next_run (not lost) — all 4 previously-seen IDs still present
+    assert set(next_run["seen_ids"].keys()) == set(seen_ids.keys())
+    # last_fetch advances to the end of the last fetched interval (= current time)
+    assert next_run["last_fetch"] == current_time
+
+
+def test_dedup_includes_new_events_within_lookback_window(requests_mock, mocker):
+    """
+    Given:
+     - last_run.seen_ids contains IDs of a delivered message and a blocked click
+       from a previous fetch.
+     - The API returns a mix of those previously-seen events AND new events
+       (MOCK_NEW_DELIVERED_MESSAGE, MOCK_NEW_BLOCKED_CLICK) within the
+       overlapped lookback window.
+     - look_back_minutes=2.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - Only the new (unseen) events become incidents.
+     - next_run.seen_ids contains both the previously-seen IDs (still in window)
+       AND the new IDs from this fetch.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:05:00Z"
+    interval_end_seen = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    api_response = {
+        "messagesDelivered": [MOCK_DELIVERED_MESSAGE, MOCK_NEW_DELIVERED_MESSAGE],
+        "messagesBlocked": [],
+        "clicksPermitted": [],
+        "clicksBlocked": [MOCK_BLOCKED_CLICK, MOCK_NEW_BLOCKED_CLICK],
+    }
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=api_response)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    previously_seen = {
+        MOCK_DELIVERED_MESSAGE["GUID"]: interval_end_seen,
+        MOCK_BLOCKED_CLICK["id"]: interval_end_seen,
+    }
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(previously_seen)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # Only the two new events become incidents
+    assert len(incidents) == 2
+    raw_jsons = [json.loads(inc["rawJSON"]) for inc in incidents]
+    fetched_dedup_keys = {raw.get("GUID") or raw.get("id") for raw in raw_jsons}
+    assert fetched_dedup_keys == {MOCK_NEW_DELIVERED_MESSAGE["GUID"], MOCK_NEW_BLOCKED_CLICK["id"]}
+
+    # next_run.seen_ids contains BOTH old (still within window) and new IDs
+    final_ids = set(next_run["seen_ids"].keys())
+    assert MOCK_DELIVERED_MESSAGE["GUID"] in final_ids  # old, retained
+    assert MOCK_BLOCKED_CLICK["id"] in final_ids  # old, retained
+    assert MOCK_NEW_DELIVERED_MESSAGE["GUID"] in final_ids  # new
+    assert MOCK_NEW_BLOCKED_CLICK["id"] in final_ids  # new
+
+
+def test_lookback_zero_no_dedup_filtering(requests_mock, mocker):
+    """
+    Given:
+     - look_back_minutes=0 (default behavior, no lookback).
+     - last_run carries a stale seen_ids entry that does not collide with the
+       new events from the API.
+     - The API returns brand-new events in a non-overlapping window.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - All events from the API window become incidents (no dedup-driven drops).
+     - The seen_ids in next_run is NOT pruned (pruning only happens when
+       look_back_minutes > 0), so the pre-existing stale ID is preserved
+       alongside the new IDs.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:31:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    # A stale dedup ID that is far older than any look-back window.
+    pre_existing_seen = {"ancient-id": "2000-01-01T00:00:00Z"}
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(pre_existing_seen)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=0,
+    )
+
+    # All 4 events appear: no dedup overlap because the pre-existing seen ID
+    # doesn't collide with the new event dedup keys.
+    assert len(incidents) == 4
+
+    # With look_back_minutes=0 the integration does NOT call prune_seen_ids,
+    # so the ancient ID survives along with the freshly-tracked new IDs.
+    final_ids = set(next_run["seen_ids"].keys())
+    assert "ancient-id" in final_ids
+    assert MOCK_DELIVERED_MESSAGE["GUID"] in final_ids
+    assert MOCK_BLOCKED_MESSAGE["GUID"] in final_ids
+    assert MOCK_PERMITTED_CLICK["id"] in final_ids
+    assert MOCK_BLOCKED_CLICK["id"] in final_ids
+
+
+def test_lookback_dedup_state_pruning(requests_mock, mocker):
+    """
+    Given:
+     - last_run.seen_ids contains a mix of IDs:
+         * one mapped to an interval_end well outside the lookback window
+           (must be pruned),
+         * one mapped to an interval_end inside the lookback window
+           (must be kept).
+     - look_back_minutes=5  ->  prune cutoff = now - (5 + 30) min.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - The stale ID is removed from next_run.seen_ids.
+     - The in-window ID is preserved.
+    """
+    last_fetch_time = "2010-01-01T00:55:00Z"
+    current_time = "2010-01-01T01:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    # Empty API response so we focus purely on pruning behavior.
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/all",
+        json={"messagesDelivered": [], "messagesBlocked": [], "clicksPermitted": [], "clicksBlocked": []},
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    # Cutoff for look_back_minutes=5 is now - 35min = 2010-01-01T00:25:00Z.
+    seen_ids = {
+        "stale-id": "2009-12-31T00:00:00Z",  # way before cutoff -> pruned
+        "fresh-id": "2010-01-01T00:55:00Z",  # after cutoff -> kept
+    }
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(seen_ids)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=5,
+    )
+
+    assert incidents == []
+    assert "stale-id" not in next_run["seen_ids"]
+    assert "fresh-id" in next_run["seen_ids"]
+
+
+def test_lookback_first_fetch_initializes_dedup_state(requests_mock, mocker):
+    """
+    Given:
+     - First fetch (last_run = {}) with look_back_minutes=2.
+     - The API returns the standard set of all four events.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - The seen_ids dedup state is initialized in next_run with the dedup
+       keys of every fetched incident (GUIDs for messages, ids for clicks).
+     - All events become incidents and last_fetch is populated.
+    """
+    current_time = "2010-01-01T00:05:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    # parse_date_range returns the first_fetch start time for a clean first-fetch flow.
+    mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
+
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={},  # first fetch
+        first_fetch_time="30 minutes",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # All 4 events become incidents on first fetch
+    assert len(incidents) == 4
+
+    # seen_ids is initialized and contains all 4 dedup keys
+    assert "seen_ids" in next_run
+    expected_ids = {
+        MOCK_DELIVERED_MESSAGE["GUID"],
+        MOCK_BLOCKED_MESSAGE["GUID"],
+        MOCK_PERMITTED_CLICK["id"],
+        MOCK_BLOCKED_CLICK["id"],
+    }
+    assert set(next_run["seen_ids"].keys()) == expected_ids
+    # last_fetch checkpoint is populated (end of last interval = current time)
+    assert next_run["last_fetch"] == current_time
 
 
 class TestGetForensics:
