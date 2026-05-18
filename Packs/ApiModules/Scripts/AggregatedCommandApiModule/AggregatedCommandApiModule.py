@@ -848,12 +848,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.additional_fields = additional_fields
         self.indicator_instances = indicator_instances
         self.redundant_error_raising = redundant_error_raising
-        # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich
-        self.indicator_mapping = {
-            indicator_instance.extracted_value.lower(): indicator_instance
-            for indicator_instance in indicator_instances
-            if indicator_instance.extracted_value
-        }
+        # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich.
+        self.indicator_mapping: dict[str, list[IndicatorInstance]] = {}
+        for indicator_instance in indicator_instances:
+            if indicator_instance.extracted_value:
+                self.indicator_mapping.setdefault(indicator_instance.extracted_value.lower(), []).append(indicator_instance)
         self.valid_inputs = [
             indicator_instance.extracted_value for indicator_instance in indicator_instances if indicator_instance.extracted_value
         ]
@@ -1066,11 +1065,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for i, ioc in enumerate(iocs):
             demisto.debug(f"Processing #{i+1} TIM result")
             parsed_indicators, indicator_score, value, message = self._process_single_tim_ioc(ioc)
-            indicator_instance = self.indicator_mapping[value.lower()]
-            indicator_instance.tim_context = parsed_indicators
-            indicator_instance.indicator_score = indicator_score
-            demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
-            indicator_instance.hr_message = message
+            instances = self.indicator_mapping.get(value.lower(), [])
+            for indicator_instance in instances:
+                indicator_instance.tim_context = parsed_indicators
+                indicator_instance.indicator_score = indicator_score
+                demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
+                indicator_instance.hr_message = message
 
     def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], float | None, str, str]:
         """

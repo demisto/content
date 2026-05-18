@@ -2613,3 +2613,129 @@ def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
     assert len(instances) == 1
     assert isinstance(instances[0], IndicatorInstance)
     assert instances[0].extracted_value == "https://example.com"
+
+
+# -------------------------------------------------------------------------------------------------
+# -- Regression tests: case-insensitive duplicates in `indicator_mapping`
+# -- See CASE_SENSITIVITY_RESEARCH.md. Multiple inputs whose values differ only in case
+# -- collide on the lower-cased mapping key. The dict-of-list fix must enrich BOTH instances.
+# -------------------------------------------------------------------------------------------------
+def _stub_single_tim_ioc(mocker, module, returned_value: str):
+    """
+    Patch _process_single_tim_ioc to deterministically return one parsed indicator with a known
+    value, score and message. The `returned_value` controls the key used to look up instances
+    in `indicator_mapping` inside process_tim_results (it is `.lower()`-ed before lookup).
+    """
+    parsed_indicators = [{"Value": returned_value, "Brand": "TIM", "Score": 2}]
+    score = 2
+    message = "Found indicator from brands: TIM."
+    mocker.patch.object(
+        module,
+        "_process_single_tim_ioc",
+        return_value=(parsed_indicators, score, returned_value, message),
+    )
+    return parsed_indicators, score, message
+
+
+def test_process_tim_results_handles_case_insensitive_duplicates_in_same_call(module_factory, mocker):
+    """
+    Given:
+        - Two IndicatorInstance objects whose extracted_value differ only in case
+          ("Test1.com" and "test1.com"), built into the same ReputationAggregatedCommand call.
+        - TIM returns a single IOC for the lower-cased value "test1.com".
+    When:
+        - process_tim_results is invoked with that single IOC.
+    Then:
+        - BOTH instances must have tim_context populated.
+        - BOTH must have indicator_score set.
+        - BOTH must have hr_message set (no "Failed to extract from TIM" failure path triggered).
+        - compute_status() afterwards must mark both as Status.SUCCESS (neither falls into the
+          missing-tim_context failure path).
+    """
+    inst_upper = IndicatorInstance(raw_input="Test1.com", extracted_value="Test1.com", enriched=True, created=True)
+    inst_lower = IndicatorInstance(raw_input="test1.com", extracted_value="test1.com", enriched=True, created=True)
+
+    module = module_factory(indicator_instances=[inst_upper, inst_lower])
+
+    # Sanity: the mapping must keep BOTH instances under the same lower-cased key.
+    bucket = module.indicator_mapping["test1.com"]
+    assert isinstance(bucket, list)
+    assert bucket == [inst_upper, inst_lower]
+
+    parsed_indicators, score, message = _stub_single_tim_ioc(mocker, module, returned_value="test1.com")
+
+    module.process_tim_results([{"value": "test1.com"}])
+
+    for inst in (inst_upper, inst_lower):
+        assert inst.tim_context == parsed_indicators
+        assert inst.indicator_score == score
+        assert inst.hr_message == message
+
+    # And neither should be flagged as the "TIM failure" once status is computed.
+    for inst in (inst_upper, inst_lower):
+        inst.compute_status()
+        assert inst.final_status == Status.SUCCESS
+        # The "Failed to extract from TIM using findIndicator." message comes from _build_failure_context
+        # when tim_context is missing; ensure it did NOT slip into the context_message.
+        assert "Failed to extract from TIM" not in (inst.context_message or "")
+
+
+def test_process_tim_results_single_value_still_works(module_factory, mocker):
+    """
+    Given:
+        - A single IndicatorInstance with extracted_value="test1.com" (lowercase).
+        - TIM returns one IOC whose canonical value is "Test1.com" (different case).
+    When:
+        - process_tim_results is invoked.
+    Then:
+        - The single instance is enriched (tim_context populated, score and hr_message set).
+        This guards the original regression fix (KeyError → safe case-insensitive lookup).
+    """
+    inst = IndicatorInstance(raw_input="test1.com", extracted_value="test1.com", enriched=True, created=True)
+    module = module_factory(indicator_instances=[inst])
+
+    assert module.indicator_mapping["test1.com"] == [inst]
+
+    parsed_indicators, score, message = _stub_single_tim_ioc(mocker, module, returned_value="Test1.com")
+
+    module.process_tim_results([{"value": "Test1.com"}])
+
+    assert inst.tim_context == parsed_indicators
+    assert inst.indicator_score == score
+    assert inst.hr_message == message
+
+
+def test_process_tim_results_three_way_case_variants(module_factory, mocker):
+    """
+    Given:
+        - Three IndicatorInstance objects sharing the same lower-cased value but each with a
+          distinct casing: "TEST1.com", "Test1.com", "test1.com".
+        - TIM returns a single IOC for the value "Test1.com".
+    When:
+        - process_tim_results is invoked.
+    Then:
+        - All three instances receive tim_context, indicator_score and hr_message.
+        - All three keep their original extracted_value casing (no case mutation).
+    """
+    inst_a = IndicatorInstance(raw_input="TEST1.com", extracted_value="TEST1.com", enriched=True, created=True)
+    inst_b = IndicatorInstance(raw_input="Test1.com", extracted_value="Test1.com", enriched=True, created=True)
+    inst_c = IndicatorInstance(raw_input="test1.com", extracted_value="test1.com", enriched=True, created=True)
+
+    module = module_factory(indicator_instances=[inst_a, inst_b, inst_c])
+
+    bucket = module.indicator_mapping["test1.com"]
+    assert bucket == [inst_a, inst_b, inst_c]
+
+    parsed_indicators, score, message = _stub_single_tim_ioc(mocker, module, returned_value="Test1.com")
+
+    module.process_tim_results([{"value": "Test1.com"}])
+
+    for inst in (inst_a, inst_b, inst_c):
+        assert inst.tim_context == parsed_indicators
+        assert inst.indicator_score == score
+        assert inst.hr_message == message
+
+    # Original casings must be preserved per instance.
+    assert inst_a.extracted_value == "TEST1.com"
+    assert inst_b.extracted_value == "Test1.com"
+    assert inst_c.extracted_value == "test1.com"
