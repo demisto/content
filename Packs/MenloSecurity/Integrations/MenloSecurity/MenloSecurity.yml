@@ -104,7 +104,7 @@ script:
       predefined:
       - "True"
       - "False"
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/fastapi:0.125.0.9094740
   isfetchevents: true
   subtype: python3
 fromversion: 8.2.0
