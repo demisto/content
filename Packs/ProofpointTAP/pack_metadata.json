@@ -15,7 +15,9 @@
         "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Proofpoint"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
