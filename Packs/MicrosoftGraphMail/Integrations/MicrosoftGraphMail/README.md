@@ -745,33 +745,33 @@ Retrieves the user's mailbox settings, including automatic replies, time zone, l
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required | 
+| user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.MailboxSettings.userId | String | The ID of the user whose mailbox settings were retrieved \(mirrors the user_id input\). | 
-| MSGraphMail.MailboxSettings.archiveFolder | String | The folder ID of an archive folder for the user. | 
-| MSGraphMail.MailboxSettings.dateFormat | String | The date format for the user's mailbox. | 
-| MSGraphMail.MailboxSettings.delegateMeetingMessageDeliveryOptions | String | The delivery method for meeting requests, updates, and responses are delivered when the user is a delegate. Possible values: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly. | 
-| MSGraphMail.MailboxSettings.timeFormat | String | The time format for the user's mailbox. | 
-| MSGraphMail.MailboxSettings.timeZone | String | The default time zone for the user's mailbox. | 
-| MSGraphMail.MailboxSettings.userPurpose | String | The purpose of the mailbox. Possible values: unknown, user, linked, shared, room, equipment, others. | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.status | String | The status of the automatic reply \(out-of-office\) feature. Possible values: disabled, alwaysEnabled, scheduled. | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.externalAudience | String | The audience that receives the external replies. Possible values: none, contactsOnly, all. | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.internalReplyMessage | String | The automatic reply sent to senders within the user's organization. | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.externalReplyMessage | String | The automatic reply sent to senders outside the user's organization. Sent only if externalAudience is contactsOnly or all. | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledStartDateTime.dateTime | Date | The start date and time automatic replies are sent \(ISO 8601 format, for example 2020-01-01T00:11:22Z\)\). | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledStartDateTime.timeZone | String | The time zone of the scheduledStartDateTime. | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledEndDateTime.dateTime | Date | The end date and time automatic replies are sent \(ISO 8601 format, for example 2020-01-01T00:11:22Z\)\). | 
-| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledEndDateTime.timeZone | String | The time zone of the scheduledEndDateTime. | 
-| MSGraphMail.MailboxSettings.language.locale | String | The language locale \(BCP 47 culture name\). For example, en-US. | 
-| MSGraphMail.MailboxSettings.language.displayName | String | The display name of the language. For example, "English \(United States\)". | 
-| MSGraphMail.MailboxSettings.workingHours.daysOfWeek | Unknown | The days of the week the user works. Possible values: sunday, monday, tuesday, wednesday, thursday, friday, saturday. | 
-| MSGraphMail.MailboxSettings.workingHours.startTime | String | The time of day the user starts work. | 
-| MSGraphMail.MailboxSettings.workingHours.endTime | String | The time of day the user stops work. | 
-| MSGraphMail.MailboxSettings.workingHours.timeZone.name | String | The time zone name to which the working hours apply. | 
+| MSGraphMail.MailboxSettings.userId | String | The ID of the user whose mailbox settings were retrieved \(mirrors the user_id input\). |
+| MSGraphMail.MailboxSettings.archiveFolder | String | The folder ID of an archive folder for the user. |
+| MSGraphMail.MailboxSettings.dateFormat | String | The date format for the user's mailbox. |
+| MSGraphMail.MailboxSettings.delegateMeetingMessageDeliveryOptions | String | The delivery method for meeting requests, updates, and responses are delivered when the user is a delegate. Possible values: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly. |
+| MSGraphMail.MailboxSettings.timeFormat | String | The time format for the user's mailbox. |
+| MSGraphMail.MailboxSettings.timeZone | String | The default time zone for the user's mailbox. |
+| MSGraphMail.MailboxSettings.userPurpose | String | The purpose of the mailbox. Possible values: unknown, user, linked, shared, room, equipment, others. |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.status | String | The status of the automatic reply \(out-of-office\) feature. Possible values: disabled, alwaysEnabled, scheduled. |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.externalAudience | String | The audience that receives the external replies. Possible values: none, contactsOnly, all. |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.internalReplyMessage | String | The automatic reply sent to senders within the user's organization. |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.externalReplyMessage | String | The automatic reply sent to senders outside the user's organization. Sent only if externalAudience is contactsOnly or all. |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledStartDateTime.dateTime | Date | The start date and time automatic replies are sent \(ISO 8601 format, for example 2020-01-01T00:11:22Z\)\). |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledStartDateTime.timeZone | String | The time zone of the scheduledStartDateTime. |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledEndDateTime.dateTime | Date | The end date and time automatic replies are sent \(ISO 8601 format, for example 2020-01-01T00:11:22Z\)\). |
+| MSGraphMail.MailboxSettings.automaticRepliesSetting.scheduledEndDateTime.timeZone | String | The time zone of the scheduledEndDateTime. |
+| MSGraphMail.MailboxSettings.language.locale | String | The language locale \(BCP 47 culture name\). For example, en-US. |
+| MSGraphMail.MailboxSettings.language.displayName | String | The display name of the language. For example, "English \(United States\)". |
+| MSGraphMail.MailboxSettings.workingHours.daysOfWeek | Unknown | The days of the week the user works. Possible values: sunday, monday, tuesday, wednesday, thursday, friday, saturday. |
+| MSGraphMail.MailboxSettings.workingHours.startTime | String | The time of day the user starts work. |
+| MSGraphMail.MailboxSettings.workingHours.endTime | String | The time of day the user stops work. |
+| MSGraphMail.MailboxSettings.workingHours.timeZone.name | String | The time zone name to which the working hours apply. |
 
 ### msgraph-mail-create-rule
 
@@ -786,27 +786,27 @@ Creates a new mailbox rule in the user's Inbox folder. By default, rules are cre
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required | 
-| display_name | The display name of the rule. | Required | 
-| sequence | The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1. Default is 1. | Optional | 
-| actions | The actions to perform when the rule conditions are met, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.<br/>Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}. | Required | 
-| conditions | The conditions that trigger the rule's actions, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}. | Optional | 
-| exceptions | The exception conditions for the rule, in JSON format. Replaces existing rule exceptions.<br/>For a list of the available fields, see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}. | Optional | 
-| is_enabled | Whether the rule is enabled to be applied to messages. Default is false (disabled). Possible values are: true, false. | Optional | 
+| user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required |
+| display_name | The display name of the rule. | Required |
+| sequence | The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1. Default is 1. | Optional |
+| actions | The actions to perform when the rule conditions are met, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.<br/>Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}. | Required |
+| conditions | The conditions that trigger the rule's actions, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}. | Optional |
+| exceptions | The exception conditions for the rule, in JSON format. Replaces existing rule exceptions.<br/>For a list of the available fields, see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}. | Optional |
+| is_enabled | Whether the rule is enabled to be applied to messages. Default is false (disabled). Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.Rule.id | String | The unique identifier of the rule. | 
-| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
-| MSGraphMail.Rule.sequence | Number | The order in which the rule is executed relative to other rules. | 
-| MSGraphMail.Rule.isEnabled | Boolean | Whether the rule is enabled to be applied to messages. | 
-| MSGraphMail.Rule.isReadOnly | Boolean | Whether the rule is read-only and cannot be modified or deleted by the rule's REST API. | 
-| MSGraphMail.Rule.hasError | Boolean | Whether the rule is in an error condition. | 
-| MSGraphMail.Rule.conditions | Unknown | The conditions that trigger the rule's actions. | 
-| MSGraphMail.Rule.actions | Unknown | The actions to perform on a message when the rule conditions are met. | 
-| MSGraphMail.Rule.exceptions | Unknown | The exception conditions for the rule. | 
+| MSGraphMail.Rule.id | String | The unique identifier of the rule. |
+| MSGraphMail.Rule.displayName | String | The display name of the rule. |
+| MSGraphMail.Rule.sequence | Number | The order in which the rule is executed relative to other rules. |
+| MSGraphMail.Rule.isEnabled | Boolean | Whether the rule is enabled to be applied to messages. |
+| MSGraphMail.Rule.isReadOnly | Boolean | Whether the rule is read-only and cannot be modified or deleted by the rule's REST API. |
+| MSGraphMail.Rule.hasError | Boolean | Whether the rule is in an error condition. |
+| MSGraphMail.Rule.conditions | Unknown | The conditions that trigger the rule's actions. |
+| MSGraphMail.Rule.actions | Unknown | The actions to perform on a message when the rule conditions are met. |
+| MSGraphMail.Rule.exceptions | Unknown | The exception conditions for the rule. |
 
 ### msgraph-mail-update-rule
 
@@ -821,28 +821,28 @@ Updates an existing mailbox rule in the user's Inbox folder by ID. Only the supp
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required | 
-| rule_id | The ID of the rule to update. | Required | 
-| display_name | The new display name of the rule. | Optional | 
-| sequence | The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1. | Optional | 
-| is_enabled | Whether the rule is enabled to be applied to messages. Possible values are: true, false. | Optional | 
-| actions | The actions to perform when the rule conditions are met, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.<br/>Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}. | Optional | 
-| conditions | The conditions that trigger the rule's actions, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}. | Optional | 
-| exceptions | The exception conditions for the rule, in JSON format. Replaces existing rule exceptions.<br/>For a list of the available fields, see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}. | Optional | 
+| user_id | The ID or User Principal Name (UPN) of the user that owns the mailbox. | Required |
+| rule_id | The ID of the rule to update. | Required |
+| display_name | The new display name of the rule. | Optional |
+| sequence | The execution order of the rule among other rules. Must be a positive integer greater than or equal to 1. Lower numbers run first. If the specified sequence is already used by an existing rule, the new rule takes that sequence and the existing rule, along with any following rules, is shifted up by 1. | Optional |
+| is_enabled | Whether the rule is enabled to be applied to messages. Possible values are: true, false. | Optional |
+| actions | The actions to perform when the rule conditions are met, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messageruleactions.<br/>Example: {\"forwardTo\":[{\"emailAddress\":{\"address\":\"alex@contoso.com\"}}],\"stopProcessingRules\":true}. | Optional |
+| conditions | The conditions that trigger the rule's actions, in JSON format. For a list of the available fields, <br/>see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"senderContains\":[\"adele\"],\"subjectContains\":[\"urgent\"]}. | Optional |
+| exceptions | The exception conditions for the rule, in JSON format. Replaces existing rule exceptions.<br/>For a list of the available fields, see: https://learn.microsoft.com/en-us/graph/api/resources/messagerulepredicates.<br/>Example: {\"fromAddresses\":[{\"emailAddress\":{\"address\":\"trusted@contoso.com\"}}]}. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.Rule.id | String | The unique identifier of the rule. | 
-| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
-| MSGraphMail.Rule.sequence | Number | The order in which the rule is executed relative to other rules. | 
-| MSGraphMail.Rule.isEnabled | Boolean | Whether the rule is enabled to be applied to messages. | 
-| MSGraphMail.Rule.isReadOnly | Boolean | Whether the rule is read-only and cannot be modified or deleted by the rule's REST API. | 
-| MSGraphMail.Rule.hasError | Boolean | Whether the rule is in an error condition. | 
-| MSGraphMail.Rule.conditions | Unknown | The conditions that trigger the rule's actions. | 
-| MSGraphMail.Rule.actions | Unknown | The actions to perform on a message when the rule conditions are met. | 
-| MSGraphMail.Rule.exceptions | Unknown | The exception conditions for the rule. | 
+| MSGraphMail.Rule.id | String | The unique identifier of the rule. |
+| MSGraphMail.Rule.displayName | String | The display name of the rule. |
+| MSGraphMail.Rule.sequence | Number | The order in which the rule is executed relative to other rules. |
+| MSGraphMail.Rule.isEnabled | Boolean | Whether the rule is enabled to be applied to messages. |
+| MSGraphMail.Rule.isReadOnly | Boolean | Whether the rule is read-only and cannot be modified or deleted by the rule's REST API. |
+| MSGraphMail.Rule.hasError | Boolean | Whether the rule is in an error condition. |
+| MSGraphMail.Rule.conditions | Unknown | The conditions that trigger the rule's actions. |
+| MSGraphMail.Rule.actions | Unknown | The actions to perform on a message when the rule conditions are met. |
+| MSGraphMail.Rule.exceptions | Unknown | The exception conditions for the rule. |
 
 ### msgraph-mail-get-mailtips
 
@@ -857,27 +857,26 @@ Retrieves Mail Tips for the specified email address, including out-of-office sta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_address | The email address (User Principal Name / UPN) of the mailbox to retrieve Mail Tips for. | Required | 
+| email_address | The email address (User Principal Name / UPN) of the mailbox to retrieve Mail Tips for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.MailTips.emailAddress.name | String | The display name of the recipient. | 
-| MSGraphMail.MailTips.emailAddress.address | String | The SMTP address of the recipient. | 
-| MSGraphMail.MailTips.emailAddressValue | String | The email address of the recipient \(flattened key used for context merging\). | 
-| MSGraphMail.MailTips.automaticReplies.message | String | The automatic reply message. | 
-| MSGraphMail.MailTips.automaticReplies.messageLanguage.locale | String | The language locale \(BCP 47\) of the automatic reply message. | 
-| MSGraphMail.MailTips.automaticReplies.messageLanguage.displayName | String | The display name of the language for the automatic reply message. | 
-| MSGraphMail.MailTips.mailboxFull | Boolean | Whether the recipient mailbox is full. | 
-| MSGraphMail.MailTips.customMailTip | String | A custom Mail Tip that has been configured for the recipient. | 
-| MSGraphMail.MailTips.externalMemberCount | Number | The number of external members in a group. | 
-| MSGraphMail.MailTips.totalMemberCount | Number | The number of members in a group. | 
-| MSGraphMail.MailTips.deliveryRestricted | Boolean | Whether delivery restrictions will prevent the sender's message from reaching the recipient. | 
-| MSGraphMail.MailTips.isModerated | Boolean | Whether sending messages to the recipient requires approval. For example, if the recipient is a large distribution list and a moderator has been set up to approve messages sent to that list. | 
-| MSGraphMail.MailTips.recipientScope | String | The scope of the recipient. Possible values: none, internal, external, externalPartner, externalNonPartner. | 
-| MSGraphMail.MailTips.recipientSuggestions | Unknown | The recipients identified from previous contexts who appeared in the same message. | 
-| MSGraphMail.MailTips.maxMessageSize | Number | The maximum message size configured for the recipient's organization or mailbox. | 
-| MSGraphMail.MailTips.error.code | String | The error code returned if the Mail Tips lookup for the recipient fails. | 
-| MSGraphMail.MailTips.error.message | String | The human-readable error message returned if the Mail Tips lookup for the recipient fails. | 
-
+| MSGraphMail.MailTips.emailAddress.name | String | The display name of the recipient. |
+| MSGraphMail.MailTips.emailAddress.address | String | The SMTP address of the recipient. |
+| MSGraphMail.MailTips.emailAddressValue | String | The email address of the recipient \(flattened key used for context merging\). |
+| MSGraphMail.MailTips.automaticReplies.message | String | The automatic reply message. |
+| MSGraphMail.MailTips.automaticReplies.messageLanguage.locale | String | The language locale \(BCP 47\) of the automatic reply message. |
+| MSGraphMail.MailTips.automaticReplies.messageLanguage.displayName | String | The display name of the language for the automatic reply message. |
+| MSGraphMail.MailTips.mailboxFull | Boolean | Whether the recipient mailbox is full. |
+| MSGraphMail.MailTips.customMailTip | String | A custom Mail Tip that has been configured for the recipient. |
+| MSGraphMail.MailTips.externalMemberCount | Number | The number of external members in a group. |
+| MSGraphMail.MailTips.totalMemberCount | Number | The number of members in a group. |
+| MSGraphMail.MailTips.deliveryRestricted | Boolean | Whether delivery restrictions will prevent the sender's message from reaching the recipient. |
+| MSGraphMail.MailTips.isModerated | Boolean | Whether sending messages to the recipient requires approval. For example, if the recipient is a large distribution list and a moderator has been set up to approve messages sent to that list. |
+| MSGraphMail.MailTips.recipientScope | String | The scope of the recipient. Possible values: none, internal, external, externalPartner, externalNonPartner. |
+| MSGraphMail.MailTips.recipientSuggestions | Unknown | The recipients identified from previous contexts who appeared in the same message. |
+| MSGraphMail.MailTips.maxMessageSize | Number | The maximum message size configured for the recipient's organization or mailbox. |
+| MSGraphMail.MailTips.error.code | String | The error code returned if the Mail Tips lookup for the recipient fails. |
+| MSGraphMail.MailTips.error.message | String | The human-readable error message returned if the Mail Tips lookup for the recipient fails. |
