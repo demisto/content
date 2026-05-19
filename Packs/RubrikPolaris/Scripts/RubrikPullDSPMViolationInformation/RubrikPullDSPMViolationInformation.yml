@@ -1,0 +1,21 @@
+commonfields:
+  id: RubrikPullDSPMViolationInformation
+  version: -1
+name: RubrikPullDSPMViolationInformation
+script: ''
+type: python
+tags: []
+comment: Syncs the DSPM violation information from RSC to XSOAR.
+enabled: true
+args:
+- name: violation_id
+  description: "The ID of the DSPM Violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.8428455
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
