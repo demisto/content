@@ -4,45 +4,9 @@ commonfields:
 name: Darkmon
 display: Darkmon
 category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
 description: |-
   Stay ahead of cyber threats with DarkMon TIP — real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets.
   Pack also helps with integration with Cortex XSOAR and provides pre-made playbooks/templates to ease integration use.
-detaileddescription: |
-  ## Darkmon Threat Intelligence Platform
-  
-  Connect Cortex XSOAR to **Darkmon TIP** for real-time intelligence from the
-  Clear, Deep, and Dark Web — tailored to your assets.
-  
-  ### What you get
-  - **Indicator enrichment** for IPs, domains, URLs, file hashes, and emails,
-    with first-class `DBotScore` + `Common.<Type>` outputs.
-  - **IOC feed** ingestion into Cortex Threat Intel Management.
-  - **Compromised data** discovery (leaked accounts, bank cards, combo lists,
-    public breaches, compromised employee accounts).
-  - **Board-level VIP email monitoring** — list protected emails and pull every
-    leak associated with each.
-  - **Ransomware tracking** (articles + company-specific mentions).
-  - **Newly registered domains** and **telnet brute-force IOCs**.
-  - **Vulnerability intelligence** (CVE feed with CVSS, exploitation status,
-    source identifier).
-  - **Global search** — fully dynamic over every Darkmon data type, future-proof
-    for new feature types added to the platform.
-  
-  ### Get an API key
-  Sign in to your Darkmon tenant, go to **Settings → API Keys**, and create a
-  key with the scopes your XSOAR instance needs. Paste it into the **API key**
-  field below.
-  
-  ### Production vs development
-  The pack ships pointing at the production endpoint. To target your dev or
-  staging environment, set **API Base URL** to your dev URL on this instance only.
-  
-  ### Data minimization
-  By default, secrets such as passwords and card numbers are redacted from War
-  Room markdown output. Raw values remain available to playbooks via context for
-  automation. Disable **Redact secrets in War Room** only when troubleshooting
-  in non-production environments.
 configuration:
 - display: API Base URL
   name: base_url
@@ -167,8 +131,6 @@ script:
   script: ''
   type: python
   commands:
-  - name: test-module
-    arguments: []
   - name: dmontip-global-search
     arguments:
     - name: type

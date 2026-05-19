@@ -1505,13 +1505,46 @@ def _python_dispatched_commands():
 def test_yaml_commands_match_python_dispatcher(yml):
     yaml_cmds = _yaml_command_names(yml)
     py_cmds = _python_dispatched_commands()
-    # XSOAR built-ins handled by Python but not always in YAML commands list:
+    # XSOAR built-ins handled by Python but never declared in the YAML
+    # commands list:
     # - 'fetch-indicators' is implicit when feed: true
-    # - 'test-module' may or may not appear in YAML
-    py_only = py_cmds - yaml_cmds - {"fetch-indicators"}
-    yaml_only = yaml_cmds - py_cmds - {"test-module"}
+    # - 'test-module' is implemented in Python only (it must NOT appear in
+    #   the YAML per the contribution guidelines)
+    py_only = py_cmds - yaml_cmds - {"fetch-indicators", "test-module"}
+    yaml_only = yaml_cmds - py_cmds
     assert py_only == set(), f"Commands dispatched in main() but missing from YAML: {py_only}"
     assert yaml_only == set(), f"Commands declared in YAML but not dispatched in main(): {yaml_only}"
+
+
+def test_yaml_omits_test_module_command(yml):
+    """test-module is implemented in Python only; it must not be declared in the YAML."""
+    assert "test-module" not in _yaml_command_names(yml)
+
+
+def test_yaml_has_no_embedded_image_or_detaileddescription(yml):
+    """The logo and detailed description live in Darkmon_image.png /
+    Darkmon_description.md; the YAML must not embed them."""
+    assert "image" not in yml, "Remove the base64 'image' key; use Darkmon_image.png"
+    assert "detaileddescription" not in yml, "Remove 'detaileddescription'; use Darkmon_description.md"
+
+
+def test_integration_logo_meets_spec():
+    """Darkmon_image.png: PNG, 120x50, <=10KB, transparent background."""
+    from PIL import Image
+
+    logo_path = os.path.join(os.path.dirname(__file__), "Darkmon_image.png")
+    assert os.path.getsize(logo_path) <= 10 * 1024, "Logo must be <= 10KB"
+    with Image.open(logo_path) as im:
+        assert im.format == "PNG"
+        assert im.size == (120, 50)
+        rgba = im.convert("RGBA")
+        assert any(px[3] == 0 for px in rgba.getdata()), "Logo must have a transparent background"
+
+
+def test_description_file_present_and_nonempty():
+    desc = os.path.join(os.path.dirname(__file__), "Darkmon_description.md")
+    assert os.path.isfile(desc)
+    assert os.path.getsize(desc) > 0
 
 
 def test_yaml_compromised_predefined_matches_python(yml):
