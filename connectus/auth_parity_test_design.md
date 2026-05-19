@@ -112,7 +112,7 @@ the corrected auth shape. The exact reset procedure is documented in
 | 1 | Checking parameter correctness / coverage | That is [`check_command_params.py`](connectus/check_command_params.py:1)'s job. |
 | 2 | Checking that the API actually accepts the request | The test only inspects the **request** side; responses are canned. |
 | 3 | Validating `interpolated: true` connections | **Explicitly out of scope — see the "Scope" section above.** Interpolated connections have their values templated at runtime by the manifest generator; there is no user-supplied secret flowing through `demisto.params()` and no UCP injection path to compare. The harness MUST NOT generate sentinels, open a proxy session, or load integration code for an interpolated entry. The tool emits `ERROR_ALL_INTERPOLATED` (treated by the skill as "step migrated, `markpass`") when every connection is interpolated, or `"skipped_interpolated"` per-connection when only some are (see [§5.5](#55-error-codes--hard-errors)). |
-| 4 | Validating `other_connection` values (URL, proxy, insecure, …) | Only auth secrets (values declared in `auth_types[].xsoar_params`) are in scope. Connection metadata is orthogonal. |
+| 4 | Validating `other_connection` values (URL, proxy, insecure, …) | Only auth secrets (XSOAR paths keyed in `auth_types[].xsoar_param_map`) are in scope. Connection metadata is orthogonal. |
 | 5 | Non-Python integrations or integrations without `BaseClient` | **Hard error, not a skip.** The tool emits `ERROR_NON_PYTHON` or `ERROR_NO_BASECLIENT` and exits immediately. The migration skill must mark the affected connections as `"interpolated": true` and re-run `set-auth`. See [§5.5](#55-error-codes--hard-errors). |
 
 ---
@@ -132,7 +132,7 @@ the corrected auth shape. The exact reset procedure is documented in
 | Input | Source | Purpose |
 |-------|--------|---------|
 | Integration directory | CLI positional arg (same as [`check_command_params.py`](connectus/check_command_params.py:1)) | Locate YML + Python source. |
-| `Auth Details` cell | **Passed in** via `--auth-details <json>` / `--auth-details-file <path>` (mutually exclusive; one is required). The orchestrator reads it once with `workflow_state.py show-step --raw "<id>" "Auth Details"`. | Provides `auth_types[]` with `xsoar_params`, `interpolated`, `name`, `type`, and the `config` expression — parsed into typed [`AuthDetails`](connectus/auth_config_parser/types.py:102) / [`AuthEntry`](connectus/auth_config_parser/types.py:52) dataclasses inside the analyzer. |
+| `Auth Details` cell | **Passed in** via `--auth-details <json>` / `--auth-details-file <path>` (mutually exclusive; one is required). The orchestrator reads it once with `workflow_state.py show-step --raw "<id>" "Auth Details"`. | Provides `auth_types[]` with `xsoar_param_map`, `interpolated`, `name`, `type`, and the `config` expression — parsed into typed [`AuthDetails`](connectus/auth_config_parser/types.py:102) / [`AuthEntry`](connectus/auth_config_parser/types.py:52) dataclasses inside the analyzer. |
 | `Params for test with default in code` cell | **Passed in** via `--param-defaults <json>` / `--param-defaults-file <path>` (mutually exclusive; both optional, default `{}`). The orchestrator reads it once with `workflow_state.py show-step --raw "<id>" "Params for test with default in code"`. | Supplies throwaway defaults for non-auth required params so the integration can start. |
 | `Params to Commands` cell | Not consumed by this analyzer (the test picks commands directly per [Command selection strategy](#command-selection-strategy) below). | — |
 | Integration ID | CLI arg `--integration-id` | Identifier for log/diagnostic messages and a fallback for the top-level `integration` field in the output JSON. **Not** used to look up workflow state. |
@@ -166,17 +166,19 @@ C**):
 
 ### 2.1 Old run (legacy path)
 
-Build a `demisto.params()` dict that includes C's `xsoar_params`
-populated with **distinguishable sentinel values**. Non-auth required
-params are filled from `Params for test with default in code` plus a
-generic placeholder pass. Run the selected command(s) under
-[`capture_proxy.py`](connectus/capture_proxy.py:1). Record every
-captured outgoing request.
+Build a `demisto.params()` dict that includes C's `xsoar_param_map`
+keys populated with **distinguishable sentinel values**. Non-auth
+required params are filled from `Params for test with default in
+code` plus a generic placeholder pass. Run the selected command(s)
+under [`capture_proxy.py`](connectus/capture_proxy.py:1). Record
+every captured outgoing request.
 
 ### 2.2 New run (UCP injection path)
 
-Build a `demisto.params()` dict that **omits** C's `xsoar_params`
-entirely. Instead, patch the UCP injection seam so that
+Build a `demisto.params()` dict that **omits** every key in C's
+`xsoar_param_map` entirely (iterate `entry.xsoar_param_map.keys()`
+and drop each one from the seeded params). Instead, patch the UCP
+injection seam so that
 [`get_ucp_credentials()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13849)
 returns a credential dict containing the **same sentinel values**,
 routed through the appropriate type envelope. Run the same command(s)
@@ -185,27 +187,63 @@ every captured outgoing request.
 
 ### 2.3 Sentinel value generation
 
-Each leaf field in `xsoar_params` gets a unique sentinel:
+One sentinel is generated per `(xsoar_path, role)` pair from the
+connection's `xsoar_param_map` — i.e. per `(key, value)` item of
+the map. Encoding both the XSOAR path AND the role into the
+sentinel value makes the captured request trivially attributable
+when grepping: the diff comparator can recover both "which XSOAR
+field?" (path) and "which UCP role?" (e.g. `key`, `username`,
+`password`, `client_secret`) from the matched sentinel alone.
 
 ```
-__AUTHPARITY__<connection_name>__<xsoar_param_path>__<uuid8>
+__AUTHPARITY__<connection_name>__<xsoar_param_path>__<role>__<uuid8>
 ```
 
-Example for a `Plain` connection named `credentials`:
+Example for a `Plain` connection named `credentials` (map:
+`{"credentials.identifier": "username", "credentials.password": "password"}`):
 
 ```
-__AUTHPARITY__credentials__credentials.identifier__a1b2c3d4
-__AUTHPARITY__credentials__credentials.password__e5f6g7h8
+__AUTHPARITY__credentials__credentials.identifier__username__a1b2c3d4
+__AUTHPARITY__credentials__credentials.password__password__e5f6g7h8
+```
+
+Example for an `APIKey` connection named `credentials` with
+`hiddenusername: true` (map: `{"credentials.password": "key"}`) —
+note only one sentinel is generated because the suppressed
+`.identifier` leaf is not a map key:
+
+```
+__AUTHPARITY__credentials__credentials.password__key__c3d4e5f6
 ```
 
 Properties:
-- **Unique per leaf field** — so we can disambiguate which secret
-  landed where even when multiple secrets share a header.
+- **Unique per `(xsoar_path, role)` pair** — so we can disambiguate
+  which secret landed where even when multiple secrets share a
+  header, AND we know at grep-time which UCP role each sentinel
+  was meant to fill.
 - **Long enough** (≥40 chars) to be unambiguous in grep.
 - **ASCII-safe** — no characters that would be mangled by URL-encoding
   or base64 in ways that hide the sentinel.
 - The `uuid8` suffix is 8 hex chars from `uuid.uuid4().hex[:8]`,
   regenerated per test run.
+
+> **Why this changed (2026-05).** Previously the tool used a
+> **leaf-name heuristic** to pick where each sentinel belonged in
+> the UCP envelope — it looked at the suffix of the XSOAR path
+> (`.identifier` → username slot, `.password` → password slot) and
+> guessed. That heuristic broke in two ways:
+>
+> 1. For non-credentials-widget cases (e.g. a `Plain` auth backed
+>    by two flat params `server_user` + `server_password`), there
+>    are no `.identifier` / `.password` suffixes and the heuristic
+>    had no signal to work with.
+> 2. For `APIKey` integrations where the YML credentials widget
+>    has `hiddenusername: true`, the secret sits at
+>    `<id>.password` but its UCP role is `"key"`, not `"password"`.
+>    A leaf-name heuristic would mis-route it.
+>
+> The explicit `xsoar_param_map` removes the guess: the classifier
+> writes down the role directly, and the parity test reads it.
 
 ### 2.4 Non-auth param filling
 
@@ -261,13 +299,20 @@ The mapping from `auth_types[].type` to credential-dict shape is:
 
 | `auth_types[].type` | UCP `type` field | Sentinel placement |
 |---------------------|------------------|--------------------|
-| `APIKey` | `"api_key"` | `api_key.key` ← sentinel for the single `xsoar_params` entry |
-| `Plain` | `"plain"` | `plain.username` ← sentinel for `.identifier`; `plain.password` ← sentinel for `.password` |
-| `OAuth2ClientCreds` | `"oauth2"` | `oauth2.access_token` ← sentinel for the password/secret param |
+| `APIKey` | `"api_key"` | `api_key.key` ← sentinel for the map entry whose role is `"key"` |
+| `Plain` | `"plain"` | `plain.username` ← sentinel for the map entry whose role is `"username"`; `plain.password` ← sentinel for the map entry whose role is `"password"` |
+| `OAuth2ClientCreds` | `"oauth2"` | `oauth2.access_token` ← sentinel for the map entry whose role names the OAuth secret (`"client_secret"`, etc. — the role enum for OAuth types is deliberately undefined for now; see [`column-schemas.md`](connectus/column-schemas.md:1) "Auth Details" § "type → allowed role values") |
 | `OAuth2AuthCode` | `"oauth2"` | same as above |
 | `OAuth2JWT` | `"oauth2"` | same as above |
 | `Other` | varies | **skip** — see [§6 edge cases](#6-edge-cases--open-questions) |
 | `NoneRequired` | n/a | no run needed |
+
+Implementation note: `_ucp_shape_api_key()` and `_ucp_shape_plain()`
+(and their OAuth counterparts) MUST select the sentinel for each UCP
+slot **by role** — i.e. by looking up the map entry whose value
+matches the slot — NOT by leaf-name heuristic on the XSOAR path.
+This is the core behavioural change the `xsoar_param_map` migration
+delivers; see the "Why this changed" note in [§2.3](#23-sentinel-value-generation).
 
 If the exact injection API changes before this test ships, the
 **contract** above is what the test needs: a function that accepts a
@@ -372,11 +417,15 @@ usage, proxy wiring is simpler than in
 For each `(connection, command)` pair, the harness executes two runs:
 
 - **Old run:** Sentinels are placed directly into `demisto.params()`
-  at the `xsoar_params` paths (see [§2.1](#21-old-run-legacy-path)).
-  UCP is disabled: `is_ucp_enabled() → False`.
-- **New run:** `xsoar_params` are **omitted** from `demisto.params()`.
-  Sentinels are injected via the UCP mock (see [§2.5](#25-ucp-injection-wiring)).
-  UCP is enabled: `is_ucp_enabled() → True`,
+  at the XSOAR field paths that are keys of `xsoar_param_map` (see
+  [§2.1](#21-old-run-legacy-path)). UCP is disabled:
+  `is_ucp_enabled() → False`.
+- **New run:** Every key in `xsoar_param_map` is **omitted** from
+  `demisto.params()` (the implementation iterates
+  `entry.xsoar_param_map.keys()` and drops each path). Sentinels are
+  injected via the UCP mock (see [§2.5](#25-ucp-injection-wiring))
+  with each sentinel routed to the UCP slot named by its role. UCP
+  is enabled: `is_ucp_enabled() → True`,
   `should_use_ucp_auth() → True`.
 
 Both runs use the same sentinel values so the location comparison
@@ -398,7 +447,7 @@ Harness                    Proxy                Integration
   |-- seed params:                                   |
   |   url=http://127.0.0.1:P                         |
   |   insecure=True                                  |
-  |   xsoar_params=sentinels                         |
+  |   xsoar_param_map keys=sentinels                 |
   |   is_ucp_enabled=False                           |
   |                          |                       |
   |-- load unified .py ----->|                       |
@@ -420,9 +469,10 @@ Harness                    Proxy                Integration
   |-- seed params:                                   |
   |   url=http://127.0.0.1:P                         |
   |   insecure=True                                  |
-  |   xsoar_params=OMITTED                           |
+  |   xsoar_param_map keys=OMITTED                   |
   |   is_ucp_enabled=True                            |
   |   demisto.getUCPCredentials=mock with sentinels  |
+  |     (routed by role)                             |
   |                          |                       |
   |-- load unified .py ----->|                       |
   |-- call main() --------->                    ---->|
@@ -465,8 +515,8 @@ When the integration crashes during a run (old or new):
 For each non-interpolated connection C and each exercised command:
 
 > **Parity invariant:** For every sentinel value S generated for C's
-> `xsoar_params`, the set of locations where S appears in the old
-> run's captured requests MUST equal the set of locations where S
+> `xsoar_param_map` entries, the set of locations where S appears in
+> the old run's captured requests MUST equal the set of locations where S
 > appears in the new run's captured requests.
 
 A "location" is a structured path — see [§4](#4-the-parity-comparison).
@@ -552,6 +602,19 @@ locations_old(S) == locations_new(S)
 | `RUN_FAILED_OLD` | The integration crashed before issuing any request in the old run. | **Inconclusive** |
 | `RUN_FAILED_NEW` | The integration crashed before issuing any request in the new run. | **Inconclusive** |
 | `NO_REQUESTS_CAPTURED` | Ran cleanly but issued zero HTTP calls. | **Inconclusive** |
+
+### 4.6 Diff comparator — user-visible identifier
+
+Sentinels now encode both the **XSOAR path** and the **role** (see
+[§2.3](#23-sentinel-value-generation)), but the user-visible identifier
+in diff reports — the `"sentinel"` field of each entry in
+`diagnostics.<connection>.<command>.diffs[]` and any human-readable
+rendering of a failure — is still the **XSOAR path** (e.g.
+`"credentials.password"`, not `"credentials.password__password"`). This
+keeps reports byte-compatible with the pre-2026-05 output so operators
+reading a failure can locate the offending YML field the same way they
+always have. The role is available in `diagnostics` for tooling that
+wants it, but it is not the primary label.
 
 ---
 
@@ -885,13 +948,14 @@ own `auth_parity["<connection_name>"]` entry.
 
 Test the optional connection **when it is non-interpolated**. Run it
 as a separate parity check with its own sentinel set. The optional
-auth is activated by seeding its `xsoar_params` (old run) or
-injecting its UCP credentials (new run) — independently of the
-required connection's run. This avoids conflating the two connections'
-sentinel locations.
+auth is activated by seeding the keys of its `xsoar_param_map` (old
+run) or injecting its UCP credentials (new run) — independently of
+the required connection's run. This avoids conflating the two
+connections' sentinel locations.
 
-If the optional connection's `xsoar_params` overlap with the required
-connection's (same XSOAR field backing both), the sentinels will
+If the optional connection's `xsoar_param_map` keys overlap with the
+required connection's (same XSOAR field backing both), the sentinels
+will
 differ between the two runs (each run generates fresh UUIDs), so
 there is no cross-contamination.
 
@@ -1088,9 +1152,10 @@ per-integration test override.
    comparing the intersection of requests (§6.7), which would skip
    the token-exchange request. Is this acceptable?
 
-3. **Multi-connection integrations with shared `xsoar_params`.** When
-   the same XSOAR field (e.g. `credentials.password`) appears in
-   multiple `auth_types[]` entries, the parity test generates
+3. **Multi-connection integrations with shared `xsoar_param_map` keys.**
+   When the same XSOAR field (e.g. `credentials.password`) appears as
+   a key in multiple `auth_types[]` entries' `xsoar_param_map`s, the
+   parity test generates
    different sentinels for each entry. But the old run can only seed
    one value into `demisto.params()["credentials"]["password"]`. **How
    should the test handle this?** Proposed: run each connection's
@@ -1222,8 +1287,9 @@ details: AuthDetails = parse_auth_details(raw_json)
 for entry in details.auth_types:          # entry: AuthEntry (frozen dataclass)
     if entry.interpolated:
         continue                          # skip interpolated connections
-    print(entry.name, entry.type, entry.xsoar_params)
+    print(entry.name, entry.type, entry.xsoar_param_map)
     # entry.type is an AuthType enum: AuthType.APIKey, AuthType.Plain, …
+    # entry.xsoar_param_map is a dict[str, str]: {xsoar_path: role}
 ```
 
 ### 8.2 Validating before use
@@ -1297,7 +1363,7 @@ flowchart TD
     B -->|interpolated: true| C[Skip - status: skipped_interpolated]
     B -->|type: Other| D[Skip - status: skipped_other_type]
     B -->|type: NoneRequired| E[Skip - no auth]
-    B -->|non-interpolated, standard type| F[Generate sentinels for xsoar_params]
+    B -->|non-interpolated, standard type| F[Generate sentinels per xsoar_param_map entry]
     F --> G[Build old-run params with sentinels in demisto.params]
     F --> H[Build new-run UCP mock with same sentinels]
     G --> I[Old run: execute command under capture_proxy]

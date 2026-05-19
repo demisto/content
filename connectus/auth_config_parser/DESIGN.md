@@ -89,14 +89,20 @@ class AuthEntry:
     Attributes:
         type: The auth-type enum value.
         name: Free-form logical id (unique within the row).
-        xsoar_params: XSOAR field paths supplying secrets for this
-            connection type. Bare ids or dotted forms.
+        xsoar_param_map: Mapping from XSOAR field path (bare id or
+            dotted form) to the role that secret plays inside the
+            ConnectUs envelope for this connection. Required and
+            non-empty for every AuthEntry, including entries with
+            interpolated=True. The allowed role values are
+            constrained per ``type`` — see the table in
+            :doc:`../column-schemas` ("Auth Details" §
+            "type → allowed role values").
         interpolated: When True, the value is templated at runtime
             rather than supplied by the user. Defaults to False.
     """
     type: AuthType
     name: str
-    xsoar_params: list[str]
+    xsoar_param_map: dict[str, str]
     interpolated: bool = False
 
 
@@ -242,13 +248,16 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
 
     Examples:
         >>> details = parse_auth_details({
-        ...     "auth_types": [{"type": "APIKey", "name": "api_key",
-        ...                     "xsoar_params": ["api_key"]}],
-        ...     "config": "REQUIRED(api_key)",
+        ...     "auth_types": [{"type": "APIKey", "name": "credentials",
+        ...                     "xsoar_param_map": {
+        ...                         "credentials.password": "key"}}],
+        ...     "config": "REQUIRED(credentials)",
         ...     "other_connection": ["url", "proxy"]
         ... })
         >>> details.auth_types[0].type
         AuthType.APIKey
+        >>> details.auth_types[0].xsoar_param_map
+        {'credentials.password': 'key'}
         >>> details.config.clauses[0].operator
         ClauseOperator.REQUIRED
     """
@@ -326,8 +335,20 @@ def validate_auth_details(data: str | dict) -> list[str]:
     - JSON parsing
     - Required keys: auth_types, config, other_connection
     - auth_types[] entry shape (type enum, name uniqueness,
-      xsoar_params non-empty list of non-empty strings, interpolated
-      bool)
+      xsoar_param_map non-empty dict[str, str] with non-empty keys
+      and non-empty role values, interpolated bool)
+    - xsoar_param_map role-value enum enforcement per
+      auth_types[].type:
+
+      - APIKey → values must be from {"key"}.
+      - Plain → values must be from {"username", "password"}.
+      - OAuth2ClientCreds, OAuth2AuthCode, OAuth2JWT, Other →
+        any non-empty string (enum deliberately undefined for now,
+        to be narrowed in a future PR).
+      - NoneRequired → no entries in auth_types[]; rule moot.
+    - Legacy xsoar_params key is **rejected** with a migration-help
+      error pointing at column-schemas.md "Auth Details" §
+      "Migration from xsoar_params".
     - auth_types[] sort order by (type, name)
     - config expression syntax (via validate_config)
     - config operand names cross-referenced against auth_types[].name
@@ -393,7 +414,7 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
     Returns the deduplicated set of bare YML configuration[].name
     values composed from:
 
-    - Every auth_types[].xsoar_params entry, projected via
+    - Every key in every auth_types[].xsoar_param_map, projected via
       project_xsoar_param_to_yml_id().
     - Every entry in other_connection (already bare YML ids).
 
@@ -406,8 +427,9 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
     Examples:
         >>> details = parse_auth_details({
         ...     "auth_types": [{"type": "Plain", "name": "creds",
-        ...         "xsoar_params": ["credentials.identifier",
-        ...                          "credentials.password"]}],
+        ...         "xsoar_param_map": {
+        ...             "credentials.identifier": "username",
+        ...             "credentials.password": "password"}}],
         ...     "config": "REQUIRED(creds)",
         ...     "other_connection": ["url", "proxy"]
         ... })
@@ -435,7 +457,7 @@ def auth_param_ids_with_sources(
     Examples:
         >>> sources = auth_param_ids_with_sources(details)
         >>> sources["credentials"]
-        ["auth_types[].name='creds' (xsoar_params=['credentials.identifier', 'credentials.password'])"]
+        ["auth_types[].name='creds' (xsoar_param_map={'credentials.identifier': 'username', 'credentials.password': 'password'})"]
         >>> sources["url"]
         ["other_connection"]
     """
@@ -672,7 +694,15 @@ identical assertions.
 | `test_non_none_required_empty_types` | Config refs but empty auth_types → error |
 | `test_sort_order_violation` | Out-of-order entries → error with pair names |
 | `test_sort_order_same_type_by_name` | Same type, names out of order → error |
-| `test_empty_xsoar_params` | `[]` xsoar_params → error |
+| `test_empty_xsoar_param_map` | `{}` xsoar_param_map → error |
+| `test_missing_xsoar_param_map` | Entry without `xsoar_param_map` → error |
+| `test_legacy_xsoar_params_rejected` | Entry with legacy `xsoar_params` key → migration-help error |
+| `test_xsoar_param_map_apikey_role_enum` | `APIKey` with role `"username"` → error; `"key"` → ok |
+| `test_xsoar_param_map_plain_role_enum` | `Plain` with role `"key"` → error; `"username"`/`"password"` → ok |
+| `test_xsoar_param_map_oauth_role_freeform` | `OAuth2ClientCreds` with any non-empty string value → ok (enum deliberately undefined for now) |
+| `test_xsoar_param_map_other_role_freeform` | `Other` with any non-empty string value → ok |
+| `test_xsoar_param_map_empty_role_value_rejected` | Role value `""` → error regardless of type |
+| `test_xsoar_param_map_interpolated_still_required` | `interpolated: true` entry with empty/missing map → error |
 | `test_duplicate_name` | Two entries with same name → error |
 | `test_other_connection_valid` | Sorted list → `[]` |
 | `test_other_connection_empty_list` | `[]` → `[]` |

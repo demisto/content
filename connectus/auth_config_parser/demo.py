@@ -83,7 +83,7 @@ SAMPLES: list[dict] = [
                 {
                     "type": "APIKey",
                     "name": "api_token",
-                    "xsoar_params": ["token"],
+                    "xsoar_param_map": {"token": "key"},
                 },
             ],
             "config": "REQUIRED(api_token)",
@@ -106,21 +106,28 @@ SAMPLES: list[dict] = [
                 {
                     "type": "Plain",
                     "name": "edgegrid_legacy",
-                    "xsoar_params": [
-                        "accessToken",
-                        "clientSecret",
-                        "clientToken",
-                    ],
+                    "xsoar_param_map": {
+                        # EdgeGrid bundles three secrets; the role
+                        # strings are deliberately illustrative —
+                        # ``Plain`` only permits "username"/"password",
+                        # so this fixture (which would fail validation
+                        # under the new role-enum rules) is kept as a
+                        # *parser* demo and the validator output will
+                        # surface the role-enum violation.
+                        "accessToken": "password",
+                        "clientSecret": "password",
+                        "clientToken": "username",
+                    },
                     "interpolated": True,
                 },
                 {
                     "type": "Plain",
                     "name": "edgegrid_v2",
-                    "xsoar_params": [
-                        "credentials_access_token",
-                        "credentials_client_secret",
-                        "credentials_client_token",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials_access_token": "password",
+                        "credentials_client_secret": "password",
+                        "credentials_client_token": "username",
+                    },
                 },
             ],
             "config": "CHOICE(edgegrid_legacy, edgegrid_v2)",
@@ -143,17 +150,17 @@ SAMPLES: list[dict] = [
                 {
                     "type": "APIKey",
                     "name": "api_token",
-                    "xsoar_params": ["apitoken"],
+                    "xsoar_param_map": {"apitoken": "key"},
                 },
                 {
                     "type": "OAuth2JWT",
                     "name": "oauth_jwt",
-                    "xsoar_params": [
-                        "client_id",
-                        "jwt_algorithm",
-                        "key_id",
-                        "private_key",
-                    ],
+                    "xsoar_param_map": {
+                        "client_id": "client_id",
+                        "jwt_algorithm": "jwt_algorithm",
+                        "key_id": "key_id",
+                        "private_key": "private_key",
+                    },
                 },
             ],
             "config": "CHOICE(api_token, oauth_jwt)",
@@ -180,16 +187,25 @@ SAMPLES: list[dict] = [
                 {
                     "type": "Plain",
                     "name": "client_certificate",
-                    "xsoar_params": [
-                        "certificate",
-                        "client_id",
-                        "private_key",
-                    ],
+                    "xsoar_param_map": {
+                        # Illustrative roles — ``Plain`` only permits
+                        # "username"/"password" so the validator will
+                        # surface a role-enum violation on the
+                        # ``certificate``/``private_key`` keys. The
+                        # demo intentionally includes this so the
+                        # validator section produces visible output.
+                        "certificate": "password",
+                        "client_id": "username",
+                        "private_key": "password",
+                    },
                 },
                 {
                     "type": "Plain",
                     "name": "client_credentials",
-                    "xsoar_params": ["client_id", "client_secret"],
+                    "xsoar_param_map": {
+                        "client_id": "username",
+                        "client_secret": "password",
+                    },
                 },
             ],
             "config": "CHOICE(client_certificate, client_credentials)",
@@ -260,7 +276,7 @@ def _print_auth_details(details: AuthDetails) -> None:
         flag = "  interpolated" if e.interpolated else ""
         print(
             f"    * type={e.type.value:<17} name={e.name!r:<22} "
-            f"xsoar_params={e.xsoar_params}{flag}"
+            f"xsoar_param_map={dict(e.xsoar_param_map)}{flag}"
         )
 
     print("  config:")

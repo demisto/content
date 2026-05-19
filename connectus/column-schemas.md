@@ -23,7 +23,10 @@ Per-integration authentication classification. One JSON object per row.
     {
       "type": "<AuthEnum>",
       "name": "<connection_type_name>",
-      "xsoar_params": ["<xsoar_field_path>", "<xsoar_field_path>", ...],
+      "xsoar_param_map": {
+        "<xsoar_field_path>": "<role>",
+        "<xsoar_field_path>": "<role>"
+      },
       "interpolated": <bool>
     }
   ],
@@ -46,7 +49,7 @@ must include it.
   legitimately feeds more than one connection type (e.g. the same
   `credentials.password` backing both a Plain profile and an OAuth
   profile) appears in **multiple entries**, listed inside each entry's
-  `xsoar_params` array. Entries are sorted by `(type, name)`.
+  `xsoar_param_map`. Entries are sorted by `(type, name)`.
 - `auth_types[].type` — Auth-type enum value identifying the kind of
   connection this entry describes (see the enum table in
   [`Readme.md`](Readme.md:19)). Pick exactly one.
@@ -54,27 +57,48 @@ must include it.
   type. Must be unique across entries within this row. This is the
   identifier referenced by `config` (not the XSOAR param id, not the
   enum value).
-- `auth_types[].xsoar_params` — Array of XSOAR **field paths** (strings)
-  whose values supply the secrets for this one connection type.
-  Conventions:
-  - For a flat XSOAR param (YML types `0` text, `4` encrypted, `14` cert
-    key, etc.), use the bare param id, e.g. `"api_key"`,
+- `auth_types[].xsoar_param_map` — JSON object mapping each XSOAR
+  **field path** (the key) to the **role** that secret plays inside
+  the ConnectUs envelope for this connection (the value). The map is
+  **required and non-empty** for every `auth_types[]` entry —
+  including entries with `interpolated: true`. Conventions for keys:
+  - For a flat XSOAR param (YML types `0` text, `4` encrypted, `14`
+    cert key, etc.), use the bare param id, e.g. `"api_key"`,
     `"server_token"`.
   - For a credentials-typed XSOAR param (YML type `9`), treat its two
-    sub-fields as separate leaf fields and list them with dotted
+    sub-fields as separate leaf fields and address them with dotted
     notation: `"<paramid>.identifier"` (the username slot) and
-    `"<paramid>.password"`. A Plain auth backed by a single credentials
-    param therefore lists both, e.g.
-    `["credentials.identifier", "credentials.password"]`.
-  - A Plain auth built from two separate flat params lists both ids
-    directly, e.g. `["server_user", "server_password"]`.
-  - The same field path may appear in the `xsoar_params` of multiple
-    entries when one XSOAR field feeds several connection types.
+    `"<paramid>.password"`. A Plain auth backed by a single
+    credentials param therefore has two keys, e.g.
+    `"credentials.identifier"` → `"username"` and
+    `"credentials.password"` → `"password"`.
+  - A Plain auth built from two separate flat params keys them
+    directly, e.g. `"server_user"` → `"username"`,
+    `"server_password"` → `"password"`.
+  - The same field path may appear as a key in the `xsoar_param_map`
+    of multiple entries when one XSOAR field feeds several connection
+    types.
+
+  The **role enum is constrained per `auth_types[].type`**:
+
+  | `auth_types[].type` | Allowed values in `xsoar_param_map` |
+  |---|---|
+  | `APIKey` | `"key"` |
+  | `Plain` | `"username"`, `"password"` |
+  | `OAuth2ClientCreds`, `OAuth2AuthCode`, `OAuth2JWT`, `Other` | any non-empty string (enum **deliberately undefined for now** — will be narrowed in a future PR) |
+  | `NoneRequired` | n/a (no entries in `auth_types[]` at all) |
+
+  See [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
+  for the full classification procedure that picks the right role for
+  each XSOAR field.
 - `auth_types[].interpolated` — Optional boolean (defaults to `false`).
   When `true`, the manifest generator sets the `interpolated` flag in
   this entry's metadata in the generated manifest (signaling that the
   value is interpolated from another source/template at runtime rather
-  than supplied verbatim by the user).
+  than supplied verbatim by the user). The `xsoar_param_map` is still
+  required and non-empty on interpolated entries — the map describes
+  the role each XSOAR field plays regardless of whether the value is
+  user-supplied or templated at runtime.
 - `config` — Auth Config Expression. Same operators as the README grammar
   in [`Auth Config Expression Format`](Readme.md:8) — `REQUIRED(...)`,
   `OPTIONAL(...)`, `CHOICE(...)`, joined with `+`, plus the literal
@@ -99,25 +123,152 @@ must include it.
     unsorted input with a clear suggestion of the sorted form.
   - Empty list `[]` is valid (= the integration has no connection-adjacent
     params besides its auth secrets).
-  - There is **no overlap requirement** with `auth_types[].xsoar_params`
+  - There is **no overlap requirement** with `auth_types[].xsoar_param_map`
     — keeping the two lists disjoint is the classifier's responsibility,
-    not the validator's. (Auth secrets go in `auth_types[].xsoar_params`;
-    per-command behavioral params go in `Params to Commands`; framework
-    params like `longRunning`/`feedReputation` are ignored entirely.)
+    not the validator's. (Auth secrets are keyed in
+    `auth_types[].xsoar_param_map`; per-command behavioral params go
+    in `Params to Commands`; framework params like
+    `longRunning`/`feedReputation` are ignored entirely.)
 
-Worked example with `other_connection`:
+### Hidden-leaf suppression rules
+
+These rules govern which YML param leaves appear as **keys** in
+`xsoar_param_map`. They live here so the schema is fully described in
+one place, but enforcement (the classification procedure) is in
+[`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1).
+
+- **YML `hidden: true` or `hidden: [<list>]` (any non-empty hidden
+  value).** The param is excluded entirely from the Auth Details cell —
+  it does NOT appear as a key in any `xsoar_param_map`, and it does
+  NOT appear in `other_connection`. This is the existing rule and is
+  unchanged.
+- **YML `type: 9` credentials with `hiddenusername: true`.** The
+  identifier leaf is suppressed: do **NOT** include
+  `<id>.identifier` as a key in `xsoar_param_map`. The
+  `<id>.password` leaf, if not also hidden, MAY still appear.
+- **YML `type: 9` credentials with `hiddenpassword: true`.** The
+  password leaf is suppressed: do **NOT** include `<id>.password`
+  as a key in `xsoar_param_map`. The `<id>.identifier` leaf, if not
+  also hidden, MAY still appear. (`hiddenpassword` is a real YML
+  field per demisto-sdk's strict-objects schema.)
+
+These suppressions matter most for `APIKey` integrations that use a
+type-9 credentials widget with `hiddenusername: true` — the widget
+collects only a password, and the resulting `xsoar_param_map` keys
+ONLY `<id>.password`. See Example 1 below.
+
+### What's required vs optional
+
+- `xsoar_param_map` is **required and non-empty** for every
+  `auth_types[]` entry, including entries with `"interpolated": true`.
+  The empty map `{}` is rejected by `set-auth`.
+- `interpolated` is **optional** and defaults to `false`. When
+  present it must be a JSON boolean.
+- `NoneRequired` integrations have **no** `auth_types[]` entries
+  (the array is `[]`), so the map requirement is moot for them — see
+  Example 5.
+
+### Migration from `xsoar_params`
+
+The pre-2026-05 shape — `auth_types[].xsoar_params: list[str]` — is
+**gone**. `set-auth` rejects any payload that still contains
+`xsoar_params` (the validator returns a migration-help error pointing
+at this section). To re-classify a legacy row:
+
+1. Look up the YML param ids that were in the old `xsoar_params`
+   array.
+2. Pick a `type` from the table above and assign each XSOAR field
+   path a role from that type's allowed set.
+3. Write the new payload using one of the 5 canonical examples below
+   as a template.
+4. Re-run `set-auth`. The cascade reset wipes downstream artifacts
+   exactly as it did before — the schema change does not alter reset
+   semantics.
+
+### Canonical worked examples
+
+**Example 1 — APIVoid pattern: APIKey with `hiddenusername: true`** (the identifier leaf is suppressed):
 
 ```json
 {
   "auth_types": [
     {
       "type": "APIKey",
-      "name": "api_key",
-      "xsoar_params": ["api_key"]
+      "name": "credentials",
+      "xsoar_param_map": {
+        "credentials.password": "key"
+      }
     }
   ],
-  "config": "REQUIRED(api_key)",
+  "config": "REQUIRED(credentials)",
   "other_connection": ["insecure", "proxy", "url"]
+}
+```
+
+**Example 2 — Plain (basic auth) with both leaves:**
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "Plain",
+      "name": "credentials",
+      "xsoar_param_map": {
+        "credentials.identifier": "username",
+        "credentials.password": "password"
+      }
+    }
+  ],
+  "config": "REQUIRED(credentials)",
+  "other_connection": ["insecure", "proxy", "url"]
+}
+```
+
+**Example 3 — Plain with two separate flat params (not a credentials widget):**
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "Plain",
+      "name": "auth",
+      "xsoar_param_map": {
+        "server_user": "username",
+        "server_password": "password"
+      }
+    }
+  ],
+  "config": "REQUIRED(auth)",
+  "other_connection": ["insecure", "proxy", "url"]
+}
+```
+
+**Example 4 — OAuth2ClientCreds with credentials widget (enum-undefined regime, any non-empty string accepted):**
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "OAuth2ClientCreds",
+      "name": "credentials",
+      "xsoar_param_map": {
+        "credentials.identifier": "client_id",
+        "credentials.password": "client_secret"
+      }
+    }
+  ],
+  "config": "REQUIRED(credentials)",
+  "other_connection": ["insecure", "proxy", "url"]
+}
+```
+
+**Example 5 — NoneRequired:**
+
+```json
+{
+  "auth_types": [],
+  "config": "NoneRequired",
+  "other_connection": []
 }
 ```
 
@@ -199,8 +350,8 @@ Notes:
 - **Disjointness with `Auth Details`:** `set-params-to-commands` HARD
   REJECTS any payload whose per-command lists include a YML param id
   that is already declared in the integration's `Auth Details` cell —
-  either as a projected `auth_types[].xsoar_params` entry (dotted forms
-  collapse to the segment before the first `.`) or as an
+  either as a projected `auth_types[].xsoar_param_map` key (dotted
+  forms collapse to the segment before the first `.`) or as an
   `other_connection` entry. Inspect the live exclusion set with
   [`workflow_state.py auth-params <Integration ID>`](workflow_state/cli.py:1)
   and see [`connectus/Readme.md`](Readme.md:1) for the full CLI

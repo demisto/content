@@ -34,6 +34,45 @@ _VALID_AUTH_TYPE_VALUES = {t.value for t in AuthType}
 
 
 # ---------------------------------------------------------------------------
+# Per-type allowed role-value table (for the xsoar_param_map values).
+# The parser only enforces the structural rules (non-empty strings); the
+# role-enum check happens in the validator. This table is kept here as
+# the canonical reference and is re-used by validator.py.
+# ---------------------------------------------------------------------------
+
+# Types whose xsoar_param_map values are constrained to a fixed enum.
+# Types not present in this mapping (OAuth2*, Other) accept any non-empty
+# string. ``NoneRequired`` never appears in ``auth_types[]``.
+_ROLE_ENUM_BY_TYPE: dict[AuthType, set[str]] = {
+    AuthType.APIKey: {"key"},
+    AuthType.Plain: {"username", "password"},
+}
+
+
+def _legacy_xsoar_params_error(index: int) -> str:
+    """Build the standard migration-help error for the legacy key.
+
+    Fired by both the parser and the validator whenever an
+    ``auth_types[]`` entry still uses the old ``xsoar_params`` field.
+    The message names the offending field path, the new field name,
+    points the reader at the schema doc, and inlines a copy-paste
+    example so the migration is mechanical.
+    """
+    return (
+        f"auth_types[{index}].xsoar_params: legacy key 'xsoar_params' "
+        "is no longer supported. Migrate to 'xsoar_param_map' (a "
+        "dict mapping each XSOAR field path to the role that secret "
+        "plays for this connection). For 'APIKey' the only allowed "
+        "value is \"key\"; for 'Plain' values must be in "
+        '{"username", "password"}; for OAuth2*/Other any non-empty '
+        "string is accepted. See connectus/column-schemas.md "
+        "§Auth Details for examples. Example: "
+        '{"type": "APIKey", "name": "credentials", '
+        '"xsoar_param_map": {"credentials.password": "key"}}.'
+    )
+
+
+# ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
@@ -152,30 +191,58 @@ def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, lis
     else:
         entry_name = raw_dict["name"]
 
-    # --- xsoar_params ---
-    xsoar_params: list[str] | None = None
-    if "xsoar_params" not in raw_dict:
-        errors.append(f"auth_types[{index}]: missing 'xsoar_params'")
-    elif not isinstance(raw_dict["xsoar_params"], list):
+    # --- xsoar_param_map ---
+    xsoar_param_map: dict[str, str] | None = None
+    if "xsoar_params" in raw_dict:
+        # Legacy key — hard-reject with migration-help guidance.
+        errors.append(_legacy_xsoar_params_error(index))
+    if "xsoar_param_map" not in raw_dict:
+        # Only emit the missing-key error when the legacy key isn't
+        # present — otherwise the legacy-rejection message is the more
+        # informative signal.
+        if "xsoar_params" not in raw_dict:
+            errors.append(
+                f"auth_types[{index}].xsoar_param_map: missing "
+                "'xsoar_param_map' (required and non-empty). See "
+                "connectus/column-schemas.md §Auth Details for the new "
+                "shape."
+            )
+    elif not isinstance(raw_dict["xsoar_param_map"], dict):
         errors.append(
-            f"auth_types[{index}]: 'xsoar_params' must be a list, "
-            f"got {type(raw_dict['xsoar_params']).__name__}"
+            f"auth_types[{index}].xsoar_param_map: must be an object "
+            f"(dict), got {type(raw_dict['xsoar_param_map']).__name__}. "
+            "See connectus/column-schemas.md §Auth Details for the new "
+            "shape."
         )
-    elif len(raw_dict["xsoar_params"]) == 0:
+    elif len(raw_dict["xsoar_param_map"]) == 0:
         errors.append(
-            f"auth_types[{index}]: 'xsoar_params' must contain at least "
-            "one entry"
+            f"auth_types[{index}].xsoar_param_map: must be a non-empty "
+            "object (each entry must declare at least one xsoar field "
+            "path). See connectus/column-schemas.md §Auth Details."
         )
     else:
-        xsoar_params = []
-        for j, p in enumerate(raw_dict["xsoar_params"]):
-            if not isinstance(p, str) or not p:
+        xsoar_param_map = {}
+        for k, v in raw_dict["xsoar_param_map"].items():
+            if not isinstance(k, str) or not k:
                 errors.append(
-                    f"auth_types[{index}]: xsoar_params[{j}] must be a "
-                    "non-empty string"
+                    f"auth_types[{index}].xsoar_param_map: key "
+                    f"{k!r} must be a non-empty string"
                 )
-            else:
-                xsoar_params.append(p)
+                continue
+            if not isinstance(v, str):
+                errors.append(
+                    f"auth_types[{index}].xsoar_param_map: value for "
+                    f"key '{k}' must be a string, got "
+                    f"{type(v).__name__}"
+                )
+                continue
+            if not v:
+                errors.append(
+                    f"auth_types[{index}].xsoar_param_map: value for "
+                    f"key '{k}' must be a non-empty string"
+                )
+                continue
+            xsoar_param_map[k] = v
 
     # --- interpolated (optional, defaults to False) ---
     interpolated = False
@@ -194,11 +261,11 @@ def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, lis
     # All fields validated — safe to construct.
     assert entry_type is not None
     assert entry_name is not None
-    assert xsoar_params is not None
+    assert xsoar_param_map is not None
     return AuthEntry(
         type=entry_type,
         name=entry_name,
-        xsoar_params=xsoar_params,
+        xsoar_param_map=xsoar_param_map,
         interpolated=interpolated,
     ), errors
 
@@ -263,12 +330,14 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
     Examples:
         >>> details = parse_auth_details({
         ...     "auth_types": [{"type": "APIKey", "name": "api_key",
-        ...                     "xsoar_params": ["api_key"]}],
+        ...                     "xsoar_param_map": {"api_key": "key"}}],
         ...     "config": "REQUIRED(api_key)",
         ...     "other_connection": ["url", "proxy"],
         ... })
         >>> details.auth_types[0].type
         <AuthType.APIKey: 'APIKey'>
+        >>> details.auth_types[0].xsoar_param_map
+        {'api_key': 'key'}
         >>> details.config.clauses[0].operator
         <ClauseOperator.REQUIRED: 'REQUIRED'>
     """

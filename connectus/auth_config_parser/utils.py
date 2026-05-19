@@ -43,8 +43,8 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
     Returns the deduplicated set of bare YML ``configuration[].name``
     values composed from:
 
-    - Every ``auth_types[].xsoar_params`` entry, projected via
-      :func:`project_xsoar_param_to_yml_id`.
+    - Every key in every ``auth_types[].xsoar_param_map``, projected
+      via :func:`project_xsoar_param_to_yml_id`.
     - Every entry in ``other_connection`` (already bare YML ids).
 
     Args:
@@ -58,8 +58,9 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
         >>> from auth_config_parser.parser import parse_auth_details
         >>> details = parse_auth_details({
         ...     "auth_types": [{"type": "Plain", "name": "creds",
-        ...         "xsoar_params": ["credentials.identifier",
-        ...                          "credentials.password"]}],
+        ...         "xsoar_param_map": {
+        ...             "credentials.identifier": "username",
+        ...             "credentials.password": "password"}}],
         ...     "config": "REQUIRED(creds)",
         ...     "other_connection": ["url", "proxy"],
         ... })
@@ -69,7 +70,7 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
     result: set[str] = set()
 
     for entry in details.auth_types:
-        for xp in entry.xsoar_params:
+        for xp in entry.xsoar_param_map:
             yml_id = project_xsoar_param_to_yml_id(xp)
             if yml_id:
                 result.add(yml_id)
@@ -89,7 +90,11 @@ def auth_param_ids_with_sources(
 
     Returns a dict mapping each YML param id to a list of
     human-readable source descriptions indicating where the param
-    was declared.
+    was declared. The descriptor for entries derived from
+    ``auth_types[]`` quotes the full ``xsoar_param_map`` (keys and
+    values) verbatim so downstream consumers (e.g. the cross-check
+    overlap rejection messages) can show the operator both the
+    XSOAR-side paths and the ConnectUs-side roles.
 
     Args:
         details: A parsed :class:`~auth_config_parser.types.AuthDetails`
@@ -102,14 +107,13 @@ def auth_param_ids_with_sources(
         >>> from auth_config_parser.parser import parse_auth_details
         >>> details = parse_auth_details({
         ...     "auth_types": [{"type": "Plain", "name": "creds",
-        ...         "xsoar_params": ["credentials.identifier",
-        ...                          "credentials.password"]}],
+        ...         "xsoar_param_map": {
+        ...             "credentials.identifier": "username",
+        ...             "credentials.password": "password"}}],
         ...     "config": "REQUIRED(creds)",
         ...     "other_connection": ["url"],
         ... })
         >>> sources = auth_param_ids_with_sources(details)
-        >>> sources["credentials"]
-        ["auth_types[].name='creds' (xsoar_params=['credentials.identifier', 'credentials.password'])"]
         >>> sources["url"]
         ['other_connection']
     """
@@ -118,20 +122,21 @@ def auth_param_ids_with_sources(
     for entry in details.auth_types:
         # Collect projected ids for this entry.
         projected_for_entry: list[str] = []
-        for xp in entry.xsoar_params:
+        for xp in entry.xsoar_param_map:
             yml_id = project_xsoar_param_to_yml_id(xp)
             if yml_id:
                 projected_for_entry.append(yml_id)
 
         # Group source description by entry — every projected id
-        # cites the same entry-level (name, xsoar_params) pair so
-        # the overlap message can quote the dotted forms verbatim.
-        # Dedupe per-yml_id so dotted forms collapsing to the same
-        # bare id (credentials.identifier + credentials.password →
-        # credentials) don't repeat the same descriptor twice.
+        # cites the same entry-level (name, xsoar_param_map) pair so
+        # the overlap message can quote the dotted forms (and their
+        # roles) verbatim. Dedupe per-yml_id so dotted forms
+        # collapsing to the same bare id (credentials.identifier +
+        # credentials.password → credentials) don't repeat the same
+        # descriptor twice.
         descriptor = (
             f"auth_types[].name={entry.name!r} "
-            f"(xsoar_params={list(entry.xsoar_params)!r})"
+            f"(xsoar_param_map={dict(entry.xsoar_param_map)!r})"
         )
         seen_for_entry: set[str] = set()
         for yml_id in projected_for_entry:

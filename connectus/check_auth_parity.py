@@ -127,19 +127,58 @@ class Diff:
     new_locations: list[str]
 
 
+@dataclass(frozen=True)
+class SentinelLeaf:
+    """One sentinel record, keyed by ``(xsoar_path, role)``.
+
+    The ``role`` is the UCP role from ``AuthEntry.xsoar_param_map``
+    (e.g. ``"key"``, ``"username"``, ``"password"``, ``"client_secret"``).
+    Carrying it here is what lets the UCP-shape selectors (§2.5) route
+    each sentinel into the right slot **by role** rather than by
+    leaf-name heuristic — the bug Commit 4 of the
+    ``xsoar_param_map`` migration plan fixes.
+
+    The ``value`` string itself ALSO encodes the role (see §2.3 of
+    ``connectus/auth_parity_test_design.md``) so a downstream grep on a
+    captured request can recover both the XSOAR path and the role from
+    the matched sentinel alone.
+    """
+
+    path: str
+    role: str
+    value: str
+
+
 @dataclass
 class SentinelMap:
-    """Mapping ``connection_name → {xsoar_param_path → sentinel}``.
+    """Mapping ``connection_name → list[SentinelLeaf]``.
 
     A single :class:`SentinelMap` is shared across the old and new runs
     of one connection so both runs seed identical secret bytes; only
     their wire placement is compared.
+
+    The list preserves the (key, value) iteration order of
+    ``AuthEntry.xsoar_param_map`` at sentinel-generation time. Lookups
+    by ``path`` use :meth:`leaves_by_path`; lookups by ``role`` use
+    :meth:`leaves_by_role`.
     """
 
-    by_connection: dict[str, dict[str, str]] = field(default_factory=dict)
+    by_connection: dict[str, list[SentinelLeaf]] = field(default_factory=dict)
 
-    def for_connection(self, name: str) -> dict[str, str]:
-        return self.by_connection.get(name, {})
+    def for_connection(self, name: str) -> list[SentinelLeaf]:
+        """Return the list of :class:`SentinelLeaf` for one connection."""
+        return self.by_connection.get(name, [])
+
+    def path_to_value(self, name: str) -> dict[str, str]:
+        """``{xsoar_path: sentinel_value}`` view — for diff reporting.
+
+        The user-visible identifier in diff reports is the XSOAR path
+        (§4.6 of the design), so the diff comparator keys by path. When
+        multiple leaves share a path (legal for OAuth where role is
+        free-form), later entries overwrite earlier ones, which is fine:
+        their sentinel values differ but the diff label is the same.
+        """
+        return {leaf.path: leaf.value for leaf in self.for_connection(name)}
 
 
 @dataclass
@@ -155,15 +194,23 @@ class RequestSetDiff:
 # --------------------------------------------------------------------------
 
 
-def _make_sentinel(connection_name: str, xsoar_param_path: str) -> str:
+def _make_sentinel(
+    connection_name: str, xsoar_param_path: str, role: str
+) -> str:
     """Build a single sentinel value per §2.3.
 
-    Format: ``__AUTHPARITY__<conn>__<param_path>__<uuid8>``. ASCII-safe,
-    ≥ 40 chars in practice for any non-trivial inputs. The uuid8 suffix
-    is regenerated per call to keep sentinels unique across runs.
+    Format: ``__AUTHPARITY__<conn>__<param_path>__<role>__<uuid8>``.
+    ASCII-safe, ≥ 40 chars in practice for any non-trivial inputs.
+    The uuid8 suffix is regenerated per call to keep sentinels unique
+    across runs. The role substring makes the sentinel
+    grep-attributable to its intended UCP slot — see §2.3's
+    "Why this changed (2026-05)" note for the rationale.
     """
     suffix = uuid.uuid4().hex[:8]
-    return f"{_SENTINEL_PREFIX}{connection_name}__{xsoar_param_path}__{suffix}"
+    return (
+        f"{_SENTINEL_PREFIX}{connection_name}__"
+        f"{xsoar_param_path}__{role}__{suffix}"
+    )
 
 
 def generate_sentinels(details: AuthDetails) -> SentinelMap:
@@ -171,33 +218,50 @@ def generate_sentinels(details: AuthDetails) -> SentinelMap:
 
     Entries with ``interpolated is True`` are skipped — they have no
     user-supplied secret to seed (§Scope). The returned mapping uses
-    ``entry.name`` as the connection key and one sentinel per leaf
-    ``xsoar_params`` path (§2.3).
+    ``entry.name`` as the connection key and one :class:`SentinelLeaf`
+    per ``(xsoar_path, role)`` pair from
+    :attr:`AuthEntry.xsoar_param_map` (§2.3).
     """
     out = SentinelMap()
     for entry in details.auth_types:
         if entry.interpolated:
             continue
-        per_conn: dict[str, str] = {}
-        for xsoar_path in entry.xsoar_params:
-            per_conn[xsoar_path] = _make_sentinel(entry.name, xsoar_path)
-        out.by_connection[entry.name] = per_conn
+        leaves: list[SentinelLeaf] = []
+        for xsoar_path, role in entry.xsoar_param_map.items():
+            leaves.append(
+                SentinelLeaf(
+                    path=xsoar_path,
+                    role=role,
+                    value=_make_sentinel(entry.name, xsoar_path, role),
+                )
+            )
+        out.by_connection[entry.name] = leaves
     return out
 
 
 # --------------------------------------------------------------------------
-# §2.5 — UCP shape mapping + mock builder
+# §2.5 — UCP shape mapping + mock builder (role-driven)
 # --------------------------------------------------------------------------
 
 
 def map_auth_type_to_ucp_shape(
-    entry: AuthEntry, sentinels: dict[str, str]
+    entry: AuthEntry, sentinels: list[SentinelLeaf]
 ) -> dict[str, Any] | None:
     """Build the UCP credential dict for ``entry`` using its sentinels.
 
     Implements the §8.5 ``match`` table on :class:`AuthType`. Returns
     ``None`` for :data:`AuthType.Other` and :data:`AuthType.NoneRequired`
     (no synthesizable shape — handled as skips by the caller).
+
+    The slot-selection inside each per-type helper is **role-driven**:
+    each helper looks up the :class:`SentinelLeaf` whose ``role``
+    matches the slot it's filling. This replaces the pre-2026-05
+    leaf-name heuristic that picked sentinels by inspecting the
+    XSOAR path's suffix (``.identifier`` / ``.password``); the heuristic
+    failed for flat-param Plain configs and for APIKey-with-hiddenusername
+    where the secret sits at ``<id>.password`` but its role is ``"key"``.
+    See §2.3 of ``connectus/auth_parity_test_design.md`` for the full
+    "Why this changed" rationale.
     """
     match entry.type:
         case AuthType.APIKey:
@@ -213,38 +277,81 @@ def map_auth_type_to_ucp_shape(
     return None
 
 
-def _first_sentinel(sentinels: dict[str, str]) -> str:
-    """Return one sentinel from ``sentinels`` (any leaf works for APIKey/OAuth2)."""
-    return next(iter(sentinels.values()), "")
+def _leaves_with_role(
+    sentinels: list[SentinelLeaf], role: str
+) -> list[SentinelLeaf]:
+    """Return all leaves whose ``role`` equals ``role``, lex-sorted by path.
 
-
-def _ucp_shape_api_key(_: AuthEntry, sentinels: dict[str, str]) -> dict[str, Any]:
-    return {"type": "api_key", "api_key": {"key": _first_sentinel(sentinels)}}
-
-
-def _ucp_shape_plain(_: AuthEntry, sentinels: dict[str, str]) -> dict[str, Any]:
-    """Plain auth: pick the .identifier sentinel for username and .password
-    for password. Falls back to insertion order if the dotted paths are absent.
+    Sorting by path makes the per-slot pick deterministic when multiple
+    paths legally share a role (e.g. an APIKey with two paths both
+    mapped to ``"key"``).
     """
-    id_sent = ""
-    pw_sent = ""
-    for path, sentinel in sentinels.items():
-        lower = path.lower()
-        if id_sent == "" and (lower.endswith(".identifier") or "identifier" in lower):
-            id_sent = sentinel
-        elif pw_sent == "" and (lower.endswith(".password") or "password" in lower):
-            pw_sent = sentinel
-    if not id_sent or not pw_sent:
-        values = list(sentinels.values())
-        id_sent = id_sent or (values[0] if values else "")
-        pw_sent = pw_sent or (values[1] if len(values) > 1 else id_sent)
-    return {"type": "plain", "plain": {"username": id_sent, "password": pw_sent}}
+    return sorted(
+        (leaf for leaf in sentinels if leaf.role == role),
+        key=lambda leaf: leaf.path,
+    )
 
 
-def _ucp_shape_oauth2(_: AuthEntry, sentinels: dict[str, str]) -> dict[str, Any]:
+def _ucp_shape_api_key(
+    _: AuthEntry, sentinels: list[SentinelLeaf]
+) -> dict[str, Any]:
+    """APIKey UCP shape — fills ``api_key.key`` with the sentinel whose role
+    is ``"key"``.
+
+    When multiple paths map to ``"key"`` (legal but contrived), the
+    first one lex-sorted by path wins. The validator
+    (:func:`auth_config_parser.validate_auth_details`) guarantees that
+    at least one path is mapped to ``"key"`` for every APIKey entry, so
+    this lookup always finds something for well-formed input.
+    """
+    key_leaves = _leaves_with_role(sentinels, "key")
+    key_value = key_leaves[0].value if key_leaves else ""
+    return {"type": "api_key", "api_key": {"key": key_value}}
+
+
+def _ucp_shape_plain(
+    _: AuthEntry, sentinels: list[SentinelLeaf]
+) -> dict[str, Any]:
+    """Plain UCP shape — fills ``plain.username`` / ``plain.password`` by
+    looking up the leaves whose roles are ``"username"`` / ``"password"``.
+
+    This is the regression-proof replacement for the old leaf-name
+    heuristic that inspected XSOAR-path suffixes (``.identifier`` /
+    ``.password``); see §2.3 of ``auth_parity_test_design.md``. A
+    Plain entry with flat params (e.g.
+    ``xsoar_param_map={"server_user": "username",
+    "server_password": "password"}``) now routes correctly because the
+    role is the source of truth.
+
+    If only one of the two roles is present in the map, the missing
+    slot is filled with an empty string. The Auth Details validator is
+    responsible for rejecting Plain entries that lack the expected
+    roles entirely; this helper does not enforce that policy.
+    """
+    user_leaves = _leaves_with_role(sentinels, "username")
+    pw_leaves = _leaves_with_role(sentinels, "password")
+    username = user_leaves[0].value if user_leaves else ""
+    password = pw_leaves[0].value if pw_leaves else ""
+    return {"type": "plain", "plain": {"username": username, "password": password}}
+
+
+def _ucp_shape_oauth2(
+    _: AuthEntry, sentinels: list[SentinelLeaf]
+) -> dict[str, Any]:
+    """OAuth2* UCP shape — fills ``oauth2.access_token`` with the first
+    sentinel by lex-sorted path.
+
+    TODO: Revisit slot selection once the OAuth2* role enum is locked
+    in ``connectus/column-schemas.md``. The role values for OAuth2*
+    entries are currently free-form (any non-empty string), so we can
+    not pick by a stable role name. Lex-sorting by path mimics the
+    pre-2026-05 behaviour of taking "any" sentinel and is deterministic.
+    """
+    chosen = sorted(sentinels, key=lambda leaf: leaf.path)
+    access_token = chosen[0].value if chosen else ""
     return {
         "type": "oauth2",
-        "oauth2": {"access_token": _first_sentinel(sentinels), "token_type": "Bearer"},
+        "oauth2": {"access_token": access_token, "token_type": "Bearer"},
     }
 
 
@@ -284,16 +391,20 @@ def build_old_params(
     base_params: dict[str, Any],
 ) -> dict[str, Any]:
     """Return a copy of ``base_params`` with sentinels seeded at the
-    ``xsoar_params`` paths for ``connection_name``.
+    XSOAR-path keys of ``xsoar_param_map`` for ``connection_name``.
 
     Dotted paths are expanded into nested dicts (``credentials.password``
     becomes ``{"credentials": {"password": "<sentinel>"}}``). The base
     dict is not mutated.
+
+    Semantics are unchanged from the pre-``xsoar_param_map`` shape:
+    the key set is the same (``xsoar_param_map.keys()`` is what used
+    to be ``xsoar_params``); we now read the leaves from the
+    role-aware :class:`SentinelLeaf` records.
     """
     params = json.loads(json.dumps(base_params))  # deep copy via JSON
-    sentinels = sentinel_map.for_connection(connection_name)
-    for xsoar_path, sentinel in sentinels.items():
-        _set_dotted(params, xsoar_path, sentinel)
+    for leaf in sentinel_map.for_connection(connection_name):
+        _set_dotted(params, leaf.path, leaf.value)
     return params
 
 
@@ -943,7 +1054,7 @@ def run_new(
     docker_cfg: _ccp.DockerConfig | None,
     param_defaults: dict[str, Any] | None = None,
 ) -> RunResult:
-    """Execute the integration with ``xsoar_params`` omitted and UCP on.
+    """Execute the integration with ``xsoar_param_map`` keys omitted and UCP on.
 
     UCP is forced **on**: ``demisto.getUCPCredentials`` is patched in
     the child to feed the sentinels through the UCP injection seam
@@ -955,7 +1066,11 @@ def run_new(
     path at all.
     """
     base = _build_base_params(yml_data, param_defaults=param_defaults)
-    params = _omit_paths(base, auth_entry.xsoar_params)
+    # The new run omits every XSOAR path that the connection's
+    # xsoar_param_map names — i.e. every key the old run seeded with a
+    # sentinel — so the integration is forced down the UCP injection
+    # path for those secrets. (Pre-Commit-4 this read auth_entry.xsoar_params.)
+    params = _omit_paths(base, list(auth_entry.xsoar_param_map.keys()))
     ucp_shape = map_auth_type_to_ucp_shape(
         auth_entry, sentinel_map.for_connection(connection_name)
     )
@@ -1089,16 +1204,39 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
 
 
     def apply_patches():
-        # Branch selectors on CommonServerPython — these decide whether
-        # the integration's code takes the UCP code path at all. They
-        # are NOT credential fetchers; the credential fetcher is the
-        # demisto.getUCPCredentials mock installed below.
-        csp = _sys.modules.get("CommonServerPython")
-        if csp is not None:
-            if hasattr(csp, "is_ucp_enabled"):
-                csp.is_ucp_enabled = lambda *a, **k: _UCP_ENABLED
-            if hasattr(csp, "should_use_ucp_auth"):
-                csp.should_use_ucp_auth = lambda *a, **k: _UCP_ENABLED
+        # Branch selectors — these decide whether the integration's code
+        # takes the UCP code path at all. They are NOT credential fetchers;
+        # the credential fetcher is the demisto.getUCPCredentials mock
+        # installed below.
+        #
+        # In production the integration imports CommonServerPython as a
+        # separate module, but the parity harness concatenates CSP into the
+        # unified file and loads it under the module name
+        # "integration_under_test" (see check_command_params._BOOTSTRAP_TEMPLATE
+        # and prepare_unified_content). So sys.modules["CommonServerPython"]
+        # is None in the child, and a CSP-only lookup would silently no-op.
+        #
+        # Patch every loaded module that exposes BOTH flags. In the child
+        # that's exactly the unified module; in production it's CSP. Either
+        # way, the namespace where BaseClient._http_request resolves these
+        # functions gets overridden.
+        patched_modules = 0
+        for _mod in list(_sys.modules.values()):
+            if _mod is None:
+                continue
+            if hasattr(_mod, "is_ucp_enabled") and hasattr(_mod, "should_use_ucp_auth"):
+                _mod.is_ucp_enabled = lambda *a, **k: _UCP_ENABLED
+                _mod.should_use_ucp_auth = lambda *a, **k: _UCP_ENABLED
+                patched_modules += 1
+        if patched_modules == 0:
+            # Be loud — silent no-op here is exactly the regression that
+            # caused the post-Commit-6 APIVoid parity failure.
+            import sys as _sys_err
+            print(
+                "[ucp_patch] WARNING: no module exposed both is_ucp_enabled "
+                "and should_use_ucp_auth; UCP branch will stay disabled.",
+                file=_sys_err.stderr,
+            )
 
         # Credential fetcher on the demisto object. Only installed for
         # the new run (UCP enabled + creds provided). This is the
@@ -1113,6 +1251,25 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
             return _UCP_CREDS
 
         demisto.getUCPCredentials = _mock_get_ucp_credentials  # type: ignore[attr-defined]
+
+        # H8c fix: BOTH UCP seams need mocking, not just the credential
+        # fetcher. CSP's _inject_ucp_credentials calls the chain
+        #   _resolve_ucp_capability -> get_ucp_method_unique_id
+        #     -> _get_ucp_profiles -> demisto.unifiedConnectorMetadata()
+        # BEFORE it ever calls demisto.getUCPCredentials. The default
+        # demistomock.unifiedConnectorMetadata() returns {}, which trips
+        # the empty-check in CSP._get_ucp_profiles and raises
+        # UcpException — short-circuiting the chain so getUCPCredentials
+        # is never reached and the integration's _apply_ucp_* override
+        # never fires. A single generic profile carrying a
+        # method_unique_id satisfies all three resolution paths
+        # (sub_capability / capability / fallback-first) in
+        # CSP.get_ucp_method_unique_id, because none of them inspect the
+        # method_unique_id itself — they only forward it to the (already
+        # mocked) demisto.getUCPCredentials.
+        demisto.unifiedConnectorMetadata = lambda: {  # type: ignore[attr-defined]
+            "connectionProfiles": [{"method_unique_id": "auth-parity-mock"}]
+        }
 
 
     apply_patches()
@@ -1186,8 +1343,16 @@ def _per_command_result(
     connection_name: str,
     extra_sentinels: list[str],
 ) -> dict[str, Any]:
-    """Build the per-command result block (§5.2 diagnostics + status)."""
-    sentinels = dict(sentinel_map.for_connection(connection_name))
+    """Build the per-command result block (§5.2 diagnostics + status).
+
+    Per §4.6 of the design, the user-visible identifier in each diff
+    entry is still the **XSOAR path** (``"sentinel"`` field in the
+    diff JSON), not the new role-encoded sentinel value — so the
+    sentinels dict here is keyed by path. The role lives inside the
+    sentinel string itself, available for grep but not the primary
+    diff label.
+    """
+    sentinels = dict(sentinel_map.path_to_value(connection_name))
     for extra in extra_sentinels:
         sentinels[f"__oauth_token__::{extra[-8:]}"] = extra
 
@@ -1349,7 +1514,10 @@ def check_connection_parity(
         "status": _connection_status(commands_block),
         "commands": commands_block,
         "diagnostics": {
-            "sentinels": dict(sentinel_map.for_connection(entry.name)),
+            # Per §4.6 — diagnostics expose the XSOAR-path → sentinel
+            # view (the user-facing identifier). The role lives inside
+            # the sentinel value itself for grep-time attribution.
+            "sentinels": dict(sentinel_map.path_to_value(entry.name)),
             "commands": diagnostics_commands,
         },
     }

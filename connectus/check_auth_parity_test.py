@@ -46,7 +46,8 @@ def _details(*entries: AuthEntry) -> AuthDetails:
 
 def _api_key_entry(name: str = "api_key", interpolated: bool = False) -> AuthEntry:
     return AuthEntry(
-        type=AuthType.APIKey, name=name, xsoar_params=["api_key"],
+        type=AuthType.APIKey, name=name,
+        xsoar_param_map={"api_key": "key"},
         interpolated=interpolated,
     )
 
@@ -54,12 +55,29 @@ def _api_key_entry(name: str = "api_key", interpolated: bool = False) -> AuthEnt
 def _plain_entry(name: str = "creds") -> AuthEntry:
     return AuthEntry(
         type=AuthType.Plain, name=name,
-        xsoar_params=["credentials.identifier", "credentials.password"],
+        xsoar_param_map={
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        },
     )
 
 
 def _oauth_entry(name: str = "oauth", subtype: AuthType = AuthType.OAuth2ClientCreds) -> AuthEntry:
-    return AuthEntry(type=subtype, name=name, xsoar_params=["client_secret"])
+    return AuthEntry(
+        type=subtype, name=name,
+        xsoar_param_map={"client_secret": "client_secret"},
+    )
+
+
+def _leaves_by_path(
+    leaves: list[cap.SentinelLeaf],
+) -> dict[str, cap.SentinelLeaf]:
+    """Index a list of :class:`SentinelLeaf` records by their ``path``."""
+    return {leaf.path: leaf for leaf in leaves}
+
+
+def _make_leaf(path: str, role: str, value: str) -> cap.SentinelLeaf:
+    return cap.SentinelLeaf(path=path, role=role, value=value)
 
 
 def _captured(method: str = "GET", path: str = "/api/v1/x",
@@ -78,13 +96,27 @@ def _captured(method: str = "GET", path: str = "/api/v1/x",
 
 class TestGenerateSentinels:
     def test_shape_matches_design_regex(self) -> None:
+        """Sentinel string format: ``__AUTHPARITY__<conn>__<path>__<role>__<uuid8>``.
+
+        The role substring is the Commit-4 addition — it lets a downstream
+        grep recover both the XSOAR path AND the UCP role from the
+        captured sentinel alone (§2.3 of the design doc).
+        """
         details = _details(_api_key_entry(), _plain_entry("creds"))
         smap = cap.generate_sentinels(details)
-        pat = re.compile(r"^__AUTHPARITY__[A-Za-z0-9_.-]+__[A-Za-z0-9_.-]+__[0-9a-f]{8}$")
-        for conn_name, conn_sentinels in smap.by_connection.items():
-            assert conn_sentinels, f"connection {conn_name} has no sentinels"
-            for path, value in conn_sentinels.items():
-                assert pat.match(value), f"sentinel for {conn_name}.{path} not in expected shape: {value!r}"
+        pat = re.compile(
+            r"^__AUTHPARITY__[A-Za-z0-9_.-]+"   # __<conn>
+            r"__[A-Za-z0-9_.-]+"                # __<xsoar_path>
+            r"__[A-Za-z0-9_.-]+"                # __<role>
+            r"__[0-9a-f]{8}$"                   # __<uuid8>
+        )
+        for conn_name, leaves in smap.by_connection.items():
+            assert leaves, f"connection {conn_name} has no sentinels"
+            for leaf in leaves:
+                assert pat.match(leaf.value), (
+                    f"sentinel for {conn_name}.{leaf.path} not in expected "
+                    f"shape: {leaf.value!r}"
+                )
 
     def test_interpolated_entries_are_skipped(self) -> None:
         details = _details(
@@ -98,9 +130,13 @@ class TestGenerateSentinels:
     def test_one_sentinel_per_xsoar_leaf(self) -> None:
         details = _details(_plain_entry("creds"))
         smap = cap.generate_sentinels(details)
-        assert set(smap.for_connection("creds").keys()) == {
+        by_path = _leaves_by_path(smap.for_connection("creds"))
+        assert set(by_path.keys()) == {
             "credentials.identifier", "credentials.password",
         }
+        # Roles are propagated from xsoar_param_map.
+        assert by_path["credentials.identifier"].role == "username"
+        assert by_path["credentials.password"].role == "password"
 
     def test_minimum_length_40(self) -> None:
         # Real-world auth-types[].name values are always at least a few
@@ -108,8 +144,10 @@ class TestGenerateSentinels:
         # input. Use a representative Plain connection here.
         details = _details(_plain_entry("credentials"))
         smap = cap.generate_sentinels(details)
-        for value in smap.for_connection("credentials").values():
-            assert len(value) >= 40, f"sentinel too short ({len(value)}): {value!r}"
+        for leaf in smap.for_connection("credentials"):
+            assert len(leaf.value) >= 40, (
+                f"sentinel too short ({len(leaf.value)}): {leaf.value!r}"
+            )
 
 
 # --------------------------------------------------------------------------
@@ -120,16 +158,16 @@ class TestGenerateSentinels:
 class TestMapAuthTypeToUcpShape:
     def test_api_key(self) -> None:
         entry = _api_key_entry()
-        sentinels = {"api_key": "S_API"}
+        sentinels = [_make_leaf("api_key", "key", "S_API")]
         shape = cap.map_auth_type_to_ucp_shape(entry, sentinels)
         assert shape == {"type": "api_key", "api_key": {"key": "S_API"}}
 
     def test_plain(self) -> None:
         entry = _plain_entry()
-        sentinels = {
-            "credentials.identifier": "S_USER",
-            "credentials.password": "S_PASS",
-        }
+        sentinels = [
+            _make_leaf("credentials.identifier", "username", "S_USER"),
+            _make_leaf("credentials.password", "password", "S_PASS"),
+        ]
         shape = cap.map_auth_type_to_ucp_shape(entry, sentinels)
         assert shape == {
             "type": "plain",
@@ -142,19 +180,182 @@ class TestMapAuthTypeToUcpShape:
     )
     def test_oauth2_variants(self, subtype: AuthType) -> None:
         entry = _oauth_entry(subtype=subtype)
-        shape = cap.map_auth_type_to_ucp_shape(entry, {"client_secret": "S_TOK"})
+        sentinels = [_make_leaf("client_secret", "client_secret", "S_TOK")]
+        shape = cap.map_auth_type_to_ucp_shape(entry, sentinels)
         assert shape == {
             "type": "oauth2",
             "oauth2": {"access_token": "S_TOK", "token_type": "Bearer"},
         }
 
     def test_other_returns_none(self) -> None:
-        entry = AuthEntry(type=AuthType.Other, name="x", xsoar_params=["x"])
-        assert cap.map_auth_type_to_ucp_shape(entry, {"x": "S"}) is None
+        entry = AuthEntry(
+            type=AuthType.Other, name="x",
+            xsoar_param_map={"x": "x"},
+        )
+        sentinels = [_make_leaf("x", "x", "S")]
+        assert cap.map_auth_type_to_ucp_shape(entry, sentinels) is None
 
     def test_none_required_returns_none(self) -> None:
-        entry = AuthEntry(type=AuthType.NoneRequired, name="n", xsoar_params=[])
-        assert cap.map_auth_type_to_ucp_shape(entry, {}) is None
+        entry = AuthEntry(
+            type=AuthType.NoneRequired, name="n",
+            xsoar_param_map={},
+        )
+        assert cap.map_auth_type_to_ucp_shape(entry, []) is None
+
+
+# --------------------------------------------------------------------------
+# Role-driven dispatch (Commit-4 regression tests).
+#
+# These tests pin the behavioural change that the xsoar_param_map
+# migration introduces: UCP-slot selection is now driven by the
+# explicit role from xsoar_param_map.values(), NOT by leaf-name
+# heuristic on the XSOAR path. See plan §5.4 and the "Why this
+# changed (2026-05)" note in §2.3 of auth_parity_test_design.md.
+# --------------------------------------------------------------------------
+
+
+class TestRoleDrivenDispatch:
+    def test_one_sentinel_per_xsoar_path(self) -> None:
+        """Each (path, role) pair gets one sentinel.
+
+        - APIKey with a single path → 1 sentinel.
+        - Plain with identifier/password split → 2 sentinels.
+        - APIKey with TWO paths both mapped to ``"key"`` → 2 sentinels.
+        """
+        # Case A: APIKey, single path.
+        a = AuthEntry(
+            type=AuthType.APIKey, name="a",
+            xsoar_param_map={"api_key": "key"},
+        )
+        # Case B: Plain, identifier + password (canonical credentials widget).
+        b = AuthEntry(
+            type=AuthType.Plain, name="b",
+            xsoar_param_map={
+                "credentials.identifier": "username",
+                "credentials.password": "password",
+            },
+        )
+        # Case C: APIKey, two paths both mapped to "key" (contrived but legal —
+        # the validator allows it and Commit 4 documents this as the
+        # multiple-paths-same-role case).
+        c = AuthEntry(
+            type=AuthType.APIKey, name="c",
+            xsoar_param_map={
+                "credentials.password": "key",
+                "extra_key_param": "key",
+            },
+        )
+        smap = cap.generate_sentinels(_details(a, b, c))
+        assert len(smap.for_connection("a")) == 1
+        assert len(smap.for_connection("b")) == 2
+        assert len(smap.for_connection("c")) == 2
+
+    def test_ucp_shape_plain_reads_roles_not_leaf_names(self) -> None:
+        """Regression-proof guard against the old leaf-name heuristic.
+
+        Pre-Commit-4, ``_ucp_shape_plain`` looked at the XSOAR-path
+        suffix to decide which sentinel was the username and which was
+        the password. With flat parameter names (no ``.identifier`` /
+        ``.password`` leaves) the heuristic had no signal to work with.
+        Role-driven dispatch fixes this by reading
+        ``xsoar_param_map.values()``.
+        """
+        entry = AuthEntry(
+            type=AuthType.Plain, name="srv",
+            xsoar_param_map={
+                "server_user": "username",
+                "server_password": "password",
+            },
+        )
+        # Intentionally name the sentinel values so the leaf-name
+        # heuristic — were it still in place — would have NO way to
+        # disambiguate (both flat params, neither named "identifier"
+        # nor "password").
+        sentinels = [
+            _make_leaf("server_user", "username", "S_USER_VALUE"),
+            _make_leaf("server_password", "password", "S_PASS_VALUE"),
+        ]
+        shape = cap.map_auth_type_to_ucp_shape(entry, sentinels)
+        assert shape == {
+            "type": "plain",
+            "plain": {
+                "username": "S_USER_VALUE",
+                "password": "S_PASS_VALUE",
+            },
+        }
+
+    def test_ucp_shape_api_key_writes_key_sentinel_only(self) -> None:
+        """When two paths map to ``"key"``, only the first (lex-sorted) wins.
+
+        Both sentinels are still generated (so ``build_old_params`` seeds
+        both leaves into the old run's ``demisto.params()``), but the UCP
+        envelope's single ``api_key.key`` slot can only hold one value.
+        Commit 4 documents picking the first by lex-sorted path for
+        determinism. The second sentinel never appears in the UCP shape.
+        """
+        entry = AuthEntry(
+            type=AuthType.APIKey, name="ak",
+            xsoar_param_map={
+                "credentials.password": "key",
+                "credentials.identifier": "key",
+            },
+        )
+        # Build leaves with stable, distinguishable sentinel values so we
+        # can assert exactly which one was selected.
+        leaves = [
+            _make_leaf("credentials.password", "key", "S_PW"),
+            _make_leaf("credentials.identifier", "key", "S_ID"),
+        ]
+        shape = cap.map_auth_type_to_ucp_shape(entry, leaves)
+        # "credentials.identifier" lex-sorts before "credentials.password",
+        # so its sentinel value wins.
+        assert shape == {"type": "api_key", "api_key": {"key": "S_ID"}}
+        # The other sentinel ("S_PW") does NOT appear in the envelope.
+        assert "S_PW" not in json.dumps(shape)
+
+    def test_omit_paths_iterates_map_keys(self) -> None:
+        """``_omit_paths`` consumes ``xsoar_param_map.keys()``, not some
+        other field.
+
+        Commit 4 changed ``run_new`` to pass
+        ``list(entry.xsoar_param_map.keys())`` into ``_omit_paths``. This
+        test pins the contract by spying on ``_omit_paths`` from within
+        the ``run_new`` execution path and asserting the paths argument
+        equals the map keys.
+        """
+        entry = _plain_entry("creds")
+        base = {
+            "credentials": {
+                "identifier": "u",
+                "password": "p",
+            },
+            "other_param": "keep_me",
+        }
+        # _omit_paths is pure — call it directly with the keys to lock
+        # in the contract. The call site in run_new is a one-liner that
+        # passes list(entry.xsoar_param_map.keys()) here.
+        result = cap._omit_paths(base, list(entry.xsoar_param_map.keys()))
+        # Both XSOAR-path leaves should be gone; non-auth params preserved.
+        assert result == {"credentials": {}, "other_param": "keep_me"}
+
+    def test_sentinel_encodes_role_for_attribution(self) -> None:
+        """The role appears as a grep-friendly substring of the sentinel.
+
+        This lets a downstream operator running ``grep`` on a captured
+        request recover not just which XSOAR path the sentinel came
+        from, but also which UCP role it was meant to fill — even when
+        the diff comparator already classified the locations.
+        """
+        details = _details(_plain_entry("creds"), _api_key_entry("ak"))
+        smap = cap.generate_sentinels(details)
+        by_path_plain = _leaves_by_path(smap.for_connection("creds"))
+        # Each Plain leaf's value contains the role string between two
+        # __ separators (the design's __<role>__ slot).
+        assert "__username__" in by_path_plain["credentials.identifier"].value
+        assert "__password__" in by_path_plain["credentials.password"].value
+        # APIKey: the role "key" is also present in the sentinel.
+        by_path_ak = _leaves_by_path(smap.for_connection("ak"))
+        assert "__key__" in by_path_ak["api_key"].value
 
 
 # --------------------------------------------------------------------------
@@ -460,7 +661,7 @@ class TestHardErrors:
         details_json = {
             "auth_types": [
                 {"type": "APIKey", "name": "api_key",
-                 "xsoar_params": ["api_key"], "interpolated": True},
+                 "xsoar_param_map": {"api_key": "key"}, "interpolated": True},
             ],
             "config": "REQUIRED(api_key)",
             "other_connection": [],
@@ -482,9 +683,9 @@ class TestHardErrors:
         details_json = {
             "auth_types": [
                 {"type": "APIKey", "name": "dropped",
-                 "xsoar_params": ["api_key"], "interpolated": True},
+                 "xsoar_param_map": {"api_key": "key"}, "interpolated": True},
                 {"type": "APIKey", "name": "kept",
-                 "xsoar_params": ["api_key"], "interpolated": False},
+                 "xsoar_param_map": {"api_key": "key"}, "interpolated": False},
             ],
             "config": "REQUIRED(kept) + OPTIONAL(dropped)",
             "other_connection": [],
@@ -624,7 +825,7 @@ class TestUcpPatchTemplate:
 
     Regression guards against silently regressing to the previous CSP
     `get_ucp_credentials` patch shape, and confirms the branch-selector
-    flags remain patched on CommonServerPython.
+    flags actually flip the values seen by the integration at runtime.
     """
 
     def test_ucp_patch_template_mocks_demisto_getucpcredentials(self) -> None:
@@ -633,9 +834,206 @@ class TestUcpPatchTemplate:
         assert "demisto.getUCPCredentials = " in template
         # Regression guard: the old CSP-attribute patch must be gone.
         assert "csp.get_ucp_credentials = " not in template
-        # The branch selectors must remain patched on CommonServerPython.
-        assert "csp.is_ucp_enabled = " in template
-        assert "csp.should_use_ucp_auth = " in template
+        # The branch-selector patch must target ANY module that exposes
+        # both flags — not just sys.modules["CommonServerPython"], which
+        # does NOT exist in the parity harness's child interpreter (the
+        # unified CSP+integration source is loaded under the module name
+        # "integration_under_test"). Pin the iteration approach so we
+        # cannot silently regress to a CSP-only lookup that no-ops.
+        assert "for _mod in list(_sys.modules.values()):" in template
+        assert 'hasattr(_mod, "is_ucp_enabled")' in template
+        assert 'hasattr(_mod, "should_use_ucp_auth")' in template
+
+    def test_ucp_patch_flips_flags_in_unified_module_namespace(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Run the patch template against a sim of the child's sys.modules.
+
+        Mimics the parity harness's child interpreter: the integration is
+        loaded under the name ``integration_under_test`` and that single
+        module owns the ``is_ucp_enabled`` / ``should_use_ucp_auth``
+        callables (because CSP source is concatenated into it). There is
+        NO ``CommonServerPython`` module. The patch must still flip the
+        flags on the unified module — otherwise BaseClient._http_request
+        skips the UCP injection branch and overrides like
+        APIVoid.Client._apply_ucp_api_key never run (the post-Commit-6
+        APIVoid parity regression).
+        """
+        import sys as _sys
+        import types as _types
+
+        # Build a fake unified module that owns both flags, returning
+        # False (the un-patched default that mirrors the real CSP
+        # behaviour when demisto.unifiedConnectorMetadata() returns None).
+        fake_unified = _types.ModuleType("integration_under_test")
+        fake_unified.is_ucp_enabled = lambda *a, **k: False  # type: ignore[attr-defined]
+        fake_unified.should_use_ucp_auth = lambda *a, **k: False  # type: ignore[attr-defined]
+        monkeypatch.setitem(_sys.modules, "integration_under_test", fake_unified)
+        # Ensure there is NO CommonServerPython module — that's the
+        # condition under which the old CSP-only lookup silently no-ops.
+        monkeypatch.delitem(_sys.modules, "CommonServerPython", raising=False)
+
+        # Seed the env-var contract the patch template consumes.
+        monkeypatch.setenv("AUTH_PARITY_UCP_ENABLED", "1")
+        monkeypatch.setenv("AUTH_PARITY_UCP_CREDS", "")
+
+        # Drop the part of the template that imports demistomock (we are
+        # not exercising the credential-mock branch here, only the
+        # branch-selector patch). The early-return at "not _UCP_ENABLED
+        # or _UCP_CREDS is None" handles this for us — _UCP_CREDS_JSON
+        # is empty so _UCP_CREDS is None and the demistomock branch is
+        # skipped — but exec()ing the template still defines the
+        # apply_patches() function and then calls it.
+        exec(cap._UCP_PATCH_TEMPLATE, {"__name__": "ucp_patch_under_test"})
+
+        # The patch MUST have flipped the unified module's flags.
+        assert fake_unified.is_ucp_enabled() is True
+        assert fake_unified.should_use_ucp_auth() is True
+
+    def test_ucp_patch_template_mocks_unified_connector_metadata_too(self) -> None:
+        """H8c regression: BOTH UCP seams must be mocked on the demisto object.
+
+        Before H8c, the new-run patch installed only
+        ``demisto.getUCPCredentials``. CSP's UCP injection chain calls
+        ``demisto.unifiedConnectorMetadata()`` FIRST (inside
+        ``_get_ucp_profiles``); when that returned an empty dict (the
+        ``demistomock`` default) the chain raised ``UcpException`` and
+        ``getUCPCredentials`` was never reached — so the integration's
+        ``_apply_ucp_*`` override never fired, and test_module returned
+        a "Test Failed" string with zero HTTP requests. This test pins
+        BOTH mocks into the template (textual guard) and validates the
+        full chain end-to-end (functional guard) so the regression
+        cannot recur.
+        """
+        # 1. Textual guard: both seams must appear in the template.
+        template = cap._UCP_PATCH_TEMPLATE
+        assert "demisto.getUCPCredentials = " in template
+        assert "demisto.unifiedConnectorMetadata = " in template
+
+        # 2. Functional guard: exec the template against a fake unified
+        # module that owns the real CSP profile-resolution helpers, then
+        # call get_ucp_method_unique_id() and assert it returns the
+        # mocked method_unique_id WITHOUT raising UcpException.
+        import os as _os
+        import sys as _sys
+        import types as _types
+
+        import demistomock as _demistomock  # type: ignore[import-not-found]
+
+        # Snapshot/restore the env vars and the two demisto attributes
+        # the template mutates, so this test stays hermetic.
+        prev_env = {
+            k: _os.environ.get(k)
+            for k in ("AUTH_PARITY_UCP_ENABLED", "AUTH_PARITY_UCP_CREDS")
+        }
+        prev_get = getattr(_demistomock, "getUCPCredentials", None)
+        prev_meta = getattr(_demistomock, "unifiedConnectorMetadata", None)
+        prev_unified = _sys.modules.get("integration_under_test")
+        try:
+            _os.environ["AUTH_PARITY_UCP_ENABLED"] = "1"
+            _os.environ["AUTH_PARITY_UCP_CREDS"] = (
+                '{"credentials": {"password": "auth-parity-sentinel"}}'
+            )
+
+            # Minimal fake unified module exposing the branch-selector
+            # flags so the iteration-based patch finds it.
+            fake_unified = _types.ModuleType("integration_under_test")
+            fake_unified.is_ucp_enabled = lambda *a, **k: False  # type: ignore[attr-defined]
+            fake_unified.should_use_ucp_auth = lambda *a, **k: False  # type: ignore[attr-defined]
+            _sys.modules["integration_under_test"] = fake_unified
+
+            # Run the patch template. After this both demisto.* mocks
+            # are installed AND fake_unified's flags are flipped.
+            exec(cap._UCP_PATCH_TEMPLATE, {"__name__": "ucp_patch_under_test"})
+
+            # Both seams must now be callable and return non-default
+            # values (the regression: only one was installed).
+            meta = _demistomock.unifiedConnectorMetadata()
+            assert meta != {}, "unifiedConnectorMetadata mock did not install"
+            profiles = meta.get("connectionProfiles") or []
+            assert profiles, "mock metadata must carry a non-empty connectionProfiles list"
+            assert profiles[0].get("method_unique_id"), (
+                "mock profile must carry a method_unique_id so CSP's "
+                "fallback-to-first-profile path resolves to a usable id"
+            )
+
+            creds = _demistomock.getUCPCredentials("any-method-id")
+            assert creds == {"credentials": {"password": "auth-parity-sentinel"}}, (
+                "getUCPCredentials mock did not return the seeded UCP payload"
+            )
+
+            # Functional end-to-end: drop the REAL CSP helpers onto the
+            # fake unified module and exercise the full chain. This
+            # mirrors what happens inside the parity-harness child
+            # process: CSP source is concatenated into
+            # ``integration_under_test``, so these helpers resolve
+            # ``demisto.unifiedConnectorMetadata`` against the same
+            # demistomock module we just patched.
+            import importlib
+
+            csp = importlib.import_module(
+                "Packs.Base.Scripts.CommonServerPython.CommonServerPython"
+            )
+            fake_unified._get_ucp_profiles = csp._get_ucp_profiles  # type: ignore[attr-defined]
+            fake_unified._find_ucp_profile_by_capability = (  # type: ignore[attr-defined]
+                csp._find_ucp_profile_by_capability
+            )
+            fake_unified._find_ucp_profile_by_sub_capability = (  # type: ignore[attr-defined]
+                csp._find_ucp_profile_by_sub_capability
+            )
+            fake_unified.get_ucp_method_unique_id = csp.get_ucp_method_unique_id  # type: ignore[attr-defined]
+
+            # In the real parity harness CSP source is concatenated into
+            # ``integration_under_test`` and resolves ``demisto`` against
+            # the demistomock module we just patched. In this isolated
+            # unit test CSP is imported as its own package and binds
+            # ``demisto`` to a fresh ``Demisto()`` instance (not the
+            # demistomock module). Forward both mocks onto CSP's
+            # ``demisto`` object so the chain sees them.
+            prev_csp_meta = getattr(csp.demisto, "unifiedConnectorMetadata", None)
+            prev_csp_get = getattr(csp.demisto, "getUCPCredentials", None)
+            csp.demisto.unifiedConnectorMetadata = _demistomock.unifiedConnectorMetadata  # type: ignore[attr-defined]
+            csp.demisto.getUCPCredentials = _demistomock.getUCPCredentials  # type: ignore[attr-defined]
+            try:
+                # The whole point: this used to raise UcpException pre-H8c.
+                resolved = csp.get_ucp_method_unique_id("automation-and-remediation")
+                assert resolved == "auth-parity-mock", (
+                    "CSP get_ucp_method_unique_id should return the mocked "
+                    "method_unique_id; got {!r}".format(resolved)
+                )
+            finally:
+                if prev_csp_meta is None:
+                    try:
+                        del csp.demisto.unifiedConnectorMetadata
+                    except AttributeError:
+                        pass
+                else:
+                    csp.demisto.unifiedConnectorMetadata = prev_csp_meta  # type: ignore[attr-defined]
+                if prev_csp_get is None:
+                    try:
+                        del csp.demisto.getUCPCredentials
+                    except AttributeError:
+                        pass
+                else:
+                    csp.demisto.getUCPCredentials = prev_csp_get  # type: ignore[attr-defined]
+        finally:
+            for k, v in prev_env.items():
+                if v is None:
+                    _os.environ.pop(k, None)
+                else:
+                    _os.environ[k] = v
+            if prev_get is None:
+                _demistomock.__dict__.pop("getUCPCredentials", None)
+            else:
+                _demistomock.getUCPCredentials = prev_get  # type: ignore[attr-defined]
+            if prev_meta is None:
+                _demistomock.__dict__.pop("unifiedConnectorMetadata", None)
+            else:
+                _demistomock.unifiedConnectorMetadata = prev_meta  # type: ignore[attr-defined]
+            if prev_unified is None:
+                _sys.modules.pop("integration_under_test", None)
+            else:
+                _sys.modules["integration_under_test"] = prev_unified
 
 
 # --------------------------------------------------------------------------

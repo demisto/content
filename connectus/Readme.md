@@ -202,14 +202,15 @@ python3 connectus/workflow_state.py show-step "Cisco Spark" "Auth Details"
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
 # Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
-# Each auth_types[] entry is one full UCP connection type. xsoar_params lists
-# the XSOAR field paths that supply its secrets (credentials params expand to
-# `<paramid>.identifier` + `<paramid>.password`). The `other_connection` field
-# is a flat sorted list of YML param ids that are connection-adjacent but not
-# auth secrets (url, proxy, insecure, port, host, region, ...). It lives
-# INSIDE the Auth Details JSON, not as a separate CSV column. See
-# column-schemas.md.
-python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)","other_connection":["insecure","proxy","url"]}'
+# Each auth_types[] entry is one full UCP connection type. xsoar_param_map is
+# a dict whose keys are XSOAR field paths supplying the secrets and whose
+# values are the role each field plays in the connection (credentials params
+# expand to `<paramid>.identifier` + `<paramid>.password` leaves). The
+# `other_connection` field is a flat sorted list of YML param ids that are
+# connection-adjacent but not auth secrets (url, proxy, insecure, port, host,
+# region, ...). It lives INSIDE the Auth Details JSON, not as a separate CSV
+# column. See column-schemas.md (incl. the per-type role-enum table).
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"credentials","xsoar_param_map":{"credentials.password":"key"}}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
 
 # Set Params to Commands (validates JSON; cascade-resets steps #4-#14).
 # REJECTED if any param in the payload also appears in Auth Details
@@ -247,7 +248,7 @@ python3 connectus/workflow_state.py list
 python3 connectus/workflow_state.py list-by-assignee "John Doe"
 
 # Print every YML param id declared in the integration's Auth Details
-# (auth_types[].xsoar_params projected to bare YML ids + other_connection).
+# (auth_types[].xsoar_param_map keys projected to bare YML ids + other_connection).
 # This is the exclusion set that 'set-params-to-commands' enforces — any
 # param appearing here MUST NOT appear in the per-command lists.
 # Default output is one id per line; --format=json emits a JSON object.
@@ -278,7 +279,7 @@ python3 connectus/workflow_state.py auth-params "Cisco Spark" --format=json
 | `list-by-connector <id>` | List integrations in one connector |
 | `set-assignee-by-connector <id> <name>` | Assign every integration in a connector |
 | `files <id> [--format=text\|paths\|json]` | Print all known source-file paths for an integration |
-| `auth-params <id> [--format=text\|json]` | Print the auth-derived YML param ignore set (auth_types[].xsoar_params projected to bare YML ids + other_connection). Used by `set-params-to-commands` to enforce disjointness; the analyzer can pull this list automatically via `--integration-id`. |
+| `auth-params <id> [--format=text\|json]` | Print the auth-derived YML param ignore set (auth_types[].xsoar_param_map keys projected to bare YML ids + other_connection). Used by `set-params-to-commands` to enforce disjointness; the analyzer can pull this list automatically via `--integration-id`. |
 | `help` | Print module docstring |
 
 ### Programmatic API (for AI agents / other scripts)
@@ -414,7 +415,7 @@ $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_params":["credentials.identifier","credentials.password"]}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_param_map":{"credentials.identifier":"username","credentials.password":"password"}}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
 Set 'Auth Details' (step 2/14) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 

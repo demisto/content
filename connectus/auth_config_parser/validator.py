@@ -7,7 +7,13 @@ from __future__ import annotations
 
 import json
 
-from auth_config_parser.parser import _VALID_AUTH_TYPE_VALUES, _parse_config_impl
+from auth_config_parser.parser import (
+    _ROLE_ENUM_BY_TYPE,
+    _VALID_AUTH_TYPE_VALUES,
+    _legacy_xsoar_params_error,
+    _parse_config_impl,
+)
+from auth_config_parser.types import AuthType
 
 
 # ---------------------------------------------------------------------------
@@ -53,8 +59,20 @@ def validate_auth_details(data: str | dict) -> list[str]:
     - JSON parsing
     - Required keys: ``auth_types``, ``config``, ``other_connection``
     - ``auth_types[]`` entry shape (type enum, name uniqueness,
-      xsoar_params non-empty list of non-empty strings, interpolated
-      bool)
+      ``xsoar_param_map`` non-empty ``dict[str, str]`` with non-empty
+      keys and non-empty role values, ``interpolated`` bool)
+    - ``xsoar_param_map`` role-value enum enforcement per
+      ``auth_types[].type``:
+
+      * ``APIKey`` → values must be from ``{"key"}``.
+      * ``Plain`` → values must be from ``{"username", "password"}``.
+      * ``OAuth2ClientCreds`` / ``OAuth2AuthCode`` / ``OAuth2JWT`` /
+        ``Other`` → any non-empty string (enum deliberately
+        undefined for now; to be narrowed in a future PR).
+      * ``NoneRequired`` → no entries in ``auth_types[]``; rule moot.
+    - Legacy ``xsoar_params`` key is **rejected** with a
+      migration-help error pointing at
+      ``connectus/column-schemas.md`` §Auth Details.
     - ``auth_types[]`` sort order by ``(type, name)``
     - ``config`` expression syntax (via :func:`validate_config`)
     - ``config`` operand names cross-referenced against
@@ -137,25 +155,83 @@ def validate_auth_details(data: str | dict) -> list[str]:
             else:
                 seen_names.add(entry["name"])
                 entry_name_ok = True
-            if "xsoar_params" not in entry:
-                errors.append(f"auth_types[{i}]: missing 'xsoar_params'")
-            elif not isinstance(entry["xsoar_params"], list):
+            # --- xsoar_param_map validation ---
+            # Legacy key: hard-reject with migration-help guidance.
+            # The rejection fires whether or not xsoar_param_map is
+            # also present.
+            legacy_present = "xsoar_params" in entry
+            if legacy_present:
+                errors.append(_legacy_xsoar_params_error(i))
+            if "xsoar_param_map" not in entry:
+                # Only emit the missing-key error when the legacy key
+                # is absent — otherwise the legacy-rejection message
+                # is the more informative signal.
+                if not legacy_present:
+                    errors.append(
+                        f"auth_types[{i}].xsoar_param_map: missing "
+                        "'xsoar_param_map' (required and non-empty). "
+                        "See connectus/column-schemas.md §Auth Details "
+                        "for the new shape."
+                    )
+            elif not isinstance(entry["xsoar_param_map"], dict):
                 errors.append(
-                    f"auth_types[{i}]: 'xsoar_params' must be a list, "
-                    f"got {type(entry['xsoar_params']).__name__}"
+                    f"auth_types[{i}].xsoar_param_map: must be an "
+                    f"object, got "
+                    f"{type(entry['xsoar_param_map']).__name__}. See "
+                    "connectus/column-schemas.md §Auth Details for "
+                    "the new shape."
                 )
-            elif len(entry["xsoar_params"]) == 0:
+            elif len(entry["xsoar_param_map"]) == 0:
                 errors.append(
-                    f"auth_types[{i}]: 'xsoar_params' must contain at "
-                    "least one entry"
+                    f"auth_types[{i}].xsoar_param_map: must be a "
+                    "non-empty object (each entry must declare at "
+                    "least one xsoar field path). See "
+                    "connectus/column-schemas.md §Auth Details."
                 )
             else:
-                for j, p in enumerate(entry["xsoar_params"]):
-                    if not isinstance(p, str) or not p:
+                # Structural per-(key,value) check.
+                structural_ok = True
+                for k, v in entry["xsoar_param_map"].items():
+                    if not isinstance(k, str) or not k:
                         errors.append(
-                            f"auth_types[{i}]: xsoar_params[{j}] must be "
-                            "a non-empty string"
+                            f"auth_types[{i}].xsoar_param_map: key "
+                            f"{k!r} must be a non-empty string"
                         )
+                        structural_ok = False
+                        continue
+                    if not isinstance(v, str):
+                        errors.append(
+                            f"auth_types[{i}].xsoar_param_map: value "
+                            f"for key '{k}' must be a string, got "
+                            f"{type(v).__name__}"
+                        )
+                        structural_ok = False
+                        continue
+                    if not v:
+                        errors.append(
+                            f"auth_types[{i}].xsoar_param_map: value "
+                            f"for key '{k}' must be a non-empty string"
+                        )
+                        structural_ok = False
+                        continue
+                # Per-type role-enum check (only when the entry's
+                # type parsed cleanly AND every (key, value) pair
+                # passed the structural check).
+                if entry_type_ok and structural_ok:
+                    enum_at = AuthType(entry["type"])
+                    allowed = _ROLE_ENUM_BY_TYPE.get(enum_at)
+                    if allowed is not None:
+                        for k, v in entry["xsoar_param_map"].items():
+                            if v not in allowed:
+                                allowed_list = sorted(allowed)
+                                errors.append(
+                                    f"auth_types[{i}].xsoar_param_map "
+                                    f"(type={enum_at.value}): value for "
+                                    f"key '{k}' must be one of "
+                                    f"{allowed_list} (got '{v}'). See "
+                                    "connectus/column-schemas.md "
+                                    "§Auth Details for the role table."
+                                )
             if "interpolated" in entry and not isinstance(
                 entry["interpolated"], bool
             ):

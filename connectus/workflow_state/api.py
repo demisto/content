@@ -558,9 +558,10 @@ def _check_params_to_commands_overlap(integration_id: str, payload: dict) -> Non
         "",
         f"  If a listed param is *truly* used per-command and was "
         f"misclassified into 'Auth Details', revert to Step 1 with "
-        f"'set-auth' and remove it from 'auth_types[].xsoar_params' "
-        f"or 'other_connection' first. Do NOT bypass this rejection "
-        f"by hand-stripping just to make the call go through.",
+        f"'set-auth' and remove it from 'auth_types[].xsoar_param_map' "
+        f"(drop the offending key) or 'other_connection' first. Do NOT "
+        f"bypass this rejection by hand-stripping just to make the "
+        f"call go through.",
     ])
 
     raise WorkflowError("\n".join(lines))

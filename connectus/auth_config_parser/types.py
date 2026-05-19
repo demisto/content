@@ -55,26 +55,43 @@ class AuthEntry:
     Attributes:
         type: The auth-type enum value.
         name: Free-form logical id (unique within the row).
-        xsoar_params: XSOAR field paths supplying secrets for this
-            connection type. Bare ids or dotted forms.
+        xsoar_param_map: Mapping from XSOAR field path (bare id or
+            dotted form like ``"credentials.identifier"``) to the
+            role that secret plays inside the ConnectUs envelope
+            for this connection. Required and non-empty for every
+            ``AuthEntry``, including entries with
+            ``interpolated=True``. The allowed role values are
+            constrained per ``type`` — see the table in
+            ``connectus/column-schemas.md`` ("Auth Details" §
+            "type → allowed role values"):
+
+            - ``APIKey`` → values must be ``"key"``.
+            - ``Plain`` → values must be ``"username"`` or ``"password"``.
+            - ``OAuth2ClientCreds`` / ``OAuth2AuthCode`` /
+              ``OAuth2JWT`` / ``Other`` → any non-empty string
+              (enum deliberately undefined for now).
+            - ``NoneRequired`` → does not appear in ``auth_types[]``.
+
         interpolated: When True, the value is templated at runtime
             rather than supplied by the user. Defaults to False.
 
     Examples:
         >>> entry = AuthEntry(
         ...     type=AuthType.APIKey,
-        ...     name="api_key",
-        ...     xsoar_params=["api_key"],
+        ...     name="credentials",
+        ...     xsoar_param_map={"credentials.password": "key"},
         ... )
         >>> entry.type
         <AuthType.APIKey: 'APIKey'>
         >>> entry.interpolated
         False
+        >>> entry.xsoar_param_map
+        {'credentials.password': 'key'}
     """
 
     type: AuthType
     name: str
-    xsoar_params: list[str]
+    xsoar_param_map: dict[str, str]
     interpolated: bool = False
 
 
@@ -150,7 +167,7 @@ class AuthDetails:
         >>> details = AuthDetails(
         ...     auth_types=[
         ...         AuthEntry(type=AuthType.APIKey, name="api_key",
-        ...                   xsoar_params=["api_key"]),
+        ...                   xsoar_param_map={"api_key": "key"}),
         ...     ],
         ...     config=ConfigExpression(clauses=[
         ...         ConfigClause(operator=ClauseOperator.REQUIRED,

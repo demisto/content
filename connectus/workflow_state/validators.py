@@ -27,6 +27,12 @@ def validate_auth_detail(value: str) -> list[str]:
 
     Backward-compatible wrapper that delegates to
     :func:`auth_config_parser.validate_auth_details`.
+
+    The schema rules (including the per-``type`` role-enum table that
+    constrains the values of ``auth_types[].xsoar_param_map``) live in
+    ``connectus/column-schemas.md`` § "Auth Details". The legacy
+    ``xsoar_params`` key (pre-2026-05) is hard-rejected by the
+    delegated validator with a migration-help error.
     """
     return _pkg_validate_auth_details(value)
 
