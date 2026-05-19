@@ -996,6 +996,30 @@ class TestTestModuleCommand:
             result = test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
             assert "Authorization Error" in result
 
+    @freeze_time("2021-01-10T00:00:00Z")
+    def test_test_module_calls_fetch_alerts_without_retries(self, client, mocker):
+        """
+        Given:
+            - Valid client with credentials
+            - Behavior Analytics event type
+        When:
+            - Calling test_module_command
+        Then:
+            - Ensure _fetch_alerts is called with enable_retries=False
+              to avoid long retry delays that cause platform timeouts
+        """
+        from iManageThreatManager import test_module_command
+
+        mock_fetch = mocker.patch.object(client, "_fetch_alerts", return_value=[])
+
+        test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
+
+        mock_fetch.assert_called_once()
+        _, kwargs = mock_fetch.call_args
+        assert (
+            kwargs.get("enable_retries") is False or mock_fetch.call_args[0][4] is False
+        ), "test_module_command must call _fetch_alerts with enable_retries=False to prevent timeout"
+
 
 class TestGetEventsCommand:
     """Tests for get_events_command function"""
