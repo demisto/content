@@ -20,6 +20,7 @@ from ArmisEventCollector import (
     datetime,
     fetch_events,
     timedelta,
+    timezone,
 )
 from freezegun import freeze_time
 
@@ -1468,7 +1469,7 @@ class TestIsTokenStillFresh:
         Then:
             - Returns True.
         """
-        generated_at = (datetime(2023, 6, 15, 11, 50, 0)).isoformat()
+        generated_at = (datetime(2023, 6, 15, 11, 50, 0, tzinfo=timezone.utc)).isoformat()
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
 
         result = _real_is_token_still_fresh(MagicMock())
@@ -1485,7 +1486,7 @@ class TestIsTokenStillFresh:
         Then:
             - Returns False.
         """
-        generated_at = (datetime(2023, 6, 15, 11, 34, 0)).isoformat()
+        generated_at = (datetime(2023, 6, 15, 11, 34, 0, tzinfo=timezone.utc)).isoformat()
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
 
         result = _real_is_token_still_fresh(MagicMock())
@@ -1533,7 +1534,7 @@ class TestIsTokenStillFresh:
             - Returns False (threshold is exclusive: age < threshold).
         """
         # TOKEN_TTL_SECONDS=1800, TOKEN_REFRESH_BUFFER_SECONDS=300, threshold=1500s=25min
-        generated_at = (datetime(2023, 6, 15, 11, 35, 0)).isoformat()
+        generated_at = (datetime(2023, 6, 15, 11, 35, 0, tzinfo=timezone.utc)).isoformat()
         mocker.patch("ArmisEventCollector.demisto.getIntegrationContext", return_value={"token_generated_at": generated_at})
 
         result = _real_is_token_still_fresh(MagicMock())
