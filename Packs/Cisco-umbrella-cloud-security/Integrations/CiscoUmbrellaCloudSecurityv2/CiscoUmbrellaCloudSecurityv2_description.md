@@ -16,11 +16,11 @@ Create an Umbrella API key and secret in the Umbrella admin console.
 4. Click **Create Key**.
 5. Copy **Your Key (API Key)** and **Your Secret (API Secret)**, acknowledge the warning, and click **Close**.
 
-> **Note:** A key with only **Read** permissions will allow `umbrella-destination-lists-list` / `umbrella-destinations-list` to succeed but write-style commands (e.g., `umbrella-destination-add`, `umbrella-destination-delete`, `umbrella-destination-list-create`, `umbrella-destination-list-delete`) will return `403 - Forbidden Access Forbidden`. Grant **Write** permissions on the Destination Lists scope to use those commands.
+> **Note:** A key with only **Read** permissions allows `umbrella-destination-lists-list` and `umbrella-destinations-list` to succeed. However, write-style commands (e.g., `umbrella-destination-add`, `umbrella-destination-delete`, `umbrella-destination-list-create`, `umbrella-destination-list-delete`) will return a `403 - Forbidden Access Forbidden` error. Grant **Write** permissions on the Destination Lists scope to use those commands.
 
 For the full list of Umbrella API OAuth scopes, see the official Cisco documentation: [Umbrella API OAuth scopes](https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/).
 
-## Configure Cisco Umbrella Cloud Security v2 on Cortex XSOAR
+## Configure Cisco Umbrella Cloud Security v2 on Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Cisco Umbrella Cloud Security.

@@ -3,7 +3,7 @@ This integration was tested with version 2 of Cisco Umbrella Cloud Security
 
 ## Prerequisites
 
-Create an Umbrella API key with the following **Policies** scopes:
+Create a Cisco Umbrella API key with the following **Policies** scopes:
 
 - **Destination Lists** – Read / Write
 - **Destinations** – Read / Write

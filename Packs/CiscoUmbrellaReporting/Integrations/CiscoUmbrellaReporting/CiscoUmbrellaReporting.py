@@ -2,6 +2,7 @@ import demistomock as demisto
 
 from CommonServerPython import *
 from datetime import datetime
+import traceback
 import requests
 import urllib3
 
@@ -300,6 +301,7 @@ def cisco_umbrella_access_token_error_handler(response: requests.Response):
         try:
             response_body = response.text
         except Exception:
+            demisto.debug(f"Failed to read response body for access token error: {traceback.format_exc()}")
             response_body = ""
         raise DemistoException(
             f"Failed to authenticate to Cisco Umbrella (HTTP {response.status_code})."
@@ -329,11 +331,15 @@ def cisco_umbrella_error_handler(response: requests.Response):
         try:
             error_message = response.json().get("data", {}).get("error") or ""
         except (ValueError, AttributeError):
+            demisto.debug(f"Failed to parse JSON error response: {traceback.format_exc()}")
             error_message = response.text or ""
 
-        if "invalid organization" in error_message:
+        # Ensure error_message is a string to prevent AttributeError on string operations.
+        error_message = str(error_message) if error_message is not None else ""
+
+        if "invalid organization" in error_message.lower():
             raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
-        elif "unauthorized" in error_message:
+        elif "unauthorized" in error_message.lower():
             raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
         elif "forbidden" in error_message.lower():
             raise DemistoException(FORBIDDEN_ERROR_MSG)
