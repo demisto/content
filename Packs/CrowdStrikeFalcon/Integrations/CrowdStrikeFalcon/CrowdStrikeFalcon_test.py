@@ -4527,11 +4527,63 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
     if is_valid:
         outputs = cs_falcon_spotlight_search_vulnerability_command(args)
-        assert outputs.readable_output == expected_hr
+        assert outputs[0].readable_output == expected_hr
     else:
         with pytest.raises(DemistoException) as e:
             cs_falcon_spotlight_search_vulnerability_command(args)
         assert str(e.value) == expected_hr
+
+
+def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
+    """
+    Given:
+        - The cs-falcon-spotlight-search-vulnerability command is called with a next_token argument.
+    When:
+        - The command runs and the API responds with a meta.pagination.after cursor.
+    Then:
+        - The next_token value is forwarded to the API as the `after` query parameter.
+        - The returned cursor is surfaced at CrowdStrike.VulnerabilityNextToken.
+        - An empty cursor from the API is normalized to None.
+    """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
+
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-1"}],
+            "meta": {"pagination": {"after": "CURSOR_VALUE"}},
+        },
+    )
+
+    # display_* args must be supplied because the production code unconditionally
+    # routes them through argToBoolean(), which raises ValueError on None.
+    args = {
+        "filter": "status:'open'",
+        "limit": "1",
+        "next_token": "PREV_CURSOR",
+        "display_remediation_info": "False",
+        "display_evaluation_logic_info": "False",
+        "display_host_info": "False",
+    }
+    results = cs_falcon_spotlight_search_vulnerability_command(args)
+
+    # Assertion (a): next_token forwarded as &after= in the URL suffix.
+    call_args, _ = http_mock.call_args
+    url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
+    assert "after=PREV_CURSOR" in url_suffix
+
+    # Assertion (b): cursor surfaced to CrowdStrike.VulnerabilityNextToken.
+    token_result = next(r for r in results if r.outputs_prefix == "CrowdStrike.VulnerabilityNextToken")
+    assert token_result.outputs == "CURSOR_VALUE"
+
+    # Assertion (c): empty cursor in response normalized to None.
+    http_mock.return_value = {
+        "resources": [{"id": "vuln-2"}],
+        "meta": {"pagination": {"after": ""}},
+    }
+    results = cs_falcon_spotlight_search_vulnerability_command(args)
+    token_result = next(r for r in results if r.outputs_prefix == "CrowdStrike.VulnerabilityNextToken")
+    assert token_result.outputs is None
 
 
 def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):

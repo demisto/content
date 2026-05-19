@@ -8251,6 +8251,7 @@ def cs_falcon_spotlight_search_vulnerability_request(
     evaluation_logic: bool | None,
     host_info: bool | None,
     limit: str | None,
+    next_token: str | None = None,
 ) -> dict:
     input_arg_dict = {
         "aid": aid,
@@ -8287,6 +8288,8 @@ def cs_falcon_spotlight_search_vulnerability_request(
             url_facet += f"&facet={argument}"
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
     suffix_url = f"/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}"
+    if next_token:
+        suffix_url += f"&after={urllib.parse.quote(next_token, safe='')}"
     return http_request("GET", suffix_url)
 
 
@@ -8301,30 +8304,44 @@ def cve_request(cve_id: list[str] | None) -> dict:
     return http_request("GET", "/spotlight/combined/vulnerabilities/v1", params={"filter": url_filter, "facet": "cve"})
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[CommandResults]:
     """
-    Get a list of vulnerability by spotlight
+    Get a list of vulnerability by spotlight (with manual cursor-based pagination via next_token).
     : args: filter which include params or filter param.
-    : return: a list of vulnerabilities according to the user.
+    : return: a list of CommandResults (vulnerabilities + the opaque pagination cursor).
     """
+    next_token = args.get("next_token")
 
-    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
-        argToList(args.get("aid")),
-        argToList(args.get("cve_id")),
-        argToList(args.get("cve_severity")),
-        argToList(args.get("tags")),
-        argToList(args.get("status")),
-        args.get("platform_name"),
-        argToList(args.get("host_group")),
-        argToList(args.get("host_type")),
-        args.get("last_seen_within"),
-        args.get("is_suppressed"),
-        args.get("filter", ""),
-        args.get("display_remediation_info"),
-        args.get("display_evaluation_logic_info"),
-        args.get("display_host_info"),
-        args.get("limit"),
-    )
+    try:
+        vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
+            argToList(args.get("aid")),
+            argToList(args.get("cve_id")),
+            argToList(args.get("cve_severity")),
+            argToList(args.get("tags")),
+            argToList(args.get("status")),
+            args.get("platform_name"),
+            argToList(args.get("host_group")),
+            argToList(args.get("host_type")),
+            args.get("last_seen_within"),
+            args.get("is_suppressed"),
+            args.get("filter", ""),
+            args.get("display_remediation_info"),
+            args.get("display_evaluation_logic_info"),
+            args.get("display_host_info"),
+            args.get("limit"),
+            next_token,
+        )
+    except DemistoException as exc:
+        # Narrow intercept: only the expired-cursor case (HTTP 404).
+        # The generic 400 "Invalid pagination token" is already self-explanatory
+        # and is intentionally NOT caught here.
+        if "Search context expired" in str(exc):
+            return_error(
+                "CrowdStrike Spotlight pagination cursor has expired "
+                "(these cursors are short-lived, typically a few minutes). "
+                "Please rerun the command without the next_token argument to start a fresh pagination session."
+            )
+        raise
     headers = ["ID", "Severity", "Status", "Base Score", "Published Date", "Impact Score", "Exploitability Score", "Vector"]
     outputs = []
     for vulnerability in vulnerability_response.get("resources", {}):
@@ -8341,13 +8358,24 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
             }
         )
     human_readable = tableToMarkdown("List Vulnerabilities", outputs, removeNull=True, headers=headers)
-    return CommandResults(
-        raw_response=vulnerability_response,
-        readable_output=human_readable,
-        outputs=vulnerability_response.get("resources"),
-        outputs_prefix="CrowdStrike.Vulnerability",
-        outputs_key_field="id",
-    )
+
+    # Extract the next-page cursor; treat empty string as "no more pages".
+    raw_after = vulnerability_response.get("meta", {}).get("pagination", {}).get("after")
+    next_token_out: str | None = raw_after if raw_after else None
+
+    return [
+        CommandResults(
+            raw_response=vulnerability_response,
+            readable_output=human_readable,
+            outputs=vulnerability_response.get("resources"),
+            outputs_prefix="CrowdStrike.Vulnerability",
+            outputs_key_field="id",
+        ),
+        CommandResults(
+            outputs=next_token_out,
+            outputs_prefix="CrowdStrike.VulnerabilityNextToken",
+        ),
+    ]
 
 
 def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> CommandResults:
