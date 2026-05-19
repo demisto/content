@@ -169,7 +169,7 @@
     "name": "Sysdig Mapper Runtime Event",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.10.0",
     "feed": false,
     "defaultIncidentType": "Sysdig Runtime Event"
 }

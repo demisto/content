@@ -242,7 +242,7 @@ def _validate_response_actions_params(args: dict[str, Any]) -> None:
             parameters[key] = None
 
     required = RESPONSE_ACTIONS_PARAMS.get(actionType, [])
-    missing_params = [param for param in required if not parameters.get(param)]
+    missing_params = [param for param in required if parameters.get(param) in (None, "")]
 
     if missing_params:
         raise ValueError(f"Missing required parameters for {actionType}: {', '.join(missing_params)}")
@@ -399,7 +399,7 @@ def get_agent_by_mac_command(client: Client, args: dict[str, Any]) -> CommandRes
                     "hostName": a.get("hostName", ""),
                     "machineId": a.get("machineId", ""),
                     "hostId": a.get("opaqueUid", ""),
-                    "clusterName": a.get("attributes", {}).get("clusterName", ""),
+                    "clusterName": (a.get("attributes") or {}).get("clusterName", ""),
                 }
                 ctx[cache_key] = {"data": agent, "cached_at": time.time()}
                 demisto.setIntegrationContext(ctx)
@@ -432,8 +432,8 @@ def get_customer_info_command(client: Client, args: dict[str, Any]) -> CommandRe
         customer_name = cached["data"].get("customer_name", "")
     else:
         result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")
-        user: dict = result.get("user", {})
-        customer = user.get("customer", {})
+        user: dict = result.get("user") or {}
+        customer = user.get("customer") or {}
         customer_id = customer.get("id") or user.get("customerId")
         customer_name = customer.get("name") or user.get("customerName", "")
         if customer_id:
@@ -467,7 +467,7 @@ def test_module(client: Client):
     """
 
     result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")  # type: ignore[assignment]
-    user: dict = result.get("user", {})
+    user: dict = result.get("user") or {}
     if user and user.get("id"):
         return "ok"
     else:
@@ -510,9 +510,9 @@ def main():  # pragma: no cover
             result = get_capture_file_command(client, args)
         elif command == "get-action-execution":
             result = get_action_execution_command(client, args)
-        elif command == "sysdig-get-agent-info":
+        elif command == "sysdig-agent-info-get":
             result = get_agent_by_mac_command(client, args)
-        elif command == "sysdig-get-customer-info":
+        elif command == "sysdig-customer-info-get":
             result = get_customer_info_command(client, args)
         elif command == "test-module":
             result = test_module(client)

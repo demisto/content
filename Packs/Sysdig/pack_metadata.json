@@ -19,7 +19,10 @@
         "Sysdig"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Sysdig"
+    ],
+    "created": "2025-07-10T09:11:56Z",
     "marketplaces": [
         "xsoar",
         "marketplacev2",

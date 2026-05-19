@@ -1,3 +1,5 @@
+name: SysdigResponseActions
+display: Sysdig Response Actions
 category: Data Enrichment & Threat Intelligence
 provider: Sysdig
 sectionorder:
@@ -60,8 +62,6 @@ configuration:
   type: 0
   section: Collect
 description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture.'
-display: Sysdig Response Actions
-name: SysdigResponseActions
 script:
   commands:
   - arguments:
@@ -375,7 +375,7 @@ script:
       required: false
       defaultValue: 'false'
     description: Resolve a host MAC address to its Sysdig agent details (agent ID, customer ID, hostname). Result is cached per MAC address.
-    name: sysdig-get-agent-info
+    name: sysdig-agent-info-get
     outputs:
     - contextPath: Sysdig.Agent.agentId
       description: The Sysdig agent ID.
@@ -402,7 +402,7 @@ script:
       required: false
       defaultValue: 'false'
     description: Get the Sysdig customer ID and name. Result is cached per integration instance.
-    name: sysdig-get-customer-info
+    name: sysdig-customer-info-get
     outputs:
     - contextPath: Sysdig.Customer.customerId
       description: The Sysdig customer ID.

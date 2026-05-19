@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 * create-system-capture
 * get-capture-file
-* sysdig-get-agent-info
+* sysdig-agent-info-get
 
 ## Playbook Inputs
 

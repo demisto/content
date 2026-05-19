@@ -315,7 +315,7 @@ tasks:
       version: -1
       name: Get Sysdig Agent Info
       description: Resolves host MAC address to agent ID, customer ID, and hostname via Sysdig API (cached).
-      script: SysdigResponseActions|||sysdig-get-agent-info
+      script: SysdigResponseActions|||sysdig-agent-info-get
       type: regular
       iscommand: true
       brand: SysdigResponseActions
