@@ -7,6 +7,7 @@ import base64
 import email
 import hashlib
 import json
+import resource
 from collections.abc import Callable
 from enum import Enum, IntEnum
 from threading import Timer
@@ -90,6 +91,8 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY = 5  # Backpressure: max pending XSIAM sends per severity stream
+SEMAPHORE_ACQUIRE_TIMEOUT = 60  # Seconds to wait for semaphore before proceeding without backpressure (cursor TTL is ~2 min)
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -3888,7 +3891,7 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
+    log_falcon_assets(f"Saved Spotlight state to integration context. Keys: {list(integration_context.keys())}")
 
 
 class AssetsDeviceHandler:
@@ -3999,7 +4002,7 @@ class AssetsDeviceHandler:
 
             # 2. Update state and send it to XSIAM after finish
             self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
             # 3. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
@@ -4452,13 +4455,17 @@ def load_spotlight_state(
     # Extract state variables
     snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
-    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+    # Load AID counts (not full sets — sets are only used within a single execution, never restored from state)
+    unique_aids_count = spotlight_state.metadata.get("unique_aids_count", 0)
+    processed_aids_count = spotlight_state.metadata.get("processed_aids_count", 0)
+    # Create empty sets for runtime use (always start fresh each execution)
+    unique_aids = set()
+    processed_aids = set()
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"{unique_aids_count=}, {processed_aids_count=}, "
         f"completed_severities={completed_severities}, "
         f"after_token={spotlight_state.cursor}"
     )
@@ -4499,8 +4506,8 @@ def update_spotlight_state_and_metadata(
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
-        "unique_aids": list(unique_aids),
-        "processed_aids": list(processed_aids),
+        "unique_aids_count": len(unique_aids) if isinstance(unique_aids, set) else unique_aids,
+        "processed_aids_count": len(processed_aids) if isinstance(processed_aids, set) else processed_aids,
         "completed_severities": completed_severities,
     }
 
@@ -4599,6 +4606,19 @@ async def fetch_vulnerabilities_by_severity(
     batch_counter = 0
     last_saved_batch_number = 0
 
+    # Per-severity backpressure semaphore: limits concurrent pending XSIAM send tasks
+    # to prevent unbounded memory growth from fire-and-forget vulnerability batches
+    send_semaphore = asyncio.Semaphore(MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY)
+
+    def _get_process_memory_mb() -> float:
+        """Get current process peak RSS memory in MB (Linux: KB, macOS: bytes)."""
+        rusage = resource.getrusage(resource.RUSAGE_SELF)
+        # On Linux (Docker), ru_maxrss is in KB; on macOS it's in bytes
+        import sys
+        if sys.platform == "darwin":
+            return rusage.ru_maxrss / (1024 * 1024)
+        return rusage.ru_maxrss / 1024
+
     try:
         while True:
             # Build filter query with severity
@@ -4636,6 +4656,34 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
+            # BACKPRESSURE: acquire semaphore before creating send task
+            # This limits concurrent pending sends to MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY per severity,
+            # preventing unbounded memory growth from fire-and-forget vulnerability batches.
+            # Timeout ensures cursor TTL (~2 min) is not exceeded if XSIAM is extremely slow.
+            semaphore_acquired = True
+            log_falcon_assets(
+                f"[{severity}] Batch {batch_counter}: Acquiring send semaphore "
+                f"(available slots: {send_semaphore._value}, pending tasks: {len(pending_tasks)}, "
+                f"peak RSS: {_get_process_memory_mb():.1f} MB)"
+            )
+            acquire_start = time.monotonic()
+            try:
+                await asyncio.wait_for(send_semaphore.acquire(), timeout=SEMAPHORE_ACQUIRE_TIMEOUT)
+                acquire_time = time.monotonic() - acquire_start
+                log_falcon_assets(
+                    f"[{severity}] Batch {batch_counter}: Semaphore acquired in {acquire_time:.2f}s "
+                    f"(remaining slots: {send_semaphore._value})"
+                )
+            except asyncio.TimeoutError:
+                semaphore_acquired = False
+                acquire_time = time.monotonic() - acquire_start
+                log_falcon_assets(
+                    f"[{severity}] Batch {batch_counter}: Semaphore acquire TIMED OUT after {acquire_time:.2f}s, "
+                    f"proceeding without backpressure to avoid cursor expiration "
+                    f"(pending tasks: {len(pending_tasks)}, peak RSS: {_get_process_memory_mb():.1f} MB)",
+                    "warning",
+                )
+
             # Create task to send batch to XSIAM
             task = create_task_send_batch_to_xsiam_and_save_context(
                 data=vulnerabilities,
@@ -4651,7 +4699,17 @@ async def fetch_vulnerabilities_by_severity(
             )
 
             # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future):
+            def update_last_saved(future, _acquired=semaphore_acquired, _batch=batch_counter):
+                if _acquired:
+                    send_semaphore.release()
+                    log_falcon_assets(
+                        f"[{severity}] Batch {_batch}: Send task completed, semaphore released "
+                        f"(available slots: {send_semaphore._value})"
+                    )
+                else:
+                    log_falcon_assets(
+                        f"[{severity}] Batch {_batch}: Send task completed (no semaphore to release)"
+                    )
                 nonlocal last_saved_batch_number
                 try:
                     last_saved_batch_number = future.result()
@@ -4664,10 +4722,20 @@ async def fetch_vulnerabilities_by_severity(
             task.add_done_callback(update_last_saved)
             log_falcon_assets(f"[{severity}] Created background task for batch {batch_counter}")
 
+            # Log memory stats every 10 batches
+            if batch_counter % 10 == 0:
+                log_falcon_assets(
+                    f"[{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
+                    f"unique_aids={len(unique_aids)}, pending_tasks={len(pending_tasks)}, "
+                    f"peak RSS: {_get_process_memory_mb():.1f} MB",
+                    "info",
+                )
+
             # Check if more pages exist
             if is_last_batch:
                 log_falcon_assets(
-                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}",
+                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}, "
+                    f"pending_tasks: {len(pending_tasks)}, peak RSS: {_get_process_memory_mb():.1f} MB",
                     "info",
                 )
                 break
