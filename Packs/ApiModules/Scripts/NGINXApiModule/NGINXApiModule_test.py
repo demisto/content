@@ -422,3 +422,206 @@ def test_parse_nginx_time_to_seconds_fail(time_str):
 
     with pytest.raises(DemistoException, match="Invalid NGINX time format"):
         parse_nginx_time_to_seconds(time_str)
+
+
+def test_normalize_nginx_time_integer_string():
+    """
+    Given:  the pure-integer string "300".
+    When:   _normalize_nginx_time is called with it.
+    Then:   it returns the canonical "<int>s" form ("300s").
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    assert _normalize_nginx_time("300", default="1m", param_name="cache_404_ttl") == "300s"
+
+
+def test_normalize_nginx_time_integer_int():
+    """
+    Given:  an actual Python int (300).
+    When:   _normalize_nginx_time is called with it.
+    Then:   it is coerced through str() and returned as "300s".
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    assert _normalize_nginx_time(300, default="1m", param_name="cache_404_ttl") == "300s"
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("12h", "43200s"),
+        ("30m", "1800s"),
+        ("1d", "86400s"),
+        ("2w", "1209600s"),
+        ("1M", "2592000s"),
+        ("1y", "31536000s"),
+        ("60s", "60s"),
+    ],
+)
+def test_normalize_nginx_time_nginx_native_single_token(value, expected):
+    """
+    Given:  an nginx-native single-token time string (e.g. "12h", "30m", "1M").
+    When:   _normalize_nginx_time is called with it.
+    Then:   it is converted to the equivalent "<seconds>s" form.
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    assert _normalize_nginx_time(value, default="1m", param_name="cache_refresh_rate") == expected
+
+
+@pytest.mark.parametrize(
+    "value, expected_seconds",
+    [
+        ("12 hours", 43200),
+        ("30 minutes", 1800),
+        ("2 days", 172800),
+        ("2 weeks", 1209600),
+    ],
+)
+def test_normalize_nginx_time_human_readable_plural(value, expected_seconds):
+    """
+    Given:  a plural human-readable time string (e.g. "12 hours", "30 minutes").
+    When:   _normalize_nginx_time is called with it.
+    Then:   the returned "<int>s" token equals the expected number of seconds
+            (allowing ±2s tolerance for the live now() computation inside
+            parse_nginx_time_to_seconds — mirrors the pattern at L407-L408).
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    result = _normalize_nginx_time(value, default="1m", param_name="cache_refresh_rate")
+    assert result.endswith("s")
+    assert abs(int(result[:-1]) - expected_seconds) <= 2
+
+
+@pytest.mark.parametrize(
+    "value, expected_seconds",
+    [
+        ("1 hour", 3600),
+        ("1 minute", 60),
+        ("1 day", 86400),
+    ],
+)
+def test_normalize_nginx_time_human_readable_singular(value, expected_seconds):
+    """
+    Given:  a singular human-readable time string (e.g. "1 hour", "1 minute").
+    When:   _normalize_nginx_time is called with it.
+    Then:   the returned "<int>s" token equals the expected number of seconds
+            (±2s tolerance, same rationale as the plural case).
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    result = _normalize_nginx_time(value, default="1m", param_name="cache_refresh_rate")
+    assert result.endswith("s")
+    assert abs(int(result[:-1]) - expected_seconds) <= 2
+
+
+@pytest.mark.parametrize(
+    "value, default, expected",
+    [
+        (None, "1m", "60s"),
+        ("", "300", "300s"),
+        ("   ", "12h", "43200s"),
+    ],
+)
+def test_normalize_nginx_time_empty_uses_default(value, default, expected):
+    """
+    Given:  an empty / whitespace-only / None value plus a non-empty default.
+    When:   _normalize_nginx_time is called.
+    Then:   the default is normalized and returned in "<int>s" form.
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    assert _normalize_nginx_time(value, default=default, param_name="cache_404_ttl") == expected
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "hours",
+        "12 hours and 5 minutes",
+        "abc",
+        "-5",
+    ],
+)
+def test_normalize_nginx_time_invalid_raises(value):
+    """
+    Given:  a non-empty but unparseable / non-positive time value.
+    When:   _normalize_nginx_time is called.
+    Then:   a DemistoException is raised whose message names the offending
+            parameter so users can pinpoint the misconfigured field.
+    """
+    from NGINXApiModule import _normalize_nginx_time
+
+    with pytest.raises(DemistoException, match="cache_refresh_rate"):
+        _normalize_nginx_time(value, default="1m", param_name="cache_refresh_rate")
+
+
+def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: Path, mocker):
+    """
+    Given:  a params dict that mixes nginx-native, human-readable and bare-integer
+            forms across all five cache_* params (plus a "timeout" of 3600s that
+            should floor-bump the lock + refresh values).
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   every rendered cache directive is in the safe "<int>s" form, and no
+            occurrence of any human-readable unit word or original input token
+            survives into the rendered conf.
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(
+        conf_file,
+        12345,
+        params={
+            "timeout": "3600",
+            "cache_refresh_rate": "12 hours",
+            "cache_lock_timeout": "1h",
+            "cache_lock_age": "30m",
+            "cache_404_ttl": "5 minutes",
+            "cache_default_ttl": "300",
+        },
+    )
+    with open(conf_file) as f:
+        conf = f.read()
+
+    # cache_refresh_rate = "12 hours" -> 43200s (>= timeout, not floor-bumped)
+    assert "proxy_cache_valid 200 301 302 43200s;" in conf
+    # cache_lock_timeout = "1h" = 3600s == timeout (not bumped, already at floor)
+    assert "proxy_cache_lock_timeout 3600s;" in conf
+    # cache_lock_age = "30m" = 1800s < timeout (3600s) -> floor-bumped to "3600s"
+    assert "proxy_cache_lock_age 3600s;" in conf
+    # cache_404_ttl = "5 minutes" -> 300s
+    assert "proxy_cache_valid 404 300s;" in conf
+    # cache_default_ttl = "300" -> 300s
+    assert "proxy_cache_valid any 300s;" in conf
+
+    # Hardening: none of the original unit words / non-normalized tokens may
+    # survive into the rendered conf — those are exactly the failure surfaces
+    # that crashed `nginx -T` in the documented incident.
+    for forbidden in ("hours", "minutes", "12h", "30m", "5 minutes"):
+        assert forbidden not in conf, f"Rendered conf must not contain non-normalized substring {forbidden!r}: {conf}"
+
+
+def test_create_nginx_server_conf_rejects_invalid_param(tmp_path: Path, mocker, monkeypatch):
+    """
+    Given:  a params dict with an unparseable value for cache_404_ttl.
+    When:   create_nginx_server_conf is called.
+    Then:   a DemistoException naming the offending param is raised BEFORE any
+            subprocess (i.e. before `nginx -T`) is invoked — the failure is
+            surfaced fast and pointed at the right field.
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+
+    # If create_nginx_server_conf ever drifted to invoke subprocess on bad input,
+    # this fail-loud monkeypatch surfaces the regression instead of hiding it.
+    def _fail_loudly(*_args, **_kwargs):
+        raise AssertionError("subprocess.check_output must not be called for invalid params")
+
+    monkeypatch.setattr(subprocess, "check_output", _fail_loudly)
+
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    with pytest.raises(DemistoException, match="cache_404_ttl"):
+        create_nginx_server_conf(conf_file, 12345, params={"cache_404_ttl": "garbage"})
