@@ -244,6 +244,10 @@ class Client(BaseClient):
             return False
         try:
             token_generated_at = datetime.fromisoformat(token_generated_at_str)
+            # Handle timestamps saved by older code versions that used datetime.utcnow()
+            # (timezone-naive). Make them aware so subtraction with datetime.now(timezone.utc) works.
+            if token_generated_at.tzinfo is None:
+                token_generated_at = token_generated_at.replace(tzinfo=timezone.utc)
         except Exception as ex:
             safe_debug(f"Could not parse token_generated_at '{token_generated_at_str}': {_safe_error_str(ex)} - forcing refresh")
             return False
