@@ -1,0 +1,287 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 132,
+            "assigned_date": null,
+            "assigned_to": null,
+            "category": "exfiltration",
+            "certainty": 70,
+            "c_score": 70,
+            "description": "",
+            "detection": "detection_name",
+            "detection_category": "exfiltration",
+            "detection_type": "detection_type",
+            "grouped_details": [
+                {
+                    "event_id": "ec2162c7-e526-4446-a549-71558743a1d7",
+                    "event_name": "UpdateAssumeRolePolicy",
+                    "aws_account_id": "aws_account_id",
+                    "src_external_host": {
+                        "ip": "0.0.0.0",
+                        "name": null
+                    },
+                    "aws_region": "us-east-1",
+                    "access_key_id": [
+                        "123456"
+                    ],
+                    "identity_type": "Federated Account",
+                    "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
+                    "request_parameters": [
+                        "{\"roleName\": \"stratus-red-team-backdoor-r-role\", \"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::123456789012:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\"}"
+                    ],
+                    "response_elements": [],
+                    "role_sequence": [
+                        "account_id",
+                        "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960"
+                    ],
+                    "user_agent": [
+                        "stratus-red-team_06e15b96-ee6b-482c-aff4-4f2f4a46a67c"
+                    ],
+                    "last_timestamp": "2023-06-06T17:01:04Z",
+                    "error_code": null,
+                    "error_message": null
+                },
+                {
+                    "event_id": "89a098eb-1198-4e2a-9fa4-ef568ae39403",
+                    "event_name": "UpdateAssumeRolePolicy",
+                    "aws_account_id": "884414556547",
+                    "src_external_host": {
+                        "ip": "0.0.0.0",
+                        "name": null
+                    },
+                    "aws_region": "us-east-1",
+                    "access_key_id": [
+                        "123456"
+                    ],
+                    "identity_type": "Federated Account",
+                    "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
+                    "request_parameters": [
+                        "{\"policyDocument\": \"{\\\"Version\\\": \\\"2012-10-17\\\", \\\"Statement\\\": {\\\"Effect\\\": \\\"Allow\\\", \\\"Principal\\\": {\\\"AWS\\\": \\\"arn:aws:iam::123456789012:root\\\"}, \\\"Action\\\": \\\"sts:AssumeRole\\\"}}\", \"roleName\": \"stratus-red-team-backdoor-r-role\"}"
+                    ],
+                    "response_elements": [],
+                    "role_sequence": [
+                        "account_name",
+                        "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960"
+                    ],
+                    "user_agent": [
+                        "stratus-red-team_a24eac3a-4fee-46ce-bc37-b4e675343fc9"
+                    ],
+                    "last_timestamp": "2023-06-06T15:40:43Z",
+                    "error_code": null,
+                    "error_message": null
+                }
+            ],
+            "is_targeting_key_asset": false,
+            "last_timestamp": "2023-06-06T17:01:04Z",
+            "note": null,
+            "note_modified_by": null,
+            "note_modified_timestamp": null,
+            "notes": [],
+            "sensor_name": "mafosb50",
+            "src_account": {
+                "id": 21,
+                "name": "account_name",
+                "url": "http://server_url.com/api/v3.3/accounts/21",
+                "threat": 76,
+                "certainty": 35,
+                "privilege_level": null,
+                "privilege_category": null
+            },
+            "src_host": null,
+            "src_ip": "0.0.0.0",
+            "state": "active",
+            "summary": {
+                "probable_owner": null,
+                "num_events": 2
+            },
+            "tags": [],
+            "threat": 80,
+            "t_score": 80,
+            "type": "account",
+            "url": "http://server_url.com/api/v3.3/detections/132"
+        },
+        {
+            "id": 135,
+            "assigned_date": null,
+            "assigned_to": null,
+            "category": "lateral_movement",
+            "certainty": 50,
+            "c_score": 50,
+            "description": "",
+            "detection": "detection_name",
+            "detection_category": "lateral_movement",
+            "detection_type": "detection_type",
+            "grouped_details": [
+                {
+                    "event_id": "85d88db5-cf2d-4b6e-9411-d3119d9920e0",
+                    "event_name": "AttachRolePolicy",
+                    "aws_account_id": "884414556547",
+                    "src_external_host": {
+                        "ip": "0.0.0.0",
+                        "name": null
+                    },
+                    "aws_region": "us-east-1",
+                    "access_key_id": [
+                        "123456"
+                    ],
+                    "identity_type": "Federated Account",
+                    "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
+                    "request_parameters": [
+                        "{\"roleName\":\"stratus-red-team-backdoor-r-role\",\"policyArn\":\"arn:aws:iam::aws:policy/AdministratorAccess\"}"
+                    ],
+                    "response_elements": [],
+                    "role_sequence": [
+                        "account_name",
+                        "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960"
+                    ],
+                    "user_agent": [
+                        "APN/1.0 HashiCorp/1.0 Terraform/1.1.2 (+https://www.terraform.io) terraform-provider-aws/3.76.1 (+https://registry.terraform.io/providers/hashicorp/aws) aws-sdk-go/1.44.157 (go1.19.3; linux; amd64) stratus-red-team_5077134d-32ea-4403-996b-de30d7f278d7 HashiCorp-terraform-exec/0.17.3"
+                    ],
+                    "last_timestamp": "2023-06-06T17:00:46Z",
+                    "error_code": null,
+                    "error_message": null
+                },
+                {
+                    "event_id": "ca157e7c-9a53-4012-9288-e6ac1c488fbc",
+                    "event_name": "AttachRolePolicy",
+                    "aws_account_id": "884414556547",
+                    "src_external_host": {
+                        "ip": "0.0.0.0",
+                        "name": null
+                    },
+                    "aws_region": "us-east-1",
+                    "access_key_id": [
+                        "123456"
+                    ],
+                    "identity_type": "Federated Account",
+                    "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
+                    "request_parameters": [
+                        "{\"roleName\":\"stratus-red-team-backdoor-r-role\",\"policyArn\":\"arn:aws:iam::aws:policy/AdministratorAccess\"}"
+                    ],
+                    "response_elements": [],
+                    "role_sequence": [
+                        "account_name",
+                        "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960"
+                    ],
+                    "user_agent": [
+                        "APN/1.0 HashiCorp/1.0 Terraform/1.1.2 (+https://www.terraform.io) terraform-provider-aws/3.76.1 (+https://registry.terraform.io/providers/hashicorp/aws) aws-sdk-go/1.44.157 (go1.19.3; linux; amd64) stratus-red-team_01be8427-d1b5-4c18-8edb-0301c8e66c8e HashiCorp-terraform-exec/0.17.3"
+                    ],
+                    "last_timestamp": "2023-06-06T15:40:07Z",
+                    "error_code": null,
+                    "error_message": null
+                }
+            ],
+            "is_targeting_key_asset": false,
+            "last_timestamp": "2023-06-06T17:00:46Z",
+            "note": null,
+            "note_modified_by": null,
+            "note_modified_timestamp": null,
+            "notes": [],
+            "sensor_name": "mafosb50",
+            "src_account": {
+                "id": 21,
+                "name": "account_name",
+                "url": "http://server_url.com/api/v3.3/accounts/21",
+                "threat": 76,
+                "certainty": 35,
+                "privilege_level": null,
+                "privilege_category": null
+            },
+            "src_host": null,
+            "src_ip": "0.0.0.0",
+            "state": "fixed",
+            "summary": {
+                "probable_owner": null
+            },
+            "tags": [],
+            "threat": 60,
+            "t_score": 60,
+            "type": "account",
+            "url": "http://server_url.com/api/v3.3/detections/135"
+        },
+        {
+            "id": 140,
+            "assigned_date": null,
+            "assigned_to": null,
+            "category": "reconnaissance",
+            "certainty": 40,
+            "c_score": 40,
+            "description": "",
+            "detection": "detection_name",
+            "detection_category": "reconnaissance",
+            "detection_type": "detection_type",
+            "grouped_details": [
+                {
+                    "event_id": "cf9f469b-0a8e-47c6-85eb-5a0486292e58",
+                    "event_name": "ModifySnapshotAttribute",
+                    "aws_account_id": "884414556547",
+                    "src_external_host": {
+                        "ip": "0.0.0.0",
+                        "name": null
+                    },
+                    "aws_region": "us-west-2",
+                    "access_key_id": [
+                        "123456"
+                    ],
+                    "identity_type": "Federated Account",
+                    "assumed_role": "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960",
+                    "request_parameters": [
+                        "{\"snapshotId\":\"snap-0f7d022a2f4f67e08\",\"createVolumePermission\":{\"add\":{\"items\":[{\"userId\":\"012345678912\"}]}},\"attributeType\":\"CREATE_VOLUME_PERMISSION\"}"
+                    ],
+                    "response_elements": [
+                        "{\"requestId\":\"350c1eb8-b696-4d94-88d4-a764a0eed08b\",\"_return\":true}"
+                    ],
+                    "role_sequence": [
+                        "account_name",
+                        "AWSReservedSSO_AdministratorAccess_a670eb90f07e2960"
+                    ],
+                    "user_agent": [
+                        "stratus-red-team_a4dd596b-7a8d-4e77-a74d-13f19adf4403"
+                    ],
+                    "last_timestamp": "2023-06-06T15:46:28Z",
+                    "error_code": null,
+                    "error_message": null
+                }
+            ],
+            "is_targeting_key_asset": false,
+            "last_timestamp": "2023-06-06T15:46:28Z",
+            "note": null,
+            "note_modified_by": null,
+            "note_modified_timestamp": null,
+            "notes": [],
+            "sensor_name": "mafosb50",
+            "src_account": {
+                "id": 21,
+                "name": "account_name",
+                "url": "http://server_url.com/api/v3.3/accounts/21",
+                "threat": 76,
+                "certainty": 35,
+                "privilege_level": null,
+                "privilege_category": null
+            },
+            "src_host": {
+                "id": 146,
+                "ip": "0.0.0.0",
+                "name": "pc",
+                "url": "https://server_url.com/api/v3.3/hosts/146",
+                "is_key_asset": false,
+                "groups": [],
+                "threat": 34,
+                "certainty": 46
+            },
+            "src_ip": "0.0.0.0",
+            "state": "fixed",
+            "summary": {
+                "probable_owner": null
+            },
+            "tags": [],
+            "threat": 60,
+            "t_score": 60,
+            "type": "account",
+            "url": "http://server_url.com/api/v3.3/detections/140"
+        }
+    ]
+}

@@ -1,0 +1,91 @@
+{
+    "name": "Vectra RUX",
+    "description": "Vectra RUX pack empowers the SOC to create incidents based on events detection using Vectra AI's Attack Signal Intelligence.",
+    "support": "partner",
+    "created": "2026-04-30T00:00:00Z",
+    "currentVersion": "1.0.0",
+    "author": "Vectra AI",
+    "url": "https://support.vectra.ai",
+    "email": "support@vectra.ai",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Network",
+        "Security",
+        "Incident Handling",
+        "Incident Response",
+        "Breach",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Network Security",
+        "Asset Management",
+        "Vulnerability Management",
+        "Breach Notification",
+        "Incident Response"
+    ],
+    "keywords": [
+        "Vectra RUX",
+        "Vectra",
+        "Entity",
+        "Detections",
+        "Vectra AI",
+        "Security",
+        "Respond",
+        "Respond UX",
+        "Vectra Platform"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "devEmail": [],
+    "githubUser": [],
+    "supportedModules": [
+        "cloud_appsec",
+        "xsiam",
+        "tim",
+        "email_security"
+    ],
+    "dependencies": {
+        "Vectra_AI": {
+            "mandatory": false,
+            "display_name": "Vectra AI"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "VectraXDR": {
+            "mandatory": false,
+            "display_name": "Vectra XDR"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        }
+    },
+    "displayedImages": [
+        "Vectra_AI",
+        "Phishing",
+        "VectraXDR",
+        "FiltersAndTransformers",
+        "CommonScripts",
+        "CommonTypes",
+        "CoreAlertFields"
+    ]
+}

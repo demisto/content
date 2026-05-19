@@ -1,0 +1,249 @@
+id: Expire Inactive Detections - Vectra RUX
+version: -1
+name: Expire Inactive Detections - Vectra RUX
+description: This playbook identifies incidents with inactive detections and updates their investigation status to "expired".
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3a0a3afa-4643-4290-8e44-c4f7c886d711
+    type: start
+    task:
+      id: 3a0a3afa-4643-4290-8e44-c4f7c886d711
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 81d719da-d8d5-4b04-8dc3-e02c6a6f9d62
+    type: title
+    task:
+      id: 81d719da-d8d5-4b04-8dc3-e02c6a6f9d62
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 46108784-cddd-4387-8511-1fbcca63f6e3
+    type: playbook
+    task:
+      id: 46108784-cddd-4387-8511-1fbcca63f6e3
+      version: -1
+      name: Find Detection State and Expire Inactive Detections - Vectra RUX
+      playbookName: Find Detection State and Expire Inactive Detections - Vectra RUX
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: This playbook identifies the detection states of incidents and updates the investigation status of inactive detections to "expired".
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incident_type:
+        complex:
+          root: inputs.incident_type
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: page
+            iscontext: true
+          right:
+            value:
+              simple: "-1"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0b3fa82c-d36c-4e09-8400-51e19e74ccc4
+    type: condition
+    task:
+      id: 0b3fa82c-d36c-4e09-8400-51e19e74ccc4
+      version: -1
+      name: Is Vectra RUX - Network Detection & Response Integration Enable?
+      description: Check Vectra RUX - Network Detection & Response integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VectraRUXEventsDetections
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 02f079bf-0415-4efc-89de-b1954a084495
+    type: regular
+    task:
+      id: 02f079bf-0415-4efc-89de-b1954a084495
+      version: -1
+      name: Clear Previous Outputs
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: VectraRUXIncidents,DetectionInfo,page
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_2_#default#": 0.49,
+      "4_3_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: incident_type
+  value:
+    simple: Vectra RUX Events Detection
+  required: false
+  description: The XSOAR incident type to search for inactive detections. Default is 'Vectra RUX Events Detection'.
+outputs:
+  - contextPath: Vectra.Detection.id
+    description: The detection ID.
+    type: String
+  - contextPath: Vectra.Detection.investigation_status
+    description: The detection investigation status.
+    type: String
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
