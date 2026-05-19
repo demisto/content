@@ -933,9 +933,7 @@ def _wait_for_enrichment(future, executor, timeout_seconds: int = ENRICHMENT_WAI
     wait_start = time.monotonic()
     try:
         future.result(timeout=timeout_seconds)
-        demisto.debug(
-            f"[{tname}] bulk_enrich: background enrichment joined after {time.monotonic() - wait_start:.2f}s"
-        )
+        demisto.debug(f"[{tname}] bulk_enrich: background enrichment joined after {time.monotonic() - wait_start:.2f}s")
     except FuturesTimeoutError:
         demisto.error(
             f"[{tname}] bulk_enrich: background enrichment did NOT finish within {timeout_seconds}s — "
