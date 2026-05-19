@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Get credentials command uses POST method instead of GET. Required CCP version 14.x or higher."
+    "breakingChangesNotes": "Get credentials command uses POST method instead of GET. Required CyberArk Central Credential Provider (CCP) version 14.x or higher."
 }
