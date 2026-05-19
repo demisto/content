@@ -3,6 +3,7 @@ provider: KELA
 commonfields:
   id: RaDark
   version: -1
+  deprecated: true
 configuration:
 - additionalinfo: API Key generated from RaDark by your user.
   display: API Key
@@ -60,7 +61,7 @@ configuration:
   - Hacking Discussions
   required: true
   type: 16
-description: This integration enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.
+description: Use Generic Webhooks instead. (This integration enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.)
 display: RaDark
 name: RaDark
 script:
