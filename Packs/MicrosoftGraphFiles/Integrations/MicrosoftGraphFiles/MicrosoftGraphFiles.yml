@@ -801,21 +801,24 @@ script:
     - description: The ID of the drive item to read the sensitivity label from.
       name: item_id
       required: true
-    description: Retrieves the sensitivity label currently assigned to a drive item. If the item has no sensitivity label assigned, the sensitivityLabelId and assignmentMethod outputs are returned as empty strings and labels as an empty list.
+    description: Retrieves the sensitivity labels currently assigned to a drive item. When the item has no labels assigned, an empty labels list is returned.
     name: msgraph-extract-sensitivity-label
     outputs:
     - contextPath: MsGraphFiles.ExtractedSensitivityLabel.itemId
-      description: Echo of the requested drive item ID.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.sensitivityLabelId
-      description: The currently assigned sensitivity label GUID, taken from the first entry of the labels array. Empty string if no label is assigned.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.assignmentMethod
-      description: The assignment method recorded on the first label entry. One of standard, privileged, or auto. Empty string if no label is assigned.
+      description: The ID of the drive item the labels were extracted from.
       type: String
     - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels
-      description: All sensitivity labels assigned to the drive item, as returned by Microsoft Graph.
+      description: List of sensitivity labels assigned to the drive item, as returned by Microsoft Graph (value.labels[]).
       type: Unknown
+    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels.sensitivityLabelId
+      description: The GUID of an assigned sensitivity label.
+      type: String
+    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels.assignmentMethod
+      description: How the label was assigned. One of standard, privileged, auto.
+      type: String
+    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels.tenantId
+      description: The tenant ID that owns the label.
+      type: String
   - arguments:
     - auto: PREDEFINED
       description: The MS Graph resource.
@@ -837,9 +840,9 @@ script:
     - description: The ID of the drive item to assign the sensitivity label to.
       name: item_id
       required: true
-    - description: The GUID of the sensitivity label to assign. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet.
+    - description: The GUID of the sensitivity label to assign. Pass an empty string to remove the existing sensitivity label from the drive item. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet.
       name: sensitivity_label_id
-      required: true
+      required: false
     - auto: PREDEFINED
       description: |-
         Assignment method recorded on Microsoft Graph.
@@ -854,24 +857,17 @@ script:
       defaultValue: standard
     - description: Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label.
       name: justification_text
-      defaultValue: Applied via Cortex XSOAR
-    description: Assigns a sensitivity label to a drive item. On success, returns SUCCESS, the HTTP status code returned by Microsoft Graph, and the Location header URL for polling the long-running operation. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
-    name: msgraph-apply-sensitivity-label
+    description: Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as a long-running operation and returns the operation status URL in the Location response header; poll that URL to track completion. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
+    name: msgraph-assign-sensitivity-label
     outputs:
-    - contextPath: MsGraphFiles.AppliedSensitivityLabel.itemId
-      description: Echo of the requested drive item ID.
+    - contextPath: MsGraphFiles.AssignedSensitivityLabel.itemId
+      description: The ID of the drive item the label was assigned to.
       type: String
-    - contextPath: MsGraphFiles.AppliedSensitivityLabel.sensitivityLabelId
-      description: Echo of the assigned sensitivity label GUID.
+    - contextPath: MsGraphFiles.AssignedSensitivityLabel.sensitivityLabelId
+      description: The GUID of the sensitivity label that was assigned. Empty string indicates the existing label was removed.
       type: String
-    - contextPath: MsGraphFiles.AppliedSensitivityLabel.result
-      description: SUCCESS on a 2xx response from Microsoft Graph.
-      type: String
-    - contextPath: MsGraphFiles.AppliedSensitivityLabel.httpStatusCode
-      description: The HTTP status code returned by Microsoft Graph.
-      type: Number
-    - contextPath: MsGraphFiles.AppliedSensitivityLabel.operationLocation
-      description: URL returned in the Location header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to monitor its completion status.
+    - contextPath: MsGraphFiles.AssignedSensitivityLabel.location
+      description: URL returned in the Microsoft Graph Location response header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to track the operation's completion status.
       type: String
   dockerimage: demisto/crypto:1.0.0.5490413
   script: ''

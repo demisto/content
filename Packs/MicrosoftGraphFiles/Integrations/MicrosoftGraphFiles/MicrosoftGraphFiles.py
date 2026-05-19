@@ -531,10 +531,8 @@ class MsGraphClient:
     def _build_drive_item_uri(object_type: str, object_type_id: str, item_id: str) -> str:
         """Build the drive-item URI prefix based on the MS Graph resource type.
 
-        Mirrors the existing branching used by other drive-item commands in this integration.
-
         Args:
-            object_type: MS Graph resource ('drives', 'groups', 'sites', 'users').
+            object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
             object_type_id: MS Graph resource ID.
             item_id: The drive item ID.
 
@@ -548,10 +546,10 @@ class MsGraphClient:
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
 
     def extract_sensitivity_label(self, object_type: str, object_type_id: str, item_id: str) -> dict:
-        """Retrieve the sensitivity label currently assigned to a drive item.
+        """Retrieve the sensitivity labels currently assigned to a drive item.
 
         Args:
-            object_type: MS Graph resource ('drives', 'groups', 'sites', 'users').
+            object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
             object_type_id: MS Graph resource ID.
             item_id: The drive item ID.
 
@@ -561,22 +559,23 @@ class MsGraphClient:
         uri = self._build_drive_item_uri(object_type, object_type_id, item_id) + "/extractSensitivityLabels"
         return self.ms_client.http_request(method="POST", url_suffix=uri)
 
-    def apply_sensitivity_label(
+    def assign_sensitivity_label(
         self,
         object_type: str,
         object_type_id: str,
         item_id: str,
         sensitivity_label_id: str,
-        assignment_method: str = "standard",
-        justification_text: str = "Applied via Cortex XSOAR",
+        assignment_method: str,
+        justification_text: str,
     ) -> requests.Response:
         """Assign a sensitivity label to a drive item.
 
         Args:
-            object_type: MS Graph resource ('drives', 'groups', 'sites', 'users').
+            object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
             object_type_id: MS Graph resource ID.
             item_id: The drive item ID.
-            sensitivity_label_id: The GUID of the sensitivity label to assign.
+            sensitivity_label_id: The GUID of the sensitivity label to assign. An empty
+                string instructs Microsoft Graph to remove the existing label.
             assignment_method: One of 'standard', 'privileged', 'auto'.
             justification_text: Free-text justification recorded with the assignment.
 
@@ -584,11 +583,12 @@ class MsGraphClient:
             Raw HTTP response object so the caller can inspect the status code and headers.
         """
         uri = self._build_drive_item_uri(object_type, object_type_id, item_id) + "/assignSensitivityLabel"
-        body = {
+        body: dict = {
             "sensitivityLabelId": sensitivity_label_id,
             "assignmentMethod": assignment_method,
-            "justificationText": justification_text,
         }
+        if justification_text:
+            body["justificationText"] = justification_text
         return self.ms_client.http_request(
             method="POST",
             url_suffix=uri,
@@ -1125,11 +1125,10 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
 
 
 def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
-    """Retrieve the sensitivity label(s) currently assigned to a drive item.
+    """Retrieve the sensitivity labels currently assigned to a drive item.
 
-    An empty `labels` array in the Graph response is treated as the documented
-    "no label assigned" case and surfaced as empty `sensitivityLabelId` /
-    `assignmentMethod` fields plus an empty `labels` list, not as an error.
+    An empty `labels` array in the Graph response is the documented "no label assigned"
+    case and is returned as a successful result with an empty `labels` list, not an error.
 
     Args:
         client: The Microsoft Graph client.
@@ -1139,29 +1138,28 @@ def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str
             item_id (Required): The drive item ID.
 
     Returns:
-        CommandResults with the extracted label fields. The flat `sensitivityLabelId` and
-        `assignmentMethod` fields reflect the first entry in `labels` (or empty strings
-        when no label is assigned); `labels` contains the full array as returned by Graph.
+        CommandResults with the drive item ID and the raw `labels[]` array as returned
+        by Microsoft Graph.
     """
-    object_type = args["object_type"]
-    object_type_id = args["object_type_id"]
-    item_id = args["item_id"]
+    object_type = args.get("object_type", "")
+    object_type_id = args.get("object_type_id", "")
+    item_id = args.get("item_id", "")
 
     raw_response = client.extract_sensitivity_label(object_type, object_type_id, item_id)
     labels = (raw_response.get("value") or {}).get("labels") or []
-    first = labels[0] if labels else {}
 
     outputs = {
         "itemId": item_id,
-        "sensitivityLabelId": first.get("sensitivityLabelId", ""),
-        "assignmentMethod": first.get("assignmentMethod", ""),
         "labels": labels,
     }
 
+    table_rows = [{"itemId": item_id, **label} for label in labels] or [{"itemId": item_id}]
     readable_output = tableToMarkdown(
         name="Extracted Sensitivity Label",
-        t=outputs,
-        headers=["itemId", "sensitivityLabelId", "assignmentMethod"],
+        t=table_rows,
+        headers=["itemId", "sensitivityLabelId", "assignmentMethod", "tenantId"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
@@ -1173,12 +1171,12 @@ def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str
     )
 
 
-def apply_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """Assign a sensitivity label to a drive item.
 
-    On a 2xx response, returns `result=SUCCESS`, the HTTP status code, and the value of
-    the `Location` response header (Microsoft Graph treats this assignment as a
-    long-running operation and returns 202 Accepted with a Location URL to poll). Non-2xx
+    Microsoft Graph treats `assignSensitivityLabel` as a long-running operation and
+    returns `202 Accepted` with a `Location` response header pointing to the operation
+    status URL. The handler surfaces that URL verbatim in `outputs["location"]`. Non-2xx
     responses raise an exception that is caught by the outer `main()` try/except and
     surfaced via `return_error` with the raw Graph error message.
 
@@ -1188,21 +1186,24 @@ def apply_sensitivity_label_command(client: MsGraphClient, args: dict[str, str])
             object_type (Required): The MS Graph resource. One of drives, groups, sites, users.
             object_type_id (Required): The MS Graph resource ID.
             item_id (Required): The drive item ID.
-            sensitivity_label_id (Required): The GUID of the sensitivity label to assign.
+            sensitivity_label_id (Optional): The GUID of the sensitivity label to assign.
+                An empty string instructs Microsoft Graph to remove the existing label.
             assignment_method (Optional): One of standard, privileged, auto. Default standard.
-            justification_text (Optional): Free-text justification recorded with the assignment.
+            justification_text (Optional): Free-text justification recorded with the
+                assignment.
 
     Returns:
-        CommandResults with the apply outcome.
+        CommandResults with the drive item ID, the assigned label GUID, and the
+        `Location` header URL returned by Microsoft Graph.
     """
-    object_type = args["object_type"]
-    object_type_id = args["object_type_id"]
-    item_id = args["item_id"]
-    sensitivity_label_id = args["sensitivity_label_id"]
-    assignment_method = args.get("assignment_method") or "standard"
-    justification_text = args.get("justification_text") or "Applied via Cortex XSOAR"
+    object_type = args.get("object_type", "")
+    object_type_id = args.get("object_type_id", "")
+    item_id = args.get("item_id", "")
+    sensitivity_label_id = args.get("sensitivity_label_id", "")
+    assignment_method = args.get("assignment_method", "") or "standard"
+    justification_text = args.get("justification_text", "")
 
-    response = client.apply_sensitivity_label(
+    response = client.assign_sensitivity_label(
         object_type=object_type,
         object_type_id=object_type_id,
         item_id=item_id,
@@ -1211,26 +1212,24 @@ def apply_sensitivity_label_command(client: MsGraphClient, args: dict[str, str])
         justification_text=justification_text,
     )
 
-    status_code = getattr(response, "status_code", 200)
     response_headers = getattr(response, "headers", {}) or {}
-    operation_location = response_headers.get("Location") or ""
+    location = response_headers.get("Location") or ""
 
     outputs = {
         "itemId": item_id,
         "sensitivityLabelId": sensitivity_label_id,
-        "result": "SUCCESS",
-        "httpStatusCode": status_code,
-        "operationLocation": operation_location,
+        "location": location,
     }
 
     readable_output = tableToMarkdown(
-        name="Applied Sensitivity Label",
+        name="Assigned Sensitivity Label",
         t=outputs,
-        headers=["itemId", "sensitivityLabelId", "result", "httpStatusCode", "operationLocation"],
+        headers=["itemId", "sensitivityLabelId", "location"],
+        headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="MsGraphFiles.AppliedSensitivityLabel",
+        outputs_prefix="MsGraphFiles.AssignedSensitivityLabel",
         outputs_key_field="itemId",
         outputs=outputs,
         readable_output=readable_output,
@@ -1316,8 +1315,8 @@ def main():
             return_results(delete_site_permission_command(client, args))
         elif command == "msgraph-extract-sensitivity-label":
             return_results(extract_sensitivity_label_command(client, args))
-        elif command == "msgraph-apply-sensitivity-label":
-            return_results(apply_sensitivity_label_command(client, args))
+        elif command == "msgraph-assign-sensitivity-label":
+            return_results(assign_sensitivity_label_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
