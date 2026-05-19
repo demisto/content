@@ -84,3 +84,5 @@ marketplaces:
 - platform
 tests:
 - No tests
+supportedModules:
+- xsiam

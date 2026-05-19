@@ -40,13 +40,14 @@ configuration:
   additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
   type: 0
   section: Connect
-- display: Long running integration
-  name: longRunning
-  additionalinfo: Use this to fetch assets and vulnerabilities snapshots. creates a long-running docker instance.
-  type: 8
-  required: false
+- additionalinfo: The interval between asset fetches. Default is 24 hours.
+  defaultvalue: 1440
+  display: Assets Fetch Interval
+  name: assetsFetchInterval
+  type: 19
   section: Collect
-  defaultvalue: 'false'
+  advanced: true
+  required: false
   hidden:
   - xsoar
 description: Vulnerability management solution to help reduce threat exposure.
@@ -2549,7 +2550,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  longRunning: true
+  isfetchassets: true
   dockerimage: demisto/auth-utils:1.0.0.6111183
 fromversion: 5.0.0
 tests:
