@@ -41,5 +41,5 @@ malware analysis in Cortex XSOAR®
 
 ### Support
 
-This is an ANY.RUN’s supported connector. You can write to us for help with integration via [support@any.run](mailto:support@any.run).
+This is an ANY.RUN’s supported connector. You can write to us for help with integration via [techsupport@any.run](mailto:techsupport@any.run).
 Contact us for a quote or demo via [this form](https://app.any.run/contact-us/?utm_source=cortex_marketplace&utm_medium=description&utm_campaign=palo_alto_networks_integration&utm_term=281025&utm_content=linktocontactus)
