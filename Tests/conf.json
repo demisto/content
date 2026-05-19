@@ -5907,7 +5907,7 @@
         },
         {
             "playbookID": "DomainEnrichment-Test",
-            "integrations": ["VirusTotal (API v3)","AlienVault OTX v2"],
+            "integrations": ["VirusTotal (API v3)","CrowdStrike Falcon Intel v2"],
             "instance_names": [
                 "virus_total_v3"
             ],
