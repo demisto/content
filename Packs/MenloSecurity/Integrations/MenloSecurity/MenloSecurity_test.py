@@ -329,23 +329,21 @@ class TestGetEventsForLogType:
         assert events[0]["domain"] == "a.com"
         assert events[1]["domain"] == "b.com"
 
-    def test_api_error_returns_partial_results(self, mock_client: Client, mocker):
+    def test_api_error_propagates(self, mock_client: Client, mocker):
         """
         Given:
-            - The first API call succeeds but the second raises a connection error.
+            - The first API call succeeds but the second raises an error.
         When:
             - Calling get_events_for_log_type.
         Then:
-            - Events from the first page are returned despite the error.
+            - The error propagates (not silently swallowed).
         """
-        mocker.patch("MenloSecurity.demisto.error")  # suppress stdout that conftest treats as failure
         mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), Exception("Connection error")])
 
-        events = get_events_for_log_type(
-            client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=5000
-        )
-
-        assert len(events) == 1
+        with pytest.raises(Exception, match="Connection error"):
+            get_events_for_log_type(
+                client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=5000
+            )
 
 
 # ─── fetch_events Tests ───────────────────────────────────────────────────────
@@ -611,8 +609,10 @@ class TestFetchEvents:
             - audit: all events are returned (no dedup on first fetch).
             - next_run has updated state for both types.
         """
-        web_event_dup = {"event": {"event_time": "2024-01-15T10:00:00", "domain": "duplicate.example.com"}}
-        web_event_new = {"event": {"event_time": "2024-01-15T10:00:01", "domain": "fresh.example.com"}}
+        dup_domain = "duplicate-event.test"
+        new_domain = "new-event.test"
+        web_event_dup = {"event": {"event_time": "2024-01-15T10:00:00", "domain": dup_domain}}
+        web_event_new = {"event": {"event_time": "2024-01-15T10:00:01", "domain": new_domain}}
         audit_event = {"event": {"event_time": "2024-01-15T10:00:00", "name": "login"}}
 
         web_response = {
@@ -664,9 +664,9 @@ class TestFetchEvents:
 
         # web: 1 dup removed, 1 new event kept. audit: 1 event (no dedup on first fetch).
         assert len(events) == 2
-        domains = {e.get("domain") for e in events if "domain" in e}
-        assert "fresh.example.com" in domains
-        assert "duplicate.example.com" not in domains
+        event_domains = [e.get("domain") for e in events if "domain" in e]
+        assert new_domain in event_domains
+        assert dup_domain not in event_domains
 
         # Both types have updated state in next_run.
         assert "web" in next_run

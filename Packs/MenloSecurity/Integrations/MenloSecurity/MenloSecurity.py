@@ -14,7 +14,7 @@ from ContentClientApiModule import *
 """ CONSTANTS """
 
 VENDOR = "Menlo"
-PRODUCT = "Menlo Security Isolation Platform"
+PRODUCT = "Security IP"
 
 DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE = 5000
 MAX_EVENTS_PER_PAGE = 1000  # API default limit per request
@@ -23,11 +23,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 # Per Menlo docs: Admin-UI-generated tokens use the v2 endpoint; legacy CSV-based tokens use v1.
 API_PATH_TEMPLATE = "/api/rep/{api_version}/fetch/client_select"
-TOKEN_TYPE_TO_API_VERSION = {"Admin token": "v2", "token": "v1"}
-DEFAULT_TOKEN_TYPE = "Admin token"
-
-# Default log types to pre-select in the UI (per design — not all available types).
-DEFAULT_LOG_TYPES = ["web", "safemail", "audit", "smtp", "attachment", "dlp"]
+TOKEN_TYPE_TO_API_VERSION = {"Admin Token": "v2", "Token": "v1"}
+DEFAULT_TOKEN_TYPE = "Admin Token"
 
 # Mapping from UI log type name to API log_type value.
 # "safemail" is the UI label used in the official Menlo Python script; the API body uses "email".
@@ -62,6 +59,8 @@ SOURCE_LOG_TYPE_MAP: dict[str, str] = {
 }
 
 ALL_LOG_TYPES = list(LOG_TYPE_MAP.keys())
+# Default log types: all available types are pre-selected in the UI.
+DEFAULT_LOG_TYPES = ALL_LOG_TYPES
 
 
 """ CLIENT CLASS """
@@ -217,17 +216,13 @@ def get_events_for_log_type(
             page_limit = MAX_EVENTS_PER_PAGE
         demisto.debug(f"[{thread_name}] Fetching: start={start_epoch}, end={end_epoch}, limit={page_limit}")
 
-        try:
-            response = client.fetch_log_page(
-                log_type=api_log_type,
-                start=start_epoch,
-                end=end_epoch,
-                limit=page_limit,
-                paging_identifiers=paging_identifiers,
-            )
-        except Exception as e:
-            demisto.error(f"[{thread_name}] Error fetching: {e}\n{traceback.format_exc()}")
-            break
+        response = client.fetch_log_page(
+            log_type=api_log_type,
+            start=start_epoch,
+            end=end_epoch,
+            limit=page_limit,
+            paging_identifiers=paging_identifiers,
+        )
 
         # The API may return an empty 200 response (Content-Length: 0) when there is no data.
         if not response:
