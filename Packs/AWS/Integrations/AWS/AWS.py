@@ -984,6 +984,7 @@ class AWSServices(str, Enum):
     SSM = "ssm"
     Redshift = "redshift"
     CloudWatchLogs = "logs"
+    NetworkFirewall = "network-firewall"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -9719,6 +9720,54 @@ class CloudWatchLogs:
         )
 
 
+class NetworkFirewall:
+    service = AWSServices.NetworkFirewall
+
+    @staticmethod
+    def describe_firewall_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns the data objects for the specified firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn")
+        }
+        remove_nulls_from_dictionary(kwargs)
+        if not kwargs:
+            raise DemistoException("Please enter at least one of the arguments firewall_name and firewall_arn.")
+        print_debug_logs(client, f"Describing firewall with parameters: {kwargs}")
+        response = client.describe_firewall(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall = response.get("Firewall", {})
+        firewall['FirewallStatus'] = response.pop("FirewallStatus", {})
+        firewall['UpdateToken'] = response.pop("UpdateToken", None)
+
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewall",
+            outputs_key_field="FirewallArn",
+            outputs=firewall,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall",
+                firewall,
+                headers=["FirewallName", "FirewallArn", "FirewallPolicyArn", "VpcId", "Description", "FirewallId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -9926,6 +9975,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-logs-metric-filter-put": CloudWatchLogs.metric_filter_put_command,
     "aws-logs-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
     "aws-logs-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
+    "aws-network-firewall-firewall-describe": NetworkFirewall.describe_firewall_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10103,6 +10153,7 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:DeleteMetricFilter",
     "logs:DescribeMetricFilters",
     "logs:TagResource",
+    "network-firewall:DescribeFirewall",
 ]
 
 COMMAND_SERVICE_MAP = {
@@ -10249,6 +10300,8 @@ def get_service_client(
     # Resolve service name
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
+    elif 'network-firewall' in command:
+        service_name = 'network-firewall'
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 

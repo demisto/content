@@ -18144,6 +18144,137 @@ script:
         description: A comma-separated list of tag keys to remove from the resource.
         required: true
         isArray: true
+  - name: aws-network-firewall-firewall-describe
+    description: Returns the data objects for the specified firewall.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall.    
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallPolicyArn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.VpcId
+      description: The unique identifier of the VPC where the firewall is in use.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.Description
+      description: A description of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallId
+      description: The unique identifier for the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.UpdateToken
+      description: An optional token that you can use for optimistic locking.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.SubnetMappings.SubnetId
+      description: The unique identifier for the subnet.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.SubnetMappings.IPAddressType
+      description: The subnet's IP address type.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.DeleteProtection
+      description: A flag indicating whether it is possible to delete the firewall.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewall.SubnetChangeProtection
+      description: A setting indicating whether the firewall is protected against changes to the subnet associations.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallPolicyChangeProtection
+      description: A setting indicating whether the firewall is protected against a change to the firewall policy association.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewall.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.EncryptionConfiguration.KeyId
+      description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.EncryptionConfiguration.Type
+      description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.NumberOfAssociations
+      description: The number of associations.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.Firewall.EnabledAnalysisTypes
+      description: The enabled analysis types.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.TransitGatewayId
+      description: The unique identifier for the transit gateway.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.TransitGatewayOwnerAccountId
+      description: The account ID of the transit gateway owner.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.AvailabilityZoneMappings.AvailabilityZone
+      description: The Availability Zone.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.AvailabilityZoneChangeProtection
+      description: A setting indicating whether the firewall is protected against changes to the Availability Zone associations.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.Status
+      description: The readiness status of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.ConfigurationSyncStateSummary
+      description: The configuration sync state for the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.SyncStates
+      description: Status for the subnets that you’ve configured in the firewall.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.CapacityUsageSummary
+      description: Describes the capacity usage of the resources contained in a firewall’s reference sets.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.TransitGatewayAttachmentSyncState.AttachmentId
+      description: The synchronization state of the transit gateway attachment. This indicates whether the firewall’s transit gateway configuration is properly synchronized and operational.
+      type: Unknown
 
   isfetch: false
   runonce: false
