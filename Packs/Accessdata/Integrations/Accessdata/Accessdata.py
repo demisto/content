@@ -13,6 +13,14 @@ from requests.exceptions import HTTPError
 
 # Disable insecure warnings
 disable_warnings()
+from typing_extensions import NotRequired
+
+class PackInfo():
+    certification: NotRequired[str]
+    tags: NotRequired[list[str]]
+    use_cases: NotRequired[list[str]]
+    categories: NotRequired[list[str]]
+    marketplaces: NotRequired[list[str]]
 
 
 ''' CONSTANTS '''
