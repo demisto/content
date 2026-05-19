@@ -50,14 +50,6 @@ class Client(BaseClient):
         headers = {"X-API-Key": apikey, "Content-Type": "application/json"}
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def _apply_ucp_api_key(self, credentials: dict, ctx: Any) -> None:
-        """
-        UCP override: write the API key into the non-standard ``X-API-Key`` header
-        instead of the default ``Authorization: Bearer ...``.
-        """
-        api_key_data = credentials.get("api_key", credentials)
-        ctx.headers["X-API-Key"] = api_key_data.get("key", "")
-
     def api_request(self, endpoint: str, json_data: dict) -> dict:
         """Generic V2 API request method"""
         demisto.debug(f"APIVoid: Making API request to {endpoint} with data: {json_data}")
