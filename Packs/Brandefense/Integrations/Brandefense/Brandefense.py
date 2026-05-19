@@ -16,7 +16,7 @@ def get_assets(api_token):
     return_results(result)
 
 
-from typing import NotRequired
+from typing_extensions import NotRequired
 from typing import TypedDict
 
 
