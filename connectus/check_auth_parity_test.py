@@ -421,10 +421,21 @@ def _run_main_capture(argv: list[str]) -> tuple[int, dict]:
 
 
 class TestHardErrors:
+    # Minimal stub Auth Details payload that satisfies the now-required
+    # --auth-details CLI flag. The non-python / no-baseclient gates
+    # fire BEFORE Auth Details validation, so the contents are
+    # immaterial for these tests; any well-formed payload works.
+    _STUB_AUTH_DETAILS = json.dumps({
+        "auth_types": [],
+        "config": "NoneRequired",
+        "other_connection": [],
+    })
+
     def test_error_non_python(self, tmp_path: Path) -> None:
         pack = _make_js_integration(tmp_path)
         rc, payload = _run_main_capture(
-            [str(pack), "--integration-id", "JsInt"]
+            [str(pack), "--integration-id", "JsInt",
+             "--auth-details", self._STUB_AUTH_DETAILS]
         )
         assert rc == cap.EXIT_NON_PYTHON
         assert payload["error"]["code"] == cap.ERROR_NON_PYTHON
@@ -434,7 +445,8 @@ class TestHardErrors:
         py = "def main():\n    pass\n"  # No BaseClient anywhere.
         pack = _make_python_integration(tmp_path, py_source=py)
         rc, payload = _run_main_capture(
-            [str(pack), "--integration-id", "TestInt"]
+            [str(pack), "--integration-id", "TestInt",
+             "--auth-details", self._STUB_AUTH_DETAILS]
         )
         assert rc == cap.EXIT_NO_BASECLIENT
         assert payload["error"]["code"] == cap.ERROR_NO_BASECLIENT
@@ -442,7 +454,9 @@ class TestHardErrors:
 
     def test_error_all_interpolated(self, tmp_path: Path) -> None:
         pack = _make_python_integration(tmp_path)
-        # Stub out the Auth Details read to return all-interpolated config.
+        # Auth Details are now passed in via --auth-details (the
+        # orchestrator's job per the REMOVE-workflow_state-lookup
+        # refactor). No more monkey-patching the workflow_state read.
         details_json = {
             "auth_types": [
                 {"type": "APIKey", "name": "api_key",
@@ -451,10 +465,10 @@ class TestHardErrors:
             "config": "REQUIRED(api_key)",
             "other_connection": [],
         }
-        with mock.patch.object(cap, "_read_auth_details_json", return_value=details_json):
-            rc, payload = _run_main_capture(
-                [str(pack), "--integration-id", "TestInt"]
-            )
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "TestInt",
+             "--auth-details", json.dumps(details_json)]
+        )
         assert rc == cap.EXIT_ALL_INTERPOLATED
         assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
         assert cap._LITERAL_MARKPASS_STEP_11 in payload["error"]["message"]
@@ -475,11 +489,11 @@ class TestHardErrors:
             "config": "REQUIRED(kept) + OPTIONAL(dropped)",
             "other_connection": [],
         }
-        with mock.patch.object(cap, "_read_auth_details_json", return_value=details_json):
-            rc, payload = _run_main_capture(
-                [str(pack), "--integration-id", "TestInt",
-                 "--connection", "dropped"]
-            )
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "TestInt",
+             "--auth-details", json.dumps(details_json),
+             "--connection", "dropped"]
+        )
         assert rc == cap.EXIT_CONNECTION_INTERPOLATED
         assert payload["error"]["code"] == cap.ERROR_CONNECTION_INTERPOLATED
 
@@ -603,6 +617,25 @@ class TestBuildBaseParamsPrecedence:
         baseline = cap._build_base_params(self._YML, param_defaults=None)
         empty = cap._build_base_params(self._YML, param_defaults={})
         assert empty == baseline
+
+
+class TestUcpPatchTemplate:
+    """Pin the shape of the UCP-patch sidecar template (§2.5 wiring).
+
+    Regression guards against silently regressing to the previous CSP
+    `get_ucp_credentials` patch shape, and confirms the branch-selector
+    flags remain patched on CommonServerPython.
+    """
+
+    def test_ucp_patch_template_mocks_demisto_getucpcredentials(self) -> None:
+        template = cap._UCP_PATCH_TEMPLATE
+        # The credential-fetcher seam is now the demisto-object method.
+        assert "demisto.getUCPCredentials = " in template
+        # Regression guard: the old CSP-attribute patch must be gone.
+        assert "csp.get_ucp_credentials = " not in template
+        # The branch selectors must remain patched on CommonServerPython.
+        assert "csp.is_ucp_enabled = " in template
+        assert "csp.should_use_ucp_auth = " in template
 
 
 # --------------------------------------------------------------------------

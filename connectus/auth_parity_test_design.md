@@ -119,13 +119,24 @@ the corrected auth shape. The exact reset procedure is documented in
 
 ## 1. Inputs
 
+> **Architecture rule (2026-05).** The analyzer is **stateless** with
+> respect to the workflow CSV. It does NOT shell out to
+> `workflow_state.py show-step`, does NOT import the `workflow_state`
+> package, and does NOT read `connectus-migration-pipeline.csv`. All
+> pipeline-cell inputs are passed in by the orchestrator (the
+> connectus-migration skill) via dedicated CLI flags. The skill is the
+> single layer that knows the integration id → cell mapping; the
+> analyzer is a pure transformation of YML + source + injected cells.
+> See §5.1 for the flag surface.
+
 | Input | Source | Purpose |
 |-------|--------|---------|
-| Integration directory | CLI arg (same as [`check_command_params.py`](connectus/check_command_params.py:1)) | Locate YML + Python source. |
-| `Auth Details` cell | Read via [`workflow_state.py show-step`](connectus/workflow_state.py:2240) or [`parse_auth_details()`](connectus/auth_config_parser/parser.py:1) / [`auth_param_ids()`](connectus/auth_config_parser/utils.py:1) programmatically | Provides `auth_types[]` with `xsoar_params`, `interpolated`, `name`, `type`, and the `config` expression — parsed into typed [`AuthDetails`](connectus/auth_config_parser/types.py:102) / [`AuthEntry`](connectus/auth_config_parser/types.py:52) dataclasses. |
-| `Params for test with default in code` cell | Read via [`workflow_state.py show-step`](connectus/workflow_state.py:1) | Supplies throwaway defaults for non-auth required params so the integration can start. |
-| `Params to Commands` cell | Read via [`workflow_state.py show-step`](connectus/workflow_state.py:1) | Provides the per-command param lists; used to pick a minimal covering command set. |
-| Integration ID | CLI arg `--integration-id` | Key into the pipeline CSV for all of the above. |
+| Integration directory | CLI positional arg (same as [`check_command_params.py`](connectus/check_command_params.py:1)) | Locate YML + Python source. |
+| `Auth Details` cell | **Passed in** via `--auth-details <json>` / `--auth-details-file <path>` (mutually exclusive; one is required). The orchestrator reads it once with `workflow_state.py show-step --raw "<id>" "Auth Details"`. | Provides `auth_types[]` with `xsoar_params`, `interpolated`, `name`, `type`, and the `config` expression — parsed into typed [`AuthDetails`](connectus/auth_config_parser/types.py:102) / [`AuthEntry`](connectus/auth_config_parser/types.py:52) dataclasses inside the analyzer. |
+| `Params for test with default in code` cell | **Passed in** via `--param-defaults <json>` / `--param-defaults-file <path>` (mutually exclusive; both optional, default `{}`). The orchestrator reads it once with `workflow_state.py show-step --raw "<id>" "Params for test with default in code"`. | Supplies throwaway defaults for non-auth required params so the integration can start. |
+| `Params to Commands` cell | Not consumed by this analyzer (the test picks commands directly per [Command selection strategy](#command-selection-strategy) below). | — |
+| Integration ID | CLI arg `--integration-id` | Identifier for log/diagnostic messages and a fallback for the top-level `integration` field in the output JSON. **Not** used to look up workflow state. |
+| Display name (optional) | CLI arg `--display-name <str>` | Human-readable name for the output `integration` field. Falls back to YML `display`, then to `--integration-id`. |
 
 ### Command selection strategy
 
@@ -215,9 +226,16 @@ Properties:
 
 The test harness must intercept the UCP credential-resolution chain.
 The seam is [`get_ucp_credentials(method_unique_id)`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13849),
-which normally calls `demisto.getUCPCredentials(...)`. The harness
-patches this function (or the underlying `demisto.getUCPCredentials`
-mock) to return a synthetic credential dict.
+which normally delegates to `demisto.getUCPCredentials(...)`. **The
+implementation patches `demisto.getUCPCredentials` directly** (the
+camel-case method on the `demisto` object exposed by `demistomock`),
+rather than the CSP wrapper. Patching the lower-level seam catches
+both call patterns in one shot: code that goes through
+[`CommonServerPython.get_ucp_credentials()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13849)
+hits the mock (because the wrapper delegates to
+`demisto.getUCPCredentials`), and integrations that call
+`demisto.getUCPCredentials(...)` directly — bypassing the CSP wrapper —
+also hit the mock.
 
 **Contract the parity test requires from the injection hook:**
 
@@ -260,7 +278,14 @@ TTL, or capability-resolution logic — it short-circuits all of that.
 Additionally, the harness must ensure [`is_ucp_enabled()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13671)
 returns `False` for the old run and `True` for the new run, and that
 [`should_use_ucp_auth()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13671)
-follows suit. This controls whether integrations like
+follows suit. These two flags remain patched on `CommonServerPython`
+as **branch selectors** — they decide whether the integration takes
+the UCP code path at all. They are distinct from the credential
+fetcher (`demisto.getUCPCredentials`, patched above): the flags
+control which branch runs, while the demisto-object mock supplies
+the actual credentials when the UCP branch is taken.
+
+This controls whether integrations like
 [`Salesforce_IAM`](Packs/Salesforce/Integrations/Salesforce_IAM/Salesforce_IAM.py:42)
 take the legacy `get_access_token_()` path or the UCP path.
 
@@ -397,7 +422,7 @@ Harness                    Proxy                Integration
   |   insecure=True                                  |
   |   xsoar_params=OMITTED                           |
   |   is_ucp_enabled=True                            |
-  |   get_ucp_credentials=mock with sentinels        |
+  |   demisto.getUCPCredentials=mock with sentinels  |
   |                          |                       |
   |-- load unified .py ----->|                       |
   |-- call main() --------->                    ---->|
@@ -537,6 +562,9 @@ locations_old(S) == locations_new(S)
 ```bash
 python3 connectus/check_auth_parity.py <integration_dir> \
     --integration-id "<Integration ID>" \
+    (--auth-details '<json>' | --auth-details-file <path>) \
+    [--param-defaults '<json>' | --param-defaults-file <path>] \
+    [--display-name "<Human Name>"] \
     [--commands cmd1 cmd2 ...] \
     [--connection <connection_name>] \
     [--timeout SECONDS] \
@@ -545,12 +573,49 @@ python3 connectus/check_auth_parity.py <integration_dir> \
     [--use-integration-docker]
 ```
 
-Mirrors [`check_command_params.py`](connectus/check_command_params.py:4206)'s
-CLI surface. The `--integration-id` flag is **required** (not optional
-as in the sibling tool) because the test needs `Auth Details` to know
-what to test. The optional `--connection` flag restricts the test to a
-single named connection (useful when re-running after removing an
-interpolated connection from the invocation).
+Mostly mirrors [`check_command_params.py`](connectus/check_command_params.py:4206)'s
+CLI surface, with one architectural difference: this analyzer takes
+its pipeline-cell inputs as CLI args rather than looking them up. The
+orchestrator (the connectus-migration skill) is the layer that knows
+the `Integration ID -> cell` mapping; the analyzer is a pure
+transformation. See §1 for rationale.
+
+Flag semantics (the cell-input flags are the new surface; the rest is
+unchanged):
+
+- **`--integration-id`** (required) — identifier for log messages and
+  fallback `integration` field. NOT used for any CSV lookup.
+- **`--auth-details` / `--auth-details-file`** (mutually exclusive,
+  **one is required**) — raw JSON of the `Auth Details` cell. Inline
+  takes a single quoted string; the file flag takes a path. Inline
+  accepts `-` to read from stdin. Empty input is a hard error
+  (argparse-level, exit 2) — there is no silent default.
+- **`--param-defaults` / `--param-defaults-file`** (mutually exclusive,
+  both optional) — raw JSON of the `Params for test with default in
+  code` cell. Same shape as the auth flags. Empty input or omission
+  both default to `{}`.
+- **`--display-name`** (optional) — overrides the `integration` field
+  in the output JSON. Falls back to YML `display`, then
+  `--integration-id`.
+- **`--connection`** (optional) — restricts the test to a single
+  `auth_types[].name` (useful when re-running after removing an
+  interpolated connection from the test).
+
+The orchestrator invocation pattern is:
+
+```bash
+AUTH=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Auth Details")
+DEFAULTS=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Params for test with default in code")
+python3 connectus/check_auth_parity.py Packs/.../Integrations/<Name> \
+    --integration-id "<id>" \
+    --auth-details "$AUTH" \
+    --param-defaults "${DEFAULTS:-{}}"
+```
+
+The `--raw` flag on `show-step` is the machine-consumer contract — see
+[`workflow_state.cli.cmd_show_step`](workflow_state/cli.py:1). It
+prints the cell value verbatim with no decorative header or
+flag-default substitution.
 
 ### 5.2 Stdout JSON shape
 
@@ -1089,7 +1154,7 @@ connectus/check_auth_parity.py
 ├── run_new(integration_path, command, params, ucp_mock, proxy) → list[CapturedRequest]
 │   ├── patch is_ucp_enabled → True
 │   ├── patch should_use_ucp_auth → True
-│   └── patch get_ucp_credentials → ucp_mock
+│   └── patch demisto.getUCPCredentials → ucp_mock
 ├── extract_sentinel_locations(requests, sentinel) → set[Location]
 │   ├── scan headers (with Basic/Bearer decomposition)
 │   ├── scan query params

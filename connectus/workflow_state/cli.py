@@ -898,10 +898,33 @@ def cmd_list_connectors(_args: list[str]) -> None:
 
 
 def cmd_show_step(args: list[str]) -> None:
+    """Read one cell for one integration.
+
+    Default output is the human-readable decorated form produced by
+    :func:`format_step_value` (header + pretty JSON). Pass ``--raw`` to
+    emit ONLY the raw cell value verbatim — no header, no decoration,
+    no flag-default substitution, no JSON pretty-printing. An empty
+    cell prints nothing in ``--raw`` mode. ``--raw`` is the contract
+    for machine consumers (e.g. ``check_auth_parity.py``) that want to
+    ``json.loads`` the output directly.
+    """
     cfg = get_config()
-    if len(args) < 2:
-        print("Usage: workflow_state.py show-step <integration_id> <column_name|column_number>")
+    # Extract --raw flag from args (position-insensitive) before
+    # consuming the rest as positionals.
+    raw_mode = False
+    positional: list[str] = []
+    for a in args:
+        if a == "--raw":
+            raw_mode = True
+        else:
+            positional.append(a)
+
+    if len(positional) < 2:
+        print("Usage: workflow_state.py show-step [--raw] <integration_id> <column_name|column_number>")
         print("  (column name or 1-based number into the full CSV column list)")
+        print("  --raw  Emit the raw cell value verbatim (no header, no")
+        print("         pretty-printing, no flag default). Empty cell prints")
+        print("         nothing. Intended for machine consumers.")
         print("\nValid columns:")
         idx_cols = cfg.identity_column_names
         for n, col in enumerate(idx_cols, start=1):
@@ -911,8 +934,8 @@ def cmd_show_step(args: list[str]) -> None:
             print(f"  #{csv_num:2d} {s.name} ({s.kind})")
         sys.exit(1)
 
-    name = args[0]
-    raw_step = " ".join(args[1:])
+    name = positional[0]
+    raw_step = " ".join(positional[1:])
 
     # show-step is read-only and may target identity columns.
     step = _resolve_column_or_exit(
@@ -924,6 +947,14 @@ def cmd_show_step(args: list[str]) -> None:
     if idx is None:
         print(f"ERROR: Integration '{name}' not found.")
         sys.exit(1)
+
+    if raw_mode:
+        # Emit the cell value verbatim. No decoration, no flag-default
+        # substitution, no JSON pretty-printing. Empty cell → no output.
+        value = (rows[idx].get(step, "") or "").strip()
+        if value:
+            print(value)
+        return
 
     print(format_step_value(rows[idx], step))
 

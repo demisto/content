@@ -1,7 +1,7 @@
 Integration ID,Integration File Path,Connector ID,assignee,Auth Details,Params to Commands,verify button placement,Params for test with default in code,Params to Capabilities,generated manifest,run manifest make validate,wrote/checked code,shadowed command test passes,write tests,precommit/validate/unit tests passed,auth parity test passes,param parity test passes,code reviewed,code merged
 AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,,,,,,,,,,,,,,,,
 AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,,,,,,,,,,,,,,,,
-APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,,,,,,,,,,,,,,,,
+APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,juschwartz,"{""auth_types"":[{""type"":""APIKey"",""name"":""credentials"",""xsoar_params"":[""credentials.identifier"",""credentials.password""]}],""config"":""REQUIRED(credentials)"",""other_connection"":[""insecure"",""proxy"",""url""]}",,,,,,,,,,,,,,
 AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,,,,,,,,,,,,,,,,
 AWS - AccessAnalyzer,Packs/AWS-AccessAnalyzer/Integrations/AWS-AccessAnalyzer/AWS-AccessAnalyzer.yml,AWS,,,,,,,,,,,,,,,,
 AWS - Athena - Beta,Packs/AWS-Athena/Integrations/AWS-Athena/AWS-Athena.yml,AWS,,,,,,,,,,,,,,,,

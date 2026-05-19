@@ -1393,6 +1393,38 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/valid
 > the standard markpass machinery (see CLI help).
 
 Run the auth parity test to verify authentication works identically.
+The analyzer is **stateless** — the skill is the layer that reads the
+relevant pipeline cells via `workflow_state.py show-step --raw` and
+passes them as CLI flags. The analyzer does NOT shell out to
+`workflow_state.py` or read the CSV itself.
+
+Invocation pattern (replace `<id>` with the Integration ID and the
+path with the integration's directory):
+
+```bash
+AUTH=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Auth Details")
+DEFAULTS=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Params for test with default in code")
+python3 connectus/check_auth_parity.py Packs/<PackName>/Integrations/<IntegrationName> \
+    --integration-id "<id>" \
+    --auth-details "$AUTH" \
+    --param-defaults "${DEFAULTS:-{}}"
+```
+
+Flag notes:
+
+- `--auth-details` is **required** (mutually exclusive with
+  `--auth-details-file <path>` if you'd rather pass the JSON via a
+  file). Pass `'-'` to read from stdin. Empty input is a hard error
+  (exit 2) — the orchestrator must always provide a value.
+- `--param-defaults` is optional; absence and empty input both default
+  to `{}`. The shell substitution `${DEFAULTS:-{}}` covers the
+  common "cell unset" case.
+- `--display-name "<Human Name>"` optionally overrides the
+  `integration` field in the output JSON; otherwise falls back to YML
+  `display`, then to `--integration-id`.
+- All other flags (`--commands`, `--connection`, `--timeout`,
+  `--docker*`) are unchanged.
+
 When it passes:
 
 ```bash

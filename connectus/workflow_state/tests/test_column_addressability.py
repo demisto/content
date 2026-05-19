@@ -107,6 +107,69 @@ def test_show_step_resolves_identity_column_by_number(temp_csv: Path, capsys) ->
 
 
 # ---------------------------------------------------------------------------
+# show-step --raw (machine-consumer contract; no header, no pretty-printing)
+# ---------------------------------------------------------------------------
+
+def test_show_step_raw_emits_cell_verbatim(temp_csv: Path, capsys) -> None:
+    """--raw on a non-empty cell prints only the raw cell value + newline."""
+    wf_cli.cmd_show_step(["--raw", "TestInt", "Auth Details"])
+    out = capsys.readouterr().out
+    # The fixture seeds Auth Details = "{}". With --raw we must get
+    # exactly that — no header, no decoration, no pretty-printing.
+    assert out == "{}\n"
+
+
+def test_show_step_raw_empty_cell_prints_nothing(temp_csv: Path, capsys) -> None:
+    """--raw on an empty cell emits no output at all (not even a default)."""
+    # ``Params to Capabilities`` is seeded to "{}" in the fixture; clear it
+    # by writing an empty string directly into the loaded row so we can
+    # exercise the empty-cell branch.
+    wf_cli.cmd_show_step(["--raw", "TestInt", "generated manifest"])
+    out = capsys.readouterr().out
+    assert out == ""
+
+
+def test_show_step_raw_flag_position_insensitive(temp_csv: Path, capsys) -> None:
+    """--raw may appear anywhere in argv (before, between, or after positionals)."""
+    wf_cli.cmd_show_step(["TestInt", "Auth Details", "--raw"])
+    out = capsys.readouterr().out
+    assert out == "{}\n"
+
+
+def test_show_step_raw_skips_flag_default(temp_csv: Path, capsys) -> None:
+    """--raw must NOT substitute the read-side default for empty flag cells.
+
+    The decorated form of ``verify button placement`` prints
+    ``connection (default; cell empty)`` when the cell is empty. ``--raw``
+    must instead emit nothing for an empty cell (the fixture seeds it,
+    so we re-clear by writing an empty value first).
+    """
+    # The fixture seeds verify-placement = "connection". Reach into the
+    # CSV directly to clear it, then verify --raw emits "".
+    import csv as _csv
+    with open(temp_csv, "r", encoding="utf-8", newline="") as fh:
+        rows = list(_csv.reader(fh))
+    header = rows[0]
+    col_idx = header.index("verify button placement")
+    rows[1][col_idx] = ""
+    with open(temp_csv, "w", encoding="utf-8", newline="") as fh:
+        w = _csv.writer(fh)
+        w.writerows(rows)
+
+    wf_cli.cmd_show_step(["--raw", "TestInt", "verify button placement"])
+    out = capsys.readouterr().out
+    assert out == ""
+
+
+def test_show_step_no_raw_still_decorates(temp_csv: Path, capsys) -> None:
+    """Default (no --raw) output continues to include the decorative header."""
+    wf_cli.cmd_show_step(["TestInt", "Auth Details"])
+    out = capsys.readouterr().out
+    assert "=" in out
+    assert "Auth Details" in out
+
+
+# ---------------------------------------------------------------------------
 # markpass (write; identity columns forbidden)
 # ---------------------------------------------------------------------------
 

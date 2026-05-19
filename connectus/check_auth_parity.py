@@ -5,7 +5,9 @@ integration's ``Auth Details``, secret values land in the **same
 wire location** whether they are supplied the legacy way (via
 ``demisto.params()`` → integration code → ``BaseClient``) or the
 new way (UCP credential injection through
-``get_ucp_credentials()``).
+``demisto.getUCPCredentials()`` — and the
+``CommonServerPython.get_ucp_credentials()`` wrapper that delegates
+to it).
 
 See :doc:`connectus/auth_parity_test_design.md` for the full design.
 
@@ -22,7 +24,6 @@ import base64
 import json
 import os
 import re
-import subprocess
 import sys
 import tempfile
 import textwrap
@@ -250,7 +251,9 @@ def _ucp_shape_oauth2(_: AuthEntry, sentinels: dict[str, str]) -> dict[str, Any]
 def build_ucp_mock(
     sentinel_map: SentinelMap, connection_name: str, auth_entry: AuthEntry
 ) -> Callable[[str], dict[str, Any]] | None:
-    """Return a callable matching the :func:`get_ucp_credentials` contract.
+    """Return a callable matching the ``demisto.getUCPCredentials`` contract
+    (and the equivalent ``CommonServerPython.get_ucp_credentials`` wrapper
+    that delegates to it).
 
     Signature: ``(method_unique_id: str) -> dict``. The returned dict is
     the UCP credential envelope for ``auth_entry``, populated with the
@@ -942,9 +945,14 @@ def run_new(
 ) -> RunResult:
     """Execute the integration with ``xsoar_params`` omitted and UCP on.
 
-    UCP is forced **on**; :func:`get_ucp_credentials`,
-    :func:`is_ucp_enabled`, and :func:`should_use_ucp_auth` are patched
-    in the child to feed the sentinels through the UCP injection seam.
+    UCP is forced **on**: ``demisto.getUCPCredentials`` is patched in
+    the child to feed the sentinels through the UCP injection seam
+    (this is the seam ``CommonServerPython.get_ucp_credentials()``
+    delegates to, and also what integrations call directly when they
+    bypass the CSP wrapper). The CSP-level :func:`is_ucp_enabled` and
+    :func:`should_use_ucp_auth` flags are also patched as the branch
+    selectors that decide whether the integration takes the UCP code
+    path at all.
     """
     base = _build_base_params(yml_data, param_defaults=param_defaults)
     params = _omit_paths(base, auth_entry.xsoar_params)
@@ -1049,6 +1057,27 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
     ``demistomock.py`` and arranges for it to be imported once
     CommonServerPython is loaded, by replacing the ``DemistoClassApiModule``
     stub with one that imports ucp_patch.
+
+    Patch strategy
+    --------------
+    We patch ``demisto.getUCPCredentials`` (the camel-case method on
+    the ``demisto`` object exposed by ``demistomock``) because (a) it
+    is what ``CommonServerPython.get_ucp_credentials()`` ultimately
+    delegates to, and (b) it catches integrations that bypass the CSP
+    wrapper and call ``demisto.getUCPCredentials(...)`` directly. A
+    single low-level patch covers both call patterns.
+
+    The CSP-level ``is_ucp_enabled`` / ``should_use_ucp_auth`` flags
+    remain patched here because they are the **branch selectors** the
+    integration code uses to decide whether to take the UCP path at
+    all — they are NOT credential fetchers. Only the demisto-object
+    mock fetches credentials in this harness.
+
+    When ``AUTH_PARITY_UCP_ENABLED`` is "0" (old / legacy run), we do
+    NOT install ``demisto.getUCPCredentials`` at all — it stays
+    whatever ``demistomock`` provides natively (or raises
+    AttributeError), so legacy-path code that accidentally tries UCP
+    fails the same way it would in real legacy execution.
     """
     import os as _os
     import json as _json
@@ -1060,15 +1089,30 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
 
 
     def apply_patches():
+        # Branch selectors on CommonServerPython — these decide whether
+        # the integration's code takes the UCP code path at all. They
+        # are NOT credential fetchers; the credential fetcher is the
+        # demisto.getUCPCredentials mock installed below.
         csp = _sys.modules.get("CommonServerPython")
-        if csp is None:
+        if csp is not None:
+            if hasattr(csp, "is_ucp_enabled"):
+                csp.is_ucp_enabled = lambda *a, **k: _UCP_ENABLED
+            if hasattr(csp, "should_use_ucp_auth"):
+                csp.should_use_ucp_auth = lambda *a, **k: _UCP_ENABLED
+
+        # Credential fetcher on the demisto object. Only installed for
+        # the new run (UCP enabled + creds provided). This is the
+        # catch-all seam: CSP.get_ucp_credentials() delegates here, and
+        # integrations that call demisto.getUCPCredentials directly
+        # also hit this mock.
+        if not _UCP_ENABLED or _UCP_CREDS is None:
             return
-        if hasattr(csp, "is_ucp_enabled"):
-            csp.is_ucp_enabled = lambda *a, **k: _UCP_ENABLED
-        if hasattr(csp, "should_use_ucp_auth"):
-            csp.should_use_ucp_auth = lambda *a, **k: _UCP_ENABLED
-        if _UCP_ENABLED and _UCP_CREDS is not None and hasattr(csp, "get_ucp_credentials"):
-            csp.get_ucp_credentials = lambda *a, **k: _UCP_CREDS
+        import demistomock as demisto  # noqa: F401
+
+        def _mock_get_ucp_credentials(method_unique_id, *args, **kwargs):  # noqa: ARG001
+            return _UCP_CREDS
+
+        demisto.getUCPCredentials = _mock_get_ucp_credentials  # type: ignore[attr-defined]
 
 
     apply_patches()
@@ -1370,61 +1414,14 @@ def _install_oauth_if_relevant(proxy: CaptureProxy, entry: AuthEntry) -> list[st
 # --------------------------------------------------------------------------
 
 
-def _read_auth_details_json(integration_id: str) -> Any:
-    """Read the Auth Details cell for ``integration_id`` via workflow_state CLI.
-
-    The output is parsed as JSON; an empty cell is returned as the
-    string ``""`` and the caller normalizes it.
-    """
-    return _show_step_json(integration_id, "Auth Details")
-
-
-def _read_param_defaults(integration_id: str) -> dict[str, Any]:
-    """Read the ``Params for test with default in code`` cell as a dict.
-
-    Returns ``{}`` when the cell is empty / unset / not a JSON object.
-    Validation of the cell's contents is the responsibility of
-    :func:`workflow_state.validators.validate_param_defaults` at write
-    time; this reader is intentionally lenient and just falls back to
-    an empty dict on any non-object payload so the analyzer never
-    crashes on stale or malformed cells.
-    """
-    payload = _show_step_json(integration_id, "Params for test with default in code")
-    if isinstance(payload, dict):
-        return payload
-    return {}
-
-
-def _show_step_json(integration_id: str, column: str) -> Any:
-    """Run ``workflow_state.py show-step`` and parse stdout as JSON.
-
-    Returns ``None`` when the cell is empty or unparseable as JSON.
-    """
-    cmd = [
-        sys.executable,
-        str(Path(__file__).resolve().parent / "workflow_state.py"),
-        "show-step",
-        integration_id,
-        column,
-    ]
-    try:
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=30, check=False,
-        )
-    except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
-        raise RuntimeError(f"workflow_state show-step failed: {exc}") from exc
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"workflow_state show-step rc={result.returncode}: "
-            f"{result.stderr.strip()[:200]}"
-        )
-    text = result.stdout.strip()
-    if not text:
-        return None
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        return text
+# NOTE: This analyzer is intentionally stateless w.r.t. workflow_state.
+# The orchestrator (the connectus-migration skill) reads the relevant
+# pipeline cells once via ``workflow_state.py show-step --raw`` and
+# passes their values in as CLI flags (``--auth-details`` /
+# ``--auth-details-file`` and ``--param-defaults`` /
+# ``--param-defaults-file``). There is no ``show-step`` shell-out and
+# no import of ``workflow_state`` anywhere in this file — the analyzer
+# does not know about ``connectus-migration-pipeline.csv``.
 
 
 def _select_commands(
@@ -1442,15 +1439,43 @@ def _select_commands(
 def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     integration_path: Path,
     integration_id: str,
+    auth_details: Any,
+    param_defaults: dict[str, Any],
     commands_filter: list[str] | None,
     connection_filter: str | None,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
+    display_name_override: str | None = None,
 ) -> dict[str, Any]:
-    """End-to-end orchestrator for one integration. Returns the §5.2 JSON."""
+    """End-to-end orchestrator for one integration. Returns the §5.2 JSON.
+
+    Inputs are injected by the caller (the migration skill / CLI); this
+    function never consults ``workflow_state.py`` or the pipeline CSV.
+
+    Args:
+        integration_path: Filesystem directory of the integration.
+        integration_id: Logical id, used for log/diagnostic messages and
+            as a fallback for the ``integration`` field in stdout JSON.
+        auth_details: Parsed ``Auth Details`` cell — either a dict
+            matching the column schema, ``None`` (treated as
+            "no auth"), or anything that
+            :func:`validate_auth_details` will reject if malformed.
+        param_defaults: Parsed ``Params for test with default in code``
+            cell — a dict of ``param_id -> default_value``. Empty dict
+            for integrations with no overrides.
+        commands_filter: Optional explicit command list (else the
+            analyzer picks one per §1).
+        connection_filter: Optional ``auth_types[].name`` to restrict
+            the test to.
+        timeout: Per-command wall-clock timeout (seconds).
+        docker_cfg: Docker config.
+        display_name_override: Optional human-readable name for the
+            ``integration`` field. Falls back to ``yml['display']`` and
+            then to ``integration_id``.
+    """
     yml_path, py_path = _ccp.find_integration_files(integration_path)
     yml_data = _ccp.load_yml(yml_path)
-    display = _ccp.display_name(yml_data, integration_path.name)
+    display = display_name_override or _ccp.display_name(yml_data, integration_id)
 
     lang = detect_non_python(yml_data, py_path)
     if lang is not None:
@@ -1464,23 +1489,19 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
             display, ERROR_NO_BASECLIENT, _msg_no_baseclient(), EXIT_NO_BASECLIENT,
         )
 
-    raw_auth = _read_auth_details_json(integration_id)
-    errors = validate_auth_details(raw_auth) if raw_auth is not None else []
+    errors = validate_auth_details(auth_details) if auth_details is not None else []
     if errors:
         raise ValueError(f"Invalid Auth Details for {integration_id}: {errors}")
-    details = parse_auth_details(raw_auth) if raw_auth is not None else _empty_details()
+    details = (
+        parse_auth_details(auth_details) if auth_details is not None
+        else _empty_details()
+    )
 
     interp_check = _check_interpolation_hard_errors(
         display, details, connection_filter
     )
     if interp_check is not None:
         return interp_check
-
-    # Per design §2.4: the ``Params for test with default in code`` cell
-    # is the first-precedence source for non-auth required-param values.
-    # Read it once here so the same overrides flow into every connection
-    # / command without re-spawning workflow_state.py per inner loop.
-    param_defaults = _read_param_defaults(integration_id)
 
     sentinels = generate_sentinels(details)
     commands = _select_commands(yml_data, commands_filter)
@@ -1596,8 +1617,64 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("integration_path", help="Path to the integration directory.")
     parser.add_argument(
         "--integration-id", required=True,
-        help="Integration ID (key into the pipeline CSV for Auth Details).",
+        help=(
+            "Integration ID. Used as an identifier in the output JSON and "
+            "in log messages. NOT used to look up workflow state — the "
+            "orchestrator passes the cells in via --auth-details / "
+            "--param-defaults below."
+        ),
     )
+
+    # Auth Details cell — mandatory; either inline JSON or a file. Use
+    # '-' to read inline JSON from stdin. The analyzer hard-rejects
+    # both being missing (no silent default).
+    auth_group = parser.add_mutually_exclusive_group(required=True)
+    auth_group.add_argument(
+        "--auth-details", default=None,
+        help=(
+            "Raw JSON of the 'Auth Details' cell, as a single string. "
+            "Pass '-' to read from stdin. Mutually exclusive with "
+            "--auth-details-file. Empty input is a hard error."
+        ),
+    )
+    auth_group.add_argument(
+        "--auth-details-file", default=None,
+        help=(
+            "Path to a file whose contents are the raw JSON of the "
+            "'Auth Details' cell. Mutually exclusive with --auth-details. "
+            "Empty file is a hard error."
+        ),
+    )
+
+    # Params for test with default in code cell — optional; defaults
+    # to {} when neither flag is supplied.
+    defaults_group = parser.add_mutually_exclusive_group()
+    defaults_group.add_argument(
+        "--param-defaults", default=None,
+        help=(
+            "Raw JSON of the 'Params for test with default in code' cell. "
+            "Pass '-' to read from stdin. Mutually exclusive with "
+            "--param-defaults-file. Empty input is treated as '{}'."
+        ),
+    )
+    defaults_group.add_argument(
+        "--param-defaults-file", default=None,
+        help=(
+            "Path to a file whose contents are the raw JSON of the "
+            "'Params for test with default in code' cell. Mutually "
+            "exclusive with --param-defaults. Empty file is treated as '{}'."
+        ),
+    )
+
+    parser.add_argument(
+        "--display-name", default=None,
+        help=(
+            "Human-readable integration name for the top-level "
+            "'integration' field in the output JSON. Falls back to the "
+            "YML 'display' field, then to --integration-id."
+        ),
+    )
+
     parser.add_argument("--commands", nargs="+", default=None)
     parser.add_argument("--connection", default=None,
                         help="Restrict the test to one auth_types[].name.")
@@ -1606,6 +1683,92 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--docker-image", default=_ccp.DEFAULT_DOCKER_IMAGE)
     parser.add_argument("--use-integration-docker", action="store_true")
     return parser.parse_args(argv)
+
+
+def _read_cell_input(
+    inline: str | None,
+    file_path: str | None,
+    *,
+    cell_name: str,
+    required: bool,
+) -> str:
+    """Read a workflow-state cell value from one of the CLI sources.
+
+    Returns the raw text (post-strip). Reads stdin when ``inline == '-'``.
+
+    Args:
+        inline: The ``--X`` flag value (or ``None``).
+        file_path: The ``--X-file`` flag value (or ``None``).
+        cell_name: Human-readable name for error messages.
+        required: When True, an empty post-strip result is a SystemExit.
+
+    Raises:
+        SystemExit(2): If both args are None and ``required`` is True,
+            if the file does not exist, or if the result is empty and
+            ``required`` is True.
+    """
+    if inline is None and file_path is None:
+        if required:
+            sys.stderr.write(
+                f"error: {cell_name} input is required "
+                f"(pass --{cell_name.replace(' ', '-')} or "
+                f"--{cell_name.replace(' ', '-')}-file)\n"
+            )
+            sys.exit(2)
+        return ""
+
+    if inline is not None:
+        text = sys.stdin.read() if inline == "-" else inline
+    else:
+        assert file_path is not None  # mutex group guarantees this
+        path = Path(file_path)
+        if not path.is_file():
+            sys.stderr.write(f"error: {cell_name} file not found: {file_path}\n")
+            sys.exit(2)
+        text = path.read_text(encoding="utf-8")
+
+    text = text.strip()
+    if required and not text:
+        sys.stderr.write(
+            f"error: {cell_name} input is empty; expected raw JSON\n"
+        )
+        sys.exit(2)
+    return text
+
+
+def _parse_auth_details_input(args: argparse.Namespace) -> Any:
+    """Read + JSON-parse the Auth Details input from the CLI."""
+    text = _read_cell_input(
+        args.auth_details, args.auth_details_file,
+        cell_name="auth-details", required=True,
+    )
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        sys.stderr.write(f"error: --auth-details is not valid JSON: {exc}\n")
+        sys.exit(2)
+
+
+def _parse_param_defaults_input(args: argparse.Namespace) -> dict[str, Any]:
+    """Read + JSON-parse the Param Defaults input; '{}' if empty/missing."""
+    text = _read_cell_input(
+        args.param_defaults, args.param_defaults_file,
+        cell_name="param-defaults", required=False,
+    )
+    if not text:
+        return {}
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError as exc:
+        sys.stderr.write(f"error: --param-defaults is not valid JSON: {exc}\n")
+        sys.exit(2)
+    if not isinstance(parsed, dict):
+        sys.stderr.write(
+            f"error: --param-defaults must be a JSON object, got "
+            f"{type(parsed).__name__}\n"
+        )
+        sys.exit(2)
+    return parsed
 
 
 def _exit_code_for(result: dict[str, Any]) -> int:
@@ -1622,7 +1785,7 @@ def main(argv: list[str] | None = None) -> int:
     integration_path = Path(args.integration_path).resolve()
     if not integration_path.is_dir():
         result = {
-            "integration": args.integration_id,
+            "integration": args.display_name or args.integration_id,
             "error": {
                 "code": "ERROR_BAD_PATH",
                 "message": f"Not a directory: {integration_path}",
@@ -1632,6 +1795,14 @@ def main(argv: list[str] | None = None) -> int:
         json.dump(result, sys.stdout, indent=2, sort_keys=True)
         sys.stdout.write("\n")
         return 2
+
+    # Parse injected cells from the CLI. These call sys.exit(2) on
+    # bad input — by design, since the orchestrator should pass valid
+    # cell values (the workflow_state validators already vetted them
+    # at write time).
+    auth_details = _parse_auth_details_input(args)
+    param_defaults = _parse_param_defaults_input(args)
+
     docker_cfg = _ccp.DockerConfig(
         mode=args.docker, default_image=args.docker_image,
         use_integration_docker=args.use_integration_docker,
@@ -1640,16 +1811,19 @@ def main(argv: list[str] | None = None) -> int:
         result = check_auth_parity(
             integration_path=integration_path,
             integration_id=args.integration_id,
+            auth_details=auth_details,
+            param_defaults=param_defaults,
             commands_filter=args.commands,
             connection_filter=args.connection,
             timeout=args.timeout,
             docker_cfg=docker_cfg,
+            display_name_override=args.display_name,
         )
     except Exception as exc:  # noqa: BLE001 — top-level guard
         import traceback
         traceback.print_exc(file=sys.stderr)
         result = {
-            "integration": args.integration_id,
+            "integration": args.display_name or args.integration_id,
             "error": {
                 "code": "ERROR_UNHANDLED",
                 "message": f"{type(exc).__name__}: {exc}",
