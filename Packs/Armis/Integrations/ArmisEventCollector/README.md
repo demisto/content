@@ -7,6 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 
 - Due to Armis API limitations, it is recommended to configure a separate integration instance for each event type (Alerts, Activities, Devices), and to tweak the limits according to the issues - lowering the limit for timeout or raising the limit for internal server errors.
 - **Each instance must use its own unique API Secret Key.** Reusing the same API Secret Key across multiple instances is prohibited by Armis and will cause authentication conflicts that lead to failed fetches.
+- **Known issue — intermittent JSON decode errors.** The Armis API may occasionally return malformed JSON responses (a known issue on the Armis side). The integration includes an automatic retry mechanism with exponential backoff to handle these transient failures, but in rare cases the error may still occur and will be logged.
 
 ## Configure Armis Event Collector in Cortex
 

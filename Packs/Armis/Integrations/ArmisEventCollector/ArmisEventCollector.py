@@ -468,7 +468,7 @@ class Client(BaseClient):
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
-        start_time = datetime.now()
+        start_time = time.monotonic()
         try:
             while next and (len(results) < max_fetch):
                 params["length"] = min(max_fetch - len(results), MAX_PAGE_SIZE)
@@ -479,7 +479,7 @@ class Client(BaseClient):
                 results.extend(current_results)
                 demisto.info(f"fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
 
-                total_seconds = (datetime.now() - start_time).total_seconds()
+                total_seconds = time.monotonic() - start_time
                 demisto.debug(f"total {total_seconds} seconds so far")
                 if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
                     demisto.debug(
@@ -806,12 +806,12 @@ def _bulk_fetch_entities_by_id(
 
     total_batches = (len(ids) + BULK_ENRICHMENT_BATCH_SIZE - 1) // BULK_ENRICHMENT_BATCH_SIZE
     demisto.debug(f"[{tname}] bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)")
-    section_start = datetime.now()
+    section_start = time.monotonic()
 
     for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
         chunk = ids[offset : offset + BULK_ENRICHMENT_BATCH_SIZE]
         aql = f"in:{entity_type} {aql_field}:{','.join(chunk)}"  # noqa: E231
-        batch_start = datetime.now()
+        batch_start = time.monotonic()
         try:
             # Use MAX_PAGE_SIZE (10K) for the response page size: we only send 1000 IDs per batch,
             # so we should never get back more than that.
@@ -827,7 +827,7 @@ def _bulk_fetch_entities_by_id(
                     by_id[str(key)] = entity
             demisto.debug(
                 f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} OK — "
-                f"{len(results)} returned in {(datetime.now() - batch_start).total_seconds():.2f}s"
+                f"{len(results)} returned in {time.monotonic() - batch_start:.2f}s"
             )
         except Exception as ex:
             # Intentional: per-batch isolation — one failed batch (e.g., transient network/parse error
@@ -838,7 +838,7 @@ def _bulk_fetch_entities_by_id(
 
     demisto.debug(
         f"[{tname}] bulk_enrich: {entity_type} fetch done in "
-        f"{(datetime.now() - section_start).total_seconds():.2f}s — "
+        f"{time.monotonic() - section_start:.2f}s — "
         f"{len(by_id)}/{len(ids)} matched"
     )
     return by_id
@@ -885,7 +885,7 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
         demisto.debug(f"[{tname}] bulk_enrich: no alerts to enrich, returning")
         return
 
-    start = datetime.now()
+    start = time.monotonic()
     demisto.debug(f"[{tname}] bulk_enrich: START enriching {len(alerts)} alerts")
 
     uuids, device_ids = _collect_unique_enrichment_ids(alerts)
@@ -911,7 +911,7 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
     _attach_enrichment(alerts, activities_by_uuid, devices_by_id)
 
     demisto.debug(
-        f"[{tname}] bulk_enrich: DONE in {(datetime.now() - start).total_seconds():.2f}s — "
+        f"[{tname}] bulk_enrich: DONE in {time.monotonic() - start:.2f}s — "
         f"matched {len(activities_by_uuid)}/{len(uuids)} activities, "
         f"{len(devices_by_id)}/{len(device_ids)} devices"
     )
@@ -930,11 +930,11 @@ def _wait_for_enrichment(future, executor, timeout_seconds: int = ENRICHMENT_WAI
     tname = threading.current_thread().name
     if future is None:
         return
-    wait_start = datetime.now()
+    wait_start = time.monotonic()
     try:
         future.result(timeout=timeout_seconds)
         demisto.debug(
-            f"[{tname}] bulk_enrich: background enrichment joined after {(datetime.now() - wait_start).total_seconds():.2f}s"
+            f"[{tname}] bulk_enrich: background enrichment joined after {time.monotonic() - wait_start:.2f}s"
         )
     except FuturesTimeoutError:
         demisto.error(
@@ -1026,8 +1026,8 @@ def fetch_events(
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
-    fetch_start = datetime.now()
-    safe_debug(f"=== Starting fetch_events cycle at {fetch_start.strftime('%Y-%m-%d %H:%M:%S')} ===")
+    fetch_start = time.monotonic()
+    safe_debug(f"=== Starting fetch_events cycle at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
     safe_debug(f"Event types requested: {event_types_to_fetch}")
     safe_debug(f"Multithreading enabled: {use_multithreading}")
     safe_debug(f"Max fetch - Alerts/Activities: {max_fetch}, Devices: {devices_max_fetch}")
@@ -1049,12 +1049,12 @@ def fetch_events(
     if "Alerts" in event_types_to_fetch:
         main_tname = threading.current_thread().name
         safe_debug(f"[{main_tname}] Fetching Alerts (then enrichment will run in parallel with other workers)")
-        alerts_start = datetime.now()
+        alerts_start = time.monotonic()
         fetch_by_event_type(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
         alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
-        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
+        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {time.monotonic() - alerts_start:.2f}s")
 
         if events and events.get(EVENT_TYPE_ALERTS):
             safe_debug(
@@ -1069,7 +1069,7 @@ def fetch_events(
     if not event_types_to_fetch:
         safe_debug("No remaining event types to fetch")
         _wait_for_enrichment(enrichment_future, enrichment_executor)
-        fetch_duration = (datetime.now() - fetch_start).total_seconds()
+        fetch_duration = time.monotonic() - fetch_start
         total_events = sum(len(event_list) for event_list in events.values())
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
         return events, next_run
@@ -1081,7 +1081,7 @@ def fetch_events(
         safe_debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
         for event_type in event_types_to_fetch:
             event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
-            type_start = datetime.now()
+            type_start = time.monotonic()
             safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch})")
 
             fetch_by_event_type(
@@ -1095,13 +1095,13 @@ def fetch_events(
                 fetch_delay=fetch_delay,
             )
 
-            type_duration = (datetime.now() - type_start).total_seconds()
+            type_duration = time.monotonic() - type_start
             type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))
             safe_debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
     else:
         # Parallel processing with ThreadPoolExecutor
         max_workers = min(len(event_types_to_fetch), len(EVENT_TYPES))
-        parallel_start = datetime.now()
+        parallel_start = time.monotonic()
         safe_debug(f"=== Starting parallel processing with {max_workers} worker(s) ===")
         safe_debug(f"Event types for parallel fetch: {event_types_to_fetch}")
 
@@ -1155,7 +1155,7 @@ def fetch_events(
                     safe_debug(f"[Worker:{event_type_name}] Failed: {_safe_error_str(e)}")
                     safe_debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
 
-            parallel_duration = (datetime.now() - parallel_start).total_seconds()
+            parallel_duration = time.monotonic() - parallel_start
             safe_debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
 
     # Block until the background enrichment task finishes; this is the join point that lets
@@ -1163,7 +1163,7 @@ def fetch_events(
     _wait_for_enrichment(enrichment_future, enrichment_executor)
 
     # Final summary
-    fetch_duration = (datetime.now() - fetch_start).total_seconds()
+    fetch_duration = time.monotonic() - fetch_start
     total_events = sum(len(event_list) for event_list in events.values())
     events_by_type = {dataset: len(event_list) for dataset, event_list in events.items()}
     safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s ===")
