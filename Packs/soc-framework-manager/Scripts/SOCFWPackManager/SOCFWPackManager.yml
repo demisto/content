@@ -1,0 +1,293 @@
+comment: |-
+  SOC Framework bootloader. Lists the SOC Framework pack catalog, installs
+  and configures packs from xsoar_config.json, and re-runs configuration
+  only. Also includes sync-tags, a backward-compat action for older SOC
+  Framework deployments still using the value_tags lookup; modern versions
+  use the SOCActionTimeMap_V3 list and do not require it.
+commonfields:
+  id: SOCFWPackManager
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    isoverridable: false
+    itemVersion: ''
+    packID: soc-framework-manager
+    packName: ''
+    prevname: ''
+    supportedModules: []
+    toServerVersion: ''
+name: SOCFWPackManager
+fromversion: 5.0.0
+type: python
+subtype: python3
+script: ''
+dockerimage: demisto/python3:3.12.12.6796194
+enabled: true
+runonce: false
+runas: DBotWeakRole
+scripttarget: 0
+system: true
+tags:
+- configuration
+- Content Management
+- SOC
+- SOC_Framework
+- SOC_Framework_Unified
+- SOCFWBootloader
+timeout: 30m0s
+engineinfo: {}
+mainengineinfo: {}
+pswd: ''
+vcShouldKeepItemLegacyProdMachine: false
+args:
+- name: action
+  required: true
+  auto: PREDEFINED
+  defaultValue: apply
+  predefined:
+  - list
+  - apply
+  - configure
+  - sync-tags
+  description: list shows the catalog. apply installs and configures a pack. configure re-runs configuration only (no pack install). sync-tags is a backward-compat action that updates the legacy value_tags lookup; modern SOC Framework deployments use SOCActionTimeMap_V3 and do not need it.
+- name: pack_id
+  description: The pack ID from pack_catalog.json (for example, soc-optimization-unified). Required for action=apply.
+- name: catalog_url
+  description: Override the catalog URL without modifying the integration instance parameters.
+- name: using
+  description: Integration instance name to route core-api commands through. Defaults to the active instance.
+- name: include_hidden
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Allow installing packs where visible=false in the catalog.
+- name: dry_run
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Show what would happen without installing or configuring.
+- name: install_marketplace
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Whether to install marketplace_packs from xsoar_config.json.
+- name: skip_verify
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Pass-through to core-api-install-packs for ZIP installs.
+- name: skip_validation
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Pass-through to core-api-install-packs for ZIP installs.
+- name: apply_configure
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Whether to apply the config sections from xsoar_config.json (instances, jobs, lookups).
+- name: overwrite_lookup
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Overwrite the SOC Framework lookup table. Save your customizations first.
+- name: configure_jobs
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: When action=apply, run job configuration from xsoar_config.json. Ignored if apply_configure=false.
+- name: configure_integrations
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: When action=apply, create or update integration instances from xsoar_config.json. Ignored if apply_configure=false.
+- name: configure_lookups
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: When action=apply, create or update lookup datasets from xsoar_config.json. Ignored if apply_configure=false.
+- name: retry_count
+  defaultValue: '5'
+  description: Number of retry attempts for install or configure operations that fail transiently.
+- name: retry_sleep_seconds
+  defaultValue: '15'
+  description: Seconds to wait between retry attempts.
+- name: execution_timeout
+  defaultValue: '1200'
+  description: Timeout in seconds for individual core-api commands invoked during configure.
+- name: install_timeout
+  defaultValue: '3600'
+  description: Timeout in seconds for the full custom-pack install command before falling back to polling.
+- name: post_install_poll_seconds
+  defaultValue: '1800'
+  description: After an install timeout, total seconds to poll the tenant for the pack to appear installed.
+- name: post_install_poll_interval_seconds
+  defaultValue: '60'
+  description: Interval in seconds between install completion polls.
+- name: continue_on_install_timeout
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Continue with configuration steps if a custom-pack install times out and polling does not confirm installation.
+- name: fail_on_marketplace_errors
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Raise on marketplace install errors instead of recording them and continuing.
+- name: debug
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Verbose War Room logging and additional install detail.
+- name: filter
+  description: action=list only. Case-insensitive free-text filter applied to id, display_name, and path.
+- name: limit
+  defaultValue: '50'
+  description: action=list only. Maximum number of rows to display per page.
+- name: offset
+  defaultValue: '0'
+  description: action=list only. Row offset for paging. offset=0 shows the first page.
+- name: sort_by
+  auto: PREDEFINED
+  defaultValue: id
+  predefined:
+  - id
+  - display_name
+  - version
+  - visible
+  - path
+  description: action=list only. Column to sort by.
+- name: sort_dir
+  auto: PREDEFINED
+  defaultValue: asc
+  predefined:
+  - asc
+  - desc
+  description: action=list only. Sort direction.
+- name: visible_only
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: action=list only. Hide packs marked visible=false in the catalog. Implied false when include_hidden=true.
+- name: fields
+  defaultValue: id,display_name,version,visible,path
+  description: action=list only. Comma-separated list of columns to show. Unknown fields are ignored.
+- name: show_total
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: action=list only. If true, displays "showing X-Y of Z" paging information.
+- name: include_doc_content
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: When printing pre_config_docs and post_config_docs, also fetch a truncated preview of the README content into the War Room output.
+- name: doc_content_max_chars
+  defaultValue: '6000'
+  description: Maximum characters per doc preview when include_doc_content=true.
+- name: doc_content_max_lines
+  defaultValue: '200'
+  description: Maximum lines per doc preview when include_doc_content=true.
+- name: pre_config_done
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: Set to true to acknowledge pre-config docs have been completed and continue with install or configure.
+- name: pre_config_gate
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: When true, the script prints pre_config_docs and stops until pre_config_done=true.
+- name: force
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: action=sync-tags only. Update value_tags even if the content hash matches the current version.
+- name: tags_url
+  description: action=sync-tags only. Override the value_tags.json source URL. Defaults to the soc-optimization-unified pack on main.
+outputs:
+- contextPath: SOCFramework.PackManager.pack_id
+  description: Pack ID acted on for action=apply or action=configure.
+  type: String
+- contextPath: SOCFramework.PackManager.xsoar_config_url
+  description: URL of the xsoar_config.json fetched for the pack.
+  type: String
+- contextPath: SOCFramework.PackManager.catalog_url
+  description: URL of the pack catalog used to resolve the manifest.
+  type: String
+- contextPath: SOCFramework.PackManager.marketplace_errors
+  description: Marketplace install errors recorded during action=apply.
+  type: Unknown
+- contextPath: SOCFramework.PackManager.configure_summary.integrations
+  description: Integration instance configuration summary (attempted, ok, already_exists, failed).
+  type: Unknown
+- contextPath: SOCFramework.PackManager.configure_summary.jobs
+  description: Job configuration summary (attempted, ok, failed, notes).
+  type: Unknown
+- contextPath: SOCFramework.PackManager.configure_summary.lookups
+  description: Lookup dataset configuration summary (attempted, ok, failed).
+  type: Unknown
+- contextPath: SOCFramework.PackManager.SyncTags.status
+  description: action=sync-tags result. up_to_date or updated.
+  type: String
+- contextPath: SOCFramework.PackManager.SyncTags.dataset
+  description: Dataset name updated (value_tags).
+  type: String
+- contextPath: SOCFramework.PackManager.SyncTags.version
+  description: Short hash of the value_tags content currently installed.
+  type: String
+- contextPath: SOCFramework.PackManager.SyncTags.hash
+  description: Full content hash of the value_tags content currently installed.
+  type: String
+- contextPath: SOCFramework.PackManager.SyncTags.rows
+  description: Number of value_tags rows uploaded to the dataset.
+  type: Number
+- contextPath: SOCFramework.PackManager.SyncTags.updated
+  description: Whether the dataset was updated on this run.
+  type: Boolean
+- contextPath: SOCFramework.PackManager.SyncTags.previous_hash
+  description: Previous content hash before this run, when applicable.
+  type: String
+- contextPath: SOCFramework.PackManager.SyncTags.updated_at
+  description: ISO 8601 timestamp the value_tags dataset was last updated.
+  type: String
