@@ -1,6 +1,6 @@
 {
     "description": "Jira V2 mirror out classifier.",
-    "feed": false,
+    "feed": true,
     "id": "1a77d3a4-7a26-4223-82b1-ba0a5470899e",
     "mapping": {
         "dbot_classification_incident_type_all": {

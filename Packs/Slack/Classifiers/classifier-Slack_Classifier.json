@@ -1,6 +1,6 @@
 {
     "description": "",
-    "feed": false,
+    "feed": false, 
     "id": "Slack Classifier",
     "keyTypeMap": {
         "1": "Password Reset via Chatbot"
