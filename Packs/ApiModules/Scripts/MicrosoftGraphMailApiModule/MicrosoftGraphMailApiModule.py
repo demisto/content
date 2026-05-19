@@ -1057,6 +1057,69 @@ class MsGraphMailBaseClient(MicrosoftClient):
         url = f"{f'/users/{user_id}' if user_id else '/me'}/mailFolders/inbox/messageRules{f'/{rule_id}' if rule_id else ''}"
         return self.http_request(action.upper(), url, return_empty_response=return_empty_response, params=params)
 
+    def create_message_rule(self, user_id, body) -> dict:
+        """Creates a new messageRule in the user's Inbox folder.
+
+        Args:
+            user_id: ID or UPN of the mailbox owner.
+            body: The messageRule JSON body to send to Graph.
+
+        Returns:
+            The created messageRule object as returned by Graph.
+        """
+        suffix = f"/users/{user_id}/mailFolders/inbox/messageRules"
+        return self.http_request("POST", suffix, json_data=body)
+
+    def update_message_rule(self, user_id, rule_id, body) -> dict:
+        """Updates an existing messageRule in the user's Inbox folder via PATCH.
+
+        Args:
+            user_id: ID or UPN of the mailbox owner.
+            rule_id: The ID of the rule to update.
+            body: Partial messageRule JSON containing only the fields to change.
+
+        Returns:
+            The updated messageRule object as returned by Graph.
+        """
+        suffix = f"/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}"
+        return self.http_request("PATCH", suffix, json_data=body)
+
+    def get_mailbox_settings(self, user_id) -> dict:
+        """Retrieves the user's mailboxSettings via Microsoft Graph.
+
+        Args:
+            user_id: ID or UPN of the mailbox owner.
+
+        Returns:
+            The mailboxSettings object as returned by Graph (with @odata keys).
+        """
+        suffix = f"/users/{user_id}/mailboxSettings"
+        return self.http_request("GET", suffix)
+
+    def get_mail_tips(self, email_address) -> dict:
+        """Retrieves Mail Tips for the given email address via Microsoft Graph.
+
+        The same email_address is used both as the path mailbox (asker) and as the single
+        EmailAddresses entry (askee) — a self-lookup. The full mailTipsType option set
+        is always requested.
+
+        Args:
+            email_address: Email address (UPN) of the mailbox to query.
+
+        Returns:
+            The Graph response containing a `value` list with one mailTips object.
+        """
+        suffix = f"/users/{email_address}/getMailTips"
+        body = {
+            "EmailAddresses": [email_address],
+            "MailTipsOptions": (
+                "automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,"
+                "totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,"
+                "recipientScope,recipientSuggestions"
+            ),
+        }
+        return self.http_request("POST", suffix, json_data=body)
+
 
 # HELPER FUNCTIONS
 class GraphMailUtils:
@@ -2231,6 +2294,21 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     return results
 
 
+def parse_json_arg(value, arg_name: str):
+    """Parse a JSON-string CLI arg into a Python object, raising a clear error on JSON parse failure.
+
+    None/empty values return None.
+    """
+    if value is None or value == "":
+        return None
+    if isinstance(value, dict | list):
+        return value
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Argument '{arg_name}' must be a valid JSON string. Error: {e}")
+
+
 def list_rule_action_command(client: MsGraphMailBaseClient, args) -> CommandResults | dict:
     rule_id = args.get("rule_id")
     user_id = args.get("user_id")
@@ -2255,3 +2333,178 @@ def delete_rule_command(client: MsGraphMailBaseClient, args) -> str:
     user_id = args.get("user_id")
     client.message_rules_action("DELETE", user_id=user_id, rule_id=rule_id)
     return f"Rule {rule_id} deleted{f' for user {user_id}' if user_id else ''}."
+
+
+def create_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
+    """Creates a new mailbox inbox rule for the specified user."""
+    user_id = args.get("user_id")
+    display_name = args.get("display_name")
+    sequence = arg_to_number(args.get("sequence"))
+
+    actions = parse_json_arg(args.get("actions"), "actions")
+    if not isinstance(actions, dict) or not actions:
+        raise DemistoException("'actions' must be a non-empty JSON object with at least one action.")
+
+    conditions = parse_json_arg(args.get("conditions"), "conditions")
+    exceptions = parse_json_arg(args.get("exceptions"), "exceptions")
+    is_enabled = arg_to_bool_or_none(args.get("is_enabled"))
+
+    body = assign_params(
+        displayName=display_name,
+        sequence=sequence,
+        isEnabled=is_enabled,
+        actions=actions,
+        conditions=conditions,
+        exceptions=exceptions,
+    )
+
+    response = client.create_message_rule(user_id, body)
+
+    # Strip Graph metadata keys (@odata.context, @odata.etag) from outputs.
+    outputs = {k: v for k, v in response.items() if not k.startswith("@odata")}
+
+    readable_output = tableToMarkdown(
+        f'Mailbox rule "{display_name}" was created successfully.',
+        outputs,
+        headers=["id", "displayName", "sequence", "isEnabled", "isReadOnly", "hasError"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MSGraphMail.Rule",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def update_rule_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
+    """Updates an existing mailbox inbox rule for the specified user."""
+    user_id = args.get("user_id")
+    rule_id = args.get("rule_id")
+
+    sequence = arg_to_number(args.get("sequence"))
+
+    actions = parse_json_arg(args.get("actions"), "actions")
+    conditions = parse_json_arg(args.get("conditions"), "conditions")
+    exceptions = parse_json_arg(args.get("exceptions"), "exceptions")
+    is_enabled = arg_to_bool_or_none(args.get("is_enabled"))
+
+    body = assign_params(
+        displayName=args.get("display_name"),
+        sequence=sequence,
+        isEnabled=is_enabled,
+        actions=actions,
+        conditions=conditions,
+        exceptions=exceptions,
+    )
+
+    if not body:
+        raise DemistoException(
+            "At least one updatable field must be provided "
+            "(display_name, sequence, is_enabled, actions, conditions, exceptions)."
+        )
+
+    response = client.update_message_rule(user_id, rule_id, body)
+
+    # Strip Graph metadata keys (@odata.context, @odata.etag) from outputs.
+    outputs = {k: v for k, v in response.items() if not k.startswith("@odata")}
+
+    readable_output = tableToMarkdown(
+        f'Mailbox rule "{outputs.get("displayName", rule_id)}" was updated successfully.',
+        outputs,
+        headers=["id", "displayName", "sequence", "isEnabled", "isReadOnly", "hasError"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MSGraphMail.Rule",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def get_mailbox_settings_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
+    """Retrieves the mailbox settings (timezone, language, automatic replies, working hours, etc.) for the specified user."""
+    user_id = args.get("user_id")
+
+    response = client.get_mailbox_settings(user_id)
+
+    # Strip Graph metadata keys (@odata.context, etc.) before placing in outputs.
+    outputs = {k: v for k, v in response.items() if not k.startswith("@odata")}
+
+    # Synthesize a key field — Graph does not return an 'id' on this endpoint.
+    outputs["userId"] = user_id
+
+    readable_output = tableToMarkdown(
+        f"Mailbox settings for user {user_id}",
+        outputs,
+        headers=["userId", "timeZone", "dateFormat", "userPurpose", "archiveFolder"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MSGraphMail.MailboxSettings",
+        outputs_key_field="userId",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def get_mail_tips_command(client: MsGraphMailBaseClient, args: dict) -> CommandResults:
+    """Retrieves mail tips (out-of-office, mailbox full, delivery restrictions, etc.) for a recipient email address."""
+    email_address = args.get("email_address")
+    if not email_address:
+        raise DemistoException("'email_address' is required.")
+
+    response = client.get_mail_tips(email_address)
+
+    # Graph returns {"@odata.context": "...", "value": [ {...mailTips...} ]}
+    raw_tips = response.get("value", []) if isinstance(response, dict) else []
+    outputs = [{k: v for k, v in tip.items() if not k.startswith("@odata")} for tip in raw_tips]
+
+    # Flatten the recipient address into a top-level key so it can be used as outputs_key_field
+    for tip in outputs:
+        tip["emailAddressValue"] = (tip.get("emailAddress") or {}).get("address")
+
+    # Build a flat readable summary keyed by recipient address.
+    table_rows = []
+    for tip in outputs:
+        addr_obj = tip.get("emailAddress") or {}
+        err = tip.get("error") or {}
+        table_rows.append(
+            {
+                "Email Address": addr_obj.get("address"),
+                "Display Name": addr_obj.get("name"),
+                "Mailbox Full": tip.get("mailboxFull"),
+                "Recipient Scope": tip.get("recipientScope"),
+                "Total Members": tip.get("totalMemberCount"),
+                "External Members": tip.get("externalMemberCount"),
+                "Max Message Size (bytes)": tip.get("maxMessageSize"),
+                "Delivery Restricted": tip.get("deliveryRestricted"),
+                "Is Moderated": tip.get("isModerated"),
+                "Custom Mail Tip": tip.get("customMailTip") or None,
+                "Error": err.get("message") if err else None,
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        f"Mail Tips for {email_address}",
+        table_rows,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MSGraphMail.MailTips",
+        outputs_key_field="emailAddressValue",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
