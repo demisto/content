@@ -3658,7 +3658,7 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 

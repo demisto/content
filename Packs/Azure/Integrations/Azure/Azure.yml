@@ -8799,7 +8799,7 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
-  - prettyname: Disable ACR Authentication as ARM
+  - prettyname: Disable ACR ARM Authentication
     description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). Required permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
     name: azure-cr-disable-authentication-as-arm-quick-action
     hidden: true
