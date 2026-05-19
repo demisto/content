@@ -9754,13 +9754,58 @@ class NetworkFirewall:
 
 
         return CommandResults(
-            outputs_prefix="AWS.NetworkFirewall.Firewall",
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=firewall,
             readable_output=tableToMarkdown(
                 "AWS Network Firewall",
                 firewall,
                 headers=["FirewallName", "FirewallArn", "FirewallPolicyArn", "VpcId", "Description", "FirewallId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response
+        )
+
+    @staticmethod
+    def list_firewalls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the metadata for the firewalls that you have defined.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing:
+                - limit: The maximum number of objects that you want Network Firewall to return for this request.
+                - next_token: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+                - vpc_ids: The unique identifiers of the VPCs that you want to retrieve the firewalls for.
+
+        Returns:
+            CommandResults: Formatted results with firewalls information
+        """
+        kwargs = {
+            "VpcIds": argToList(args.get("vpc_ids"))
+        }
+        kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Listing firewalls with parameters: {kwargs}")
+        response = client.list_firewalls(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewalls = response.get("Firewalls", [])
+
+        outputs = {
+            "AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)": firewalls,
+            "AWS.NetworkFirewall(true)": response.get("NextToken")
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewalls",
+                firewalls,
+                headers=["FirewallName", "FirewallArn"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -9976,6 +10021,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-logs-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
     "aws-logs-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
     "aws-network-firewall-firewall-describe": NetworkFirewall.describe_firewall_command,
+    "aws-network-firewall-firewalls-list": NetworkFirewall.list_firewalls_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10154,6 +10200,7 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:DescribeMetricFilters",
     "logs:TagResource",
     "network-firewall:DescribeFirewall",
+    "network-firewall:ListFirewalls",
 ]
 
 COMMAND_SERVICE_MAP = {

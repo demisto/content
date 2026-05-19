@@ -18194,87 +18194,149 @@ script:
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall.    
     outputs:
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallName
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
       description: The descriptive name of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallArn
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
       description: The Amazon Resource Name (ARN) of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallPolicyArn
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyArn
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.VpcId
+    - contextPath: AWS.NetworkFirewall.Firewalls.VpcId
       description: The unique identifier of the VPC where the firewall is in use.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.Description
+    - contextPath: AWS.NetworkFirewall.Firewalls.Description
       description: A description of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallId
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
       description: The unique identifier for the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.UpdateToken
+    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
       description: An optional token that you can use for optimistic locking.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.SubnetMappings.SubnetId
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
       description: The unique identifier for the subnet.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.SubnetMappings.IPAddressType
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType
       description: The subnet's IP address type.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.DeleteProtection
+    - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
       description: A flag indicating whether it is possible to delete the firewall.
       type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewall.SubnetChangeProtection
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
       description: A setting indicating whether the firewall is protected against changes to the subnet associations.
       type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallPolicyChangeProtection
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
       description: A setting indicating whether the firewall is protected against a change to the firewall policy association.
       type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewall.Tags.Key
+    - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Key
       description: The key of the tag.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.Tags.Value
+    - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Value
       description: The value of the tag.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.EncryptionConfiguration.KeyId
+    - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.KeyId
       description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.EncryptionConfiguration.Type
+    - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.Type
       description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.NumberOfAssociations
+    - contextPath: AWS.NetworkFirewall.Firewalls.NumberOfAssociations
       description: The number of associations.
       type: Number
-    - contextPath: AWS.NetworkFirewall.Firewall.EnabledAnalysisTypes
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
       description: The enabled analysis types.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.TransitGatewayId
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
       description: The unique identifier for the transit gateway.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.TransitGatewayOwnerAccountId
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayOwnerAccountId
       description: The account ID of the transit gateway owner.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.AvailabilityZoneMappings.AvailabilityZone
+    - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneMappings.AvailabilityZone
       description: The Availability Zone.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.AvailabilityZoneChangeProtection
+    - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
       description: A setting indicating whether the firewall is protected against changes to the Availability Zone associations.
       type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.Status
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
       description: The readiness status of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.ConfigurationSyncStateSummary
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.ConfigurationSyncStateSummary
       description: The configuration sync state for the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.SyncStates
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.SyncStates
       description: Status for the subnets that you’ve configured in the firewall.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.CapacityUsageSummary
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.CapacityUsageSummary
       description: Describes the capacity usage of the resources contained in a firewall’s reference sets.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.Firewall.FirewallStatus.TransitGatewayAttachmentSyncState.AttachmentId
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState.AttachmentId
       description: The synchronization state of the transit gateway attachment. This indicates whether the firewall’s transit gateway configuration is properly synchronized and operational.
       type: Unknown
+  - name: aws-network-firewall-firewalls-list
+    description: Retrieves the metadata for the firewalls that you have defined.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: max_results
+      description: The maximum number of objects that you want Network Firewall to return for this request.
+    - name: next_token
+      description: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+    - name: vpc_ids
+      description: The unique identifiers of the VPCs that you want to retrieve the firewalls for.
+      isArray: true
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallsNextToken
+      description: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      type: String
 
   isfetch: false
   runonce: false
