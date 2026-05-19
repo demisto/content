@@ -16,6 +16,18 @@ def get_assets(api_token):
     return_results(result)
 
 
+from typing import NotRequired
+from typing import TypedDict
+
+
+class PackInfo(TypedDict):
+    certification: NotRequired[str]
+    tags: NotRequired[list[str]]
+    use_cases: NotRequired[list[str]]
+    categories: NotRequired[list[str]]
+    marketplaces: NotRequired[list[str]]
+
+
 def get_specific_asset(api_token, args):
     asset_id = args.get("assetid")
     url = "https://api.brandefense.io/api/v1/assets/" + str(asset_id)
