@@ -76,4 +76,3 @@ def test_main_failure(mocker):
 
     PanoraysFindingsAPI.main()
     assert mock_error.called
-    
