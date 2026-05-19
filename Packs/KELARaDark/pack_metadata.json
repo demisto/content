@@ -1,7 +1,8 @@
 {
-    "name": "KELA RaDark",
-    "description": "This content pack enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.",
+    "name": "KELA RaDark (Deprecated)",
+    "description": "Deprecated. Use Generic Webhooks instead. - This content pack enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.",
     "support": "partner",
+    "hidden": true,
     "currentVersion": "1.1.13",
     "author": "KELA",
     "url": "ke-la.com",
