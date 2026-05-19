@@ -18,7 +18,7 @@ This integration was integrated and tested with version v2 of Proofpoint TAP v2
 | Maximum number of incident per fetch |  | False |
 | First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
 | Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
-| Events Fetch Look-Back (minutes) | Number of minutes to look back when fetching events, to account for Proofpoint SIEM API indexing delay. When set, each fetch cycle re-queries the previous N minutes to catch late-indexed events. Deduplication ensures no duplicates are created. Set to 0 to disable (default). Default value is 0. | False |
+| Events Fetch Look-Back (minutes) | The number of minutes to look back when fetching events, to account for Proofpoint SIEM API indexing delay. When set, each fetch cycle re-queries the previous N minutes to catch late-indexed events. Deduplication ensures no duplicates are created. Set to 0 to disable. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 

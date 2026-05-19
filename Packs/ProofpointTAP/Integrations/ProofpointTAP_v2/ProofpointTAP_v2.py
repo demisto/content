@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import dateparser
 import demistomock as demisto
@@ -20,16 +20,16 @@ DELIVERED_MESSAGES = "Delivered Messages"
 DEFAULT_LIMIT = 50
 DEFAULT_LOOK_BACK_MINUTES = 0
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-MAX_SEEN_IDS = 50_000
+MAX_SEEN_IDS = 10_000
 
 
 def get_now():
-    """A wrapper function for datetime.utcnow
+    """A wrapper function for datetime.now(timezone.utc)
     helps handle tests
     Returns:
-        datetime: time right now in the UTC timezone.
+        datetime: time right now in the UTC timezone (naive, for backward compatibility).
     """
-    return datetime.utcnow()
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str, str]:
@@ -38,12 +38,13 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
     Args:
         seen_ids: Mapping of event_id → interval_end_str (the end of the fetch interval
                   in which the event was first seen) for deduplication.
-        look_back_minutes: The lookback window in minutes.
+        look_back_minutes: The lookback window in minutes. A 30-minute safety margin is
+                           added on top to tolerate clock skew and API indexing delay.
 
     Returns:
         Pruned dict with only IDs whose interval_end is within the lookback window + 30min margin.
     """
-    if not seen_ids or look_back_minutes <= 0:
+    if not seen_ids:
         return seen_ids
 
     cutoff = (get_now() - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
@@ -711,15 +712,11 @@ def fetch_incidents(
     if dedup_count > 0:
         demisto.debug(f"Deduplicated {dedup_count} events")
 
-    # Prune old IDs outside the lookback window
-    if look_back_minutes > 0:
-        seen_ids = prune_seen_ids(seen_ids, look_back_minutes)
+    # Prune old IDs outside the lookback window (always, to avoid unbounded growth of last_run)
+    seen_ids = prune_seen_ids(seen_ids, look_back_minutes)
 
     # Advance last_fetch to end of last interval (real now, not shifted)
     end_query_time = fetch_intervals[-1][1]
-    # Clean up milliseconds if present
-    if len(end_query_time) > 5 and end_query_time[-5] == ".":
-        end_query_time = end_query_time[:-5] + "Z"
 
     next_run = {
         "last_fetch": end_query_time,

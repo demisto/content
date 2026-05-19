@@ -533,7 +533,7 @@ def test_dedup_includes_new_events_within_lookback_window(requests_mock, mocker)
     assert MOCK_NEW_BLOCKED_CLICK["id"] in final_ids  # new
 
 
-def test_lookback_zero_no_dedup_filtering(requests_mock, mocker):
+def test_lookback_zero_prunes_stale_ids(requests_mock, mocker):
     """
     Given:
      - look_back_minutes=0 (default behavior, no lookback).
@@ -544,9 +544,9 @@ def test_lookback_zero_no_dedup_filtering(requests_mock, mocker):
      - fetch_incidents is called.
     Then:
      - All events from the API window become incidents (no dedup-driven drops).
-     - The seen_ids in next_run is NOT pruned (pruning only happens when
-       look_back_minutes > 0), so the pre-existing stale ID is preserved
-       alongside the new IDs.
+     - The seen_ids in next_run is pruned (pruning runs unconditionally to
+       prevent unbounded last_run growth) — the ancient stale ID is removed
+       while the freshly-tracked new IDs remain.
     """
     last_fetch_time = "2010-01-01T00:00:00Z"
     current_time = "2010-01-01T00:31:00Z"
@@ -577,10 +577,11 @@ def test_lookback_zero_no_dedup_filtering(requests_mock, mocker):
     # doesn't collide with the new event dedup keys.
     assert len(incidents) == 4
 
-    # With look_back_minutes=0 the integration does NOT call prune_seen_ids,
-    # so the ancient ID survives along with the freshly-tracked new IDs.
+    # With look_back_minutes=0 pruning still runs (cutoff = now - 30min), so the
+    # ancient stale ID is dropped, but the freshly-tracked new IDs (interval_end
+    # = current_time) are preserved.
     final_ids = set(next_run["seen_ids"].keys())
-    assert "ancient-id" in final_ids
+    assert "ancient-id" not in final_ids
     assert MOCK_DELIVERED_MESSAGE["GUID"] in final_ids
     assert MOCK_BLOCKED_MESSAGE["GUID"] in final_ids
     assert MOCK_PERMITTED_CLICK["id"] in final_ids
