@@ -81,14 +81,27 @@ def pr_changes_protected_files(pr: PullRequest) -> list[str]:
     return [path for path in PROTECTED_PATHS if path in changed]
 
 
-def upsert_reminder_comment(pr: PullRequest) -> None:
-    """Create the sticky reminder comment if it does not yet exist on the PR."""
-    for comment in pr.get_issue_comments():
-        if COMMENT_MARKER in (comment.body or ""):
-            print(f"Reminder comment already present on PR #{pr.number}, skipping.")
-            return
+def reminder_comment_already_posted(pr: PullRequest) -> bool:
+    """Return True if a reminder comment (identified by COMMENT_MARKER) already exists on the PR."""
+    return any(COMMENT_MARKER in (comment.body or "") for comment in pr.get_issue_comments())
+
+
+def post_reminder_comment_once(pr: PullRequest) -> None:
+    """
+    Create the sticky reminder comment **only if** none has been posted yet on this PR.
+
+    Idempotency is enforced by looking for the hidden HTML marker
+    `COMMENT_MARKER` inside existing comment bodies. This guarantees the
+    reminder appears exactly once per PR, regardless of how many times the
+    workflow re-runs (synchronize / labeled / unlabeled / reopened events).
+    """
+    if reminder_comment_already_posted(pr):
+        print(
+            f"Reminder comment already present on PR #{pr.number} " f"(marker '{COMMENT_MARKER}' found); not posting a duplicate."
+        )
+        return
     pr.create_issue_comment(REMINDER_COMMENT_BODY)
-    print(f"Posted CommonServerPython nightly reminder comment on PR #{pr.number}.")
+    print(f"Posted CommonServerPython nightly reminder comment on PR #{pr.number} (first time).")
 
 
 def main() -> None:
@@ -101,7 +114,7 @@ def main() -> None:
 
     changed_protected = pr_changes_protected_files(pr)
     if not changed_protected:
-        print(f"PR #{pr_number} does not modify CommonServerPython or related helpers. " "Nothing to enforce.")
+        print(f"PR #{pr_number} does not modify CommonServerPython or related helpers. Nothing to enforce.")
         sys.exit(0)
 
     print(
@@ -109,8 +122,8 @@ def main() -> None:
         "Verifying that the content nightly pipeline has been run and labeled."
     )
 
-    # Always make sure the reminder comment is visible on the PR.
-    upsert_reminder_comment(pr)
+    # Post the reminder comment at most once per PR (idempotent — guarded by COMMENT_MARKER).
+    post_reminder_comment_once(pr)
 
     pr_label_names = {label.name for label in pr.labels}
     if NIGHTLY_RUN_PASSED_LABEL in pr_label_names:
