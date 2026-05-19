@@ -1015,9 +1015,9 @@ class TestTestModuleCommand:
         test_module_command(client, {}, [BEHAVIOR_ANALYTICS])
 
         mock_fetch.assert_called_once()
-        _, kwargs = mock_fetch.call_args
+        call_kwargs = mock_fetch.call_args.kwargs
         assert (
-            kwargs.get("enable_retries") is False or mock_fetch.call_args[0][4] is False
+            call_kwargs.get("enable_retries") is False
         ), "test_module_command must call _fetch_alerts with enable_retries=False to prevent timeout"
 
 
