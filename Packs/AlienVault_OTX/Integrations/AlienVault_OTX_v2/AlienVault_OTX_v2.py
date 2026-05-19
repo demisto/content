@@ -116,9 +116,9 @@ class Client(BaseClient):
                 demisto.debug("A DemistoException was raised but there is no status code.")
                 raise
         except requests.exceptions.ReadTimeout as e:
-            demisto.debug("A ReadTimeout error was raised.")
-            if argument in ["microsoft.com", "google.com"]:
-                demisto.debug(f"heavy domain to retrieve its passive dns, skipping {argument}")
+            demisto.debug(f"A ReadTimeout error was raised with suffix {suffix}.")
+            if sub_section == "passive_dns":
+                demisto.debug(f"skipping retrieving passive dns for {argument} as it has massive Passive DNS history.")
                 return {}
             if self.should_error:
                 raise e
