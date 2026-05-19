@@ -155,7 +155,8 @@ filter
     xdm.source.host.os = json_extract_scalar(client, "$.userAgent.os"),
     xdm.source.application.name = json_extract_scalar(client, "$.userAgent.browser"),
     xdm.event.id = uuid,
-    xdm.source.asn.as_name = json_extract_scalar(securityContext,"$.asOrg");
+    xdm.source.asn.as_name = json_extract_scalar(securityContext,"$.asOrg"),
+    xdm.logon.fingerprint = json_extract_scalar(debugContext, "$.debugData.dtHash");
 
 
 
