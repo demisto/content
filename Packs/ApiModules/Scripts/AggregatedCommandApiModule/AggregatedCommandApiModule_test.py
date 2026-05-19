@@ -2615,11 +2615,6 @@ def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
     assert instances[0].extracted_value == "https://example.com"
 
 
-# -------------------------------------------------------------------------------------------------
-# -- Regression tests: case-insensitive duplicates in `indicator_mapping`
-# -- See CASE_SENSITIVITY_RESEARCH.md. Multiple inputs whose values differ only in case
-# -- collide on the lower-cased mapping key. The dict-of-list fix must enrich BOTH instances.
-# -------------------------------------------------------------------------------------------------
 def _stub_single_tim_ioc(mocker, module, returned_value: str):
     """
     Patch _process_single_tim_ioc to deterministically return one parsed indicator with a known
