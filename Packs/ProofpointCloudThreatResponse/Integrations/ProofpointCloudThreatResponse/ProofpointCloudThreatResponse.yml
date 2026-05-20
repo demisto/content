@@ -1,4 +1,7 @@
 category: Case Management
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Proofpoint Cloud Threat Response
   version: -1
@@ -9,38 +12,57 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL of the Proofpoint Cloud Threat Response API.
+  section: Connect
 - displaypassword: Client Secret
   display: Client ID
   name: credentials
   type: 9
   required: true
   additionalinfo: The Client ID and Client Secret generated from your Proofpoint Threat Response account (API Key Management).
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   defaultvalue: Cloud Threat Response Incident
   type: 13
   required: false
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '50'
   type: 0
   required: false
   additionalinfo: The maximum number of incidents to fetch each interval. Default and maximum is 200.
+  section: Collect
 - display: Fetch delta (minutes)
   name: fetch_delta
   defaultvalue: '1'
   type: 0
   required: false
   additionalinfo: An additional buffer (in minutes) subtracted from the start of each fetch window to mitigate clock drift and ensure no incidents are missed.
+  section: Collect
 - display: Fetch incidents with specific states
   name: fetch_states
   defaultvalue: open_incidents
@@ -50,14 +72,7 @@ configuration:
   - open_incidents
   - closed_incidents
   additionalinfo: Must be set when fetch is enabled. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API.
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
+  section: Collect
 description: Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR for case management, and exposes commands to list and retrieve incident details.
 display: Proofpoint Cloud Threat Response
 name: Proofpoint Cloud Threat Response
