@@ -18647,6 +18647,76 @@ script:
         description: The synchronization state of the transit gateway attachment.
         type: Unknown
 
+  - name: aws-network-firewall-firewall-delete-protection-update
+    description: Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: update_token
+      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
+    - name: firewall_name
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall.
+    - name: delete_protection
+      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to TRUE.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
+      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
+      description: An optional token that you can use for optimistic locking.
+      type: String
+
   isfetch: false
   runonce: false
   script: '-'

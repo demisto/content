@@ -9910,6 +9910,45 @@ class NetworkFirewall:
             raw_response=response
         )
 
+    @staticmethod
+    def update_firewall_delete_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, and delete_protection
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection"))
+        }
+        remove_nulls_from_dictionary(kwargs)
+        if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
+            raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+
+        print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs}")
+        response = client.update_firewall_delete_protection(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output=f"The delete protection flag of the firewall {args.get('firewall_name')} was updated successfully.",
+            raw_response=response
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10122,6 +10161,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewalls-list": NetworkFirewall.list_firewalls_command,
     "aws-network-firewall-firewall-create": NetworkFirewall.create_firewall_command,
     "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
+    "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10303,6 +10343,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:ListFirewalls",
     "network-firewall:CreateFirewall",
     "network-firewall:DeleteFirewall",
+    "network-firewall:UpdateFirewallDeleteProtection",
     "network-firewall:TagResource",
 ]
 
