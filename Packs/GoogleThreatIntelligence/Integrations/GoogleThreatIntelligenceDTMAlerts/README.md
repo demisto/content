@@ -6,11 +6,11 @@ This integration allows the creation of incidents based on DTM Alerts from Googl
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
+| API Key |  | True |
 | Fetch incidents |  | False |
 | Max Fetch | Maximum number of Alerts to fetch each time. Maximum value is 100. | False |
-| First Fetch Time | The date or relative timestamp from which to begin fetching Alerts.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z.<br/> | False |
-| Mirroring Direction | The mirroring direction in which to mirror the details. You can mirror "Outgoing" \(from XSOAR to GTI\) direction for DTM Alerts. | False |
+| First Fetch Time | The date or relative timestamp from which to begin fetching Alerts.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z. | False |
+| Mirroring Direction | The mirroring direction in which to mirror the details. You can mirror "Outgoing" \(from XSOAR to GTI\) direction for DTM Alerts. Cortex XSOAR only parameter. | False |
 | Alert Type | Fetch Alerts by the specified alert types. | False |
 | Alert Monitor ID | Fetch Alerts by the specified monitor IDs. | False |
 | Alert Status | Fetch Alerts by the specified status. | False |
@@ -21,6 +21,7 @@ This integration allows the creation of incidents based on DTM Alerts from Googl
 | Alert Search | Search Alerts and triggering documents using a Lucene query with text values joined by AND/OR. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
+| Incident type |  |  |
 
 ### Acquiring your API key
 

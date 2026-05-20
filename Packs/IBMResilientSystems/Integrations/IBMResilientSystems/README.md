@@ -8,10 +8,6 @@ Case management that enables visibility across your tools for continual IR impro
 | Organization name |  | True |
 | API key ID |  | False |
 | API key secret |  | False |
-| API key ID |  | True |
-| API key secret |  | True |
-| Credentials (Deprecated - use API Key authentication instead) |  | False |
-| Password |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Incident type |  | False |
@@ -19,9 +15,9 @@ Case management that enables visibility across your tools for continual IR impro
 | Fetch closed incidents |  | False |
 | Fetch notes |  |  |
 | Fetch tasks |  |  |
-| First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | True |
+| First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | False |
 | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
-| Incident Mirroring Direction |  | False |
+| Incident Mirroring Direction | Cortex XSOAR only parameter. | False |
 | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
 | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient. | False |
 | Tag from IBM Qradar SOAR | Add this tag to an entry to mirror it from IBM Qradar SOAR. | False |

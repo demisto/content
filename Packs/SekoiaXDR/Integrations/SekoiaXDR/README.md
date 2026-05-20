@@ -6,9 +6,8 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API key |  | True |
 | API Key |  | True |
-| Server URL (i.e. <https://api.sekoia.io>) |  | True |
+| Server URL (i.e. https://api.sekoia.io) |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |
@@ -24,11 +23,11 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 | Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
 | Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
 | Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
-| Incident Mirroring Direction. | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). | True |
+| Incident Mirroring Direction. | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). Cortex XSOAR only parameter. | False |
 | Include events in the mirroring of the alerts. | When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia. | False |
 | Include kill chain information in the mirroring of the alerts. | When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia. | False |
 | Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident. | False |
-| Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. | False |
+| Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. Cortex XSOAR only parameter. | False |
 | Close notes. | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
 | Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
 

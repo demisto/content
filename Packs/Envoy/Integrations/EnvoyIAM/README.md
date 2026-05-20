@@ -6,16 +6,16 @@ This integration was integrated and tested with version v2 of Envoy SCIM API.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Base URL |  | True |
-| API Key |  | True |
-| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-| Use system proxy settings | Use system proxy settings. | False |
+| API Key |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 | Allow creating users |  | False |
 | Allow updating users |  | False |
 | Allow enabling users |  | False |
 | Allow disabling users |  | False |
 | Automatically create user if not found in update command |  | False |
 | Incoming Mapper |  | True |
-| Outgoing Mapper |  | True |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
 
 ## Commands
 

@@ -8,18 +8,19 @@ For more information, please refer to the [Identity Lifecycle Management article
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | ServiceNow URL \(https://domain.service-now.com\) | True |
-| api_version | ServiceNow API Version \(e.g. 'v1'\). Specify this value to use an endpoint version other than the latest. | False |
-| credentials | Username | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| create_user_enabled | Allow creating users | False |
-| update_user_enabled | Allow updating users | False |
-| enable_user_enabled | Allow enabling users | False |
-| disable_user_enabled | Allow disabling users | False |
-| create_if_not_exists | Automatically create user if not found in update and enable commands | False |
-| mapper_in | Incoming Mapper | True |
-| mapper_out | Outgoing Mapper | True |
+| ServiceNow URL (https://&lt;domain&gt;.service-now.com) |  | True |
+| ServiceNow API Version (e.g. 'v1'). Specify this value to use an endpoint version other than the latest. |  | False |
+| Username |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Allow creating users |  | False |
+| Allow updating users |  | False |
+| Allow enabling users |  | False |
+| Allow disabling users |  | False |
+| Automatically create user if not found in update command |  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
 
 ## Commands
 

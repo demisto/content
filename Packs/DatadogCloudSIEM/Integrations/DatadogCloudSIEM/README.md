@@ -18,18 +18,22 @@ This integration was integrated and tested with version 2.12.0 of datadog-api-cl
 2. Search for Datadog Cloud SIEM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**    | **Description**                                                                 | **Required** |
-    | ---------------- | ------------------------------------------------------------------------------- | ------------ |
-    | Server URL       | Datadog website URL (e.g. datadoghq.com)                                        | True         |
-    | API Key          | The API Key to use for authentication                                           | True         |
-    | APP Key          | The APP Key to use for authentication                                           | True         |
-    | Fetch incidents  | Enable fetching security signals as incidents                                   | False        |
-    | Incident type    | The incident type to assign to fetched incidents                                | False        |
-    | First fetch time | Time range for initial fetch (e.g., "3 days", "7 days")                         | False        |
-    | Max fetch        | Maximum number of incidents to fetch per cycle                                  | False        |
-    | Fetch severity   | Comma-separated list of severities to fetch (info, low, medium, high, critical) | False        |
-    | Fetch state      | Signal state to fetch (open, under_review, archived)                            | False        |
-    | Fetch query      | Additional custom query filter using Datadog search syntax                      | False        |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Datadog website URL | True |
+| API Key | The API Key to use for authentication | True |
+| Application Key | The APP Key to use for authentication | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch time | First fetch time range. How far back to fetch security signals on the first run. Examples "3 days", "7 days", "1 week" | False |
+| Max fetch | Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100. | False |
+| Fetch severity | Fetch only security signals with these severity levels or higher. | False |
+| Fetch state | Fetch only security signals in this state. Default is "open". | False |
+| Fetch query | Additional custom query filter for fetching security signals. Uses Datadog search syntax. | False |
+| Incident Mirroring Direction | Choose the mirroring direction for incidents. Incoming mirrors changes from Datadog to XSOAR. Cortex XSOAR only parameter. | False |
+| Close Mirrored XSOAR Incident | When selected, archiving the Datadog security signal is mirrored in XSOAR and closes the XSOAR incident. Cortex XSOAR only parameter. | False |
 
 4. Click **Test** to validate the URLs, keys, and connection.
 

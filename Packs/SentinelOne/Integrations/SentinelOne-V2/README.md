@@ -8,7 +8,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., <https://usea1.sentinelone.net>) |  | True |
+| Server URL (e.g., https://usea1.sentinelone.net) |  | True |
 | API Token |  | False |
 | API Version |  | True |
 | Fetch incidents |  | False |
@@ -17,17 +17,16 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Fetch incidents from UAM Alert type |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
 | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
-| Defines Alert severity to fetch. Supported values: Low, Medium, High, Critical. |  | False |
+| Defines Alert severity to fetch. |  | False |
 | Define which Alerts should be fetched. |  | False |
 | Define which Threats should be fetched. |  | False |
 | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
 | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
-| Block Site IDs | Comma-separated string of site IDs where the hash should be blocked. If left blank and no other scopes are provided in the sentinelone-add-hash-to-blocklist command, the hash will be blocked globally. If filled, the hash will be blocked only within the specified site scopes. When used with sentinelone-add-hash-to-blocklist, these IDs are combined with any site_ids passed as command arguments to define the final scope. |  | False |
+| Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
 | Incidents Fetch Interval |  | False |
-| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). Cortex XSOAR only parameter. | False |
 | Close Mirrored XSOAR Incident | When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR. | False |
 
 ## Commands

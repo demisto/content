@@ -5,17 +5,22 @@ This integration was integrated and tested with Wiz
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Integration Name. Default: `Wiz_instance_1` | True |
-| said | Service Account ID | True |
-| sasecret | Service Account Secret | True |
-| auth_endpoint | Wiz Authentication Endpoint, e.g., `https://auth.app.wiz.io/oauth/token` | True |
-| api_endpoint | Wiz API Endpoint. Default: `https://api.us1.app.wiz.io/graphql` <br /> To find your API endpoint URL: <br />1. Log in to Wiz, then open your <a href="https://app.wiz.io/user/profile">user profile</a> <br />2. Copy the **API Endpoint URL** to use here. | True
-| first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-| Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
-| max_fetch | Max Issues to fetch | False |
-| mirror_direction | Incident Mirror Direction. Choose the mirroring direction for Wiz issues: None, Incoming, Outgoing, or Incoming And Outgoing. Default is None (no mirroring). | False |
-| mirror_limit | Page size for mirror API calls (1-500). Controls how many remote issues are fetched per `get-modified-remote-data` call. Default: 50. | False |
-| comment_tag | Tag for comment mirroring. Add this tag to XSOAR war room entries to mirror them as Wiz issue notes. Default: `comments`. | False |
+| Incident type |  | False |
+| Service Account ID |  | True |
+| Password |  | True |
+| Authentication Endpoint |  | False |
+| API Endpoint |  | True |
+| Incidents Fetch Interval |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Max Issues to Fetch |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Issue severity to fetch | Select the severity levels of issues to fetch from Wiz. Multiple selections are allowed. Leave empty to fetch all severities. | False |
+| Issue status to fetch | Select the status of issues to fetch from Wiz. Multiple selections are allowed. | False |
+| Issue type to fetch | Select the type of issues to fetch from Wiz. Multiple selections are allowed. | False |
+| Incident Mirror Direction | Choose the mirroring direction for Wiz issues. Default is None \(no mirroring\). Cortex XSOAR only parameter. | False |
+| Mirror API page size | Page size for mirror API calls \(1-500\). All modified issues are fetched using this as the page size. | False |
+| Tag for comment mirroring | Add this tag to XSOAR war room entries to mirror them as Wiz issue notes. | False |
 
 ## Mirroring
 

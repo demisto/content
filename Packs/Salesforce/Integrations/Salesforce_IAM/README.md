@@ -15,22 +15,23 @@ This configuration ensures that the user being created is created with the right
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Salesforce url \(Eg: https://domain.salesforce.com/\) | True |
-| credentials | User name | True |
-| consumer_key | Consumer Key | True |
-| consumer_secret | Consumer Secret | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| create_user_enabled | Allow creating users | False |
-| update_user_enabled | Allow updating users | False |
-| enable_user_enabled | Allow enabling users | False |
-| disable_user_enabled | Allow disabling users | False |
-| create_if_not_exists | Automatically create user if not found in update and enable commands | False |
-| mapper_in | Incoming Mapper | True |
-| mapper_out | Outgoing Mapper | True |
-| localesidkey | Default Local Sid Key | True |
-| emailencodingkey | Default Email Encoding Key | True |
-| languagelocalekey | Default Language Locale Key | True |
+| Salesforce url (Eg: https://&lt;domain&gt;.salesforce.com/) |  | True |
+| User name |  | True |
+| Password |  | True |
+| Consumer Key |  | False |
+| Consumer Secret |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Allow creating users |  | False |
+| Allow updating users |  | False |
+| Allow enabling users |  | False |
+| Allow disabling users |  | False |
+| Automatically create user if not found in update and enable commands |  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
+| Default Local Sid Key | Used when creating a new user. | True |
+| Default Email Encoding Key | Used when creating a new user. | True |
+| Default Language Locale Key | Used when creating a new user. | True |
 
 ## Commands
 
