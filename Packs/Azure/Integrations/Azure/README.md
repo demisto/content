@@ -1480,13 +1480,13 @@ Retrieve properties for the specified Container.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageContainer.Container.Property.last_modified | Date | Last modified time of the container. |
-| Azure.StorageContainer.Container.Property.etag | String | The entity tag for the container. |
-| Azure.StorageContainer.Container.Property.lease_status | String | The lease status of the container. |
-| Azure.StorageContainer.Container.Property.lease_state | String | The lease state of the container. |
-| Azure.StorageContainer.Container.Property.has_immutability_policy | String | Indicates whether the container has an immutability policy set on it. |
-| Azure.StorageContainer.Container.Property.has_legal_hold | String | Indicates whether the container has a legal hold. |
-| Azure.StorageContainer.Container.name | String | Container name. |
+| Azure.Storage.Container.Property.Last-Modified | Date | Last modified time of the container. | 
+| Azure.Storage.Container.Property.Etag | String | The entity tag for the container. | 
+| Azure.Storage.Container.Property.X-Ms-Lease-Status | String | The lease status of the container. | 
+| Azure.Storage.Container.Property.X-Ms-Lease-State | String | The lease state of the container. | 
+| Azure.Storage.Container.Property.X-Ms-Has-Immutability-Policy | String | Indicates whether the container has an immutability policy set on it. | 
+| Azure.Storage.Container.Property.X-Ms-Has-Legal-Hold | String | Indicates whether the container has a legal hold. | 
+| Azure.Storage.Container.ContainerName | String | Container name. | 
 
 ### azure-storage-container-create
 

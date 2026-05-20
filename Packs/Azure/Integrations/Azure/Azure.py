@@ -2978,7 +2978,7 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
     outputs = {}
 
-    outputs["name"] = container_name
+    outputs["ContainerName"] = container_name
     outputs["Property"] = raw_response
 
     readable_output = tableToMarkdown(
@@ -2990,7 +2990,7 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.StorageContainer",
+        outputs_prefix="Azure.Storage.Container",
         outputs_key_field="name",
         outputs=outputs,
         raw_response=raw_response,

@@ -817,25 +817,25 @@ script:
     description: Retrieve properties for the specified Container.
     name: azure-storage-container-property-get
     outputs:
-    - contextPath: Azure.StorageContainer.Container.Property.last_modified
+    - contextPath: Azure.Storage.Container.Property.Last-Modified
       description: Last modified time of the container.
       type: Date
-    - contextPath: Azure.StorageContainer.Container.Property.etag
+    - contextPath: Azure.Storage.Container.Property.Etag
       description: The entity tag for the container.
       type: String
-    - contextPath: Azure.StorageContainer.Container.Property.lease_status
+    - contextPath: Azure.Storage.Container.Property.X-Ms-Lease-Status
       description: The lease status of the container.
       type: String
-    - contextPath: Azure.StorageContainer.Container.Property.lease_state
+    - contextPath: Azure.Storage.Container.Property.X-Ms-Lease-State
       description: The lease state of the container.
       type: String
-    - contextPath: Azure.StorageContainer.Container.Property.has_immutability_policy
+    - contextPath: Azure.Storage.Container.Property.X-Ms-Has-Immutability-Policy
       description: Indicates whether the container has an immutability policy set on it.
       type: String
-    - contextPath: Azure.StorageContainer.Container.Property.has_legal_hold
+    - contextPath: Azure.Storage.Container.Property.X-Ms-Has-Legal-Hold
       description: Indicates whether the container has a legal hold.
       type: String
-    - contextPath: Azure.StorageContainer.Container.name
+    - contextPath: Azure.Storage.Container.ContainerName
       description: Container name.
       type: String
 
