@@ -29,7 +29,10 @@ ignore=BA100
 ignore=BA100
 
 [file:FeedCyberintPremium_README.md]
-ignore=RM110
+ignore=RM110,RM115
+
+[file:README.md]
+ignore=RM115
 
 [file:FeedCyberintPremium.yml]
 ignore=RM109,BA129
