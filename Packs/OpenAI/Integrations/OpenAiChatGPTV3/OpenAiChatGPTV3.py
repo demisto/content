@@ -29,14 +29,18 @@ class Config:
 
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-    # XSIAM dataset routing: each stream lands in `<vendor>_<product>_raw`.
     VENDOR = "openai"
-    PRODUCT_AUDIT = "chatgpt_audit"
+    PRODUCT_AUDIT = "admin_audit"
     PRODUCT_COMPLIANCE = "chatgpt_compliance"
-    AUDIT_DATASET = "openai_chatgpt_audit_raw"
-    COMPLIANCE_DATASET = "openai_chatgpt_compliance_raw"
 
     DEFAULT_CHATGPT_URL = "https://api.chatgpt.com"
+
+    RETRY_POLICY: dict = {
+        "retries": 3,
+        "status_list_to_retry": [429, 500, 502, 503, 504],
+        "backoff_factor": 2,
+        "raise_on_status": True,
+    }
 
     DEFAULT_AUDIT_MAX_FETCH = 1000
     DEFAULT_COMPLIANCE_MAX_FETCH = 900
@@ -235,14 +239,13 @@ class EmailParts:
 
 
 class OpenAiClient(BaseClient):
-    """OpenAI HTTP client.
+    """OpenAI HTTP client wrapping three API surfaces:
 
-    Wraps two API surfaces under one client:
-        - Chat Completions (`api.openai.com/v1/chat/completions`) - existing GPT functionality.
-        - Audit Logs (`api.openai.com/v1/organization/audit_logs`) - requires Admin API key.
-        - Compliance Logs (`api.chatgpt.com/v1/compliance/...`) - requires Compliance API key.
-
-    Each surface uses its own bearer token; audit/compliance calls pass an absolute URL via `full_url=`.
+    - `api.openai.com` (`Connect` section, via inherited `base_url` + `url_suffix=`):
+        * Chat Completions - uses `apikey`.
+        * Audit Logs - uses `admin_api_key`.
+    - `api.chatgpt.com` (`Connect - Compliance` section, via `self.chatgpt_base_url` + `full_url=`):
+        * Compliance Logs - uses `compliance_api_key` and `workspace_id`.
     """
 
     def __init__(
@@ -291,7 +294,7 @@ class OpenAiClient(BaseClient):
 
         options["messages"] = chat_context
         demisto.debug(
-            f"openai-gpt Calling chat completions | model={options.get(ArgAndParamNames.MODEL)} | "
+            f"[API Chat Completions] Calling | model={options.get(ArgAndParamNames.MODEL)} | "
             f"messages_count={len(chat_context)} | "
             f"max_tokens={options.get(ArgAndParamNames.MAX_TOKENS)} | "
             f"temperature={options.get(ArgAndParamNames.TEMPERATURE)} | "
@@ -339,6 +342,7 @@ class OpenAiClient(BaseClient):
             params=params,
             headers=headers,
             resp_type="text",
+            **Config.RETRY_POLICY,
         )
         response = _parse_json_or_concatenated(raw_body, log_prefix="[API Audit]")
         if not isinstance(response, dict):
@@ -354,7 +358,7 @@ class OpenAiClient(BaseClient):
 
     # endregion
 
-    # region Event Collector - Compliance Logs (ChatGPT Platform)
+    # region Event Collector - Compliance Logs (ChatGPT Platform - `Connect - Compliance` section)
     def list_compliance_logs(
         self,
         workspace_id: str,
@@ -400,6 +404,7 @@ class OpenAiClient(BaseClient):
             params=params,
             headers=headers,
             resp_type="text",
+            **Config.RETRY_POLICY,
         )
         response = _parse_json_or_concatenated(raw_body, log_prefix="[API Compliance List]")
         # Normalize the response shape - the API may return either a bare list or a dict with `data`/`last_end_time`.
@@ -433,7 +438,7 @@ class OpenAiClient(BaseClient):
         demisto.debug("[API Compliance Content] Fetching content for one log entry.")
 
         # The response body is a stream of concatenated JSON objects (or a JSONL file) - fetch raw text.
-        raw_body = self._http_request(method="GET", full_url=full_url, headers=headers, resp_type="text")
+        raw_body = self._http_request(method="GET", full_url=full_url, headers=headers, resp_type="text", **Config.RETRY_POLICY)
         records = parse_concatenated_json(raw_body)
         demisto.debug(f"[API Compliance Content] Parsed {len(records)} record(s) from response body.")
         return records
@@ -487,7 +492,7 @@ def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dic
     """
 
     chat_context = []
-    demisto.debug(f"openai-gpt conversation_to_chat_context expanding {len(conversation)} turn(s)")
+    demisto.debug(f"[Chat Context] Expanding {len(conversation)} turn(s) from prior conversation.")
     for element in conversation:
         chat_context.append({"role": Roles.USER, "content": element.get(Roles.USER, "")})
         chat_context.append({"role": Roles.ASSISTANT, "content": element.get(Roles.ASSISTANT, "")})
@@ -513,39 +518,35 @@ def get_chat_context(reset_conversation_history: bool, message: str) -> List[dic
 
     if reset_conversation_history or not conversation:
         conversation = []
-        demisto.debug("openai-gpt get_chat_context conversation history reset or initialized as empty.")
+        demisto.debug("[Chat Context] History reset or initialized as empty.")
     else:
         demisto.debug(
-            f"openai-gpt get_chat_context loaded conversation history from context | "
+            f"[Chat Context] Loaded prior conversation from context | "
             f"type={type(conversation).__name__} | turns={len(conversation) if hasattr(conversation, '__len__') else 'n/a'}"
         )
 
     # Create the chat context which is suitable with the required format for a 'chat-completions' request.
     chat_context = conversation_to_chat_context(conversation)
     chat_context.append({"role": Roles.USER, "content": message})
-    demisto.debug(f"openai-gpt get_chat_context appended new user message | total_messages={len(chat_context)}")
+    demisto.debug(f"[Chat Context] Appended new user message | total_messages={len(chat_context)}")
     return chat_context
 
 
 def extract_assistant_message(response: dict[str, Any]) -> str:
-    """
-    Extracts the assistant message from a response.
-    Returns:
-    The assistant message as a string.
-    """
-
-    choices: list = response.get("choices", [])
+    """Extract the assistant's reply content from a chat-completions response."""
+    choices: list = response.get("choices") or []
     if not choices:
-        return_error("Could not retrieve message from response.")
+        raise DemistoException("Could not retrieve message from response: 'choices' field is empty or missing.")
 
-    message = choices[0].get("message", {})
+    message: dict = choices[0].get("message") or {}
     if not message:
-        return_error("Could not retrieve message from response.")
+        raise DemistoException("Could not retrieve message from response: 'choices[0].message' field is empty or missing.")
 
-    response_content = message.get("content", "")
+    response_content: str = message.get("content") or ""
     if not response_content:
-        return_error("Could not retrieve message from response.")
+        raise DemistoException("Could not retrieve message from response: 'choices[0].message.content' is empty.")
 
+    demisto.debug(f"[Chat Response] Extracted assistant message | length={len(response_content)} chars")
     return response_content
 
 
@@ -565,6 +566,7 @@ def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | N
     if not entry_id:
         DemistoException("Provide an entryId of an uploaded '.eml' file.")
 
+    demisto.debug("[Email Parts] Resolving uploaded .eml file path from entry_id.")
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
@@ -579,6 +581,10 @@ def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | N
         email_parser.parsed_email.get("Headers", None),
         email_parser.parsed_email.get("Text", None),
         email_parser.parsed_email.get("HTML", None),
+    )
+    demisto.debug(
+        f"[Email Parts] Parsed .eml | headers_count={len(headers) if headers else 0} | "
+        f"text_body_present={bool(text_body)} | html_body_present={bool(html_body)}"
     )
     return headers, text_body, html_body, file_name
 
@@ -597,7 +603,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     )
 
     if email_part == EmailParts.HEADERS:
-        demisto.debug(f"openai-gpt checking email headers | headers_present={bool(email_headers)}")
+        demisto.debug(f"[Email Check] Checking email headers | headers_present={bool(email_headers)}")
         if email_headers:
             email_headers_formatted = {
                 header["name"]: header["value"] for header in email_headers if "name" in header and "value" in header
@@ -609,7 +615,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
             raise DemistoException("'parse_emails' did not extract any email headers from the provided file..")
     elif email_part == EmailParts.BODY:
         demisto.debug(
-            f"openai-gpt checking email body | "
+            f"[Email Check] Checking email body | "
             f"text_body_present={bool(email_text_body)} | html_body_present={bool(email_html_body)}"
         )
 
@@ -626,7 +632,7 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
     else:
         raise DemistoException("Invalid email part to check provided.")
 
-    demisto.debug(f"openai-gpt check_email_part built prompt | length={len(check_email_part_message or '')}")
+    demisto.debug(f"[Email Check] Built prompt | length={len(check_email_part_message or '')} chars")
 
     # Starting a new conversation as of a new topic discussed.
     args.update({ArgAndParamNames.RESET_CONVERSATION_HISTORY: "yes", ArgAndParamNames.MESSAGE: check_email_part_message})
@@ -722,6 +728,7 @@ def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> tuple[Co
     """
     Sending a message with conversation context to an OpenAI GPT model and retrieving the generated response.
     """
+    demisto.debug("[Command gpt-send-message] triggered")
     message = args.get(ArgAndParamNames.MESSAGE, "")
     if not message:
         raise ValueError("Message not provided")
@@ -735,13 +742,14 @@ def send_message_command(client: OpenAiClient, args: dict[str, Any]) -> tuple[Co
     reset_conversation_history = args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, "") == "yes"
     chat_context = get_chat_context(reset_conversation_history, message)
     demisto.debug(
-        f"openai-gpt send_message_command prepared chat | messages_count={len(chat_context)} | "
-        f"completion_params_keys={sorted(completion_params.keys())}"
+        f"[Command gpt-send-message] Prepared chat | messages_count={len(chat_context)} | "
+        f"completion_params_keys={sorted(completion_params.keys())} | "
+        f"reset_history={reset_conversation_history}"
     )
 
     response = client.get_chat_completions(chat_context=chat_context, completion_params=completion_params)
     demisto.debug(
-        f"openai-gpt send_message_command got response | "
+        f"[Command gpt-send-message] Got response | "
         f"choices_count={len(response.get('choices') or [])} | "
         f"usage_keys={sorted((response.get('usage') or {}).keys())}"
     )
@@ -1502,6 +1510,7 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
     # Each thread gets its own copy of last_run; main thread merges after `as_completed`.
     updated_last_run: dict[str, Any] = dict(last_run)
     results: list[FetchResult] = []
+    stream_failures: dict[str, str] = {}  # surfaced to the UI after partial success is persisted.
 
     futures: dict[Future, str] = {}
     with ThreadPoolExecutor(max_workers=len(streams_to_run)) as executor:
@@ -1523,7 +1532,9 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
             try:
                 result = future.result()
             except Exception as exc:
+                # Keep iterating so successful streams still push events and persist their cursor.
                 demisto.error(f"[Command fetch-events] {stream_name} stream failed: {exc}")
+                stream_failures[stream_name] = str(exc)
                 continue
             results.append(result)
             updated_last_run.update(result.last_run_updates)
@@ -1543,8 +1554,14 @@ def fetch_events_command(client: OpenAiClient, params: dict[str, Any]) -> None:
         f"[Command fetch-events] done | "
         f"streams={[r.stream for r in results]} | "
         f"events_per_stream={[len(r.events) for r in results]} | "
-        f"last_run={updated_last_run}"
+        f"last_run={updated_last_run} | "
+        f"failed_streams={list(stream_failures.keys())}"
     )
+
+    # Re-raise after partial progress is persisted so `main()` shows a visible UI error.
+    if stream_failures:
+        summary = "; ".join(f"{name}: {err}" for name, err in stream_failures.items())
+        raise DemistoException(f"One or more event-collector streams failed: {summary}")
 
 
 def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
@@ -1663,8 +1680,8 @@ def main() -> None:  # pragma: no cover
             compliance_api_key=config["compliance_api_key"],
             chatgpt_base_url=config["chatgpt_base_url"],
         )
-        demisto.debug("[Main] Client built. Dispatching command...")
 
+        demisto.debug("[Main] Client built. Dispatching command...")
         result = handler(client, args, params)
         if result is not None:
             return_results(result)

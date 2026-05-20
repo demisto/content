@@ -631,6 +631,80 @@ def test_get_compliance_log_content_requires_compliance_key():
     assert "Compliance API Key" in str(exc_info.value)
 
 
+# region Retry policy tests
+# =============================================================================
+# Verify that event-collector HTTP calls forward `Config.RETRY_POLICY` to
+# `_http_request`, while chat-completion stays fail-fast (no retry). Without
+# this contract, transient OpenAI 5xx/429 errors silently fail the fetch and
+# the UI shows an opaque "Error pulling at <time>" with no actionable details.
+# =============================================================================
+
+
+def test_retry_policy_values_are_sensible():
+    """The retry policy constant must use the expected values - any drift here is a behaviour change
+    operators rely on (number of retries, which statuses retry, exponential backoff factor)."""
+    policy = module.Config.RETRY_POLICY
+    assert policy["retries"] == 3
+    assert set(policy["status_list_to_retry"]) == {429, 500, 502, 503, 504}
+    assert policy["backoff_factor"] == 2
+    # `raise_on_status=True` is what converts an exhausted retry into a `DemistoException`
+    # rather than silently returning the last error response body.
+    assert policy["raise_on_status"] is True
+
+
+@pytest.mark.parametrize(
+    "method_name, call_kwargs",
+    [
+        pytest.param(
+            "get_audit_logs",
+            {"after": "FAKE_AUDIT_CURSOR", "effective_at_gt": None},
+            id="happy-audit-logs-forwards-retry-policy",
+        ),
+        pytest.param(
+            "list_compliance_logs",
+            {"workspace_id": "FAKE_WORKSPACE_ID", "event_types": ["APP_LOG"], "after": "2099-01-01T00:00:00Z"},
+            id="happy-compliance-list-forwards-retry-policy",
+        ),
+        pytest.param(
+            "get_compliance_log_content",
+            {"workspace_id": "FAKE_WORKSPACE_ID", "log_id": "FAKE_LOG_001"},
+            id="happy-compliance-content-forwards-retry-policy",
+        ),
+    ],
+)
+def test_event_collector_calls_forward_retry_policy(mocker, method_name, call_kwargs):
+    """Good path: every event-collector `_http_request` call must include the RETRY_POLICY kwargs.
+
+    This is asserted at the contract layer (the kwargs forwarded into `_http_request`) rather than
+    by simulating a 5xx and counting retries, which would couple the test to `urllib3.Retry`'s
+    internals and break across CI image upgrades.
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
+
+    getattr(client, method_name)(**call_kwargs)
+
+    forwarded = http_mock.call_args.kwargs
+    for key, expected in module.Config.RETRY_POLICY.items():
+        assert forwarded.get(key) == expected, f"{method_name}: missing/wrong '{key}' kwarg passed to _http_request"
+
+
+def test_chat_completions_does_not_forward_retry_policy(mocker):
+    """Bad path: chat-completion is interactive and intentionally NOT retried so the user sees
+    transient errors immediately in the war room rather than waiting through backoffs."""
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"choices": [{"message": {"content": "hi"}}]})
+
+    client.get_chat_completions(chat_context=[{"role": "user", "content": "ping"}], completion_params={})
+
+    forwarded = http_mock.call_args.kwargs
+    for key in module.Config.RETRY_POLICY:
+        assert key not in forwarded, f"chat-completions must NOT forward '{key}' (interactive commands must fail fast)"
+
+
+# endregion
+
+
 def test_send_events_routes_to_correct_dataset(mocker):
     """`send_events` must call `send_events_to_xsiam` with the requested vendor + product."""
 
@@ -883,12 +957,11 @@ def test_fetch_events_command_runs_streams_in_parallel_and_routes_datasets(mocke
     assert persisted[module.LastRunKey.COMPLIANCE_LAST_END_TIME] == "2099-02-01T00:00:00Z"
 
 
-def test_fetch_events_command_failure_in_one_stream_does_not_block_the_other(mocker, capfd):
-    """`fetch_events_command` must isolate stream failures - one stream's exception cannot stop the other.
-
-    The audit-stream failure path intentionally calls `demisto.error()`, which writes to stdout.
-    `capfd.disabled()` lets the test ignore that allowed-by-design output (the conftest fixture
-    `check_std_out_err` would otherwise fail any test that emits anything on stdout/stderr).
+def test_fetch_events_command_failure_in_one_stream_pushes_survivor_then_reraises(mocker, capfd):
+    """`fetch_events_command` must:
+    1. Let the surviving (compliance) stream push its events and persist its cursor.
+    2. THEN re-raise the failed (audit) stream's exception so the UI shows a real error
+       instead of an opaque "Error pulling at <time>" banner.
     """
 
     client = _make_client()
@@ -904,21 +977,28 @@ def test_fetch_events_command_failure_in_one_stream_does_not_block_the_other(moc
     )
     sender = mocker.patch.object(module.OpenAiClient, "send_events")
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
 
     params = {
         "event_types_to_fetch": ["OpenAI Audit logs", "Compliance Audit"],
         "workspace_id": "FAKE_WORKSPACE_ID",
         "first_fetch": "1 day",
     }
-    with capfd.disabled():
-        # Must NOT raise - the audit failure is caught (and its `demisto.error` log is expected
-        # output) and the compliance stream still pushes.
+    with capfd.disabled(), pytest.raises(DemistoException) as exc_info:
         module.fetch_events_command(client=client, params=params)
 
+    # The re-raised error must name the failing stream so the UI banner is actionable.
+    assert "audit" in str(exc_info.value)
+    assert "simulated audit failure" in str(exc_info.value)
+
+    # Partial progress is preserved: compliance events were pushed AND its cursor was persisted
+    # BEFORE the re-raise (otherwise the next run would re-fetch the same compliance events).
     pushed_products = [call.kwargs.get("product", call.args[1] if len(call.args) > 1 else None) for call in sender.call_args_list]
     assert module.Config.PRODUCT_COMPLIANCE in pushed_products
     assert module.Config.PRODUCT_AUDIT not in pushed_products
+    assert set_last_run.called
+    persisted = set_last_run.call_args.args[0]
+    assert persisted.get(module.LastRunKey.COMPLIANCE_LAST_END_TIME) == "2099-02-02T00:00:00Z"
 
 
 def test_fetch_events_command_no_event_types_selected_is_a_noop(mocker):
