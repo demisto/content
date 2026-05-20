@@ -4546,7 +4546,7 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
           War Room entry) so it always lands at CrowdStrike.VulnerabilityNextToken even if the
           bulk-data entry gets auto-filed by XSOAR for being too large.
         - An empty cursor from the API is normalized to None on that internal return_results call.
-        - limit > 5000 is silently capped to 5000 in the outgoing request URL.
+        - limit > 2500 is silently capped to 2500 in the outgoing request URL.
     """
     import CrowdStrikeFalcon
     from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
@@ -4600,18 +4600,18 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
     assert token_command_results.outputs_prefix == "CrowdStrike.VulnerabilityNextToken"
     assert token_command_results.outputs is None
 
-    # Assertion (d): limit > 5000 is silently capped to 5000 in the outgoing request.
+    # Assertion (d): limit > 2500 is silently capped to 2500 in the outgoing request.
     http_mock.reset_mock()
     http_mock.return_value = {
         "resources": [{"id": "vuln-3"}],
         "meta": {"pagination": {"after": "ANY"}},
     }
-    args_oversize = {**args, "limit": "5001"}
+    args_oversize = {**args, "limit": "2501"}
     cs_falcon_spotlight_search_vulnerability_command(args_oversize)
     call_args, _ = http_mock.call_args
     url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
-    assert "limit=5000" in url_suffix
-    assert "limit=5001" not in url_suffix
+    assert "limit=2500" in url_suffix
+    assert "limit=2501" not in url_suffix
 
 
 def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
