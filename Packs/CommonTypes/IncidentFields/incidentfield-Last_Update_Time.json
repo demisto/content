@@ -48,6 +48,7 @@
         "CrowdStrike Falcon NGSIEM Incident",
         "CrowdStrike Falcon NGSIEM Automated Lead",
         "CrowdStrike Falcon NGSIEM Case",
+        "CrowdStrike Falcon IOA Event",
         "GravityZone EDR",
         "GravityZone XDR"
     ],

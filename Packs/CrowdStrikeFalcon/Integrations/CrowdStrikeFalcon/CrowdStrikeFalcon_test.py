@@ -6120,6 +6120,66 @@ class TestIOAFetch:
         assert raw["composite_id"] == composite_id
         assert raw["incident_type"] == "ioa_detection"
 
+    def test_fetch_items_ioa_empty_response(self, mocker: MockerFixture):
+        """
+        Given:
+            - The IOA fetch type is selected and the queries endpoint returns zero composite ids.
+        When:
+            - Calling fetch_items.
+        Then:
+            - Validate that only the queries endpoint is hit (the entities endpoint is skipped).
+            - Validate that no incidents are produced.
+            - Validate that setLastRun is still invoked so the cursor advances normally.
+        """
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
+
+        self._patch_xsoar_params(mocker)
+        mocker.patch.object(demisto, "getLastRun", return_value=self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR))
+
+        # Queries endpoint returns an empty `resources` list -> entities endpoint must not be called.
+        query_response = self._build_query_response([])
+        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request", return_value=query_response)
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
+
+        _, fetched_incidents = fetch_items()
+
+        # Exactly one HTTP call: the queries endpoint. No entities POST when there are no ids.
+        assert http_request_mocker.call_count == 1
+        assert http_request_mocker.call_args_list[0][0][1].startswith("/alerts/queries/alerts/v2?filter=")
+        # No incidents from an empty response.
+        assert fetched_incidents == []
+        # last_run is still persisted so the time window advances.
+        assert set_last_run_mocker.call_count == 1
+
+    def test_fetch_items_ioa_api_error_propagates(self, mocker: MockerFixture):
+        """
+        Given:
+            - The IOA fetch type is selected and the queries endpoint raises a DemistoException
+              (e.g. the alerts/v2 endpoint returned a non-200 response).
+        When:
+            - Calling fetch_items.
+        Then:
+            - The DemistoException propagates out of fetch_items (no silent swallow).
+            - The entities endpoint is never called and no last_run is persisted for this run.
+        """
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
+
+        self._patch_xsoar_params(mocker)
+        mocker.patch.object(demisto, "getLastRun", return_value=self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR))
+
+        api_error = DemistoException("Error in API call to CrowdStrike Falcon: code: 500 - reason: Internal Server Error")
+        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request", side_effect=api_error)
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
+
+        with pytest.raises(DemistoException) as exc_info:
+            fetch_items()
+
+        assert "Internal Server Error" in str(exc_info.value)
+        # Only the queries call was attempted; the entities POST never happened.
+        assert http_request_mocker.call_count == 1
+        # Last run must not advance when the fetch failed.
+        set_last_run_mocker.assert_not_called()
+
     def test_fetch_items_ioa_user_fetch_query_is_anded(self, mocker: MockerFixture):
         """
         Given:

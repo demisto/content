@@ -1018,7 +1018,6 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == IOA_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context["severity"] = severity_string_to_int(detection.get("severity_name"))
-        incident_context["last_updated"] = detection.get("updated_timestamp")
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"

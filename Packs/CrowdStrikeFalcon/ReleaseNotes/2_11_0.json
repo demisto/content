@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Indicator of Attack (IOA) filter query now uses FQL"
+    "breakingChangesNotes": "Indicator of Attack (IOA) filter query now uses FQL. If you are currently using a custom filter query, please update the IOA filter query parameter to use FQL."
 }

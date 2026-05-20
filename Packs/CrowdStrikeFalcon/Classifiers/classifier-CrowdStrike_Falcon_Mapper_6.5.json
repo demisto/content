@@ -194,6 +194,9 @@
                 "State": {
                     "simple": "state"
                 },
+                "Last Update Time": {
+                    "simple": "updated_timestamp"
+                },
                 "name": {
                     "complex": {
                         "filters": [],
