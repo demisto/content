@@ -1,6 +1,5 @@
 {
     "name": "SOC Framework Pack Manager",
-    "id": "soc-framework-manager",
     "description": "Installs and configures SOC Framework content packs directly from the XSIAM Playground. Manages the foundation layer, NIST IR orchestration, and vendor enhancement packs through a single bootloader script.",
     "support": "community",
     "currentVersion": "1.0.0",
@@ -28,7 +27,8 @@
         "scottbrumley"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "supportedModules": [
         "agentix",

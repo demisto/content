@@ -3,7 +3,7 @@ SOCFWPackManager_test.py
 
 Unit tests for the SOCFWPackManager integration.
 Run:
-    pytest Packs/soc-framework-manager/Integrations/SOCFWPackManager/SOCFWPackManager_test.py -v
+    pytest Packs/SocFrameworkManager/Integrations/SOCFWPackManager/SOCFWPackManager_test.py -v
 """
 
 import importlib

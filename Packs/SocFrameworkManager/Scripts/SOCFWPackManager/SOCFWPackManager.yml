@@ -7,23 +7,12 @@ comment: |-
 commonfields:
   id: SOCFWPackManager
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ''
-    fromServerVersion: ''
-    isoverridable: false
-    itemVersion: ''
-    packID: soc-framework-manager
-    packName: ''
-    prevname: ''
-    supportedModules: []
-    toServerVersion: ''
 name: SOCFWPackManager
 fromversion: 5.0.0
 type: python
 subtype: python3
 script: ''
-dockerimage: demisto/python3:3.12.12.6796194
+dockerimage: demisto/python3:3.12.13.9059085
 enabled: true
 runonce: false
 runas: DBotWeakRole
@@ -38,8 +27,6 @@ tags:
 - SOCFWBootloader
 timeout: 30m0s
 engineinfo: {}
-mainengineinfo: {}
-pswd: ''
 vcShouldKeepItemLegacyProdMachine: false
 args:
 - name: action
@@ -291,3 +278,5 @@ outputs:
 - contextPath: SOCFramework.PackManager.SyncTags.updated_at
   description: ISO 8601 timestamp the value_tags dataset was last updated.
   type: String
+tests:
+- No tests (auto formatted)

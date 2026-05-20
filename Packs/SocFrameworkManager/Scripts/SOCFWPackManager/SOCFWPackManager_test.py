@@ -2,7 +2,7 @@
 Unit tests for the SOCFWPackManager script.
 
 Follows the pattern from SOCCommandWrapper_test.py.
-Run: pytest Packs/soc-framework-manager/Scripts/SOCFWPackManager_test.py
+Run: pytest Packs/SocFrameworkManager/Scripts/SOCFWPackManager_test.py
 """
 
 import importlib
