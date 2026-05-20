@@ -384,7 +384,6 @@ def get_hit_table(hit):
             headers.append(source_field)
 
     # Add normalized Elasticsearch fields to the table context
-    # Fields are prefixed with "fields." to distinguish them from _source values
     if hit.get("fields") is not None:
         for field_name, field_value in hit.get("fields").items():
             normalized_key = f"fields.{field_name}"
