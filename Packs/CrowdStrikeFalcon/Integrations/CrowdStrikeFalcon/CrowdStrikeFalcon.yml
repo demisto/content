@@ -380,6 +380,30 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  hidden:
+  - marketplacev2
+  - platform
+- display: Incident type
+  name: incidentType
+  type: 13
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  hidden:
+  - marketplacev2
+  - platform
+- display: Incident type
+  name: incidentType
+  type: 13
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -2915,7 +2939,7 @@ script:
       defaultValue: '50'
       type: String
       name: limit
-    - description: An opaque pagination cursor returned in the `CrowdStrike.VulnerabilityNextToken` context output from a previous run. Supply it to retrieve the next page of results. The maximum `limit` per call remains 5000 - requests with `limit > 5000` will be rejected by the CrowdStrike API regardless of whether `next_token` is supplied. Pagination cursors are short-lived (a few minutes); if a cursor has expired, an error will be raised and you must rerun the command without `next_token` to start a fresh session.
+    - description: An opaque pagination cursor returned in the `CrowdStrike.VulnerabilityNextToken` context output from a previous run. Values of `limit` greater than 5000 are silently capped at the 5000 per-call API maximum; supply `next_token` from a prior run's `CrowdStrike.VulnerabilityNextToken` output to fetch the next page. Pagination cursors are short-lived (a few minutes); if a cursor has expired, an error will be raised and you must rerun the command without `next_token` to start a fresh session.
       name: next_token
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
