@@ -140,7 +140,14 @@ class MsGraphMailBaseClient(MicrosoftClient):
         attachments = zip(ids, attach_names) if provided_names else zip(ids, ids)
 
         for attach_id, attach_name in attachments:
-            file_data, file_size, uploaded_file_name = GraphMailUtils.read_file(attach_id)
+            try:
+                file_data, file_size, uploaded_file_name = GraphMailUtils.read_file(attach_id)
+            except Exception as e:
+                demisto.debug(
+                    f"send-mail: Failed to read file with ID '{attach_id}'. " f"Skipping this attachment. Error: {str(e)}"
+                )
+                # Skip this attachment if we can't read it - this can happen if the ID is invalid
+                continue
             file_name = attach_name if provided_names or not uploaded_file_name else uploaded_file_name
             if file_size < cls.MAX_ATTACHMENT_SIZE:  # if file is less than 3MB
                 file_attachments_result.append(
