@@ -9,7 +9,7 @@ configuration:
   required: true
   section: Connect
   type: 0
-- additionalinfo: The default port for the Elastic API is 9200.
+- additionalinfo: The port number used to connect to the Elasticsearch API.
   defaultvalue: '9200'
   display: Elastic API Port
   name: elastic_port
