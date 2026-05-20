@@ -15,7 +15,7 @@ configuration:
   name: elastic_port
   required: false
   type: 0
-- additionalinfo: The default port for the Kibana API is 443.
+- additionalinfo: The port number used to connect to the Kibana API.
   defaultvalue: '443'
   display: Kibana API Port
   name: kibana_port
