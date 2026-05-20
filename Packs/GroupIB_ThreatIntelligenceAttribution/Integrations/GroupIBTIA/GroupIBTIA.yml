@@ -2154,6 +2154,9 @@ script:
       required: true
     description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
     name: gibti-get-phishing-group-info
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   dockerimage: demisto/vendors-sdk:1.0.0.8307504
   feed: false
   isfetch: true
@@ -2163,9 +2166,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-    compliantpolicies:
-    - EndPoint Isolation
-    - User Hard Remediation
 tests:
 - Group-IB Threat Intelligence -Test
 fromversion: 6.0.0
