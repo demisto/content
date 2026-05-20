@@ -3889,7 +3889,7 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context. Keys: {list(integration_context.keys())}")
+    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
 
 
 class AssetsDeviceHandler:
@@ -4000,7 +4000,7 @@ class AssetsDeviceHandler:
 
             # 2. Update state and send it to XSIAM after finish
             self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
+            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
 
             # 3. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
@@ -4302,9 +4302,8 @@ async def send_batch_to_xsiam_and_save_context(
     log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
 
     try:
-        # 1. Send to XSIAM (returns list of async tasks)
-        # Note: send_data_to_xsiam_async compresses data synchronously before creating tasks,
-        # so the original data dicts can be deleted once this call returns.
+        # 1. Send to XSIAM — data is serialized, chunked, and gzip-compressed synchronously
+        # inside send_data_to_xsiam_async before async HTTP tasks are created.
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4352,10 +4351,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
 ):
     """
     Create an async task to send vulnerability batch to XSIAM and save context.
-
-    Data is compressed SYNCHRONOUSLY (before creating the async task) via send_data_to_xsiam_async().
-    This ensures the original data objects (e.g., vulnerability dicts) can be garbage collected
-    immediately, and the async task only holds references to compressed bytes and HTTP send coroutines.
+    Parameters now match the order and names of the internal async function.
 
     Args:
         data: List of data items to send
@@ -4373,42 +4369,22 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    # 1. Compress data and create HTTP send tasks SYNCHRONOUSLY (before asyncio.create_task).
-    # This frees the original data dicts immediately — the async task only holds compressed bytes.
-    http_send_tasks = send_data_to_xsiam_async(
-        data=data,
-        vendor=VENDOR,
-        product=product,
-        data_format="json",
-        url_key="url",
-        num_of_attempts=3,
-        chunk_size=XSIAM_EVENT_CHUNK_SIZE,
-        data_type=data_type,
-        snapshot_id=snapshot_id,
-        items_count=items_count,
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor=VENDOR,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
     )
-
-    # 2. Create async task that only awaits the HTTP sends and saves context
-    async def send_and_save_context() -> int:
-        try:
-            await asyncio.gather(*http_send_tasks)
-            log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
-
-            if batch_number > last_saved_batch_number:
-                save_state_callback(context_store, state)
-                log_falcon_assets(f"[Batch {batch_number}] Context saved")
-                return batch_number
-            else:
-                log_falcon_assets(
-                    f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
-                )
-                return last_saved_batch_number
-
-        except Exception as e:
-            log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
-            raise
-
-    return asyncio.create_task(send_and_save_context())
+    return task
 
 
 def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
@@ -4477,17 +4453,13 @@ def load_spotlight_state(
     # Extract state variables
     snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    # Load AID counts (not full sets — sets are only used within a single execution, never restored from state)
-    unique_aids_count = spotlight_state.metadata.get("unique_aids_count", 0)
-    processed_aids_count = spotlight_state.metadata.get("processed_aids_count", 0)
-    # Create empty sets for runtime use (always start fresh each execution)
-    unique_aids: set[str] = set()
-    processed_aids: set[str] = set()
+    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
+    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"{unique_aids_count=}, {processed_aids_count=}, "
+        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
         f"completed_severities={completed_severities}, "
         f"after_token={spotlight_state.cursor}"
     )
@@ -4528,8 +4500,8 @@ def update_spotlight_state_and_metadata(
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
-        "unique_aids_count": len(unique_aids) if isinstance(unique_aids, set) else unique_aids,
-        "processed_aids_count": len(processed_aids) if isinstance(processed_aids, set) else processed_aids,
+        "unique_aids": list(unique_aids),
+        "processed_aids": list(processed_aids),
         "completed_severities": completed_severities,
     }
 
@@ -4629,23 +4601,35 @@ async def fetch_vulnerabilities_by_severity(
     last_saved_batch_number = 0
 
     def _get_process_memory_mb() -> str:
-        """Get current and peak process RSS memory in MB. Returns formatted string."""
-        import os
-        import resource as resource_mod
+        """Get current process RSS memory usage for monitoring backpressure effectiveness.
+
+        Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
+        which reflects actual physical memory usage at this moment.
+        The `resource` module is imported locally as `resource_mod` to avoid shadowing
+        the `resource` loop variable used elsewhere in this file (ruff F402).
+
+        Returns:
+            Formatted string with current and peak RSS in MB, e.g. "current=1234.5 MB, peak=3198.4 MB"
+        """
+        # Import locally to avoid shadowing the `resource` loop variable used in other functions
+        import resource as resource_mod  # noqa: F811
         import sys
 
-        # Current RSS from /proc/self/status (Linux) or resource (macOS)
+        # Current RSS: read from /proc/self/status (Linux only)
+        # VmRSS shows the actual physical memory currently used by the process
         current_rss_mb = 0.0
         try:
             with open("/proc/self/status") as f:
                 for line in f:
                     if line.startswith("VmRSS:"):
-                        current_rss_mb = int(line.split()[1]) / 1024  # KB to MB
+                        # VmRSS is reported in KB in /proc/self/status
+                        current_rss_mb = int(line.split()[1]) / 1024
                         break
         except (FileNotFoundError, ValueError):
-            pass  # Not on Linux or parse error
+            pass  # Not on Linux or parse error — current RSS will show 0
 
-        # Peak RSS from resource module
+        # Peak RSS: the maximum RSS ever reached during the process lifetime
+        # On Linux ru_maxrss is in KB, on macOS it's in bytes
         rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
         if sys.platform == "darwin":
             peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
@@ -4712,9 +4696,7 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
-            # Create task to send batch to XSIAM
-            # Note: send_data_to_xsiam_async (called inside) compresses data synchronously
-            # before creating async tasks, so vulnerability dicts can be deleted immediately
+            # Create task to send batch to XSIAM (data compressed synchronously inside)
             task = create_task_send_batch_to_xsiam_and_save_context(
                 data=vulnerabilities,
                 product=SPOTLIGHT_VULN_PRODUCT,
