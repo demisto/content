@@ -9385,26 +9385,24 @@ class TestSpotlightSeverityBasedFetch:
 
 
     @pytest.mark.asyncio
-    async def test_fetch_vulnerabilities_by_severity_semaphore_backpressure(self, mocker):
+    async def test_fetch_vulnerabilities_by_severity_backpressure(self, mocker):
         """
-        Tests that the per-severity semaphore limits concurrent pending send tasks.
+        Tests that backpressure limits concurrent pending send tasks using asyncio.wait.
 
         Given:
-            - MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY is set to 2 (for testing).
+            - MAX_PENDING_TASKS_PER_SEVERITY is set to 2 (for testing).
             - API returns 4 pages of vulnerabilities (4 batches).
             - Send tasks are slow (simulated with asyncio.sleep).
         When:
             - fetch_vulnerabilities_by_severity is called.
         Then:
-            - The semaphore blocks the fetch loop when 2 tasks are pending.
+            - The backpressure loop waits when 2 tasks are pending.
             - All 4 batches are eventually processed.
-            - The semaphore is released correctly after each task completes.
         """
         from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
 
-        # Override the semaphore limit for testing
-        mocker.patch("CrowdStrikeFalcon.MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY", 2)
-        mocker.patch("CrowdStrikeFalcon.SEMAPHORE_ACQUIRE_TIMEOUT", 5)
+        # Override the pending tasks limit for testing
+        mocker.patch("CrowdStrikeFalcon.MAX_PENDING_TASKS_PER_SEVERITY", 2)
 
         # Setup
         mock_client = mocker.AsyncMock()
@@ -9472,85 +9470,6 @@ class TestSpotlightSeverityBasedFetch:
         assert operation_log.count("task_created_2") == 1
         assert operation_log.count("task_created_3") == 1
         assert operation_log.count("task_created_4") == 1
-
-    @pytest.mark.asyncio
-    async def test_fetch_vulnerabilities_by_severity_semaphore_timeout_fallback(self, mocker):
-        """
-        Tests that the semaphore timeout fallback works when XSIAM is extremely slow.
-
-        Given:
-            - MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY is set to 1.
-            - SEMAPHORE_ACQUIRE_TIMEOUT is set to 0.01 (very short for testing).
-            - A send task that never completes (simulating stuck XSIAM).
-        When:
-            - fetch_vulnerabilities_by_severity is called with 2 pages.
-        Then:
-            - The first batch acquires the semaphore normally.
-            - The second batch times out on semaphore acquire.
-            - Processing continues without backpressure (fallback behavior).
-            - Both batches are still sent.
-        """
-        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
-
-        # Override constants for testing
-        mocker.patch("CrowdStrikeFalcon.MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY", 1)
-        mocker.patch("CrowdStrikeFalcon.SEMAPHORE_ACQUIRE_TIMEOUT", 0.01)  # Very short timeout
-
-        # Setup
-        mock_client = mocker.AsyncMock()
-        mock_handler = mocker.Mock()
-        mock_handler.receive_new_aids = mocker.AsyncMock()
-
-        # Mock API responses - 2 pages
-        page1 = mocker.Mock()
-        page1.json.return_value = {
-            "resources": [{"id": "vuln1", "aid": "aid1"}],
-            "meta": {"pagination": {"after": "token2"}},
-        }
-        page2 = mocker.Mock()
-        page2.json.return_value = {
-            "resources": [{"id": "vuln2", "aid": "aid2"}],
-            "meta": {"pagination": {"after": None}},
-        }
-        mock_client._request.side_effect = [page1, page2]
-
-        # Create a task that never completes (blocks the semaphore)
-        task_count = 0
-
-        def create_blocking_task(*args, **kwargs):
-            nonlocal task_count
-            task_count += 1
-
-            async def blocking_send():
-                await asyncio.sleep(10)  # Very long - will cause timeout
-                return task_count
-
-            return asyncio.create_task(blocking_send())
-
-        mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
-            side_effect=create_blocking_task,
-        )
-
-        # Execute
-        total, aids, tasks = await fetch_vulnerabilities_by_severity(
-            client=mock_client,
-            severity="HIGH",
-            context_store=mocker.Mock(),
-            spotlight_state=mocker.Mock(metadata={}),
-            snapshot_id="snap123",
-            asset_handler=mock_handler,
-        )
-
-        # Cancel remaining tasks to clean up
-        for task in tasks:
-            task.cancel()
-        await asyncio.gather(*tasks, return_exceptions=True)
-
-        # Verify both batches were processed despite timeout
-        assert total == 2
-        assert task_count == 2  # Both tasks were created
-        assert aids == {"aid1", "aid2"}
 
 
 class TestAssetsDeviceHandler:

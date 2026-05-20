@@ -91,8 +91,7 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 50
-MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY = 10  # Backpressure: max pending XSIAM sends per severity stream
-SEMAPHORE_ACQUIRE_TIMEOUT = 60  # Seconds to wait for semaphore before proceeding without backpressure (cursor TTL is ~2 min)
+MAX_PENDING_TASKS_PER_SEVERITY = 10  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -4623,14 +4622,9 @@ async def fetch_vulnerabilities_by_severity(
     batch_counter = 0
     last_saved_batch_number = 0
 
-    # Per-severity backpressure semaphore: limits concurrent pending XSIAM send tasks
-    # to prevent unbounded memory growth from fire-and-forget vulnerability batches
-    send_semaphore = asyncio.Semaphore(MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY)
-
     def _get_process_memory_mb() -> float:
         """Get current process peak RSS memory in MB (Linux: KB, macOS: bytes)."""
         rusage = resource.getrusage(resource.RUSAGE_SELF)
-        # On Linux (Docker), ru_maxrss is in KB; on macOS it's in bytes
         import sys
         if sys.platform == "darwin":
             return rusage.ru_maxrss / (1024 * 1024)
@@ -4638,6 +4632,30 @@ async def fetch_vulnerabilities_by_severity(
 
     try:
         while True:
+            # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
+            # This prevents unbounded memory growth from fire-and-forget vulnerability batches.
+            while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
+                log_falcon_assets(
+                    f"[{severity}] Backpressure: {len(pending_tasks)} pending tasks >= limit {MAX_PENDING_TASKS_PER_SEVERITY}, "
+                    f"waiting for at least one to complete (peak RSS: {_get_process_memory_mb():.1f} MB)"
+                )
+                done, pending_tasks_updated = await asyncio.wait(
+                    pending_tasks, return_when=asyncio.FIRST_COMPLETED
+                )
+                pending_tasks = pending_tasks_updated
+                # Process completed tasks to update last_saved_batch_number
+                for completed_task in done:
+                    try:
+                        result = completed_task.result()
+                        if isinstance(result, int) and result > last_saved_batch_number:
+                            last_saved_batch_number = result
+                    except Exception as e:
+                        log_falcon_assets(f"[{severity}] Background send task failed: {e}", "error")
+                log_falcon_assets(
+                    f"[{severity}] Backpressure released: {len(done)} tasks completed, "
+                    f"{len(pending_tasks)} still pending"
+                )
+
             # Build filter query with severity
             filter_query = f"status:['open','reopen']+cve.severity:['{severity}']"
 
@@ -4673,34 +4691,6 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
-            # BACKPRESSURE: acquire semaphore before creating send task
-            # This limits concurrent pending sends to MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY per severity,
-            # preventing unbounded memory growth from fire-and-forget vulnerability batches.
-            # Timeout ensures cursor TTL (~2 min) is not exceeded if XSIAM is extremely slow.
-            semaphore_acquired = True
-            log_falcon_assets(
-                f"[{severity}] Batch {batch_counter}: Acquiring send semaphore "
-                f"(available slots: {send_semaphore._value}, pending tasks: {len(pending_tasks)}, "
-                f"peak RSS: {_get_process_memory_mb():.1f} MB)"
-            )
-            acquire_start = time.monotonic()
-            try:
-                await asyncio.wait_for(send_semaphore.acquire(), timeout=SEMAPHORE_ACQUIRE_TIMEOUT)
-                acquire_time = time.monotonic() - acquire_start
-                log_falcon_assets(
-                    f"[{severity}] Batch {batch_counter}: Semaphore acquired in {acquire_time:.2f}s "
-                    f"(remaining slots: {send_semaphore._value})"
-                )
-            except asyncio.TimeoutError:
-                semaphore_acquired = False
-                acquire_time = time.monotonic() - acquire_start
-                log_falcon_assets(
-                    f"[{severity}] Batch {batch_counter}: Semaphore acquire TIMED OUT after {acquire_time:.2f}s, "
-                    f"proceeding without backpressure to avoid cursor expiration "
-                    f"(pending tasks: {len(pending_tasks)}, peak RSS: {_get_process_memory_mb():.1f} MB)",
-                    "warning",
-                )
-
             # Create task to send batch to XSIAM
             # Note: send_data_to_xsiam_async (called inside) compresses data synchronously
             # before creating async tasks, so vulnerability dicts can be GC'd immediately
@@ -4717,29 +4707,11 @@ async def fetch_vulnerabilities_by_severity(
                 data_type="assets",
             )
 
-            # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future, _acquired=semaphore_acquired, _batch=batch_counter):
-                if _acquired:
-                    send_semaphore.release()
-                    log_falcon_assets(
-                        f"[{severity}] Batch {_batch}: Send task completed, semaphore released "
-                        f"(available slots: {send_semaphore._value})"
-                    )
-                else:
-                    log_falcon_assets(
-                        f"[{severity}] Batch {_batch}: Send task completed (no semaphore to release)"
-                    )
-                nonlocal last_saved_batch_number
-                try:
-                    last_saved_batch_number = future.result()
-                except Exception as e:
-                    log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
-                finally:
-                    pending_tasks.discard(future)
-
             pending_tasks.add(task)
-            task.add_done_callback(update_last_saved)
-            log_falcon_assets(f"[{severity}] Created background task for batch {batch_counter}")
+            log_falcon_assets(
+                f"[{severity}] Created send task for batch {batch_counter} "
+                f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
+            )
 
             # Log memory stats every 10 batches
             if batch_counter % 10 == 0:
