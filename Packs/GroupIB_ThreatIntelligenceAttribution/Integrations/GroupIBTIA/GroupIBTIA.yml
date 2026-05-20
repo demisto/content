@@ -1008,6 +1008,10 @@ script:
       description: |-
         Query you want to search.
         e.g.: 8.8.8.8.
+    - name: date_from
+      description: Start date of search session.
+    - name: date_to
+      description: End date of search session.
     - name: requests_limit
       description: |-
         Maximum number of API requests (pages) sent to the collection.
@@ -1030,6 +1034,12 @@ script:
     description: Command performs Group IB search in selected collection.
     name: gibtia-local-search
     outputs:
+    - contextPath: id
+      description: Id of a feed that matches a query.
+      type: String
+    - contextPath: additional_info
+      description: Additional info about feed.
+      type: String
     - contextPath: GIBTI.search.local.id
       description: Id of a feed that matches a query.
       type: String

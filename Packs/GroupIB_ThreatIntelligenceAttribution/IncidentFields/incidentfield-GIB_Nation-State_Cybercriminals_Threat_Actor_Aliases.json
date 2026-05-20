@@ -10,7 +10,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gibnationstatecybercriminalsthreatactoraliases",
+    "id": "gibnationstatecybercriminalsthreatactoraliases",
     "isReadOnly": false,
     "itemVersion": "1.4.2",
     "locked": false,
@@ -30,6 +30,6 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0",
+    "fromVersion": "5.0.0",
     "toVersion": "99.99.99"
 }
