@@ -116,7 +116,9 @@ class Client(BaseClient):
                 raise
         except requests.exceptions.ReadTimeout as e:
             demisto.debug(f"A ReadTimeout error was raised with suffix {suffix}. Error: {str(e)}.")
-            return {}
+            if sub_section == "passive_dns":
+                return {}
+            return_warning(f"A ReadTimeout error was raised with suffix {suffix}.", exit=True)
         return result
 
 
