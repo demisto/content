@@ -377,7 +377,6 @@ def get_hit_table(hit):
     }
     headers = ["_index", "_id", "_type", "_score"]
 
-    # Add _source fields to the table context (original behavior preserved)
     if hit.get("_source") is not None:
         for source_field in hit.get("_source"):
             table_context[str(source_field)] = hit.get("_source").get(str(source_field))
