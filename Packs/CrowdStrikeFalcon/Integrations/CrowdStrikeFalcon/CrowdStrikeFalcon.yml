@@ -113,7 +113,7 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html)."
+  additionalinfo: "The Indicator of Attack (IOA) fetch query. This is an FQL filter that is combined with the time-range filter using AND. For example: cloud_provider:'aws'. For more information, see the Falcon Query Language (FQL) documentation at: https://www.falconpy.io/Usage/Falcon-Query-Language.html."
   hidden:
   - marketplacev2
   - platform
