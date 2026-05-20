@@ -262,7 +262,7 @@ The following commands are available in this integration:
 - `gibti-get-suspicious-ip-scanner-info` - Performs Group-IB event lookup in suspicious_ip/scanner collection
 - `gibti-get-malware-cnc-info` - Performs Group-IB event lookup in malware/cnc collection
 - `gibti-global-search` - Performs global Group-IB search across all collections
-- `gibti-local-search` - Performs Group-IB search in selected collection
+- `gibtia-local-search` - Performs Group-IB search in selected collection
 
 ### gibti-get-compromised-account-info
 
@@ -1244,7 +1244,7 @@ Command performs Group-IB search in selected collection.
 
 #### Command Example
 
-```!gibti-local-search collection_name=attacks/phishing query=100.100.100.100```
+```!gibtia-local-search collection_name=attacks/phishing query=100.100.100.100```
 
 #### Human Readable Output
 
