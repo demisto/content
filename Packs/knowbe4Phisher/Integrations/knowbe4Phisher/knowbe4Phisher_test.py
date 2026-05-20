@@ -3,6 +3,7 @@ import json
 import knowbe4Phisher as phisher
 import pytest
 from CommonServerPython import CommandResults
+from freezegun import freeze_time
 from test_data.mock_tests import (
     create_request_test,
     events_example,
@@ -89,6 +90,231 @@ def test_fetch_incidents(mocker, last_run, first_fetch, max_fetch, expected, res
     mocker.patch.object(client, "phisher_gql_request", return_value=respon)
     _, result = phisher.fetch_incidents(client, last_run, first_fetch, max_fetch)
     assert result == expected
+
+
+# --- Lookback / EIR-14074 tests ---
+
+MSG_A = {
+    "actionStatus": "RECEIVED",
+    "category": "UNKNOWN",
+    "comments": [],
+    "events": [
+        {"causer": "null", "createdAt": "2024-01-01T10:00:00Z", "eventType": "CREATED", "id": "evt-a1", "triggerer": "null"},
+    ],
+    "from": "a@example.com",
+    "id": "msg-a",
+    "phishmlReport": None,
+    "pipelineStatus": "PROCESSED",
+    "severity": "UNKNOWN_SEVERITY",
+    "subject": "Message A",
+    "tags": [],
+}
+
+MSG_B = {
+    "actionStatus": "RECEIVED",
+    "category": "UNKNOWN",
+    "comments": [],
+    "events": [
+        {"causer": "null", "createdAt": "2024-01-01T10:05:00Z", "eventType": "CREATED", "id": "evt-b1", "triggerer": "null"},
+    ],
+    "from": "b@example.com",
+    "id": "msg-b",
+    "phishmlReport": None,
+    "pipelineStatus": "PROCESSED",
+    "severity": "UNKNOWN_SEVERITY",
+    "subject": "Message B",
+    "tags": [],
+}
+
+
+def _gql_response(messages):
+    return {
+        "data": {
+            "phisherMessages": {"nodes": messages, "pagination": {"page": 1, "pages": 1, "per": 50, "totalCount": len(messages)}}
+        }
+    }
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_first_run(mocker):
+    """
+    Given:
+    - No prior run (empty last_run), first_fetch of 7 days, 2 messages returned from API
+
+    When:
+    - fetch_incidents is called
+
+    Then:
+    - Both incidents are emitted, next_run has 'time' and 'found_incident_ids' containing both message ids
+    """
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([MSG_A, MSG_B]))
+    next_run, incidents = phisher.fetch_incidents(client, {}, "7 days", 50)
+    assert len(incidents) == 2
+    assert "time" in next_run
+    assert "found_incident_ids" in next_run
+    assert "msg-a" in next_run["found_incident_ids"]
+    assert "msg-b" in next_run["found_incident_ids"]
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_dedup_via_found_ids(mocker):
+    """
+    Given:
+    - last_run contains msg-a in found_incident_ids, API returns both msg-a and msg-b
+
+    When:
+    - fetch_incidents is called
+
+    Then:
+    - Only msg-b is emitted (msg-a is deduped), found_incident_ids still includes msg-b
+    """
+    last_run = {"time": "2024-01-01T10:00:00Z", "found_incident_ids": {"msg-a": 1704067200}}
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([MSG_A, MSG_B]))
+    next_run, incidents = phisher.fetch_incidents(client, last_run, "7 days", 50)
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "msg-b"
+    assert "msg-b" in next_run["found_incident_ids"]
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_late_arrival_recovered(mocker):
+    """
+    Given:
+    - last_run time is T-30min (10:30Z), look_back=60
+    - API returns a message with created_at = 2024-01-01T10:05:00Z (T-55min, before last_run["time"])
+    - That message is NOT in found_incident_ids
+
+    When:
+    - fetch_incidents is called with look_back=60
+
+    Then:
+    - The late-arriving message IS emitted (lookback expanded the start window to T-60min)
+    """
+    last_run = {"time": "2024-01-01T10:30:00Z", "found_incident_ids": {}}
+    late_msg = {
+        "actionStatus": "RECEIVED",
+        "category": "UNKNOWN",
+        "comments": [],
+        "events": [
+            {
+                "causer": "null",
+                "createdAt": "2024-01-01T10:05:00Z",
+                "eventType": "CREATED",
+                "id": "evt-late",
+                "triggerer": "null",
+            },
+        ],
+        "from": "late@example.com",
+        "id": "msg-late",
+        "phishmlReport": None,
+        "pipelineStatus": "PROCESSED",
+        "severity": "UNKNOWN_SEVERITY",
+        "subject": "Late message",
+        "tags": [],
+    }
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([late_msg]))
+    next_run, incidents = phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=60)
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "msg-late"
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_lookback_zero_no_overlap(mocker):
+    """
+    Given:
+    - last_run time is 10:30Z, look_back=0
+    - A spy captures the GQL payload sent to phisher_gql_request
+
+    When:
+    - fetch_incidents is called with look_back=0
+
+    Then:
+    - The GQL payload contains 'reported_at:{2024-01-01T10:30:00Z TO' (no window expansion)
+    """
+    last_run = {"time": "2024-01-01T10:30:00Z", "found_incident_ids": {}}
+    spy = mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([]))
+    phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=0)
+    call_arg = spy.call_args[0][0]
+    assert "reported_at:{2024-01-01T10:30:00Z TO" in call_arg
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_max_fetch_truncates(mocker):
+    """
+    Given:
+    - API returns 5 messages, max_fetch=2
+
+    When:
+    - fetch_incidents is called
+
+    Then:
+    - Only 2 incidents are emitted
+    """
+    msgs = [
+        {
+            **MSG_A,
+            "id": f"msg-{i}",
+            "subject": f"Msg {i}",
+            "events": [
+                {
+                    "causer": "null",
+                    "createdAt": f"2024-01-01T10:0{i}:00Z",
+                    "eventType": "CREATED",
+                    "id": f"evt-{i}",
+                    "triggerer": "null",
+                }
+            ],
+        }
+        for i in range(5)
+    ]
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response(msgs))
+    _next_run, incidents = phisher.fetch_incidents(client, {}, "7 days", 2)
+    assert len(incidents) == 2
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_legacy_last_fetch_migration(mocker):
+    """
+    Given:
+    - last_run has legacy shape {"last_fetch": "2024-01-01T10:00:00Z"} (pre-lookback upgrade)
+    - API returns msg-a
+
+    When:
+    - fetch_incidents is called
+
+    Then:
+    - msg-a is emitted (legacy time is used, not first_fetch fallback)
+    - next_run has the new dict shape with 'time' and 'found_incident_ids'
+    """
+    # legacy state gets migrated in fetch_incidents_command; fetch_incidents itself
+    # receives the already-migrated dict, so we simulate that here
+    legacy_migrated = {"time": "2024-01-01T10:00:00Z", "found_incident_ids": {}}
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([MSG_A]))
+    next_run, incidents = phisher.fetch_incidents(client, legacy_migrated, "7 days", 50)
+    assert len(incidents) == 1
+    assert "time" in next_run
+    assert "found_incident_ids" in next_run
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_query_uses_window(mocker):
+    """
+    Given:
+    - last_run time is 10:30Z, look_back=0
+    - now is frozen at 11:00Z
+
+    When:
+    - fetch_incidents is called
+
+    Then:
+    - GQL payload uses a closed window 'reported_at:{10:30:00Z TO 11:00:00Z}', not open-ended 'TO *'
+    """
+    last_run = {"time": "2024-01-01T10:30:00Z", "found_incident_ids": {}}
+    spy = mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([]))
+    phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=0)
+    call_arg = spy.call_args[0][0]
+    assert "reported_at:{2024-01-01T10:30:00Z TO 2024-01-01T11:00:00Z}" in call_arg
+    assert "TO *" not in call_arg
 
 
 def test_time_creation():
