@@ -3889,7 +3889,8 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
+    spotlight_data = integration_context.get("spotlight_assets", {})
+    log_falcon_assets(f"Saved Spotlight state: metadata={spotlight_data.get('metadata', {})}")
 
 
 class AssetsDeviceHandler:
@@ -4302,8 +4303,7 @@ async def send_batch_to_xsiam_and_save_context(
     log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
 
     try:
-        # 1. Send to XSIAM — data is serialized, chunked, and gzip-compressed synchronously
-        # inside send_data_to_xsiam_async before async HTTP tasks are created.
+        # 1. Send to XSIAM (returns list of async tasks)
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4696,7 +4696,7 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
-            # Create task to send batch to XSIAM (data compressed synchronously inside)
+            # Create task to send batch to XSIAM
             task = create_task_send_batch_to_xsiam_and_save_context(
                 data=vulnerabilities,
                 product=SPOTLIGHT_VULN_PRODUCT,
