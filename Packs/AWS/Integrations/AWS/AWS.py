@@ -9874,6 +9874,42 @@ class NetworkFirewall:
             raw_response=response
         )
 
+    @staticmethod
+    def delete_firewall_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified firewall and its firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        if not kwargs:
+            raise DemistoException("Please enter at least one of the arguments firewall_name, or firewall_arn.")
+        print_debug_logs(client, f"Deleting firewall with parameters: {kwargs}")
+        response = client.delete_firewall(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall = response.get("Firewall", {})
+        firewall['FirewallStatus'] = response.pop("FirewallStatus", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=firewall,
+            readable_output="The AWS Network Firewall was deleted successfully.",
+            raw_response=response
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10085,6 +10121,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-describe": NetworkFirewall.describe_firewall_command,
     "aws-network-firewall-firewalls-list": NetworkFirewall.list_firewalls_command,
     "aws-network-firewall-firewall-create": NetworkFirewall.create_firewall_command,
+    "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10265,6 +10302,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:DescribeFirewall",
     "network-firewall:ListFirewalls",
     "network-firewall:CreateFirewall",
+    "network-firewall:DeleteFirewall",
     "network-firewall:TagResource",
 ]
 

@@ -18520,6 +18520,133 @@ script:
       description: The synchronization state of the transit gateway attachment.
       type: Unknown
 
+  - name: aws-network-firewall-firewall-delete
+    description: Deletes the specified firewall and its firewall policy. This operation requires the firewall’s DeleteProtection flag to be FALSE. You can’t revert this operation.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall.
+    outputs:
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+        description: The descriptive name of the firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+        description: The Amazon Resource Name (ARN) of the firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyArn
+        description: The Amazon Resource Name (ARN) of the firewall policy.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.VpcId
+        description: The unique identifier of the VPC where the firewall is in use.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
+        description: The unique identifier for the subnet.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType
+        description: The subnet's IP address type.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
+        description: A flag indicating whether it is possible to delete the firewall.
+        type: Boolean
+      - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
+        description: A flag indicating whether it is possible to change the associated subnet(s).
+        type: Boolean
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
+        description: A flag indicating whether it is possible to change the associated firewall policy.
+        type: Boolean
+      - contextPath: AWS.NetworkFirewall.Firewalls.Description
+        description: A description of the firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
+        description: The unique identifier for the firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Key
+        description: The key of the tag.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Value
+        description: The value of the tag.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.KeyId
+        description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.Type
+        description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.NumberOfAssociations
+        description: The number of VpcEndpointAssociation resources that use this firewall.
+        type: Number
+      - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
+        description: The enabled analysis types.
+        type: Unknown
+      - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
+        description: The unique identifier of the transit gateway associated with this firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayOwnerAccountId
+        description: The Amazon Web Services account ID that owns the transit gateway.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneMappings.AvailabilityZone
+        description: The ID of the Availability Zone where the firewall endpoint is located.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
+        description: A setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
+        description: The readiness status of the firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.ConfigurationSyncStateSummary
+        description: The configuration sync state for the firewall.
+        type: String
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.SyncStates
+        description: Status for the subnets that you’ve configured in the firewall. This contains one array element per Availability Zone where you’ve configured a subnet in the firewall.
+        type: Unknown
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.CapacityUsageSummary
+        description: Describes the capacity usage of the resources contained in a firewall’s reference sets.
+        type: Unknown
+      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState
+        description: The synchronization state of the transit gateway attachment.
+        type: Unknown
+
   isfetch: false
   runonce: false
   script: '-'
