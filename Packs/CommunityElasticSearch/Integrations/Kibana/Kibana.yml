@@ -21,7 +21,7 @@ configuration:
   name: kibana_port
   required: false
   type: 0
-- additionalinfo: 'Select the authentication type and enter the appropriate credentials:- Basic Auth: Enter Username and Password.- Bearer Auth: Enter Username and Password.- API Key Auth: Enter the API Key ID and API Key.'
+- additionalinfo: 'The authentication method used to connect to the service. For Basic auth or Bearer auth, provide the username and password. For API key auth, provide the API key ID and API key.'
   display: Authorization type
   name: auth_type
   options:
