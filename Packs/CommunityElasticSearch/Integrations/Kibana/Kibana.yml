@@ -3,7 +3,7 @@ commonfields:
   id: Kibana
   version: -1
 configuration:
-- additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
+- additionalinfo: The Elasticsearch server URL, including the port (e.g., 9200 for v7 and below). Use this field for on-premises deployments.
   display: Server URL
   name: url
   required: true
