@@ -2039,26 +2039,17 @@ def get_cases_command(client: Client, args: dict[str, Any]):
         data = [data] if data else []
 
     if get_enriched_case_data and data:
-        enriched_data = add_cases_extra_data(client, data)
-        command_results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", enriched_data, headerTransform=string_to_table_header),
-                outputs_prefix="Core.Case",
-                outputs_key_field="case_id",
-                outputs=enriched_data,
-                raw_response=enriched_data,
-            )
+        data = add_cases_extra_data(client, data)
+
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+            outputs_key_field="case_id",
+            outputs=data,
+            raw_response=data,
         )
-    else:
-        command_results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
-                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-                outputs_key_field="case_id",
-                outputs=data,
-                raw_response=data,
-            )
-        )
+    )
 
     return command_results
 
