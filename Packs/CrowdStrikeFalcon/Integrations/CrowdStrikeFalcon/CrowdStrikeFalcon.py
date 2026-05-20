@@ -3888,7 +3888,7 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
+    log_falcon_assets(f"Saved Spotlight state to integration context (keys: {list(integration_context.keys())})")
 
 
 class AssetsDeviceHandler:
@@ -4677,8 +4677,29 @@ async def fetch_vulnerabilities_by_severity(
             after_token = new_after_token
 
     except ContentClientError as e:
-        # Check if this is an expired cursor error
+        # Check if this is an authentication error (HTTP 401)
+        # Authentication errors are not transient and should fail immediately
+        if e.response and e.response.status_code == 401:
+            error_msg = (
+                f"Authentication failed (HTTP 401) while fetching {severity} severity vulnerabilities. "
+                f"Invalid or expired credentials. Please verify the API credentials and try again. "
+                f"Error: {e}"
+            )
+            log_falcon_assets(f"[{severity}] {error_msg}", "error")
+            raise ContentClientError(error_msg) from e
+        
+        # Check for "Unauthorized" in error message as fallback
         error_str = str(e)
+        if "Unauthorized" in error_str or "401" in error_str:
+            error_msg = (
+                f"Authentication failed while fetching {severity} severity vulnerabilities. "
+                f"Invalid or expired credentials. Please verify the API credentials and try again. "
+                f"Error: {e}"
+            )
+            log_falcon_assets(f"[{severity}] {error_msg}", "error")
+            raise ContentClientError(error_msg) from e
+        
+        # Check if this is an expired cursor error
         if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
             log_falcon_assets(
                 f"[{severity}] Pagination cursor expired. This should not happen with continuous fetching. "
