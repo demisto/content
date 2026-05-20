@@ -1,5 +1,6 @@
 import contextlib
 import io
+import os
 import shutil
 import tarfile
 from collections.abc import Callable
@@ -23,7 +24,6 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get("suppress_file_type_error")
 RELIABILITY = PARAMS.get("integrationReliability", DBotScoreReliability.B) or DBotScoreReliability.B
 CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get("create_relationships", "true"))
 DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
-MULTIPART_HEADERS = {"Content-Type": "multipart/form-data; boundary=upload_boundry"}
 WILDFIRE_REPORT_DT_FILE = (
     "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
 )
@@ -380,8 +380,15 @@ def create_relationship(name: str, entities: tuple, types: tuple) -> list[Entity
 
 
 def test_module():
-    if wildfire_upload_url("https://www.demisto.com")[1]:
-        demisto.results("ok")
+    """Test API connectivity by querying a well-known hash via /get/verdict."""
+    test_hash = "dca86121cc7427e375fd24fe5871d727"
+    try:
+        wildfire_get_verdict(file_hash=test_hash)
+    except NotFoundError:
+        # Hash not found is still a valid API response —
+        # connectivity and authentication are working.
+        pass
+    return "ok"
 
 
 @logger
@@ -393,7 +400,7 @@ def wildfire_upload_file(upload):
     body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)["path"]
-    file_name = demisto.getFilePath(upload)["name"]
+    file_name = os.path.basename(demisto.getFilePath(upload)["name"])
 
     try:
         shutil.copy(file_path, file_name)
@@ -405,7 +412,8 @@ def wildfire_upload_file(upload):
         with open(file_name, "rb") as file:
             result = http_request(upload_file_uri, "POST", body=body, files={"file": file})
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(file_name)
 
     upload_file_data = result["wildfire"]["upload-file-info"]
 
@@ -438,38 +446,13 @@ def wildfire_upload_file_command(args) -> list:
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
 
-    body = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
+    # The WildFire /submit/url endpoint requires multipart/form-data. Passing form
+    # fields as (None, value) tuples via `files=` makes `requests` build a compliant
+    # multipart body (auto-generated boundary, CRLF separators).
+    multipart_fields: dict = {key: (None, value) for key, value in BODY_DICT.items()}
+    multipart_fields["url"] = (None, upload)
 
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="url"
-
-{upload}
---upload_boundry--"""
-
-    body2 = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
-
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="url"
-
-{upload}
---upload_boundry
-Content-Disposition: form-data; name="agent"
-
-{AGENT_VALUE}
---upload_boundry--"""
-
-    # check upload value
-    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
-
-    if AGENT_VALUE != "":
-        # we need to attach another form element of agent for this APIKEY
-        body = body2
-
-    result = http_request(upload_file_url_uri, "POST", headers=MULTIPART_HEADERS, body=body)
+    result = http_request(upload_file_url_uri, "POST", files=multipart_fields)
 
     upload_file_url_data = result["wildfire"]["upload-file-info"]
 
@@ -504,37 +487,13 @@ def wildfire_upload_file_url_command(args) -> list:
 def wildfire_upload_url(upload):
     upload_url_uri = URL + URL_DICT["upload_url"]
 
-    body = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
+    # The WildFire /submit/link endpoint requires multipart/form-data. Passing form
+    # fields as (None, value) tuples via `files=` makes `requests` build a compliant
+    # multipart body (auto-generated boundary, CRLF separators).
+    multipart_fields: dict = {key: (None, value) for key, value in BODY_DICT.items()}
+    multipart_fields["link"] = (None, upload)
 
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="link"
-
-{upload}
---upload_boundry--"""
-
-    body2 = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
-
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="link"
-
-{upload}
---upload_boundry
-Content-Disposition: form-data; name="agent"
-
-{AGENT_VALUE}
---upload_boundry--"""
-
-    # koby test
-    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
-
-    if AGENT_VALUE != "":
-        body = body2
-
-    result = http_request(upload_url_uri, "POST", headers=MULTIPART_HEADERS, body=body)
+    result = http_request(upload_url_uri, "POST", files=multipart_fields)
 
     upload_url_data = result["wildfire"]["submit-link-info"]
 
@@ -1605,8 +1564,13 @@ def main():  # pragma: no cover
             )
         set_http_params(token, agent_value)
 
+        # Log diagnostic info for troubleshooting credential/agent issues.
+        token_type = type(token).__name__
+        token_length = len(token) if isinstance(token, str) else "N/A"
+        demisto.info(f"WildFire_v2: using agent_value={agent_value}, token_type={token_type}, token_length={token_length}")
+
         if command == "test-module":
-            test_module()
+            return_results(test_module())
 
         elif command == "wildfire-upload":
             if args.get("polling") == "true":
