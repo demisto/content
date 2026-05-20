@@ -53,7 +53,7 @@ configuration:
   required: false
   section: Connect
   type: 8
-- additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+- additionalinfo: The type of client used to connect to the Elasticsearch server. Use the OpenSearch client if the standard Elasticsearch client is not supported by your hosting environment.
   advanced: true
   defaultvalue: Elasticsearch
   display: Client type
@@ -86,7 +86,7 @@ script:
       - open
       - in-progress
       - closed
-      description: The status of the cases to retrieve
+      description: The status of the cases to retrieve.
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -94,38 +94,38 @@ script:
       - high
       - medium
       - low
-      description: The status of the cases to retrieve
+      description: The severity of the cases to retrieve.
     - name: from_time
-      description: Earliest time to search from (i.e. 2025-10-02T00:27:58.162Z)
+      description: The earliest time to search from (for example, 2025-10-02T00:27:58.162Z).
     outputs:
     - contextPath: Kibana.Cases.Status
-      description: Status of the case in Kibana
+      description: The status of the case in Kibana.
     - contextPath: Kibana.Cases.Version
-      description: Version number of the case in Kibana
+      description: The version number of the case in Kibana.
     - contextPath: Kibana.Cases.ID
-      description: ID number of the case in Kibana
-    description: Used to list cases in Kibana
+      description: The ID number of the case in Kibana.
+    description: Lists cases in Kibana.
   - name: kibana-case-alerts-find
     arguments:
     - name: case_id
       required: true
-      description: ID of case in Kibana. Locate with "kibana-find-cases".
+      description: The ID of the case in Kibana. Locate with the kibana-find-cases command.
     outputs:
     - contextPath: Kibana.CaseAlerts.ID
-      description: ID of alerts tied to case in Kibana
-    description: Returns information on the alerts of input case in Kibana.
+      description: The alert IDs tied to the case in Kibana.
+    description: Retrieves information about the alerts associated with a specific case in Kibana.
   - name: kibana-alert-status-update
     arguments:
     - name: alert_id
       required: true
-      description: Alert ID to update. Find with "kibana-list-detection-alerts".
+      description: The alert ID to update. Find it with the kibana-list-detection-alerts command.
     - name: status
       required: true
       auto: PREDEFINED
       predefined:
       - open
       - closed
-      description: Status to set the alert to
+      description: The status to set the input alert to.
     description: Updates the status of an input alert.
   - name: kibana-case-status-update
     arguments:
@@ -136,64 +136,63 @@ script:
       - open
       - in-progress
       - closed
-      description: The status of the case to update
+      description: The status of the case to update to.
     - name: case_id
       required: true
-      description: ID of case in Kibana. Locate with "kibana-find-cases".
+      description: The ID of the case in Kibana. Find it with the kibana-find-cases command.
     - name: version_id
       required: true
-      description: Version ID of the case. Found with kibana-find-cases. This ID changes
-        after each case update.
-    description: Updates the status of an input case
+      description: The version ID of the case. Find it with the kibana-find-cases command. This ID changes after each update.
+    description: Updates the status of an input case.
   - name: kibana-user-spaces-find
     arguments: []
     outputs:
     - contextPath: Kibana.UserSpaces.description
-      description: Default user space description
+      description: The default user space description.
     - contextPath: Kibana.UserSpaces.disabledFeatures
-      description: List of disabled Kibana features
-    description: Get list of user spaces in Kibana
+      description: The list of disabled Kibana features.
+    description: Retrieves a list of user spaces in Kibana.
   - name: kibana-case-comments-find
     arguments:
     - name: case_id
       required: true
-      description: Case ID to find comments for. Locate with "kibana-find-cases".
+      description: The case ID to find comments for. Find it with the kibana-find-cases command.
     outputs:
     - contextPath: Kibana.CaseComments.version
-      description: Version number of the case comment in Kibana
+      description: The version number of the case comment in Kibana.
     - contextPath: Kibana.CaseComments.id
-      description: ID number of the case comment in Kibana
-    description: Finds comments for an input case ID
+      description: The ID number of the case comment in Kibana.
+    description: Finds comments for an input case ID.
   - name: kibana-case-delete
     arguments:
     - name: case_id
       required: true
-      description: Case ID to delete. Locate with "kibana-find-cases".
-    description: Deletes a case in Kibana based on case ID
+      description: The case ID to delete. Find it with the kibana-find-cases command.
+    description: Deletes a case in Kibana based on case ID.
   - name: kibana-rule-delete
     arguments:
     - name: rule_id
       required: true
-      description: Rule ID to delete. Find with "kibana-search-rule-details"
-    description: Delete rule in Kibana based on input rule ID.
+      description: The rule ID to delete. Find it with the kibana-search-rule-details command.
+    description: Deletes a rule in Kibana based on the input rule ID.
   - name: kibana-rule-details-search
     arguments:
     - name: kql_query
-      description: 'Example query: "alert.attributes.name: *Smith*"'
+      description: 'The KQL (Kibana Query Language) query used to filter results. Example query: "alert.attributes.name: *Smith*".'
     outputs:
     - contextPath: Kibana.RuleDetails.enabled
-      description: Whether the rule is enabled in Kibana
+      description: Whether the rule is enabled in Kibana.
     - contextPath: Kibana.RuleDetails.name
-      description: Name of the rule in Kibana
+      description: The name of the rule in Kibana.
     - contextPath: Kibana.RuleDetails.id
-      description: ID of the rule in Kibana
-    description: Retrieve details about detection rule in Kibana based on input KQL
+      description: The ID of the rule in Kibana.
+    description: Retrieves details about detection rule in Kibana based on the input KQL.
       filter.
   - name: kibana-case-comment-add
     arguments:
     - name: case_id
       required: true
-      description: Case ID to add comment to. Locate with "kibana-find-cases".
+      description: The case ID to add the comment to. Find it with the kibana-find-cases command.
     - name: case_owner
       required: true
       auto: PREDEFINED
@@ -201,28 +200,28 @@ script:
       - cases
       - observability
       - securitySolution
-      description: Owner of the case listed in kibana-find-cases output.
+      description: The owner of the case listed in the kibana-find-cases command output.
     - name: comment
       required: true
-      description: The comment to add to the case in Kibana
-    description: Adds a comment to a case in Kibana. Get case ID/owner from kibana-find-cases.
+      description: The comment to add to the case in Kibana.
+    description: Adds a comment to a case in Kibana. Find the case ID/owner from the kibana-find-cases command.
   - name: kibana-user-list-get
     arguments: []
     outputs:
     - contextPath: Kibana.UserList.username
-      description: Username of the user in Kibana
+      description: The username of the user in Kibana.
     - contextPath: Kibana.UserList.roles
-      description: Associated roles of the user in Kibana
-    description: Search for list of users in Kibana and return user's UID.
+      description: The associated roles of the user in Kibana.
+    description: Searches for the list of users in Kibana and returns the users' UIDs.
   - name: kibana-alert-assign
     arguments:
     - name: user_id
       required: true
-      description: UID of user to be assigned. Locate with 'kibana-get-user-list'
+      description: The UID of user to be assigned. Find it with the kibana-get-user-list command.
     - name: alert_id
       required: true
-      description: Alert ID to assign user to. Find with "kibana-list-detection-alerts".
-    description: Used to assign an alert in Kibana to a user via user ID input
+      description: The alert ID to assign the user to. Find with it the kibana-list-detection-alerts command.
+    description: Assigns an alert in Kibana to a user via the user ID input.
   - name: kibana-detection-alerts-list
     arguments:
     - name: alert_status
@@ -231,16 +230,16 @@ script:
       predefined:
       - open
       - closed
-      description: Status of the detection alert to search for
+      description: The status of the detection alert to search for.
     outputs:
     - contextPath: Kibana.DetectionAlerts.bhe.windows.security_id
-      description: Username associated with the detection alert
+      description: The username associated with the detection alert.
     - contextPath: Kibana.DetectionAlerts.kibana.alert.original_data_stream.dataset
-      description: Dataset associated with the detection alert
+      description: The dataset associated with the detection alert.
     - contextPath: Kibana.DetectionAlerts.message
-      description: Raw log message of the detection alert
+      description: The raw log message of the detection alert.
     - contextPath: Kibana.DetectionAlerts.kibana.alert.uuid
-      description: ID of the detection alert
+      description: The ID of the detection alert.
     - contextPath: Kibana.DetectionAlerts.kibana.alert.rule.name
       description: Rule name associated with the detection alert
     description: Used to search for detection alerts in Kibana
