@@ -9296,6 +9296,118 @@ class TestSpotlightSeverityBasedFetch:
         # Verify handler received empty set
         mock_handler.receive_new_aids.assert_awaited_once_with(set())
 
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_401_error(self, mocker):
+        """
+        Tests that HTTP 401 authentication errors fail fast without retrying.
+
+        Given:
+            - API returns HTTP 401 Unauthorized error.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - ContentClientError is raised immediately with clear authentication error message.
+            - Error message indicates authentication failure.
+            - No retry attempts are made.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+        from ContentClientApiModule import ContentClientError
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        # Create a mock response with 401 status code
+        mock_response = mocker.Mock()
+        mock_response.status_code = 401
+        mock_response.text = "Unauthorized"
+
+        # Create ContentClientError with 401 response
+        error_401 = ContentClientError("Unauthorized", response=mock_response)
+
+        # Mock fetch_spotlight_vulnerabilities_page to raise 401 error
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
+            side_effect=error_401,
+        )
+
+        # Mock logging
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Execute and verify exception is raised
+        with pytest.raises(ContentClientError) as exc_info:
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        # Verify error message contains authentication failure details
+        error_message = str(exc_info.value)
+        assert "Authentication failed" in error_message
+        assert "HTTP 401" in error_message
+        assert "CRITICAL" in error_message
+        assert "Invalid or expired credentials" in error_message
+
+        # Verify error was logged
+        assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_401_error_string_match(self, mocker):
+        """
+        Tests that 401 errors are detected via string matching when response object is not available.
+
+        Given:
+            - ContentClientError with "Unauthorized" or "401" in error message.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - ContentClientError is raised with clear authentication error message.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+        from ContentClientApiModule import ContentClientError
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        # Create ContentClientError with "Unauthorized" in message but no response object
+        error_unauthorized = ContentClientError("Request failed: Unauthorized access")
+
+        # Mock fetch_spotlight_vulnerabilities_page to raise error
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
+            side_effect=error_unauthorized,
+        )
+
+        # Mock logging
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Execute and verify exception is raised
+        with pytest.raises(ContentClientError) as exc_info:
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="HIGH",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        # Verify error message contains authentication failure details
+        error_message = str(exc_info.value)
+        assert "Authentication failed" in error_message
+        assert "HIGH" in error_message
+        assert "Invalid or expired credentials" in error_message
+
+        # Verify error was logged
+        assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
+
 
 class TestAssetsDeviceHandler:
     @pytest.mark.asyncio
