@@ -1069,10 +1069,10 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
 @pytest.mark.parametrize(
     "object_type, expected_uri_part",
     [
-        ("drives", "drives/drive-1/items/item-1/extractSensitivityLabels"),
-        ("users", "users/user-1/drive/items/item-1/extractSensitivityLabels"),
-        ("sites", "sites/site-1/drive/items/item-1/extractSensitivityLabels"),
-        ("groups", "groups/group-1/drive/items/item-1/extractSensitivityLabels"),
+        ("drives", "drives/drive-1/items/item-1"),
+        ("users", "users/user-1/drive/items/item-1"),
+        ("sites", "sites/site-1/drive/items/item-1"),
+        ("groups", "groups/group-1/drive/items/item-1"),
     ],
 )
 def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_type: str, expected_uri_part: str) -> None:
@@ -1084,11 +1084,13 @@ def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_t
     Then:
         - The Graph URL is constructed using the correct drive-prefix branching:
           'drives/{id}/items/...' for drives and '{type}/{id}/drive/items/...' for users/sites/groups.
+        - The request uses GET (not the action endpoint) and includes the
+          `$select=sensitivityLabel` query parameter.
     """
     http_mock = mocker.patch.object(
         CLIENT_MOCKER.ms_client,
         "http_request",
-        return_value={"value": {"labels": []}},
+        return_value={"sensitivityLabel": None},
     )
     object_type_id_map = {
         "drives": "drive-1",
@@ -1104,90 +1106,112 @@ def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_t
     extract_sensitivity_label_command(CLIENT_MOCKER, args)
 
     call_kwargs = http_mock.call_args.kwargs
-    assert call_kwargs["method"] == "POST"
+    assert call_kwargs["method"] == "GET"
     assert call_kwargs["url_suffix"] == expected_uri_part
+    assert "/extractSensitivityLabels" not in call_kwargs["url_suffix"]
+    assert call_kwargs["params"] == {"$select": "sensitivityLabel"}
 
 
-# 3-label fixture from the official MS Graph extractSensitivityLabels docs.
-EXTRACT_LABELS_FIXTURE = [
-    {
-        "sensitivityLabelId": "5feba255-cb69-4cd5-9d09-ed493b8b3194",
-        "assignmentMethod": "standard",
-        "tenantId": "bba7d54e-1234-1234-9876-12fa3e310bcb",
+# Real Graph v1.0 response for GET driveItem?$select=sensitivityLabel, captured
+# from live testing against a file with a classification-only label.
+EXTRACT_LABEL_REAL_RESPONSE = {
+    "@odata.etag": '"{45E2324B-C375-4B70-92E7-177F0C2B52BF},14"',
+    "sensitivityLabel": {
+        "displayName": "This label is created to test the MRB Activity",
+        "id": "08973045-2fd6-4014-9177-9f2a3e55c29e",
+        "protectionEnabled": False,
     },
-    {
-        "sensitivityLabelId": "fa781fdf-2c20-4f7b-b29d-b748c1f0a780",
-        "assignmentMethod": "privileged",
-        "tenantId": "bba7d54e-1234-1234-9876-12fa3e310bcb",
-    },
-    {
-        "sensitivityLabelId": "3937098d-c1d2-4ad6-8ce2-1f23270c5842",
-        "assignmentMethod": "auto",
-        "tenantId": "bba7d54e-1234-1234-9876-12fa3e310bcb",
-    },
-]
+}
 
 
 def test_extract_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
     """
     Given:
-        - A Graph response containing the documented multi-label fixture under
-          `value.labels[]`, including tenantId on each entry.
+        - A real Graph v1.0 response containing a classification-only sensitivity
+          label (protectionEnabled=false) returned by
+          `GET driveItem?$select=sensitivityLabel`.
     When:
         - Running the extract_sensitivity_label_command.
     Then:
-        - The outputs contain only `itemId` and the verbatim `labels[]` array.
+        - The outputs contain itemId plus the label id, displayName, and
+          protectionEnabled flag, matching the values in the response.
     """
-    response = {"value": {"@odata.type": "microsoft.graph.extractSensitivityLabelsResult", "labels": EXTRACT_LABELS_FIXTURE}}
-    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=EXTRACT_LABEL_REAL_RESPONSE)
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
     result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
 
     assert result.outputs_prefix == "MsGraphFiles.ExtractedSensitivityLabel"
-    assert result.outputs == {"itemId": "i1", "labels": EXTRACT_LABELS_FIXTURE}
+    assert result.outputs == {
+        "itemId": "i1",
+        "id": "08973045-2fd6-4014-9177-9f2a3e55c29e",
+        "displayName": "This label is created to test the MRB Activity",
+        "protectionEnabled": False,
+    }
 
 
-def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture) -> None:
+@pytest.mark.parametrize(
+    "graph_response",
+    [
+        {"sensitivityLabel": None},
+        {},
+    ],
+)
+def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture, graph_response: dict) -> None:
     """
     Given:
-        - A Graph response with an empty `value.labels` array, meaning the drive item
-          has no sensitivity label assigned.
+        - A Graph response where the drive item has no sensitivity label assigned.
+          This is represented either as `sensitivityLabel: null` or by omitting the
+          field entirely from the response.
     When:
         - Running the extract_sensitivity_label_command.
     Then:
         - The command does NOT raise an error.
-        - The outputs contain `itemId` and an empty `labels` list.
+        - The outputs contain itemId, empty id, empty displayName, and
+          protectionEnabled=False.
     """
     mocker.patch.object(
         CLIENT_MOCKER.ms_client,
         "http_request",
-        return_value={"value": {"labels": []}},
+        return_value=graph_response,
     )
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
     result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
 
-    assert result.outputs == {"itemId": "i1", "labels": []}
+    assert result.outputs == {
+        "itemId": "i1",
+        "id": "",
+        "displayName": "",
+        "protectionEnabled": False,
+    }
 
 
-def test_extract_sensitivity_label_command_returns_labels_verbatim(mocker: MockerFixture) -> None:
+def test_extract_sensitivity_label_command_protected_label(mocker: MockerFixture) -> None:
     """
     Given:
-        - A Graph response containing multiple sensitivity labels assigned to the
-          drive item under `value.labels[]`.
+        - A Graph response containing a sensitivity label whose
+          `protectionEnabled` flag is true (encrypted/protected label).
     When:
         - Running the extract_sensitivity_label_command.
     Then:
-        - The `labels` array in the outputs equals the input array verbatim.
+        - The boolean is preserved in the outputs as True.
     """
-    mocker.patch.object(
-        CLIENT_MOCKER.ms_client,
-        "http_request",
-        return_value={"value": {"labels": EXTRACT_LABELS_FIXTURE}},
-    )
+    response = {
+        "sensitivityLabel": {
+            "id": "11111111-2222-3333-4444-555555555555",
+            "displayName": "Confidential",
+            "protectionEnabled": True,
+        },
+    }
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
     result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
 
-    assert result.outputs["labels"] == EXTRACT_LABELS_FIXTURE
+    assert result.outputs == {
+        "itemId": "i1",
+        "id": "11111111-2222-3333-4444-555555555555",
+        "displayName": "Confidential",
+        "protectionEnabled": True,
+    }
 
 
 @pytest.mark.parametrize(

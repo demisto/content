@@ -1018,7 +1018,7 @@ There is no context output for this command.
 ### msgraph-extract-sensitivity-label
 
 ***
-Retrieves the sensitivity labels currently assigned to a drive item. When the item has no labels assigned, an empty labels list is returned.
+Retrieves the sensitivity label currently assigned to a drive item. Returns the label ID, display name, and protection state regardless of whether the label has encryption enabled.
 
 #### Base Command
 
@@ -1036,11 +1036,10 @@ Retrieves the sensitivity labels currently assigned to a drive item. When the it
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraphFiles.ExtractedSensitivityLabel.itemId | String | The ID of the drive item the labels were extracted from. | 
-| MsGraphFiles.ExtractedSensitivityLabel.labels | Unknown | List of sensitivity labels assigned to the drive item, as returned by Microsoft Graph \(value.labels\[\]\). | 
-| MsGraphFiles.ExtractedSensitivityLabel.labels.sensitivityLabelId | String | The GUID of an assigned sensitivity label. | 
-| MsGraphFiles.ExtractedSensitivityLabel.labels.assignmentMethod | String | How the label was assigned. One of standard, privileged, auto. | 
-| MsGraphFiles.ExtractedSensitivityLabel.labels.tenantId | String | The tenant ID that owns the label. | 
+| MsGraphFiles.ExtractedSensitivityLabel.itemId | String | The ID of the drive item the label was extracted from. | 
+| MsGraphFiles.ExtractedSensitivityLabel.id | String | The GUID of the sensitivity label assigned to the drive item, or empty string when no label is assigned. | 
+| MsGraphFiles.ExtractedSensitivityLabel.displayName | String | The human-readable display name of the assigned sensitivity label, or empty string when no label is assigned. | 
+| MsGraphFiles.ExtractedSensitivityLabel.protectionEnabled | Boolean | True if the assigned label has encryption/protection settings; false for classification-only labels. Defaults to false when no label is assigned. | 
 
 ### msgraph-assign-sensitivity-label
 
@@ -1060,7 +1059,7 @@ Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as
 | item_id | The ID of the drive item to assign the sensitivity label to. | Required | 
 | sensitivity_label_id | The GUID of the sensitivity label to assign. Pass an empty string to remove the existing sensitivity label from the drive item. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet. | Optional | 
 | assignment_method | Assignment method recorded on Microsoft Graph.<br/>standard: a user-driven assignment.<br/>privileged: overrides existing user-applied labels.<br/>auto: recorded as a system-driven assignment. Possible values are: standard, privileged, auto. Default is standard. | Optional | 
-| justification_text | Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label. Omitted from the request body when empty. | Optional | 
+| justification_text | Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label. | Optional | 
 
 #### Context Output
 

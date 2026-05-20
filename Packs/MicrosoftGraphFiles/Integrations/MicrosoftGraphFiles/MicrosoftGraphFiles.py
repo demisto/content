@@ -546,7 +546,7 @@ class MsGraphClient:
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
 
     def extract_sensitivity_label(self, object_type: str, object_type_id: str, item_id: str) -> dict:
-        """Retrieve the sensitivity labels currently assigned to a drive item.
+        """Retrieve the sensitivity label currently assigned to a drive item.
 
         Args:
             object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
@@ -554,10 +554,14 @@ class MsGraphClient:
             item_id: The drive item ID.
 
         Returns:
-            Graph API raw response.
+            Graph API raw response (the driveItem with the sensitivityLabel projection).
         """
-        uri = self._build_drive_item_uri(object_type, object_type_id, item_id) + "/extractSensitivityLabels"
-        return self.ms_client.http_request(method="POST", url_suffix=uri)
+        uri = self._build_drive_item_uri(object_type, object_type_id, item_id)
+        return self.ms_client.http_request(
+            method="GET",
+            url_suffix=uri,
+            params={"$select": "sensitivityLabel"},
+        )
 
     def assign_sensitivity_label(
         self,
@@ -1125,10 +1129,11 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
 
 
 def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
-    """Retrieve the sensitivity labels currently assigned to a drive item.
+    """Retrieve the sensitivity label currently assigned to a drive item.
 
-    An empty `labels` array in the Graph response is the documented "no label assigned"
-    case and is returned as a successful result with an empty `labels` list, not an error.
+    A missing or null `sensitivityLabel` field in the Graph response is the documented
+    "no label assigned" case and is returned as a successful result with empty label
+    fields, not an error.
 
     Args:
         client: The Microsoft Graph client.
@@ -1138,28 +1143,27 @@ def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str
             item_id (Required): The drive item ID.
 
     Returns:
-        CommandResults with the drive item ID and the raw `labels[]` array as returned
-        by Microsoft Graph.
+        CommandResults with the drive item ID and the label id, display name, and
+        protection state as returned by Microsoft Graph.
     """
     object_type = args.get("object_type", "")
     object_type_id = args.get("object_type_id", "")
     item_id = args.get("item_id", "")
 
     raw_response = client.extract_sensitivity_label(object_type, object_type_id, item_id)
-    labels = (raw_response.get("value") or {}).get("labels") or []
+    label = raw_response.get("sensitivityLabel") or {}
 
     outputs = {
         "itemId": item_id,
-        "labels": labels,
+        "id": label.get("id", ""),
+        "displayName": label.get("displayName", ""),
+        "protectionEnabled": label.get("protectionEnabled", False),
     }
 
-    table_rows = [{"itemId": item_id, **label} for label in labels] or [{"itemId": item_id}]
     readable_output = tableToMarkdown(
-        name="Extracted Sensitivity Label",
-        t=table_rows,
-        headers=["itemId", "sensitivityLabelId", "assignmentMethod", "tenantId"],
+        "Extracted Sensitivity Label",
+        outputs,
         headerTransform=pascalToSpace,
-        removeNull=True,
     )
 
     return CommandResults(

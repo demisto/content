@@ -801,24 +801,21 @@ script:
     - description: The ID of the drive item to read the sensitivity label from.
       name: item_id
       required: true
-    description: Retrieves the sensitivity labels currently assigned to a drive item. When the item has no labels assigned, an empty labels list is returned.
+    description: Retrieves the sensitivity label currently assigned to a drive item. Returns the label ID, display name, and protection state regardless of whether the label has encryption enabled.
     name: msgraph-extract-sensitivity-label
     outputs:
     - contextPath: MsGraphFiles.ExtractedSensitivityLabel.itemId
-      description: The ID of the drive item the labels were extracted from.
+      description: The ID of the drive item the label was extracted from.
       type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels
-      description: List of sensitivity labels assigned to the drive item, as returned by Microsoft Graph (value.labels[]).
-      type: Unknown
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels.sensitivityLabelId
-      description: The GUID of an assigned sensitivity label.
+    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.id
+      description: The GUID of the sensitivity label assigned to the drive item, or empty string when no label is assigned.
       type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels.assignmentMethod
-      description: How the label was assigned. One of standard, privileged, auto.
+    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.displayName
+      description: The human-readable display name of the assigned sensitivity label, or empty string when no label is assigned.
       type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.labels.tenantId
-      description: The tenant ID that owns the label.
-      type: String
+    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.protectionEnabled
+      description: True if the assigned label has encryption/protection settings; false for classification-only labels. Defaults to false when no label is assigned.
+      type: Boolean
   - arguments:
     - auto: PREDEFINED
       description: The MS Graph resource.
