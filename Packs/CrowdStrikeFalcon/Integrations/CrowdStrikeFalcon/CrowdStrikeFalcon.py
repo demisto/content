@@ -4304,7 +4304,7 @@ async def send_batch_to_xsiam_and_save_context(
     try:
         # 1. Send to XSIAM (returns list of async tasks)
         # Note: send_data_to_xsiam_async compresses data synchronously before creating tasks,
-        # so the original data dicts can be GC'd once this call returns.
+        # so the original data dicts can be deleted once this call returns.
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4352,7 +4352,10 @@ def create_task_send_batch_to_xsiam_and_save_context(
 ):
     """
     Create an async task to send vulnerability batch to XSIAM and save context.
-    Parameters now match the order and names of the internal async function.
+
+    Data is compressed SYNCHRONOUSLY (before creating the async task) via send_data_to_xsiam_async().
+    This ensures the original data objects (e.g., vulnerability dicts) can be garbage collected
+    immediately, and the async task only holds references to compressed bytes and HTTP send coroutines.
 
     Args:
         data: List of data items to send
@@ -4370,22 +4373,42 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    task = asyncio.create_task(
-        send_batch_to_xsiam_and_save_context(
-            data=data,
-            vendor=VENDOR,
-            product=product,
-            snapshot_id=snapshot_id,
-            items_count=items_count,
-            batch_number=batch_number,
-            last_saved_batch_number=last_saved_batch_number,
-            context_store=context_store,
-            state=state,
-            save_state_callback=save_state_callback,
-            data_type=data_type,
-        )
+    # 1. Compress data and create HTTP send tasks SYNCHRONOUSLY (before asyncio.create_task).
+    # This frees the original data dicts immediately — the async task only holds compressed bytes.
+    http_send_tasks = send_data_to_xsiam_async(
+        data=data,
+        vendor=VENDOR,
+        product=product,
+        data_format="json",
+        url_key="url",
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+        data_type=data_type,
+        snapshot_id=snapshot_id,
+        items_count=items_count,
     )
-    return task
+
+    # 2. Create async task that only awaits the HTTP sends and saves context
+    async def send_and_save_context() -> int:
+        try:
+            await asyncio.gather(*http_send_tasks)
+            log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
+
+            if batch_number > last_saved_batch_number:
+                save_state_callback(context_store, state)
+                log_falcon_assets(f"[Batch {batch_number}] Context saved")
+                return batch_number
+            else:
+                log_falcon_assets(
+                    f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
+                )
+                return last_saved_batch_number
+
+        except Exception as e:
+            log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
+            raise
+
+    return asyncio.create_task(send_and_save_context())
 
 
 def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
@@ -4605,15 +4628,31 @@ async def fetch_vulnerabilities_by_severity(
     batch_counter = 0
     last_saved_batch_number = 0
 
-    def _get_process_memory_mb() -> float:
-        """Get current process peak RSS memory in MB (Linux: KB, macOS: bytes)."""
+    def _get_process_memory_mb() -> str:
+        """Get current and peak process RSS memory in MB. Returns formatted string."""
+        import os
         import resource as resource_mod
         import sys
 
+        # Current RSS from /proc/self/status (Linux) or resource (macOS)
+        current_rss_mb = 0.0
+        try:
+            with open("/proc/self/status") as f:
+                for line in f:
+                    if line.startswith("VmRSS:"):
+                        current_rss_mb = int(line.split()[1]) / 1024  # KB to MB
+                        break
+        except (FileNotFoundError, ValueError):
+            pass  # Not on Linux or parse error
+
+        # Peak RSS from resource module
         rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
         if sys.platform == "darwin":
-            return rusage.ru_maxrss / (1024 * 1024)
-        return rusage.ru_maxrss / 1024
+            peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
+        else:
+            peak_rss_mb = rusage.ru_maxrss / 1024
+
+        return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
 
     try:
         while True:
@@ -4622,7 +4661,7 @@ async def fetch_vulnerabilities_by_severity(
             while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
                 log_falcon_assets(
                     f"[{severity}] Backpressure: {len(pending_tasks)} pending tasks >= limit {MAX_PENDING_TASKS_PER_SEVERITY}, "
-                    f"waiting for at least one to complete (peak RSS: {_get_process_memory_mb():.1f} MB)"
+                    f"waiting for at least one to complete (RSS: {_get_process_memory_mb()})"
                 )
                 done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
                 pending_tasks = pending_tasks_updated
@@ -4675,7 +4714,7 @@ async def fetch_vulnerabilities_by_severity(
 
             # Create task to send batch to XSIAM
             # Note: send_data_to_xsiam_async (called inside) compresses data synchronously
-            # before creating async tasks, so vulnerability dicts can be GC'd immediately
+            # before creating async tasks, so vulnerability dicts can be deleted immediately
             task = create_task_send_batch_to_xsiam_and_save_context(
                 data=vulnerabilities,
                 product=SPOTLIGHT_VULN_PRODUCT,
@@ -4700,7 +4739,7 @@ async def fetch_vulnerabilities_by_severity(
                 log_falcon_assets(
                     f"[{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
                     f"unique_aids={len(unique_aids)}, pending_tasks={len(pending_tasks)}, "
-                    f"peak RSS: {_get_process_memory_mb():.1f} MB",
+                    f"RSS: {_get_process_memory_mb()}",
                     "info",
                 )
 
@@ -4708,7 +4747,7 @@ async def fetch_vulnerabilities_by_severity(
             if is_last_batch:
                 log_falcon_assets(
                     f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}, "
-                    f"pending_tasks: {len(pending_tasks)}, peak RSS: {_get_process_memory_mb():.1f} MB",
+                    f"pending_tasks: {len(pending_tasks)}, RSS: {_get_process_memory_mb()}",
                     "info",
                 )
                 break
