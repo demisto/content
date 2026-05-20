@@ -9735,10 +9735,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
-        kwargs = {
-            "FirewallName": args.get("firewall_name"),
-            "FirewallArn": args.get("firewall_arn")
-        }
+        kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
         remove_nulls_from_dictionary(kwargs)
         if not kwargs:
             raise DemistoException("Please enter at least one of the arguments firewall_name and firewall_arn.")
@@ -9749,9 +9746,8 @@ class NetworkFirewall:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         firewall = response.get("Firewall", {})
-        firewall['FirewallStatus'] = response.pop("FirewallStatus", {})
-        firewall['UpdateToken'] = response.pop("UpdateToken", None)
-
+        firewall["FirewallStatus"] = response.pop("FirewallStatus", {})
+        firewall["UpdateToken"] = response.pop("UpdateToken", None)
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
@@ -9764,7 +9760,7 @@ class NetworkFirewall:
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -9776,15 +9772,15 @@ class NetworkFirewall:
             client (BotoClient): The boto3 client for NetworkFirewall service
             args (Dict[str, Any]): Command arguments containing:
                 - limit: The maximum number of objects that you want Network Firewall to return for this request.
-                - next_token: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+                - next_token: When you request a list of objects with a MaxResults setting, if the number of objects that are
+                    still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value
+                    in the response.
                 - vpc_ids: The unique identifiers of the VPCs that you want to retrieve the firewalls for.
 
         Returns:
             CommandResults: Formatted results with firewalls information
         """
-        kwargs = {
-            "VpcIds": argToList(args.get("vpc_ids"))
-        }
+        kwargs = {"VpcIds": argToList(args.get("vpc_ids"))}
         kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Listing firewalls with parameters: {kwargs}")
@@ -9797,7 +9793,7 @@ class NetworkFirewall:
 
         outputs = {
             "AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)": firewalls,
-            "AWS.NetworkFirewall(true)": response.get("NextToken")
+            "AWS.NetworkFirewall(true)": response.get("NextToken"),
         }
 
         return CommandResults(
@@ -9809,7 +9805,7 @@ class NetworkFirewall:
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -9831,25 +9827,29 @@ class NetworkFirewall:
             except json.JSONDecodeError as e:
                 raise ValueError(f"subnet_mappings must be a valid JSON string: {e}") from e
 
-        kwargs = remove_empty_elements({
-            "FirewallName": args.get("firewall_name"),
-            "FirewallPolicyArn": args.get("firewall_policy_arn"),
-            "VpcId": args.get("vpc_id"),
-            "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
-            "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
-            "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
-            "Description": args.get("description"),
-            "SubnetMappings": subnet_mappings,
-            "Tags": parse_tag_field(args.get("tags", "")),
-            "EncryptionConfiguration": {
-                "KeyId": args.get("encryption_config_id"),
-                "Type": args.get("encryption_config_type")
-            },
-            "EnabledAnalysisTypes": argToList(args.get("enabled_analysis_types")),
-            "TransitGatewayId": args.get("transit_gateway_id"),
-            "AvailabilityZoneMappings": [{"AvailabilityZone": az} for az in argToList(args.get("availability_zone_mappings"))],
-            "AvailabilityZoneChangeProtection": arg_to_bool_or_none("availability_zone_change_protection"),
-        })
+        kwargs = remove_empty_elements(
+            {
+                "FirewallName": args.get("firewall_name"),
+                "FirewallPolicyArn": args.get("firewall_policy_arn"),
+                "VpcId": args.get("vpc_id"),
+                "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
+                "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
+                "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
+                "Description": args.get("description"),
+                "SubnetMappings": subnet_mappings,
+                "Tags": parse_tag_field(args.get("tags", "")),
+                "EncryptionConfiguration": {
+                    "KeyId": args.get("encryption_config_id"),
+                    "Type": args.get("encryption_config_type"),
+                },
+                "EnabledAnalysisTypes": argToList(args.get("enabled_analysis_types")),
+                "TransitGatewayId": args.get("transit_gateway_id"),
+                "AvailabilityZoneMappings": [
+                    {"AvailabilityZone": az} for az in argToList(args.get("availability_zone_mappings"))
+                ],
+                "AvailabilityZoneChangeProtection": arg_to_bool_or_none("availability_zone_change_protection"),
+            }
+        )
 
         print_debug_logs(client, f"Creating firewall with parameters: {kwargs}")
         response = client.create_firewall(**kwargs)
@@ -9858,7 +9858,7 @@ class NetworkFirewall:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         firewall = response.get("Firewall", {})
-        firewall['FirewallStatus'] = response.pop("FirewallStatus", {})
+        firewall["FirewallStatus"] = response.pop("FirewallStatus", {})
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
@@ -9871,7 +9871,7 @@ class NetworkFirewall:
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -9900,14 +9900,14 @@ class NetworkFirewall:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         firewall = response.get("Firewall", {})
-        firewall['FirewallStatus'] = response.pop("FirewallStatus", {})
+        firewall["FirewallStatus"] = response.pop("FirewallStatus", {})
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=firewall,
             readable_output="The AWS Network Firewall was deleted successfully.",
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -9926,7 +9926,7 @@ class NetworkFirewall:
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
             "FirewallArn": args.get("firewall_arn"),
-            "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection"))
+            "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
         if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
@@ -9945,8 +9945,8 @@ class NetworkFirewall:
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=outputs,
-            readable_output=f"The delete protection flag of the firewall was updated successfully.",
-            raw_response=response
+            readable_output="The delete protection flag of the firewall was updated successfully.",
+            raw_response=response,
         )
 
     @staticmethod
@@ -9965,7 +9965,7 @@ class NetworkFirewall:
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
             "FirewallArn": args.get("firewall_arn"),
-            "Description": args.get("description")
+            "Description": args.get("description"),
         }
         remove_nulls_from_dictionary(kwargs)
         if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
@@ -9985,7 +9985,7 @@ class NetworkFirewall:
             outputs_key_field="FirewallArn",
             outputs=outputs,
             readable_output="The firewall description was updated successfully.",
-            raw_response=response
+            raw_response=response,
         )
 
 
@@ -10532,8 +10532,8 @@ def get_service_client(
     # Resolve service name
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
-    elif 'network-firewall' in command:
-        service_name = 'network-firewall'
+    elif "network-firewall" in command:
+        service_name = "network-firewall"
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
