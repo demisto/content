@@ -9945,7 +9945,46 @@ class NetworkFirewall:
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=outputs,
-            readable_output=f"The delete protection flag of the firewall {args.get('firewall_name')} was updated successfully.",
+            readable_output=f"The delete protection flag of the firewall was updated successfully.",
+            raw_response=response
+        )
+
+    @staticmethod
+    def update_firewall_description_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the description for the specified firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, and description
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "Description": args.get("description")
+        }
+        remove_nulls_from_dictionary(kwargs)
+        if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
+            raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+
+        print_debug_logs(client, f"Updating firewall description with parameters: {kwargs}")
+        response = client.update_firewall_description(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output="The firewall description was updated successfully.",
             raw_response=response
         )
 
@@ -10162,6 +10201,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-create": NetworkFirewall.create_firewall_command,
     "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
     "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
+    "aws-network-firewall-firewall-description-update": NetworkFirewall.update_firewall_description_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10344,6 +10384,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:CreateFirewall",
     "network-firewall:DeleteFirewall",
     "network-firewall:UpdateFirewallDeleteProtection",
+    "network-firewall:UpdateFirewallDescription",
     "network-firewall:TagResource",
 ]
 
