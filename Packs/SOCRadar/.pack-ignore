@@ -5,11 +5,26 @@ ignore=IM111
 ignore=IM111
 
 [file:README.md]
-ignore=RM108
+ignore=RM108,RM110,BA125
 
 # GR103 is temporary, see CIAC-11656
 [file:layoutscontainer-SOCRadar_Incident.json]
 ignore=GR103
 
 [file:SOCRadarRapidReputation.yml]
-ignore=RM102
+ignore=BA125,RM102
+
+[file:SOCRadarIoCEnrichment.yml]
+ignore=BA125
+
+[file:SOCRadarThreatFusion.yml]
+ignore=BA125
+
+[file:FeedSOCRadarThreatFeed.yml]
+ignore:BA125
+
+[file:SOCRadarIncidents.yml]
+ignore=BA125
+
+[file:SOCRadarIncidentsV4.yml]
+ignore=BA125

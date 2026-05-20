@@ -187,6 +187,7 @@ Checks reputation of provided IP entities using SOCRadar Rapid Reputation API.
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | IP.Address | String | IP address |
 
 #### Command Example
@@ -234,6 +235,7 @@ Checks reputation of provided domain entities using SOCRadar Rapid Reputation AP
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | Domain.Name | String | Domain name |
 
 #### Command Example
@@ -277,6 +279,7 @@ Checks reputation of provided URL entities using SOCRadar Rapid Reputation API.
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | URL.Data | String | URL |
 
 #### Command Example
@@ -320,6 +323,7 @@ Checks reputation of provided file hash entities using SOCRadar Rapid Reputation
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | File.MD5 | String | MD5 hash of the file |
 | File.SHA1 | String | SHA1 hash of the file |
 | File.SHA256 | String | SHA256 hash of the file |

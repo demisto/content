@@ -1,10 +1,13 @@
-name: FeedSOCRadarThreatFeed
-display: SOCRadar Threat Feed
+name: FeedSOCRadarThreatFeedV2
+display: SOCRadar Threat Feed v2
 category: Data Enrichment & Threat Intelligence
 provider: SOCRadar
 commonfields:
-  id: FeedSOCRadarThreatFeed
+  id: FeedSOCRadarThreatFeedV2
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - name: apikey
   displaypassword: API Key
@@ -12,24 +15,29 @@ configuration:
   type: 9
   hiddenusername: true
   additionalinfo: API Key to access the SOCRadar service.
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Comma-separated list of SOCRadar Collection UUIDs to fetch IOCs from. You can find your collection UUIDs in the SOCRadar platform under Threat Intelligence > Feeds section.
   display: Collection UUIDs
   name: collection_uuids
   required: true
   type: 0
+  section: Collect
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
   display: Indicator Reputation
@@ -41,6 +49,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -54,6 +63,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - name: feedExpirationPolicy
   display: ''
   options:
@@ -62,21 +72,25 @@ configuration:
   - indicatorType
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   defaultvalue: GREEN
   display: Traffic Light Protocol Color
@@ -88,11 +102,13 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
@@ -100,6 +116,7 @@ configuration:
   type: 8
   hidden: true
   required: false
+  section: Collect
 description: Retrieve indicators provided by SOCRadar Collection Based IOC Feed using collection UUIDs. Users can create custom feed collections on the SOCRadar platform and use their UUIDs to fetch IOCs via this integration.
 script:
   commands:
@@ -175,7 +192,7 @@ script:
       type: String
   - description: Resets the indicator fetch history.
     name: socradar-reset-fetch-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.9059085
   feed: true
   runonce: false
   script: '-'

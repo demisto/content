@@ -12,14 +12,10 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "threat intelligence",
-        "reputation",
-        "ioc",
-        "enrichment"
+        "Threat Intelligence"
     ],
     "useCases": [
-        "Threat Intelligence Management",
-        "Indicator Enrichment"
+        "Threat Intelligence Management"
     ],
     "keywords": [
         "Threat Intelligence",

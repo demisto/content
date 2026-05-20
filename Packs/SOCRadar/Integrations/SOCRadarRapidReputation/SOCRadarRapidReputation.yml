@@ -1,9 +1,13 @@
 name: SOCRadarRapidReputation
 display: SOCRadar Rapid Reputation
 category: Data Enrichment & Threat Intelligence
+provider: SOCRadar
 commonfields:
   id: SOCRadarRapidReputation
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - name: apikey
   displaypassword: API Key
@@ -11,14 +15,17 @@ configuration:
   type: 9
   hiddenusername: true
   additionalinfo: API Key to access the SOCRadar service.
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -33,6 +40,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -43,11 +51,13 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 defaultclassifier: 'null'
 description: Enrich indicators (IP, Domain, URL, Hash) by obtaining reputation information via SOCRadar Rapid Reputation API.
 script:
@@ -104,7 +114,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
@@ -163,7 +173,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
@@ -222,7 +232,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
@@ -281,7 +291,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
@@ -385,7 +395,7 @@ script:
     - contextPath: SOCRadarRapidReputation.BulkCheckSummary.by_score
       description: Breakdown by score classification.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.9059085
   runonce: false
   script: '-'
   subtype: python3
