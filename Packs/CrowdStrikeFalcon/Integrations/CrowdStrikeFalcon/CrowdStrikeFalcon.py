@@ -4369,7 +4369,10 @@ def create_task_send_batch_to_xsiam_and_save_context(
 ):
     """
     Create an async task to send vulnerability batch to XSIAM and save context.
-    Parameters now match the order and names of the internal async function.
+
+    Data is compressed SYNCHRONOUSLY (before creating the async task) via send_data_to_xsiam_async().
+    This ensures the original data objects (e.g., vulnerability dicts) can be garbage collected
+    immediately, and the async task only holds references to compressed bytes and HTTP send coroutines.
 
     Args:
         data: List of data items to send
@@ -4387,22 +4390,46 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    task = asyncio.create_task(
-        send_batch_to_xsiam_and_save_context(
-            data=data,
-            vendor=VENDOR,
-            product=product,
-            snapshot_id=snapshot_id,
-            items_count=items_count,
-            batch_number=batch_number,
-            last_saved_batch_number=last_saved_batch_number,
-            context_store=context_store,
-            state=state,
-            save_state_callback=save_state_callback,
-            data_type=data_type,
-        )
+    log_falcon_assets(f"[Batch {batch_number}] Compressing {len(data)} {data_type} items synchronously before task creation")
+
+    # 1. Compress data and create HTTP send tasks SYNCHRONOUSLY (before asyncio.create_task).
+    # This frees the original data dicts immediately — the async task only holds compressed bytes.
+    http_send_tasks = send_data_to_xsiam_async(
+        data=data,
+        vendor=VENDOR,
+        product=product,
+        data_format="json",
+        url_key="url",
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+        data_type=data_type,
+        snapshot_id=snapshot_id,
+        items_count=items_count,
     )
-    return task
+    # At this point, data dicts have been serialized + compressed + split into HTTP tasks.
+    # The original `data` list can now be GC'd by the caller.
+
+    # 2. Create async task that only awaits the HTTP sends and saves context
+    async def send_and_save_context() -> int:
+        try:
+            await asyncio.gather(*http_send_tasks)
+            log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
+
+            if batch_number > last_saved_batch_number:
+                save_state_callback(context_store, state)
+                log_falcon_assets(f"[Batch {batch_number}] Context saved")
+                return batch_number
+            else:
+                log_falcon_assets(
+                    f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
+                )
+                return last_saved_batch_number
+
+        except Exception as e:
+            log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
+            raise
+
+    return asyncio.create_task(send_and_save_context())
 
 
 def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
