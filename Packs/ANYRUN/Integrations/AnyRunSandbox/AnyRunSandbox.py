@@ -223,7 +223,7 @@ def get_user_limits(params: dict) -> None:  # pragma: no cover
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
     ) as connector:
-        user_limits = connector.get_user_limits().get("data").get("limits")
+        user_limits = connector.get_user_limits()
 
     return_results(
         CommandResults(
