@@ -1566,7 +1566,7 @@ def _compute_hash(obj):
     import hashlib
 
     canonical = json.dumps(obj, sort_keys=True, separators=(",", ":"))
-    return hashlib.md5(canonical.encode()).hexdigest()  # nosec
+    return hashlib.md5(canonical.encode()).hexdigest()  # guardrails-disable-line # nosec
 
 
 VALUE_TAGS_LIST_NAME = "SOCFWTagsVersion"
