@@ -737,7 +737,8 @@ def test_search_assets_command_success(mocker):
     WHEN:
         search_assets_command is called.
     THEN:
-        Asset group IDs are resolved, filter is created, and assets are searched successfully.
+        Asset group IDs are resolved, filter is created, and assets are searched successfully
+        via get_webapp_data with the UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS table.
     """
     from CortexPlatformCore import Client, search_assets_command
 
@@ -746,20 +747,36 @@ def test_search_assets_command_success(mocker):
     # Mock get_asset_group_ids_from_names
     mock_get_asset_group_ids = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[1, 2])
 
-    # Mock client.search_assets
+    # Mock client.get_webapp_data (replaces the old client.search_assets)
     mock_reply = {
-        "data": [
-            {"xdm.asset.id": "asset-1", "xdm.asset.name": "Server-1", "xdm.asset.type.name": "server"},
-            {"xdm.asset.id": "asset-2", "xdm.asset.name": "Server-2", "xdm.asset.type.name": "server"},
+        "DATA": [
+            {"xdm__asset__id": "asset-1", "xdm__asset__name": "Server-1", "xdm__asset__type__name": "server"},
+            {"xdm__asset__id": "asset-2", "xdm__asset__name": "Server-2", "xdm__asset__type__name": "server"},
         ]
     }
     expected_reply = [
-        {"id": "asset-1", "name": "Server-1", "type.name": "server"},
-        {"id": "asset-2", "name": "Server-2", "type.name": "server"},
+        {
+            "id": "asset-1",
+            "name": "Server-1",
+            "type__name": "server",
+            "related_issues.critical_issues": [],
+            "related_issues.issues_breakdown": [],
+            "related_cases.critical_cases": [],
+            "related_cases.cases_breakdown": [],
+        },
+        {
+            "id": "asset-2",
+            "name": "Server-2",
+            "type__name": "server",
+            "related_issues.critical_issues": [],
+            "related_issues.issues_breakdown": [],
+            "related_cases.critical_cases": [],
+            "related_cases.cases_breakdown": [],
+        },
     ]
-    mock_search_assets = mocker.patch.object(
+    mock_get_webapp_data = mocker.patch.object(
         mock_client,
-        "search_assets",
+        "get_webapp_data",
         return_value={"reply": mock_reply},
     )
 
@@ -776,40 +793,40 @@ def test_search_assets_command_success(mocker):
 
     assert len(result.outputs) == 2
     assert result.outputs == expected_reply
-    mock_search_assets.assert_called_once()
+    mock_get_webapp_data.assert_called_once()
     mock_get_asset_group_ids.assert_called_once_with(mock_client, ["Production Servers", "Development Workstations"])
 
-    filter_arg = mock_search_assets.call_args[0][0]
+    # The filter is passed inside the request_data dict under filter_data.filter.
+    request_data_arg = mock_get_webapp_data.call_args[0][0]
+    from CortexPlatformCore import ASSETS_TABLE
+
+    assert request_data_arg["table_name"] == ASSETS_TABLE
+    filter_arg = request_data_arg["filter_data"]["filter"]
     expected_filter = {
         "AND": [
             {
                 "OR": [
                     {
-                        "SEARCH_FIELD": "xdm.asset.name",
+                        "SEARCH_FIELD": "xdm__asset__name",
                         "SEARCH_TYPE": "CONTAINS",
                         "SEARCH_VALUE": "Server-1",
                     },
                     {
-                        "SEARCH_FIELD": "xdm.asset.name",
+                        "SEARCH_FIELD": "xdm__asset__name",
                         "SEARCH_TYPE": "CONTAINS",
                         "SEARCH_VALUE": "Server-2",
                     },
                 ]
             },
             {
-                "SEARCH_FIELD": "xdm.asset.type.name",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "server",
-            },
-            {
                 "OR": [
                     {
-                        "SEARCH_FIELD": "xdm.asset.tags",
+                        "SEARCH_FIELD": "xdm__asset__tags",
                         "SEARCH_TYPE": "JSON_WILDCARD",
                         "SEARCH_VALUE": {"tag1": "value1"},
                     },
                     {
-                        "SEARCH_FIELD": "xdm.asset.tags",
+                        "SEARCH_FIELD": "xdm__asset__tags",
                         "SEARCH_TYPE": "JSON_WILDCARD",
                         "SEARCH_VALUE": {"tag2": "value2"},
                     },
@@ -818,25 +835,114 @@ def test_search_assets_command_success(mocker):
             {
                 "OR": [
                     {
-                        "SEARCH_FIELD": "xdm.asset.group_ids",
+                        "SEARCH_FIELD": "xdm__asset__group_ids",
                         "SEARCH_TYPE": "ARRAY_CONTAINS",
                         "SEARCH_VALUE": 1,
                     },
                     {
-                        "SEARCH_FIELD": "xdm.asset.group_ids",
+                        "SEARCH_FIELD": "xdm__asset__group_ids",
                         "SEARCH_TYPE": "ARRAY_CONTAINS",
                         "SEARCH_VALUE": 2,
                     },
                 ]
+            },
+            {
+                "SEARCH_FIELD": "xdm__asset__type__name",
+                "SEARCH_TYPE": "CONTAINS",
+                "SEARCH_VALUE": "server",
             },
         ]
     }
 
     assert filter_arg == expected_filter
 
-    # Check other parameters
-    assert mock_search_assets.call_args[0][1] == 0  # page_number
-    assert mock_search_assets.call_args[0][2] == 50  # page_size
+    # Check pagination parameters are passed correctly via filter_data.paging.
+    paging = request_data_arg["filter_data"]["paging"]
+    assert paging["from"] == 0  # page_number=0 → start_page=0
+    assert paging["to"] == 50  # page_size=50 → limit=50
+
+
+def _get_request_data_from_webapp_call(mock_get_webapp_data) -> dict:
+    """Helper to extract the full request_data dict from a get_webapp_data mock call."""
+    return mock_get_webapp_data.call_args[0][0]
+
+
+def _get_filter_from_webapp_call(mock_get_webapp_data) -> dict:
+    """Helper to extract the filter dict from a get_webapp_data mock call."""
+    return _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["filter"]
+
+
+def test_search_assets_asset_type_contains_only():
+    """
+    GIVEN:
+        Asset types that are all non-WILDCARD.
+    WHEN:
+        search_assets_command builds the filter.
+    THEN:
+        A CONTAINS AND entry is added for the asset types field with the original values.
+    """
+    from CortexPlatformCore import Client, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"asset_types": "Endpoint,Virtual Machine"})
+
+    filter_arg = _get_filter_from_webapp_call(mock_get_webapp_data)
+    and_list = filter_arg["AND"]
+    contains_entries = [
+        b
+        for b in and_list
+        if b.get("SEARCH_TYPE") == "CONTAINS"
+        and b.get("SEARCH_FIELD") == "xdm__asset__type__name"
+        or "OR" in b
+        and any(c.get("SEARCH_TYPE") == "CONTAINS" and c.get("SEARCH_FIELD") == "xdm__asset__type__name" for c in b.get("OR", []))
+    ]
+    assert len(contains_entries) == 1
+    block = contains_entries[0]
+    conditions = block.get("OR", [block])
+    assert [c["SEARCH_VALUE"] for c in conditions] == ["Endpoint", "Virtual Machine"]
+    for c in conditions:
+        assert c["SEARCH_TYPE"] == "CONTAINS"
+
+
+def test_search_assets_asset_type_empty():
+    """
+    GIVEN:
+        No asset types provided.
+    WHEN:
+        search_assets_command builds the filter.
+    THEN:
+        No asset type entries appear in the filter AND list.
+    """
+    from CortexPlatformCore import Client, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {})
+
+    filter_arg = _get_filter_from_webapp_call(mock_get_webapp_data)
+    # With no asset types, the filter should be empty or have no asset type entries.
+    and_list = filter_arg.get("AND", []) if filter_arg else []
+    asset_type_entries = [
+        b
+        for b in and_list
+        if b.get("SEARCH_FIELD") == "xdm__asset__type__name"
+        or "OR" in b
+        and any(c.get("SEARCH_FIELD") == "xdm__asset__type__name" for c in b.get("OR", []))
+    ]
+    assert asset_type_entries == []
 
 
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
@@ -6376,25 +6482,34 @@ def test_core_list_endpoints_command_error_handling(mocker):
 
 
 def test_normalize_key_with_xdm_asset_prefix():
-    """Test normalization of keys with 'xdm.asset.' prefix."""
+    """Test normalization of keys with 'xdm__asset__' double-underscore prefix."""
     from CortexPlatformCore import normalize_key
 
-    assert normalize_key("xdm.asset.name") == "name"
-    assert normalize_key("xdm.asset.id") == "id"
-    assert normalize_key("xdm.asset.type") == "type"
+    assert normalize_key("xdm__asset__name") == "name"
+    assert normalize_key("xdm__asset__id") == "id"
+    assert normalize_key("xdm__asset__type") == "type"
 
-    assert normalize_key("xdm.asset.type.name") == "type.name"
-    assert normalize_key("xdm.asset.group.id") == "group.id"
-    assert normalize_key("xdm.asset.provider.region") == "provider.region"
+    assert normalize_key("xdm__asset__type__name") == "type__name"
+    assert normalize_key("xdm__asset__group__id") == "group__id"
+    assert normalize_key("xdm__asset__provider__region") == "provider__region"
+
+    # dot-notation keys are NOT stripped — returned unchanged
+    assert normalize_key("xdm.asset.name") == "xdm.asset.name"
+    assert normalize_key("xdm.asset.type.name") == "xdm.asset.type.name"
 
 
 def test_normalize_key_with_xdm_prefix():
-    """Test normalization of keys with 'xdm.' prefix (but not 'xdm.asset.')."""
+    """Test normalization of keys with 'xdm__' double-underscore prefix (but not 'xdm__asset__')."""
     from CortexPlatformCore import normalize_key
 
-    assert normalize_key("xdm.source.ip") == "source.ip"
-    assert normalize_key("xdm.target.host") == "target.host"
-    assert normalize_key("xdm.event.type") == "event.type"
+    assert normalize_key("xdm__source__ip") == "source__ip"
+    assert normalize_key("xdm__target__host") == "target__host"
+    assert normalize_key("xdm__event__type") == "event__type"
+
+    # dot-notation keys are NOT stripped — returned unchanged
+    assert normalize_key("xdm.source.ip") == "xdm.source.ip"
+    assert normalize_key("xdm.target.host") == "xdm.target.host"
+    assert normalize_key("xdm.event.type") == "xdm.event.type"
 
 
 def test_normalize_key_without_prefix():

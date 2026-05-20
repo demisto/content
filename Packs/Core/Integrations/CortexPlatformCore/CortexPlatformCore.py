@@ -32,17 +32,17 @@ WINDOWS_PLATFORM = "Windows"
 
 
 ASSET_FIELDS = {
-    "asset_names": "xdm.asset.name",
-    "asset_types": "xdm.asset.type.name",
-    "asset_tags": "xdm.asset.tags",
-    "asset_ids": "xdm.asset.id",
-    "asset_providers": "xdm.asset.provider",
-    "asset_realms": "xdm.asset.realm",
-    "asset_group_ids": "xdm.asset.group_ids",
-    "asset_categories": "xdm.asset.type.category",
-    "asset_classes": "xdm.asset.type.class",
-    "software_package_versions": "xdm.software_package.version",
-    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version",
+    "asset_names": "xdm__asset__name",
+    "asset_types": "xdm__asset__type__name",
+    "asset_tags": "xdm__asset__tags",
+    "asset_ids": "xdm__asset__id",
+    "asset_providers": "xdm__asset__provider",
+    "asset_realms": "xdm__asset__realm",
+    "asset_group_ids": "xdm__asset__group_ids",
+    "asset_categories": "xdm__asset__type__category",
+    "asset_classes": "xdm__asset__type__class",
+    "software_package_versions": "xdm__software_package__version",
+    "kubernetes_cluster_versions": "xdm__kubernetes__cluster__version",
 }
 
 APPSEC_SOURCES = [
@@ -82,6 +82,7 @@ WEBAPP_COMMANDS = [
     "core-list-brokers",
     "core-create-endpoint-policy",
     "core-delete-endpoint-policy",
+    "core-search-assets",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -90,6 +91,7 @@ XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSETS_TABLE = "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
@@ -2189,8 +2191,8 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
 
 def normalize_key(key: str) -> str:
     """
-    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
-    if present, and returns the remaining key unchanged otherwise.
+    Strips the prefixes 'xdm__asset__' or 'xdm__' from the
+    beginning of the key, if present, and returns the remaining key unchanged otherwise.
 
     Args:
         key (str): The original output key.
@@ -2198,11 +2200,11 @@ def normalize_key(key: str) -> str:
     Returns:
         str: The normalized key without XDM prefixes.
     """
-    if key.startswith("xdm.asset."):
-        return key.replace("xdm.asset.", "")
+    if key.startswith("xdm__asset__"):
+        return key.removeprefix("xdm__asset__")
 
-    if key.startswith("xdm."):
-        return key.replace("xdm.", "")
+    if key.startswith("xdm__"):
+        return key.removeprefix("xdm__")
 
     return key
 
@@ -2232,11 +2234,6 @@ def search_assets_command(client: Client, args):
         argToList(args.get("asset_names", "")),
     )
     filter.add_field(
-        ASSET_FIELDS["asset_types"],
-        FilterType.EQ,
-        argToList(args.get("asset_types", "")),
-    )
-    filter.add_field(
         ASSET_FIELDS["asset_tags"],
         FilterType.JSON_WILDCARD,
         safe_load_json(args.get("asset_tags", [])),
@@ -2261,21 +2258,40 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
     filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
     filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
-    filter_str = filter.to_dict()
 
-    demisto.debug(f"Search Assets Filter: {filter_str}")
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
-    page_number = arg_to_number(args.get("page_number", 0))
-    on_demand_fields = ["xdm.asset.tags"]
+    asset_types = argToList(args.get("asset_types", ""))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
+
+    page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
+    on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
-        ("xdm.software_package.version", software_package_versions),
-        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
+        ("xdm__software_package__version", software_package_versions),
+        ("xdm__kubernetes__cluster__version", kubernetes_cluster_versions),
     ]
     on_demand_fields.extend([field for field, condition in version_fields if condition])
 
-    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
-    # Remove "xdm.asset." suffix from all keys in the response
+    request_data = build_webapp_request_data(
+        table_name=ASSETS_TABLE,
+        filter_dict=filter.to_dict(),
+        limit=page_number * page_size + page_size,
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        start_page=page_number * page_size,
+        on_demand_fields=on_demand_fields,
+    )
+    demisto.debug(f"Search Assets Request: {request_data}")
+    raw_response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
+    # Remove "xdm__asset__" and "xdm__" prefix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
+
+    # Preserve BC after migrating to private API - add related issues/cases as in old API response
+    for asset in response:
+        asset["related_issues.critical_issues"] = asset.get("issues_critical", [])
+        asset["related_issues.issues_breakdown"] = asset.get("issues_breakdown", [])
+        asset["related_cases.critical_cases"] = asset.get("cases_critical", [])
+        asset["related_cases.cases_breakdown"] = asset.get("cases_breakdown", [])
+
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
