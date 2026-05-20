@@ -509,6 +509,32 @@ def _filter_hidden_params(
         )
 
 
+def _cleanup_empty_capabilities(result: dict[str, list[str]]) -> None:
+    """Step 2.7 — Remove any capability bucket with an empty param list.
+
+    Mutates ``result`` in place. Applies to ALL keys, including
+    ``general_configurations`` (so an empty default bucket is also dropped).
+
+    This is the final cleanup pass that catches buckets emptied by either:
+      - Step 2.4 (``_deduplicate``) — moves duplicated params to
+        ``general_configurations`` and clears them from the originating
+        capabilities, which can leave those capabilities empty.
+      - Step 2.6 (``_filter_hidden_params``) — strips hidden-on-platform
+        params, which can also empty a bucket if all of its params were
+        hidden.
+
+    Logs the removed capability names at INFO level for traceability.
+    """
+    empty_keys = [cap for cap, params in result.items() if len(params) == 0]
+    for cap in empty_keys:
+        del result[cap]
+    if empty_keys:
+        logger.info(
+            f"Removed empty capabilities from the final result: "
+            f"{sorted(empty_keys)}"
+        )
+
+
 def _route_long_running_param(
     result: dict[str, list[str]],
     integration_yml: dict | None,
@@ -608,6 +634,9 @@ def map_params_to_capabilities(
             integration_yml, param_defaults
         )
         _filter_hidden_params(result, to_remove, kept_by_carveout)
+
+    # Step 2.7 (NEW) - cleanup empty capabilities (including general_configurations)
+    _cleanup_empty_capabilities(result)
 
     return result
 

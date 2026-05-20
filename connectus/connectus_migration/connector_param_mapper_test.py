@@ -369,7 +369,8 @@ class TestMapParamsToCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        assert "api_key" not in result["general_configurations"]
+        # general_configurations bucket is dropped by Step 2.7 cleanup when empty
+        assert "api_key" not in result.get("general_configurations", [])
 
     def test_single_capability_shortcut(self):
         """
@@ -462,7 +463,8 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert sorted(result["Automation"]) == ["a", "b"]
-        assert result["Fetch Issues"] == []
+        # Empty 'Fetch Issues' bucket is dropped by Step 2.7 cleanup
+        assert "Fetch Issues" not in result
 
     def test_multi_capability_missing_target_logs_warning(self, caplog):
         """
@@ -490,9 +492,10 @@ class TestMapParamsToCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        # The param should not be placed anywhere
-        assert "missing_param" not in result["Automation"]
-        assert "missing_param" not in result["general_configurations"]
+        # The param should not be placed anywhere; empty buckets are dropped
+        # by Step 2.7 cleanup, so use .get() for defensive lookups.
+        assert "missing_param" not in result.get("Automation", [])
+        assert "missing_param" not in result.get("general_configurations", [])
         # And a warning should have been logged
         assert "missing_param" in caplog.text
         assert "Fetch Issues" in caplog.text
@@ -607,7 +610,8 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert result["Automation"] == ["indicators_param"]
-        assert result["Fetch Issues"] == []
+        # Empty 'Fetch Issues' bucket is dropped by Step 2.7 cleanup
+        assert "Fetch Issues" not in result
 
     def test_dedup_param_in_multiple_capabilities_moves_to_general(self):
         """
@@ -636,7 +640,10 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert "shared" in result["general_configurations"]
-        assert "shared" not in result["Fetch Issues"]
+        # After dedup, 'Fetch Issues' has no params left → dropped by Step 2.7
+        # cleanup. 'Automation' still has 'unique' so it survives.
+        assert "shared" not in result.get("Fetch Issues", [])
+        assert "Fetch Issues" not in result
         assert "shared" not in result["Automation"]
         assert "unique" in result["Automation"]
 
@@ -667,7 +674,9 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert result["general_configurations"].count("url") == 1
-        assert "url" not in result["Fetch Issues"]
+        # After dedup, 'Fetch Issues' is empty → dropped by Step 2.7 cleanup
+        assert "url" not in result.get("Fetch Issues", [])
+        assert "Fetch Issues" not in result
 
 
 # ---------------------------------------------------------------------------
@@ -1456,8 +1465,9 @@ class TestLongRunningRouting:
         assert "longRunningPort" in result["Log Collection"]
         # The command's other params are also routed there
         assert "listenerUrl" in result["Log Collection"]
-        # And longRunningPort is NOT in general_configurations
-        assert "longRunningPort" not in result["general_configurations"]
+        # And longRunningPort is NOT in general_configurations (which is
+        # dropped entirely by Step 2.7 cleanup when empty)
+        assert "longRunningPort" not in result.get("general_configurations", [])
 
     def test_no_long_running_flag_dict_ignored(self):
         """
@@ -1549,3 +1559,167 @@ class TestLongRunningRouting:
             cap for cap, params in result.items() if "longRunning" in params
         ]
         assert all_locations == ["Log Collection"]
+
+
+# ---------------------------------------------------------------------------
+# Step 2.7 — cleanup empty capabilities
+# ---------------------------------------------------------------------------
+class TestCleanupEmptyCapabilities:
+    """Tests for the Step 2.7 cleanup that removes any capability bucket with
+    an empty param list, including ``general_configurations``."""
+
+    def test_capability_emptied_by_dedup_is_removed(self):
+        """
+        Given: A param routed to two capabilities so dedup moves it to
+               general_configurations, leaving one of the source capabilities
+               empty.
+        When:  map_params_to_capabilities is called.
+        Then:  The emptied capability is removed from the final result by
+               Step 2.7 cleanup.
+        """
+        capabilities = {
+            "general_configurations": [],
+            "Fetch Issues": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                # 'shared' is routed to both Fetch Issues (by fetch-incidents)
+                # and Automation (by vendor-action). After dedup it moves to
+                # general_configurations, leaving Fetch Issues empty.
+                "fetch-incidents": ["shared"],
+                "vendor-action": ["shared"],
+            },
+        }
+        param_defaults = {"shared": 1}
+        result = map_params_to_capabilities(
+            capabilities, command_params, param_defaults
+        )
+        assert "Fetch Issues" not in result
+        assert "Automation" not in result
+        assert result["general_configurations"] == ["shared"]
+
+    def test_capability_emptied_by_hidden_filter_is_removed(self):
+        """
+        Given: A capability that contains only params that are hidden on
+               the platform (via integration_yml).
+        When:  map_params_to_capabilities is called with the integration_yml.
+        Then:  Step 2.6 hidden filter strips all params, then Step 2.7
+               cleanup removes the now-empty capability.
+        """
+        integration_yml = {
+            "name": "X",
+            "configuration": [
+                {"name": "vendor_arg", "hidden": True},
+            ],
+            "script": {"commands": []},
+        }
+        capabilities = {
+            "general_configurations": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "vendor-action": ["vendor_arg"],
+            },
+        }
+        param_defaults = {"vendor_arg": 1}
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults,
+            integration_yml=integration_yml,
+        )
+        # Step 2.6 stripped 'vendor_arg' from Automation; Step 2.7 removed it.
+        assert "Automation" not in result
+        assert "general_configurations" not in result
+
+    def test_empty_general_configurations_is_also_removed(self):
+        """
+        Given: A capabilities setup that ends with an empty
+               general_configurations bucket (no test-module-without-default
+               and no duplicates to demote).
+        When:  map_params_to_capabilities is called.
+        Then:  Step 2.7 cleanup removes general_configurations too (per the
+               Q2=b spec — empty general_configurations is NOT exempt).
+        """
+        capabilities = {
+            "general_configurations": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "vendor-action": ["only_param"],
+            },
+        }
+        param_defaults = {"only_param": 1}
+        result = map_params_to_capabilities(
+            capabilities, command_params, param_defaults
+        )
+        # Automation has 'only_param' so it stays
+        assert result["Automation"] == ["only_param"]
+        # general_configurations is empty → removed
+        assert "general_configurations" not in result
+
+    def test_non_empty_capabilities_are_preserved(self):
+        """
+        Given: A capabilities mapping where every bucket ends with at least
+               one param.
+        When:  map_params_to_capabilities is called.
+        Then:  No bucket is removed by Step 2.7 cleanup; all keys present.
+        """
+        capabilities = {
+            "general_configurations": [],
+            "Fetch Issues": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "test-module": ["url"],
+                "fetch-incidents": ["incident_query"],
+                "vendor-action": ["arg1"],
+            },
+        }
+        # url has no default → goes to general_configurations
+        # incident_query → Fetch Issues
+        # arg1 → Automation
+        param_defaults = {"incident_query": "", "arg1": "x"}
+        result = map_params_to_capabilities(
+            capabilities, command_params, param_defaults
+        )
+        assert result["general_configurations"] == ["url"]
+        assert result["Fetch Issues"] == ["incident_query"]
+        assert result["Automation"] == ["arg1"]
+
+    def test_cleanup_logs_removed_keys(self, caplog):
+        """
+        Given: A run that produces at least one empty capability.
+        When:  map_params_to_capabilities is called at INFO log level.
+        Then:  An INFO log message names the removed capability key(s).
+        """
+        capabilities = {
+            "general_configurations": [],
+            "Fetch Issues": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "vendor-action": ["only_param"],
+            },
+        }
+        param_defaults = {"only_param": 1}
+        caplog.set_level("INFO")
+        result = map_params_to_capabilities(
+            capabilities, command_params, param_defaults
+        )
+        # Fetch Issues and general_configurations both end up empty
+        assert "Removed empty capabilities" in caplog.text
+        assert "Fetch Issues" in caplog.text
+        assert "general_configurations" in caplog.text
+        # Sanity: Automation survives
+        assert result["Automation"] == ["only_param"]

@@ -16,6 +16,7 @@ import io
 import json
 import logging
 import re
+import shutil
 from pathlib import Path
 from typing import Any
 from collections.abc import Callable
@@ -204,13 +205,19 @@ def deep_merge_dicts(base: dict, overrides: dict) -> dict:
     return result
 
 
-def build_connector_yaml(connector_title: str, pack_tags: list[str]) -> dict:
+def build_connector_yaml(
+    connector_title: str,
+    pack_tags: list[str],
+    author_image_filename: str = "",
+) -> dict:
     """Build the dict for a brand-new connector.yaml.
 
     All TBD fields (description, category, domain, vendor) are set to empty
     strings. Per-task spec:
       - publisher: "Palo Alto Networks" (hardcoded)
-      - author_image: "icon-gcp" (hardcoded)
+      - author_image: pass-through of ``author_image_filename`` (filename
+        relative to the connector root; e.g. ``"salesforce.png"``). Defaults
+        to empty string when no image is supplied.
       - ownership.team: "xsoar"
       - ownership.maintainers: ["@xsoar-content"]
       - version: "1.0.0"
@@ -227,7 +234,7 @@ def build_connector_yaml(connector_title: str, pack_tags: list[str]) -> dict:
             "domain": "",
             "vendor": "",
             "publisher": "Palo Alto Networks",
-            "author_image": "icon-gcp",
+            "author_image": author_image_filename,
             "ownership": {
                 "team": "xsoar",
                 "maintainers": ["@xsoar-content"],
@@ -237,6 +244,37 @@ def build_connector_yaml(connector_title: str, pack_tags: list[str]) -> dict:
             "allow_skip_verification": False,
         },
     }
+
+
+def _copy_author_image(
+    connector_dir: Path, connector_id: str, source_image_path: Path
+) -> str:
+    """Copy the source author image into the connector root.
+
+    Destination filename is ``<connector_id><source_suffix>`` (original
+    extension preserved — e.g. ``salesforce.png`` if source was a PNG,
+    ``salesforce.svg`` if source was an SVG). Returns just the filename,
+    which is also the relative path to use in
+    ``connector.yaml`` ``metadata.author_image`` (the YAML lives at the
+    connector root alongside the image).
+
+    Mutates the filesystem only — creates the parent dir if missing,
+    overwrites an existing dest. Raises ``FileNotFoundError`` if
+    ``source_image_path`` does not exist.
+    """
+    if not source_image_path.is_file():
+        raise FileNotFoundError(
+            f"Author image not found at {source_image_path}; cannot copy."
+        )
+    dest_filename = f"{connector_id}{source_image_path.suffix}"
+    connector_dir.mkdir(parents=True, exist_ok=True)
+    dest_path = connector_dir / dest_filename
+    shutil.copy2(source_image_path, dest_path)
+    logger.info(
+        f"[manifest_generator] Copied author image "
+        f"{source_image_path} -> {dest_path}"
+    )
+    return dest_filename
 
 
 def derive_handler_id(integration_id: str) -> str:
@@ -975,6 +1013,7 @@ def create_manifest_from_scratch(
     connector_title: str,
     mapped_params: dict[str, Any],
     auth_methods: dict[str, Any],
+    author_image_path: Path | None = None,
     manual_connector_fields: dict | None = None,
     manual_handler_fields: dict | None = None,
     manual_summary_fields: dict | None = None,
@@ -985,9 +1024,10 @@ def create_manifest_from_scratch(
 ) -> None:
     """Create a brand-new connector folder from scratch.
 
-    For now, only generates ``connector.yaml``. The other files
-    (capabilities.yaml, configurations.yaml, connection.yaml, handlers/) will
-    be added in follow-up iterations.
+    If ``author_image_path`` is provided, the image is copied into the
+    connector root as ``<connector_id><source_suffix>`` and that filename is
+    written into ``connector.yaml``'s ``metadata.author_image`` field. When
+    not provided, ``author_image`` is left as an empty string.
     """
     logger.info(f"[manifest_generator] Creating new connector at {connector_dir}")
     logger.debug(
@@ -1011,9 +1051,20 @@ def create_manifest_from_scratch(
     # Create the connector directory if it doesn't exist
     connector_dir.mkdir(parents=True, exist_ok=True)
 
+    # Copy the author image (if provided) into the connector root before
+    # building connector.yaml so we can record the dest filename.
+    author_image_filename = ""
+    if author_image_path is not None:
+        connector_id = title_to_slug(connector_title)
+        author_image_filename = _copy_author_image(
+            connector_dir, connector_id, author_image_path
+        )
+
     # Generate connector.yaml
     pack_tags = get_pack_tags(integration_path)
-    connector_data = build_connector_yaml(connector_title, pack_tags)
+    connector_data = build_connector_yaml(
+        connector_title, pack_tags, author_image_filename=author_image_filename
+    )
     connector_data = deep_merge_dicts(connector_data, manual_connector_fields or {})
     connector_yaml_path = connector_dir / "connector.yaml"
     with open(connector_yaml_path, "w") as fh:
@@ -1079,6 +1130,7 @@ def add_handler_to_existing_connector(
     connector_title: str,
     mapped_params: dict[str, Any],
     auth_methods: dict[str, Any],
+    author_image_path: Path | None = None,
     manual_connector_fields: dict | None = None,
     manual_handler_fields: dict | None = None,
     manual_summary_fields: dict | None = None,
@@ -1089,9 +1141,13 @@ def add_handler_to_existing_connector(
 ) -> None:
     """Add a new handler under an existing connector and update shared files.
 
-    For now, only updates ``connector.yaml`` (merges pack tags + bumps minor
-    version). The other files will be updated in follow-up iterations.
+    Note: ``author_image_path`` is accepted for API uniformity but the
+    append path does NOT touch the connector's author image — that is a
+    from-scratch-only operation (per spec). If provided, it's silently
+    ignored.
     """
+    # Author image is owned by the from-scratch path only.
+    _ = author_image_path
     logger.info(
         f"[manifest_generator] Updating existing connector at {connector_dir}"
     )
@@ -1277,6 +1333,16 @@ def generate_manifest(
         help="Root directory under which connector folders live. "
         "Defaults to <CWD>/connectors.",
     ),
+    author_image_path: Path = typer.Option(
+        None,
+        "--author-image-path",
+        help=(
+            "Optional path to an author image file to copy into the new "
+            "connector's root as <connector_id><source_suffix>. Used to "
+            "populate connector.yaml's metadata.author_image field. "
+            "From-scratch path only — silently ignored on the append path."
+        ),
+    ),
     manual_connector_fields: str = typer.Option(
         "{}",
         "--manual-connector-fields",
@@ -1360,6 +1426,7 @@ def generate_manifest(
             connector_title=connector_title,
             mapped_params=mapped_params_dict,
             auth_methods=auth_methods_dict,
+            author_image_path=author_image_path,
             manual_connector_fields=manual_connector_fields_dict,
             manual_handler_fields=manual_handler_fields_dict,
             manual_summary_fields=manual_summary_fields_dict,
@@ -1376,6 +1443,7 @@ def generate_manifest(
             connector_title=connector_title,
             mapped_params=mapped_params_dict,
             auth_methods=auth_methods_dict,
+            author_image_path=author_image_path,
             manual_connector_fields=manual_connector_fields_dict,
             manual_handler_fields=manual_handler_fields_dict,
             manual_summary_fields=manual_summary_fields_dict,

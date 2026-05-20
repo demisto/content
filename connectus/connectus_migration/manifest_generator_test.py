@@ -158,7 +158,8 @@ def test_create_manifest_from_scratch_generates_correct_connector_yaml(
     assert metadata["domain"] == ""
     assert metadata["vendor"] == ""
     assert metadata["publisher"] == "Palo Alto Networks"
-    assert metadata["author_image"] == "icon-gcp"
+    # No --author-image-path provided → author_image defaults to ""
+    assert metadata["author_image"] == ""
     assert metadata["ownership"]["team"] == "xsoar"
     assert list(metadata["ownership"]["maintainers"]) == ["@xsoar-content"]
     assert data["settings"]["allow_skip_verification"] is False
@@ -184,6 +185,161 @@ def test_create_manifest_from_scratch_creates_directory_if_missing(
 
     assert connector_dir.is_dir()
     assert (connector_dir / "connector.yaml").is_file()
+
+
+# ---------------------------------------------------------------------------
+# create_manifest_from_scratch — author image copy + connector.yaml field
+# ---------------------------------------------------------------------------
+def test_create_manifest_from_scratch_copies_author_image_and_records_filename(
+    tmp_path: Path,
+) -> None:
+    """
+    Given: --author-image-path pointing to a real PNG file.
+    When:  create_manifest_from_scratch is called.
+    Then:  The image is copied into the connector root as
+           '<connector_id>.png', AND connector.yaml's metadata.author_image
+           contains just that filename (relative to the connector root).
+    """
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+
+    # Create a source author image (any binary content works for a copy test).
+    source_image = tmp_path / "source_image.png"
+    source_image.write_bytes(b"\x89PNG\r\n\x1a\nfake-png-bytes")
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"name": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+        author_image_path=source_image,
+    )
+
+    # Image was copied under the expected name (connector_id + suffix).
+    copied_image = connector_dir / "myconnector.png"
+    assert copied_image.is_file()
+    assert copied_image.read_bytes() == source_image.read_bytes()
+
+    # connector.yaml records the relative filename (sibling of connector.yaml).
+    with open(connector_dir / "connector.yaml") as fh:
+        data = yaml.safe_load(fh)
+    assert data["metadata"]["author_image"] == "myconnector.png"
+
+
+def test_create_manifest_from_scratch_preserves_svg_extension(
+    tmp_path: Path,
+) -> None:
+    """
+    Given: --author-image-path pointing to a .svg file.
+    When:  create_manifest_from_scratch is called.
+    Then:  The dest filename preserves the .svg extension.
+    """
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+    source_image = tmp_path / "logo.svg"
+    source_image.write_text("<svg></svg>")
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"name": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+        author_image_path=source_image,
+    )
+
+    assert (connector_dir / "myconnector.svg").is_file()
+    with open(connector_dir / "connector.yaml") as fh:
+        data = yaml.safe_load(fh)
+    assert data["metadata"]["author_image"] == "myconnector.svg"
+
+
+def test_create_manifest_from_scratch_missing_author_image_raises(
+    tmp_path: Path,
+) -> None:
+    """
+    Given: --author-image-path pointing to a NON-existent file.
+    When:  create_manifest_from_scratch is called.
+    Then:  FileNotFoundError is raised; nothing is written.
+    """
+    import pytest
+
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+    nonexistent_image = tmp_path / "no_such_image.png"
+
+    with pytest.raises(FileNotFoundError, match="Author image not found"):
+        create_manifest_from_scratch(
+            connector_dir=connector_dir,
+            integration_yml={"name": "MyInt"},
+            integration_path=integration_yml,
+            connector_title="My Connector",
+            mapped_params={},
+            auth_methods={},
+            author_image_path=nonexistent_image,
+        )
+
+
+def test_add_handler_to_existing_connector_silently_ignores_author_image(
+    tmp_path: Path,
+) -> None:
+    """
+    Given: An existing connector + --author-image-path on the append path.
+    When:  add_handler_to_existing_connector is called.
+    Then:  Per spec, the image is NOT copied and the existing
+           connector.yaml's author_image field is NOT touched.
+    """
+    from manifest_generator import add_handler_to_existing_connector
+
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+    _write_existing_connector_yaml(
+        connector_dir, version="1.0.0", tags=[]
+    )
+
+    # Also write the existing capabilities.yaml + configurations.yaml +
+    # a first handler so the append path's preconditions are met.
+    capabilities_yaml_path = connector_dir / "capabilities.yaml"
+    capabilities_yaml_path.write_text(
+        "metadata:\n  title: x\n  description: y\n"
+        "general_configurations:\n  configurations:\n  - fields: []\n"
+        "capabilities: []\n"
+    )
+    configurations_yaml_path = connector_dir / "configurations.yaml"
+    configurations_yaml_path.write_text(
+        "metadata:\n  title: x\n  description: y\nconfigurations: []\n"
+    )
+
+    source_image = tmp_path / "would_be_copied.png"
+    source_image.write_bytes(b"png-content")
+
+    add_handler_to_existing_connector(
+        connector_dir=connector_dir,
+        integration_yml={"commonfields": {"id": "MyInt"}, "name": "MyInt", "display": "My Int"},
+        integration_path=integration_yml_path,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={"auth_types": []},
+        author_image_path=source_image,
+    )
+
+    # Image was NOT copied into the connector root.
+    assert not (connector_dir / "myconnector.png").exists()
+    # connector.yaml's author_image was preserved as written by the fixture.
+    with open(connector_dir / "connector.yaml") as fh:
+        data = yaml.safe_load(fh)
+    assert data["metadata"]["author_image"] == ""
 
 
 # ---------------------------------------------------------------------------
@@ -220,7 +376,7 @@ def _write_existing_connector_yaml(
             "domain": "",
             "vendor": "",
             "publisher": "Palo Alto Networks",
-            "author_image": "icon-gcp",
+            "author_image": "",
             "ownership": {
                 "team": "xsoar",
                 "maintainers": ["@xsoar-content"],
