@@ -73,7 +73,7 @@ configuration:
   required: false
   section: Connect
   type: 0
-description: Supports Elastic Security SIEM functionality for security operations. This pack is to be used in combination with the Elasticsearch v2 integration.
+description: Use the Kibana content pack in combination with the Elasticsearch v2 integration to streamline security operations. It supports Elastic Security SIEM functionality.
 display: Kibana
 name: Kibana
 script:
