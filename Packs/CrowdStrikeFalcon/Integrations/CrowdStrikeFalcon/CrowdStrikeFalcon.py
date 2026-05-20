@@ -4495,7 +4495,9 @@ def load_spotlight_state(
     # AIDs are no longer stored in context (only counts) to reduce memory/serialization overhead.
     # Backward compat: read old "unique_aids"/"processed_aids" lists if present, otherwise use counts.
     unique_aids_count = spotlight_state.metadata.get("unique_aids_count", len(spotlight_state.metadata.get("unique_aids", [])))
-    processed_aids_count = spotlight_state.metadata.get("processed_aids_count", len(spotlight_state.metadata.get("processed_aids", [])))
+    processed_aids_count = spotlight_state.metadata.get(
+        "processed_aids_count", len(spotlight_state.metadata.get("processed_aids", []))
+    )
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
@@ -4714,14 +4716,14 @@ async def fetch_vulnerabilities_by_severity(
             )
 
             # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future):
+            def update_last_saved(future, _pending=pending_tasks):
                 nonlocal last_saved_batch_number
                 try:
                     last_saved_batch_number = future.result()
                 except Exception as e:
                     log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
                 finally:
-                    pending_tasks.discard(future)
+                    _pending.discard(future)
 
             pending_tasks.add(task)
             task.add_done_callback(update_last_saved)
