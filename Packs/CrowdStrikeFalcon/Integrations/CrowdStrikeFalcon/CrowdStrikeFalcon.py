@@ -4425,10 +4425,8 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
         base_url=SERVER,
         verify=USE_SSL,
         proxy=PROXY,
-        # OAuth2 authentication with token persistence
-        auth_handler=OAuth2ClientCredentialsHandler(
-            token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
-        ),
+        # Basic authentication for benchmark testing (restore to OAuth2ClientCredentialsHandler for production)
+        auth_handler=BasicAuthHandler(username=CLIENT_ID, password=SECRET),
         # Enable diagnostics
         diagnostic_mode=True,
         client_name="FalconSpotlightAssetCollector",
