@@ -771,6 +771,218 @@ script:
       name: ttl
     description: Change job settings to share its results to all Splunk users, and change its TTL.
     name: splunk-job-share
+  - arguments:
+    - description: The name of the investigation to be created.
+      name: name
+      required: true
+    - description: The description of the investigation to be created.
+      name: description
+    - description: The type of the investigation to be created (for example, `default`).
+      name: investigation_type
+    - auto: PREDEFINED
+      description: The status of the investigation to be created. Defaults to the out-of-the-box Splunk ES status labels; custom statuses are also supported by typing the status ID or label.
+      name: status
+      predefined:
+      - New
+      - In Progress
+      - Pending
+      - Resolved
+      - Closed
+    - auto: PREDEFINED
+      description: The disposition of the investigation to be created. Defaults to the out-of-the-box Splunk ES disposition labels; custom dispositions are also supported by typing the disposition ID or label.
+      name: disposition
+      predefined:
+      - Undetermined
+      - 'True Positive - Suspicious Activity'
+      - 'Benign Positive - Suspicious But Expected'
+      - 'False Positive - Incorrect Analytic Logic'
+      - 'False Positive - Inaccurate Data'
+      - Other
+    - description: The Splunk user to assign as the owner of the investigation.
+      name: owner
+    - auto: PREDEFINED
+      description: The urgency of the investigation to be created.
+      name: urgency
+      predefined:
+      - informational
+      - low
+      - medium
+      - high
+      - critical
+      - unknown
+    - auto: PREDEFINED
+      description: The sensitivity of the investigation to be created.
+      name: sensitivity
+      predefined:
+      - White
+      - Green
+      - Amber
+      - Red
+      - Unassigned
+    description: Creates a new investigation in Splunk Enterprise Security.
+    execution: true
+    name: splunk-create-investigation
+    outputs:
+    - contextPath: Splunk.CreateInvestigation.investigation_guid
+      description: The ID (GUID) of the investigation that was created.
+      type: String
+  - arguments:
+    - description: A comma-separated list of investigation IDs (GUID or display ID such as `ES-00001`) to retrieve.
+      name: ids
+      isArray: true
+    - defaultValue: '20'
+      description: The maximum number of investigations to return on the page. Default is 20, maximum is 100.
+      name: limit
+    - description: Pagination offset used together with `limit` to specify the starting point of the returned results. Default is 0.
+      name: offset
+    - description: Sort expression for the returned investigations (for example, `create_time:asc,status:desc`). Default is `create_time:desc`.
+      name: sort
+    - description: Filter by the disposition ID or disposition label of an investigation (comma-separated, for example, `disposition:1,Undetermined`).
+      name: disposition
+      isArray: true
+    - description: Filter by the status ID or status label of an investigation (comma-separated, for example, `New,In progress`).
+      name: status
+      isArray: true
+    - description: Filter by the owner of an investigation (comma-separated for multiple owners).
+      name: owner
+      isArray: true
+    - description: Filter by the urgency of an investigation (comma-separated for multiple values, for example, `medium,high,critical`). Valid values are `informational`, `low`, `medium`, `high`, `critical`, or `unknown`.
+      name: urgency
+      isArray: true
+    - description: Filter by the sensitivity of an investigation (comma-separated for multiple values, for example, `Amber,Red`). Valid values are `White`, `Green`, `Amber`, `Red`, or `Unassigned`.
+      name: sensitivity
+      isArray: true
+    - description: The minimum (epoch) time during which investigations were created.
+      name: create_time_min
+    - description: The maximum (epoch) time during which investigations were created.
+      name: create_time_max
+    - description: The minimum (epoch) time during which investigations were updated.
+      name: update_time_min
+    - description: The maximum (epoch) time during which investigations were updated.
+      name: update_time_max
+    description: Lists investigations from Splunk Enterprise Security.
+    name: splunk-list-investigations
+    outputs:
+    - contextPath: Splunk.ListInvestigations.investigation_guid
+      description: The ID (GUID) of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.investigation_id
+      description: The short display ID of the investigation (for example, `ES-00001`).
+      type: String
+    - contextPath: Splunk.ListInvestigations.name
+      description: The name of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.description
+      description: The description of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.investigation_type
+      description: The type of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.source
+      description: The detection that generated the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.incident_origin
+      description: Where the investigation came from (for example, Splunk Enterprise Security or a risk-based alerting finding).
+      type: String
+    - contextPath: Splunk.ListInvestigations.finding_id
+      description: The ID of the originating Splunk Enterprise Security finding.
+      type: String
+    - contextPath: Splunk.ListInvestigations.disposition
+      description: The disposition ID of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.disposition_name
+      description: The disposition name of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.status
+      description: The status ID of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.status_name
+      description: The status name of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.owner
+      description: The person assigned to the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.urgency
+      description: The urgency of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.sensitivity
+      description: The sensitivity of the investigation.
+      type: String
+    - contextPath: Splunk.ListInvestigations.create_time
+      description: The time when the investigation was created (epoch seconds).
+      type: Number
+    - contextPath: Splunk.ListInvestigations.update_time
+      description: The time when the investigation was last updated (epoch seconds).
+      type: Number
+    - contextPath: Splunk.ListInvestigations.mc_create_time
+      description: The time when the finding or investigation was created or imported into Splunk Enterprise Security (epoch seconds).
+      type: Number
+    - contextPath: Splunk.ListInvestigations.count_findings
+      description: The number of findings (or intermediate findings) associated with this investigation or finding-based-detection (FBD) group.
+      type: Number
+    - contextPath: Splunk.ListInvestigations.risk_event_count
+      description: The number of risk events associated with this investigation.
+      type: Number
+    - contextPath: Splunk.ListInvestigations.risk_score
+      description: The maximum risk score for all the findings added to the investigation.
+      type: Number
+    - contextPath: Splunk.ListInvestigations.excluded_finding_ids
+      description: List of finding IDs (or intermediate findings in the finding groups) that are removed from the investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.attachments
+      description: Array of file IDs attached directly to the investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.notes
+      description: Array of note IDs added directly to the finding or investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.findings.incident_ids
+      description: The added finding IDs.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.findings.field_inheritors
+      description: The added finding IDs that will inherit this investigation's owner, status, urgency, sensitivity, and disposition values.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.current_response_plan_phase.phase_id
+      description: The ID of the current response plan phase.
+      type: String
+    - contextPath: Splunk.ListInvestigations.current_response_plan_phase.response_plan_id
+      description: The ID of the current response plan.
+      type: String
+    - contextPath: Splunk.ListInvestigations.response_plans
+      description: The array of response plans added to the investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.consolidated_findings
+      description: The consolidated list of fields for the findings and all the findings that are added to this investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.finding
+      description: The raw data of the originating finding.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.custom_fields
+      description: Custom fields in the investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.src
+      description: List of values for the `source` field.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.dest
+      description: List of values for the `destination` field.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.dvc
+      description: List of values for the `device` field.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.orig_host
+      description: List of values for the `host` field.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.src_user
+      description: List of values for the `source user` field.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.user
+      description: List of values for the `user` field.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.risk_object
+      description: The list of entities for a finding, finding group, or investigation.
+      type: Unknown
+    - contextPath: Splunk.ListInvestigations.risk_object_type
+      description: The list of risk object types for a finding, finding group, or investigation.
+      type: Unknown
   dockerimage: demisto/splunksdk-py3:1.0.0.7241125
   isfetch: true
   ismappable: true
