@@ -3,6 +3,12 @@ ServiceNow CMDB is a service‑centric foundation that proactively
 
 ## Configure ServiceNow_CMDB in Cortex
 
+### Required ServiceNow Roles
+
+This integration uses the [ServiceNow CMDB Instance API](https://docs.servicenow.com/bundle/xanadu-api-reference/page/integrate/inbound-rest/concept/c_CMDBInstanceAPI.html) (`/api/now/cmdb/instance/`). 
+
+> **The CMDB Instance API requires the user to have the ITIL role.**
+
 ### Instance Configuration
 
 The integration supports three types of authorization:
