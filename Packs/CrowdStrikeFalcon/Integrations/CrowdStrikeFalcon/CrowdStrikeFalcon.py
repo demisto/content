@@ -4040,7 +4040,7 @@ class AssetsDeviceHandler:
 
             # 2. Update state and send it to XSIAM after finish
             self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
             # 3. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
@@ -4492,18 +4492,20 @@ def load_spotlight_state(
     # Extract state variables
     snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
-    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+    # AIDs are no longer stored in context (only counts) to reduce memory/serialization overhead.
+    # Backward compat: read old "unique_aids"/"processed_aids" lists if present, otherwise use counts.
+    unique_aids_count = spotlight_state.metadata.get("unique_aids_count", len(spotlight_state.metadata.get("unique_aids", [])))
+    processed_aids_count = spotlight_state.metadata.get("processed_aids_count", len(spotlight_state.metadata.get("processed_aids", [])))
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"{unique_aids_count=}, {processed_aids_count=}, "
         f"completed_severities={completed_severities}, "
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities
+    return spotlight_state, snapshot_id, total_fetched, unique_aids_count, processed_aids_count, completed_severities
 
 
 def update_spotlight_state_and_metadata(
@@ -4539,8 +4541,8 @@ def update_spotlight_state_and_metadata(
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
-        "unique_aids": list(unique_aids),
-        "processed_aids": list(processed_aids),
+        "unique_aids_count": len(unique_aids),
+        "processed_aids_count": len(processed_aids),
         "completed_severities": completed_severities,
     }
 
