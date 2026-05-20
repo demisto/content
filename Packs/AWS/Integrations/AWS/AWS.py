@@ -9812,6 +9812,68 @@ class NetworkFirewall:
             raw_response=response
         )
 
+    @staticmethod
+    def create_firewall_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an AWS Network Firewall firewall for your VPC.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): The Command arguments.
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        subnet_mappings = None
+        if subnet_mappings_raw := args.get("subnet_mappings"):
+            try:
+                subnet_mappings = json.loads(subnet_mappings_raw)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"subnet_mappings must be a valid JSON string: {e}") from e
+
+        kwargs = remove_empty_elements({
+            "FirewallName": args.get("firewall_name"),
+            "FirewallPolicyArn": args.get("firewall_policy_arn"),
+            "VpcId": args.get("vpc_id"),
+            "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
+            "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
+            "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
+            "Description": args.get("description"),
+            "SubnetMappings": subnet_mappings,
+            "Tags": parse_tag_field(args.get("tags", "")),
+            "EncryptionConfiguration": {
+                "KeyId": args.get("encryption_config_id"),
+                "Type": args.get("encryption_config_type")
+            },
+            "EnabledAnalysisTypes": argToList(args.get("enabled_analysis_types")),
+            "TransitGatewayId": args.get("transit_gateway_id"),
+            "AvailabilityZoneMappings": [{"AvailabilityZone": az} for az in argToList(args.get("availability_zone_mappings"))],
+            "AvailabilityZoneChangeProtection": arg_to_bool_or_none("availability_zone_change_protection"),
+        })
+
+        print_debug_logs(client, f"Creating firewall with parameters: {kwargs}")
+        response = client.create_firewall(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall = response.get("Firewall", {})
+        firewall['FirewallStatus'] = response.pop("FirewallStatus", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=firewall,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall",
+                firewall,
+                headers=["FirewallName", "FirewallArn", "FirewallPolicyArn", "VpcId", "Description", "FirewallId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10022,6 +10084,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-logs-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
     "aws-network-firewall-firewall-describe": NetworkFirewall.describe_firewall_command,
     "aws-network-firewall-firewalls-list": NetworkFirewall.list_firewalls_command,
+    "aws-network-firewall-firewall-create": NetworkFirewall.create_firewall_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10201,6 +10264,8 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:TagResource",
     "network-firewall:DescribeFirewall",
     "network-firewall:ListFirewalls",
+    "network-firewall:CreateFirewall",
+    "network-firewall:TagResource",
 ]
 
 COMMAND_SERVICE_MAP = {
