@@ -85,6 +85,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  additionalinfo: Cortex XSOAR only parameter.
 description: Integrate with GitHub services to perform Identity Lifecycle Management operations.
 display: GitHub IAM
 name: GitHub IAM

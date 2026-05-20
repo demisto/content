@@ -61,6 +61,7 @@ configuration:
   name: mapper_out
   required: false
   type: 0
+  additionalinfo: Cortex XSOAR only parameter.
   hidden:
   - marketplacev2
   - platform

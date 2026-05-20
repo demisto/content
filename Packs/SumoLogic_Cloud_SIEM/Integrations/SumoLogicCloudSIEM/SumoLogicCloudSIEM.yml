@@ -75,7 +75,7 @@ configuration:
   required: false
   section: Collect
 - display: Incident Mirroring Direction
-  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Sumo Logic SIEM to Cortex XSOAR), Outgoing (from Cortex XSOAR to Sumo Logic SIEM), or Incoming and Outgoing (from/to Cortex XSOAR and Sumo Logic SIEM).'
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Sumo Logic SIEM to Cortex XSOAR), Outgoing (from Cortex XSOAR to Sumo Logic SIEM), or Incoming and Outgoing (from/to Cortex XSOAR and Sumo Logic SIEM). Cortex XSOAR only parameter.'
   defaultvalue: None
   name: mirror_direction
   options:
@@ -90,7 +90,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored XSOAR Incident
-  additionalinfo: When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR.
+  additionalinfo: When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR. Cortex XSOAR only parameter.
   defaultvalue: 'false'
   name: close_incident
   type: 8

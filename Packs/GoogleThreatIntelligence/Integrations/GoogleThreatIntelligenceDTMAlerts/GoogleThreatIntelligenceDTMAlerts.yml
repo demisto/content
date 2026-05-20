@@ -46,7 +46,7 @@ configuration:
   options:
   - Outgoing
   required: false
-  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for DTM Alerts.
+  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for DTM Alerts. Cortex XSOAR only parameter.
   section: Collect
 - display: Alert Type
   name: alert_type

@@ -78,7 +78,7 @@ configuration:
   required: false
   type: 19
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from RSA to Cortex XSOAR), Outgoing (from Cortex XSOAR to RSA), or Incoming and Outgoing (from/to Cortex XSOAR and RSA).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from RSA to Cortex XSOAR), Outgoing (from Cortex XSOAR to RSA), or Incoming and Outgoing (from/to Cortex XSOAR and RSA). Cortex XSOAR only parameter.'
   display: Incident Mirroring Direction
   name: mirror_direction
   options:
@@ -94,7 +94,7 @@ configuration:
   - platform
 - defaultvalue: "true"
   display: Close Mirrored XSOAR Incident
-  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
+  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness. Cortex XSOAR only parameter.
   name: close_incident
   required: false
   type: 8

@@ -64,6 +64,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  additionalinfo: Cortex XSOAR only parameter.
 description: Integrate with Exceed LMS Identity Access Management services to execute CRUD operations to employee lifecycle processes.
 display: ExceedLMS IAM
 name: ExceedLMS IAM

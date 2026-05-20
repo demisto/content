@@ -67,7 +67,7 @@ configuration:
   display: Incident Mirror Direction
   defaultvalue: None
   type: 15
-  additionalinfo:
+  additionalinfo: Cortex XSOAR only parameter.
   options:
   - None
   - Incoming

@@ -105,7 +105,7 @@ configuration:
   - Incoming And Outgoing
   required: false
   section: Collect
-  additionalinfo: 'Choose the mirroring direction for Wiz issues. Default is None (no mirroring).'
+  additionalinfo: 'Choose the mirroring direction for Wiz issues. Default is None (no mirroring). Cortex XSOAR only parameter.'
   hidden:
   - marketplacev2
   - platform

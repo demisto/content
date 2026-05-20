@@ -87,6 +87,7 @@ configuration:
   required: false
   type: 0
   section: Collect
+  additionalinfo: Cortex XSOAR only parameter.
   hidden:
   - marketplacev2
   - platform

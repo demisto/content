@@ -58,6 +58,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  additionalinfo: Cortex XSOAR only parameter.
 description: An Identity and Access Management integration template.
 display: Hello World IAM
 name: Hello IAM World

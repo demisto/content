@@ -72,6 +72,7 @@ configuration:
   type: 0
   defaultvalue: User Profile - Salesforce Fusion (Outgoing)
   required: false
+  additionalinfo: Cortex XSOAR only parameter.
   hidden:
   - marketplacev2
   - platform

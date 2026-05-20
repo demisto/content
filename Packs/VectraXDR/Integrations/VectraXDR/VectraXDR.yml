@@ -52,7 +52,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions.
+- additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions. Cortex XSOAR only parameter.
   display: Mirroring Direction
   hidden:
   - marketplacev2

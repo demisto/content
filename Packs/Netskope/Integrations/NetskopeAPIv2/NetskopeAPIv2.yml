@@ -130,6 +130,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  additionalinfo: Cortex XSOAR only parameter.
 - name: close_incident
   display: Close Mirrored XSOAR Incident
   required: false
@@ -139,6 +140,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  additionalinfo: Cortex XSOAR only parameter.
 - name: close_netskope_incident
   display: Close Mirrored Netskope Incident
   required: false

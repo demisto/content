@@ -205,7 +205,7 @@ configuration:
   defaultvalue: None
   type: 15
   required: false
-  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
+  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR). Cortex XSOAR only parameter.'
   options:
   - None
   - Incoming
@@ -245,7 +245,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident.
+  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. Cortex XSOAR only parameter.
   hidden:
   - marketplacev2
   - platform

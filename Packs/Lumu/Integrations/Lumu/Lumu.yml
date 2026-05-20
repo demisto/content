@@ -75,7 +75,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  additionalinfo: Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Lumu to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Lumu), or both **Incoming And Outgoing**.
+  additionalinfo: Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Lumu to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Lumu), or both **Incoming And Outgoing**. Cortex XSOAR only parameter.
   required: false
   hidden:
   - marketplacev2

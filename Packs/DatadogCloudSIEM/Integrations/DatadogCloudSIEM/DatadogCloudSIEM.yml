@@ -109,7 +109,7 @@ configuration:
       - None
       - Incoming
     defaultvalue: None
-    additionalinfo: Choose the mirroring direction for incidents. Incoming mirrors changes from Datadog to XSOAR.
+    additionalinfo: Choose the mirroring direction for incidents. Incoming mirrors changes from Datadog to XSOAR. Cortex XSOAR only parameter.
     required: false
     section: Collect
     hidden:
@@ -118,7 +118,7 @@ configuration:
   - display: Close Mirrored XSOAR Incident
     name: close_incident
     type: 8
-    additionalinfo: When selected, archiving the Datadog security signal is mirrored in XSOAR and closes the XSOAR incident.
+    additionalinfo: When selected, archiving the Datadog security signal is mirrored in XSOAR and closes the XSOAR incident. Cortex XSOAR only parameter.
     required: false
     section: Collect
     hidden:

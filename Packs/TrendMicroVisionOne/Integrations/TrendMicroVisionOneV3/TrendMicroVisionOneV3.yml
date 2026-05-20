@@ -101,7 +101,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   defaultvalue: None
-  additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts.
+  additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts. Cortex XSOAR only parameter.
   required: false
   hidden:
   - marketplacev2

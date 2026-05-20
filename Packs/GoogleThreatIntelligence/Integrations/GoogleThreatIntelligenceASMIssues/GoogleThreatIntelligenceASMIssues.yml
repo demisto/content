@@ -46,7 +46,7 @@ configuration:
   options:
   - Outgoing
   required: false
-  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for ASM Issues.
+  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for ASM Issues. Cortex XSOAR only parameter.
   section: Collect
 - display: Mirror tag for notes
   additionalinfo: The tag value should be used to mirror the issue note by adding the same tag in the notes.
