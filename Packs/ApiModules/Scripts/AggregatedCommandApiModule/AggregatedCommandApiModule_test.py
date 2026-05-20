@@ -2613,3 +2613,47 @@ def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
     assert len(instances) == 1
     assert isinstance(instances[0], IndicatorInstance)
     assert instances[0].extracted_value == "https://example.com"
+
+
+# =================================================================================================
+# == Tests for split_into_chunks
+# =================================================================================================
+
+
+@pytest.mark.parametrize(
+    "items, num_chunks, expected",
+    [
+        # Docstring examples
+        (["a", "b", "c", "d", "e"], 3, [["a", "b"], ["c", "d"], ["e"]]),
+        (["a", "b"], 5, [["a"], ["b"]]),
+        ([], 3, []),
+        # Even split
+        ([1, 2, 3, 4], 2, [[1, 2], [3, 4]]),
+        # Single chunk
+        ([1, 2, 3], 1, [[1, 2, 3]]),
+        # One item per chunk
+        ([1, 2, 3], 3, [[1], [2], [3]]),
+        # More chunks than items
+        ([1], 10, [[1]]),
+        # Single item, single chunk
+        ([1], 1, [[1]]),
+    ],
+)
+def test_split_into_chunks(items: list, num_chunks: int, expected: list[list]):
+    """Test that split_into_chunks divides items correctly."""
+    result = split_into_chunks(items, num_chunks)
+    assert result == expected
+
+
+def test_split_into_chunks_preserves_order():
+    """Concatenation of chunks must equal the original list."""
+    items = list(range(17))
+    chunks = split_into_chunks(items, 5)
+    assert [x for chunk in chunks for x in chunk] == items
+
+
+def test_split_into_chunks_all_non_empty():
+    """Every returned chunk must be non-empty."""
+    items = list(range(7))
+    chunks = split_into_chunks(items, 4)
+    assert all(len(c) > 0 for c in chunks)
