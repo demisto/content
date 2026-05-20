@@ -12,10 +12,10 @@ ignore=RM108,RM110,BA125
 ignore=GR103
 
 [file:SOCRadarRapidReputation.yml]
-ignore=BA125,RM102
+ignore=BA125,RM102,BA129
 
 [file:SOCRadarIoCEnrichment.yml]
-ignore=BA125
+ignore=BA125,BA129
 
 [file:SOCRadarThreatFusion.yml]
 ignore=BA125
