@@ -7,6 +7,7 @@ from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError, WaiterError
+import boto3
 from boto3 import Session
 from xml.sax.saxutils import escape
 import re
@@ -10125,6 +10126,27 @@ def print_debug_logs(client: BotoClient, message: str):
 
 
 def test_module(params):
+    """
+    Validate that the integration is configured correctly.
+
+    - On the Cortex Cloud platform, this code path is not taken: ``main()`` routes to
+      ``run_health_check_for_accounts`` whenever ``get_connector_id()`` returns a value.
+    - On XSOAR / XSIAM marketplaces, validate the supplied credentials by issuing a
+      live ``sts:GetCallerIdentity`` call. This proves both that the access keys are
+      valid and that the (optional) role can be assumed.
+    - When neither a marketplace credential nor a platform ``test_account_id`` is
+      configured, fail with a clear error.
+    """
+    if _has_marketplace_credentials(params):
+        sts_client, _ = get_service_client(
+            params=params,
+            service_name="sts",
+            config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
+        )
+        sts_client.get_caller_identity()
+        demisto.info("[AWS Automation Test Module] sts.GetCallerIdentity succeeded")
+        return "ok"
+
     if params.get("test_account_id"):
         iam_client, _ = get_service_client(
             params=params,
@@ -10132,8 +10154,9 @@ def test_module(params):
             config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
         )
         demisto.info("[AWS Automation Test Module] Initialized IAM client")
-    else:
-        raise DemistoException("Missing AWS credentials or account ID for health check")
+        return "ok"
+
+    raise DemistoException("Missing AWS credentials or account ID for health check")
 
 
 def health_check(credentials: dict, account_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None:
@@ -10217,6 +10240,89 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
     event_system.register_last("before-send.*.*", _add_proxydome_header)
 
 
+def _resolve_marketplace_credentials(params: dict) -> tuple[str | None, str | None]:
+    """
+    Resolve the AWS Access Key ID / Secret Access Key pair from the integration
+    parameters for the XSOAR / XSIAM marketplace path.
+
+    The paired ``credentials`` field (type 9) takes precedence over the standalone
+    ``access_key_id`` / ``secret_access_key`` fields, which are retained as a
+    backward-compatible fallback.
+
+    Args:
+        params (dict): Integration configuration parameters.
+
+    Returns:
+        tuple[str | None, str | None]: ``(access_key_id, secret_access_key)``. Either
+        side may be ``None`` if not configured.
+    """
+    paired = params.get("credentials") or {}
+    access_key_id = paired.get("identifier") or params.get("access_key_id")
+    secret_access_key = paired.get("password") or params.get("secret_access_key", {}).get("password")
+    return access_key_id, secret_access_key
+
+
+def _has_marketplace_credentials(params: dict) -> bool:
+    """
+    Return ``True`` when the user has supplied AWS credentials directly on the
+    integration instance (the XSOAR / XSIAM marketplace pattern), as opposed to the
+    platform-managed Cortex Cloud connector flow.
+    """
+    access_key_id, secret_access_key = _resolve_marketplace_credentials(params)
+    return bool(access_key_id and secret_access_key)
+
+
+def _assume_role_credentials(
+    params: dict,
+    access_key_id: str,
+    secret_access_key: str,
+    region: str,
+    client_config: Config,
+) -> dict:
+    """
+    Call AWS STS ``AssumeRole`` using the marketplace-supplied access keys and
+    return temporary credentials suitable for constructing a boto3 ``Session``.
+
+    Args:
+        params (dict): Integration configuration parameters.
+        access_key_id (str): Long-lived AWS access key ID.
+        secret_access_key (str): Long-lived AWS secret access key.
+        region (str): Region for the service client (used as the STS region when
+            ``sts_region`` is not explicitly configured).
+        client_config (Config): botocore client configuration to apply to the STS
+            client.
+
+    Returns:
+        dict: ``{"AccessKeyId", "SecretAccessKey", "SessionToken"}`` from the STS
+        response.
+
+    Raises:
+        DemistoException: If ``role_arn`` is configured without a session name.
+    """
+    role_arn: str = params.get("role_arn", "")
+    role_session_name: str = params.get("role_session_name") or DEFAULT_SESSION_NAME
+    session_duration = arg_to_number(params.get("session_duration"))
+    sts_region: str = params.get("sts_region") or region
+    sts_endpoint_url: str | None = params.get("sts_endpoint_url") or None
+
+    sts_client = boto3.client(
+        "sts",
+        region_name=sts_region,
+        aws_access_key_id=access_key_id,
+        aws_secret_access_key=secret_access_key,
+        endpoint_url=sts_endpoint_url,
+        config=client_config,
+        verify=not argToBoolean(params.get("insecure", False)),
+    )
+    assume_kwargs: dict = {"RoleArn": role_arn, "RoleSessionName": role_session_name}
+    if session_duration:
+        assume_kwargs["DurationSeconds"] = session_duration
+
+    demisto.debug(f"[AWS Automation] Calling sts.AssumeRole with {assume_kwargs=}")
+    response = sts_client.assume_role(**assume_kwargs)
+    return response["Credentials"]
+
+
 def get_service_client(
     credentials: dict = {},
     params: dict = {},
@@ -10229,38 +10335,108 @@ def get_service_client(
     """
     Create and configure a boto3 client for the specified AWS service.
 
+    The function supports two distinct authentication flows:
+
+    1. **Cortex Cloud platform** - ``credentials`` is populated by
+       ``get_cloud_credentials()`` with short-lived CTS tokens. The resulting client
+       is wired through ProxyDome so requests are tagged with the connector identity.
+
+    2. **XSOAR / XSIAM marketplace** - ``credentials`` is empty. AWS access keys are
+       read from the integration parameters (``credentials`` paired field, or the
+       standalone ``access_key_id`` / ``secret_access_key`` fallback). When
+       ``role_arn`` is also configured, STS ``AssumeRole`` is invoked to obtain
+       temporary credentials. ProxyDome is not used in this path because the
+       integration is not running inside the platform egress environment.
+
     Args:
-        params (dict): Integration configuration parameters
-        args (dict): Command arguments containing region information
-        command (str): AWS command name used to determine the service type
-        credentials (dict): AWS credentials (access key, secret key, session token)
+        credentials (dict): Platform-supplied CTS credentials. Empty on the
+            marketplace path.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments containing region information.
+        command (str): AWS command name used to determine the service type.
+        session (Session | None): Optional pre-built boto3 session to reuse.
+        service_name (str): Explicit AWS service name; inferred from ``command``
+            when not provided.
+        config (Config | None): Additional botocore configuration to merge.
 
     Returns:
-        BotoClient: Configured boto3 client with ProxyDome headers and proxy settings
-        Session: Boto3 session object
+        tuple[BotoClient, Session | None]: Configured boto3 client and the session
+        used to create it.
     """
-    aws_session: Session = session or Session(
-        aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
-        aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key", {}).get("password"),
-        aws_session_token=credentials.get("session_token"),
-        region_name=args.get("region") or params.get("region", "") or DEFAULT_REGION,
-    )
+    region: str = args.get("region") or params.get("region", "") or DEFAULT_REGION
+    is_platform_path: bool = bool(credentials) or bool(get_connector_id())
+
+    if is_platform_path:
+        # Cortex Cloud platform path: credentials come from CTS via get_cloud_credentials().
+        aws_session: Session = session or Session(
+            aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
+            aws_secret_access_key=credentials.get("access_token")
+            or params.get("secret_access_key", {}).get("password"),
+            aws_session_token=credentials.get("session_token"),
+            region_name=region,
+        )
+    else:
+        # Marketplace path: resolve access keys from params and optionally assume a role.
+        access_key_id, secret_access_key = _resolve_marketplace_credentials(params)
+        if not (access_key_id and secret_access_key):
+            raise DemistoException(
+                "AWS credentials are not configured. Provide an Access Key and Secret Key "
+                "on the integration instance, or run the integration through a Cortex Cloud connector."
+            )
+
+        sts_assume_config = Config(retries={"max_attempts": 1})
+        if config:
+            sts_assume_config = sts_assume_config.merge(config)
+
+        if params.get("role_arn"):
+            tmp_creds = _assume_role_credentials(
+                params=params,
+                access_key_id=access_key_id,
+                secret_access_key=secret_access_key,
+                region=region,
+                client_config=sts_assume_config,
+            )
+            aws_session = session or Session(
+                aws_access_key_id=tmp_creds["AccessKeyId"],
+                aws_secret_access_key=tmp_creds["SecretAccessKey"],
+                aws_session_token=tmp_creds["SessionToken"],
+                region_name=region,
+            )
+        else:
+            aws_session = session or Session(
+                aws_access_key_id=access_key_id,
+                aws_secret_access_key=secret_access_key,
+                region_name=region,
+            )
 
     # Resolve service name
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
     service_name = service_name or command.split("-")[1]
-    service = AWSServices(service_name)
 
-    client_config = Config(
-        proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH}
-    )
+    # Build the client config. ProxyDome is only relevant on the platform path.
+    if is_platform_path:
+        client_config = Config(
+            proxies={"https": DEFAULT_PROXYDOME},
+            proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH},
+        )
+    else:
+        client_config = Config()
     if config:
-        client_config.merge(config)
+        client_config = client_config.merge(config)
 
-    client = aws_session.client(service, verify=False, config=client_config)
+    verify_certificate = not argToBoolean(params.get("insecure", False)) if params else False
+    endpoint_url: str | None = params.get("endpoint_url") or None if params else None
 
-    register_proxydome_header(client)
+    client = aws_session.client(
+        service_name,
+        verify=verify_certificate,
+        config=client_config,
+        endpoint_url=endpoint_url,
+    )
+
+    if is_platform_path:
+        register_proxydome_header(client)
 
     return client, session
 
