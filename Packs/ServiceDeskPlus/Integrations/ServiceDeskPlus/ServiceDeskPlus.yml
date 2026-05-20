@@ -735,7 +735,7 @@ script:
       required: true
     - description: The ID of the note to delete.
       name: request_note_id
-      required: false
+      required: true
     name: service-desk-plus-request-notes-delete
     description: delete a request note.
   - arguments:
