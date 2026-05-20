@@ -35,7 +35,7 @@ configuration:
   name: api_key_auth_credentials
   required: false
   type: 9
-- additionalinfo: Provide Username + Password instead of API key + API ID
+- additionalinfo: The username used for Basic or Bearer Authentication.
   display: Username
   name: credentials
   required: false
