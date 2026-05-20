@@ -1217,14 +1217,14 @@ Command performs global Group-IB search
 >| osi/git_leak | 5 | [https://group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100](https://group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100) |
 >| osi/public_leak | 23 | [https://group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100](https://group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100) |
 
-### gibti-local-search
+### gibtia-local-search
 
 ***
 Command performs Group-IB search in selected collection.
 
 #### Base Command
 
-`gibti-local-search`
+`gibtia-local-search`
 
 #### Input
 
