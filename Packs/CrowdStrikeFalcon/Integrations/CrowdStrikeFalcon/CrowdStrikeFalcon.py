@@ -847,6 +847,45 @@ def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
         demisto.error(full_log_line)
 
 
+def _get_process_memory_mb() -> str:
+    """Get current process RSS memory usage for monitoring backpressure effectiveness.
+
+    Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
+    which reflects actual physical memory usage at this moment.
+    The `resource` module is imported locally as `resource_mod` to avoid shadowing
+    the `resource` loop variable used elsewhere in this file (ruff F402).
+
+    Returns:
+        Formatted string with current and peak RSS in MB, e.g. "current=1234.5 MB, peak=3198.4 MB"
+    """
+    # Import locally to avoid shadowing the `resource` loop variable used in other functions
+    import resource as resource_mod  # noqa: F811
+    import sys
+
+    # Current RSS: read from /proc/self/status (Linux only)
+    # VmRSS shows the actual physical memory currently used by the process
+    current_rss_mb = 0.0
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    # VmRSS is reported in KB in /proc/self/status
+                    current_rss_mb = int(line.split()[1]) / 1024
+                    break
+    except (FileNotFoundError, ValueError):
+        pass  # Not on Linux or parse error — current RSS will show 0
+
+    # Peak RSS: the maximum RSS ever reached during the process lifetime
+    # On Linux ru_maxrss is in KB, on macOS it's in bytes
+    rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
+    if sys.platform == "darwin":
+        peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
+    else:
+        peak_rss_mb = rusage.ru_maxrss / 1024
+
+    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
+
+
 def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
     """Convert data to a newline-separated JSON string for XSIAM ingestion.
 
@@ -4600,44 +4639,6 @@ async def fetch_vulnerabilities_by_severity(
     batch_counter = 0
     last_saved_batch_number = 0
 
-    def _get_process_memory_mb() -> str:
-        """Get current process RSS memory usage for monitoring backpressure effectiveness.
-
-        Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
-        which reflects actual physical memory usage at this moment.
-        The `resource` module is imported locally as `resource_mod` to avoid shadowing
-        the `resource` loop variable used elsewhere in this file (ruff F402).
-
-        Returns:
-            Formatted string with current and peak RSS in MB, e.g. "current=1234.5 MB, peak=3198.4 MB"
-        """
-        # Import locally to avoid shadowing the `resource` loop variable used in other functions
-        import resource as resource_mod  # noqa: F811
-        import sys
-
-        # Current RSS: read from /proc/self/status (Linux only)
-        # VmRSS shows the actual physical memory currently used by the process
-        current_rss_mb = 0.0
-        try:
-            with open("/proc/self/status") as f:
-                for line in f:
-                    if line.startswith("VmRSS:"):
-                        # VmRSS is reported in KB in /proc/self/status
-                        current_rss_mb = int(line.split()[1]) / 1024
-                        break
-        except (FileNotFoundError, ValueError):
-            pass  # Not on Linux or parse error — current RSS will show 0
-
-        # Peak RSS: the maximum RSS ever reached during the process lifetime
-        # On Linux ru_maxrss is in KB, on macOS it's in bytes
-        rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
-        if sys.platform == "darwin":
-            peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
-        else:
-            peak_rss_mb = rusage.ru_maxrss / 1024
-
-        return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
-
     try:
         while True:
             # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
@@ -4710,7 +4711,18 @@ async def fetch_vulnerabilities_by_severity(
                 data_type="assets",
             )
 
+            # Track task and update last_saved_batch_number when task completes
+            def update_last_saved(future):
+                nonlocal last_saved_batch_number
+                try:
+                    last_saved_batch_number = future.result()
+                except Exception as e:
+                    log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
+                finally:
+                    pending_tasks.discard(future)
+
             pending_tasks.add(task)
+            task.add_done_callback(update_last_saved)
             log_falcon_assets(
                 f"[{severity}] Created send task for batch {batch_counter} "
                 f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
@@ -5070,7 +5082,8 @@ async def fetch_spotlight_assets():
         log_falcon_assets(
             f"Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
             f"Total vulnerabilities: {total_vulnerabilities}, "
-            f"Total unique hosts: {len(all_unique_aids)}",
+            f"Total unique hosts: {len(all_unique_aids)}, "
+            f"RSS: {_get_process_memory_mb()}",
             "info",
         )
 
