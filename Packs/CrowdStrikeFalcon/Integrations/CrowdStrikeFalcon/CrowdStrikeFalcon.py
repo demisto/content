@@ -4459,8 +4459,8 @@ def load_spotlight_state(
     unique_aids_count = spotlight_state.metadata.get("unique_aids_count", 0)
     processed_aids_count = spotlight_state.metadata.get("processed_aids_count", 0)
     # Create empty sets for runtime use (always start fresh each execution)
-    unique_aids = set()
-    processed_aids = set()
+    unique_aids: set[str] = set()
+    processed_aids: set[str] = set()
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
