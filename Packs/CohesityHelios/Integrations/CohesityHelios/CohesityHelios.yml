@@ -1,10 +1,6 @@
 sectionorder:
 - Connect
 - Collect
-- Optimize
-- Mirroring
-- Result
-- Agentic Assistant
 category: Vulnerability Management
 provider: Cohesity
 commonfields:
