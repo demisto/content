@@ -89,6 +89,9 @@ configuration:
   required: false
   type: 15
   section: Mirroring
+  hidden:
+  - marketplacev2
+  - platform
 - defaultvalue: "true"
   display: Close Mirrored XSOAR Incident
   additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
@@ -96,6 +99,9 @@ configuration:
   required: false
   type: 8
   section: Mirroring
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days.
   display: Mirroring Days Limit
   defaultvalue: '3'

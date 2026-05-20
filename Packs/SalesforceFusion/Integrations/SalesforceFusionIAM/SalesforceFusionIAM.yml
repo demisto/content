@@ -71,7 +71,10 @@ configuration:
   name: mapper_out
   type: 0
   defaultvalue: User Profile - Salesforce Fusion (Outgoing)
-  required: true
+  required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

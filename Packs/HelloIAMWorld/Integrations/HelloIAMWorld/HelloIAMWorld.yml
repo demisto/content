@@ -53,8 +53,11 @@ configuration:
 - defaultvalue: User Profile - IAM Template (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
+  hidden:
+  - marketplacev2
+  - platform
 description: An Identity and Access Management integration template.
 display: Hello World IAM
 name: Hello IAM World

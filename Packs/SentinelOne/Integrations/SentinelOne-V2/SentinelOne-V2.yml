@@ -156,6 +156,9 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident

@@ -56,6 +56,9 @@ configuration:
   - Incoming
   - Outgoing
   - Both
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
   defaultvalue: 'true'
   display: Close Mirrored XSOAR Incident

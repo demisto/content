@@ -84,6 +84,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 description: An Identity and Access Management integration template.
 display: Zoom_IAM
 name: Zoom_IAM

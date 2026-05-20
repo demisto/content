@@ -127,12 +127,18 @@ configuration:
   - Outgoing
   - Incoming and Outgoing
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - name: close_incident
   display: Close Mirrored XSOAR Incident
   required: false
   type: 8
   defaultvalue: "false"
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - name: close_netskope_incident
   display: Close Mirrored Netskope Incident
   required: false

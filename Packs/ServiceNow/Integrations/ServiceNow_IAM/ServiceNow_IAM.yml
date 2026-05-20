@@ -57,8 +57,11 @@ configuration:
 - defaultvalue: User Profile - ServiceNow (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
+  hidden:
+  - marketplacev2
+  - platform
 description: Integrate with ServiceNow's services to execute CRUD operations for employee lifecycle processes.
 display: ServiceNow IAM
 name: ServiceNow IAM

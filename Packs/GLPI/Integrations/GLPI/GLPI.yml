@@ -74,6 +74,9 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - name: work_notes_tag
   display: Tag used for work note mirroring
   defaultvalue: work_notes

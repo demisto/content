@@ -54,7 +54,9 @@ configuration:
   section: Collect
 - additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
-  hidden: false
+  hidden:
+  - marketplacev2
+  - platform
   name: mirror_direction
   options:
   - Incoming

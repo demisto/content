@@ -97,6 +97,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 description: Streamline alerts and related forensic information from Varonis SaaS.
 display: Varonis SaaS
 name: VaronisSaaS

@@ -64,6 +64,9 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   - None
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: "1 day"
   display: First fetch

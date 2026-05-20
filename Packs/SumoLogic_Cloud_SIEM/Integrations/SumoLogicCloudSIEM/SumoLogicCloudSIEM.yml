@@ -86,6 +86,9 @@ configuration:
   type: 15
   section: Collect
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: Close Mirrored XSOAR Incident
   additionalinfo: When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
@@ -94,6 +97,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: Close Mirrored Sumo Logic Insight
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Sumo Logic SIEM.
   defaultvalue: 'false'

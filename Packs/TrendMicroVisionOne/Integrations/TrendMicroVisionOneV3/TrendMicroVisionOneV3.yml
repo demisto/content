@@ -103,6 +103,9 @@ configuration:
   defaultvalue: None
   additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts.
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 description: TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
 display: TrendAI Vision One™ v3
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper

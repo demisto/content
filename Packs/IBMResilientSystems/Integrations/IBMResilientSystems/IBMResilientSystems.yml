@@ -102,6 +102,9 @@ configuration:
   - Out
   - Both
   defaultvalue: None
+  hidden:
+  - marketplacev2
+  - platform
 
 - display: Close Mirrored XSOAR Incidents
   name: close_xsoar_incident

@@ -112,12 +112,18 @@ configuration:
     additionalinfo: Choose the mirroring direction for incidents. Incoming mirrors changes from Datadog to XSOAR.
     required: false
     section: Collect
+    hidden:
+      - marketplacev2
+      - platform
   - display: Close Mirrored XSOAR Incident
     name: close_incident
     type: 8
     additionalinfo: When selected, archiving the Datadog security signal is mirrored in XSOAR and closes the XSOAR incident.
     required: false
     section: Collect
+    hidden:
+      - marketplacev2
+      - platform
 description: Datadog Cloud SIEM integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members. Supports incoming mirroring of signals to XSOAR incidents.
 display: Datadog Cloud SIEM
 name: DatadogCloudSIEMV2

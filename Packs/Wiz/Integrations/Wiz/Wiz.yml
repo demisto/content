@@ -106,6 +106,9 @@ configuration:
   required: false
   section: Collect
   additionalinfo: 'Choose the mirroring direction for Wiz issues. Default is None (no mirroring).'
+  hidden:
+  - marketplacev2
+  - platform
 - name: mirror_limit
   display: Mirror API page size
   defaultvalue: '50'
