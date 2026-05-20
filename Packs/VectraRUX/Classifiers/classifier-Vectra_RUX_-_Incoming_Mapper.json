@@ -776,5 +776,15 @@
     "name": "Vectra RUX - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "edr",
+        "agentix",
+        "asm",
+        "xsiam",
+        "exposure_management"
+    ]
 }

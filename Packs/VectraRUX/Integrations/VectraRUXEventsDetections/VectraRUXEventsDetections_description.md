@@ -41,7 +41,7 @@ To fetch Vectra RUX Events Detections follow the next steps:
 11. Uncheck the "Open Detection on Incident Reopen" option if you don't want to open the detection in Vectra when the incident is reopened in XSOAR. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 12. Select the "Detection Status for Incident Reopen" option if you want to set the detection status in Vectra when the incident is reopened in XSOAR. Default value is 'Escalated'. This option is only used when the "Open Detection on Incident Reopen" option is checked and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 13. Uncheck the "Close Detection on Incident Closure" option if you don't want to close the detection in Vectra when the incident is closed in XSOAR. This option is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
-14. Select the "Detection Close Reason for Incident Closure" option if you want to set the detection close reason in Vectra when the incident is closed in XSOAR. Default value is 'Benign'. This option is only used when the "Close Detection on Incident Closure" option is checked and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
+14. Select the "Detection Close Reason for Incident Closure" option if you want to set the detection close reason in Vectra when the incident is closed in XSOAR. Default value is 'Remediated'. This option is only used when the "Close Detection on Incident Closure" option is checked and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'.
 15. Select SSL certificate validation and Proxy if required.
 16. Click "Test" to validate the connection.
 17. Click "Save".

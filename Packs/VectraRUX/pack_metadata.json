@@ -44,10 +44,17 @@
     "devEmail": [],
     "githubUser": [],
     "supportedModules": [
+        "agentix",
+        "asm",
+        "cloud",
         "cloud_appsec",
-        "xsiam",
+        "cloud_posture",
+        "cloud_runtime_security",
+        "edr",
+        "email_security",
+        "exposure_management",
         "tim",
-        "email_security"
+        "xsiam"
     ],
     "dependencies": {
         "Vectra_AI": {

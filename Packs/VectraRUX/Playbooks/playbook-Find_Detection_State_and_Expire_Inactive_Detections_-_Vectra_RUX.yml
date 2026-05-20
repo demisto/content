@@ -538,3 +538,12 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+supportedModules:
+- cloud_posture
+- cloud
+- cloud_runtime_security
+- edr
+- agentix
+- asm
+- xsiam
+- exposure_management

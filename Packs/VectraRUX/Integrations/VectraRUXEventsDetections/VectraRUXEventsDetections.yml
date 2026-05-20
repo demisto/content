@@ -101,7 +101,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- additionalinfo: "Detection close reason to set in Vectra when closing incidents in XSOAR. Default value is 'Benign'.\n\nNote: This parameter is only used when close detection on incident closer is 'checked' and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+- additionalinfo: "Detection close reason to set in Vectra when closing incidents in XSOAR. Default value is 'Remediated'.\n\nNote: This parameter is only used when close detection on incident closer is 'checked' and the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
   display: Detection Close Reason for Incident Closure
   name: close_reason_of_detection
   type: 15
