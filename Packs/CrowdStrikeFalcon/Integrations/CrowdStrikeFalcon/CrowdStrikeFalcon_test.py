@@ -9441,10 +9441,7 @@ class TestSpotlightSeverityBasedFetch:
         assert "Invalid or expired credentials" in error_message
 
         # Verify error was logged
-        assert any(
-            "Authentication failed" in str(call) and "error" in str(call)
-            for call in mock_log.call_args_list
-        )
+        assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
 
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_401_error_string_match(self, mocker):
@@ -9496,10 +9493,7 @@ class TestSpotlightSeverityBasedFetch:
         assert "Invalid or expired credentials" in error_message
 
         # Verify error was logged
-        assert any(
-            "Authentication failed" in str(call) and "error" in str(call)
-            for call in mock_log.call_args_list
-        )
+        assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
 
 
 class TestAssetsDeviceHandler:

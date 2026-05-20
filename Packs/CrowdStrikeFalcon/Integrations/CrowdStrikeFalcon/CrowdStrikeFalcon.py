@@ -4687,7 +4687,7 @@ async def fetch_vulnerabilities_by_severity(
             )
             log_falcon_assets(f"[{severity}] {error_msg}", "error")
             raise ContentClientError(error_msg) from e
-        
+
         # Check for "Unauthorized" in error message as fallback
         error_str = str(e)
         if "Unauthorized" in error_str or "401" in error_str:
@@ -4698,7 +4698,7 @@ async def fetch_vulnerabilities_by_severity(
             )
             log_falcon_assets(f"[{severity}] {error_msg}", "error")
             raise ContentClientError(error_msg) from e
-        
+
         # Check if this is an expired cursor error
         if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
             log_falcon_assets(
