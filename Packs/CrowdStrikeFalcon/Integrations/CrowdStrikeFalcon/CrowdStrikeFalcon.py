@@ -4178,10 +4178,6 @@ def send_data_to_xsiam_async(
     Generic function for sending any type of data (assets, events, etc.) to XSIAM.
     Adapted from Rapid7_Nexpose.py lines 7631-7672.
 
-    Data is serialized, chunked, and gzip-compressed SYNCHRONOUSLY before creating async tasks.
-    This ensures the original data objects (e.g., vulnerability dicts) can be garbage collected
-    immediately, reducing memory footprint for fire-and-forget patterns.
-
     Args:
         data: List of data objects to send (e.g., vulnerabilities, alerts, events)
         vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
@@ -4199,9 +4195,9 @@ def send_data_to_xsiam_async(
 
     Note:
         - Data is automatically converted to newline-separated JSON strings
-        - Data is compressed with gzip BEFORE creating async tasks (synchronously)
-        - Data is split into chunks based on chunk_size parameter (max 9 MB enforced)
-        - Each chunk is sent as a separate async task holding only compressed bytes
+        - Data is compressed with gzip before sending
+        - Data is split into chunks based on chunk_size parameter
+        - Each chunk is sent as a separate async task
     """
     params = demisto.params()
     calling_context = demisto.callingContext.get("context", {})
@@ -4246,34 +4242,23 @@ def send_data_to_xsiam_async(
         headers["snapshot-id"] = snapshot_id + instance_name + product
         headers["total-items-count"] = str(items_count)
 
-    # If data_str is empty (the seal), we force a single empty compressed chunk
+    # If data_str is empty (the seal), we force a list with one empty string [""] to ensure the task is created
     if not data_str and data_type == "assets":
-        compressed_chunks = [gzip.compress(b"")]
+        data_chunks = [""]
         log_falcon_assets("Preparing empty 'Seal' batch to close snapshot.")
     else:
-        # Split into chunks and compress SYNCHRONOUSLY before creating async tasks.
-        # This ensures the original data objects can be GC'd immediately,
-        # and async tasks only hold compressed bytes (~5-10x smaller).
         data_chunks = list(split_data_to_chunks(data_str, chunk_size))
-        compressed_chunks = []
-        for chunk in data_chunks:
-            chunk_str = "\n".join(chunk)
-            compressed_chunks.append(gzip.compress(chunk_str.encode("utf-8")))
 
-        log_falcon_assets(
-            f"Compressed {len(data) if isinstance(data, list) else 'N/A'} {data_type} items "
-            f"into {len(compressed_chunks)} gzipped chunks "
-            f"(total compressed: {sum(len(c) for c in compressed_chunks) / 1024:.1f} KB)"
-        )
-
-    # Create async tasks that only hold compressed bytes — original data refs are freed
-    async def send_compressed_chunk_async(zipped_data: bytes) -> int:
+    async def send_events_async(data_chunk) -> int:
+        chunk_size_val = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
         await xsiam_api_call_async(
             xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
         )
-        return len(zipped_data)
+        return chunk_size_val
 
-    tasks = [asyncio.create_task(send_compressed_chunk_async(chunk)) for chunk in compressed_chunks]
+    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
     return tasks
 
 
@@ -4368,10 +4353,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
 ):
     """
     Create an async task to send vulnerability batch to XSIAM and save context.
-
-    Data is compressed SYNCHRONOUSLY (before creating the async task) via send_data_to_xsiam_async().
-    This ensures the original data objects (e.g., vulnerability dicts) can be garbage collected
-    immediately, and the async task only holds references to compressed bytes and HTTP send coroutines.
+    Parameters now match the order and names of the internal async function.
 
     Args:
         data: List of data items to send
@@ -4389,46 +4371,22 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    log_falcon_assets(f"[Batch {batch_number}] Compressing {len(data)} {data_type} items synchronously before task creation")
-
-    # 1. Compress data and create HTTP send tasks SYNCHRONOUSLY (before asyncio.create_task).
-    # This frees the original data dicts immediately — the async task only holds compressed bytes.
-    http_send_tasks = send_data_to_xsiam_async(
-        data=data,
-        vendor=VENDOR,
-        product=product,
-        data_format="json",
-        url_key="url",
-        num_of_attempts=3,
-        chunk_size=XSIAM_EVENT_CHUNK_SIZE,
-        data_type=data_type,
-        snapshot_id=snapshot_id,
-        items_count=items_count,
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor=VENDOR,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
     )
-    # At this point, data dicts have been serialized + compressed + split into HTTP tasks.
-    # The original `data` list can now be GC'd by the caller.
-
-    # 2. Create async task that only awaits the HTTP sends and saves context
-    async def send_and_save_context() -> int:
-        try:
-            await asyncio.gather(*http_send_tasks)
-            log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
-
-            if batch_number > last_saved_batch_number:
-                save_state_callback(context_store, state)
-                log_falcon_assets(f"[Batch {batch_number}] Context saved")
-                return batch_number
-            else:
-                log_falcon_assets(
-                    f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
-                )
-                return last_saved_batch_number
-
-        except Exception as e:
-            log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
-            raise
-
-    return asyncio.create_task(send_and_save_context())
+    return task
 
 
 def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
