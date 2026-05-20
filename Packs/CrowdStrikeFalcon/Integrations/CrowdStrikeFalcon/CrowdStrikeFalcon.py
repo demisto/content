@@ -90,8 +90,8 @@ FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch
 MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
-MAX_FETCH_SPOTLIGHT_ASSETS = 5000
-MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY = 5  # Backpressure: max pending XSIAM sends per severity stream
+MAX_FETCH_SPOTLIGHT_ASSETS = 50
+MAX_CONCURRENT_VULN_SENDS_PER_SEVERITY = 10  # Backpressure: max pending XSIAM sends per severity stream
 SEMAPHORE_ACQUIRE_TIMEOUT = 60  # Seconds to wait for semaphore before proceeding without backpressure (cursor TTL is ~2 min)
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
@@ -4179,6 +4179,10 @@ def send_data_to_xsiam_async(
     Generic function for sending any type of data (assets, events, etc.) to XSIAM.
     Adapted from Rapid7_Nexpose.py lines 7631-7672.
 
+    Data is serialized, chunked, and gzip-compressed SYNCHRONOUSLY before creating async tasks.
+    This ensures the original data objects (e.g., vulnerability dicts) can be garbage collected
+    immediately, reducing memory footprint for fire-and-forget patterns.
+
     Args:
         data: List of data objects to send (e.g., vulnerabilities, alerts, events)
         vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
@@ -4196,9 +4200,9 @@ def send_data_to_xsiam_async(
 
     Note:
         - Data is automatically converted to newline-separated JSON strings
-        - Data is compressed with gzip before sending
-        - Data is split into chunks based on chunk_size parameter
-        - Each chunk is sent as a separate async task
+        - Data is compressed with gzip BEFORE creating async tasks (synchronously)
+        - Data is split into chunks based on chunk_size parameter (max 9 MB enforced)
+        - Each chunk is sent as a separate async task holding only compressed bytes
     """
     params = demisto.params()
     calling_context = demisto.callingContext.get("context", {})
@@ -4243,23 +4247,35 @@ def send_data_to_xsiam_async(
         headers["snapshot-id"] = snapshot_id + instance_name + product
         headers["total-items-count"] = str(items_count)
 
-    # If data_str is empty (the seal), we force a list with one empty string [""] to ensure the task is created
+    # If data_str is empty (the seal), we force a single empty compressed chunk
     if not data_str and data_type == "assets":
-        data_chunks = [""]
+        compressed_chunks = [gzip.compress(b"")]
         log_falcon_assets("Preparing empty 'Seal' batch to close snapshot.")
     else:
+        # Split into chunks and compress SYNCHRONOUSLY before creating async tasks.
+        # This ensures the original data objects can be GC'd immediately,
+        # and async tasks only hold compressed bytes (~5-10x smaller).
         data_chunks = list(split_data_to_chunks(data_str, chunk_size))
+        compressed_chunks = []
+        for chunk in data_chunks:
+            chunk_str = "\n".join(chunk)
+            compressed_chunks.append(gzip.compress(chunk_str.encode("utf-8")))
 
-    async def send_events_async(data_chunk) -> int:
-        chunk_size_val = len(data_chunk)
-        data_chunk = "\n".join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
-        await xsiam_api_call_async(
-            xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
+        log_falcon_assets(
+            f"Compressed {len(data) if isinstance(data, list) else 'N/A'} {data_type} items "
+            f"into {len(compressed_chunks)} gzipped chunks "
+            f"(total compressed: {sum(len(c) for c in compressed_chunks) / 1024:.1f} KB)"
         )
-        return chunk_size_val
 
-    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    # Create async tasks that only hold compressed bytes — original data refs are freed
+    async def send_compressed_chunk_async(zipped_data: bytes) -> int:
+        await xsiam_api_call_async(
+            xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers,
+            num_of_attempts=num_of_attempts, data_type=data_type
+        )
+        return len(zipped_data)
+
+    tasks = [asyncio.create_task(send_compressed_chunk_async(chunk)) for chunk in compressed_chunks]
     return tasks
 
 
@@ -4305,6 +4321,8 @@ async def send_batch_to_xsiam_and_save_context(
 
     try:
         # 1. Send to XSIAM (returns list of async tasks)
+        # Note: send_data_to_xsiam_async compresses data synchronously before creating tasks,
+        # so the original data dicts can be GC'd once this call returns.
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4370,7 +4388,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    # items_count = items_count if batch
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
             data=data,
@@ -4685,6 +4702,8 @@ async def fetch_vulnerabilities_by_severity(
                 )
 
             # Create task to send batch to XSIAM
+            # Note: send_data_to_xsiam_async (called inside) compresses data synchronously
+            # before creating async tasks, so vulnerability dicts can be GC'd immediately
             task = create_task_send_batch_to_xsiam_and_save_context(
                 data=vulnerabilities,
                 product=SPOTLIGHT_VULN_PRODUCT,
@@ -5016,6 +5035,7 @@ async def fetch_spotlight_assets():
     Total time = max(all queries) = ~2.3 hours. No cursor expiration, no duplication.
     """
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
+    fetch_start_time = time.monotonic()
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
@@ -5049,8 +5069,11 @@ async def fetch_spotlight_assets():
         )
         save_spotlight_state(context_store, spotlight_state)
 
+        fetch_elapsed = time.monotonic() - fetch_start_time
+        fetch_minutes = fetch_elapsed / 60
         log_falcon_assets(
-            f"Finished Spotlight assets fetch. Total vulnerabilities: {total_vulnerabilities}, "
+            f"Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
+            f"Total vulnerabilities: {total_vulnerabilities}, "
             f"Total unique hosts: {len(all_unique_aids)}",
             "info",
         )
