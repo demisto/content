@@ -7,7 +7,6 @@ import base64
 import email
 import hashlib
 import json
-import resource
 from collections.abc import Callable
 from enum import Enum, IntEnum
 from threading import Timer
@@ -4608,9 +4607,10 @@ async def fetch_vulnerabilities_by_severity(
 
     def _get_process_memory_mb() -> float:
         """Get current process peak RSS memory in MB (Linux: KB, macOS: bytes)."""
-        rusage = resource.getrusage(resource.RUSAGE_SELF)
+        import resource as resource_mod
         import sys
 
+        rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
         if sys.platform == "darwin":
             return rusage.ru_maxrss / (1024 * 1024)
         return rusage.ru_maxrss / 1024
