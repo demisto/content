@@ -38,7 +38,8 @@ from Qualysv2 import (
     ASSETS_FETCH_FROM,
     ASSETS_DATE_FORMAT,
     HOST_LIMIT,
-    API_SUFFIX,
+    API_SUFFIX_DETECTION,
+    API_SUFFIX_KNOWLEDGEBASE,
     VENDOR,
     DEFAULT_LAST_ASSETS_RUN,
 )
@@ -168,7 +169,7 @@ def test_fetch_assets_command(requests_mock: RequestsMocker, client: Client):
     with open("./test_data/host_list_detections_raw.xml") as f:
         assets = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/asset/host/vm/detection/"
+        f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/"
         f"?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after="
         f"{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}",
         text=assets,
@@ -193,7 +194,7 @@ def test_fetch_assets_command_time_out(requests_mock: RequestsMocker, mocker, cl
     with open("./test_data/host_list_detections_raw.xml") as f:
         assets = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/asset/host/vm/detection/"
+        f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/"
         f"?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after="
         f"{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}",
         exc=requests.exceptions.ReadTimeout,
@@ -222,7 +223,7 @@ def test_fetch_vulnerabilities_command_by_date(requests_mock: RequestsMocker, cl
     since_datetime = arg_to_datetime("2025-01-25").strftime(ASSETS_DATE_FORMAT)
     last_run = {"since_datetime": since_datetime}
     requests_mock.post(
-        f"{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}", text=raw_response
+        f"{BASE_URL}api/4.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}", text=raw_response
     )
 
     vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run=last_run)
@@ -248,7 +249,7 @@ def test_fetch_vulnerabilities_command_by_qid(requests_mock: RequestsMocker, cli
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
 
     detection_qids = ["10052", "10186"]
-    requests_mock.post(f'{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
+    requests_mock.post(f'{BASE_URL}api/4.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
 
     vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run={}, detection_qids=detection_qids)
 
@@ -1121,7 +1122,7 @@ class TestClientClass:
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(
-            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+            API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
         )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
@@ -1159,7 +1160,7 @@ class TestClientClass:
 
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
 
     @pytest.mark.parametrize(
@@ -1680,7 +1681,7 @@ def test_get_vulnerabilities_valid_inputs(
     http_request_kwargs = client_http_request.call_args.kwargs
 
     assert http_request_kwargs["method"] == "POST"
-    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
     assert http_request_kwargs["params"] == expected_params
 
 

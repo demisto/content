@@ -911,7 +911,9 @@ script:
       - '1'
     - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: download a list of vulnerabilities from Qualys’ KnowledgeBase.
+    - description: Filter vulnerabilities by cloud agent scan type. When applied, only Deep Scan QIDs are returned. Possible value - "Deep Scan - Windows".
+      name: cloud_agent_scan_type
+    description: download a list of vulnerabilities from Qualys' KnowledgeBase.
     name: qualys-vulnerability-list
     outputs:
     - contextPath: Qualys.Vulnerability.List.QID
@@ -2880,6 +2882,8 @@ script:
     - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
       name: cve
       required: true
+    - description: Filter vulnerabilities by cloud agent scan type. When applied, only Deep Scan QIDs are returned. Possible value - "Deep Scan - Windows".
+      name: cloud_agent_scan_type
     description: Retrieves one or more Qualys QIDs (Qualys IDs) associated with a specified CVE.
     name: qualys-get-quid-by-cve
     outputs:

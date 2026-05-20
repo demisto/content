@@ -39,6 +39,12 @@ ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 EXECUTION_START_TIME = time.time()
 API_SUFFIX = "/api/2.0/fo/"
+# New API version suffixes per endpoint group (replacing some deprecated v2.0 endpoints)
+API_SUFFIX_HOST = "/api/5.0/fo/"  # asset/host/ endpoints (list, update, purge)
+API_SUFFIX_DETECTION = "/api/5.0/fo/"  # asset/host/vm/detection/ endpoints
+API_SUFFIX_KNOWLEDGEBASE = "/api/4.0/fo/"  # knowledge_base/vuln/ endpoints
+API_SUFFIX_SCAN = "/api/3.0/fo/"  # scan/ endpoints
+API_SUFFIX_REPORT = "/api/3.0/fo/"  # report/ endpoints
 TAG_API_SUFFIX = "/qps/rest/2.0/"
 
 FETCH_COMMAND = {"events": 0, "assets": 1}
@@ -598,12 +604,12 @@ COMMANDS_CONTEXT_DATA = {
 # Information about the API request of the commands
 COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     "qualys-purge-scan-host-data": {
-        "api_route": API_SUFFIX + "asset/host/?action=purge",
+        "api_route": API_SUFFIX_HOST + "asset/host/?action=purge",
         "call_method": "POST",
         "resp_type": "text",
     },
     "qualys-report-list": {
-        "api_route": API_SUFFIX + "/report/?action=list",
+        "api_route": API_SUFFIX_REPORT + "/report/?action=list",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -613,7 +619,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-vm-scan-list": {
-        "api_route": API_SUFFIX + "/scan/?action=list",
+        "api_route": API_SUFFIX_SCAN + "/scan/?action=list",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -643,7 +649,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-host-list": {
-        "api_route": API_SUFFIX + "/asset/host/?action=list",
+        "api_route": API_SUFFIX_HOST + "/asset/host/?action=list",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -668,7 +674,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-vulnerability-list": {
-        "api_route": API_SUFFIX + "/knowledge_base/vuln/?action=list",
+        "api_route": API_SUFFIX_KNOWLEDGEBASE + "/knowledge_base/vuln/?action=list",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -794,14 +800,14 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     },
     "qualys-host-list-detection": {
         # show detection score `QDS` and score contributing factors `QDS_FACTORS`
-        "api_route": API_SUFFIX
+        "api_route": API_SUFFIX_DETECTION
         + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1&\
             host_metadata=all&show_cloud_tags=1",
         "call_method": "GET",
         "resp_type": "text",
     },
     "qualys-host-update": {
-        "api_route": API_SUFFIX + "asset/host/?action=update",
+        "api_route": API_SUFFIX_HOST + "asset/host/?action=update",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -1089,6 +1095,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
             "show_supported_modules_info",
             "show_disabled_flag",
             "show_qid_change_log",
+            "cloud_agent_scan_type",
         ],
         "inner_args": ["limit"],
     },
@@ -1675,7 +1682,7 @@ class Client(BaseClient):
 
         response = self._http_request(
             method="GET",
-            url_suffix=urljoin(API_SUFFIX, "activity_log/?action=list"),
+            url_suffix=urljoin(API_SUFFIX, "activity_log/?action=list"),  # Activity log is not deprecated; stays on v2.0
             resp_type="text/csv",
             params=params,
             timeout=60,
@@ -1724,7 +1731,9 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"),
+                url_suffix=urljoin(
+                    API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+                ),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
@@ -1763,7 +1772,7 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="POST",
-                url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+                url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
@@ -1775,17 +1784,17 @@ class Client(BaseClient):
 
         return response
 
-    def get_qid_for_cve(self, cve: str) -> requests.Response:
+    def get_qid_for_cve(self, cve: str, cloud_agent_scan_type: str | None = None) -> requests.Response:
         """
         This method retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
         """
         self._headers.update({"Content-Type": "application/json"})
 
-        params: dict[str, Any] = {"cve": cve}
+        params: dict[str, Any] = assign_params(cve=cve, cloud_agent_scan_type=cloud_agent_scan_type)
 
         response = self._http_request(
             method="GET",
-            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+            url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
             params=params,
             resp_type="xml",
             timeout=60,
@@ -3234,14 +3243,14 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     return vulnerabilities, new_last_run
 
 
-def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
+def get_qid_for_cve(client: Client, cve: str, cloud_agent_scan_type: str | None = None) -> CommandResults:
     """
     This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
     """
 
     demisto.debug(f"Start getting qids for the given {cve=}")
 
-    response = client.get_qid_for_cve(cve=cve)
+    response = client.get_qid_for_cve(cve=cve, cloud_agent_scan_type=cloud_agent_scan_type)
     # Parse XML response
     root = ElementTree.fromstring(response.content)
 
@@ -3855,7 +3864,9 @@ def main():  # pragma: no cover
             )
 
         elif command == "qualys-get-quid-by-cve":
-            return_results(get_qid_for_cve(client=client, cve=args["cve"]))
+            return_results(
+                get_qid_for_cve(client=client, cve=args["cve"], cloud_agent_scan_type=args.get("cloud_agent_scan_type"))
+            )
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
