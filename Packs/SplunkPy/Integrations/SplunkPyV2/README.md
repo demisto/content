@@ -1289,6 +1289,106 @@ Change job settings to share its results to all Splunk users, and change its TTL
 
 There is no context output for this command.
 
+### splunk-investigation-create
+
+***
+Creates a new investigation in Splunk Enterprise Security.
+
+#### Base Command
+
+`splunk-investigation-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the investigation to be created. | Required |
+| description | The description of the investigation to be created. | Optional |
+| investigation_type | The type of the investigation to be created (for example, `default`). | Optional |
+| status | The status of the investigation to be created. Defaults to the out-of-the-box Splunk ES status labels; custom statuses are also supported by typing the status ID or label. Possible values are: New, In Progress, Pending, Resolved, Closed. | Optional |
+| disposition | The disposition of the investigation to be created. Defaults to the out-of-the-box Splunk ES disposition labels; custom dispositions are also supported by typing the disposition ID or label. Possible values are: Undetermined, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other. | Optional |
+| owner | The Splunk user to assign as the owner of the investigation. | Optional |
+| urgency | The urgency of the investigation to be created. Possible values are: informational, low, medium, high, critical, unknown. | Optional |
+| sensitivity | The sensitivity of the investigation to be created. Possible values are: White, Green, Amber, Red, Unassigned. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Investigation.investigation_guid | String | The ID \(GUID\) of the investigation that was created. |
+
+### splunk-investigation-list
+
+***
+Lists investigations from Splunk Enterprise Security.
+
+#### Base Command
+
+`splunk-investigation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of investigation IDs (GUID or display ID such as `ES-00001`) to retrieve. | Optional |
+| limit | The maximum number of investigations to return on the page. Maximum is 100. Default is 20. | Optional |
+| offset | Pagination offset used together with `limit` to specify the starting point of the returned results. | Optional |
+| sort | Sort expression for the returned investigations (for example, `create_time:asc,status:desc`). | Optional |
+| disposition | A comma-separated list of disposition IDs or disposition labels to filter investigations by (for example, `disposition:1,Undetermined`). | Optional |
+| status | A comma-separated list of status IDs or status labels to filter investigations by (for example, `New,In progress`). | Optional |
+| owner | A comma-separated list of owners to filter investigations by. | Optional |
+| urgency | A comma-separated list of urgency values to filter investigations by (for example, `medium,high,critical`). Valid values are `informational`, `low`, `medium`, `high`, `critical`, or `unknown`. | Optional |
+| sensitivity | A comma-separated list of sensitivity values to filter investigations by (for example, `Amber,Red`). Valid values are `White`, `Green`, `Amber`, `Red`, or `Unassigned`. | Optional |
+| create_time_min | The minimum (epoch) time during which investigations were created. | Optional |
+| create_time_max | The maximum (epoch) time during which investigations were created. | Optional |
+| update_time_min | The minimum (epoch) time during which investigations were updated. | Optional |
+| update_time_max | The maximum (epoch) time during which investigations were updated. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Investigation.investigation_guid | String | The ID \(GUID\) of the investigation. |
+| Splunk.Investigation.investigation_id | String | The short display ID of the investigation \(for example, \`ES-00001\`\). |
+| Splunk.Investigation.name | String | The name of the investigation. |
+| Splunk.Investigation.description | String | The description of the investigation. |
+| Splunk.Investigation.investigation_type | String | The type of the investigation. |
+| Splunk.Investigation.source | String | The detection that generated the investigation. |
+| Splunk.Investigation.incident_origin | String | Where the investigation came from \(for example, Splunk Enterprise Security or a risk-based alerting finding\). |
+| Splunk.Investigation.finding_id | String | The ID of the originating Splunk Enterprise Security finding. |
+| Splunk.Investigation.disposition | String | The disposition ID of the investigation. |
+| Splunk.Investigation.disposition_name | String | The disposition name of the investigation. |
+| Splunk.Investigation.status | String | The status ID of the investigation. |
+| Splunk.Investigation.status_name | String | The status name of the investigation. |
+| Splunk.Investigation.owner | String | The person assigned to the investigation. |
+| Splunk.Investigation.urgency | String | The urgency of the investigation. |
+| Splunk.Investigation.sensitivity | String | The sensitivity of the investigation. |
+| Splunk.Investigation.create_time | Number | The time when the investigation was created \(epoch seconds\). |
+| Splunk.Investigation.update_time | Number | The time when the investigation was last updated \(epoch seconds\). |
+| Splunk.Investigation.mc_create_time | Number | The time when the finding or investigation was created or imported into Splunk Enterprise Security \(epoch seconds\). |
+| Splunk.Investigation.count_findings | Number | The number of findings \(or intermediate findings\) associated with this investigation or finding-based-detection \(FBD\) group. |
+| Splunk.Investigation.risk_event_count | Number | The number of risk events associated with this investigation. |
+| Splunk.Investigation.risk_score | Number | The maximum risk score for all the findings added to the investigation. |
+| Splunk.Investigation.excluded_finding_ids | Unknown | A list of finding IDs \(or intermediate findings in the finding groups\) that are removed from the investigation. |
+| Splunk.Investigation.attachments | Unknown | An array of file IDs attached directly to the investigation. |
+| Splunk.Investigation.notes | Unknown | An array of note IDs added directly to the finding or investigation. |
+| Splunk.Investigation.findings.incident_ids | Unknown | The added finding IDs. |
+| Splunk.Investigation.findings.field_inheritors | Unknown | The added finding IDs that will inherit this investigation's owner, status, urgency, sensitivity, and disposition values. |
+| Splunk.Investigation.current_response_plan_phase.phase_id | String | The ID of the current response plan phase. |
+| Splunk.Investigation.current_response_plan_phase.response_plan_id | String | The ID of the current response plan. |
+| Splunk.Investigation.response_plans | Unknown | The array of response plans added to the investigation. |
+| Splunk.Investigation.consolidated_findings | Unknown | The consolidated list of fields for the findings and all the findings that are added to this investigation. |
+| Splunk.Investigation.finding | Unknown | The raw data of the originating finding. |
+| Splunk.Investigation.custom_fields | Unknown | The custom fields in the investigation. |
+| Splunk.Investigation.src | Unknown | A list of values for the \`source\` field. |
+| Splunk.Investigation.dest | Unknown | A list of values for the \`destination\` field. |
+| Splunk.Investigation.dvc | Unknown | A list of values for the \`device\` field. |
+| Splunk.Investigation.orig_host | Unknown | A list of values for the \`host\` field. |
+| Splunk.Investigation.src_user | Unknown | A list of values for the \`source user\` field. |
+| Splunk.Investigation.user | Unknown | A list of values for the \`user\` field. |
+| Splunk.Investigation.risk_object | Unknown | The list of entities for a finding, finding group, or investigation. |
+| Splunk.Investigation.risk_object_type | Unknown | The list of risk object types for a finding, finding group, or investigation. |
+
 ## Additional Information
 
 To get the HEC token

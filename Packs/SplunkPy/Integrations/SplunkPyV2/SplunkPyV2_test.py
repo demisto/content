@@ -7810,7 +7810,7 @@ def test_splunk_update_investigation_command_multiple_event_ids_without_findings
 
 
 # --------------------------------------------------------------------------- #
-# Tests for splunk-create-investigation                                       #
+# Tests for splunk-investigation-create                                       #
 # --------------------------------------------------------------------------- #
 
 
@@ -7843,7 +7843,7 @@ def test_splunk_create_investigation_command_minimal_args(mocker):
     assert called_args_positional[2] == "public/v2/investigations"
     assert called_kwargs["body"] == {"name": "My Investigation"}
 
-    assert result.outputs_prefix == "Splunk.CreateInvestigation"
+    assert result.outputs_prefix == "Splunk.Investigation"
     assert result.outputs_key_field == "investigation_guid"
     assert result.outputs == {"investigation_guid": expected_guid}
     assert "Investigation created successfully" in result.readable_output
@@ -7932,7 +7932,7 @@ def test_splunk_create_investigation_command_non_dict_response(mocker):
 
 
 # --------------------------------------------------------------------------- #
-# Tests for splunk-list-investigations                                        #
+# Tests for splunk-investigation-list                                         #
 # --------------------------------------------------------------------------- #
 
 
@@ -7978,7 +7978,7 @@ def test_splunk_list_investigations_command_no_args_returns_list(mocker):
     assert called_args[2] == "public/v2/investigations"
     assert called_kwargs["query"] == {}
 
-    assert result.outputs_prefix == "Splunk.ListInvestigations"
+    assert result.outputs_prefix == "Splunk.Investigation"
     assert result.outputs_key_field == "investigation_guid"
     assert isinstance(result.outputs, list)
     assert len(result.outputs) == 2

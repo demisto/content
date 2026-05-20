@@ -4178,7 +4178,7 @@ def _build_investigation_create_payload(args: dict) -> dict:
         if value:
             payload[key] = value
     if "name" not in payload:
-        raise DemistoException("`name` is a required argument for splunk-create-investigation.")
+        raise DemistoException("`name` is a required argument for splunk-investigation-create.")
     return payload
 
 
@@ -4216,7 +4216,7 @@ def _format_investigation_for_hr(item: dict) -> dict:
     }
 
 
-# Ordered headers for the splunk-list-investigations HR table.
+# Ordered headers for the splunk-investigation-list HR table.
 INVESTIGATION_HR_HEADERS = [
     "Investigation ID",
     "Name",
@@ -4231,7 +4231,7 @@ INVESTIGATION_HR_HEADERS = [
 def splunk_create_investigation_command(service: client.Service, args: dict) -> CommandResults:
     """Create a new investigation in Splunk ES via ``POST /public/v2/investigations``.
 
-    Returns the new investigation's GUID in the ``Splunk.CreateInvestigation`` context.
+    Returns the new investigation's GUID in the ``Splunk.Investigation`` context.
     """
     payload = _build_investigation_create_payload(args)
     response = _es_rest_request(service, "POST", "public/v2/investigations", body=payload)
@@ -4245,7 +4245,7 @@ def splunk_create_investigation_command(service: client.Service, args: dict) -> 
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Splunk.CreateInvestigation",
+        outputs_prefix="Splunk.Investigation",
         outputs_key_field="investigation_guid",
         outputs=response_dict or None,
         readable_output=readable,
@@ -4294,7 +4294,7 @@ def splunk_list_investigations_command(service: client.Service, args: dict) -> C
         if values:
             query[key] = ",".join(str(v) for v in values)
     query = assign_params(**query)
-    demisto.debug(f"splunk-list-investigations: GET public/v2/investigations query={query}")
+    demisto.debug(f"splunk-investigation-list: GET public/v2/investigations query={query}")
     response = _es_rest_request(service, "GET", "public/v2/investigations", query=query)
 
     # Normalize the response into a list of investigation dicts.
@@ -4328,7 +4328,7 @@ def splunk_list_investigations_command(service: client.Service, args: dict) -> C
     )
     outputs: dict | list = investigations[0] if len(investigations) == 1 else investigations
     return CommandResults(
-        outputs_prefix="Splunk.ListInvestigations",
+        outputs_prefix="Splunk.Investigation",
         outputs_key_field="investigation_guid",
         outputs=outputs,
         readable_output=readable,
@@ -5750,9 +5750,9 @@ def main() -> None:  # pragma: no cover
     elif command == "splunk-update-investigation" and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         return_results(splunk_update_investigation_command(service, args))
-    elif command == "splunk-create-investigation" and service is not None:
+    elif command == "splunk-investigation-create" and service is not None:
         return_results(splunk_create_investigation_command(service, args))
-    elif command == "splunk-list-investigations" and service is not None:
+    elif command == "splunk-investigation-list" and service is not None:
         return_results(splunk_list_investigations_command(service, args))
     elif command == "splunk-submit-event-hec":
         splunk_submit_event_hec_command(params, service, args)
