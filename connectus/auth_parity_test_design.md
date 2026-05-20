@@ -323,12 +323,30 @@ TTL, or capability-resolution logic — it short-circuits all of that.
 Additionally, the harness must ensure [`is_ucp_enabled()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13671)
 returns `False` for the old run and `True` for the new run, and that
 [`should_use_ucp_auth()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:13671)
-follows suit. These two flags remain patched on `CommonServerPython`
-as **branch selectors** — they decide whether the integration takes
-the UCP code path at all. They are distinct from the credential
-fetcher (`demisto.getUCPCredentials`, patched above): the flags
-control which branch runs, while the demisto-object mock supplies
-the actual credentials when the UCP branch is taken.
+follows suit. **These two CSP functions are NOT patched directly.**
+They derive their truthiness from the `demisto` object:
+
+- `is_ucp_enabled()` returns `bool(demisto.unifiedConnectorMetadata())`.
+  The harness's new-run patch installs
+  `demisto.unifiedConnectorMetadata = lambda: {"connectionProfiles":
+  [{"method_unique_id": "auth-parity-mock"}]}`, which is truthy — so
+  `is_ucp_enabled()` returns `True` naturally on the new run. For
+  the old run the patch is not installed, so the demistomock default
+  (empty dict) leaves `is_ucp_enabled()` returning `False`.
+- `should_use_ucp_auth()` is `is_ucp_enabled() and not
+  _UCP_AUTH_PARAMS_INJECTED`. The module-level
+  `_UCP_AUTH_PARAMS_INJECTED` flag defaults to `False` and nothing
+  in production CSP flips it, so `should_use_ucp_auth()` mirrors
+  `is_ucp_enabled()` for free. The patch includes a small defensive
+  loop that resets `_UCP_AUTH_PARAMS_INJECTED` to `False` on any
+  loaded module that exposes it — cheap insurance against a future
+  integration whose import-time code might flip the flag.
+
+In short: only `demisto.unifiedConnectorMetadata` and
+`demisto.getUCPCredentials` are mocked; the CSP `is_ucp_enabled`
+and `should_use_ucp_auth` functions are then `True` naturally
+because the former calls the mocked `unifiedConnectorMetadata` and
+the latter doesn't depend on anything else our tests can affect.
 
 This controls whether integrations like
 [`Salesforce_IAM`](Packs/Salesforce/Integrations/Salesforce_IAM/Salesforce_IAM.py:42)
@@ -1217,8 +1235,8 @@ connectus/check_auth_parity.py
 ├── map_auth_type_to_ucp_shape(entry: AuthEntry)  # entry.type (AuthType enum) → UCP credential dict template
 ├── run_old(integration_path, command, params, proxy) → list[CapturedRequest]
 ├── run_new(integration_path, command, params, ucp_mock, proxy) → list[CapturedRequest]
-│   ├── patch is_ucp_enabled → True
-│   ├── patch should_use_ucp_auth → True
+│   ├── patch demisto.unifiedConnectorMetadata → truthy stub
+│   │     (makes is_ucp_enabled() / should_use_ucp_auth() True naturally)
 │   └── patch demisto.getUCPCredentials → ucp_mock
 ├── extract_sentinel_locations(requests, sentinel) → set[Location]
 │   ├── scan headers (with Basic/Bearer decomposition)

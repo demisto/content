@@ -834,61 +834,138 @@ class TestUcpPatchTemplate:
         assert "demisto.getUCPCredentials = " in template
         # Regression guard: the old CSP-attribute patch must be gone.
         assert "csp.get_ucp_credentials = " not in template
-        # The branch-selector patch must target ANY module that exposes
-        # both flags — not just sys.modules["CommonServerPython"], which
-        # does NOT exist in the parity harness's child interpreter (the
-        # unified CSP+integration source is loaded under the module name
-        # "integration_under_test"). Pin the iteration approach so we
-        # cannot silently regress to a CSP-only lookup that no-ops.
-        assert "for _mod in list(_sys.modules.values()):" in template
-        assert 'hasattr(_mod, "is_ucp_enabled")' in template
-        assert 'hasattr(_mod, "should_use_ucp_auth")' in template
 
-    def test_ucp_patch_flips_flags_in_unified_module_namespace(
+    def test_ucp_patch_no_longer_touches_csp_functions(self) -> None:
+        """Guard against re-introducing the old H7 CSP-function patches.
+
+        After the simplification the patch template mocks ONLY the
+        ``demisto`` object (``unifiedConnectorMetadata`` +
+        ``getUCPCredentials``). The CSP ``is_ucp_enabled`` and
+        ``should_use_ucp_auth`` functions return True naturally:
+        the former is ``bool(demisto.unifiedConnectorMetadata())``
+        which the mock makes truthy; the latter is
+        ``is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED`` and
+        the injected flag defaults to False. So directly assigning
+        to these CSP symbols is dead weight and must not creep back.
+        """
+        template = cap._UCP_PATCH_TEMPLATE
+        assert "is_ucp_enabled =" not in template, (
+            "patch template must not assign to is_ucp_enabled — the "
+            "function returns True naturally once "
+            "demisto.unifiedConnectorMetadata is mocked"
+        )
+        assert "should_use_ucp_auth =" not in template, (
+            "patch template must not assign to should_use_ucp_auth — "
+            "the function is True naturally because is_ucp_enabled() "
+            "is True and _UCP_AUTH_PARAMS_INJECTED defaults to False"
+        )
+
+    def test_ucp_patch_makes_real_csp_flags_return_true_end_to_end(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Run the patch template against a sim of the child's sys.modules.
+        """Behavioural assertion: real CSP functions return True after the patch.
 
-        Mimics the parity harness's child interpreter: the integration is
-        loaded under the name ``integration_under_test`` and that single
-        module owns the ``is_ucp_enabled`` / ``should_use_ucp_auth``
-        callables (because CSP source is concatenated into it). There is
-        NO ``CommonServerPython`` module. The patch must still flip the
-        flags on the unified module — otherwise BaseClient._http_request
-        skips the UCP injection branch and overrides like
-        APIVoid.Client._apply_ucp_api_key never run (the post-Commit-6
-        APIVoid parity regression).
+        Replaces the old implementation-flavoured H7 regression test.
+        Instead of asserting "the patch template reassigns
+        ``is_ucp_enabled`` / ``should_use_ucp_auth`` on the unified
+        module", which is what the OLD patch did, we now assert the
+        end-to-end behaviour: after running the patch template, the
+        real ``csp.is_ucp_enabled()`` and ``csp.should_use_ucp_auth()``
+        both return True. They get there naturally because the patch
+        mocks ``demisto.unifiedConnectorMetadata()`` to a truthy value
+        (which is what ``is_ucp_enabled()`` consults) and resets
+        ``_UCP_AUTH_PARAMS_INJECTED`` to False (which
+        ``should_use_ucp_auth()`` requires).
         """
+        import importlib
+        import os as _os
         import sys as _sys
-        import types as _types
 
-        # Build a fake unified module that owns both flags, returning
-        # False (the un-patched default that mirrors the real CSP
-        # behaviour when demisto.unifiedConnectorMetadata() returns None).
-        fake_unified = _types.ModuleType("integration_under_test")
-        fake_unified.is_ucp_enabled = lambda *a, **k: False  # type: ignore[attr-defined]
-        fake_unified.should_use_ucp_auth = lambda *a, **k: False  # type: ignore[attr-defined]
-        monkeypatch.setitem(_sys.modules, "integration_under_test", fake_unified)
-        # Ensure there is NO CommonServerPython module — that's the
-        # condition under which the old CSP-only lookup silently no-ops.
-        monkeypatch.delitem(_sys.modules, "CommonServerPython", raising=False)
+        import demistomock as _demistomock  # type: ignore[import-not-found]
 
-        # Seed the env-var contract the patch template consumes.
+        csp = importlib.import_module(
+            "Packs.Base.Scripts.CommonServerPython.CommonServerPython"
+        )
+
+        # Snapshot/restore the demisto-object attributes the template
+        # mutates, and the module-level _UCP_AUTH_PARAMS_INJECTED flag.
+        prev_get = getattr(_demistomock, "getUCPCredentials", None)
+        prev_meta = getattr(_demistomock, "unifiedConnectorMetadata", None)
+        prev_csp_meta = getattr(csp.demisto, "unifiedConnectorMetadata", None)
+        prev_csp_get = getattr(csp.demisto, "getUCPCredentials", None)
+        prev_injected = getattr(csp, "_UCP_AUTH_PARAMS_INJECTED", False)
+
+        # Need non-empty creds so the patch template installs the
+        # demisto.* mocks (it short-circuits early when creds are None).
         monkeypatch.setenv("AUTH_PARITY_UCP_ENABLED", "1")
-        monkeypatch.setenv("AUTH_PARITY_UCP_CREDS", "")
+        monkeypatch.setenv(
+            "AUTH_PARITY_UCP_CREDS",
+            '{"credentials": {"password": "auth-parity-sentinel"}}',
+        )
 
-        # Drop the part of the template that imports demistomock (we are
-        # not exercising the credential-mock branch here, only the
-        # branch-selector patch). The early-return at "not _UCP_ENABLED
-        # or _UCP_CREDS is None" handles this for us — _UCP_CREDS_JSON
-        # is empty so _UCP_CREDS is None and the demistomock branch is
-        # skipped — but exec()ing the template still defines the
-        # apply_patches() function and then calls it.
-        exec(cap._UCP_PATCH_TEMPLATE, {"__name__": "ucp_patch_under_test"})
+        # Stress the defensive loop: pretend something set the
+        # injection flag to True. The patch must reset it.
+        csp._UCP_AUTH_PARAMS_INJECTED = True  # type: ignore[attr-defined]
 
-        # The patch MUST have flipped the unified module's flags.
-        assert fake_unified.is_ucp_enabled() is True
-        assert fake_unified.should_use_ucp_auth() is True
+        try:
+            # Run the patch template.
+            exec(cap._UCP_PATCH_TEMPLATE, {"__name__": "ucp_patch_under_test"})
+
+            # The template mocks `demisto` (= demistomock) — forward
+            # those mocks onto CSP's bound demisto object so the real
+            # CSP helpers see them. In the production parity-harness
+            # child, CSP source is concatenated into the unified module
+            # and resolves ``demisto`` against the same demistomock
+            # module the template patched, so this forwarding is just
+            # mimicking what happens for free in the real run.
+            csp.demisto.unifiedConnectorMetadata = (  # type: ignore[attr-defined]
+                _demistomock.unifiedConnectorMetadata
+            )
+            csp.demisto.getUCPCredentials = (  # type: ignore[attr-defined]
+                _demistomock.getUCPCredentials
+            )
+
+            # End-to-end behaviour: the REAL CSP functions return True
+            # without anyone monkey-patching them directly.
+            assert csp.is_ucp_enabled() is True, (
+                "is_ucp_enabled() should return True because "
+                "demisto.unifiedConnectorMetadata() is mocked truthy"
+            )
+            assert csp.should_use_ucp_auth() is True, (
+                "should_use_ucp_auth() should return True because "
+                "is_ucp_enabled() is True AND the defensive loop "
+                "reset _UCP_AUTH_PARAMS_INJECTED to False"
+            )
+            # And the defensive reset actually fired.
+            assert csp._UCP_AUTH_PARAMS_INJECTED is False
+        finally:
+            _os.environ.pop("AUTH_PARITY_UCP_ENABLED", None)
+            _os.environ.pop("AUTH_PARITY_UCP_CREDS", None)
+            csp._UCP_AUTH_PARAMS_INJECTED = prev_injected  # type: ignore[attr-defined]
+            if prev_get is None:
+                _demistomock.__dict__.pop("getUCPCredentials", None)
+            else:
+                _demistomock.getUCPCredentials = prev_get  # type: ignore[attr-defined]
+            if prev_meta is None:
+                _demistomock.__dict__.pop("unifiedConnectorMetadata", None)
+            else:
+                _demistomock.unifiedConnectorMetadata = prev_meta  # type: ignore[attr-defined]
+            if prev_csp_meta is None:
+                try:
+                    del csp.demisto.unifiedConnectorMetadata
+                except AttributeError:
+                    pass
+            else:
+                csp.demisto.unifiedConnectorMetadata = prev_csp_meta  # type: ignore[attr-defined]
+            if prev_csp_get is None:
+                try:
+                    del csp.demisto.getUCPCredentials
+                except AttributeError:
+                    pass
+            else:
+                csp.demisto.getUCPCredentials = prev_csp_get  # type: ignore[attr-defined]
+            # Keep _sys reference used elsewhere from being flagged unused.
+            _ = _sys
 
     def test_ucp_patch_template_mocks_unified_connector_metadata_too(self) -> None:
         """H8c regression: BOTH UCP seams must be mocked on the demisto object.

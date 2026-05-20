@@ -1183,10 +1183,23 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
     single low-level patch covers both call patterns.
 
     The CSP-level ``is_ucp_enabled`` / ``should_use_ucp_auth`` flags
-    remain patched here because they are the **branch selectors** the
-    integration code uses to decide whether to take the UCP path at
-    all — they are NOT credential fetchers. Only the demisto-object
-    mock fetches credentials in this harness.
+    are NOT patched directly. They derive their value from the demisto
+    object:
+
+      * ``is_ucp_enabled()`` returns truthy iff
+        ``demisto.unifiedConnectorMetadata()`` returns a truthy value
+        — and we mock that below to return a non-empty profile dict,
+        so ``is_ucp_enabled()`` naturally returns True.
+      * ``should_use_ucp_auth()`` is ``is_ucp_enabled() and not
+        _UCP_AUTH_PARAMS_INJECTED``. The module-level
+        ``_UCP_AUTH_PARAMS_INJECTED`` flag defaults to False and
+        nothing in production CSP flips it, so
+        ``should_use_ucp_auth()`` is naturally True as well.
+
+    The defensive loop below resets ``_UCP_AUTH_PARAMS_INJECTED`` to
+    False on any module that happens to expose it — cheap insurance
+    against a hypothetical future where some integration's
+    import-time code flips that flag.
 
     When ``AUTH_PARITY_UCP_ENABLED`` is "0" (old / legacy run), we do
     NOT install ``demisto.getUCPCredentials`` at all — it stays
@@ -1204,39 +1217,18 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
 
 
     def apply_patches():
-        # Branch selectors — these decide whether the integration's code
-        # takes the UCP code path at all. They are NOT credential fetchers;
-        # the credential fetcher is the demisto.getUCPCredentials mock
-        # installed below.
-        #
-        # In production the integration imports CommonServerPython as a
-        # separate module, but the parity harness concatenates CSP into the
-        # unified file and loads it under the module name
-        # "integration_under_test" (see check_command_params._BOOTSTRAP_TEMPLATE
-        # and prepare_unified_content). So sys.modules["CommonServerPython"]
-        # is None in the child, and a CSP-only lookup would silently no-op.
-        #
-        # Patch every loaded module that exposes BOTH flags. In the child
-        # that's exactly the unified module; in production it's CSP. Either
-        # way, the namespace where BaseClient._http_request resolves these
-        # functions gets overridden.
-        patched_modules = 0
+        # Defensive: ensure should_use_ucp_auth() isn't gated off by a
+        # stray writer flipping _UCP_AUTH_PARAMS_INJECTED to True at
+        # import time. In production CSP nothing flips it, but this is
+        # cheap insurance and stays narrowly scoped to one flag.
         for _mod in list(_sys.modules.values()):
             if _mod is None:
                 continue
-            if hasattr(_mod, "is_ucp_enabled") and hasattr(_mod, "should_use_ucp_auth"):
-                _mod.is_ucp_enabled = lambda *a, **k: _UCP_ENABLED
-                _mod.should_use_ucp_auth = lambda *a, **k: _UCP_ENABLED
-                patched_modules += 1
-        if patched_modules == 0:
-            # Be loud — silent no-op here is exactly the regression that
-            # caused the post-Commit-6 APIVoid parity failure.
-            import sys as _sys_err
-            print(
-                "[ucp_patch] WARNING: no module exposed both is_ucp_enabled "
-                "and should_use_ucp_auth; UCP branch will stay disabled.",
-                file=_sys_err.stderr,
-            )
+            if hasattr(_mod, "_UCP_AUTH_PARAMS_INJECTED"):
+                try:
+                    _mod._UCP_AUTH_PARAMS_INJECTED = False
+                except Exception:
+                    pass
 
         # Credential fetcher on the demisto object. Only installed for
         # the new run (UCP enabled + creds provided). This is the
@@ -1252,8 +1244,8 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
 
         demisto.getUCPCredentials = _mock_get_ucp_credentials  # type: ignore[attr-defined]
 
-        # H8c fix: BOTH UCP seams need mocking, not just the credential
-        # fetcher. CSP's _inject_ucp_credentials calls the chain
+        # BOTH UCP seams need mocking, not just the credential fetcher.
+        # CSP's _inject_ucp_credentials calls the chain
         #   _resolve_ucp_capability -> get_ucp_method_unique_id
         #     -> _get_ucp_profiles -> demisto.unifiedConnectorMetadata()
         # BEFORE it ever calls demisto.getUCPCredentials. The default
@@ -1267,6 +1259,11 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
         # CSP.get_ucp_method_unique_id, because none of them inspect the
         # method_unique_id itself — they only forward it to the (already
         # mocked) demisto.getUCPCredentials.
+        #
+        # As a bonus, this same mock is what makes CSP's
+        # ``is_ucp_enabled()`` return True naturally (it's defined as
+        # ``bool(demisto.unifiedConnectorMetadata())``), so we don't
+        # need to patch that function directly.
         demisto.unifiedConnectorMetadata = lambda: {  # type: ignore[attr-defined]
             "connectionProfiles": [{"method_unique_id": "auth-parity-mock"}]
         }
