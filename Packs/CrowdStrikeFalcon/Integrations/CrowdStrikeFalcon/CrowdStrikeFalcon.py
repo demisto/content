@@ -90,7 +90,7 @@ FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch
 MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
-MAX_FETCH_SPOTLIGHT_ASSETS = 50
+MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 MAX_PENDING_TASKS_PER_SEVERITY = 10  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
