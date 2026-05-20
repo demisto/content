@@ -9383,7 +9383,6 @@ class TestSpotlightSeverityBasedFetch:
         # Verify handler received empty set
         mock_handler.receive_new_aids.assert_awaited_once_with(set())
 
-
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_backpressure(self, mocker):
         """

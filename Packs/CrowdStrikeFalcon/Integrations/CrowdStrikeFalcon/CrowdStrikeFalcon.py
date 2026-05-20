@@ -4269,8 +4269,7 @@ def send_data_to_xsiam_async(
     # Create async tasks that only hold compressed bytes — original data refs are freed
     async def send_compressed_chunk_async(zipped_data: bytes) -> int:
         await xsiam_api_call_async(
-            xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers,
-            num_of_attempts=num_of_attempts, data_type=data_type
+            xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
         )
         return len(zipped_data)
 
@@ -4653,6 +4652,7 @@ async def fetch_vulnerabilities_by_severity(
         """Get current process peak RSS memory in MB (Linux: KB, macOS: bytes)."""
         rusage = resource.getrusage(resource.RUSAGE_SELF)
         import sys
+
         if sys.platform == "darwin":
             return rusage.ru_maxrss / (1024 * 1024)
         return rusage.ru_maxrss / 1024
@@ -4666,9 +4666,7 @@ async def fetch_vulnerabilities_by_severity(
                     f"[{severity}] Backpressure: {len(pending_tasks)} pending tasks >= limit {MAX_PENDING_TASKS_PER_SEVERITY}, "
                     f"waiting for at least one to complete (peak RSS: {_get_process_memory_mb():.1f} MB)"
                 )
-                done, pending_tasks_updated = await asyncio.wait(
-                    pending_tasks, return_when=asyncio.FIRST_COMPLETED
-                )
+                done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
                 pending_tasks = pending_tasks_updated
                 # Process completed tasks to update last_saved_batch_number
                 for completed_task in done:
@@ -4679,8 +4677,7 @@ async def fetch_vulnerabilities_by_severity(
                     except Exception as e:
                         log_falcon_assets(f"[{severity}] Background send task failed: {e}", "error")
                 log_falcon_assets(
-                    f"[{severity}] Backpressure released: {len(done)} tasks completed, "
-                    f"{len(pending_tasks)} still pending"
+                    f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
                 )
 
             # Build filter query with severity
