@@ -27,7 +27,6 @@ tags:
 - SOCFWBootloader
 timeout: 30m0s
 engineinfo: {}
-vcShouldKeepItemLegacyProdMachine: false
 args:
 - name: action
   required: true
