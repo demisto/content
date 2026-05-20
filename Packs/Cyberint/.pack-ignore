@@ -28,6 +28,12 @@ ignore=BA100
 [file:incidentfield-Cyberint_Closure_reason_Description.json]
 ignore=BA100
 
+[file:FeedCyberintPremium_README.md]
+ignore=RM110
+
+[file:FeedCyberintPremium.yml]
+ignore=RM109,BA129
+
 [known_words]
 Cyberint
 
