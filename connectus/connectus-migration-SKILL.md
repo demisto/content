@@ -396,7 +396,7 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
 
   The validator enforces the APIKey and Plain constraints strictly; OAuth/Other values are only checked for "non-empty string".
 - **Multi-secret packages.** When two or more XSOAR paths are issued together as one credential (see §1.2.2a), both paths go in the **same entry's** `xsoar_param_map`, each with its own role per the type's enum.
-- **`interpolated`** (optional, defaults to `false`) — set to `true` only when the value is templated in at runtime by the manifest generator rather than supplied by the user. Rare; leave it out if you are not certain it applies. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
+- **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** All other auth types (`OAuth2AuthCode`, `OAuth2ClientCreds`, `OAuth2JWT`, `Other`) MUST set `interpolated: true` — these flows cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
 - **Sort order** — entries are sorted by `(type, name)` ascending. The validator enforces this — `set-auth` will reject unsorted input. Map keys, by contrast, are an unordered dict and have no sort requirement.
 
 ---
@@ -895,6 +895,7 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] Every credentials-typed (YML type `9`) auth param appears in `xsoar_param_map` as the appropriate leaves, with `<id>.identifier` suppressed if YML `hiddenusername: true` and `<id>.password` suppressed if YML `hiddenpassword: true`. (See §1.3.)
 - [ ] Every map value matches the role-enum for its entry's `type` (APIKey: `"key"`; Plain: `"username"`/`"password"`; OAuth/Other: any non-empty string).
 - [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
+- [ ] Every entry whose `type` is NOT `Plain` or `APIKey` has `interpolated: true`. Only `Plain` and `APIKey` entries may be non-interpolated.
 - [ ] No `xsoar_params` legacy key is present in any entry — that key is rejected by the validator with a migration-help error.
 - [ ] Every name referenced in `config` exists as some `auth_types[].name`.
 - [ ] `auth_types[]` entries are sorted by `(type, name)` ascending. (Map keys are unordered — no sort requirement.)
