@@ -356,14 +356,13 @@ EXPECTED_GET_NOTES_LIST = [
     }
 ]
 
-EXPECTED_GET_NOTE = [
-    {
-        "id": "1",
-        "request": {"id": "123"},
-        "description": "Note 1",
-        "created_time": {"display_value": "2023-01-01 10:00:00"}
-    }
-]
+EXPECTED_GET_NOTE = {
+    "id": "1",
+    "request": {"id": "123"},
+    "description": "Note 1",
+    "created_time": {"display_value": "2023-01-01 10:00:00"}
+}
+
 
 EXPECTED_ADD_NOTE = {
     "id": "3",

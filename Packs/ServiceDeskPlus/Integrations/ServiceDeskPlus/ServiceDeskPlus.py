@@ -357,13 +357,13 @@ def resolution_human_readable(output: dict) -> dict:
 
 def note_human_readable(res: dict | list):
     if isinstance(res, dict):
-        prefix = f"Note with ID {res.get('id')}:"
+        prefix = f"Note of request {res.get('request', {}).get('id')}:"
         res = [res]
     else:
-        prefix = "Notes details:"
+        prefix = f"Notes of request {res[0].get('request').get('id')}:"
     hr = [
         {
-            "Request ID": note.get("request").get("id"),
+            "Note ID": note.get("id"),
             "Description": note.get("description"),
             "Created time": note.get("created_time").get("display_value"),
         }
@@ -745,7 +745,7 @@ def get_request_notes_list_command(client: Client, args: dict) -> CommandResults
     request_note_id = args.get("request_note_id")
     if request_note_id:
         raw_result = client.http_request("GET", url_suffix=f"requests/{request_id}/notes/{request_note_id}")
-        res = [raw_result.get("request_note")]
+        res = raw_result.get("request_note")
     else:
         raw_result = client.http_request("GET", url_suffix=f"requests/{request_id}/notes")
         res = raw_result.get("notes")
