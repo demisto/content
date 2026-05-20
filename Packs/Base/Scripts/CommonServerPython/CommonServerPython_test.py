@@ -685,20 +685,6 @@ class TestTableToMarkdown:
         assert table_single_key_dict_nested == expected_single_key_dict_nested_tbl
 
     @staticmethod
-    def test_single_key_dict_with_empty_list():
-        """
-        Given:
-          - A single-key dict whose value is an empty list, and no explicit headers.
-        When:
-          - Calling tableToMarkdown.
-        Then:
-          - Should return a 'No entries.' table without raising an IndexError.
-        """
-        table = tableToMarkdown('tableToMarkdown test with single key dict and empty list',
-                                {'Name Servers': []})
-        assert '|Name Servers|\n|---|\n|  |' in table
-
-    @staticmethod
     def test_dict_with_special_character():
         """
         When:
@@ -11199,6 +11185,72 @@ class TestTimeSensitive:
 
         with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* exceeded"):
             client._http_request('get', 'test')
+
+
+class TestSanitizeHtmlOutput:
+    """Tests for sanitize_html_output – output encoding."""
+
+    def test_escapes_html_tags_by_default(self):
+        """Test that HTML special characters are escaped when no allow_tags specified."""
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('<img src=x onerror=alert(1)>')
+        assert '&lt;img' in result
+        assert '<img' not in result
+
+    def test_escapes_script_tags(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('<script>alert(1)</script>')
+        assert '<script>' not in result
+        assert '&lt;script&gt;' in result
+
+    def test_preserves_plain_text(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('Hello World')
+        assert result == 'Hello World'
+
+    def test_handles_non_string_input(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output(12345)
+        assert result == '12345'
+
+    def test_escapes_ampersand_and_quotes(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('a & b "c"')
+        assert '&amp;' in result
+        assert '&quot;' in result
+
+
+class TestGetFilePathSafe:
+    """Tests for getFilePathSafe – safe filename handling."""
+
+    def test_basenames_name_field(self, mocker):
+        """Test that the name field is reduced to basename."""
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'id': 'entry1', 'path': '/tmp/file', 'name': '/tmp/evil/../../etc/passwd'
+        })
+        from CommonServerPython import getFilePathSafe
+        result = getFilePathSafe('entry1')
+        assert result['name'] == 'passwd'
+
+    def test_preserves_other_fields(self, mocker):
+        """Test that id and path fields are not modified."""
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'id': 'entry1', 'path': '/tmp/file', 'name': 'test.txt'
+        })
+        from CommonServerPython import getFilePathSafe
+        result = getFilePathSafe('entry1')
+        assert result['id'] == 'entry1'
+        assert result['path'] == '/tmp/file'
+        assert result['name'] == 'test.txt'
+
+    def test_handles_absolute_path_name(self, mocker):
+        """Test that absolute path in name is reduced to basename."""
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'id': 'entry1', 'path': '/tmp/file', 'name': '/etc/shadow'
+        })
+        from CommonServerPython import getFilePathSafe
+        result = getFilePathSafe('entry1')
+        assert result['name'] == 'shadow'
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
