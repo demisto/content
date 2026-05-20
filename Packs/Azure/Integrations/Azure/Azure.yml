@@ -516,8 +516,9 @@ script:
       type: bool
     - description: The number of days the deleted item should be retained.
       name: delete_rentention_policy_days
-    description: Sets properties for the blob service in a specific account storage.
+    description: Sets properties for the blob service in a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-set.
     name: azure-storage-blob-service-properties-set
+    deprecated: true
     outputs:
     - contextPath: Azure.StorageAccountBlobServiceProperties.id
       description: The resource ID.
@@ -547,8 +548,73 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
-  - description: Run this command to get the blob service properties of a specific account storage.
+  - name: azure-storage-blob-service-property-set
+    description: "Sets properties for the blob service in a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write."
+    arguments:
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The name of the storage account.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Whether DeleteRetentionPolicy is enabled.
+      name: delete_rentention_policy_enabled
+      predefined:
+        - 'true'
+        - 'false'
+      type: bool
+    - description: The number of days the deleted item should be retained.
+      name: delete_rentention_policy_days
+    outputs:
+    - contextPath: Azure.Storage.BlobService.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.Storage.BlobService.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobService.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobService.properties.cors
+      description: Specifies CORS rules for the Blob service.
+      type: String
+    - contextPath: Azure.Storage.BlobService.properties.defaultServiceVersion
+      description: The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      type: Date
+    - contextPath: Azure.Storage.BlobService.properties.deleteRetentionPolicy
+      description: The service properties for soft delete.
+    - contextPath: Azure.Storage.BlobService.properties.isVersioningEnabled
+      description: If set to true, enables versioning.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobService.properties.changeFeed
+      description: The blob service properties for change feed events.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled
+      description: Deprecated in favor of isVersioningEnabled property.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy
+      description: The blob service properties for container soft delete.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy
+      description: The blob service property to configure last access time based tracking policy.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.restorePolicy
+      description: The blob service properties for blob restore policy.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.sku.name
+      description: The SKU name.
+      type: String
+    - contextPath: Azure.Storage.BlobService.sku.tier
+      description: The SKU tier.
+      type: String
+
+  - description: Run this command to get the blob service properties of a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-get.
     name: azure-storage-blob-service-properties-get
+    deprecated: true
     outputs:
       - contextPath: Azure.StorageBlobServiceProperties.id
         description: Fully qualified resource ID for the resource.
@@ -559,18 +625,9 @@ script:
       - contextPath: Azure.StorageBlobServiceProperties.type
         description: The resource type.
         type: String
-      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
-        description: When set to true, last access time–based tracking is enabled.
-        type: Boolean
-      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
-        description: Name of the policy. The valid value is AccessTimeTracking.
-        type: String
-      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
-        description: Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked.
-        type: Number
-      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
-        description: An array of predefined, supported blob types. The only supported value is BlockBlob.
-        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy
+        description: The blob service property to configure last access time based tracking policy.
+        type: Unknown
     arguments:
       - description: The subscription ID.
         name: subscription_id
@@ -581,6 +638,62 @@ script:
       - description: The storage account name.
         name: account_name
         required: true
+  - name: azure-storage-blob-service-property-get
+    description: "Run this command to get the blob service properties of a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read."
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    outputs:
+    - contextPath: Azure.Storage.BlobService.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobService.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobService.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy
+      description: The blob service property to configure last access time based tracking policy.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled
+      description: Deprecated in favor of isVersioningEnabled property.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobService.properties.changeFeed
+      description: The blob service properties for change feed events.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy
+      description: The blob service properties for container soft delete.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.cors
+      description: Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.defaultServiceVersion
+      description: DefaultServiceVersion indicates the default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      type: String
+    - contextPath: Azure.Storage.BlobService.properties.deleteRetentionPolicy
+      description: The blob service properties for blob soft delete.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.properties.isVersioningEnabled
+      description: Versioning is enabled if set to true.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobService.properties.restorePolicy
+      description: The blob service properties for blob restore policy.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobService.sku.name
+      description: The SKU name.
+      type: String
+    - contextPath: Azure.Storage.BlobService.sku.tier
+      description: The SKU tier.
+      type: String
+
   - description: Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
     name: azure-storage-blob-containers-update
     deprecated: true

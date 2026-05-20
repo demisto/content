@@ -97,11 +97,14 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
         "azure-storage-blob-enable-soft-delete-quick-action",
+        "azure-storage-blob-service-property-get",
+        "azure-storage-blob-service-property-set",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/write": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
         "azure-storage-blob-enable-soft-delete-quick-action",
+        "azure-storage-blob-service-property-set",
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
@@ -476,6 +479,10 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-acr-disable-public-private-access-quick-action": "Azure.ACR",
     "azure-acr-disable-authentication-as-arm-quick-action": "Azure.ACR",
     "azure-acr-disable-anonymous-pull-quick-action": "Azure.ACR",
+    "azure-storage-blob-service-properties-get": "Azure.StorageBlobServiceProperties",
+    "azure-storage-blob-service-property-get": "Azure.Storage.BlobService",
+    "azure-storage-blob-service-properties-set": "Azure.StorageAccountBlobServiceProperties",
+    "azure-storage-blob-service-property-set": "Azure.Storage.BlobService",
 }
 
 
@@ -2822,8 +2829,6 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    # subscription_id = args.get("subscription_id")
-    # resource_group_name = args.get("resource_group_name")
     delete_rentention_policy_enabled = args.get("delete_rentention_policy_enabled")
     delete_rentention_policy_days = args.get("delete_rentention_policy_days")
     account_name = args.get("account_name", "")
@@ -2840,8 +2845,11 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
         else None,
     }
 
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.BlobService")
+
     return CommandResults(
-        outputs_prefix="Azure.StorageAccountBlobServiceProperties",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -2927,8 +2935,11 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
         "Versioning": response.get("properties", {}).get("isVersioningEnabled"),
     }
 
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.BlobService")
+
     return CommandResults(
-        outputs_prefix="Azure.StorageBlobServiceProperties",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -5060,7 +5071,9 @@ def main():  # pragma: no cover
             "azure-billing-budgets-list": azure_billing_budgets_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
+            "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
+            "azure-storage-blob-service-property-get": storage_blob_service_properties_get_command,
             "azure-storage-blob-containers-update": storage_blob_containers_update_command,
             "azure-storage-blob-container-update": storage_blob_containers_update_command,
             "azure-storage-container-property-get": storage_container_property_get_command,

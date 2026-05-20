@@ -2884,3 +2884,77 @@ Updates a container registry. Required permissions: Microsoft.ContainerRegistry/
 | Azure.ContainerRegistry.Registries.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
 | Azure.ContainerRegistry.Registries.tags | Unknown | The tags of the resource. |
 | Azure.ContainerRegistry.Registries.type | String | The type of the resource. |
+
+### azure-storage-blob-service-property-get
+
+***
+Run this command to get the blob service properties of a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read.
+
+#### Base Command
+
+`azure-storage-blob-service-property-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group name. | Required | 
+| account_name | The storage account name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobService.id | String | Fully qualified resource ID for the resource. | 
+| Azure.Storage.BlobService.name | String | The name of the resource. | 
+| Azure.Storage.BlobService.type | String | The resource type. | 
+| Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. | 
+| Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled | Boolean | Deprecated in favor of isVersioningEnabled property. | 
+| Azure.Storage.BlobService.properties.changeFeed | Unknown | The blob service properties for change feed events. | 
+| Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. | 
+| Azure.Storage.BlobService.properties.cors | Unknown | Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service. | 
+| Azure.Storage.BlobService.properties.defaultServiceVersion | String | DefaultServiceVersion indicates the default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions. | 
+| Azure.Storage.BlobService.properties.deleteRetentionPolicy | Unknown | The blob service properties for blob soft delete. | 
+| Azure.Storage.BlobService.properties.isVersioningEnabled | Boolean | Versioning is enabled if set to true. | 
+| Azure.Storage.BlobService.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. | 
+| Azure.Storage.BlobService.sku.name | String | The SKU name. | 
+| Azure.Storage.BlobService.sku.tier | String | The SKU tier. | 
+
+### azure-storage-blob-service-property-set
+
+***
+Sets properties for the blob service in a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write.
+
+#### Base Command
+
+`azure-storage-blob-service-property-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| account_name | The name of the storage account. | Required | 
+| delete_rentention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional | 
+| delete_rentention_policy_days | The number of days the deleted item should be retained. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobService.id | String | The resource ID. | 
+| Azure.Storage.BlobService.name | String | The name of the resource. | 
+| Azure.Storage.BlobService.type | String | The type of the resource. | 
+| Azure.Storage.BlobService.properties.cors | String | Specifies CORS rules for the Blob service. | 
+| Azure.Storage.BlobService.properties.defaultServiceVersion | Date | The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions. | 
+| Azure.Storage.BlobService.properties.deleteRetentionPolicy | unknown | The service properties for soft delete. | 
+| Azure.Storage.BlobService.properties.isVersioningEnabled | Boolean | If set to true, enables versioning. | 
+| Azure.Storage.BlobService.properties.changeFeed | Unknown | The blob service properties for change feed events. | 
+| Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled | Boolean | Deprecated in favor of isVersioningEnabled property. | 
+| Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. | 
+| Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. | 
+| Azure.Storage.BlobService.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. | 
+| Azure.Storage.BlobService.sku.name | String | The SKU name. | 
+| Azure.Storage.BlobService.sku.tier | String | The SKU tier. | 
