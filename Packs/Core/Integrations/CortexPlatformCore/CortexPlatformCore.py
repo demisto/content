@@ -32,17 +32,17 @@ WINDOWS_PLATFORM = "Windows"
 
 
 ASSET_FIELDS = {
-    "asset_names": "xdm.asset.name",
-    "asset_types": "xdm.asset.type.name",
-    "asset_tags": "xdm.asset.tags",
-    "asset_ids": "xdm.asset.id",
-    "asset_providers": "xdm.asset.provider",
-    "asset_realms": "xdm.asset.realm",
-    "asset_group_ids": "xdm.asset.group_ids",
-    "asset_categories": "xdm.asset.type.category",
-    "asset_classes": "xdm.asset.type.class",
-    "software_package_versions": "xdm.software_package.version",
-    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version",
+    "asset_names": "xdm__asset__name",
+    "asset_types": "xdm__asset__type__name",
+    "asset_tags": "xdm__asset__tags",
+    "asset_ids": "xdm__asset__id",
+    "asset_providers": "xdm__asset__provider",
+    "asset_realms": "xdm__asset__realm",
+    "asset_group_ids": "xdm__asset__group_ids",
+    "asset_categories": "xdm__asset__type__category",
+    "asset_classes": "xdm__asset__type__class",
+    "software_package_versions": "xdm__software_package__version",
+    "kubernetes_cluster_versions": "xdm__kubernetes__cluster__version",
 }
 
 APPSEC_SOURCES = [
@@ -82,6 +82,7 @@ WEBAPP_COMMANDS = [
     "core-list-brokers",
     "core-create-endpoint-policy",
     "core-delete-endpoint-policy",
+    "core-search-assets",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -90,6 +91,7 @@ XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSETS_TABLE = "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
@@ -2189,8 +2191,8 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
 
 def normalize_key(key: str) -> str:
     """
-    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
-    if present, and returns the remaining key unchanged otherwise.
+    Strips the prefixes 'xdm__asset__' or 'xdm__' from the
+    beginning of the key, if present, and returns the remaining key unchanged otherwise.
 
     Args:
         key (str): The original output key.
@@ -2198,11 +2200,11 @@ def normalize_key(key: str) -> str:
     Returns:
         str: The normalized key without XDM prefixes.
     """
-    if key.startswith("xdm.asset."):
-        return key.replace("xdm.asset.", "")
+    if key.startswith("xdm__asset__"):
+        return key.removeprefix("xdm__asset__")
 
-    if key.startswith("xdm."):
-        return key.replace("xdm.", "")
+    if key.startswith("xdm__"):
+        return key.removeprefix("xdm__")
 
     return key
 
@@ -2232,11 +2234,6 @@ def search_assets_command(client: Client, args):
         argToList(args.get("asset_names", "")),
     )
     filter.add_field(
-        ASSET_FIELDS["asset_types"],
-        FilterType.EQ,
-        argToList(args.get("asset_types", "")),
-    )
-    filter.add_field(
         ASSET_FIELDS["asset_tags"],
         FilterType.JSON_WILDCARD,
         safe_load_json(args.get("asset_tags", [])),
@@ -2261,21 +2258,40 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
     filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
     filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
-    filter_str = filter.to_dict()
 
-    demisto.debug(f"Search Assets Filter: {filter_str}")
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
-    page_number = arg_to_number(args.get("page_number", 0))
-    on_demand_fields = ["xdm.asset.tags"]
+    asset_types = argToList(args.get("asset_types", ""))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
+
+    page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
+    on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
-        ("xdm.software_package.version", software_package_versions),
-        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
+        ("xdm__software_package__version", software_package_versions),
+        ("xdm__kubernetes__cluster__version", kubernetes_cluster_versions),
     ]
     on_demand_fields.extend([field for field, condition in version_fields if condition])
 
-    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
-    # Remove "xdm.asset." suffix from all keys in the response
+    request_data = build_webapp_request_data(
+        table_name=ASSETS_TABLE,
+        filter_dict=filter.to_dict(),
+        limit=page_number * page_size + page_size,
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        start_page=page_number * page_size,
+        on_demand_fields=on_demand_fields,
+    )
+    demisto.debug(f"Search Assets Request: {request_data}")
+    raw_response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
+    # Remove "xdm__asset__" and "xdm__" prefix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
+
+    # Preserve BC after migrating to private API - add related issues/cases as in old API response
+    for asset in response:
+        asset["related_issues.critical_issues"] = asset.get("issues_critical", [])
+        asset["related_issues.issues_breakdown"] = asset.get("issues_breakdown", [])
+        asset["related_cases.critical_cases"] = asset.get("cases_critical", [])
+        asset["related_cases.cases_breakdown"] = asset.get("cases_breakdown", [])
+
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
@@ -3570,36 +3586,101 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
 
+def resolve_playbook_id(client: Client, playbook: str) -> str:
+    """
+    Resolves a playbook name or ID to a playbook ID.
+
+    Fetches all playbooks metadata and builds a name→id mapping.
+    If the provided value matches a known playbook name, the corresponding ID is returned.
+    If no name match is found, the value is checked against known IDs.
+    If it matches a known ID, it is returned as-is.
+    If it matches neither a name nor a known ID, a DemistoException is raised.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        playbook (str): A playbook name or playbook ID.
+
+    Returns:
+        str: The resolved playbook ID.
+
+    Raises:
+        DemistoException: If the value does not match any known playbook name or ID.
+    """
+    pbs_metadata: list = client.get_playbooks_metadata() or []
+    name_to_id: dict[str, str] = {}
+    known_ids: set[str] = set()
+    for pb in pbs_metadata:
+        pb_name = pb.get("name", "")
+        pb_id = pb.get("id", "")
+        known_ids.add(pb_id)
+        name_to_id[pb_name] = pb_id
+
+    if playbook in known_ids:
+        demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
+        return playbook
+
+    if playbook in name_to_id:
+        resolved_id = name_to_id[playbook]
+        demisto.debug(f"Resolved playbook name '{playbook}' to ID '{resolved_id}'.")
+        return resolved_id
+
+    raise DemistoException(
+        f"Playbook '{playbook}' was not found. "
+        f"Verify that the playbook name or ID is correct and that the playbook exists in the system."
+    )
+
+
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
 
+    Reads the ``playbook`` argument, which can be either a playbook name or a playbook ID,
+    and resolves it to a playbook ID via :func:`resolve_playbook_id`.
+
+    All outcomes — success, resolution errors (unknown name/ID), and API-level per-issue
+    failures — are reported via the ``result`` output field rather than raising exceptions.
+    The ``result`` field contains the full status message string in all cases.
+
     Args:
         client (Client): The client instance for making API requests.
-        args (dict): Arguments for running the playbook.
+        args (dict): Arguments for running the playbook. Supported keys:
+            - ``playbook`` (str): Playbook name or ID to execute.
+            - ``issue_ids`` (str | list): Issue IDs to run the playbook against.
 
     Returns:
-        CommandResults: Results of the playbook execution.
+        CommandResults: Results of the playbook execution with the following output fields:
+            - ``playbook``: The playbook name or ID as provided by the caller.
+            - ``result``: A status message string. On success:
+              ``"Playbook '<name>' executed successfully for all issue IDs: <ids>"``.
+              On resolution failure or per-issue API errors: a descriptive error string.
     """
-    playbook_id = args.get("playbook_id", "")
+    playbook_input = args.get("playbook", "")
     issue_ids = argToList(args.get("issue_ids", ""))
+
+    try:
+        playbook_id = resolve_playbook_id(client, playbook_input)
+    except DemistoException as e:
+        demisto.debug(f"Playbook resolution error: {str(e)}")
+        return CommandResults(
+            outputs_prefix="Core.RunPlaybook",
+            outputs_key_field="playbook",
+            outputs={"playbook": playbook_input, "result": str(e)},
+        )
 
     response = client.run_playbook(issue_ids, playbook_id)
 
-    # Process the response to determine success or failure
-    if not response:
-        # Empty response indicates success for all issues
-        return CommandResults(
-            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
-        )
+    if response:
+        pb_failed_on_issue = [f"Issue ID {issue_id}: {msg.replace('alert', 'issue')}" for issue_id, msg in response.items()]
+        result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(pb_failed_on_issue)
+        demisto.debug(f"Playbook run errors: {pb_failed_on_issue}")
+    else:
+        result = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
 
-    error_messages = []
-
-    for issue_id, error_message in response.items():
-        error_messages.append(f"Issue ID {issue_id}: {error_message}")
-
-    demisto.debug(f"Playbook run errors: {error_messages}")
-    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+    return CommandResults(
+        outputs_prefix="Core.RunPlaybook",
+        outputs_key_field="playbook",
+        outputs={"playbook": playbook_input, "result": result},
+    )
 
 
 def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
