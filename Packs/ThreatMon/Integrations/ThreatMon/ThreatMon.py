@@ -1,4 +1,3 @@
-import requests
 import json
 import time
 import demistomock as demisto
@@ -7,38 +6,39 @@ from typing import Any
 from CommonServerPython import *
 
 THREATMON_PAGE_SIZE = 10
-MAX_PAGES_PER_RUN = 100  # Max pages fetched per XSOAR run (1000 incidents) to avoid timeout
+MAX_PAGES_PER_RUN = 100  # Max pages fetched per run (1000 incidents) to avoid timeout
 
 
-class Client:
-    def __init__(self, api_url, api_key):
-        self.api_url = api_url
-        self.headers = {"X-COMPANY-API-KEY": api_key, "accept": "application/json"}
+class Client(BaseClient):
+    def __init__(self, api_url: str, api_key: str, verify: bool, proxy: bool):
+        super().__init__(base_url=api_url, verify=verify, proxy=proxy, headers={"X-COMPANY-API-KEY": api_key, "accept": "application/json"})
 
     def get_incidents(self, last_incident_id=None, page=0):
         """Fetches incidents from Threatmon API using pagination and lastIncidentId filtering."""
 
-        url = f"{self.api_url}/vulnerabilities/{page}"
+        url_suffix = f"/vulnerabilities/{page}"
+        params = {}
         if last_incident_id:
-            url += f"?afterAlarmCode={last_incident_id}"
+            params["afterAlarmCode"] = last_incident_id
 
-        response = requests.get(url, headers=self.headers)
-
-        if response.status_code != 200:
-            raise Exception(f"API Error: {response.status_code} - {response.text}")
-
-        return response.json()
+        return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def set_status(self, data):
-        """Updates incidents on Threatmon API using PATCH request and pagination."""
+        """Updates incidents on Threatmon API using PATCH request."""
 
-        url = f"{self.api_url}/incident/status"
-        response = requests.patch(url, headers=self.headers, json=data)
+        return self._http_request(method="PATCH", url_suffix="/incident/status", json_data=data)
 
-        if response.status_code == 200:
-            return {"message": "status updated successfully"}
-        else:
-            raise Exception(f"API Error: {response.status_code} - {response.text}")
+    def request_takedown(self, finding_id: int, finding: str):
+        """Submits a takedown request for a specific finding (alarm row)."""
+
+        payload = {"findingId": finding_id, "finding": finding}
+        return self._http_request(
+            method="POST",
+            url_suffix="/takedown",
+            json_data=payload,
+            ok_codes=(200, 400, 403, 404, 409),
+            resp_type="response",
+        )
 
     def request_takedown(self, finding_id: int, finding: str):
         """Submits a takedown request for a specific finding (alarm row)."""
@@ -62,7 +62,7 @@ class Client:
 
 
 def convert_to_demisto_severity(severity: str) -> int:
-    """Maps Threatmon severity to Cortex XSOAR severity (1 to 4)."""
+    """Maps Threatmon severity to Cortex XSOAR/XSIAM severity (1 to 4)."""
     severity_mapping = {"Information": 1, "Low": 1, "Medium": 2, "High": 3, "Critical": 4}
     return severity_mapping.get(severity, 1)
 
@@ -70,7 +70,7 @@ def convert_to_demisto_severity(severity: str) -> int:
 def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Fetches new incidents from Threatmon API using pagination and latest lastIncidentId logic.
 
-    Fetches at most MAX_PAGES_PER_RUN pages per XSOAR run to avoid timeout. Pagination state
+    Fetches at most MAX_PAGES_PER_RUN pages per run to avoid timeout. Pagination state
     is saved in last_run so subsequent runs continue from where the previous run left off.
     last_incident_id is only advanced once the current batch is fully consumed to ensure
     consistent afterAlarmCode filtering across pages.
@@ -161,20 +161,17 @@ def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict
     return incidents, last_run
 
 
-def test_module(client):
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication."""
     try:
         response = client.get_incidents(page=0)
 
-        # Check for expected successful response
         if isinstance(response, dict) and "data" in response:
             return "ok"
 
-        # Check if API returned an error message
         if isinstance(response, dict) and "message" in response:
             return_error(f"Test failed: {response.get('message')}")
 
-        # Generic unexpected structure
         return_error("Test failed: Unexpected API response structure.")
 
     except DemistoException as e:
@@ -187,6 +184,8 @@ def test_module(client):
 
     except Exception as e:
         return_error(f"Test failed: {str(e)}")
+
+    return "ok"
 
 
 def change_incident_status(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -214,18 +213,34 @@ def request_takedown_command(client: Client, args: dict[str, Any]) -> CommandRes
     except (ValueError, TypeError):
         raise ValueError(f"findingId must be a valid integer, got: {finding_id_raw}")
 
-    result = client.request_takedown(finding_id=finding_id, finding=finding)
-    return CommandResults(readable_output=result.get("message", "Takedown request submitted."))
+    response = client.request_takedown(finding_id=finding_id, finding=finding)
+
+    status_code = response.status_code
+    if status_code == 200:
+        return CommandResults(readable_output="Takedown request submitted successfully.")
+    elif status_code == 404:
+        raise DemistoException(f"Finding not found: findingId={finding_id}")
+    elif status_code == 409:
+        raise DemistoException(f"A takedown request already exists for findingId={finding_id}")
+    elif status_code == 403:
+        raise DemistoException("Takedown quota exceeded. Please contact ThreatMon.")
+    elif status_code == 400:
+        raise DemistoException("This finding is not eligible for a takedown request.")
+    else:
+        raise DemistoException(f"API Error: {status_code} - {response.text}")
 
 
 def main():
-    """Main function called by Cortex XSOAR."""
+    """Main function called by Cortex XSOAR/XSIAM."""
     try:
         params = demisto.params()
         api_url = params.get("url", "https://external.threatmonit.io/api/threatmon/external/v1")
         credentials = params.get("credentials", {})
         api_key = credentials.get("password")
-        client = Client(api_url, api_key)
+        verify = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
+
+        client = Client(api_url=api_url, api_key=api_key, verify=verify, proxy=proxy)
         command = demisto.command()
 
         if command == "test-module":
