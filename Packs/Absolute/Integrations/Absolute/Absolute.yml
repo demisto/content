@@ -946,6 +946,23 @@ script:
       defaultValue: "false"
     name: absolute-wipe-request-create
     description: Create a Wipe request for the devices.
+  - arguments:
+    - name: request_uid
+      description: The system-defined unique identifier of the Device Action request.
+      required: true
+    - name: action_uids
+      description: The system-defined unique identifiers of the actions included in the request.
+      isArray: true
+      required: true
+    - name: cancel_all_actions
+      description: Indicates whether all actions in the request should be canceled.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    name: absolute-wipe-request-cancel
+    description: Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
   runonce: false
   script: '-'
   type: python
