@@ -876,8 +876,10 @@ def fetch_attack_path_details(client: Client, last_run: dict[str, Any], domains:
                 domain_attack_path_counts[domain_name] += len(filtered_attack_paths)
 
             else:
-                # Preserve existing timestamp even if no new paths found
-                if finding_type_key not in finding_type_latest_dates and last_created_at_timestamp:
+                # ALWAYS preserve the timestamp to prevent re-fetching old incidents
+                # This ensures that even when no new paths are found, we don't regress
+                # and re-fetch the same incidents on the next run
+                if last_created_at_timestamp:
                     finding_type_latest_dates[finding_type_key] = last_created_at_timestamp
 
         demisto.info(
@@ -1259,6 +1261,8 @@ def fetch_incidents(bhe_client: Client):
         demisto.info("[FETCH] Lock not acquired, sending empty incident list.")
         demisto.incidents([])
         return None
+    
+    fetch_start_time = datetime.utcnow()
     try:
         demisto.info("Executing fetch_incidents function")
         last_run = demisto.getLastRun()
@@ -1290,6 +1294,11 @@ def fetch_incidents(bhe_client: Client):
         last_run.update(finding_type_latest_dates)
         demisto.setLastRun(last_run)
         demisto.incidents(incidents)
+        
+        # Log fetch performance
+        fetch_duration = (datetime.utcnow() - fetch_start_time).total_seconds()
+        demisto.info(f"[FETCH_PERFORMANCE] Completed fetch cycle in {fetch_duration:.2f} seconds. "
+                     f"Created {len(incidents)} incidents from {len(attack_path_details)} attack path groups.")
 
     except Exception as e:
         demisto.error(f"Error in fetch_incidents: {str(e)}")
@@ -1759,7 +1768,9 @@ def main():
 
     params = demisto.params()
     interval_minutes = params.get("incidentFetchInterval", 0)
-    LOCK_TIMEOUT = int(interval_minutes) * 60 if int(interval_minutes) else 600
+    # Set lock timeout to 3x the fetch interval (minimum 600 seconds = 10 minutes)
+    # This prevents lock expiry during long-running fetch operations
+    LOCK_TIMEOUT = max((int(interval_minutes) * 60 * 3) if int(interval_minutes) else 600, 600)
     domain = params.get("url").rstrip("/")
     bhe_token_id = params.get("token_id")
     bhe_token_key = params.get("token_key")

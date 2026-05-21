@@ -4,8 +4,8 @@
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "SpecterOps",
-    "url": "",
-    "email": "",
+    "url": "https://bloodhound.specterops.io",
+    "email": "support@specterops.io",
     "created": "2025-12-15T00:00:00Z",
     "categories": [
         "Vulnerability Management"
