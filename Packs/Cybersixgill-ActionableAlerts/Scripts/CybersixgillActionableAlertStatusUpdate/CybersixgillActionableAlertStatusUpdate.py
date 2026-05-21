@@ -2,9 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from urllib.parse import urlparse, parse_qs
 
+
 def main():
     args = demisto.args()
-    command_args = {"alert_status": None, "alert_id": None, "aggregate_alert_id": None}
+    command_args = {"alert_status": "", "alert_id": "", "aggregate_alert_id": ""}
     incident = demisto.incident()
 
     alert_status = args["new"]
@@ -17,7 +18,7 @@ def main():
             command_args["alert_id"] = label.get("value")
         if label.get("type") == "aggregate_alert_id":
             command_args["aggregate_alert_id"] = label.get("value")
-    
+
     if not command_args["alert_id"]:
         post_url = incident.get("CustomFields").get("cybersixgillposturl")
         url_fragment = parse_qs(urlparse(post_url).fragment)
