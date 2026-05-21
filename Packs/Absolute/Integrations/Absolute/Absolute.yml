@@ -927,6 +927,25 @@ script:
     - contextPath: Absolute.WipeAction.certificateUid
       description: The unique identifier of the certificate.
       type: String
+  - arguments:
+    - name: device_uids
+      description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
+      isArray: true
+      required: true
+    - name: mac_user_name
+      description: The username of the user with administrative rights (applies to Mac devices only).
+    - name: mac_pwd
+      description: The password of the user with administrative rights (applies to Mac devices only).
+      secret: true
+    - name: unenroll_devices_and_free_licenses
+      description: Indicates whether a Windows device should be unenrolled after the Wipe is complete.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    name: absolute-wipe-request-create
+    description: Create a Wipe request for the devices.
   runonce: false
   script: '-'
   type: python

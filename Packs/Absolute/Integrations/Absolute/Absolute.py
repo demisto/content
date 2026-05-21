@@ -916,6 +916,33 @@ def wipe_actions_list_command(args, client) -> CommandResults:
         return CommandResults(readable_output=f"No wipe actions found in {INTEGRATION} for the given filters: {args}")
 
 
+def wipe_request_create_command(args, client) -> CommandResults:
+    """Creates a wipe request"""
+    device_uids = argToList(args.get("device_uids"))
+    mac_user_name = args.get("mac_user_name")
+    mac_pwd = args.get("mac_pwd")
+
+    payload = {
+        "deviceUids": device_uids,
+        "unenrollDevicesAndFreeLicenses": argToBoolean(args.get("unenroll_devices_and_free_licenses", False)),
+    }
+    if mac_user_name:
+        payload["macUsername"] = mac_user_name
+    if mac_pwd:
+        payload["macPwd"] = mac_pwd
+
+    res = client.api_request_absolute(
+        "POST",
+        "/v3/actions/requests/wipe",
+        body=payload,
+    )
+
+    return CommandResults(
+        readable_output=f"Wipe request {res.get('requestUid')} has been successfully created.",
+        raw_response=res,
+    )
+
+
 def wipe_request_list_command(args, client) -> CommandResults:
     """Lists wipe requests"""
     request_uid = args.get("request_uid")
@@ -1438,6 +1465,9 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "absolute-wipe-actions-list":
             return_results(wipe_actions_list_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-create":
+            return_results(wipe_request_create_command(args=args, client=client_v3))
 
         else:
             raise NotImplementedError(f"{demisto.command()} is not an existing {INTEGRATION} command.")
