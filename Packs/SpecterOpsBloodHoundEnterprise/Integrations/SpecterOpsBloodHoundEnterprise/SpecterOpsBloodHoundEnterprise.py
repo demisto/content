@@ -877,7 +877,6 @@ def fetch_attack_path_details(client: Client, last_run: dict[str, Any], domains:
 
             else:
                 # ALWAYS preserve the timestamp to prevent re-fetching old incidents
-                # This ensures that even when no new paths are found, we don't regress
                 # and re-fetch the same incidents on the next run
                 if last_created_at_timestamp:
                     finding_type_latest_dates[finding_type_key] = last_created_at_timestamp
