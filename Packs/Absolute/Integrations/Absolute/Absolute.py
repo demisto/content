@@ -349,7 +349,7 @@ class ClientV3(BaseClient):
         return all_events
 
     def prepare_query_string_for_fetch_events(
-        self, start_date: datetime, end_date: datetime, page_size: int = None, next_page: str = None
+        self, start_date: datetime, end_date: datetime, page_size: Optional[int] = None, next_page: Optional[str] = None
     ) -> str:
         """
         Prepares the query string for fetching events based on the provided parameters.
@@ -848,6 +848,75 @@ def device_unenroll_command(args, client) -> CommandResults:
     )
 
 
+def prepare_wipe_request_query(args: dict) -> str:
+    created_from = args.get("created_from_date_time_utc")
+    created_to = args.get("created_to_date_time_utc")
+    request_status = args.get("request_status")
+
+    query_params = []
+    if created_from:
+        query_params.append(f"createdFromDateTimeUtc={created_from}")
+    if created_to:
+        query_params.append(f"createdToDateTimeUtc={created_to}")
+    if request_status:
+        query_params.append(f"requestStatus={request_status}")
+
+    return "&".join(query_params)
+
+
+def wipe_request_list_command(args, client) -> CommandResults:
+    """Lists wipe requests"""
+    request_uid = args.get("request_uid")
+    page = arg_to_number(args.get("page", 0))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    hr_headers = [
+        "requestId",
+        "requestUid",
+        "requestStatus",
+        "totalDevices",
+        "pending",
+        "processing",
+        "completed",
+        "canceled",
+        "failed",
+    ]
+
+    if request_uid:
+        res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe/{request_uid}")
+    else:
+        res = client.api_request_absolute(
+            "GET",
+            "/v3/actions/requests/wipe",
+            query_string=prepare_wipe_request_query(args),
+            page=page,
+            page_size=limit,
+            specific_page=True,
+        )
+
+    if res:
+        human_readable = tableToMarkdown(
+            f"{INTEGRATION} wipe request details:" if request_uid else f"{INTEGRATION} wipe requests list:",
+            res,
+            headers=hr_headers,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="Absolute.WipeRequest",
+            outputs=res,
+            outputs_key_field="requestUid",
+            readable_output=human_readable,
+            raw_response=res,
+        )
+    else:
+        return CommandResults(
+            readable_output=f"No wipe request found in {INTEGRATION} for the given request_uid: {request_uid}"
+            if request_uid
+            else f"No wipe requests found in {INTEGRATION} for the given filters: {args}"
+        )
+
+
 def add_list_to_filter_string(field_name, list_of_values, query):
     if not list_of_values:
         return query
@@ -1311,6 +1380,9 @@ def main() -> None:  # pragma: no cover
             if should_push_events and events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
+
+        elif demisto.command() == "absolute-wipe-request-list":
+            return_results(wipe_request_list_command(args=args, client=client_v3))
 
         else:
             raise NotImplementedError(f"{demisto.command()} is not an existing {INTEGRATION} command.")
