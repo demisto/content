@@ -67,7 +67,7 @@ POST_REQUEST_AUTH_HEADER = (
     "Signature=2355cede6fe99bf852ec7e4bc7dc450445fac9458814ef81d1a1b0906aac750b"
 )
 
-FREEZE_REQ_EXPECTED_OUTPUT = [
+FREEZE_REQ_EXPECTED_OUTPUT: list[dict] = [
     {
         "ActionRequestUid": "e416f97e-dc43-4ed0-88c3-b33ea66c660f",
         "ChangedBy": None,
@@ -324,6 +324,7 @@ def test_get_device_freeze_request_command(mocker, absolute_client_v3):
     response = util_load_json("test_data/custom_get_device_freeze_request_response.json")
     mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
     command_results = get_device_freeze_request_command(args={"request_uid": "1"}, client=absolute_client_v3)
+    assert isinstance(command_results.outputs, list)
     assert command_results.outputs[0] == FREEZE_REQ_EXPECTED_OUTPUT[0]
 
 
@@ -638,7 +639,7 @@ def test_fetch_events_case_no_events_exist(mocker, absolute_client_v3):
     """
     from Absolute import fetch_events
 
-    mock_response = {"data": [], "metadata": {}}
+    mock_response: dict = {"data": [], "metadata": {}}
     mocker.patch("Absolute.ClientV3.fetch_events_between_dates", return_value=(mock_response.get("data"), ""))
     mocker.patch("Absolute.process_events", return_value=(mock_response.get("data"), {}))
     events, last_run_object = fetch_events(absolute_client_v3, 10000, {})
@@ -742,9 +743,12 @@ def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3)
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(minutes=1)
 
+    call_count = 0
+
     def fetch_events_side_effect(method: str, url_suffix: str, query_string: str, ok_codes: tuple):
-        if fetch_events_side_effect.call_count == 1:
-            fetch_events_side_effect.call_count += 1
+        nonlocal call_count
+        if call_count == 0:
+            call_count += 1
             return {
                 "data": mock_response.get("data")[: Absolute.SEIM_EVENTS_PAGE_SIZE],
                 "metadata": {"pagination": {"nextPage": "next_token"}},
@@ -752,7 +756,6 @@ def test_fetch_events_between_dates_multiple_fetches(mocker, absolute_client_v3)
         else:
             return {"data": mock_response.get("data")[Absolute.SEIM_EVENTS_PAGE_SIZE :], "metadata": {"pagination": {}}}
 
-    fetch_events_side_effect.call_count = 1
     mocker.patch.object(absolute_client_v3, "send_request_to_api", side_effect=fetch_events_side_effect)
     fetch_events_spy = mocker.spy(absolute_client_v3, "send_request_to_api")
     all_events = ClientV3.fetch_events_between_dates(absolute_client_v3, 10000, start_date, end_date)
@@ -800,8 +803,8 @@ def test_get_latest_events(absolute_client_v3):
     mock_response = util_load_json("test_data/siem_events.json")
     events = mock_response.get("data")
     _, last_run = process_events(events=events, last_run={})
-    assert len(last_run.get("latest_events_id")) == 2
-    assert len(set(last_run.get("latest_events_id"))) == 2
+    assert len(last_run.get("latest_events_id", [])) == 2
+    assert len(set(last_run.get("latest_events_id", []))) == 2
     assert last_run.get("latest_events_id") == ["id14", "id15"]
     assert events[13].get("eventDateTimeUtc") == events[14].get("eventDateTimeUtc") == last_run.get("latest_events_time")
 
@@ -871,7 +874,7 @@ def test_prepare_query_string_for_fetch_events(mocker, absolute_client_v3):
     end_date = start_date + timedelta(minutes=1)
     page_size = 1000
     query = ClientV3.prepare_query_string_for_fetch_events(
-        None, page_size=page_size, start_date=start_date, end_date=end_date, next_page="next_page_token"
+        absolute_client_v3, page_size=page_size, start_date=start_date, end_date=end_date, next_page="next_page_token"
     )
     expected_query = (
         f'fromDateTimeUtc={start_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z&toDateTimeUtc='
@@ -931,3 +934,103 @@ def test_last_run_hold_created_time_and_events_sorted_by_created_time_in_fetch_e
     assert last_run_object.get("latest_events_time") == events[-1].get("createdDateTimeUtc")
     for event in events:
         assert event.get("_time") == event.get("eventDateTimeUtc")
+
+
+def test_wipe_request_list_command(mocker, absolute_client_v3):
+    from Absolute import wipe_request_list_command
+
+    mock_response = {
+        "data": [
+            {
+                "requestId": "123",
+                "requestUid": "abc",
+                "requestStatus": "Completed",
+                "totalDevices": 1,
+                "pending": 0,
+                "processing": 0,
+                "completed": 1,
+                "canceled": 0,
+                "failed": 0,
+            }
+        ]
+    }
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=mock_response)
+    command_results = wipe_request_list_command(args={}, client=absolute_client_v3)
+    assert command_results.outputs == mock_response
+
+
+def test_wipe_request_list_command_with_request_uid(mocker, absolute_client_v3):
+    from Absolute import wipe_request_list_command
+
+    mock_response = {
+        "requestId": "123",
+        "requestUid": "abc",
+        "requestStatus": "Completed",
+        "totalDevices": 1,
+        "pending": 0,
+        "processing": 0,
+        "completed": 1,
+        "canceled": 0,
+        "failed": 0,
+    }
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=mock_response)
+    command_results = wipe_request_list_command(args={"request_uid": "abc"}, client=absolute_client_v3)
+    assert command_results.outputs == mock_response
+
+
+def test_wipe_actions_list_command(mocker, absolute_client_v3):
+    from Absolute import wipe_actions_list_command
+
+    mock_response = {
+        "data": [
+            {
+                "actionUid": "123",
+                "requestUid": "abc",
+                "deviceUid": "def",
+                "deviceName": "test",
+                "esn": "12345",
+                "actionStatus": "Completed",
+            }
+        ]
+    }
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=mock_response)
+    command_results = wipe_actions_list_command(args={}, client=absolute_client_v3)
+    assert command_results.outputs == mock_response
+
+
+def test_wipe_actions_list_command_with_request_uid(mocker, absolute_client_v3):
+    from Absolute import wipe_actions_list_command
+
+    mock_response = {
+        "data": [
+            {
+                "actionUid": "123",
+                "requestUid": "abc",
+                "deviceUid": "def",
+                "deviceName": "test",
+                "esn": "12345",
+                "actionStatus": "Completed",
+            }
+        ]
+    }
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=mock_response)
+    command_results = wipe_actions_list_command(args={"request_uid": "abc"}, client=absolute_client_v3)
+    assert command_results.outputs == mock_response
+
+
+def test_wipe_request_create_command(mocker, absolute_client_v3):
+    from Absolute import wipe_request_create_command
+
+    mock_response = {"requestUid": "abc"}
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=mock_response)
+    command_results = wipe_request_create_command(args={"device_uids": "1,2"}, client=absolute_client_v3)
+    assert command_results.readable_output == "Wipe request abc has been successfully created."
+
+
+def test_wipe_request_cancel_command(mocker, absolute_client_v3):
+    from Absolute import wipe_request_cancel_command
+
+    mock_response = {"status": "success"}
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=mock_response)
+    command_results = wipe_request_cancel_command(args={"request_uid": "abc", "action_uids": "1,2"}, client=absolute_client_v3)
+    assert command_results.readable_output == "Wipe actions for the request abc have been successfully canceled."
