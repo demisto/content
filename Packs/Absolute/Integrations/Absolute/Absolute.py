@@ -848,10 +848,10 @@ def device_unenroll_command(args, client) -> CommandResults:
     )
 
 
-def prepare_wipe_request_query(args: dict) -> str:
+def prepare_wipe_request_query(args: dict, status) -> str:
     created_from = args.get("created_from_date_time_utc")
     created_to = args.get("created_to_date_time_utc")
-    request_status = args.get("request_status")
+    request_status = args.get("request_status") or args.get("action_status")
 
     query_params = []
     if created_from:
@@ -859,9 +859,61 @@ def prepare_wipe_request_query(args: dict) -> str:
     if created_to:
         query_params.append(f"createdToDateTimeUtc={created_to}")
     if request_status:
-        query_params.append(f"requestStatus={request_status}")
+        query_params.append(f"{status}={request_status}")
 
     return "&".join(query_params)
+
+
+def wipe_actions_list_command(args, client) -> CommandResults:
+    """Lists wipe actions"""
+    request_uid = args.get("request_uid")
+    device_uids = argToList(args.get("device_uids"))
+    page = arg_to_number(args.get("page", 0))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    payload = {}
+    if device_uids:
+        payload["deviceUids"] = device_uids
+
+    if request_uid:
+        res = client.api_request_absolute(
+            "POST",
+            f"/v3/actions/wipe/get-actions/{request_uid}",
+            query_string=prepare_wipe_request_query(args, "actionStatus"),
+            body=payload,
+            page=page,
+            page_size=limit,
+            specific_page=True,
+        )
+    else:
+        res = client.api_request_absolute(
+            "POST",
+            "/v3/actions/wipe/get-actions",
+            query_string=prepare_wipe_request_query(args, "actionStatus"),
+            body=payload,
+            page=page,
+            page_size=limit,
+            specific_page=True,
+        )
+
+    if res:
+        outputs = res
+        human_readable = tableToMarkdown(
+            f"{INTEGRATION} wipe actions list:",
+            outputs,
+            headers=["actionUid", "requestUid", "deviceUid", "deviceName", "esn", "actionStatus"],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="Absolute.WipeAction",
+            outputs=outputs,
+            outputs_key_field="actionUid",
+            readable_output=human_readable,
+            raw_response=res,
+        )
+    else:
+        return CommandResults(readable_output=f"No wipe actions found in {INTEGRATION} for the given filters: {args}")
 
 
 def wipe_request_list_command(args, client) -> CommandResults:
@@ -888,7 +940,7 @@ def wipe_request_list_command(args, client) -> CommandResults:
         res = client.api_request_absolute(
             "GET",
             "/v3/actions/requests/wipe",
-            query_string=prepare_wipe_request_query(args),
+            query_string=prepare_wipe_request_query(args, "requestStatus"),
             page=page,
             page_size=limit,
             specific_page=True,
@@ -1383,6 +1435,9 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "absolute-wipe-request-list":
             return_results(wipe_request_list_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-actions-list":
+            return_results(wipe_actions_list_command(args=args, client=client_v3))
 
         else:
             raise NotImplementedError(f"{demisto.command()} is not an existing {INTEGRATION} command.")

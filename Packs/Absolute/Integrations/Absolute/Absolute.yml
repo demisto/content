@@ -872,6 +872,61 @@ script:
     - contextPath: Absolute.WipeRequest.unenrollDevicesAndFreeLicenses
       description: Indicates whether a Windows device should be unenrolled after the Wipe is complete.
       type: Boolean
+  - arguments:
+    - name: request_uid
+      description: The system-defined unique identifier of the Device Action request.
+    - name: device_uids
+      description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
+      isArray: true
+      required: true
+    - name: action_status
+      description: Filters results to include responses where action_status equals the given value.
+      auto: PREDEFINED
+      predefined:
+      - "Failed"
+      - "Pending"
+      - "Canceled"
+      - "Processing"
+      - "Succeeded"
+    - name: created_from_date_time_utc
+      description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
+    - name: created_to_date_time_utc
+      description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
+    - name: page
+      description: The page number for pagination.
+    - name: limit
+      description: Pagination limit - maximum number of events to return.
+      defaultValue: "50"
+    name: absolute-wipe-actions-list
+    description: Get the status of actions by devices or by request.
+    outputs:
+    - contextPath: Absolute.WipeAction.actionUid
+      description: The unique identifier of the wipe action.
+      type: String
+    - contextPath: Absolute.WipeAction.requestUid
+      description: The unique identifier of the wipe request.
+      type: String
+    - contextPath: Absolute.WipeAction.deviceUid
+      description: The unique identifier of the device.
+      type: String
+    - contextPath: Absolute.WipeAction.deviceName
+      description: The name of the device.
+      type: String
+    - contextPath: Absolute.WipeAction.esn
+      description: The Electronic Serial Number of the device.
+      type: String
+    - contextPath: Absolute.WipeAction.actionStatus
+      description: The status of the wipe action.
+      type: String
+    - contextPath: Absolute.WipeAction.updatedDateTimeUtc
+      description: The date and time when the wipe action was last updated.
+      type: Date
+    - contextPath: Absolute.WipeAction.createdDateTimeUtc
+      description: The date and time when the wipe action was created.
+      type: Date
+    - contextPath: Absolute.WipeAction.certificateUid
+      description: The unique identifier of the certificate.
+      type: String
   runonce: false
   script: '-'
   type: python
