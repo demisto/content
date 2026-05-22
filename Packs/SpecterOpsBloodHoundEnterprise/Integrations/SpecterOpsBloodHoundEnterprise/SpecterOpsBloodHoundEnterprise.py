@@ -860,7 +860,6 @@ def fetch_attack_path_details(client: Client, last_run: dict[str, Any], domains:
             else:
                 demisto.info(f"No last created_at timestamp found for " f"{finding_type_key}, will fetch all attack paths.")
 
-            # Paginate and filter attack paths
             filtered_attack_paths = _paginate_and_filter_attack_paths(
                 client,
                 domain_id,
