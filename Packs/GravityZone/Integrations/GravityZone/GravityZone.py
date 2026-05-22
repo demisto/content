@@ -31,6 +31,7 @@ COMMAND_KILL_PROCESS = "KillProcess"
 COMMAND_ISOLATE = "Isolate"
 COMMAND_RESTORE_FROM_ISOLATION = "Deisolate"
 COMMAND_UPLOAD_FILE = "UploadFile"
+COMMAND_GET_ACTIVE_SESSIONS = "GetActiveSessions"
 
 ACTIVITY_STATUS_SUCCESS = "success"
 ACTIVITY_STATUS_PENDING = "pending"
@@ -62,11 +63,13 @@ TASK_TYPE_ISOLATE_ENDPOINT_PARENT = 16
 TASK_TYPE_RESTORE_ENDPOINT_PARENT = 17
 TASK_TYPE_KILL_PROCESS_PARENT = 21
 TASK_TYPE_REMOTE_ACCESS_DOWNLOAD_PARENT = 24
+TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT = 26
 TASK_NUMERIC_TO_COMMAND_NAME = {
     TASK_TYPE_KILL_PROCESS_PARENT: COMMAND_KILL_PROCESS,
     TASK_TYPE_ISOLATE_ENDPOINT_PARENT: COMMAND_ISOLATE,
     TASK_TYPE_RESTORE_ENDPOINT_PARENT: COMMAND_RESTORE_FROM_ISOLATION,
     TASK_TYPE_REMOTE_ACCESS_DOWNLOAD_PARENT: COMMAND_UPLOAD_FILE,
+    TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT: COMMAND_GET_ACTIVE_SESSIONS,
 }
 TASK_STATUS_PENDING = 1
 TASK_STATUS_PROCESSING = 2
@@ -453,6 +456,21 @@ class Client(BaseClient):
             "/v1.0/jsonrpc/investigation",
             "collectInvestigationPackage",
             {"targetId": target_id},
+        )
+
+    @logger
+    def start_get_active_sessions_on_endpoint(self, endpoint_id: str) -> Any:
+        """
+        Start active session collection on one endpoint.
+        Args:
+            endpoint_id (str): The ID of the target endpoint.
+        Returns:
+            Any: The response containing the task ID.
+        """
+        return self.call(
+            "/v1.0/jsonrpc/network",
+            "createGetActiveSessionsTask",
+            {"endpointId": endpoint_id},
         )
 
     @logger
@@ -1795,6 +1813,110 @@ def generate_task_output(
     }
 
 
+def _extract_active_sessions_from_task(task_output: dict[str, Any]) -> list[dict[str, Any]]:
+    sessions: list[dict[str, Any]] = []
+    for subtask in task_output.get("subtasks", []):
+        if subtask.get("status") != TASK_STATUS_PROCESSED:
+            continue
+
+        for session in subtask.get("result", []) or []:
+            user_data = session.get("user", {})
+            username = user_data.get("displayName", "")
+
+            row: dict[str, Any] = {
+                "Username": username,
+                "ConnectionType": session.get("connection", {}).get("type"),
+                "StartTime": session.get("connection", {}).get("started"),
+            }
+
+            if user_data.get("sid"):
+                row["UserSID"] = user_data.get("sid")
+
+            domain_sid = user_data.get("domain", {}).get("sid")
+            if domain_sid:
+                row["DomainSID"] = domain_sid
+
+            ou_dn = user_data.get("organizationalUnit", {}).get("distinguishedName")
+            if ou_dn:
+                row["OrganizationalUnitDN"] = ou_dn
+
+            member_of_sids = [
+                group.get("sid") for group in user_data.get("memberOf", []) if isinstance(group, dict) and group.get("sid")
+            ]
+            if member_of_sids:
+                row["MemberOfSIDs"] = member_of_sids
+
+            sessions.append(row)
+
+    return sessions
+
+
+def _extract_endpoint_summary_from_task(task_output: dict[str, Any], endpoint_id: str) -> tuple[str, str]:
+    resolved_endpoint_id = endpoint_id
+    resolved_hostname = ""
+
+    for subtask in task_output.get("subtasks", []):
+        subtask_endpoint_id = subtask.get("endpointId") or ""
+        subtask_hostname = subtask.get("endpointName") or ""
+
+        if not resolved_endpoint_id and subtask_endpoint_id:
+            resolved_endpoint_id = subtask_endpoint_id
+
+        if resolved_endpoint_id and subtask_endpoint_id == resolved_endpoint_id:
+            resolved_hostname = subtask_hostname
+            break
+
+        if not resolved_hostname and subtask_hostname:
+            resolved_hostname = subtask_hostname
+
+    return resolved_endpoint_id, resolved_hostname
+
+
+def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str) -> CommandResults:
+    """Build endpoint-scoped command results for active logged-in sessions."""
+    endpoint_id, endpoint_hostname = _extract_endpoint_summary_from_task(task_output, endpoint_id)
+
+    sessions = _extract_active_sessions_from_task(task_output)
+    endpoint_output: dict[str, Any] = {
+        "ID": endpoint_id,
+        "Hostname": endpoint_hostname,
+        "ActiveSessions": sessions or [],
+    }
+
+    if not sessions:
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=f"No active sessions found for endpoint {endpoint_id}.",
+            outputs=endpoint_output,
+            outputs_prefix="GravityZone.Endpoint",
+            outputs_key_field="ID",
+            entry_type=EntryType.NOTE,
+            replace_existing=True,
+        )
+
+    return CommandResults(
+        raw_response=task_output,
+        readable_output=tableToMarkdown(
+            f"Active sessions for endpoint {endpoint_id}",
+            sessions,
+            headers=[
+                "Username",
+                "ConnectionType",
+                "StartTime",
+                "UserSID",
+                "DomainSID",
+                "OrganizationalUnitDN",
+                "MemberOfSIDs",
+            ],
+        ),
+        outputs=endpoint_output,
+        outputs_prefix="GravityZone.Endpoint",
+        outputs_key_field="ID",
+        entry_type=EntryType.NOTE,
+        replace_existing=True,
+    )
+
+
 def fetch_incidents(client: Client, start_fetch_time, end_fetch_time, fetch_limit=FETCH_LIMIT) -> list[dict]:
     """
     Fetches incidents from GravityZone within the specified time range.
@@ -2609,6 +2731,51 @@ def gz_endpoint_kill_process_command(client: Client, args: dict[str, Any]) -> Po
     return get_task_results(client, kill_task_id, {"targetId": endpoint_id, "processId": process_id})
 
 
+@polling_function(
+    name="gz-poll-endpoint-users-loggedin-status",
+    timeout=POLL_TIMEOUT,
+    interval=POLL_INTERVAL,
+    requires_polling_arg=False,
+)
+def check_endpoint_users_loggedin_status(args: dict[str, Any], client: Client) -> PollResult:
+    task_id = args.get("task_id", "")
+    endpoint_id = args.get("endpoint_id", "")
+    if not task_id:
+        return PollResult(
+            CommandResults(
+                readable_output="`task_id` must be provided.",
+                entry_type=EntryType.ERROR,
+            )
+        )
+
+    task_output = client.get_task_status(task_id)
+    current_status = task_output.get("status")
+
+    if current_status == TASK_STATUS_PROCESSED:
+        return PollResult(_build_users_loggedin_results(task_output, endpoint_id))
+
+    return PollResult(
+        continue_to_poll=True,
+        response=CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' still pending.",
+            entry_type=EntryType.NOTE,
+        ),
+    )
+
+
+def gz_poll_endpoint_users_loggedin_status_command(args: dict[str, Any], client: Client) -> PollResult:
+    return check_endpoint_users_loggedin_status(args, client)
+
+
+@logger
+def gz_endpoint_users_loggedin_command(client: Client, args: dict[str, Any]) -> PollResult:
+    endpoint_id = args.get("id", "")
+    task_id = client.start_get_active_sessions_on_endpoint(endpoint_id)
+
+    return check_endpoint_users_loggedin_status({"task_id": task_id, "endpoint_id": endpoint_id}, client)
+
+
 def main():
     command: str = demisto.command()
 
@@ -2635,9 +2802,11 @@ def main():
             "gz-poll-task-status": gz_poll_task_status_command,
             "gz-poll-investigation-activity-status": gz_poll_investigation_activity_status_command,
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
+            "gz-poll-endpoint-users-loggedin-status": gz_poll_endpoint_users_loggedin_status_command,
             ### GravityZone Endpoint Commands ###
             "gz-endpoint-list": gz_endpoint_list_command,
             "gz-endpoint-get": gz_endpoint_get_command,
+            "gz-endpoint-users-loggedin": gz_endpoint_users_loggedin_command,
             "gz-endpoint-download-investigation-package": gz_endpoint_download_investigation_package_command,
             "gz-endpoint-download-file": gz_endpoint_download_file_command,
             "gz-endpoint-isolate": gz_endpoint_isolate_command,
@@ -2664,6 +2833,7 @@ def main():
             "gz-poll-task-status",
             "gz-poll-investigation-activity-status",
             "gz-poll-live-search-status",
+            "gz-poll-endpoint-users-loggedin-status",
         ]
 
         if command in command_function_map:

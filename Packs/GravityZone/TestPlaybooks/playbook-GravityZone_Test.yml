@@ -771,7 +771,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -838,6 +838,88 @@ tasks:
       {
         "position": {
           "x": 710,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 8a51ec37-c60e-4e59-88eb-74a8ce22eebf
+    type: regular
+    task:
+      id: 8a51ec37-c60e-4e59-88eb-74a8ce22eebf
+      version: -1
+      name: gz-endpoint-users-loggedin
+      script: GravityZone|||gz-endpoint-users-loggedin
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a6c6f97a-0391-4f11-840b-7864603f66ec
+    type: condition
+    task:
+      id: a6c6f97a-0391-4f11-840b-7864603f66ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.Hostname
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GravityZone.Endpoint.ActiveSessions
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
           "y": 970
         }
       }
@@ -1704,6 +1786,7 @@ view: |-
     "linkLabelsPosition": {
       "10_11_yes": 0.9,
       "33_5_yes": 0.83,
+      "35_17_yes": 0.5,
       "6_7_yes": 0.48,
       "8_9_yes": 0.87
     },

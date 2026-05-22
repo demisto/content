@@ -176,6 +176,45 @@ script:
       description: The endpoint vendor.
       type: String
 
+  - name: gz-endpoint-users-loggedin
+    description: Retrieves active logged-in sessions for an endpoint.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The ID of the endpoint.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Endpoint.ID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Endpoint.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.Username
+      description: The logged-in username.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.ConnectionType
+      description: The connection type for the session.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.StartTime
+      description: The session start time.
+      type: Date
+    - contextPath: GravityZone.Endpoint.ActiveSessions.UserSID
+      description: The user SID for the session, if available.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.DomainSID
+      description: The domain SID for the session, if available.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.OrganizationalUnitDN
+      description: The organizational unit distinguished name, if available.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.MemberOfSIDs
+      description: The list of group SIDs for the session user, if available.
+      type: Unknown
+
   - name: gz-endpoint-download-investigation-package
     description: Collects and downloads an investigation package from an endpoint.
     compliantpolicies:
@@ -929,6 +968,23 @@ script:
       isArray: false
       description: The metadata to pass to the task.
       required: false
+      secret: false
+      default: false
+    outputs: []
+  - name: gz-poll-endpoint-users-loggedin-status
+    description: Checks endpoint active sessions task status. This command is not intended for direct use.
+    polling: true
+    arguments:
+    - name: task_id
+      isArray: false
+      description: The task ID.
+      required: true
+      secret: false
+      default: false
+    - name: endpoint_id
+      isArray: false
+      description: The endpoint ID.
+      required: true
       secret: false
       default: false
     outputs: []

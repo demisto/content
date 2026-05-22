@@ -302,6 +302,122 @@ def test_gz_endpoint_get_command(mock_demisto, requests_mock):
 
 
 @patch("GravityZone.demisto")
+def test_gz_endpoint_users_loggedin_command(mock_demisto, requests_mock):
+    """
+    Given
+            All relevant arguments for the command that is executed
+    When
+            Calling gz-endpoint-users-loggedin command
+    Then
+            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_users_loggedin_command, gz_poll_endpoint_users_loggedin_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-users-loggedin"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-users-loggedin")
+    client = get_client()
+
+    # Execute command
+    command_response = gz_endpoint_users_loggedin_command(client=client, args={"id": "ENDPOINT_ID"})
+
+    # Assert command response
+    assert_command_mocked_data(
+        "gz-endpoint-users-loggedin",
+        command_response,
+        polling_func=gz_poll_endpoint_users_loggedin_status_command,
+        client=client,
+    )
+
+
+def test_extract_active_sessions_from_task_handles_missing_optional_fields():
+    from GravityZone import _extract_active_sessions_from_task
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 3,
+                "result": [
+                    {
+                        "connection": {
+                            "started": "2021-05-19T10:37:56Z",
+                            "type": "local",
+                        },
+                        "user": {
+                            "displayName": "user@example.com",
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
+    sessions = _extract_active_sessions_from_task(task_output)
+
+    assert len(sessions) == 1
+    assert sessions[0]["Username"] == "user@example.com"
+    assert sessions[0]["ConnectionType"] == "local"
+    assert sessions[0]["StartTime"] == "2021-05-19T10:37:56Z"
+    assert "UserSID" not in sessions[0]
+    assert "DomainSID" not in sessions[0]
+    assert "OrganizationalUnitDN" not in sessions[0]
+    assert "MemberOfSIDs" not in sessions[0]
+
+
+def test_extract_endpoint_summary_from_task_returns_hostname_for_matching_endpoint_id():
+    from GravityZone import _extract_endpoint_summary_from_task
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-2",
+                "endpointName": "host-2",
+            },
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1-updated",
+            },
+        ]
+    }
+
+    endpoint_id, hostname = _extract_endpoint_summary_from_task(task_output, "endpoint-1")
+
+    assert endpoint_id == "endpoint-1"
+    assert hostname == "host-1-updated"
+
+
+def test_build_users_loggedin_results_outputs_endpoint_scoped_context():
+    from GravityZone import _build_users_loggedin_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1-updated",
+                "status": 3,
+                "result": [],
+            }
+        ],
+    }
+
+    result = _build_users_loggedin_results(task_output, "endpoint-1")
+
+    assert result.outputs_prefix == "GravityZone.Endpoint"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs == {
+        "ID": "endpoint-1",
+        "Hostname": "host-1-updated",
+        "ActiveSessions": [],
+    }
+
+
+@patch("GravityZone.demisto")
 def test_gz_endpoint_isolate_command(mock_demisto, requests_mock):
     """
     Given
