@@ -780,3 +780,86 @@ Gets Domain from the feed.
 | Description | String |  Description of detected activity.       |
 | Confidence | Number |  Confidence of detected activity.        |
 | Occurrences count | Number |  Occurrences count of detected activity. |
+
+### cyberint-cve-enrich
+
+***
+Enriches one or more CVE identifiers with Cyberint vulnerability intelligence, including EPSS, CVSS, CWE, the Cyberint CVE score and active-exploitation evidence.
+
+#### Base Command
+
+`cyberint-cve-enrich`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve_id | CVE identifier to enrich (e.g., CVE-2024-1234). Supports a comma-separated list of identifiers. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cyberint.CVE.cve_id | String | The CVE identifier. |
+| Cyberint.CVE.cyberint_score | Number | Cyberint proprietary risk score for the CVE. |
+| Cyberint.CVE.epss | Number | EPSS (Exploit Prediction Scoring System) probability score. |
+| Cyberint.CVE.description | String | The CVE description. |
+| Cyberint.CVE.published | Date | The date the CVE was published. |
+| Cyberint.CVE.last_updated | Date | The date the CVE was last updated. |
+| Cyberint.CVE.cvss.cvss_v3.base_score | Number | CVSS v3 base score. |
+| Cyberint.CVE.cvss.cvss_v3.base_severity | String | CVSS v3 base severity. |
+| Cyberint.CVE.cvss.cvss_v4.base_score | Number | CVSS v4 base score. |
+| Cyberint.CVE.cwes.cwe_id | String | Associated CWE identifier. |
+| Cyberint.CVE.cwes.name | String | Associated CWE name. |
+| Cyberint.CVE.risk_factors | Unknown | Risk factors associated with the CVE. |
+| Cyberint.CVE.exploited_by | Unknown | Threat actors observed exploiting the CVE. |
+| Cyberint.CVE.products | Unknown | Products affected by the CVE. |
+| Cyberint.CVE.recommendation | String | Cyberint remediation recommendation for the CVE. |
+| Cyberint.CVE.references | Unknown | External references for the CVE. |
+| CVE.ID | String | The CVE identifier. |
+| CVE.CVSS | String | The CVSS score of the CVE. |
+| CVE.Published | Date | The date the CVE was published. |
+| CVE.Description | String | The CVE description. |
+
+#### Command Example
+
+```!cyberint-cve-enrich cve_id="CVE-2024-1234"```
+
+### cyberint-credential-leak-lookup
+
+***
+Looks up leaked employee or customer credentials associated with a company domain, using the Cyberint leaked-credentials API.
+
+#### Base Command
+
+`cyberint-credential-leak-lookup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The company domain to search leaked credentials for (e.g., example.com). | Required |
+| last_seen_from | Only return credentials last seen on or after this ISO-formatted date (YYYY-MM-DDTHH:MM:SSZ). | Optional |
+| last_seen_to | Only return credentials last seen on or before this ISO-formatted date (YYYY-MM-DDTHH:MM:SSZ). | Optional |
+| limit | Maximum number of leaked credential records to return per credential type (employee/customer). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cyberint.LeakedCredential.domain | String | The company domain that was searched. |
+| Cyberint.LeakedCredential.total | Number | Total number of leaked credential records returned. |
+| Cyberint.LeakedCredential.employee_total | Number | Number of leaked employee credential records returned. |
+| Cyberint.LeakedCredential.customer_total | Number | Number of leaked customer credential records returned. |
+| Cyberint.LeakedCredential.employee_credentials.username | String | The leaked employee account username. |
+| Cyberint.LeakedCredential.employee_credentials.first_seen | Date | The date the employee credential was first observed. |
+| Cyberint.LeakedCredential.employee_credentials.last_seen | Date | The date the employee credential was last observed. |
+| Cyberint.LeakedCredential.employee_credentials.entries | Unknown | The leaked credential entries (password, source, URL) for the employee account. |
+| Cyberint.LeakedCredential.customer_credentials.username | String | The leaked customer account username. |
+| Cyberint.LeakedCredential.customer_credentials.first_seen | Date | The date the customer credential was first observed. |
+| Cyberint.LeakedCredential.customer_credentials.last_seen | Date | The date the customer credential was last observed. |
+| Cyberint.LeakedCredential.customer_credentials.entries | Unknown | The leaked credential entries (password, source, URL) for the customer account. |
+
+#### Command Example
+
+```!cyberint-credential-leak-lookup domain="example.com"```

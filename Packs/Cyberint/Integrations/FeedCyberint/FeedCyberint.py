@@ -240,6 +240,49 @@ class Client(BaseClient):
         )
         return response
 
+    @logger
+    def retrieve_cve_intelligence(self, cve_id: str) -> dict[str, Any]:
+        """
+        Makes the API request to retrieve enriched CVE intelligence.
+
+        Args:
+            cve_id (str): The CVE identifier (e.g. CVE-2024-1234).
+
+        Returns:
+            CVE intelligence information (a VulnerabilityDetail object).
+        """
+        url_suffix = f"/cve-intel/external/api/v1/vulnerability/{cve_id}"
+        demisto.debug(f"URL to retrieve CVE intelligence: {url_suffix}")
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            cookies=self._cookies,
+            timeout=120,
+            retries=3,
+        )
+
+    @logger
+    def retrieve_leaked_credentials_by_domain(self, domain: str) -> dict[str, Any]:
+        """
+        Makes the API request to retrieve leaked credentials for a company domain.
+
+        Args:
+            domain (str): The company domain to search leaked credentials for.
+
+        Returns:
+            Leaked credentials information (a Response[ByDomainData] object).
+        """
+        url_suffix = "/exposed-credentials/by_domain/"
+        demisto.debug(f"URL to retrieve leaked credentials: {url_suffix}")
+        return self._http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            json_data={"domain": domain},
+            cookies=self._cookies,
+            timeout=120,
+            retries=3,
+        )
+
 
 def test_module(client: Client, feed_enabled: Optional[bool]) -> str:
     """
@@ -907,6 +950,206 @@ def is_x_minutes_ago_yesterday(minutes: int) -> bool:
     return x_minutes_ago.date() == yesterday.date()
 
 
+def cvss_base_score(cvss: dict[str, Any]) -> Optional[float]:
+    """
+    Picks the most relevant CVSS base score from a Cyberint CVSS object (prefers v4, then v3, then v2).
+
+    Args:
+        cvss (dict): The CVSS object from a Cyberint VulnerabilityDetail response.
+
+    Returns:
+        The CVSS base score, or None when no score is available.
+    """
+    for version_key in ("cvss_v4", "cvss_v3", "cvss_v2"):
+        collection = cvss.get(version_key) or {}
+        if collection.get("base_score") is not None:
+            return collection.get("base_score")
+    return None
+
+
+def get_cve_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Enriches one or more CVE identifiers with Cyberint vulnerability intelligence.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments. Expects a 'cve_id' argument (CSV supported).
+
+    Returns:
+        One CommandResults entry per CVE.
+    """
+    cve_ids = argToList(args.get("cve_id"))
+    if not cve_ids:
+        raise DemistoException("You must supply at least one CVE identifier in the 'cve_id' argument.")
+
+    command_results: list[CommandResults] = []
+    for cve_id in cve_ids:
+        raw_response = client.retrieve_cve_intelligence(cve_id)
+        cve_data = raw_response.get("data", raw_response) if isinstance(raw_response, dict) else {}
+        cve_data = cve_data or {}
+        # Ensure the CVE identifier is always present in the output, even for a sparse response.
+        cve_data.setdefault("cve_id", cve_id)
+
+        cvss = cve_data.get("cvss") or {}
+        base_score = cvss_base_score(cvss)
+        cvss_v3 = cvss.get("cvss_v3") or {}
+        cwes = cve_data.get("cwes") or []
+        cwe_ids = [item.get("cwe_id") if isinstance(item, dict) else item for item in cwes]
+        exploited_by = cve_data.get("exploited_by") or []
+        actor_names = [item.get("name") if isinstance(item, dict) else item for item in exploited_by]
+
+        indicator = Common.CVE(
+            id=cve_data.get("cve_id", cve_id),
+            cvss=base_score,
+            cvss_score=base_score,
+            cvss_version=cvss_v3.get("version"),
+            cvss_vector=cvss_v3.get("vector_string"),
+            published=cve_data.get("published"),
+            modified=cve_data.get("last_updated"),
+            description=cve_data.get("description"),
+        )
+
+        human_readable = tableToMarkdown(
+            f"Cyberint CVE Intelligence: {cve_id}",
+            {
+                "CVE ID": cve_data.get("cve_id"),
+                "Cyberint Score": cve_data.get("cyberint_score"),
+                "CVSS Score": base_score,
+                "EPSS": cve_data.get("epss"),
+                "CWE": ", ".join(filter(None, cwe_ids)),
+                "Risk Factors": ", ".join(cve_data.get("risk_factors") or []),
+                "Exploited By": ", ".join(filter(None, actor_names)),
+                "Affected Products": ", ".join(cve_data.get("products") or []),
+                "Published": cve_data.get("published"),
+            },
+            removeNull=True,
+        )
+        command_results.append(
+            CommandResults(
+                outputs_prefix="Cyberint.CVE",
+                outputs_key_field="cve_id",
+                outputs=cve_data,
+                readable_output=human_readable,
+                raw_response=raw_response,
+                indicator=indicator,
+            )
+        )
+    return command_results
+
+
+def summarize_credential_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Builds a password-free summary of leaked-credential records for human-readable output.
+
+    Args:
+        records (list): Leaked-credential records (LeakedCredentialRecord objects).
+
+    Returns:
+        A list of summary dictionaries, one per record.
+    """
+    summary = []
+    for record in records:
+        entries = record.get("entries") or []
+        summary.append(
+            {
+                "Username": record.get("username"),
+                "First Seen": record.get("first_seen"),
+                "Last Seen": record.get("last_seen"),
+                "Exposures": len(entries),
+                "Sources": ", ".join(sorted({entry.get("source") for entry in entries if entry.get("source")})),
+            }
+        )
+    return summary
+
+
+def filter_credentials_by_last_seen(
+    records: list[dict[str, Any]], last_seen_from: Optional[str], last_seen_to: Optional[str]
+) -> list[dict[str, Any]]:
+    """
+    Filters leaked-credential records by their 'last seen' date.
+
+    The leaked-credentials by_domain API does not support date filtering server-side, so it is applied here.
+
+    Args:
+        records (list): Leaked-credential records.
+        last_seen_from (str): Optional lower bound for the record 'last seen' date.
+        last_seen_to (str): Optional upper bound for the record 'last seen' date.
+
+    Returns:
+        The filtered list of records.
+    """
+    if not last_seen_from and not last_seen_to:
+        return records
+    start = arg_to_datetime(last_seen_from)
+    end = arg_to_datetime(last_seen_to)
+    filtered = []
+    for record in records:
+        last_seen = arg_to_datetime(record.get("last_seen"))
+        if last_seen is None:
+            continue
+        if start and last_seen < start:
+            continue
+        if end and last_seen > end:
+            continue
+        filtered.append(record)
+    return filtered
+
+
+def get_leaked_credentials_by_domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Looks up leaked employee and customer credentials associated with a company domain.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments. Expects 'domain'; optionally 'last_seen_from', 'last_seen_to' and 'limit'.
+
+    Returns:
+        Outputs the leaked credentials.
+    """
+    domain = args.get("domain")
+    if not domain:
+        raise DemistoException("You must supply a 'domain' argument.")
+
+    last_seen_from = args.get("last_seen_from")
+    last_seen_to = args.get("last_seen_to")
+    limit = arg_to_number(args.get("limit"))
+
+    raw_response = client.retrieve_leaked_credentials_by_domain(domain)
+    data = raw_response.get("data") if isinstance(raw_response, dict) else None
+    data = data or {}
+    employee_records = (data.get("employee") or {}).get("raw_data") or []
+    customer_records = (data.get("customer") or {}).get("raw_data") or []
+
+    employee_records = filter_credentials_by_last_seen(employee_records, last_seen_from, last_seen_to)
+    customer_records = filter_credentials_by_last_seen(customer_records, last_seen_from, last_seen_to)
+    if limit:
+        employee_records = employee_records[:limit]
+        customer_records = customer_records[:limit]
+
+    outputs = {
+        "domain": domain,
+        "employee_total": len(employee_records),
+        "customer_total": len(customer_records),
+        "total": len(employee_records) + len(customer_records),
+        "employee_credentials": employee_records,
+        "customer_credentials": customer_records,
+    }
+
+    # Passwords are intentionally excluded from the readable tables to avoid exposing them in the war room.
+    human_readable = f"### Cyberint Leaked Credentials for {domain}\n"
+    human_readable += f"Employee credentials: {len(employee_records)} | Customer credentials: {len(customer_records)}\n"
+    human_readable += tableToMarkdown("Employee Credentials", summarize_credential_records(employee_records), removeNull=True)
+    human_readable += tableToMarkdown("Customer Credentials", summarize_credential_records(customer_records), removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="Cyberint.LeakedCredential",
+        outputs_key_field="domain",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=raw_response,
+    )
+
+
 @logger
 def main():
     """
@@ -952,6 +1195,14 @@ def main():
         elif command == "cyberint-get-url":
             demisto.debug("cyberint-get-url")
             return_results(get_url_command(client, args))
+
+        elif command == "cyberint-cve-enrich":
+            demisto.debug("cyberint-cve-enrich")
+            return_results(get_cve_command(client, args))
+
+        elif command == "cyberint-credential-leak-lookup":
+            demisto.debug("cyberint-credential-leak-lookup")
+            return_results(get_leaked_credentials_by_domain_command(client, args))
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)

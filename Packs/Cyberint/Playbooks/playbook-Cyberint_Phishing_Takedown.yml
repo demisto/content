@@ -1,0 +1,588 @@
+id: Cyberint - Phishing Takedown
+version: -1
+name: Cyberint - Phishing Takedown
+description: |-
+  Automates or semi-automates the takedown of high-confidence phishing websites detected by Cyberint.
+
+  The playbook evaluates the confidence and severity of a Cyberint phishing-website alert, submits a takedown request via the Cyberint Takedown API (automatically or after analyst approval), polls the takedown request until it reaches a terminal status, and annotates the incident and notifies the SOC of the outcome.
+
+  Requires the Cyberint Takedown integration to be configured.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 94a7e583-c1e5-4d2e-9de2-b22adee8c411
+    type: start
+    task:
+      id: 94a7e583-c1e5-4d2e-9de2-b22adee8c411
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 39007e94-8bd2-4a06-92ec-ab55580610ec
+    type: condition
+    task:
+      id: 39007e94-8bd2-4a06-92ec-ab55580610ec
+      version: -1
+      name: Is there a phishing website URL?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Verifies that the incident contains a phishing website URL to submit for takedown.
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1edba630-8413-419f-929d-670f9e02b4e6
+    type: condition
+    task:
+      id: 1edba630-8413-419f-929d-670f9e02b4e6
+      version: -1
+      name: Does the alert meet the takedown threshold?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Checks whether the alert confidence and severity are at or above the configured thresholds for initiating a takedown.
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: inputs.Confidence
+            iscontext: true
+          right:
+            value:
+              simple: inputs.ConfidenceThreshold
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: inputs.Severity
+            iscontext: true
+          right:
+            value:
+              simple: inputs.MinSeverity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ddd6cb22-f504-47fa-a2fb-e95e55d0dc7d
+    type: condition
+    task:
+      id: ddd6cb22-f504-47fa-a2fb-e95e55d0dc7d
+      version: -1
+      name: Is automated takedown enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Determines whether to submit the takedown request automatically or to require analyst approval first (semi-automated).
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoTakedown
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9f7b97cd-d7b5-44b3-a690-399581f7c4c0
+    type: regular
+    task:
+      id: 9f7b97cd-d7b5-44b3-a690-399581f7c4c0
+      version: -1
+      name: Approve phishing takedown request
+      type: regular
+      iscommand: false
+      brand: ""
+      description: |-
+        Review the phishing website details (URL, registrar, detection reasons, SSL and password-field indicators) and approve the takedown request.
+
+        Mark this task complete to submit the takedown request to Cyberint.
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f055ad73-a342-4f56-bf76-e386d4c52feb
+    type: regular
+    task:
+      id: f055ad73-a342-4f56-bf76-e386d4c52feb
+      version: -1
+      name: Submit takedown request
+      description: Submits a takedown request to Cyberint for the phishing website URL.
+      script: '|||cyberint-takedown-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      customer:
+        complex:
+          root: inputs.CustomerID
+      reason:
+        complex:
+          root: inputs.Reason
+      url:
+        complex:
+          root: inputs.URL
+      alert_id:
+        complex:
+          root: inputs.AlertID
+      note:
+        simple: Submitted automatically by the Cyberint - Phishing Takedown SOAR playbook.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 57a97310-cbf6-4f17-bb0a-d10d7bd285fa
+    type: regular
+    task:
+      id: 57a97310-cbf6-4f17-bb0a-d10d7bd285fa
+      version: -1
+      name: Annotate incident - takedown requested
+      description: Tags the incident to indicate that a Cyberint takedown request has been submitted and is being tracked.
+      script: '|||setIncident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      tags:
+        simple: cyberint-takedown-requested
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d78661a9-3930-4e5c-b738-d33133e56d65
+    type: playbook
+    task:
+      id: d78661a9-3930-4e5c-b738-d33133e56d65
+      version: -1
+      name: Poll Cyberint takedown status
+      description: Polls the Cyberint takedown request on a schedule until its status changes to a terminal value (anything other than pending or request_sent).
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: Cyberint.takedowns_submit
+          accessor: alert_ref_id
+      PollingCommandName:
+        simple: cyberint-retrieve-takedowns
+      PollingCommandArgName:
+        simple: alert_ref_id
+      AdditionalPollingCommandArgNames:
+        simple: customer_id
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.CustomerID
+      dt:
+        simple: Cyberint.takedowns_list(val.status == "pending" || val.status == "request_sent").alert_ref_id
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5682d783-eb6e-4601-9d6f-a8d132d80436
+    type: regular
+    task:
+      id: 5682d783-eb6e-4601-9d6f-a8d132d80436
+      version: -1
+      name: Annotate incident - takedown status updated
+      description: Tags the incident to indicate that the Cyberint takedown request has reached a terminal status.
+      script: '|||setIncident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      tags:
+        simple: cyberint-takedown-status-updated
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 084e857f-66e1-4ac4-99d8-08e6451fcaab
+    type: regular
+    task:
+      id: 084e857f-66e1-4ac4-99d8-08e6451fcaab
+      version: -1
+      name: Notify SOC of takedown outcome
+      type: regular
+      iscommand: false
+      brand: ""
+      description: |-
+        Notify the SOC team of the final takedown status (see Cyberint.takedowns_list in the context).
+
+        If Cyberint requires additional information to proceed (the takedown status indicates pending details), provide this information to the SOC as a high-priority item. Connect this task to your notification integration to automate this step.
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e0e46451-0783-404e-90fb-788315937f23
+    type: regular
+    task:
+      id: e0e46451-0783-404e-90fb-788315937f23
+      version: -1
+      name: Manual review - confidence below threshold
+      type: regular
+      iscommand: false
+      brand: ""
+      description: |-
+        The phishing website alert did not meet the configured confidence and severity thresholds for an automated takedown.
+
+        Review the alert and, if appropriate, submit a takedown request manually using the cyberint-takedown-url command.
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: bc7573f9-7482-48a6-9d4c-8007aa8713d7
+    type: title
+    task:
+      id: bc7573f9-7482-48a6-9d4c-8007aa8713d7
+      version: -1
+      name: Takedown Flow Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 3bfb6026-faa9-42a9-a5d6-15ff65d98509
+    type: title
+    task:
+      id: 3bfb6026-faa9-42a9-a5d6-15ff65d98509
+      version: -1
+      name: Manual Review Required
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: cc44ed76-a9e8-4780-9d23-139389525260
+    type: title
+    task:
+      id: cc44ed76-a9e8-4780-9d23-139389525260
+      version: -1
+      name: Not a Phishing Website Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 1090,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    simple: ${incident.cyberintalertdata.url}
+  required: false
+  description: The phishing website URL to submit for takedown. Defaults to the URL from the Cyberint alert data.
+  playbookInputQuery:
+- key: CustomerID
+  value: {}
+  required: true
+  description: The Cyberint customer ID, as configured in the Cyberint integration. Used to submit and track the takedown request.
+  playbookInputQuery:
+- key: Reason
+  value:
+    simple: phishing
+  required: false
+  description: 'The takedown reason. One of: phishing, brand_abuse, impersonating_application, unofficial_application_distribution, malicious_content, social_media_impersonation, social_media_employee_impersonation, fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other. Default is phishing.'
+  playbookInputQuery:
+- key: AlertID
+  value:
+    simple: ${incident.cyberintalertid}
+  required: false
+  description: The Cyberint alert ID associated with the phishing website. Used to correlate the takedown request with the alert.
+  playbookInputQuery:
+- key: Confidence
+  value:
+    simple: ${incident.cyberintconfidence}
+  required: false
+  description: The confidence score (0-100) of the phishing website alert. Defaults to the Cyberint alert confidence field.
+  playbookInputQuery:
+- key: ConfidenceThreshold
+  value:
+    simple: "80"
+  required: false
+  description: The minimum confidence score (0-100) required to initiate a takedown. Default is 80.
+  playbookInputQuery:
+- key: Severity
+  value:
+    simple: ${incident.severity}
+  required: false
+  description: The severity of the incident (1-Low, 2-Medium, 3-High, 4-Critical). Defaults to the incident severity.
+  playbookInputQuery:
+- key: MinSeverity
+  value:
+    simple: "3"
+  required: false
+  description: The minimum incident severity (1-4) required to initiate a takedown. Default is 3 (High).
+  playbookInputQuery:
+- key: AutoTakedown
+  value:
+    simple: "no"
+  required: false
+  description: Whether to submit the takedown request automatically (yes) or to require analyst approval first (no). Default is no.
+  playbookInputQuery:
+- key: PollingInterval
+  value:
+    simple: "5"
+  required: false
+  description: How often, in minutes, to poll the Cyberint takedown request status. Default is 5.
+  playbookInputQuery:
+- key: PollingTimeout
+  value:
+    simple: "1440"
+  required: false
+  description: How long, in minutes, to keep polling the takedown request status before timing out. Default is 1440 (24 hours).
+  playbookInputQuery:
+outputs:
+- contextPath: Cyberint.takedowns_submit
+  description: The submitted Cyberint takedown request.
+  type: unknown
+- contextPath: Cyberint.takedowns_list
+  description: The polled Cyberint takedown request, including its current status.
+  type: unknown
+tests:
+- No tests
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform

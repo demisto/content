@@ -367,6 +367,123 @@ script:
       description: Benign.
       type: String
     description: Gets URL enrichment from the feed.
+  - name: cyberint-cve-enrich
+    arguments:
+    - name: cve_id
+      description: CVE identifier to enrich (e.g., CVE-2024-1234). Supports a comma-separated list of identifiers.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: Cyberint.CVE.cve_id
+      description: The CVE identifier.
+      type: String
+    - contextPath: Cyberint.CVE.cyberint_score
+      description: Cyberint proprietary risk score for the CVE.
+      type: Number
+    - contextPath: Cyberint.CVE.epss
+      description: EPSS (Exploit Prediction Scoring System) probability score.
+      type: Number
+    - contextPath: Cyberint.CVE.description
+      description: The CVE description.
+      type: String
+    - contextPath: Cyberint.CVE.published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: Cyberint.CVE.last_updated
+      description: The date the CVE was last updated.
+      type: Date
+    - contextPath: Cyberint.CVE.cvss.cvss_v3.base_score
+      description: CVSS v3 base score.
+      type: Number
+    - contextPath: Cyberint.CVE.cvss.cvss_v3.base_severity
+      description: CVSS v3 base severity.
+      type: String
+    - contextPath: Cyberint.CVE.cvss.cvss_v4.base_score
+      description: CVSS v4 base score.
+      type: Number
+    - contextPath: Cyberint.CVE.cwes.cwe_id
+      description: Associated CWE identifier.
+      type: String
+    - contextPath: Cyberint.CVE.cwes.name
+      description: Associated CWE name.
+      type: String
+    - contextPath: Cyberint.CVE.risk_factors
+      description: Risk factors associated with the CVE.
+      type: Unknown
+    - contextPath: Cyberint.CVE.exploited_by
+      description: Threat actors observed exploiting the CVE.
+      type: Unknown
+    - contextPath: Cyberint.CVE.products
+      description: Products affected by the CVE.
+      type: Unknown
+    - contextPath: Cyberint.CVE.recommendation
+      description: Cyberint remediation recommendation for the CVE.
+      type: String
+    - contextPath: Cyberint.CVE.references
+      description: External references for the CVE.
+      type: Unknown
+    - contextPath: CVE.ID
+      description: The CVE identifier.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: String
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Description
+      description: The CVE description.
+      type: String
+    description: Enriches one or more CVE identifiers with Cyberint vulnerability intelligence, including EPSS, CVSS, CWE, the Cyberint CVE score and active-exploitation evidence.
+  - name: cyberint-credential-leak-lookup
+    arguments:
+    - name: domain
+      description: The company domain to search leaked credentials for (e.g., example.com).
+      required: true
+    - name: last_seen_from
+      description: Only return credentials last seen on or after this ISO-formatted date (YYYY-MM-DDTHH:MM:SSZ).
+    - name: last_seen_to
+      description: Only return credentials last seen on or before this ISO-formatted date (YYYY-MM-DDTHH:MM:SSZ).
+    - name: limit
+      description: Maximum number of leaked credential records to return per credential type (employee/customer).
+    outputs:
+    - contextPath: Cyberint.LeakedCredential.domain
+      description: The company domain that was searched.
+      type: String
+    - contextPath: Cyberint.LeakedCredential.total
+      description: Total number of leaked credential records returned.
+      type: Number
+    - contextPath: Cyberint.LeakedCredential.employee_total
+      description: Number of leaked employee credential records returned.
+      type: Number
+    - contextPath: Cyberint.LeakedCredential.customer_total
+      description: Number of leaked customer credential records returned.
+      type: Number
+    - contextPath: Cyberint.LeakedCredential.employee_credentials.username
+      description: The leaked employee account username.
+      type: String
+    - contextPath: Cyberint.LeakedCredential.employee_credentials.first_seen
+      description: The date the employee credential was first observed.
+      type: Date
+    - contextPath: Cyberint.LeakedCredential.employee_credentials.last_seen
+      description: The date the employee credential was last observed.
+      type: Date
+    - contextPath: Cyberint.LeakedCredential.employee_credentials.entries
+      description: The leaked credential entries (password, source, URL) for the employee account.
+      type: Unknown
+    - contextPath: Cyberint.LeakedCredential.customer_credentials.username
+      description: The leaked customer account username.
+      type: String
+    - contextPath: Cyberint.LeakedCredential.customer_credentials.first_seen
+      description: The date the customer credential was first observed.
+      type: Date
+    - contextPath: Cyberint.LeakedCredential.customer_credentials.last_seen
+      description: The date the customer credential was last observed.
+      type: Date
+    - contextPath: Cyberint.LeakedCredential.customer_credentials.entries
+      description: The leaked credential entries (password, source, URL) for the customer account.
+      type: Unknown
+    description: Looks up leaked employee or customer credentials associated with a company domain, using the Cyberint leaked-credentials API.
   dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   subtype: python3
