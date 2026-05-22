@@ -1,13 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import dateparser
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 from XSOARmirroring import (
+    MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY,
     XSOAR_DATE_FORMAT,
     Client,
     fetch_incidents,
     get_mapping_fields_command,
+    get_modified_remote_data_command,
     update_remote_system_command,
     validate_and_prepare_basic_params,
 )
@@ -566,3 +568,349 @@ def test_get_incident_entries_without_entries(mocker):
     )
     assert result is not None
     assert result == []
+
+
+# ── get-modified-remote-data tests ────────────────────────────────────────────
+
+
+def test_get_modified_remote_data_returns_ids(mocker):
+    """
+    Given:
+        - A lastUpdate timestamp and a remote server that returns two modified incident IDs.
+        - No unsupported-endpoint flag in integration context.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The response contains exactly those two incident IDs.
+        - The stale flag is NOT written (no failure occurred).
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch("XSOARmirroring.get_integration_context", return_value={})
+    mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["101", "202"],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == ["101", "202"]
+
+
+def test_get_modified_remote_data_empty_response(mocker):
+    """
+    Given:
+        - A lastUpdate timestamp and a remote server that returns no modified incidents.
+        - No unsupported-endpoint flag in integration context.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The response contains an empty list of incident IDs.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch("XSOARmirroring.get_integration_context", return_value={})
+    mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=[],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == []
+
+
+def test_get_modified_remote_data_passes_correct_timestamp(mocker):
+    """
+    Given:
+        - A specific lastUpdate ISO8601 timestamp.
+        - No unsupported-endpoint flag in integration context.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The client's get_modified_incidents is called with the correct epoch seconds derived from lastUpdate.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    expected_epoch = int(last_update.timestamp())
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch("XSOARmirroring.get_integration_context", return_value={})
+    mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mock_get_modified = mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["999"],
+    )
+
+    client = Client(base_url="https://test.com")
+    get_modified_remote_data_command(client, args)
+
+    mock_get_modified.assert_called_once_with(from_timestamp=expected_epoch)
+
+
+def test_get_modified_incidents_client_method(mocker):
+    """
+    Given:
+        - A mock HTTP response from /incidents/modified returning a list of incident IDs.
+
+    When:
+        - Calling client.get_modified_incidents with a from_timestamp.
+
+    Then:
+        - The method returns the list of incident IDs as-is.
+    """
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value=["101", "202", "303"],
+    )
+
+    result = client.get_modified_incidents(from_timestamp=1740830400)
+
+    assert sorted(result) == ["101", "202", "303"]
+
+
+def test_get_modified_incidents_client_method_empty_response(mocker):
+    """
+    Given:
+        - A mock HTTP response from /incidents/modified returning an empty dict.
+
+    When:
+        - Calling client.get_modified_incidents.
+
+    Then:
+        - The method returns an empty list.
+    """
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={},
+    )
+
+    result = client.get_modified_incidents(from_timestamp=1740830400)
+
+    assert result == []
+
+
+@pytest.mark.parametrize("status_code", [303, 404])
+def test_get_modified_remote_data_unsupported_endpoint_handled_gracefully(mocker, status_code):
+    """
+    Given:
+        - client.get_modified_incidents raises a DemistoException with a 303 or 404 response,
+          indicating the remote machine does not support the /public/v1/incidents/modified endpoint.
+        - No unsupported-endpoint flag is set in integration context yet.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - demisto.error is called twice: once for the general log and once for the user-facing message.
+        - The user-facing error message mentions the unsupported endpoint and actionable guidance.
+        - demisto.results is called with an ERROR entry whose Contents explains the issue.
+        - Today's UTC date is persisted to integration context under MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY.
+        - sys.exit(0) is called to terminate gracefully.
+    """
+    import sys
+    from unittest.mock import MagicMock
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mock_res = MagicMock()
+    mock_res.status_code = status_code
+    exc = DemistoException("Endpoint not found", res=mock_res)
+
+    integration_context: dict = {}
+    mocker.patch("XSOARmirroring.get_integration_context", return_value=integration_context)
+    mock_set_context = mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mocker.patch.object(Client, "get_modified_incidents", side_effect=exc)
+    mock_error = mocker.patch("demistomock.error")
+    mock_results = mocker.patch("demistomock.results")
+    mock_exit = mocker.patch.object(sys, "exit", side_effect=SystemExit)
+
+    client = Client(base_url="https://test.com")
+
+    with pytest.raises(SystemExit):
+        get_modified_remote_data_command(client, args)
+
+    # demisto.error should be called twice: general log + user-facing message
+    assert mock_error.call_count == 2
+    all_error_msgs = " ".join(call[0][0] for call in mock_error.call_args_list)
+    assert "/public/v1/incidents/modified" in all_error_msgs
+    assert str(status_code) in all_error_msgs
+
+    # demisto.results should carry an ERROR entry with the actionable message
+    mock_results.assert_called_once()
+    result_entry = mock_results.call_args[0][0]
+    assert result_entry["Type"] == EntryType.ERROR  # 4
+    contents = result_entry["Contents"]
+    assert "/public/v1/incidents/modified" in contents
+    assert "XSOAR 8" in contents
+
+    mock_exit.assert_called_once_with(0)
+
+    # The unsupported-endpoint flag must have been persisted to integration context
+    today_utc = datetime.now(tz=UTC).strftime("%Y-%m-%d")
+    assert integration_context.get(MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY) == today_utc
+    mock_set_context.assert_called_once()
+
+
+@pytest.mark.parametrize("status_code", [303, 404])
+def test_get_modified_remote_data_circuit_breaker_skips_call_when_flag_set(mocker, status_code):
+    """
+    Given:
+        - The integration context already contains today's UTC date under MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY,
+          meaning the endpoint was found unsupported earlier today.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - client.get_modified_incidents is NOT called (no HTTP request is made).
+        - demisto.results is called with an ERROR entry containing the cached error message.
+        - sys.exit(0) is called to terminate gracefully.
+    """
+    import sys
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+    today_utc = datetime.now(tz=UTC).strftime("%Y-%m-%d")
+
+    mocker.patch(
+        "XSOARmirroring.get_integration_context",
+        return_value={MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY: today_utc},
+    )
+    mock_get_modified = mocker.patch.object(Client, "get_modified_incidents")
+    mock_results = mocker.patch("demistomock.results")
+    mocker.patch("demistomock.debug")
+    mocker.patch("demistomock.error")
+    mock_exit = mocker.patch.object(sys, "exit", side_effect=SystemExit)
+
+    client = Client(base_url="https://test.com")
+
+    with pytest.raises(SystemExit):
+        get_modified_remote_data_command(client, args)
+
+    # No HTTP call should have been made
+    mock_get_modified.assert_not_called()
+
+    # An ERROR entry must be returned with the cached message
+    mock_results.assert_called_once()
+    result_entry = mock_results.call_args[0][0]
+    assert result_entry["Type"] == EntryType.ERROR
+    assert "/public/v1/incidents/modified" in result_entry["Contents"]
+
+    mock_exit.assert_called_once_with(0)
+
+
+def test_get_modified_remote_data_circuit_breaker_retries_next_day(mocker):
+    """
+    Given:
+        - The integration context contains yesterday's UTC date under MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - client.get_modified_incidents IS called (the flag is stale — different day).
+        - The response contains the returned incident IDs.
+    """
+    from datetime import timedelta
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+    yesterday_utc = (datetime.now(tz=UTC) - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    mocker.patch(
+        "XSOARmirroring.get_integration_context",
+        return_value={MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY: yesterday_utc},
+    )
+    mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mock_get_modified = mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["42"],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    mock_get_modified.assert_called_once()
+    assert result.modified_incident_ids == ["42"]
+
+
+def test_get_modified_remote_data_clears_flag_on_success(mocker):
+    """
+    Given:
+        - The integration context contains a stale unsupported-endpoint flag (from a previous day).
+        - The remote server now responds successfully.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY key is removed from integration context.
+        - set_to_integration_context_with_retries is called to persist the cleared context.
+        - The response contains the returned incident IDs.
+    """
+    from datetime import timedelta
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+    yesterday_utc = (datetime.now(tz=UTC) - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    integration_context = {MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY: yesterday_utc}
+    mocker.patch("XSOARmirroring.get_integration_context", return_value=integration_context)
+    mock_set_context = mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mocker.patch.object(Client, "get_modified_incidents", return_value=["77"])
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    # Flag must have been removed
+    assert MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY not in integration_context
+    mock_set_context.assert_called_once()
+    assert result.modified_incident_ids == ["77"]
+
+
+def test_get_modified_remote_data_no_flag_cleared_when_context_clean(mocker):
+    """
+    Given:
+        - The integration context has no unsupported-endpoint flag.
+        - The remote server responds successfully.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - set_to_integration_context_with_retries is NOT called (nothing to clear).
+        - The response contains the returned incident IDs.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch("XSOARmirroring.get_integration_context", return_value={})
+    mock_set_context = mocker.patch("XSOARmirroring.set_to_integration_context_with_retries")
+    mocker.patch.object(Client, "get_modified_incidents", return_value=["55"])
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    mock_set_context.assert_not_called()
+    assert result.modified_incident_ids == ["55"]

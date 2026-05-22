@@ -437,8 +437,8 @@ def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = N
         "## 🤖 AI-Powered Code Review Available\n\n"
         f"{greeting} can leverage AI-powered code review to assist with this PR!\n\n"
         "**Available Commands:**\n"
-        "- `@content-bot start review` - Initiate a full AI code review\n"
-        "- `@content-bot re-review` - Incremental review for new commits\n"
+        "- `@marketplace-ai-reviewer start review` - Initiate a full AI code review\n"
+        "- `@marketplace-ai-reviewer re-review` - Incremental review for new commits\n"
     )
     pr.create_issue_comment(ai_reviewer_introduction_msg)
     if t:

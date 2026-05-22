@@ -28,7 +28,7 @@ configuration:
   defaultvalue: '25'
   type: 0
   required: false
-  additionalinfo: Maximum number of Alerts to fetch each time. Maximum value is 25.
+  additionalinfo: Maximum number of Alerts to fetch each time. Maximum value is 100.
   section: Collect
 - display: First Fetch Time
   name: first_fetch
@@ -939,7 +939,7 @@ script:
     - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version
       description: Version of the monitoring source generating the alert.
       type: Number
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   isremotesyncout: true
 tests:

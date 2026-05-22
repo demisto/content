@@ -4,3 +4,5 @@ name: Cisco Webex Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

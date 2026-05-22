@@ -26,7 +26,7 @@ For a list of the supported file types, see [here](https://docs.paloaltonetworks
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server base URL (e.g., https://192.168.0.1/publicapi) |  | True |
+    | Server base URL (see [WildFire Server URLs](#wildfire-server-urls) below) |  | True |
     | API Key |  | True |
     | API Key Type | API Key product name | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
@@ -36,6 +36,20 @@ For a list of the supported file types, see [here](https://docs.paloaltonetworks
     | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## WildFire Server URLs
+
+Use the appropriate server URL in the **Server base URL** parameter based on your region or cloud environment:
+
+| Region | Server URL |
+| --- | --- |
+| Global (default) | https://wildfire.paloaltonetworks.com |
+| US Gov Cloud / FedRAMP Moderate | https://pubsec-cloud.wildfire.paloaltonetworks.com |
+| US Gov Cloud / FedRAMP High | https://gov-cloud.wildfire.paloaltonetworks.com |
+| EU | https://eu.wildfire.paloaltonetworks.com |
+| Japan | https://jp.wildfire.paloaltonetworks.com |
+
+For on-premise WildFire appliances, use the appliance IP or hostname with the `/publicapi` path (e.g., `https://192.168.0.1/publicapi`).
 
 ## Commands
 
@@ -406,11 +420,11 @@ Retrieves results for a file hash using WildFire.
 
 #### Command Example
 
-```!wildfire-report url=https://www.XSOAR.com```
+```!wildfire-report url=https://www.paloaltonetworks.com```
 
 #### Human Readable Output
 
->### Wildfire URL report for https://www.XSOAR.com
+>### Wildfire URL report for https://www.paloaltonetworks.com
 >
 >|sha256|type|verdict|
 >|---|---|---|
@@ -488,12 +502,6 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 | DBotScore.Type | string | The indicator type. |
 | DBotScore.Vendor | string | Vendor used to calculate the score. |
 | DBotScore.Score | number | The actual score. |
-
-#### Command Example
-
-``````
-
-#### Human Readable Output
 
 ### wildfire-upload-url
 
@@ -592,7 +600,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Command Example
 
-```!wildfire-upload-url upload=https://www.XSOAR.com```
+```!wildfire-upload-url upload=https://www.paloaltonetworks.com```
 
 #### Human Readable Output
 
@@ -600,7 +608,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 >
 >|MD5|SHA256|Status|URL|
 >|---|---|---|---|
->| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.XSOAR.com |
+>| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.paloaltonetworks.com |
 
 ### wildfire-get-sample
 

@@ -8,7 +8,7 @@ This integration allows the creation of incidents based on DTM Alerts from Googl
 | --- | --- | --- |
 | API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
 | Fetch incidents |  | False |
-| Max Fetch | Maximum number of Alerts to fetch each time. Maximum value is 25. | False |
+| Max Fetch | Maximum number of Alerts to fetch each time. Maximum value is 100. | False |
 | First Fetch Time | The date or relative timestamp from which to begin fetching Alerts.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z.<br/> | False |
 | Mirroring Direction | The mirroring direction in which to mirror the details. You can mirror "Outgoing" \(from XSOAR to GTI\) direction for DTM Alerts. | False |
 | Alert Type | Fetch Alerts by the specified alert types. | False |

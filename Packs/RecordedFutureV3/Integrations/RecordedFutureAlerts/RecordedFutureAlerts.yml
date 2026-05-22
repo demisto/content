@@ -208,6 +208,106 @@ script:
         - contextPath: RecordedFutureAlerts.Alert.comment
           description: Note (Classic) or comment (Playbook) that was just applied.
           type: string
+    - name: rf-alert-lookup
+      description: Look up a single Recorded Future alert by ID. Supports both Classic Alerts and Playbook Alerts. Returns full alert data including rule details, entities, AI insights, and Playbook Alert panel data.
+      arguments:
+        - name: alert_id
+          required: true
+          description: ID of the alert to look up.
+      outputs:
+        - contextPath: RecordedFutureAlerts.Alert.id
+          description: Unique ID of the alert in Recorded Future.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.title
+          description: Title of the alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.type
+          description: Alert type (classic-alert / playbook-alert).
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.subtype
+          description: Alert subtype / category.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.status
+          description: Current status of the alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.created
+          description: Timestamp when the alert was created (ex. "2025-05-17T16:06:00Z").
+          type: date
+        - contextPath: RecordedFutureAlerts.Alert.updated
+          description: Timestamp when the alert was last updated (ex. "2025-05-17T16:06:00Z"). For Classic Alerts this equals the created timestamp.
+          type: date
+        - contextPath: RecordedFutureAlerts.Alert.markdown
+          description: Markdown-formatted summary of the alert details.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.images
+          description: List of image IDs attached to the alert.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.classic_alert_rule_name
+          description: (Classic Alert) Name of the alert rule that triggered this alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.classic_alert_rule_id
+          description: (Classic Alert) ID of the alert rule that triggered this alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.portal_url
+          description: (Classic Alert) URL to the alert in the Recorded Future portal.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.ai_insights
+          description: (Classic Alert) AI-generated insights summary for the alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.review.status
+          description: (Classic Alert) Review status of the alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.review.assignee
+          description: (Classic Alert) User the alert is assigned to.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.review.note
+          description: (Classic Alert) Review note on the alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.entities
+          description: (Classic Alert) List of entities referenced in the alert.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.fragments
+          description: (Classic Alert) Text fragments from the alert hits.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.documents
+          description: (Classic Alert) Documents associated with alert hits.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.analyst_notes
+          description: (Classic Alert) URLs to analyst notes linked in the alert.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.triggered_by
+          description: (Classic Alert) List of entities / paths that triggered the alert.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.playbook_alert_category
+          description: (Playbook Alert) Category of the playbook alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.playbook_alert_priority
+          description: (Playbook Alert) Priority of the playbook alert.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.entity_name
+          description: (Playbook Alert) Name of the primary entity (e.g. domain, CVE).
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.targets
+          description: (Playbook Alert) List of target names associated with the alert.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.log_entries
+          description: (Playbook Alert) Log entries associated with the alert.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.log_entries.created
+          description: (Playbook Alert) Timestamp when the log entry was created (ex. "2025-05-17T16:06:00Z").
+          type: date
+        - contextPath: RecordedFutureAlerts.Alert.log_entries.author_name
+          description: (Playbook Alert) Name of the log entry author.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.log_entries.author_id
+          description: (Playbook Alert) ID of the log entry author.
+          type: string
+        - contextPath: RecordedFutureAlerts.Alert.log_entries.changes
+          description: (Playbook Alert) Raw log entry changes from the alert activity history.
+          type: unknown
+        - contextPath: RecordedFutureAlerts.Alert.details
+          description: (Playbook Alert) Detailed panel data for the alert. Structure depends on the alert category.
+          type: unknown
     - name: rf-alerts
       description: List Classic or Playbook alerts.
       arguments:
@@ -325,7 +425,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.7090913
 fromversion: 6.1.0
 marketplaces:
 - xsoar

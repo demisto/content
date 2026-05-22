@@ -140,7 +140,7 @@ def test_parsing_user_query_remove_timestamp():
         - Return query without the timestamp parameter
     """
     good_query = (
-        '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000,'
+        '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2,'
         ' "attribute_timestamp": "1617875568"}'
     )
     querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
@@ -299,7 +299,7 @@ def test_search_query_indicators_pagination(mocker):
         proxy=False,
         timeout=60,
         performance=False,
-        max_indicator_to_fetch=2000,
+        max_indicator_to_fetch=2,
     )
     returned_result_1 = {
         "response": {
@@ -403,7 +403,7 @@ def test_parsing_user_query_timestamp_deprecated():
     """
     good_query = (
         '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1,'
-        ' "limit": 2000, "attribute_timestamp": "1617875568"}'
+        ' "limit": 2, "attribute_timestamp": "1617875568"}'
     )
     query_str = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
     params = parsing_user_query(query_str, limit=2)
@@ -659,3 +659,21 @@ def test_build_indicators_with_hostname():
     assert result[0].get("Relationships", [])[0].get("entityAType") == "Domain"
     assert result[0].get("Relationships", [])[0].get("entityBType") == "Attack Pattern"
     assert result[0].get("Relationships", [])[0].get("entityB") == "T1111"
+
+
+def test_parsing_user_query_with_limit():
+    """
+    Given
+        - A json parsed result from MISP
+    When
+        - function has limit argument
+    Then
+        - Return query with the right limit value
+    """
+    good_query = (
+        '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 3,'
+        ' "attribute_timestamp": "1617875568"}'
+    )
+    querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = parsing_user_query(querystr, limit=3)
+    assert good_query == json.dumps(params)

@@ -1,0 +1,85 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights [Compliance]",
+            "description": "This dashboard provides an overview of administrative activities related to security policy management to ensure compliance and proper governance. It highlights key metrics such as the volume of policy modifications and identifies the specific administrators responsible for these changes over time.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-8108",
+                    "data": [
+                        {
+                            "key": "xql_1772559691980",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 1094,
+                                "phrase": "config timeframe = 30d case_sensitive = false \n  | dataset = management_auditing\n  | fields management_auditing_type, user_name\n  | filter management_auditing_type in (ENUM.MANAGEMENT_AUDIT_EXTENSIONS_POLICY_RULES, ENUM.MANAGEMENT_AUDIT_POLICY_PROFILES, ENUM.MANAGEMENT_AUDIT_PREVENTION_POLICY_RULES)\n  | comp count() as NumberOfActions by user_name",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "6a2bcc80f015454e9559fba793736806",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1772559691980",
+            "title": "Policy and Profile Changes in last 30 days",
+            "creation_time": 1772559691980,
+            "description": "This widget displays the number of policy and profile modifications made by each administrator over the last 30 days. Use this insight to monitor administrative activity for change control and to ensure all adjustments to the security posture are authorized.",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false \n  | dataset = management_auditing\n  | fields management_auditing_type, user_name\n  | filter management_auditing_type in (ENUM.MANAGEMENT_AUDIT_EXTENSIONS_POLICY_RULES, ENUM.MANAGEMENT_AUDIT_POLICY_PROFILES, ENUM.MANAGEMENT_AUDIT_PREVENTION_POLICY_RULES)\n  | comp count() as NumberOfActions by user_name",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "management_auditing"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

@@ -4,3 +4,5 @@ name: Cisco Umbrella Cloud Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

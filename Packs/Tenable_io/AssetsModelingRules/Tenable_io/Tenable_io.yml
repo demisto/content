@@ -4,3 +4,5 @@ name: Tenable_io Asset Collection
 rules: ''
 schema: ''
 tags: tenable
+supportedModules:
+- xsiam

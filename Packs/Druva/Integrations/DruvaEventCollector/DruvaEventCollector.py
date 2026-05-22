@@ -8,6 +8,7 @@ from CommonServerPython import *
 MIN_FETCH = 1
 MAX_FETCH = 10_000
 MAX_EVENTS_API_CALL = 500  # As a limitation of the API, we can only retrieve 500 events at a time
+FIRST_FETCH_TIMEDELTA = timedelta(hours=1)
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -22,7 +23,15 @@ PRODUCT = "Druva"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, client_id: str, secret_key: str, max_fetch: int, verify: bool, proxy: bool):
+    def __init__(
+        self,
+        base_url: str,
+        client_id: str,
+        secret_key: str,
+        max_fetch: int,
+        verify: bool,
+        proxy: bool,
+    ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.credentials = f"{client_id}:{secret_key}"
         self.max_fetch = max_fetch
@@ -187,6 +196,48 @@ def get_events(client: Client, event_type: str, tracker: Optional[str] = None) -
     return response["events"], response["tracker"]
 
 
+def _filter_old_events(events: list[dict]) -> list[dict]:
+    """
+    Filters out events older than FIRST_FETCH_TIMEDELTA (1 hour) from now.
+    Used on the first fetch (no tracker) or after a last-run reset to avoid
+    ingesting a large volume of historical events.
+
+    Args:
+        events: list of events to filter.
+
+    Returns:
+        list of events that are newer than or equal to the cutoff time.
+    """
+    cutoff = datetime.now(tz=timezone.utc) - FIRST_FETCH_TIMEDELTA
+    filtered_events: list[dict] = []
+    dropped_count = 0
+
+    for event in events:
+        # Handle both timestamp formats: "timestamp" (InSync events) and "timeStamp" (Cybersecurity events)
+        timestamp_value = event.get("timestamp") or event.get("timeStamp")
+        event_time = arg_to_datetime(timestamp_value)
+
+        if event_time:
+            # Normalize to aware UTC for comparison with cutoff
+            aware_utc = event_time.astimezone(timezone.utc) if event_time.tzinfo else event_time.replace(tzinfo=timezone.utc)
+            if aware_utc >= cutoff:
+                filtered_events.append(event)
+            else:
+                dropped_count += 1
+        else:
+            # Keep events with unparseable timestamps to avoid silent data loss; log for visibility
+            demisto.debug(f"Could not parse timestamp for event {event.get('eventID', 'unknown')}, keeping it.")
+            filtered_events.append(event)
+
+    if dropped_count:
+        demisto.debug(
+            f"First fetch (no tracker): dropped {dropped_count} events older than "
+            f"{cutoff.strftime(DATE_FORMAT)}. Kept {len(filtered_events)} events."
+        )
+
+    return filtered_events
+
+
 def fetch_events(
     client: Client, last_run: dict[str, str], max_fetch: int, event_types: list[str]
 ) -> tuple[list[dict], dict[str, str]]:
@@ -209,6 +260,9 @@ def fetch_events(
         demisto.debug(f"Fetching events for type: {event_type} (max {max_fetch} events per type)")
         done_fetching: bool = False
         type_events: list[dict] = []
+
+        # Determine if this is a first fetch (no tracker) before the pagination loop,
+        is_first_fetch = f"tracker_{event_type}" not in last_run and "tracker" not in last_run
 
         while not done_fetching:
             # Backward compatibility: Migrate from old format {"tracker": "..."} to new format {"tracker_<event_type>": "..."}
@@ -235,8 +289,13 @@ def fetch_events(
             # Save the next_run as a dict with the last_fetch key to be stored
             last_run[f"tracker_{event_type}"] = new_tracker or ""
 
+            # On first fetch (no tracker), filter out events older than 1 hour to avoid ingesting historical data
+            if is_first_fetch:
+                events = _filter_old_events(events)
+
             # Add source_log_type to events before extending
             add_time_and_source_to_events(events, event_type)
+
             type_events.extend(events)
 
             # Check if we've reached the per-type max_fetch limit
@@ -338,7 +397,10 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fetch-events":
             events, next_run = fetch_events(
-                client=client, last_run=demisto.getLastRun(), max_fetch=max_fetch, event_types=event_types_param
+                client=client,
+                last_run=demisto.getLastRun(),
+                max_fetch=max_fetch,
+                event_types=event_types_param,
             )
 
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

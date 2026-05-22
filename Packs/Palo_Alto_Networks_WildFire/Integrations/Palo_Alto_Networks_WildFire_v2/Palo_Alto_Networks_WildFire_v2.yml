@@ -1265,12 +1265,12 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Wildfire Test
-- Detonate File - WildFire - Test
+- Detonate URL - WildFire-v2 - Test
 fromversion: 5.0.0

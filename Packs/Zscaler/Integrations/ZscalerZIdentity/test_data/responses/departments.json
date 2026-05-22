@@ -1,0 +1,16 @@
+[
+    {
+        "id": 5,
+        "name": "IT",
+        "idpId": 0,
+        "comments": "Information Technology",
+        "deleted": false
+    },
+    {
+        "id": 6,
+        "name": "HR",
+        "idpId": 0,
+        "comments": "Human Resources",
+        "deleted": false
+    }
+]

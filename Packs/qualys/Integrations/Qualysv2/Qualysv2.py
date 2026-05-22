@@ -1621,7 +1621,7 @@ class Client(BaseClient):
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
-            err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
+            err_msg = f"{err_msg}\nError Code: {simple_response.get('CODE')}\nError Message: {simple_response.get('TEXT')}"
         except Exception:
             try:
                 # Try to parse json error response
@@ -1740,7 +1740,7 @@ class Client(BaseClient):
         demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
         return response, set_new_limit
 
-    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> requests.Response:
+    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
@@ -1755,14 +1755,23 @@ class Client(BaseClient):
 
         params: dict[str, Any] = assign_params(ids=detection_qids, last_modified_after=since_datetime)
 
-        response = self._http_request(
-            method="POST",
-            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
-            resp_type="text",
-            params=params,
-            timeout=60,
-            error_handler=self.error_handler,
+        timeout = (
+            60,  # Connection Timeout: max seconds to wait for a connection to the server to be established
+            150,  # Read Timeout: max seconds to wait between streamed bytes of the response body from the server
         )
+
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+                resp_type="text",
+                params=params,
+                timeout=timeout,
+                error_handler=self.error_handler,
+            )
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
+            demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
+            raise
 
         return response
 
@@ -2538,7 +2547,7 @@ def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     limit_msg = ""
 
     if "STATUS" in handled_result:
-        readable_output += f'### Current Status: {handled_result["STATUS"]}\n'
+        readable_output += f"### Current Status: {handled_result['STATUS']}\n"
 
     if command_parse_and_output_data["collection_name"] in handled_result:
         asset_collection = handled_result[command_parse_and_output_data["collection_name"]]
@@ -2822,11 +2831,11 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     return response_requested_value, str(response_next_url)
 
 
-def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
+def handle_vulnerabilities_result(raw_response: str) -> list:
     """
     Handles vulnerabilities response - parses xml to json and gets the list
     Args:
-        raw_response (requests.Response): the raw result received from Qualys API command
+        raw_response (str): the raw XML result received from Qualys API command
     Returns:
         List with data generated for the result given
     """
@@ -2939,6 +2948,37 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def close_snapshot_if_empty(
+    data: list,
+    items_count: int,
+    snapshot_id: str,
+    product: str,
+) -> tuple[list, int]:
+    """Ensures a snapshot can be closed even when the last page returned 0 items.
+
+    `send_data_to_xsiam` skips the API call when `data` is an empty list, which prevents the snapshot
+    from being finalized with the correct `items_count`. When this happens, we send an empty JSON (`[{}]`)
+    to trigger the API call and increment `items_count` by 1 to account for the extra row in the dataset.
+
+    Args:
+        data (list): The data to send. If empty and snapshot needs closing, will be replaced with [{}].
+        items_count (int): The total items count to report for the snapshot.
+        snapshot_id (str): The snapshot ID.
+        product (str): The product name (for logging).
+
+    Returns:
+        tuple[list, int]: The (possibly modified) data and items_count.
+    """
+    if not data and items_count > 0:
+        items_count += 1  # Account for the empty JSON row added to the dataset
+        demisto.debug(
+            f"Last page returned 0 {product}. "
+            f"Sending snapshot closing signal with items_count={items_count} for snapshot {snapshot_id}."
+        )
+        data = [{}]
+    return data, items_count
+
+
 def send_assets_and_vulnerabilities_to_xsiam(
     assets: list,
     vulnerabilities: list,
@@ -2961,12 +3001,16 @@ def send_assets_and_vulnerabilities_to_xsiam(
     # Set to 1 if not done pulling to signal to the server that the dataset snapshot is not yet complete
     total_assets_to_report = 1 if has_next_page else cumulative_assets_count
     total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
+    is_closing_snapshot = not has_next_page
 
     demisto.debug(
         f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
         f"Total assets collected so far: {cumulative_assets_count}. "
-        f"Reported items count: {total_assets_to_report}."
+        f"Reported items count: {total_assets_to_report}. Is closing snapshot: {is_closing_snapshot}."
     )
+
+    if is_closing_snapshot:
+        assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
     send_data_to_xsiam(
         data=assets,
@@ -2983,6 +3027,12 @@ def send_assets_and_vulnerabilities_to_xsiam(
         f"Total vulnerabilities collected so far: {cumulative_vulns_count}. "
         f"Reported items count: {total_vulns_to_report}."
     )
+
+    if is_closing_snapshot:
+        vulnerabilities, total_vulns_to_report = close_snapshot_if_empty(
+            vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
+        )
+
     send_data_to_xsiam(
         data=vulnerabilities,
         vendor=VENDOR,
@@ -3417,11 +3467,16 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
+            is_last_page = not new_last_run.get("next_page")
             demisto.debug(
                 f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
                 f"Total assets collected so far: {cumulative_assets_count}. "
-                f"Reported items count: {total_assets_to_report}."
+                f"Reported items count: {total_assets_to_report}. Is last page: {is_last_page}."
             )
+
+            if is_last_page:
+                assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
+
             send_data_to_xsiam(
                 data=assets,
                 vendor=VENDOR,

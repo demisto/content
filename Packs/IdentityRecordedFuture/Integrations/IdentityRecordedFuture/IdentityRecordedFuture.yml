@@ -1,6 +1,9 @@
 commonfields:
   id: Recorded Future Identity
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
@@ -13,46 +16,57 @@ configuration:
   defaultvalue: https://api.recordedfuture.com/gw/xsoar-identity
   type: 0
   required: true
+  section: Connect
 - display: API Token
   name: token
   type: 4
   required: false
   hidden: true
+  section: Connect
 - displaypassword: API Token
   name: credential
   type: 9
   required: false
   hiddenusername: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   defaultvalue: Recorded Future Identity Exposure
   type: 13
   required: false
+  section: Collect
 - display: 'First Incident Fetch: Time Range'
   name: first_fetch
   defaultvalue: "24 hours"
   type: 0
   required: false
   additionalinfo: 'Limit incidents to include in the first fetch by time range. Input format: "NN hours" or "NN days". E.g., input "5 days" to fetch all incidents created in the last 5 days.'
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   required: false
   defaultvalue: "50"
+  section: Collect
 - display: 'Playbook Alerts: Fetched Statuses'
   name: pa_statuses
   type: 16
@@ -63,6 +77,7 @@ configuration:
   - Dismissed
   - Resolved
   required: false
+  section: Collect
 - display: 'Playbook Alerts: Fetched Priorities Threshold'
   name: pa_priorities
   type: 15
@@ -73,6 +88,7 @@ configuration:
   - Moderate
   - Informational
   required: false
+  section: Collect
 - display: Password properties
   name: password_properties
   defaultvalue: Letter,Number
@@ -90,21 +106,24 @@ configuration:
   - AtLeast24Characters
   additionalinfo: Filter for password properties
   required: false
+  section: Collect
 - display: Limit of identities to get (min is 0 and max is 10 000)
   name: limit_identities
   defaultvalue: "500"
   type: 0
   required: false
+  section: Collect
 - display: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). This will be used for identity search command as a default value.
   name: domains
   type: 12
   required: true
   additionalinfo: List of domains.
+  section: Collect
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.

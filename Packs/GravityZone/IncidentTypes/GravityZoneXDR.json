@@ -1,0 +1,22 @@
+{
+    "id": "GravityZone XDR",
+    "name": "GravityZone XDR",
+    "prevName": "GravityZone XDR",
+    "color": "#38a5ff",
+    "version": -1,
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "layout": "GravityZone XDR Incident Layout",
+    "detached": false,
+    "reputationCalc": 0,
+    "fromVersion": "6.10.0"
+}

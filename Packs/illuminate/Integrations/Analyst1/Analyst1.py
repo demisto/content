@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 from CommonServerUserPython import *
 
 """ IMPORTS """
@@ -9,6 +8,9 @@ import json
 import traceback
 from collections.abc import Callable, Collection
 from typing import Any
+
+import re
+import time
 
 import requests
 import urllib3
@@ -735,8 +737,142 @@ class EnrichmentOutput:
 
 
 class Client(BaseClient):
-    def __init__(self, server: str, username: str, password: str, insecure: bool, proxy: bool):
-        super().__init__(base_url=f"https://{server}/api/1_0/", verify=not insecure, proxy=proxy, auth=(username, password))
+    def __init__(self, server: str, auth_method: str, credentials: dict, insecure: bool, proxy: bool):
+        self._auth_method = auth_method
+        self._server = server
+
+        if auth_method == "basic":
+            username = str(credentials.get("identifier"))
+            password = str(credentials.get("password"))
+            super().__init__(base_url=f"https://{server}/api/1_0/", verify=not insecure, proxy=proxy, auth=(username, password))
+        else:
+            self._client_id = credentials.get("identifier", "")
+            self._client_secret = credentials.get("password", "")
+            self._token: str | None = None
+            self._token_expiry: float = 0.0
+            self._token_endpoint = f"https://{server}/oauth2/token"
+            super().__init__(base_url=f"https://{server}/api/1_1/", verify=not insecure, proxy=proxy)
+
+    def _obtain_token(self) -> None:
+        try:
+            response = self._session.post(
+                self._token_endpoint,
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": self._client_id,
+                    "client_secret": self._client_secret,
+                },
+                verify=self._verify,
+                timeout=self.timeout,
+            )
+        except requests.exceptions.RequestException as e:
+            raise DemistoException(f"Failed to connect to OAuth2 token endpoint at {self._token_endpoint}: {type(e).__name__}")
+
+        if response.status_code == 200:
+            try:
+                response_json = response.json()
+            except ValueError:
+                raise DemistoException(
+                    f"Failed to obtain OAuth2 token: HTTP {response.status_code}. Verify client_id and client_secret are correct."
+                )
+            if "access_token" not in response_json:
+                raise DemistoException("OAuth2 token response missing 'access_token' field. Verify server configuration.")
+            self._token = response_json["access_token"]
+            self._token_expiry = time.time() + response_json.get("expires_in", 3600)
+            try:
+                set_to_integration_context_with_retries(
+                    {
+                        "oauth2_token": self._token,
+                        "oauth2_token_expiry": self._token_expiry,
+                    }
+                )
+            except Exception:
+                demisto.debug(
+                    "Failed to persist OAuth2 token to integration context; "
+                    "token will be used in-memory only for this execution."
+                )
+        else:
+            try:
+                response_json = response.json()
+                error = response_json.get("error", "unknown")
+                error_description = response_json.get("error_description", "")
+                raise DemistoException(
+                    f"Failed to obtain OAuth2 token: HTTP {response.status_code}. Error: {error}. {error_description}"
+                )
+            except (ValueError, DemistoException) as e:
+                if isinstance(e, DemistoException):
+                    raise
+                raise DemistoException(
+                    f"Failed to obtain OAuth2 token: HTTP {response.status_code}. Verify client_id and client_secret are correct."
+                )
+
+    def _ensure_token(self) -> None:
+        # Fast path: valid in-memory token
+        if self._token is not None and time.time() < self._token_expiry - 30:
+            return
+
+        # Check integration context for a cached token from another execution
+        try:
+            ctx = get_integration_context()
+            cached_token = ctx.get("oauth2_token")
+            cached_expiry = ctx.get("oauth2_token_expiry")
+            if cached_token and cached_expiry:
+                # Values are JSON-encoded by set_to_integration_context_with_retries
+                cached_token = json.loads(cached_token)
+                cached_expiry = json.loads(cached_expiry)
+                if time.time() < cached_expiry - 30:
+                    self._token = cached_token
+                    self._token_expiry = cached_expiry
+                    return
+        except (TypeError, ValueError, json.JSONDecodeError):
+            pass  # Corrupted context, fall through to fresh acquisition
+
+        # No valid cached token — acquire fresh
+        self._obtain_token()
+
+    def _build_oauth_headers(self, existing_headers: dict | None = None) -> dict:
+        headers = {"Authorization": f"Bearer {self._token}"}
+        if existing_headers is not None:
+            for key, value in existing_headers.items():
+                if key != "Authorization":
+                    headers[key] = value
+        return headers
+
+    def _make_raw_request(self, method: str, url_suffix: str, **kwargs) -> requests.Response:
+        url = self._base_url + url_suffix
+        if self._auth_method == "basic":
+            kwargs["auth"] = self._auth
+        else:
+            self._ensure_token()
+            kwargs["headers"] = self._build_oauth_headers(kwargs.get("headers"))
+        kwargs["verify"] = self._verify
+        kwargs.setdefault("timeout", self.timeout)
+        response = self._session.request(method, url, **kwargs)
+        if response.status_code == 401 and self._auth_method == "oauth2":
+            self._token = None
+            self._obtain_token()
+            kwargs["headers"] = self._build_oauth_headers(kwargs.get("headers"))
+            response = self._session.request(method, url, **kwargs)
+            if response.status_code == 401:
+                raise DemistoException("OAuth2 authentication failed after token refresh. Status: 401")
+        return response
+
+    def _http_request(self, method, url_suffix="", full_url=None, headers=None, **kwargs):  # type: ignore[override]
+        if self._auth_method == "basic":
+            return super()._http_request(method, url_suffix=url_suffix, full_url=full_url, headers=headers, **kwargs)
+
+        self._ensure_token()
+        oauth_headers = self._build_oauth_headers(headers)
+
+        try:
+            return super()._http_request(method, url_suffix=url_suffix, full_url=full_url, headers=oauth_headers, **kwargs)
+        except DemistoException as e:
+            if not hasattr(e, "res") or e.res is None or e.res.status_code != 401:
+                raise
+            self._token = None
+            self._obtain_token()
+            oauth_headers = self._build_oauth_headers(headers)
+            return super()._http_request(method, url_suffix=url_suffix, full_url=full_url, headers=oauth_headers, **kwargs)
 
     def indicator_search(self, indicator_type: str, indicator: str) -> dict:
         params = {"type": indicator_type, "value": indicator}
@@ -765,7 +901,7 @@ class Client(BaseClient):
         if evidence_to_submit is None:
             raise DemistoException("either fileContent or fileEntryId must be specified to submit Evidence")
 
-        x = requests.post(self._base_url + "evidence", files=evidence_to_submit, data=data_to_submit, auth=self._auth)
+        x = self._make_raw_request("POST", "evidence", files=evidence_to_submit, data=data_to_submit)
         if x is not None and x.status_code == 200:
             return x.json()
         elif x is None:
@@ -774,7 +910,7 @@ class Client(BaseClient):
             return {"message": "Error occurred. Status Code: " + str(x.status_code) + " Text: " + x.text}
 
     def get_evidence_status(self, uuid: str) -> dict:
-        x = requests.get(self._base_url + "evidence/uploadStatus/" + uuid, auth=self._auth)
+        x = self._make_raw_request("GET", "evidence/uploadStatus/" + uuid)
         if x is None:
             return {"message": "Empty response"}
         elif x.status_code == 404:
@@ -792,7 +928,7 @@ class Client(BaseClient):
     def post_batch_search(self, indicator_values_as_file: str) -> dict:
         values_to_submit = {"values": indicator_values_as_file}
         # more data here for future maintainers: https://www.w3schools.com/python/module_requests.asp
-        x = requests.post(self._base_url + "batchCheck", files=values_to_submit, auth=self._auth)
+        x = self._make_raw_request("POST", "batchCheck", files=values_to_submit)
         # need to check status here or error
         if x is not None and x.status_code == 200:
             return x.json()
@@ -824,6 +960,107 @@ class Client(BaseClient):
         )
         # if raw_data is not None:
         return raw_data
+
+    def search_evidence(
+        self,
+        search_term: str | None = None,
+        page: int = 1,
+        page_size: int = 50,
+        evidence_type: str | None = None,
+        tlp: str | None = None,
+        actor_id: int | None = None,
+        source_id: str | None = None,
+        analyzed_state: str | None = None,
+        analyzed_date_from: str | None = None,
+        analyzed_date_to: str | None = None,
+        sort_by: str = "id",
+        desc_sort: bool = True,
+    ) -> dict:
+        """
+        Search for evidence using filters and search terms.
+
+        Args:
+            search_term: Free text search term
+            page: Results page (1-indexed)
+            page_size: Results per page (1-100)
+            evidence_type: Evidence type filter
+            tlp: TLP color filter (can be comma-separated for multiple)
+            actor_id: Actor ID filter
+            source_id: Source ID filter (can be comma-separated for multiple)
+            analyzed_state: Analyzed state filter (r/b/g)
+            analyzed_date_from: Analyzed date from (ISO-8601)
+            analyzed_date_to: Analyzed date to (ISO-8601)
+            sort_by: Sort field
+            desc_sort: Sort descending
+
+        Returns:
+            Dictionary containing evidence search results
+        """
+        params = {
+            "page": page,
+            "pageSize": page_size,
+            "sortBy": sort_by,
+            "descSort": str(desc_sort).lower(),
+        }
+
+        # Add optional parameters only if provided
+        if search_term:
+            params["searchTerm"] = search_term
+        if evidence_type:
+            params["type"] = evidence_type
+        if tlp:
+            params["tlp"] = tlp
+        if actor_id:
+            params["actorId"] = actor_id
+        if source_id:
+            params["sourceId"] = source_id
+        if analyzed_state:
+            params["analysedState"] = analyzed_state
+        if analyzed_date_from:
+            params["analyzedDateFrom"] = analyzed_date_from
+        if analyzed_date_to:
+            params["analyzedDateTo"] = analyzed_date_to
+
+        return self._http_request(method="GET", url_suffix="evidence", params=params)
+
+    def get_evidence_file(self, evidence_id: int) -> tuple[bytes, str]:
+        """
+        Download evidence file by ID.
+
+        Args:
+            evidence_id: The Evidence resource's ID
+
+        Returns:
+            Tuple of (binary file content, filename)
+
+        Raises:
+            DemistoException: If evidence not found or error occurs
+        """
+        try:
+            response = self._make_raw_request("GET", f"evidence/{evidence_id}/file")
+
+            if response.status_code == 404:
+                raise DemistoException(f"Evidence ID {evidence_id} not found.")
+            elif response.status_code != 200:
+                raise DemistoException(
+                    f"Error fetching evidence file. Status Code: {response.status_code}, Text: {response.text}"
+                )
+
+            # Extract filename from Content-Disposition header if available
+            filename = f"analyst1_evidence_{evidence_id}.bin"  # Default fallback
+            content_disposition = response.headers.get("Content-Disposition", "")
+            if "filename=" in content_disposition:
+                # Parse filename from header: attachment; filename="1683120_title.pdf"
+                match = re.search(r'filename="?([^";\n]+)"?', content_disposition)
+                if match:
+                    filename = match.group(1)
+
+            return response.content, filename
+
+        except DemistoException:
+            raise
+        except Exception as e:
+            raise DemistoException(f"Failed to fetch evidence file: {str(e)}")
 
     def perform_test_request(self):
         data: dict = self._http_request(method="GET", url_suffix="")
@@ -891,7 +1128,7 @@ class Client(BaseClient):
         links_list = Client.get_data_key_as_list(data, "links")
         result_dict["Analyst1Link"] = next(
             (
-                link["href"].replace("api/1_0/indicator/", "indicators/")
+                re.sub(r"api/1_\d+/indicator/", "indicators/", link["href"])
                 for link in links_list
                 if "rel" in link and link["rel"] == "self" and "href" in link
             ),
@@ -902,14 +1139,22 @@ class Client(BaseClient):
 
 
 def build_client(demisto_params: dict) -> Client:
-    server: str = str(demisto_params.get("server"))
-    proxy: bool = demisto_params.get("proxy", False)
-    insecure: bool = demisto_params.get("insecure", False)
-    credentials: dict = demisto_params.get("credentials", {})
-    username: str = str(credentials.get("identifier"))
-    password: str = str(credentials.get("password"))
+    server = str(demisto_params.get("server"))
+    proxy = demisto_params.get("proxy", False)
+    insecure = demisto_params.get("insecure", False)
+    credentials = demisto_params.get("credentials", {})
 
-    return Client(server, username, password, insecure, proxy)
+    # Determine auth method (default "basic" for backward compatibility)
+    auth_method_display = demisto_params.get("auth_method", "Basic Authentication")
+    auth_method = "oauth2" if "OAuth2" in auth_method_display else "basic"
+
+    # Validate credentials
+    if not credentials.get("identifier") or not credentials.get("password"):
+        raise DemistoException(
+            "API credentials are required. Provide username/password for Basic Auth or client_id/client_secret for OAuth2."
+        )
+
+    return Client(server, auth_method, credentials, insecure, proxy)
 
 
 """ COMMAND EXECUTION """
@@ -1354,6 +1599,100 @@ def analyst1_get_sensor_config_command(client: Client, args):
     return command_results
 
 
+def analyst1_evidence_search_command(client: Client, args: dict) -> CommandResults:
+    """
+    Search for evidence in Analyst1 using filters and search terms.
+
+    Args:
+        client: Analyst1 API client
+        args: Command arguments from XSOAR
+
+    Returns:
+        CommandResults with evidence search results
+    """
+    # Parse arguments with defaults
+    search_term = args.get("search_term")
+    page = argsToInt(args, "page", 1)
+    page_size = argsToInt(args, "page_size", 50)
+    evidence_type = args.get("evidence_type")
+    tlp_list = argToList(args.get("tlp"))
+    tlp = ",".join(tlp_list) if tlp_list else None
+    actor_id = argsToInt(args, "actor_id", 0) if args.get("actor_id") else None
+    source_id_list = argToList(args.get("source_id"))
+    source_id = ",".join(source_id_list) if source_id_list else None
+    analyzed_state = args.get("analyzed_state")
+    analyzed_date_from = args.get("analyzed_date_from")
+    analyzed_date_to = args.get("analyzed_date_to")
+    sort_by = args.get("sort_by", "id")
+    desc_sort = argToBoolean(args.get("desc_sort", True))
+
+    # Call API
+    raw_data = client.search_evidence(
+        search_term=search_term,
+        page=page,
+        page_size=page_size,
+        evidence_type=evidence_type,
+        tlp=tlp,
+        actor_id=actor_id,
+        source_id=source_id,
+        analyzed_state=analyzed_state,
+        analyzed_date_from=analyzed_date_from,
+        analyzed_date_to=analyzed_date_to,
+        sort_by=sort_by,
+        desc_sort=desc_sort,
+    )
+
+    # Extract results
+    results = raw_data.get("results", [])
+    total_results = raw_data.get("totalResults", 0)
+
+    # Build human-readable output
+    if results:
+        readable_output = tableToMarkdown(
+            f"Analyst1 Evidence Search Results (Page {page}, {len(results)} of {total_results} total)",
+            results,
+            headers=["id", "title", "type", "tlp", "analyzed", "indicatorsStatus", "activityDate", "reportedDate"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+    else:
+        readable_output = "No evidence found matching the search criteria."
+
+    # Return results
+    return CommandResults(
+        outputs_prefix="Analyst1.Evidence",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=readable_output,
+        raw_response=raw_data,
+    )
+
+
+def analyst1_evidence_file_fetch_command(client: Client, args: dict) -> dict:
+    """
+    Fetch (download) an evidence file by its ID.
+
+    Args:
+        client: Analyst1 API client
+        args: Command arguments from XSOAR
+
+    Returns:
+        File result dictionary for XSOAR
+    """
+    evidence_id = argsToInt(args, "evidence_id", 0)
+
+    if not evidence_id:
+        raise ValueError("evidence_id is required")
+
+    # Fetch the file content and filename from Content-Disposition header
+    file_content, filename = client.get_evidence_file(evidence_id)
+
+    # Return as file result for XSOAR (use ENTRY_INFO_FILE to avoid "File may be malicious" warning)
+    file_result = fileResult(filename, file_content, file_type=EntryType.ENTRY_INFO_FILE)
+
+    return file_result
+
+
 """ EXECUTION """
 
 
@@ -1404,6 +1743,10 @@ def main():
             analyst1_get_sensor_diff(client, demisto.args())
         if command == "analyst1-indicator-by-id":
             analyst1_get_indicator(client, demisto.args())
+        if command == "analyst1-evidence-search":
+            return_results(analyst1_evidence_search_command(client, demisto.args()))
+        if command == "analyst1-evidence-file-fetch":
+            return_results(analyst1_evidence_file_fetch_command(client, demisto.args()))
         elif command in enrichment_commands:
             enrichment_outputs: list[EnrichmentOutput] = enrichment_commands[command](client, demisto.args())
             [e.return_outputs() for e in enrichment_outputs]
