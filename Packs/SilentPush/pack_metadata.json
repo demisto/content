@@ -9,7 +9,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Threat Intelligence",
+        "Free Enricher"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
@@ -17,5 +20,10 @@
         "marketplacev2",
         "platform"
     ],
-    "githubUser": []
+    "githubUser": [
+        "Jorgeley-SilentPush"
+    ],
+    "devEmail": [
+        "jorgeley@silentpush.com"
+    ]
 }

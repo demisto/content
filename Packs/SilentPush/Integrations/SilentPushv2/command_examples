@@ -1,0 +1,27 @@
+!silentpush-get-nameserver-reputation nameserver=a.dns-servers.net.ru
+!silentpush-get-subnet-reputation subnet=192.35.168.0/23
+!silentpush-get-ipv4-reputation ipv4=173.245.58.236
+!silentpush-forward-padns-lookup qtype=a query=vida.ns.cloudflare.com
+!silentpush-reverse-padns-lookup qtype=a query=173.245.58.236
+!silentpush-multi-conditional-padns-lookup qtype=ns query=sil*push.* answer=*.ns.cloudflare.com last_seen_after=2021-07-01
+!silentpush-density-lookup qtype=nssrv query=vida.ns.cloudflare.com
+!silentpush-ip-diversity-lookup qtype=a query=ibm.com
+!silentpush-get-enrichment-data resource=ipv6 value=2a02:4780:37:b262:f807:71a8:e3ee:9b64
+!silentpush-bulk-enrich resource=ipv4 value=173.245.58.236,173.245.58.237 explain=1 scan_data=1
+!silentpush-list-domain-information domains=ig.com,x.com
+!silentpush-list-ip4-information ips=8.8.4.4,1.1.1.1
+!silentpush-list-ip6-information ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64
+!silentpush-search-domains name_server=*.bodis.com min_asn_diversity=2 limit=3 timeline=1
+!silentpush-get-asns-for-domain domain=x.com
+!silentpush-get-domain-certificates domain=uol.com
+!silentpush-search-scan-data query=domain="ig.com" fields=scan_date,hostname,domain,ip,user-agent sort=scan_date/desc,domain/asc limit=10
+!silentpush-live-url-scan url=https://bol.com.br region=EU proxy=mu platform=Mobile
+!silentpush-add-feed name=myFeed
+!silentpush-add-feed-tags feed_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx tags=Tag1,Tag2
+!silentpush-add-indicators feed_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx indicators=ig.com,1.1.1.1
+!silentpush-add-indicator-tags feed_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx indicator_name=ig.com tags=Tag3,Tag4
+!silentpush-run-threat-check data=iofa query=127.0.0.2 type=ip user_identifier=your-threat-check-key
+!silentpush-get-data-exports export_type=organisation name=the_file_name
+!silentpush-whois domain=x.com
+!silentpush-retry-job job_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+!silentpush-ip-diversity-patterns nsname=*.bodis.com asn_diversity_min=2
