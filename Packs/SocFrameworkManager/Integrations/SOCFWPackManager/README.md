@@ -30,7 +30,7 @@ internally.
 
    | **Parameter** | **Description** | **Required** |
    | --- | --- | --- |
-   | Server URL | Tenant API URL (`https://api-tenant.xdr...`) or tenant URL (`https://tenant.xdr...`). The integration adds the `api-` prefix when it is missing. | True |
+   | Server URL | Tenant API URL or tenant URL. The integration adds the `api-` prefix when it is missing. | True |
    | API Key ID | Numeric ID of the Standard API key. | True |
    | API Key | Secret value of the Standard API key. Stored masked. | True |
    | Trust any certificate (not secure) | Disable TLS certificate validation. Off by default. | False |
