@@ -15,7 +15,8 @@
     ],
     "useCases": [],
     "keywords": [
-        "Asset Collection"
+        "Asset Collection",
+        "Qualys"
     ],
     "marketplaces": [
         "xsoar",
