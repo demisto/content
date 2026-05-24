@@ -2,7 +2,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 ## Configure CrowdStrike Falcon in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://api.crowdstrike.com) |  | True |
@@ -53,7 +52,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Fetch incidents |  |  |
 | Incident type |  |  |
 | Fetch incidents |  |  |
-
 
 ### Required API client scope
 
@@ -6263,76 +6261,76 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional | 
-| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional | 
-| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
-| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional | 
-| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional | 
-| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional | 
-| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional | 
-| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional | 
-| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional | 
-| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional | 
-| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional | 
-| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
-| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
-| display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional | 
-| limit | Maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional | 
-| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit &lt;= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`. | Optional | 
-| omit_next_token | When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor. Possible values are: true, false. Default is true. | Optional | 
+| filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional |
+| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional |
+| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional |
+| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional |
+| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional |
+| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional |
+| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional |
+| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional |
+| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional |
+| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional |
+| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional |
+| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
+| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
+| display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional |
+| limit | Maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional |
+| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit &lt;= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`. | Optional |
+| omit_next_token | When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. | 
-| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier \(CID\) of the account. | 
-| CrowdStrike.Vulnerability.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. | 
-| CrowdStrike.Vulnerability.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. | 
-| CrowdStrike.Vulnerability.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. | 
-| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
-| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability. | 
-| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. | 
-| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. | 
-| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine. | 
-| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host. | 
-| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. | 
-| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host. | 
-| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. | 
-| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. | 
-| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. | 
-| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. | 
-| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. | 
-| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. | 
-| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. | 
-| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer. | 
-| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to. | 
-| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to. | 
-| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host. | 
-| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform. This filter supports negation. | 
-| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.link | String | Link to the remediation page for the vendor. In certain cases, this field is null. | 
-| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
-| CrowdStrike.Vulnerability.cve.base_score | Number | Base score of the CVE \(float value between 1 and 10\). | 
-| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.exploit_status | Number | Numeric value of the most severe known exploit. | 
-| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system. | 
-| CrowdStrike.Vulnerability.cve.description | String | Brief description of the CVE. | 
-| CrowdStrike.Vulnerability.cve.published_date | Date | UTC timestamp with the date and time of when the vendor published the CVE. | 
-| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed. | 
-| CrowdStrike.Vulnerability.cve.exploitability_score | Number | Exploitability score of the CVE \(float values from 1-4\). | 
-| CrowdStrike.Vulnerability.cve.impact_score | Number | Impact score of the CVE \(float values from 1-6\). | 
-| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability \(U = Unavailable, or O = Official fix\). | 
-| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | Boolean | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities \(KEV\) catalog. | 
-| CrowdStrike.Vulnerability.cve.cisa_info.due_date | Date | Date before which CISA mandates subject organizations to patch the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. | 
-| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with \`limit &lt;= 2500\`, this cursor is suppressed by default. To always receive it, set \`omit_next_token=false\`. | 
+| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. |
+| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier \(CID\) of the account. |
+| CrowdStrike.Vulnerability.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. |
+| CrowdStrike.Vulnerability.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. |
+| CrowdStrike.Vulnerability.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. |
+| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. |
+| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability. |
+| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. |
+| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. |
+| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine. |
+| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host. |
+| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. |
+| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host. |
+| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. |
+| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. |
+| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. |
+| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. |
+| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. |
+| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. |
+| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. |
+| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer. |
+| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to. |
+| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to. |
+| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host. |
+| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform. This filter supports negation. |
+| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation. |
+| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation. |
+| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation. |
+| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation. |
+| CrowdStrike.Vulnerability.remediation.entities.link | String | Link to the remediation page for the vendor. In certain cases, this field is null. |
+| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). |
+| CrowdStrike.Vulnerability.cve.base_score | Number | Base score of the CVE \(float value between 1 and 10\). |
+| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability. |
+| CrowdStrike.Vulnerability.cve.exploit_status | Number | Numeric value of the most severe known exploit. |
+| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system. |
+| CrowdStrike.Vulnerability.cve.description | String | Brief description of the CVE. |
+| CrowdStrike.Vulnerability.cve.published_date | Date | UTC timestamp with the date and time of when the vendor published the CVE. |
+| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed. |
+| CrowdStrike.Vulnerability.cve.exploitability_score | Number | Exploitability score of the CVE \(float values from 1-4\). |
+| CrowdStrike.Vulnerability.cve.impact_score | Number | Impact score of the CVE \(float values from 1-6\). |
+| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability. |
+| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability \(U = Unavailable, or O = Official fix\). |
+| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | Boolean | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities \(KEV\) catalog. |
+| CrowdStrike.Vulnerability.cve.cisa_info.due_date | Date | Date before which CISA mandates subject organizations to patch the vulnerability. |
+| CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. |
+| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. |
+| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. |
+| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with \`limit &lt;= 2500\`, this cursor is suppressed by default. To always receive it, set \`omit_next_token=false\`. |
 
 ### cs-falcon-spotlight-list-host-by-vulnerability
 
