@@ -1,10 +1,10 @@
 # Microsoft Security & Compliance Center - Content Search Integration
 
-## ⚠️ Important: Deprecation Notice
+Deprecated. Use the **Microsoft Graph Security** integration instead.
 
-Microsoft is deprecating the legacy Remote PowerShell (RPS) protocol used by this integration. As a result, the **O365 - Security And Compliance - Content Search v2** integration is scheduled for deprecation on **June 2026**.
+## ⚠️ Deprecation Notice
 
-Customers should transition to the **Microsoft Graph Security** integration, which provides the supported replacement functionality.
+This integration is **deprecated**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
 
 Note: The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery). Content searches are now performed within the context of an eDiscovery case.
 
