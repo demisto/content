@@ -4578,9 +4578,7 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
             "meta": {"pagination": {"after": "CURSOR_VALUE"}},
         },
     )
-    results = cs_falcon_spotlight_search_vulnerability_command(
-        {**base_args, "limit": "1", "next_token": "PREV_CURSOR"}
-    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1", "next_token": "PREV_CURSOR"})
     call_args, _ = http_mock.call_args
     url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
     assert "after=PREV_CURSOR" in url_suffix  # (a)
