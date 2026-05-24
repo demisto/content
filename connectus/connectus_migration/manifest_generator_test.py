@@ -15,6 +15,7 @@ from manifest_generator import (
     CAPABILITIES_SCHEMA_DIRECTIVE,
     HANDLER_SCHEMA_DIRECTIVE,
     SERIALIZER_PLACEHOLDER,
+    SERIALIZER_SCHEMA_DIRECTIVE,
     add_handler_to_existing_connector,
     append_capability_to_files,
     build_capabilities_yaml,
@@ -23,13 +24,17 @@ from manifest_generator import (
     build_handler_yaml,
     build_summary_yaml,
     bump_minor_version,
+    collect_existing_field_ids,
     create_manifest_from_scratch,
+    dedup_field_id_and_register,
     deep_merge_dicts,
     derive_handler_id,
+    emit_field_for_param,
     find_existing_handler_for_capability,
     get_pack_tags,
     merge_general_configurations,
     merge_tags_case_insensitive,
+    register_serializer_entry,
     rename_handler_capability_id,
     slugify_capability_name,
     write_capabilities_yaml,
@@ -2365,3 +2370,478 @@ def test_serializer_and_connection_manual_fields_logged_but_not_applied(
     )
     assert serializer_yaml_path.is_file()
     assert serializer_yaml_path.read_text() == SERIALIZER_PLACEHOLDER
+
+
+# ---------------------------------------------------------------------------
+# Dedup-via-rename + serializer-mapping
+# (per Q1=a / Q2=a / Q3=a / Q4=b in the design discussion)
+# ---------------------------------------------------------------------------
+
+
+def _read_serializer_dict(handler_dir: Path) -> dict:
+    """Helper: load handler_dir/serializer.yaml stripping the directive line."""
+    path = handler_dir / "serializer.yaml"
+    raw = path.read_text()
+    # Strip leading comment lines
+    lines = raw.splitlines(keepends=True)
+    idx = 0
+    while idx < len(lines):
+        stripped = lines[idx].strip()
+        if stripped.startswith("#") or stripped == "":
+            idx += 1
+            continue
+        break
+    body = "".join(lines[idx:])
+    return yaml.safe_load(body) or {}
+
+
+def test_collect_existing_field_ids_walks_all_three_files():
+    """All three input dicts contribute their field ids to the returned set."""
+    capabilities = {
+        "general_configurations": {
+            "configurations": [
+                {"fields": [{"id": "alpha"}, {"id": "beta"}]},
+            ]
+        }
+    }
+    configurations = {
+        "configurations": [
+            {
+                "id": "cap-1",
+                "configurations": [
+                    {"fields": [{"id": "gamma"}, {"id": "delta"}]},
+                ],
+            },
+        ]
+    }
+    connection = {
+        "profiles": [
+            {
+                "id": "profile-1",
+                "configurations": [
+                    {"fields": [{"id": "epsilon"}]},
+                ],
+            },
+        ]
+    }
+    result = collect_existing_field_ids(capabilities, configurations, connection)
+    assert result == {"alpha", "beta", "gamma", "delta", "epsilon"}
+
+
+def test_collect_existing_field_ids_tolerates_partial_inputs():
+    """Missing keys / None inputs collapse to empty contribution."""
+    assert collect_existing_field_ids(None, None, None) == set()
+    assert collect_existing_field_ids({}, {}, {}) == set()
+    # Only configurations populated
+    assert collect_existing_field_ids(
+        {},
+        {"configurations": [{"id": "c", "configurations": [{"fields": [{"id": "x"}]}]}]},
+        None,
+    ) == {"x"}
+
+
+def test_register_serializer_entry_creates_file_with_directive(tmp_path: Path):
+    """First call creates the file with schema directive + a single mapping."""
+    handler_dir = tmp_path / "h"
+    register_serializer_entry(handler_dir, new_id="h_team", original_id="team")
+    serializer_path = handler_dir / "serializer.yaml"
+    assert serializer_path.is_file()
+    raw = serializer_path.read_text()
+    assert raw.startswith("# yaml-language-server: $schema=")
+    data = _read_serializer_dict(handler_dir)
+    assert data == {
+        "field_mappings": [{"id": "h_team", "field_name": "team"}]
+    }
+
+
+def test_register_serializer_entry_appends_to_existing_dict_file(tmp_path: Path):
+    """Second call (different mapping) appends without overwriting the first."""
+    handler_dir = tmp_path / "h"
+    register_serializer_entry(handler_dir, new_id="h_a", original_id="a")
+    register_serializer_entry(handler_dir, new_id="h_b", original_id="b")
+    data = _read_serializer_dict(handler_dir)
+    assert data["field_mappings"] == [
+        {"id": "h_a", "field_name": "a"},
+        {"id": "h_b", "field_name": "b"},
+    ]
+
+
+def test_register_serializer_entry_is_idempotent(tmp_path: Path):
+    """Calling twice with the same (new_id, original_id) does not duplicate."""
+    handler_dir = tmp_path / "h"
+    register_serializer_entry(handler_dir, new_id="h_x", original_id="x")
+    register_serializer_entry(handler_dir, new_id="h_x", original_id="x")
+    data = _read_serializer_dict(handler_dir)
+    assert data["field_mappings"] == [{"id": "h_x", "field_name": "x"}]
+
+
+def test_register_serializer_entry_preserves_existing_computed_fields(tmp_path: Path):
+    """An existing serializer.yaml with computed_fields (Salesforce example
+    style) keeps them intact when a new field_mappings entry is appended."""
+    handler_dir = tmp_path / "h"
+    handler_dir.mkdir(parents=True)
+    serializer_path = handler_dir / "serializer.yaml"
+    # Seed with a comment line + computed_fields + a pre-existing field_mappings entry
+    serializer_path.write_text(
+        "# yaml-language-server: $schema=foo\n"
+        "field_mappings:\n"
+        "  - id: preexisting\n"
+        "    field_name: pre\n"
+        "computed_fields:\n"
+        "  - output:\n"
+        "      - id: fetch_event\n"
+        "        value: true\n"
+        "    any_of:\n"
+        "      - conditions: []\n"
+    )
+
+    register_serializer_entry(handler_dir, new_id="h_new", original_id="new")
+    data = _read_serializer_dict(handler_dir)
+    # Existing entries preserved
+    assert {"id": "preexisting", "field_name": "pre"} in data["field_mappings"]
+    # New entry appended
+    assert {"id": "h_new", "field_name": "new"} in data["field_mappings"]
+    # computed_fields untouched
+    assert data["computed_fields"][0]["output"][0]["id"] == "fetch_event"
+
+
+def test_dedup_field_id_returns_unchanged_when_no_conflict(tmp_path: Path):
+    """When the id is not in existing_ids, it's returned as-is, no serializer
+    side-effect, and the set is updated."""
+    handler_dir = tmp_path / "h"
+    existing: set = set()
+    result = dedup_field_id_and_register(existing, "h", handler_dir, "team")
+    assert result == "team"
+    assert existing == {"team"}
+    assert not (handler_dir / "serializer.yaml").exists()
+
+
+def test_dedup_field_id_renames_and_registers_on_conflict(tmp_path: Path):
+    """When the id IS in existing_ids, returns prefixed id, adds prefixed id
+    to the set, and creates a serializer.yaml mapping prefixed -> original."""
+    handler_dir = tmp_path / "h"
+    existing: set = {"team"}
+    result = dedup_field_id_and_register(existing, "h", handler_dir, "team")
+    assert result == "h_team"
+    assert existing == {"team", "h_team"}
+    data = _read_serializer_dict(handler_dir)
+    assert data["field_mappings"] == [{"id": "h_team", "field_name": "team"}]
+
+
+def _write_integration_yml(path: Path, integration_id: str) -> dict:
+    """Write a minimal integration YAML with an explicit ``commonfields.id``
+    and return the parsed dict. Used by the dedup tests to give each
+    integration a unique handler-id (so the per-handler dir paths don't
+    collide between two-handler scenarios)."""
+    yml = {
+        "name": integration_id,
+        "commonfields": {"id": integration_id, "version": -1},
+        "display": integration_id,
+        "configuration": [],
+        "script": {"commands": [], "type": "python", "subtype": "python3"},
+    }
+    path.write_text(yaml.safe_dump(yml))
+    return yml
+
+
+def test_create_manifest_from_scratch_dedup_inside_same_handler(tmp_path: Path):
+    """Same-handler cross-bucket collision (a field appears in BOTH
+    general_configurations AND a per-capability bucket): the first emission
+    keeps the bare id; the second is renamed and serializer.yaml gets an
+    entry mapping the renamed id back to the original.
+    """
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path / "ws",
+        pack_name="TestPack",
+        integration_name="MyInt",
+        pack_metadata=None,
+    )
+    integration_yml = _write_integration_yml(integration_yml_path, "MyInt")
+    connector_dir = tmp_path / "connectors" / "test_conn"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml=integration_yml,
+        integration_path=integration_yml_path,
+        connector_title="test_conn",
+        mapped_params={
+            "general_configurations": ["server_url"],
+            "Automation": ["server_url", "extra"],
+        },
+        auth_methods={},
+    )
+
+    # capabilities.yaml general_configurations got the unchanged id first.
+    with open(connector_dir / "capabilities.yaml") as fh:
+        first_line = fh.readline()
+        rest = fh.read()
+        if not first_line.startswith("# yaml-language-server"):
+            rest = first_line + rest
+    cap_data = yaml.safe_load(rest)
+    gen_field_ids = [
+        f["id"]
+        for g in cap_data["general_configurations"]["configurations"]
+        for f in g["fields"]
+    ]
+    assert "server_url" in gen_field_ids
+
+    # configurations.yaml Automation bucket got the renamed id second.
+    with open(connector_dir / "configurations.yaml") as fh:
+        cfg_data = yaml.safe_load(fh)
+    automation_field_ids = [
+        f["id"]
+        for cfg in cfg_data["configurations"]
+        for g in cfg["configurations"]
+        for f in g["fields"]
+    ]
+    handler_id = "xsoar_myint"
+    renamed = f"{handler_id}_server_url"
+    assert renamed in automation_field_ids
+    assert "extra" in automation_field_ids  # untouched
+
+    # Handler serializer.yaml has the dedup mapping.
+    serializer_data = _read_serializer_dict(
+        connector_dir / "components" / "handlers" / handler_id
+    )
+    assert {"id": renamed, "field_name": "server_url"} in serializer_data["field_mappings"]
+
+
+def test_add_handler_dedup_against_existing_capabilities_yaml_field(tmp_path: Path):
+    """Append a 2nd handler to an existing connector whose configurations.yaml
+    already has the field id 'team'. The new handler's same-named param is
+    renamed; the existing 'team' field is left untouched.
+    """
+    integration_yml_path_1 = _make_pack_with_integration(
+        tmp_path / "ws1",
+        pack_name="Pack1",
+        integration_name="FirstInt",
+        pack_metadata=None,
+    )
+    integration_yml_1 = _write_integration_yml(integration_yml_path_1, "FirstInt")
+    connector_dir = tmp_path / "connectors" / "shared"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml=integration_yml_1,
+        integration_path=integration_yml_path_1,
+        connector_title="shared",
+        mapped_params={"Automation": ["team"]},
+        auth_methods={},
+    )
+
+    # 2nd integration (different commonfields.id so derive_handler_id yields a
+    # distinct handler dir name)
+    integration_yml_path_2 = _make_pack_with_integration(
+        tmp_path / "ws2",
+        pack_name="Pack2",
+        integration_name="SecondInt",
+        pack_metadata=None,
+    )
+    integration_yml_2 = _write_integration_yml(integration_yml_path_2, "SecondInt")
+    add_handler_to_existing_connector(
+        connector_dir=connector_dir,
+        integration_yml=integration_yml_2,
+        integration_path=integration_yml_path_2,
+        connector_title="shared",
+        mapped_params={"Automation": ["team"]},
+        auth_methods={},
+    )
+
+    # Verify configurations.yaml
+    with open(connector_dir / "configurations.yaml") as fh:
+        cfg_data = yaml.safe_load(fh)
+    all_field_ids = [
+        f["id"]
+        for cfg in cfg_data["configurations"]
+        for g in cfg["configurations"]
+        for f in g["fields"]
+    ]
+    assert "team" in all_field_ids  # original handler's field still there
+    new_handler_id = "xsoar_secondint"
+    renamed = f"{new_handler_id}_team"
+    assert renamed in all_field_ids
+    # No duplicate
+    assert all_field_ids.count("team") == 1
+    assert all_field_ids.count(renamed) == 1
+
+    # Verify new handler's serializer.yaml has the dedup mapping
+    serializer_data = _read_serializer_dict(
+        connector_dir / "components" / "handlers" / new_handler_id
+    )
+    assert {"id": renamed, "field_name": "team"} in serializer_data["field_mappings"]
+
+
+# ---------------------------------------------------------------------------
+# Rich field materializer wiring
+# (per Q1=a / Q2=a / Q3=c / Q4=a / Q5=a in the design discussion)
+# ---------------------------------------------------------------------------
+
+
+def test_emit_field_for_param_rich_type_0_input():
+    """Type 0 (short text) yml param yields a single input field with
+    title from display, options.description from additionalinfo, and
+    create/edit_modifiers gated on required + hidden."""
+    yml = {
+        "type": 0,
+        "name": "url",
+        "display": "Server URL",
+        "additionalinfo": "Base URL for the service.",
+        "required": True,
+        "defaultvalue": "https://example.com",
+    }
+    out = emit_field_for_param("url", {"url": yml})
+    assert len(out) == 1
+    field = out[0]
+    assert field["id"] == "url"
+    assert field["field_type"] == "input"
+    assert field["title"] == "Server URL"
+    assert field["options"]["description"] == "Base URL for the service."
+    assert field["options"]["default_value"] == "https://example.com"
+    assert field["options"]["create_modifiers"] == {"required": True, "hidden": False}
+    assert field["options"]["edit_modifiers"] == {"required": True, "hidden": False}
+
+
+def test_emit_field_for_param_rich_type_8_toggle_coerces_bool_default():
+    """Type 8 (boolean) yml param with defaultvalue='true' (string) is
+    coerced to a Python bool True in options.default_value."""
+    yml = {
+        "type": 8,
+        "name": "isFetch",
+        "display": "Fetch incidents",
+        "defaultvalue": "true",
+        "required": False,
+    }
+    field = emit_field_for_param("isFetch", {"isFetch": yml})[0]
+    assert field["field_type"] == "toggle"
+    assert field["options"]["default_value"] is True
+
+
+def test_emit_field_for_param_rich_type_15_select_with_options_values():
+    """Type 15 (single-select) yml param emits a select field with
+    options.values mapped from yml.options."""
+    yml = {
+        "type": 15,
+        "name": "auth_type",
+        "display": "Authentication Type",
+        "options": ["Client Credentials", "Authorization Code"],
+        "defaultvalue": "Client Credentials",
+        "required": False,
+    }
+    field = emit_field_for_param("auth_type", {"auth_type": yml})[0]
+    assert field["field_type"] == "select"
+    values = field["options"]["values"]
+    assert {"key": "Client Credentials", "value": "Client Credentials"} in values
+    assert {"key": "Authorization Code", "value": "Authorization Code"} in values
+
+
+def test_emit_field_for_param_type_9_credentials_splits_into_two_fields():
+    """Type 9 (credentials) yml param without hiddenusername emits TWO
+    connectus fields: <name>_username (input) + <name>_password (input
+    with mask). Title on the username half is yml.display; title on the
+    password half is yml.displaypassword (if present)."""
+    yml = {
+        "type": 9,
+        "name": "creds",
+        "display": "Bot ID",
+        "displaypassword": "Bot Password",
+        "required": False,
+    }
+    out = emit_field_for_param("creds", {"creds": yml})
+    assert len(out) == 2
+    user, pwd = out
+    assert user["id"] == "creds_username"
+    assert user["field_type"] == "input"
+    assert user["title"] == "Bot ID"
+    assert pwd["id"] == "creds_password"
+    assert pwd["field_type"] == "input"
+    assert pwd["options"]["mask"] is True
+    assert pwd["title"] == "Bot Password"
+
+
+def test_emit_field_for_param_type_9_hiddenusername_emits_only_password():
+    """Type 9 credentials with hiddenusername=true emits ONLY the password
+    half, and its id equals the yml param name (no _password suffix)."""
+    yml = {
+        "type": 9,
+        "name": "auth_code_creds",
+        "displaypassword": "Authorization code",
+        "hiddenusername": True,
+        "required": False,
+    }
+    out = emit_field_for_param("auth_code_creds", {"auth_code_creds": yml})
+    assert len(out) == 1
+    pwd = out[0]
+    assert pwd["id"] == "auth_code_creds"
+    assert pwd["options"]["mask"] is True
+    assert pwd["title"] == "Authorization code"
+
+
+def test_emit_field_for_param_bare_id_fallback_when_yml_missing(caplog):
+    """When yml_params_by_name is provided but the name is missing from
+    it, fall back to a single bare-id field and log a warning (Q3=c)."""
+    import logging
+    with caplog.at_level(logging.WARNING, logger="manifest_generator"):
+        out = emit_field_for_param("phantom", yml_params_by_name={"other": {"type": 0, "name": "other"}})
+    assert out == [{"id": "phantom"}]
+    assert any("phantom" in rec.message for rec in caplog.records)
+
+
+def test_create_manifest_from_scratch_emits_rich_fields_with_titles(tmp_path: Path):
+    """End-to-end: the from-scratch path threads yml_params_by_name through
+    the builders so emitted fields in configurations.yaml have title,
+    field_type, and options — not just id."""
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path / "ws",
+        pack_name="PackX",
+        integration_name="MyInt",
+        pack_metadata=None,
+    )
+    # Override the integration YML with a real configuration list.
+    integration_yml = {
+        "name": "MyInt",
+        "commonfields": {"id": "MyInt", "version": -1},
+        "display": "MyInt",
+        "configuration": [
+            {
+                "type": 0,
+                "name": "domain",
+                "display": "Domain",
+                "required": True,
+                "defaultvalue": "example.com",
+            },
+            {
+                "type": 8,
+                "name": "useFetch",
+                "display": "Use Fetch",
+                "defaultvalue": "false",
+            },
+        ],
+        "script": {"commands": [], "type": "python", "subtype": "python3"},
+    }
+    integration_yml_path.write_text(yaml.safe_dump(integration_yml))
+
+    connector_dir = tmp_path / "connectors" / "rich_test"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml=integration_yml,
+        integration_path=integration_yml_path,
+        connector_title="rich_test",
+        mapped_params={"Automation": ["domain", "useFetch"]},
+        auth_methods={},
+    )
+
+    with open(connector_dir / "configurations.yaml") as fh:
+        cfg = yaml.safe_load(fh)
+
+    fields_by_id = {
+        f["id"]: f
+        for cfg_entry in cfg["configurations"]
+        for group in cfg_entry["configurations"]
+        for f in group["fields"]
+    }
+    # Both fields are present with rich shape
+    assert fields_by_id["domain"]["field_type"] == "input"
+    assert fields_by_id["domain"]["title"] == "Domain"
+    assert fields_by_id["domain"]["options"]["default_value"] == "example.com"
+    assert fields_by_id["domain"]["options"]["create_modifiers"]["required"] is True
+
+    assert fields_by_id["useFetch"]["field_type"] == "toggle"
+    assert fields_by_id["useFetch"]["options"]["default_value"] is False  # coerced

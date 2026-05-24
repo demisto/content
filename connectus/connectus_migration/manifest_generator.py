@@ -416,6 +416,9 @@ def write_handler_yaml(handler_yaml_path: Path, handler_data: dict) -> None:
 
 
 SERIALIZER_PLACEHOLDER = "# TODO: serializer config\n"
+SERIALIZER_SCHEMA_DIRECTIVE = (
+    "# yaml-language-server: $schema=../../../../../schema/serializer.schema.json\n"
+)
 
 
 def write_serializer_yaml(serializer_yaml_path: Path) -> None:
@@ -436,20 +439,259 @@ def write_serializer_yaml(serializer_yaml_path: Path) -> None:
         fh.write(SERIALIZER_PLACEHOLDER)
 
 
+# ---------------------------------------------------------------------------
+# Field-id dedup + serializer registration
+# ---------------------------------------------------------------------------
+
+
+def collect_existing_field_ids(
+    capabilities_data: dict | None,
+    configurations_data: dict | None,
+    connection_data: dict | None = None,
+) -> set[str]:
+    """Return the set of every ``ConnectorField.id`` declared anywhere in the
+    connector's three field-bearing files.
+
+    Conflict scope (per Q1=a, Q4=b in the design):
+      - ``capabilities.yaml`` general_configurations[].configurations[].fields[].id
+      - ``configurations.yaml`` configurations[].configurations[].fields[].id
+      - ``connection.yaml``    profiles[].configurations[].fields[].id
+
+    Any of the three dicts may be ``None``/empty (e.g., when called early in
+    a from-scratch run before that file has been written yet). Tolerates
+    schema-incomplete dicts (missing keys) by treating them as empty.
+    """
+    result: set[str] = set()
+
+    if capabilities_data:
+        gen = capabilities_data.get("general_configurations") or {}
+        for group in gen.get("configurations") or []:
+            for field in group.get("fields") or []:
+                fid = (field or {}).get("id")
+                if fid:
+                    result.add(fid)
+
+    if configurations_data:
+        for cfg in configurations_data.get("configurations") or []:
+            for group in cfg.get("configurations") or []:
+                for field in group.get("fields") or []:
+                    fid = (field or {}).get("id")
+                    if fid:
+                        result.add(fid)
+
+    if connection_data:
+        for profile in connection_data.get("profiles") or []:
+            for group in profile.get("configurations") or []:
+                for field in group.get("fields") or []:
+                    fid = (field or {}).get("id")
+                    if fid:
+                        result.add(fid)
+
+    return result
+
+
+def register_serializer_entry(
+    handler_dir: Path, new_id: str, original_id: str
+) -> None:
+    """Append one ``field_mappings`` entry to a handler's ``serializer.yaml``.
+
+    Behavior:
+      - Creates the file if it does not exist (with the schema directive
+        comment line prepended), or if it exists as a comment-only stub
+        (the legacy ``# TODO: serializer config`` placeholder) by rewriting
+        it with the schema directive + a fresh dict body.
+      - Preserves any existing ``field_mappings`` and ``computed_fields``
+        entries when the file is already dict-based.
+      - Idempotent: if an entry with the same ``id`` AND ``field_name``
+        already exists, the file is left untouched (no duplicate appended,
+        no write).
+    """
+    handler_dir.mkdir(parents=True, exist_ok=True)
+    serializer_path = handler_dir / "serializer.yaml"
+
+    # Load existing content (if any) — strip schema directive and tolerate the
+    # legacy comment-only placeholder.
+    existing: dict = {}
+    if serializer_path.is_file():
+        with open(serializer_path) as fh:
+            raw = fh.read()
+        # Strip leading directive / comment lines that are not YAML.
+        body = _strip_leading_comments(raw)
+        loaded = yaml.safe_load(io.StringIO(body)) if body.strip() else None
+        if isinstance(loaded, dict):
+            existing = loaded
+
+    field_mappings = existing.setdefault("field_mappings", [])
+    entry = {"id": new_id, "field_name": original_id}
+
+    # Idempotency guard: skip if an identical entry already exists.
+    for fm in field_mappings:
+        if (
+            isinstance(fm, dict)
+            and fm.get("id") == new_id
+            and fm.get("field_name") == original_id
+        ):
+            return
+    field_mappings.append(entry)
+
+    with open(serializer_path, "w") as fh:
+        fh.write(SERIALIZER_SCHEMA_DIRECTIVE)
+        yaml.safe_dump(existing, fh)
+
+
+def _strip_leading_comments(text: str) -> str:
+    """Strip leading comment lines (``# ...``) and blank lines.
+
+    Used so we can re-parse a serializer.yaml that begins with the
+    ``# yaml-language-server`` directive — the directive is metadata for the
+    editor, not valid YAML structure to merge into.
+    """
+    lines = text.splitlines(keepends=True)
+    idx = 0
+    while idx < len(lines):
+        stripped = lines[idx].strip()
+        if stripped.startswith("#") or stripped == "":
+            idx += 1
+            continue
+        break
+    return "".join(lines[idx:])
+
+
+def dedup_field_id_and_register(
+    existing_ids: set[str],
+    handler_id: str,
+    handler_dir: Path,
+    field_id: str,
+) -> str:
+    """Decide the final connector field id for ``field_id`` under handler
+    ``handler_id``, applying the dedup-via-rename rule (Q1=a, Q2=a, Q3=a).
+
+    If ``field_id`` is not already in ``existing_ids``, returns it unchanged
+    and adds it to the set.
+
+    If it IS in ``existing_ids``, returns ``f"{handler_id}_{field_id}"``,
+    adds the renamed id to the set, and appends a ``field_mappings`` entry
+    to the handler's ``serializer.yaml`` (idempotent) mapping the renamed
+    connector id back to the original XSOAR param name.
+
+    Mutates ``existing_ids`` in place so subsequent calls see the new id.
+    """
+    if field_id not in existing_ids:
+        existing_ids.add(field_id)
+        return field_id
+    renamed = f"{handler_id}_{field_id}"
+    register_serializer_entry(handler_dir, new_id=renamed, original_id=field_id)
+    existing_ids.add(renamed)
+    return renamed
+
+
+def emit_field_for_param(
+    name: str,
+    yml_params_by_name: dict[str, dict] | None,
+    handler_id: str = "",
+    handler_dir: Path | None = None,
+    existing_ids: set[str] | None = None,
+) -> list[dict]:
+    """Return one or more connectus field dicts for an XSOAR yml param name.
+
+    Resolution policy (Q1=a / Q2=a / Q3=c / Q4=a / Q5=a):
+
+      - If ``yml_params_by_name`` is missing or doesn't contain ``name``,
+        log a warning and fall back to the bare-id shape ``{"id": name}``
+        (with dedup-rename applied when requested).
+      - Otherwise, dispatch through :func:`map_xsoar_param_to_connectus_field`
+        which returns a list of rich field dicts (one for most types, two
+        for type 9 / credentials).
+      - For each emitted dict, run dedup-via-rename on its ``id`` (treating
+        each credentials half independently per Q5=a). Title and all other
+        keys are preserved across the rename per Q4=a.
+
+    All three dedup parameters are optional — callers that pass them in
+    enable rename + serializer registration; callers that omit them get
+    bare emission.
+    """
+    use_dedup = (
+        existing_ids is not None and handler_id and handler_dir is not None
+    )
+
+    def _maybe_rename(original_id: str) -> str:
+        if use_dedup:
+            return dedup_field_id_and_register(
+                existing_ids, handler_id, handler_dir, original_id  # type: ignore[arg-type]
+            )
+        return original_id
+
+    # Fallback path: no YAML param dict available for this name.
+    if not yml_params_by_name or name not in yml_params_by_name:
+        if yml_params_by_name is not None:
+            logger.warning(
+                f"[manifest_generator] No XSOAR yml config entry found for "
+                f"param '{name}' (handler='{handler_id}'). Emitting bare-id "
+                f"field only — rich metadata (title, field_type, options) "
+                f"will be missing."
+            )
+        return [{"id": _maybe_rename(name)}]
+
+    # Rich path: materialize via the type-aware dispatcher.
+    raw_fields = map_xsoar_param_to_connectus_field(yml_params_by_name[name])
+
+    out: list[dict] = []
+    for raw in raw_fields:
+        original_id = raw.get("id", "")
+        renamed = _maybe_rename(original_id)
+        if renamed != original_id:
+            field_copy = dict(raw)
+            field_copy["id"] = renamed
+            out.append(field_copy)
+        else:
+            out.append(raw)
+    return out
+
+
 CAPABILITIES_SCHEMA_DIRECTIVE = (
     "# yaml-language-server: $schema=../../schema/capabilities.schema.json\n"
 )
 
 
-def build_capabilities_yaml(mapped_params: dict[str, Any]) -> dict:
+def build_capabilities_yaml(
+    mapped_params: dict[str, Any],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_id: str = "",
+    handler_dir: Path | None = None,
+    existing_ids: set[str] | None = None,
+) -> dict:
     """Build the dict for capabilities.yaml.
 
-    Per POC: only 'id' is populated for each capability and each general-config
-    field. Other schema-required fields (title, description, default_enabled,
-    required) are intentionally omitted — to be added later.
+    When ``yml_params_by_name`` is provided, each ``general_configurations``
+    field is materialized via :func:`emit_field_for_param` — a rich dict
+    with ``title``, ``field_type``, ``options`` (default_value, mask,
+    create/edit_modifiers, etc.) sourced from the underlying XSOAR yml
+    param. Type 9 (credentials) params expand into two fields. Missing yml
+    entries fall back to a bare ``{"id": name}`` shape with a warning
+    (per Q3=c).
+
+    Dedup-via-rename (per Q1=a/Q2=a/Q3=a/Q4=b design): when ``handler_id``
+    + ``handler_dir`` are supplied, any ``general_configurations`` field id
+    that collides with an entry in ``existing_ids`` is renamed and a
+    serializer entry is registered. Capability ids are NOT deduped here —
+    capability id collisions are handled by the append flow's promote-to-
+    sub-capability path, not by this builder.
+
+    Backwards-compatible: callers omitting all extra args get bare-id
+    fields with no dedup side-effects.
     """
     general_params = mapped_params.get("general_configurations", []) or []
-    general_fields = [{"id": p} for p in general_params]
+    general_fields: list[dict] = []
+    for p in general_params:
+        general_fields.extend(
+            emit_field_for_param(
+                p,
+                yml_params_by_name,
+                handler_id=handler_id,
+                handler_dir=handler_dir,
+                existing_ids=existing_ids,
+            )
+        )
 
     capabilities = []
     for cap_name in mapped_params:
@@ -480,18 +722,45 @@ def write_capabilities_yaml(
         yaml.safe_dump(capabilities_data, fh)
 
 
-def build_configurations_yaml(mapped_params: dict[str, Any]) -> dict:
+def build_configurations_yaml(
+    mapped_params: dict[str, Any],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_id: str = "",
+    handler_dir: Path | None = None,
+    existing_ids: set[str] | None = None,
+) -> dict:
     """Build the dict for configurations.yaml.
 
-    Per POC: only the 'id' (capability-id and field-id) is populated.
-    Other field metadata (title, type, options, etc.) intentionally omitted.
+    When ``yml_params_by_name`` is provided, each per-capability field is
+    materialized via :func:`emit_field_for_param` (rich shape with title +
+    field_type + options). Type 9 credentials expand to two fields each.
+
+    Dedup-via-rename (per Q1=a/Q2=a/Q3=a/Q4=b design): when ``handler_id`` +
+    ``handler_dir`` are supplied, any field id colliding with an entry in
+    ``existing_ids`` is renamed to ``f"{handler_id}_{field_id}"`` and a
+    ``field_mappings`` entry is appended to ``handler_dir/serializer.yaml``
+    (creating the file if missing). ``existing_ids`` is mutated in place so
+    later calls see freshly-claimed ids.
+
+    Backwards-compatible: callers omitting all extra args get bare-id
+    fields with no dedup side-effects.
     """
     configurations = []
     for cap_name, params in mapped_params.items():
         if cap_name == "general_configurations":
             continue
         cap_id = slugify_capability_name(cap_name)
-        fields = [{"id": p} for p in (params or [])]
+        fields: list[dict] = []
+        for p in (params or []):
+            fields.extend(
+                emit_field_for_param(
+                    p,
+                    yml_params_by_name,
+                    handler_id=handler_id,
+                    handler_dir=handler_dir,
+                    existing_ids=existing_ids,
+                )
+            )
         configurations.append(
             {
                 "id": cap_id,
@@ -585,6 +854,8 @@ def append_capability_to_files(
     capabilities_data: dict,
     configurations_data: dict,
     connector_dir: Path,
+    yml_params_by_name: dict[str, dict] | None = None,
+    existing_ids: set[str] | None = None,
 ) -> str:
     """Process one capability for the append-handler path.
 
@@ -595,7 +866,35 @@ def append_capability_to_files(
     Returns the cap id that the NEW handler should reference in its own
     handler.yaml ``capabilities`` list (either the bare slug for Case 3, or
     the sub-cap id ``<new_handler_id>-<cap_slug>`` for Cases 1 and 2).
+
+    When ``yml_params_by_name`` is supplied, each new field is materialized
+    via :func:`emit_field_for_param` (rich shape with title + field_type +
+    options; type 9 / credentials split into two fields each). Missing yml
+    entries fall back to bare-id shape with a warning (Q3=c).
+
+    Dedup-via-rename: when ``existing_ids`` is supplied, every newly-added
+    field id is checked against the set; collisions are renamed to
+    ``f"{new_handler_id}_{field_id}"`` and a ``field_mappings`` entry is
+    appended to the new handler's ``serializer.yaml``. ``existing_ids`` is
+    mutated in place so subsequent calls in the same append session see
+    freshly-claimed ids.
     """
+    handler_dir = connector_dir / "components" / "handlers" / new_handler_id
+
+    def _emit_fields(params: list[str]) -> list[dict]:
+        result: list[dict] = []
+        for p in params:
+            result.extend(
+                emit_field_for_param(
+                    p,
+                    yml_params_by_name,
+                    handler_id=new_handler_id,
+                    handler_dir=handler_dir,
+                    existing_ids=existing_ids,
+                )
+            )
+        return result
+
     cap_slug = slugify_capability_name(cap_name)
     new_sub_cap_id = f"{new_handler_id}-{cap_slug}"
 
@@ -614,7 +913,7 @@ def append_capability_to_files(
         configurations_data.setdefault("configurations", []).append(
             {
                 "id": cap_slug,
-                "configurations": [{"fields": [{"id": p} for p in cap_params]}],
+                "configurations": [{"fields": _emit_fields(cap_params)}],
             }
         )
         return cap_slug
@@ -649,7 +948,7 @@ def append_capability_to_files(
     configurations_data.setdefault("configurations", []).append(
         {
             "id": new_sub_cap_id,
-            "configurations": [{"fields": [{"id": p} for p in cap_params]}],
+            "configurations": [{"fields": _emit_fields(cap_params)}],
         }
     )
 
@@ -657,12 +956,28 @@ def append_capability_to_files(
 
 
 def merge_general_configurations(
-    capabilities_data: dict, new_general_params: list[str]
+    capabilities_data: dict,
+    new_general_params: list[str],
+    yml_params_by_name: dict[str, dict] | None = None,
+    new_handler_id: str = "",
+    handler_dir: Path | None = None,
+    existing_ids: set[str] | None = None,
 ) -> None:
     """Append new general params to capabilities.yaml's general_configurations.
 
     Mutates ``capabilities_data`` in place. Deduplicates by field id
     (case-sensitive). Existing entries are left untouched.
+
+    When ``yml_params_by_name`` is supplied, each new param is materialized
+    via :func:`emit_field_for_param` (rich shape with title + field_type +
+    options; type 9 / credentials split into two fields each).
+
+    Dedup-via-rename: when ``existing_ids`` is supplied along with
+    ``new_handler_id`` + ``handler_dir``, a new param colliding with any
+    entry in ``existing_ids`` is renamed to ``f"{new_handler_id}_{p}"`` and
+    a ``field_mappings`` entry is appended to the handler's serializer.yaml.
+    ``existing_ids`` is mutated in place. Backwards-compatible: callers
+    omitting all extra args get the previous (bare-id) behavior.
     """
     if not new_general_params:
         return
@@ -672,11 +987,24 @@ def merge_general_configurations(
     if not configurations:
         configurations.append({"fields": []})
     fields = configurations[0].setdefault("fields", [])
-    existing_ids = {f.get("id") for f in fields}
+    local_existing = {f.get("id") for f in fields}
     for param in new_general_params:
-        if param not in existing_ids:
-            fields.append({"id": param})
-            existing_ids.add(param)
+        if param in local_existing:
+            # In-bucket dedup — already present in this very general_configurations
+            # block (same field id, same handler likely re-adding); skip.
+            continue
+        new_fields = emit_field_for_param(
+            param,
+            yml_params_by_name,
+            handler_id=new_handler_id,
+            handler_dir=handler_dir,
+            existing_ids=existing_ids,
+        )
+        for new_field in new_fields:
+            if new_field["id"] in local_existing:
+                continue
+            fields.append(new_field)
+            local_existing.add(new_field["id"])
 
 
 def build_summary_yaml(connector_title: str) -> dict:
@@ -1084,13 +1412,9 @@ def create_manifest_from_scratch(
     handler_yaml_path = (
         connector_dir / "components" / "handlers" / handler_id / "handler.yaml"
     )
+    handler_dir = handler_yaml_path.parent
     write_handler_yaml(handler_yaml_path, handler_data)
     logger.info(f"[manifest_generator] Generated {handler_yaml_path}")
-
-    # Generate serializer.yaml stub (per-handler placeholder)
-    serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
-    write_serializer_yaml(serializer_yaml_path)
-    logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
 
     # Generate summary.yaml (one per connector — only on from-scratch path)
     summary_data = build_summary_yaml(connector_title)
@@ -1100,8 +1424,29 @@ def create_manifest_from_scratch(
         yaml.safe_dump(summary_data, fh)
     logger.info(f"[manifest_generator] Generated {summary_yaml_path}")
 
+    # Dedup bookkeeping: from-scratch starts with an empty set; both
+    # builders mutate it in place so cross-file collisions (e.g., a field
+    # appearing in both general_configurations and a per-capability bucket)
+    # trigger the rename + serializer registration in the second emission.
+    existing_field_ids: set[str] = set()
+
+    # Build a name -> yml param dict lookup once so the field materializer
+    # can produce rich field shapes (title / field_type / options / etc.)
+    # for every emitted param.
+    yml_params_by_name = {
+        p["name"]: p
+        for p in (integration_yml.get("configuration") or [])
+        if p.get("name")
+    }
+
     # Generate capabilities.yaml
-    capabilities_data = build_capabilities_yaml(mapped_params)
+    capabilities_data = build_capabilities_yaml(
+        mapped_params,
+        yml_params_by_name=yml_params_by_name,
+        handler_id=handler_id,
+        handler_dir=handler_dir,
+        existing_ids=existing_field_ids,
+    )
     capabilities_data = deep_merge_dicts(
         capabilities_data, manual_capabilities_fields or {}
     )
@@ -1110,7 +1455,13 @@ def create_manifest_from_scratch(
     logger.info(f"[manifest_generator] Generated {capabilities_yaml_path}")
 
     # Generate configurations.yaml (no schema directive)
-    configurations_data = build_configurations_yaml(mapped_params)
+    configurations_data = build_configurations_yaml(
+        mapped_params,
+        yml_params_by_name=yml_params_by_name,
+        handler_id=handler_id,
+        handler_dir=handler_dir,
+        existing_ids=existing_field_ids,
+    )
     configurations_data = deep_merge_dicts(
         configurations_data, manual_configurations_fields or {}
     )
@@ -1118,6 +1469,18 @@ def create_manifest_from_scratch(
     with open(configurations_yaml_path, "w") as fh:
         yaml.safe_dump(configurations_data, fh)
     logger.info(f"[manifest_generator] Generated {configurations_yaml_path}")
+
+    # Generate serializer.yaml stub (per-handler placeholder) — only if
+    # the dedup step did not already create a dict-based serializer.yaml.
+    serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
+    if not serializer_yaml_path.exists():
+        write_serializer_yaml(serializer_yaml_path)
+        logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
+    else:
+        logger.info(
+            f"[manifest_generator] Serializer.yaml already present at "
+            f"{serializer_yaml_path} (populated by dedup step); not overwriting"
+        )
 
     # TODO: generate connection.yaml
     # TODO: generate connection.yaml from auth_methods
@@ -1240,9 +1603,41 @@ def add_handler_to_existing_connector(
     else:
         configurations_data = {}
 
+    # Optional: load connection.yaml so dedup considers its profile field ids
+    # (per Q4=b in the design). Tolerate missing file; we don't generate one
+    # yet, but a previous run or manual file may exist.
+    connection_yaml_path = connector_dir / "connection.yaml"
+    if connection_yaml_path.is_file():
+        with open(connection_yaml_path) as fh:
+            connection_data = yaml.safe_load(fh) or {}
+    else:
+        connection_data = {}
+
+    # Build the cross-file existing-id set BEFORE any new field is added so
+    # newcomers get renamed against the full prior state.
+    existing_field_ids = collect_existing_field_ids(
+        capabilities_data, configurations_data, connection_data
+    )
+    handler_dir = (
+        connector_dir / "components" / "handlers" / new_handler_id
+    )
+
+    # Build a name -> yml param dict lookup once so the field materializer
+    # can produce rich field shapes for every emitted param.
+    yml_params_by_name = {
+        p["name"]: p
+        for p in (integration_yml.get("configuration") or [])
+        if p.get("name")
+    }
+
     # Merge general configurations (deduplicated by field id).
     merge_general_configurations(
-        capabilities_data, mapped_params.get("general_configurations", []) or []
+        capabilities_data,
+        mapped_params.get("general_configurations", []) or [],
+        yml_params_by_name=yml_params_by_name,
+        new_handler_id=new_handler_id,
+        handler_dir=handler_dir,
+        existing_ids=existing_field_ids,
     )
 
     # Per-capability append: compute the cap id mapping the new handler
@@ -1258,6 +1653,8 @@ def add_handler_to_existing_connector(
             capabilities_data=capabilities_data,
             configurations_data=configurations_data,
             connector_dir=connector_dir,
+            yml_params_by_name=yml_params_by_name,
+            existing_ids=existing_field_ids,
         )
         cap_name_to_handler_cap_id[cap_name] = handler_cap_id
 
@@ -1274,10 +1671,17 @@ def add_handler_to_existing_connector(
     write_handler_yaml(handler_yaml_path, handler_data)
     logger.info(f"[manifest_generator] Generated {handler_yaml_path}")
 
-    # Generate serializer.yaml stub (per-handler placeholder)
+    # Generate serializer.yaml stub (per-handler placeholder) — skip if the
+    # dedup pass already created a dict-based serializer.yaml.
     serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
-    write_serializer_yaml(serializer_yaml_path)
-    logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
+    if not serializer_yaml_path.exists():
+        write_serializer_yaml(serializer_yaml_path)
+        logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
+    else:
+        logger.info(
+            f"[manifest_generator] Serializer.yaml already present at "
+            f"{serializer_yaml_path} (populated by dedup step); not overwriting"
+        )
 
     # Write capabilities.yaml back (with schema directive).
     capabilities_data = deep_merge_dicts(
