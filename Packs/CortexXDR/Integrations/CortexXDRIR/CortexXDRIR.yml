@@ -3416,8 +3416,9 @@ script:
     - description: The MITRE attack technique.
       isArray: true
       name: mitre_technique_id_and_name
-    description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+    description: "This command is deprecated, please use xdr-issue-list instead. Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
     name: xdr-get-alerts
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.Alert.internal_id
       description: The unique ID of the alert.
@@ -3868,9 +3869,10 @@ script:
       name: comment
       required: false
     description: |-
-      Update one or more alerts with the provided arguments.
+      This command is deprecated, please use xdr-issue-update instead. Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
+    deprecated: true
   - arguments:
     - description: A comma-separated list of API key IDs to retrieve.
       isArray: true
@@ -5115,8 +5117,9 @@ script:
       description: A comma-separated list of external IDs.
       isArray: true
     - name: detection_method
-      description: A comma-separated list of methods used to detect the activity.
+      description: "A comma-separated list of methods used to detect the activity. Possible values: 'BIOC', 'Correlation', 'Analytics', 'System', 'IOC'."
       auto: PREDEFINED
+      isArray: true
       predefined:
         - BIOC
         - Correlation
@@ -5125,8 +5128,9 @@ script:
         - IOC
     - name: domain
       description: A comma-separated list of domains.
+      isArray: true
     - name: severity
-      description: A comma-separated list of severities.
+      description: "A comma-separated list of severities. Possible values: 'critical', 'high', 'medium', 'low', 'info'."
       auto: PREDEFINED
       predefined:
         - info
@@ -5137,7 +5141,12 @@ script:
     - name: insert_time
       description: Filter by issues inserted after this time.
     - name: status
-      description: "A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'."
+      description: "A comma-separated list of statuses. Possible values: 'new', 'in_progress', 'resolved'."
+      auto: PREDEFINED
+      predefined:
+        - new
+        - in_progress
+        - resolved
       isArray: true
     - name: sort_field
       description: The field to sort by.
@@ -5229,7 +5238,7 @@ script:
       description: Whether this observation is excluded from standard views.
       type: Boolean
   - name: xdr-issue-create
-    description: Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI
+    description: Creates a new issue. Issues with an 'INFO' severity level are not displayed in the UI.
     arguments:
     - name: name
       description: The issue name.
@@ -5238,7 +5247,7 @@ script:
       description: The issue description.
       required: true
     - name: observation_time
-      description: The observation time. Should support english expressions like "one year".
+      description: The observation time. Supports natural language expressions such as "one year".
       required: true
     - name: domain
       description: The domain.
@@ -5252,7 +5261,7 @@ script:
     - name: mitre_tactic
       description: A comma-separated list of MITRE tactics.
       isArray: true
-    - name: mitre_tecnique
+    - name: mitre_technique
       description: A comma-separated list of MITRE techniques.
       isArray: true
     - name: type
@@ -5302,7 +5311,7 @@ script:
       description: The issue detection method.
       type: String
   - name: xdr-issue-update
-    description: Update an existing issue.
+    description: Updates an existing issue.
     arguments:
     - name: issue_id
       description: The issue ID.
@@ -5336,7 +5345,7 @@ script:
         - resolved_security_testing
     - name: resolve_comment
       description: The resolve comment.
-  dockerimage: demisto/python3:3.12.12.7019815
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
   isfetch:xpanse: false
   script: ''
