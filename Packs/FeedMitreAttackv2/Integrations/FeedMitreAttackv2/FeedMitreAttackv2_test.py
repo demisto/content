@@ -608,8 +608,8 @@ def test_query_with_retry_retries_on_403_and_succeeds(mocker):
     assert result == expected
     assert mock_source.query.call_count == 3
     assert sleep_mock.call_count == 2
-    sleep_mock.assert_any_call(TAXII_QUERY_RETRY_BASE_DELAY * 1)   # attempt 0 → delay 5s
-    sleep_mock.assert_any_call(TAXII_QUERY_RETRY_BASE_DELAY * 2)   # attempt 1 → delay 10s
+    sleep_mock.assert_any_call(TAXII_QUERY_RETRY_BASE_DELAY * 1)  # attempt 0 → delay 5s
+    sleep_mock.assert_any_call(TAXII_QUERY_RETRY_BASE_DELAY * 2)  # attempt 1 → delay 10s
 
 
 def test_query_with_retry_raises_after_all_retries_exhausted(mocker):
@@ -634,7 +634,7 @@ def test_query_with_retry_raises_after_all_retries_exhausted(mocker):
     with pytest.raises(Exception, match="403"):
         query_with_retry(mock_source, [], max_retries=2)
 
-    assert mock_source.query.call_count == 3   # initial + 2 retries
+    assert mock_source.query.call_count == 3  # initial + 2 retries
     assert sleep_mock.call_count == 2
 
 
