@@ -1837,7 +1837,7 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 ### azure-compute-vm-list
 
 ***
-Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Requires the Microsoft.Compute/virtualMachines/read permission.
+Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read.
 
 #### Base Command
 
@@ -1953,7 +1953,7 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 ### azure-vn-security-group-create
 
 ***
-Creates a network security group. Requires the Microsoft.Network/networkSecurityGroups/write permission.
+Creates a network security group. Required Permissions: Microsoft.Network/networkSecurityGroups/write.
 
 #### Base Command
 
@@ -2372,7 +2372,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 ### azure-vn-network-interface-update
 
 ***
-Updates a network interface. Requires the Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action permissions.
+Updates a network interface. Required Permissions: Microsoft.Network/networkInterfaces/read, Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action.
 
 #### Base Command
 
