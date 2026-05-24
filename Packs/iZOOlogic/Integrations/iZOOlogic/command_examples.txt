@@ -1,0 +1,4 @@
+!izoologic-get-incidents limit=10
+!izoologic-get-incidents limit=50 start_time="3 days ago"
+!izoologic-get-incidents limit=10 start_time="2024-01-01T00:00:00Z" end_time="2024-01-02T00:00:00Z"
+!izoologic-get-incidents limit=10 incident_type=phishing

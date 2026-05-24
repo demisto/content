@@ -1,0 +1,887 @@
+import asyncio
+import json
+from pathlib import Path
+from unittest.mock import AsyncMock
+
+import pytest
+import demistomock as demisto
+from CommonServerPython import *  # noqa
+from pytest_mock import MockerFixture
+
+from iZOOlogic import (
+    Client,
+    COMMAND_MAP,
+    _validate_api_response,
+    date_to_unix_timestamp,
+    get_current_unix_timestamp,
+    snap_to_day_boundary_utc,
+    parse_date,
+    create_incidents,
+    filter_by_ids,
+    validate_date_range,
+    resolve_type_codes,
+    parse_integration_params,
+    _fetch_all_pages,
+    _filter_and_dedup,
+    _compute_new_state,
+    _fetch_for_type,
+    test_module as izoologic_test_module,
+    get_incidents_command,
+    fetch_incidents_command,
+    main,
+)
+
+
+# region Test Data Loading
+TEST_DATA_DIR = Path(__file__).parent / "test_data"
+
+
+def load_test_data(filename: str) -> dict:
+    """Load test data from a JSON file in the test_data directory."""
+    with open(TEST_DATA_DIR / filename) as f:
+        return json.load(f)
+
+
+# endregion
+
+# region Fixtures
+
+
+@pytest.fixture(autouse=True)
+def mock_support_multithreading(mocker: MockerFixture):
+    """ContentClient calls support_multithreading() on init — mock it."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
+
+
+@pytest.fixture
+def incidents_result() -> dict:
+    """The 'result' object from the API response."""
+    return load_test_data("incidents_response.json")["result"]
+
+
+@pytest.fixture
+def incidents_result_with_pagination() -> dict:
+    """The 'result' object with pagination token."""
+    return load_test_data("incidents_response_with_pagination.json")["result"]
+
+
+@pytest.fixture
+def empty_result() -> dict:
+    """The 'result' object with no incidents."""
+    return load_test_data("empty_response.json")["result"]
+
+
+@pytest.fixture
+def mock_client(mocker: MockerFixture) -> Client:
+    """Create a mock Client with auth handler's _authenticate mocked."""
+    client = Client(
+        base_url="https://api.test.izoologic.com",
+        api_key="test-api-key",
+        secret_key="test-secret-key",
+        verify=False,
+        proxy=False,
+    )
+    # Mock the auth handler's _authenticate to avoid real API calls
+    mocker.patch.object(client._auth_handler, "_authenticate", new_callable=AsyncMock)
+    return client
+
+
+@pytest.fixture
+def valid_params() -> dict:
+    return {
+        "url": "https://api.izoologic.com/",
+        "api_key": "test-key",
+        "secret_key": {"password": "test-secret"},
+        "incident_types_filter": ["phishing", "malware"],
+        "max_fetch": "5000",
+    }
+
+
+# endregion
+
+# region Date Helper Tests
+
+
+class TestDateHelpers:
+    @pytest.mark.parametrize(
+        "date_input, expected",
+        [
+            ("2024-01-01T00:00:00Z", "1704067200"),
+            ("2023-06-15T12:00:00Z", "1686830400"),
+        ],
+    )
+    def test_date_to_unix_timestamp_iso(self, date_input: str, expected: str):
+        assert date_to_unix_timestamp(date_input) == expected
+
+    def test_date_to_unix_timestamp_relative(self):
+        result = date_to_unix_timestamp("1 hour ago")
+        assert result.isdigit()
+
+    def test_parse_date_valid(self):
+        result = parse_date("2024-01-01T00:00:00Z")
+        assert result.year == 2024
+
+    def test_parse_date_invalid_raises(self):
+        with pytest.raises(ValueError):
+            parse_date("not-a-date")
+
+    def test_get_current_unix_timestamp(self):
+        result = get_current_unix_timestamp()
+        assert result.isdigit()
+
+
+# endregion
+
+# region Snap to Day Boundary Tests
+
+
+class TestSnapToDayBoundaryUtc:
+    @pytest.mark.parametrize(
+        "input_ts, boundary, expected",
+        [
+            # Start boundary (midnight)
+            ("1738063023", "start", "1738022400"),  # 2025-01-28T11:37:03Z -> 00:00:00
+            ("1738022400", "start", "1738022400"),  # Already at midnight
+            ("1704153599", "start", "1704067200"),  # 2024-01-01T23:59:59Z -> 00:00:00
+            ("1704067201", "start", "1704067200"),  # 2024-01-01T00:00:01Z -> 00:00:00
+            # End boundary (23:59:59)
+            ("1704067200", "end", "1704153599"),  # 2024-01-01T00:00:00Z -> 23:59:59
+            ("1704153599", "end", "1704153599"),  # Already at 23:59:59
+            ("1704100000", "end", "1704153599"),  # Mid-day -> 23:59:59
+        ],
+    )
+    def test_snap(self, input_ts: str, boundary: str, expected: str):
+        assert snap_to_day_boundary_utc(input_ts, boundary) == expected
+
+
+# endregion
+
+# region Create Incidents Tests
+
+
+class TestCreateIncidents:
+    @pytest.mark.parametrize(
+        "raw, expected_name, expected_occurred",
+        [
+            (
+                [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}],
+                "iZOOlogic - Phishing - abc",
+                "100",
+            ),
+            (
+                [{"incidentID": "1"}],
+                "iZOOlogic - Unknown - 1",
+                "",
+            ),
+        ],
+    )
+    def test_create_incidents(self, raw: list, expected_name: str, expected_occurred: str):
+        incidents = create_incidents(raw)
+        assert len(incidents) == 1
+        assert incidents[0]["name"] == expected_name
+        assert incidents[0]["occurred"] == expected_occurred
+
+    def test_empty(self):
+        assert create_incidents([]) == []
+
+    def test_rawjson_contains_original_data(self):
+        raw = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100", "extra": "data"}]
+        incidents = create_incidents(raw)
+        parsed = json.loads(incidents[0]["rawJSON"])
+        assert parsed["incidentID"] == "abc"
+        assert parsed["extra"] == "data"
+
+
+# endregion
+
+# region Filter By IDs Tests
+
+
+class TestFilterByIds:
+    @pytest.mark.parametrize(
+        "raw, ids_to_skip, expected_count",
+        [
+            ([{"incidentID": "1"}, {"incidentID": "2"}], ["3"], 2),  # No match
+            ([{"incidentID": "1"}, {"incidentID": "2"}], ["1"], 1),  # One match
+            ([{"incidentID": "1"}, {"incidentID": "2"}], ["1", "2"], 0),  # All match
+            ([{"incidentID": "1"}], [], 1),  # Empty skip list
+            ([], ["1"], 0),  # Empty incidents
+        ],
+    )
+    def test_filter(self, raw: list, ids_to_skip: list, expected_count: int):
+        assert len(filter_by_ids(raw, ids_to_skip)) == expected_count
+
+
+# endregion
+
+# region Validate API Response Tests
+
+
+class TestValidateApiResponse:
+    def test_success_response(self):
+        """Successful response returns the 'result' object."""
+        response = load_test_data("incidents_response.json")
+        result = _validate_api_response(response)
+        assert "incidents" in result
+        assert len(result["incidents"]) == 3
+
+    def test_no_data_found_returns_empty(self):
+        """Known 'no data found' error code returns empty dict (not an error)."""
+        response = {"success": False, "errorCode": "iZOO2011", "message": "No data found"}
+        result = _validate_api_response(response)
+        assert result == {}
+
+    def test_real_api_error_raises(self):
+        """Unknown API error raises DemistoException."""
+        response = {"success": False, "errorCode": "iZOO5000", "message": "Server error"}
+        with pytest.raises(DemistoException, match="API error: Server error"):
+            _validate_api_response(response)
+
+    def test_missing_success_key_treated_as_success(self):
+        """Response without 'success' key defaults to True."""
+        response = {"result": {"incidents": []}}
+        result = _validate_api_response(response)
+        assert result == {"incidents": []}
+
+
+# endregion
+
+# region Validate Date Range Tests
+
+
+class TestValidateDateRange:
+    @pytest.mark.parametrize(
+        "days_offset, should_raise, match",
+        [
+            (1, False, None),  # 1 day — valid
+            (31, False, None),  # 31 days — valid (boundary)
+            (32, True, "Date range exceeds"),  # 32 days — exceeds max
+        ],
+    )
+    def test_max_range(self, days_offset: int, should_raise: bool, match: str | None):
+        from_ts = "1700000000"
+        to_ts = str(int(from_ts) + days_offset * 86400)
+        if should_raise:
+            with pytest.raises(DemistoException, match=match):
+                validate_date_range(from_ts, to_ts)
+        else:
+            validate_date_range(from_ts, to_ts)
+
+    def test_inverted_date_range_raises(self):
+        """to_date on an earlier day than from_date should raise."""
+        from_ts = "1700100000"  # 2023-11-16
+        to_ts = "1700000000"  # 2023-11-15
+        with pytest.raises(DemistoException, match="is before"):
+            validate_date_range(from_ts, to_ts)
+
+    def test_same_day_does_not_raise(self):
+        """Same-day range (to_date == from_date after midnight snap) should not raise."""
+        from_ts = "1700092800"  # 2023-11-16T00:00:00Z
+        to_ts = "1700100000"  # 2023-11-16T02:00:00Z
+        validate_date_range(from_ts, to_ts)  # Should not raise
+
+
+# endregion
+
+# region Resolve Type Codes Tests
+
+
+class TestResolveTypeCodes:
+    @pytest.mark.parametrize(
+        "type_names, expected_codes",
+        [
+            (["phishing"], [2]),
+            (["phishing", "malware"], [2, 3]),
+            (["PHISHING"], [2]),  # Case-insensitive
+            ([" phishing "], [2]),  # Whitespace trimmed
+            (["brand abuse", "email"], [1, 23]),
+        ],
+    )
+    def test_valid_types(self, type_names: list[str], expected_codes: list[int]):
+        assert resolve_type_codes(type_names) == expected_codes
+
+    @pytest.mark.parametrize(
+        "type_names",
+        [
+            (["invalid_type"]),
+            (["phishing", "nonexistent"]),
+        ],
+    )
+    def test_invalid_type_raises(self, type_names: list[str]):
+        with pytest.raises(DemistoException, match="Invalid incident type"):
+            resolve_type_codes(type_names)
+
+
+# endregion
+
+# region Parse Integration Params Tests
+
+
+class TestParseIntegrationParams:
+    def test_valid_params(self, valid_params: dict):
+        config = parse_integration_params(valid_params)
+        assert config["base_url"] == "https://api.izoologic.com"
+        assert config["incident_type_codes"] == [2, 3]
+        assert config["max_fetch"] == 5000
+
+    @pytest.mark.parametrize(
+        "override, error_match",
+        [
+            ({"url": ""}, "Server URL is required"),
+            ({"api_key": ""}, "API Key is required"),
+            ({"secret_key": {"password": ""}}, "Secret Key is required"),
+            ({"max_fetch": "-1"}, "Invalid max_fetch value"),
+        ],
+    )
+    def test_invalid_params(self, valid_params: dict, override: dict, error_match: str):
+        with pytest.raises(DemistoException, match=error_match):
+            parse_integration_params({**valid_params, **override})
+
+    def test_no_filter_defaults_to_all(self, valid_params: dict):
+        del valid_params["incident_types_filter"]
+        config = parse_integration_params(valid_params)
+        assert len(config["incident_type_codes"]) == 10
+
+    def test_trailing_slash_stripped(self, valid_params: dict):
+        valid_params["url"] = "https://api.izoologic.com///"
+        config = parse_integration_params(valid_params)
+        assert config["base_url"] == "https://api.izoologic.com"
+
+    def test_verify_and_proxy_defaults(self, valid_params: dict):
+        config = parse_integration_params(valid_params)
+        assert config["verify"] is True  # insecure not set -> verify=True
+        assert config["proxy"] is False
+
+    def test_insecure_flag(self, valid_params: dict):
+        valid_params["insecure"] = True
+        config = parse_integration_params(valid_params)
+        assert config["verify"] is False
+
+
+# endregion
+
+# region Client Tests
+
+
+class TestClient:
+    def test_fetch_incidents_page_full_body(self, mocker: MockerFixture, mock_client: Client):
+        """Test that fetch_incidents_page sends correct body with all params."""
+        full_resp = load_test_data("incidents_response.json")
+        mock_req = mocker.patch.object(mock_client, "_http_request", return_value=full_resp)
+        mock_client.fetch_incidents_page("1700000000", "1700100000", incident_type=2, page_token="tok")
+        body = mock_req.call_args.kwargs["json_data"]
+        assert body == {"fromdate": "1700000000", "todate": "1700100000", "incidenttype": 2, "token": "tok"}
+
+    def test_fetch_incidents_page_minimal_body(self, mocker: MockerFixture, mock_client: Client):
+        """Without incident_type and page_token, body only has dates."""
+        full_resp = load_test_data("incidents_response.json")
+        mock_req = mocker.patch.object(mock_client, "_http_request", return_value=full_resp)
+        mock_client.fetch_incidents_page("1700000000", "1700100000")
+        body = mock_req.call_args.kwargs["json_data"]
+        assert body == {"fromdate": "1700000000", "todate": "1700100000"}
+
+    def test_fetch_incidents_page_returns_result(self, mocker: MockerFixture, mock_client: Client):
+        mocker.patch.object(mock_client, "_http_request", return_value=load_test_data("incidents_response.json"))
+        result = mock_client.fetch_incidents_page("1700000000", "1700100000")
+        assert "incidents" in result
+        assert "success" not in result  # _validate_api_response strips the wrapper
+
+
+# endregion
+
+# region Test Module Tests
+
+
+class TestTestModule:
+    def test_success(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        assert izoologic_test_module(mock_client) == "ok"
+
+    def test_success_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        """Empty result still proves connectivity — test passes."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        assert izoologic_test_module(mock_client) == "ok"
+
+    @pytest.mark.parametrize("error_msg", ["401 Unauthorized", "403 Forbidden", "unauthorized"])
+    def test_auth_failure(self, mocker: MockerFixture, mock_client: Client, error_msg: str):
+        mocker.patch.object(mock_client, "fetch_incidents_page", side_effect=DemistoException(error_msg))
+        assert "Authorization Error" in izoologic_test_module(mock_client)
+
+    def test_other_error_raises(self, mocker: MockerFixture, mock_client: Client):
+        mocker.patch.object(mock_client, "fetch_incidents_page", side_effect=DemistoException("timeout"))
+        with pytest.raises(DemistoException, match="timeout"):
+            izoologic_test_module(mock_client)
+
+
+# endregion
+
+# region Fetch All Pages Tests
+
+
+class TestFetchAllPages:
+    def test_single_page(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", incident_type=2)
+        assert len(results) == 3
+
+    def test_multi_page(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+        incidents_result_with_pagination: dict,
+        incidents_result: dict,
+    ):
+        """Exhausts all pages until nextPage is null."""
+        mocker.patch.object(
+            mock_client,
+            "fetch_incidents_page",
+            side_effect=[incidents_result_with_pagination, incidents_result],
+        )
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", incident_type=2)
+        # Page 1: 2 incidents (with pagination), Page 2: 3 incidents (no pagination)
+        assert len(results) == 5
+
+    def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", incident_type=2)
+        assert results == []
+
+    def test_no_incident_type(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Works without incident_type filter."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000")
+        assert len(results) == 3
+
+
+# endregion
+
+# region Filter and Dedup Tests
+
+
+class TestFilterAndDedup:
+    @pytest.mark.parametrize(
+        "last_created_on, last_ids, expected_ids",
+        [
+            # First run — no filtering
+            (None, [], ["a", "b", "c"]),
+            # Time filter only — discard before threshold
+            ("200", [], ["b", "c"]),
+            # Time filter + dedup — discard before threshold and matching IDs
+            ("200", ["b"], ["c"]),
+            # All deduped out
+            ("200", ["b", "c"], []),
+            # Dedup at boundary with no time filter effect
+            ("100", ["a"], ["b", "c"]),
+        ],
+    )
+    def test_filter_and_dedup(
+        self,
+        last_created_on: str | None,
+        last_ids: list[str],
+        expected_ids: list[str],
+    ):
+        raw = [
+            {"incidentID": "a", "createdOn": "100"},
+            {"incidentID": "b", "createdOn": "200"},
+            {"incidentID": "c", "createdOn": "300"},
+        ]
+        result = _filter_and_dedup(raw, last_created_on, last_ids, type_key="1")
+        assert [inc["incidentID"] for inc in result] == expected_ids
+
+
+# endregion
+
+# region Compute New State Tests
+
+
+class TestComputeNewState:
+    @pytest.mark.parametrize(
+        "consumed, expected_created_on, expected_ids",
+        [
+            # Single incident at max
+            (
+                [{"incidentID": "a", "createdOn": "100"}, {"incidentID": "b", "createdOn": "200"}],
+                "200",
+                ["b"],
+            ),
+            # Multiple incidents at max timestamp
+            (
+                [
+                    {"incidentID": "a", "createdOn": "100"},
+                    {"incidentID": "b", "createdOn": "200"},
+                    {"incidentID": "c", "createdOn": "200"},
+                ],
+                "200",
+                ["b", "c"],
+            ),
+            # Single incident
+            (
+                [{"incidentID": "x", "createdOn": "500"}],
+                "500",
+                ["x"],
+            ),
+        ],
+    )
+    def test_compute_new_state(
+        self,
+        consumed: list[dict],
+        expected_created_on: str,
+        expected_ids: list[str],
+    ):
+        state = _compute_new_state(consumed, type_key="1")
+        assert state["last_created_on"] == expected_created_on
+        assert set(state["last_ids"]) == set(expected_ids)
+
+
+# endregion
+
+# region Fetch For Type Tests
+
+
+class TestFetchForType:
+    def test_first_fetch(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """First fetch with empty state — all incidents consumed, sorted ascending."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, {}, 10000)
+
+        assert type_key == "2"
+        assert len(cortex_incidents) == 3
+        # State should have last_created_on = max createdOn (ascending sort, last consumed)
+        assert state["last_created_on"] == "1700000200"
+        # Only the incident at max createdOn should be in last_ids
+        assert state["last_ids"] == ["abc123"]
+
+    def test_ascending_sort(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Verify incidents are returned sorted ascending by createdOn."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        _, cortex_incidents, _ = _fetch_for_type(mock_client, 2, {}, 10000)
+
+        created_ons = [json.loads(i["rawJSON"])["createdOn"] for i in cortex_incidents]
+        assert created_ons == ["1700000000", "1700000100", "1700000200"]
+
+    def test_slice_to_max_fetch(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """When max_fetch < total incidents, slice to max_fetch (oldest first)."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        _, cortex_incidents, state = _fetch_for_type(mock_client, 2, {}, 2)
+
+        assert len(cortex_incidents) == 2
+        # Should consume the 2 oldest (ascending sort)
+        ids = [json.loads(i["rawJSON"])["incidentID"] for i in cortex_incidents]
+        assert ids == ["ghi789", "def456"]
+        # last_created_on = createdOn of the last consumed (def456 = 1700000100)
+        assert state["last_created_on"] == "1700000100"
+        assert state["last_ids"] == ["def456"]
+
+    def test_time_filter(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Incidents with createdOn < last_created_on are discarded."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
+
+        type_state = {"last_created_on": "1700000100", "last_ids": []}
+        _, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
+
+        # ghi789 (createdOn=1700000000) should be filtered out
+        ids = [json.loads(i["rawJSON"])["incidentID"] for i in cortex_incidents]
+        assert "ghi789" not in ids
+        assert len(cortex_incidents) == 2
+
+    def test_dedup_at_boundary(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Incidents with createdOn == last_created_on and matching IDs are removed."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
+
+        type_state = {"last_created_on": "1700000100", "last_ids": ["def456"]}
+        _, cortex_incidents, _ = _fetch_for_type(mock_client, 2, type_state, 10000)
+
+        ids = [json.loads(i["rawJSON"])["incidentID"] for i in cortex_incidents]
+        assert "def456" not in ids
+        assert "ghi789" not in ids  # Filtered by time
+        assert ids == ["abc123"]
+
+    def test_empty_response_advances_cursor(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        """When no incidents are returned, cursor advances to to_date."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
+        # Mock date_to_unix_timestamp so DEFAULT_FROM_TIME doesn't resolve to "now"
+        mocker.patch("iZOOlogic.date_to_unix_timestamp", return_value="1700000000")
+
+        type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, {}, 10000)
+
+        assert cortex_incidents == []
+        assert state["last_created_on"] == "1700100000"
+        assert state["last_ids"] == []
+
+    def test_all_filtered_out_advances_cursor(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """When all incidents are filtered/deduped out, cursor advances to to_date."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
+
+        type_state = {"last_created_on": "1700000200", "last_ids": ["abc123"]}
+        _, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
+
+        assert cortex_incidents == []
+        assert state["last_created_on"] == "1700100000"
+        assert state["last_ids"] == []
+
+    def test_state_update_with_multiple_same_timestamp(self, mocker: MockerFixture, mock_client: Client):
+        """When multiple incidents share the max createdOn, all their IDs are in last_ids."""
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1000")
+        # Mock date_to_unix_timestamp so DEFAULT_FROM_TIME doesn't resolve to "now"
+        mocker.patch("iZOOlogic.date_to_unix_timestamp", return_value="100")
+        result = {
+            "incidents": [
+                {"incidentID": "a", "createdOn": "200", "incidentType": "Phishing"},
+                {"incidentID": "b", "createdOn": "200", "incidentType": "Phishing"},
+                {"incidentID": "c", "createdOn": "100", "incidentType": "Phishing"},
+            ],
+            "nextPage": None,
+        }
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=result)
+
+        _, _, state = _fetch_for_type(mock_client, 2, {}, 10000)
+
+        assert state["last_created_on"] == "200"
+        assert set(state["last_ids"]) == {"a", "b"}
+
+    def test_date_range_validation_skips(self, mocker: MockerFixture, mock_client: Client):
+        """When date range is invalid (>31 days), type is skipped and state preserved."""
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1703000000")
+
+        # last_created_on is >31 days before to_date
+        type_state = {"last_created_on": "1700000000", "last_ids": ["old"]}
+        type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
+
+        assert cortex_incidents == []
+        assert state == type_state  # State preserved on validation error
+
+
+# endregion
+
+# region Get Incidents Command Tests
+
+
+class TestGetIncidentsCommand:
+    def test_basic(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        result = get_incidents_command(mock_client, {"limit": "10"}, [2])
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "iZOOlogic.Incident"
+
+    def test_slices_to_limit(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Test that get-incidents slices results to the limit per type."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        result = get_incidents_command(mock_client, {"limit": "2"}, [2])
+        assert len(result.outputs) <= 2  # type: ignore[arg-type]
+
+    def test_invalid_limit(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="Invalid limit value"):
+            get_incidents_command(mock_client, {"limit": "-5"}, [2])
+
+    def test_inverted_date_range_raises(self, mocker: MockerFixture, mock_client: Client):
+        """end_time before start_time (different days) should raise."""
+        with pytest.raises(DemistoException, match="is before"):
+            get_incidents_command(
+                mock_client,
+                {
+                    "limit": "10",
+                    "start_time": "2024-01-15T00:00:00Z",
+                    "end_time": "2024-01-10T00:00:00Z",
+                },
+                [2],
+            )
+
+    def test_incident_type_arg_overrides_default(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """When incident_type is provided in args, it overrides default_type_codes."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        get_incidents_command(mock_client, {"limit": "10", "incident_type": "malware"}, [2])
+        # Should call with type_code=3 (malware), not 2 (phishing)
+        call_body = mock_fetch.call_args.kwargs
+        assert call_body.get("incident_type") == 3
+
+    def test_multiple_types(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Fetches incidents for each type code — API called once per type."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        result = get_incidents_command(mock_client, {"limit": "10"}, [2, 3])
+        # Verify fetch_incidents_page was called for each type
+        called_types = [call.kwargs["incident_type"] for call in mock_fetch.call_args_list]
+        assert 2 in called_types
+        assert 3 in called_types
+        assert isinstance(result.outputs, list)
+
+    def test_outputs_key_field(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Verify outputs_key_field is set correctly."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        result = get_incidents_command(mock_client, {"limit": "10"}, [2])
+        assert result.outputs_key_field == "incidentID"
+
+
+# endregion
+
+# region Fetch Incidents Command Tests (async)
+
+
+class TestFetchIncidentsCommand:
+    def test_first_fetch(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mock_set = mocker.patch.object(demisto, "setLastRun")
+
+        asyncio.run(fetch_incidents_command(mock_client, 10000, [2]))
+
+        created = mock_incidents.call_args[0][0]
+        assert len(created) == 3
+        last_run = mock_set.call_args[0][0]
+        assert "2" in last_run
+        assert last_run["2"]["last_created_on"] == "1700000200"
+        assert last_run["2"]["last_ids"] == ["abc123"]
+
+    def test_multiple_types_concurrent(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+        incidents_result: dict,
+        empty_result: dict,
+    ):
+        """Test that multiple types are fetched (concurrently via asyncio.to_thread)."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", side_effect=[incidents_result, empty_result])
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mock_set = mocker.patch.object(demisto, "setLastRun")
+
+        asyncio.run(fetch_incidents_command(mock_client, 10000, [2, 3]))
+
+        created = mock_incidents.call_args[0][0]
+        assert len(created) == 3
+        last_run = mock_set.call_args[0][0]
+        assert "2" in last_run
+        assert "3" in last_run
+
+    def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "setLastRun")
+
+        asyncio.run(fetch_incidents_command(mock_client, 10000, [2]))
+        mock_incidents.assert_called_once_with([])
+
+    def test_exception_in_one_type_does_not_block_others(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+        incidents_result: dict,
+    ):
+        """If one type raises an exception, other types still succeed."""
+
+        def side_effect(client, type_code, type_state, max_fetch):
+            if type_code == 3:
+                raise DemistoException("API error for type 3")
+            return _fetch_for_type(client, type_code, type_state, max_fetch)
+
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch("iZOOlogic._fetch_for_type", side_effect=side_effect)
+        mocker.patch.object(demisto, "incidents")
+        mock_set = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "error")
+
+        asyncio.run(fetch_incidents_command(mock_client, 10000, [2, 3]))
+
+        # Type 2 should still succeed, type 3 error is logged
+        last_run = mock_set.call_args[0][0]
+        assert "2" in last_run
+
+    def test_preserves_existing_last_run_keys(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Existing last_run keys for other types are preserved."""
+        existing_last_run = {"5": {"last_created_on": "999", "last_ids": ["old"]}}
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch.object(demisto, "getLastRun", return_value=existing_last_run)
+        mocker.patch.object(demisto, "incidents")
+        mock_set = mocker.patch.object(demisto, "setLastRun")
+
+        asyncio.run(fetch_incidents_command(mock_client, 10000, [2]))
+
+        last_run = mock_set.call_args[0][0]
+        assert "5" in last_run  # Preserved
+        assert "2" in last_run  # New
+
+
+# endregion
+
+# region Main Tests
+
+
+class TestMain:
+    @pytest.mark.parametrize("command", ["test-module", "fetch-incidents", "izoologic-get-incidents"])
+    def test_main_dispatches(self, mocker: MockerFixture, command: str):
+        mocker.patch("ContentClientApiModule.support_multithreading")
+        mocker.patch.object(demisto, "command", return_value=command)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.izoologic.com",
+                "api_key": "k",
+                "secret_key": {"password": "s"},
+                "max_fetch": "1000",
+                "incident_types_filter": ["phishing"],
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={"limit": "10"})
+        mock_func = mocker.MagicMock(return_value="ok")
+        COMMAND_MAP[command] = mock_func
+        mocker.patch("iZOOlogic.return_results")
+        if command == "fetch-incidents":
+            # fetch_incidents_command is async, mock asyncio.run
+            mocker.patch("iZOOlogic.asyncio.run")
+        main()
+        if command != "fetch-incidents":
+            mock_func.assert_called_once()
+
+    def test_main_unknown_command(self, mocker: MockerFixture):
+        mocker.patch("ContentClientApiModule.support_multithreading")
+        mocker.patch.object(demisto, "command", return_value="unknown")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://x.com",
+                "api_key": "k",
+                "secret_key": {"password": "s"},
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "error")
+        mock_err = mocker.patch("iZOOlogic.return_error")
+        main()
+        mock_err.assert_called_once()
+
+    def test_main_error_handling(self, mocker: MockerFixture):
+        """Exceptions in command execution are caught and return_error is called."""
+        mocker.patch("ContentClientApiModule.support_multithreading")
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.izoologic.com",
+                "api_key": "k",
+                "secret_key": {"password": "s"},
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "error")
+        # Patch COMMAND_MAP directly since main() reads from it, not from the module-level name
+        error_func = mocker.MagicMock(side_effect=DemistoException("Connection refused"))
+        COMMAND_MAP["test-module"] = error_func
+        mock_err = mocker.patch("iZOOlogic.return_error")
+        main()
+        mock_err.assert_called_once()
+        assert "Connection refused" in mock_err.call_args[0][0]
+
+
+# endregion

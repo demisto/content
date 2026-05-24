@@ -1,0 +1,155 @@
+category: Network Security
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: iZOOlogic
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  additionalinfo: 'The iZOOlogic API server URL.'
+  section: Connect
+- name: api_key
+  display: API Key
+  required: true
+  type: 14
+  additionalinfo: 'The API key provided by iZOOlogic for authentication.'
+  section: Connect
+- name: secret_key
+  display: Secret Key
+  required: true
+  type: 9
+  displaypassword: Secret Key
+  hiddenusername: true
+  additionalinfo: 'The secret key corresponding to the API key.'
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  additionalinfo: 'When selected, certificates are not checked.'
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  additionalinfo: 'When selected, uses the system proxy settings.'
+  section: Connect
+- name: isFetch
+  display: Fetch incidents
+  type: 8
+  required: false
+  additionalinfo: 'Whether to fetch incidents from iZOOlogic.'
+  section: Collect
+- name: incident_types_filter
+  display: Fetch Incident types
+  required: true
+  defaultvalue: brand abuse,phishing,malware,pharming,smishing,vishing,mobile apps,social media,other,email
+  type: 16
+  options:
+  - brand abuse
+  - phishing
+  - malware
+  - pharming
+  - smishing
+  - vishing
+  - mobile apps
+  - social media
+  - other
+  - email
+  additionalinfo: 'Select which incident types to fetch from iZOOlogic. By default, all types are selected.'
+  section: Collect
+- name: max_fetch
+  display: The maximum number of incidents per type per fetch
+  required: true
+  defaultvalue: '5000'
+  type: 0
+  additionalinfo: 'Maximum number of incidents to fetch per type per fetch cycle (default: 5000).'
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+description: Access and manage iZOOlogic incident data, allowing for automated ingestion, status updates, and communication history tracking.
+display: iZOOlogic
+name: iZOOlogic
+script:
+  commands:
+  - name: izoologic-get-incidents
+    description: Gets incidents from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
+    arguments:
+    - name: limit
+      description: The maximum number of incidents to return per type.
+      defaultValue: '50'
+    - name: start_time
+      description: 'Filter incidents detected at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
+    - name: end_time
+      description: 'Filter incidents detected at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
+    - name: incident_type
+      description: 'Filter by incident type(s). If not specified, uses the types configured in the integration parameters.'
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - brand abuse
+      - phishing
+      - malware
+      - pharming
+      - smishing
+      - vishing
+      - mobile apps
+      - social media
+      - other
+      - email
+    outputs:
+    - contextPath: iZOOlogic.Incident.incidentID
+      description: The unique identifier of the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.incidentType
+      description: The type and subtype of the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.subIncidentType
+      description: The subtype of the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.detectionDate
+      description: The detection date of the incident as a Unix timestamp.
+      type: String
+    - contextPath: iZOOlogic.Incident.url
+      description: The URL associated with the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.status
+      description: The current status of the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.statusCode
+      description: The numeric status code of the incident.
+      type: Number
+    - contextPath: iZOOlogic.Incident.brand
+      description: The brand associated with the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.threatType
+      description: The threat level of the incident.
+      type: String
+    - contextPath: iZOOlogic.Incident.createdOn
+      description: The creation date of the incident as a Unix timestamp.
+      type: String
+    - contextPath: iZOOlogic.Incident.closedOn
+      description: The closing date of the incident as a Unix timestamp.
+      type: String
+    - contextPath: iZOOlogic.Incident.detectedBy
+      description: The entity that detected the incident.
+      type: String
+  dockerimage: demisto/fastapi:0.125.0.7194517
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)
