@@ -9793,7 +9793,7 @@ class NetworkFirewall:
 
         outputs = {
             "AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)": firewalls,
-            "AWS.NetworkFirewall(true)": response.get("NextToken"),
+            "AWS.NetworkFirewall(true)": {'FirewallsNextToken': response.get("NextToken")},
         }
 
         return CommandResults(
@@ -9847,7 +9847,7 @@ class NetworkFirewall:
                 "AvailabilityZoneMappings": [
                     {"AvailabilityZone": az} for az in argToList(args.get("availability_zone_mappings"))
                 ],
-                "AvailabilityZoneChangeProtection": arg_to_bool_or_none("availability_zone_change_protection"),
+                "AvailabilityZoneChangeProtection": arg_to_bool_or_none(args.get("availability_zone_change_protection")),
             }
         )
 

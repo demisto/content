@@ -18145,7 +18145,7 @@ script:
         required: true
         isArray: true
   - name: aws-network-firewall-firewall-describe
-    description: Returns the data objects for the specified firewall.
+    description: "Returns the data objects for the specified firewall. Required permissions: network-firewall:DescribeFirewall."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -18276,7 +18276,7 @@ script:
       description: The synchronization state of the transit gateway attachment. This indicates whether the firewall’s transit gateway configuration is properly synchronized and operational.
       type: Unknown
   - name: aws-network-firewall-firewalls-list
-    description: Retrieves the metadata for the firewalls that you have defined.
+    description: "Retrieves the metadata for the firewalls that you have defined. Required permissions: network-firewall:ListFirewalls."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -18320,7 +18320,7 @@ script:
         - sa-east-1
         - us-gov-east-1
         - us-gov-west-1
-    - name: max_results
+    - name: limit
       description: The maximum number of objects that you want Network Firewall to return for this request.
     - name: next_token
       description: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
@@ -18339,7 +18339,7 @@ script:
       type: String
 
   - name: aws-network-firewall-firewall-create
-    description: Creates an AWS Network Firewall firewall for your VPC.
+    description: "Creates an AWS Network Firewall firewall for your VPC. Required permissions: network-firewall:CreateFirewall, network-firewall:TagResource, ec2:DescribeSubnets, ec2:DescribeVpcs, network-firewall:DescribeFirewallPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -18401,7 +18401,7 @@ script:
       predefined:
         - "true"
         - "false"
-      description: A flag indicating whether it is possible to delete the firewall.
+      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
     - name: subnet_change_protection
       auto: PREDEFINED
       predefined:
@@ -18521,7 +18521,7 @@ script:
       type: Unknown
 
   - name: aws-network-firewall-firewall-delete
-    description: Deletes the specified firewall and its firewall policy. This operation requires the firewall’s DeleteProtection flag to be FALSE. You can’t revert this operation.
+    description: "Deletes the specified firewall and its firewall policy. This operation requires the firewall’s DeleteProtection flag to be FALSE. You can’t revert this operation. Required permissions: network-firewall:DeleteFirewall."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -18648,7 +18648,7 @@ script:
         type: Unknown
 
   - name: aws-network-firewall-firewall-delete-protection-update
-    description: Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall.
+    description: "Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall. Requires permissions: network-firewall:UpdateFirewallDeleteProtection."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -18718,7 +18718,7 @@ script:
       type: String
 
   - name: aws-network-firewall-firewall-description-update
-    description: Modifies the description for the specified firewall.
+    description: "Modifies the description for the specified firewall. Required permissions: network-firewall:UpdateFirewallDescription."
     arguments:
     - name: account_id
       description: The AWS account ID.
