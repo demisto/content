@@ -91,7 +91,7 @@ MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detec
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
-SPOTLIGHT_VULNERABILITY_PAGE_SIZE_LIMIT = 2500
+MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -8306,28 +8306,25 @@ def cve_request(cve_id: list[str] | None) -> dict:
     return http_request("GET", "/spotlight/combined/vulnerabilities/v1", params={"filter": url_filter, "facet": "cve"})
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
-    """
-    Get a list of vulnerability by spotlight (with manual cursor-based pagination via next_token).
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[CommandResults]:
+    """Search Spotlight vulnerabilities with cursor-based pagination via ``next_token``.
 
-    The pagination cursor (`CrowdStrike.VulnerabilityNextToken`) is emitted via an internal
-    `return_results()` call as a *separate* War Room entry, BEFORE the bulk-data `CommandResults`
-    is returned. This works around XSOAR's auto-file behavior for large result payloads: when
-    the bulk Vulnerability data exceeds the auto-file threshold (~600 KB at limit=5000), XSOAR
-    uploads the entry as a file attachment which strips it from normal context-setting. By
-    emitting the lightweight cursor as its own entry first, the cursor always lands in
-    `CrowdStrike.VulnerabilityNextToken` even when the bulk entry gets filed.
+    Args:
+        args: Command arguments (filter, limit, next_token, omit_next_token, etc.).
 
-    : args: filter which include params or filter param.
-    : return: the bulk-data CommandResults (the token CommandResults is emitted via return_results
-              from inside this function as a separate War Room entry).
+    Returns:
+        list[CommandResults]: Bulk-data entry, optionally followed by a cursor entry.
+
+    A 404 ``Search context expired`` response is intercepted and re-raised with a friendly message.
     """
     next_token = args.get("next_token")
 
-    initial_limit = limit = arg_to_number(args.get("limit"))
-    should_paginate = initial_limit is not None and initial_limit > SPOTLIGHT_VULNERABILITY_PAGE_SIZE_LIMIT
-    if should_paginate:
-        limit = SPOTLIGHT_VULNERABILITY_PAGE_SIZE_LIMIT
+    requested_limit = arg_to_number(args.get("limit", 50))
+    limit = requested_limit
+    if limit is not None and limit > MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE:
+        limit = MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
+
+    omit_next_token = argToBoolean(args.get("omit_next_token", "true"))
 
     try:
         vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
@@ -8345,7 +8342,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
             args.get("display_remediation_info"),
             args.get("display_evaluation_logic_info"),
             args.get("display_host_info"),
-            limit,
+            str(limit),
             next_token,
         )
     except DemistoException as exc:
@@ -8380,21 +8377,30 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
     raw_after = vulnerability_response.get("meta", {}).get("pagination", {}).get("after")
     next_token_out: str | None = raw_after if raw_after else None
 
-    results =  [
-            CommandResults(
-            raw_response=vulnerability_response,
-            readable_output=human_readable,
-            outputs=vulnerability_response.get("resources"),
+    results: list[CommandResults] = [
+        CommandResults(
             outputs_prefix="CrowdStrike.Vulnerability",
             outputs_key_field="id",
-    )]
-    if next_token_out and should_paginate:
+            outputs=vulnerability_response.get("resources"),
+            readable_output=human_readable,
+            raw_response=vulnerability_response,
+        )
+    ]
+
+    # Suppress the cursor entry for small ad-hoc requests by default (token is opt-in
+    # via omit_next_token=false). Suppression requires that the caller's
+    # *requested* limit (before our internal cap-down) is set and <= the page size; when
+    # the caller asked for an over-cap limit, we DID cap internally, so the cursor is
+    # still needed to retrieve the remainder.
+    suppress_cursor = omit_next_token and requested_limit is not None and requested_limit <= MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
+    if not suppress_cursor:
         results.append(
             CommandResults(
-            outputs=next_token_out,
-            outputs_prefix="CrowdStrike.VulnerabilityNextToken",
-            readable_output="Token for next fetch was produced and can be found in context data under CrowdStrike.VulnerabilityNextToken"
-        ))
+                outputs_prefix="CrowdStrike.VulnerabilityNextToken",
+                outputs=next_token_out,
+            )
+        )
+
     return results
 
 

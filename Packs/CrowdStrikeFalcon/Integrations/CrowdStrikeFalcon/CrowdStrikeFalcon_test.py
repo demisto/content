@@ -4527,30 +4527,55 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
     if is_valid:
         outputs = cs_falcon_spotlight_search_vulnerability_command(args)
-        assert outputs.readable_output == expected_hr
+        assert outputs[0].readable_output == expected_hr
     else:
         with pytest.raises(DemistoException) as e:
             cs_falcon_spotlight_search_vulnerability_command(args)
         assert str(e.value) == expected_hr
 
 
+def _find_token_cr(results):
+    """Return the CommandResults whose outputs_prefix is the pagination-token prefix, or None."""
+    for cr in results:
+        if getattr(cr, "outputs_prefix", None) == "CrowdStrike.VulnerabilityNextToken":
+            return cr
+    return None
+
+
 def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
     """
-    Given:
-        - The cs-falcon-spotlight-search-vulnerability command is called with a next_token argument.
-    When:
-        - The command runs and the API responds with a meta.pagination.after cursor.
-    Then:
-        - The next_token value is forwarded to the API as the `after` query parameter.
-        - The cursor CommandResults is emitted via an internal return_results() call (separate
-          War Room entry) so it always lands at CrowdStrike.VulnerabilityNextToken even if the
-          bulk-data entry gets auto-filed by XSOAR for being too large.
-        - An empty cursor from the API is normalized to None on that internal return_results call.
-        - limit > 2500 is silently capped to 2500 in the outgoing request URL.
+    Verify the pagination contract and the opt-out cursor-emission behavior.
+
+    Default is `omit_next_token=true` (cursor suppressed for small ad-hoc
+    requests). Pass `omit_next_token=false` to opt back in to faithful
+    pass-through.
+
+    (a) next_token is forwarded to the API as `&after=`.
+    (b) With omit=false + small limit, a server cursor is surfaced as
+        `CrowdStrike.VulnerabilityNextToken`.
+    (c) With omit=false + small limit, an empty server cursor is surfaced as None
+        (cleared, not omitted).
+    (d) limit > 2500 is silently capped to 2500 in the outgoing URL.
+    (e) omit_next_token=True (default) + small limit -> cursor entry omitted.
+    (f) omit_next_token=True (default) + over-cap limit -> cursor entry
+        still emitted (suppression doesn't apply because we DID internally cap).
+    (g) omit_next_token=False + small limit -> cursor entry emitted
+        (explicit opt-in to pass-through).
+    (i) next_token with URL-special chars is correctly percent-encoded.
+    (h) 404 "Search context expired" path raises the friendly intercept.
     """
-    import CrowdStrikeFalcon
     from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
 
+    # display_* args must be supplied because the production code unconditionally
+    # routes them through argToBoolean(), which raises ValueError on None.
+    base_args = {
+        "filter": "status:'open'",
+        "display_remediation_info": "False",
+        "display_evaluation_logic_info": "False",
+        "display_host_info": "False",
+    }
+
+    # ---- (a) + (b): cursor forwarded; populated server cursor surfaces ----
     http_mock = mocker.patch(
         "CrowdStrikeFalcon.http_request",
         return_value={
@@ -4558,60 +4583,104 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
             "meta": {"pagination": {"after": "CURSOR_VALUE"}},
         },
     )
-    # Capture the internal return_results() call that emits the cursor as a separate
-    # War Room entry. This split exists because XSOAR auto-files large CommandResults
-    # payloads (~600 KB at limit=5000), which strips them from normal context-setting;
-    # emitting the lightweight cursor as its own entry guarantees the token reaches context.
-    return_results_mock = mocker.patch.object(CrowdStrikeFalcon, "return_results")
-
-    # display_* args must be supplied because the production code unconditionally
-    # routes them through argToBoolean(), which raises ValueError on None.
-    args = {
-        "filter": "status:'open'",
-        "limit": "1",
-        "next_token": "PREV_CURSOR",
-        "display_remediation_info": "False",
-        "display_evaluation_logic_info": "False",
-        "display_host_info": "False",
-    }
-    cs_falcon_spotlight_search_vulnerability_command(args)
-
-    # Assertion (a): next_token forwarded as &after= in the URL suffix.
+    results = cs_falcon_spotlight_search_vulnerability_command(
+        {**base_args, "limit": "1", "next_token": "PREV_CURSOR", "omit_next_token": "false"}
+    )
     call_args, _ = http_mock.call_args
     url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
-    assert "after=PREV_CURSOR" in url_suffix
+    assert "after=PREV_CURSOR" in url_suffix  # (a)
+    token_cr = _find_token_cr(results)
+    assert token_cr is not None  # (b)
+    assert token_cr.outputs == "CURSOR_VALUE"  # (b)
 
-    # Assertion (b): internal return_results() was called with the token CommandResults
-    # carrying outputs_prefix=CrowdStrike.VulnerabilityNextToken and outputs=CURSOR_VALUE.
-    assert return_results_mock.call_count == 1
-    token_command_results = return_results_mock.call_args[0][0]
-    assert token_command_results.outputs_prefix == "CrowdStrike.VulnerabilityNextToken"
-    assert token_command_results.outputs == "CURSOR_VALUE"
+    # ---- (c): empty server cursor surfaces as None (cleared, not omitted) ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-2"}],
+            "meta": {"pagination": {"after": ""}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1", "omit_next_token": "false"})
+    token_cr = _find_token_cr(results)
+    assert token_cr is not None  # (c)
+    assert token_cr.outputs is None  # (c)
 
-    # Assertion (c): empty cursor in response normalized to None on the next call.
-    http_mock.return_value = {
-        "resources": [{"id": "vuln-2"}],
-        "meta": {"pagination": {"after": ""}},
-    }
-    return_results_mock.reset_mock()
-    cs_falcon_spotlight_search_vulnerability_command(args)
-    assert return_results_mock.call_count == 1
-    token_command_results = return_results_mock.call_args[0][0]
-    assert token_command_results.outputs_prefix == "CrowdStrike.VulnerabilityNextToken"
-    assert token_command_results.outputs is None
-
-    # Assertion (d): limit > 2500 is silently capped to 2500 in the outgoing request.
-    http_mock.reset_mock()
-    http_mock.return_value = {
-        "resources": [{"id": "vuln-3"}],
-        "meta": {"pagination": {"after": "ANY"}},
-    }
-    args_oversize = {**args, "limit": "2501"}
-    cs_falcon_spotlight_search_vulnerability_command(args_oversize)
+    # ---- (d): limit > 2500 is silently capped to 2500 ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-3"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "3000"})
     call_args, _ = http_mock.call_args
     url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
     assert "limit=2500" in url_suffix
-    assert "limit=2501" not in url_suffix
+    assert "limit=3000" not in url_suffix  # (d)
+
+    # ---- (e): default suppression (omit=true) + small limit -> token entry omitted ----
+    mocker.resetall()
+    mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-4"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "100"})
+    assert len(results) == 1
+    assert _find_token_cr(results) is None  # (e)
+
+    # ---- (f): default suppression but over-cap limit -> token entry STILL emitted ----
+    mocker.resetall()
+    mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-5"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "3000"})
+    assert len(results) == 2
+    assert _find_token_cr(results) is not None  # (f)
+
+    # ---- (g): explicit omit=false + small limit -> token entry emitted ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-6"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "100", "omit_next_token": "false"})
+    assert len(results) == 2
+    assert _find_token_cr(results) is not None  # (g)
+
+    # Assertion (i): next_token with URL-special chars is correctly percent-encoded.
+    http_mock.reset_mock()
+    http_mock.side_effect = None  # if h leaked it
+    http_mock.return_value = {"resources": [], "meta": {"pagination": {"after": ""}}}
+    cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1", "next_token": "a+b/c=d&e"})
+    call_args = http_mock.call_args.args
+    url_suffix = call_args[1]
+    assert "after=a%2Bb%2Fc%3Dd%26e" in url_suffix
+
+    # Assertion (h): the 404 "Search context expired" path raises the friendly intercept.
+    http_mock.reset_mock()
+    http_mock.side_effect = DemistoException(
+        "Error in API call to CrowdStrike Falcon: code: 404 - reason: Not Found\n"
+        "Search context expired, 'after' key no longer valid"
+    )
+    return_error_mock = mocker.patch("CrowdStrikeFalcon.return_error", side_effect=SystemExit)
+    with pytest.raises(SystemExit):
+        cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1"})
+    assert return_error_mock.call_count == 1
+    assert "cursor has expired" in return_error_mock.call_args.args[0]
 
 
 def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):

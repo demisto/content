@@ -416,6 +416,30 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  hidden:
+  - marketplacev2
+  - platform
+- display: Incident type
+  name: incidentType
+  type: 13
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  hidden:
+  - marketplacev2
+  - platform
+- display: Incident type
+  name: incidentType
+  type: 13
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -2951,8 +2975,15 @@ script:
       defaultValue: '50'
       type: String
       name: limit
-    - description: An opaque pagination cursor returned in the `CrowdStrike.VulnerabilityNextToken` context output from a previous run. Values of `limit` greater than 2500 are silently capped at 2500 to keep result payloads compact and avoid Cortex XSOAR auto-uploading the response as a file attachment; supply `next_token` from a prior run's `CrowdStrike.VulnerabilityNextToken` output to fetch the next page. Pagination cursors are short-lived (a few minutes); if a cursor has expired, an error will be raised and you must rerun the command without `next_token` to start a fresh session.
+    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit <= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`."
       name: next_token
+    - name: omit_next_token
+      description: When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -3098,7 +3129,7 @@ script:
       description: The vulnerability name.
       type: String
     - contextPath: CrowdStrike.VulnerabilityNextToken
-      description: Opaque pagination cursor for the next page of results. Will be empty or null on the last page.
+      description: "Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with `limit <= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`."
       type: String
   - arguments:
     - description: Deprecated. Use cve instead.
