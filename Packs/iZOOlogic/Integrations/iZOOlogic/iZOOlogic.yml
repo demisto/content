@@ -1,5 +1,6 @@
 display: iZOOlogic
 name: iZOOlogic
+provider: iZOOlogic
 category: Network Security
 sectionorder:
 - Connect
@@ -46,6 +47,13 @@ configuration:
   required: false
   additionalinfo: 'Whether to fetch incidents from iZOOlogic.'
   section: Collect
+- name: first_fetch
+  display: First fetch timestamp
+  type: 0
+  required: false
+  defaultvalue: '1 day'
+  additionalinfo: 'The time range for the initial fetch (e.g., "1 day", "3 days"). Subsequent fetches use the last run timestamp.'
+  section: Collect
 - name: incident_types_filter
   display: Fetch Incident types
   required: true
@@ -71,7 +79,7 @@ configuration:
   type: 0
   additionalinfo: 'The maximum number of incidents to fetch per type per fetch cycle.'
   section: Collect
-- display: Incident Type
+- display: Incident type
   name: incidentType
   type: 13
   section: Collect

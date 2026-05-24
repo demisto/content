@@ -476,6 +476,7 @@ class TestParseIntegrationParams:
         assert config["base_url"] == "https://api.izoologic.com"
         assert config["incident_type_codes"] == [2, 3]
         assert config["max_fetch"] == 5000
+        assert "first_fetch_ts" in config
 
     @pytest.mark.parametrize(
         "override, error_match",
@@ -494,6 +495,17 @@ class TestParseIntegrationParams:
         del valid_params["incident_types_filter"]
         config = parse_integration_params(valid_params)
         assert len(config["incident_type_codes"]) == 10
+
+    def test_first_fetch_default(self, valid_params: dict):
+        """first_fetch_ts should be set from default when not provided."""
+        config = parse_integration_params(valid_params)
+        assert config["first_fetch_ts"]  # Should be a non-empty Unix timestamp string
+
+    def test_first_fetch_custom(self, valid_params: dict):
+        """first_fetch_ts should be set from the provided first_fetch param."""
+        valid_params["first_fetch"] = "3 days"
+        config = parse_integration_params(valid_params)
+        assert config["first_fetch_ts"]  # Should be a non-empty Unix timestamp string
 
     def test_trailing_slash_stripped(self, valid_params: dict):
         valid_params["url"] = "https://api.izoologic.com///"

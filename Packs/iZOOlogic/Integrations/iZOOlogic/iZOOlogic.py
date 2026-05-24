@@ -274,7 +274,10 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     if max_fetch <= 0:
         raise DemistoException(f"Invalid max_fetch value: {params.get('max_fetch')}. Must be a positive integer.")
 
-    demisto.debug(f"[Config] URL: {base_url}")
+    first_fetch = params.get("first_fetch", Config.DEFAULT_FROM_TIME)
+    first_fetch_ts = date_to_unix_timestamp(first_fetch)
+
+    demisto.debug(f"[Config] URL: {base_url}, first_fetch: {first_fetch} ({first_fetch_ts})")
 
     return {
         "base_url": base_url,
@@ -284,6 +287,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "proxy": proxy,
         "incident_type_codes": incident_type_codes,
         "max_fetch": max_fetch,
+        "first_fetch_ts": first_fetch_ts,
     }
 
 
@@ -754,6 +758,7 @@ def _fetch_for_type(
     type_code: int,
     type_state: dict,
     max_fetch_per_type: int,
+    first_fetch_ts: str = "",
 ) -> tuple[str, list[dict], dict]:
     """Fetch incidents for a single type using fetch-all-sort-slice pattern.
 
@@ -779,7 +784,7 @@ def _fetch_for_type(
     last_ids: list[str] = type_state.get("last_ids", [])
 
     from_date = snap_to_day_boundary_utc(
-        last_created_on if last_created_on else date_to_unix_timestamp(Config.DEFAULT_FROM_TIME),
+        last_created_on if last_created_on else first_fetch_ts,
         "start",
     )
     to_date = get_current_unix_timestamp()
@@ -823,6 +828,7 @@ async def fetch_incidents_command(
     client: Client,
     max_fetch_per_type: int,
     incident_type_codes: list[int],
+    first_fetch_ts: str = "",
 ) -> None:
     """Scheduled command to fetch incidents from iZOOlogic.
 
@@ -853,6 +859,7 @@ async def fetch_incidents_command(
             type_code,
             last_run.get(str(type_code), {}),  # type: ignore[arg-type]
             max_fetch_per_type,
+            first_fetch_ts,
         )
         for type_code in incident_type_codes
     ]
@@ -918,7 +925,7 @@ def main() -> None:
             result = command_func(client)
             return_results(result)
         elif command == "fetch-incidents":
-            asyncio.run(command_func(client, config["max_fetch"], config["incident_type_codes"]))
+            asyncio.run(command_func(client, config["max_fetch"], config["incident_type_codes"], config["first_fetch_ts"]))
         elif command == "izoologic-get-incidents":
             result = command_func(client, args, config["incident_type_codes"])
             return_results(result)
