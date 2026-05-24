@@ -7,7 +7,7 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key |  | True |
-| Server URL (i.e. https://api.sekoia.io) |  | True |
+| Server URL (i.e. <https://api.sekoia.io>) |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |

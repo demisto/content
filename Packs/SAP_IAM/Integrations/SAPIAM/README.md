@@ -8,11 +8,11 @@ Integrate with SAP's services to execute get and disable operations for employee
 | Deactive User URL |  | False |
 | Username |  | True |
 | Password |  | True |
-| Allow disabling users |  | False |
+| Allow disabling users | Determines whether users can be disabled using the SAP IAM integration | False |
 | Incoming Mapper |  | True |
 | Outgoing Mapper | Cortex XSOAR only parameter. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
 

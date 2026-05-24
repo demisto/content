@@ -25,8 +25,8 @@ This integration was integrated and tested with version 2.12.0 of datadog-api-cl
 | Application Key | The APP Key to use for authentication | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Fetch incidents |  | False |
-| Incident type |  | False |
+| Fetch incidents | Enable fetching security signals as incidents | False |
+| Incident type | The incident type to assign to fetched incidents | False |
 | First fetch time | First fetch time range. How far back to fetch security signals on the first run. Examples "3 days", "7 days", "1 week" | False |
 | Max fetch | Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100. | False |
 | Fetch severity | Fetch only security signals with these severity levels or higher. | False |

@@ -59,7 +59,7 @@ If your account name is `xsoar` and the region is `de`, your Server URL is: http
 | Server URL |  | True |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
-| API token |  | True |
+| API token | Netskope API access token \(make sure to generate token for the required endpoints\). | True |
 | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago". | False |
 | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
 | Maximum Netskope events per fetch. Max value is 200. |  | False |

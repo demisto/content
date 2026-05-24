@@ -15,7 +15,7 @@ This configuration ensures that the user being created is created with the right
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Salesforce url (Eg: https://&lt;domain&gt;.salesforce.com/) |  | True |
+| Salesforce url \(Eg: https://domain.salesforce.com/\) |  | True |
 | User name |  | True |
 | Password |  | True |
 | Consumer Key |  | False |

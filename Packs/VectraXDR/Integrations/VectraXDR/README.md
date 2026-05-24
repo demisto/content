@@ -25,8 +25,8 @@ This integration supports only cloud instances of Vectra XDR. To configure an in
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | URL of the Vectra AI platform. | True |
-| Client ID |  | True |
-| Client Secret Key |  | True |
+| Client ID | Identifies a client or application for authentication and authorization in the Vectra AI platform. | True |
+| Client Secret Key | Secret key used for secure communication with the Vectra AI platform. | True |
 | Trust any certificate (not secure) | When checked, no SSL certificates check will be done when interacting with the Vectra XDR API. It's insecure. \(Default - unchecked\) | False |
 | Use system proxy settings | Use the system proxy settings to reach with the Vectra XDR API. | False |
 | Fetch incidents |  | False |

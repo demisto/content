@@ -13,7 +13,9 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
 | API Key | The API Key to use for connection with Doppel. | True |
 | User API Key | The User API Key \(Optional\) to use for connection with Doppel. | False |
-| Organization Code | The Organization Code to use for connection with Doppel. | False |
+| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False |
+| Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
+| Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
 | Fetch incidents |  | False |
 | Incidents Fetch Interval | The interval specifies the cadence with which the Doppel alerts be fetched. | True |
 | Incident type |  | False |

@@ -5,16 +5,16 @@ This integration was integrated and tested with Wiz
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Incident type |  | False |
+| Incident type |  | False |ß
 | Service Account ID |  | True |
 | Password |  | True |
-| Authentication Endpoint |  | False |
-| API Endpoint |  | True |
+| Authentication Endpoint | Wiz Authentication Endpoint, e.g., `https://auth.app.wiz.io/oauth/token` | False |
+| API Endpoint | Wiz API Endpoint. Default: `https://api.us1.app.wiz.io/graphql` <br /> To find your API endpoint URL: <br />1. Log in to Wiz, then open your <a href="https://app.wiz.io/user/profile">user profile</a> <br />2. Copy the **API Endpoint URL** to use here. | True |
 | Incidents Fetch Interval |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Max Issues to Fetch |  | False |
 | Use system proxy settings |  | False |
-| Fetch incidents |  | False |
+| Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues) | False |
 | Issue severity to fetch | Select the severity levels of issues to fetch from Wiz. Multiple selections are allowed. Leave empty to fetch all severities. | False |
 | Issue status to fetch | Select the status of issues to fetch from Wiz. Multiple selections are allowed. | False |
 | Issue type to fetch | Select the type of issues to fetch from Wiz. Multiple selections are allowed. | False |
