@@ -2,26 +2,28 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 ## Configure CrowdStrike Falcon in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., <https://api.crowdstrike.com>) |  | True |
+| Server URL (e.g., https://api.crowdstrike.com) |  | True |
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
 | Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
-| Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| Mobile Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| IOM filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| IOA filter query | In the query parameter format: 'cloud_provider=aws&amp;amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: <https://www.falconpy.io/Service-Collections/CSPM-Registration.html\#keyword-arguments-13> | False |
-| Detections from On-Demand Scans filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| OFP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| Third Party Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| NGSIEM Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| NGSIEM automated leads fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| NGSIEM cases fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
-| NGSIEM incidents fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
+| Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| IDP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Mobile Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOM filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOA filter query | In the query parameter format: 'cloud_provider=aws&amp;amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html\#keyword-arguments-13 | False |
+| Detections from On-Demand Scans filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| OFP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Third Party Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM automated leads fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM cases fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM incidents fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Recon filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | Fetch incidents |  | False |
 | Fetch events |  | False |
 | Incident type |  | False |
@@ -39,6 +41,19 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 | Advanced: Time in minutes to look back when fetching events and detections | Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created. | False |
 | Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+
 
 ### Required API client scope
 
@@ -131,25 +146,7 @@ For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
 ### Indicator of Attack (IOA) Fetch Query
 
-The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
-
-Using multiple values for the same parameter is not supported.
-
-Available parameters:
-
-- `cloud_provider` (required by every query)
-- `account_id`
-- `aws_account_id`
-- `azure_subscription_id`
-- `azure_tenant_id`
-- `severity`
-- `region`
-- `service`
-- `state`
-
-For example: `cloud_provider=aws&region=eu-west-2`
-
-For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).
 
 ## Fetch Assets
 
@@ -372,7 +369,7 @@ Search for details of specific detections, either using a filter query, or by pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the detections to search. If provided, will override other arguments. | Optional |
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>Default is "product:'epp'+type:'ldt'.Applies only if the ids argument is not supplied.<br/>For a full list of valid filter options, see: <https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch>. | Optional |
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>Default is "product:'epp'+type:'ldt'.Applies only if the ids argument is not supplied.<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional |
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional |
 
 #### Context Output
@@ -4518,7 +4515,7 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional |
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional |
 | name | The name by which the exclusions should be filtered. | Optional |
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional |
 | limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the ids argument is not supplied. | Optional |
@@ -6266,137 +6263,76 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional |
-| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional |
-| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional |
-| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional |
-| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional |
-| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional |
-| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional |
-| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional |
-| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional |
-| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional |
-| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional |
-| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
-| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
-| display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional |
-| limit | Maximum number of items to return (1-5000). Default is 50. | Optional |
+| filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional | 
+| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional | 
+| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
+| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional | 
+| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional | 
+| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional | 
+| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional | 
+| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional | 
+| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional | 
+| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional | 
+| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional | 
+| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
+| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
+| display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional | 
+| limit | Maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional | 
+| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit &lt;= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`. | Optional | 
+| omit_next_token | When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. |
-| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier \(CID\) of the account. |
-| CrowdStrike.Vulnerability.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. |
-| CrowdStrike.Vulnerability.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. |
-| CrowdStrike.Vulnerability.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. |
-| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. |
-| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability. |
-| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. |
-| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. |
-| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine. |
-| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host. |
-| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. |
-| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host. |
-| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. |
-| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. |
-| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. |
-| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. |
-| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. |
-| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. |
-| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. |
-| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer. |
-| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to. |
-| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to. |
-| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host. |
-| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform. This filter supports negation. |
-| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation. |
-| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation. |
-| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation. |
-| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation. |
-| CrowdStrike.Vulnerability.remediation.entities.link | String | Link to the remediation page for the vendor. In certain cases, this field is null. |
-| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). |
-| CrowdStrike.Vulnerability.cve.base_score | Number | Base score of the CVE \(float value between 1 and 10\). |
-| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability. |
-| CrowdStrike.Vulnerability.cve.exploit_status | Number | Numeric value of the most severe known exploit. |
-| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system. |
-| CrowdStrike.Vulnerability.cve.description | String | Brief description of the CVE. |
-| CrowdStrike.Vulnerability.cve.published_date | Date | UTC timestamp with the date and time of when the vendor published the CVE. |
-| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed. |
-| CrowdStrike.Vulnerability.cve.exploitability_score | Number | Exploitability score of the CVE \(float values from 1-4\). |
-| CrowdStrike.Vulnerability.cve.impact_score | Number | Impact score of the CVE \(float values from 1-6\). |
-| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability. |
-| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability \(U = Unavailable, or O = Official fix\). |
-| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | Boolean | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities \(KEV\) catalog. |
-| CrowdStrike.Vulnerability.cve.cisa_info.due_date | Date | Date before which CISA mandates subject organizations to patch the vulnerability. |
-| CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. |
-| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. |
-| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. |
-
-#### Command Example
-
-``` cs-falcon-spotlight-search-vulnerability filter=status:['open','closed'] cve_id=CVE-2021-2222 cve_severity='LOW,HIGH' display_host_info=false display_evaluation_logic_info=false display_remediation_info=false limit=1 ```
-
-#### Context Example
-
-```json
-{
-    "resources": [
-        {
-            "id": "id_num",
-            "cid": "cid_num",
-            "aid": "aid_num",
-            "created_timestamp": "2021-07-13T01:12:57Z",
-            "updated_timestamp": "2022-10-27T18:32:21Z",
-            "status": "open",
-            "apps": [
-                {
-                    "product_name_version": "product",
-                    "sub_status": "open",
-                    "remediation": {
-                        "ids": [
-                            "1234"
-                        ]
-                    },
-                    "evaluation_logic": {
-                        "id": "1234"
-                    }
-                }
-            ],
-            "suppression_info": {
-                "is_suppressed": false
-            },
-            "cve": {
-                "id": "CVE-2021-2222",
-                "base_score": 5.5,
-                "severity": "MEDIUM",
-                "exploit_status": 0,
-                "exprt_rating": "LOW",
-                "remediation_level": "O",
-                "cisa_info": {
-                    "is_cisa_kev": false
-                },
-                "spotlight_published_date": "2021-05-10T17:08:00Z",
-                "description": "description\n",
-                "published_date": "2021-02-25T23:15:00Z",
-                "vendor_advisory": [
-                    "web address"
-                ],
-                "exploitability_score": 1.8,
-                "impact_score": 3.6,
-                "vector": "vendor"
-            }
-        }
-    ]
-}
-```
-
-#### Human Readable Output
-
-| CVE ID | CVE Severity | CVE Base Score | CVE Published Date | CVE Impact Score | CVE Exploitability Score | CVE Vector |
-| --- | --- | --- | --- | --- | --- |  --- |
-| CVE-2021-2222 | LOW | 5.5 | 2021-05-10T17:08:00Z | 3.6 | 0 | vendor |
+| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. | 
+| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier \(CID\) of the account. | 
+| CrowdStrike.Vulnerability.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. | 
+| CrowdStrike.Vulnerability.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. | 
+| CrowdStrike.Vulnerability.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. | 
+| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
+| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability. | 
+| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. | 
+| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. | 
+| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine. | 
+| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host. | 
+| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. | 
+| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host. | 
+| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. | 
+| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. | 
+| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. | 
+| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. | 
+| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. | 
+| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. | 
+| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. | 
+| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer. | 
+| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to. | 
+| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to. | 
+| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host. | 
+| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform. This filter supports negation. | 
+| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.link | String | Link to the remediation page for the vendor. In certain cases, this field is null. | 
+| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
+| CrowdStrike.Vulnerability.cve.base_score | Number | Base score of the CVE \(float value between 1 and 10\). | 
+| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.exploit_status | Number | Numeric value of the most severe known exploit. | 
+| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system. | 
+| CrowdStrike.Vulnerability.cve.description | String | Brief description of the CVE. | 
+| CrowdStrike.Vulnerability.cve.published_date | Date | UTC timestamp with the date and time of when the vendor published the CVE. | 
+| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed. | 
+| CrowdStrike.Vulnerability.cve.exploitability_score | Number | Exploitability score of the CVE \(float values from 1-4\). | 
+| CrowdStrike.Vulnerability.cve.impact_score | Number | Impact score of the CVE \(float values from 1-6\). | 
+| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability \(U = Unavailable, or O = Official fix\). | 
+| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | Boolean | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities \(KEV\) catalog. | 
+| CrowdStrike.Vulnerability.cve.cisa_info.due_date | Date | Date before which CISA mandates subject organizations to patch the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. | 
+| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with \`limit &lt;= 2500\`, this cursor is suppressed by default. To always receive it, set \`omit_next_token=false\`. | 
 
 ### cs-falcon-spotlight-list-host-by-vulnerability
 
@@ -6729,7 +6665,7 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repository | The repository to run the query against. Possible values are: search-all, third-party, falcon_for_it_view, forensics_view, investigate_view. Default is search-all. | Optional |
-| query | The CQL query to use for the search. Note: Double quotes and backslashes in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\"", For more details see: <https://library.humio.com/data-analysis/syntax.html>. | Required |
+| query | The CQL query to use for the search. Note: Double quotes and backslashes in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\"", For more details see: https://library.humio.com/data-analysis/syntax.html. | Required |
 | start | The start of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | end | The end of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
 | around_event_id | The ID of the event to search around. Must be provided together with around_timestamp. | Optional |
