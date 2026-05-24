@@ -9978,7 +9978,8 @@ def test_list_workflow_executions_command_filter_priority(mocker):
 class TestSynchronousCompression:
     """Tests for synchronous compression in send_data_to_xsiam_async (CIAC-16811 memory optimization)."""
 
-    def test_send_data_to_xsiam_async_compresses_synchronously(self, mocker):
+    @pytest.mark.asyncio
+    async def test_send_data_to_xsiam_async_compresses_synchronously(self, mocker):
         """
         Tests that send_data_to_xsiam_async compresses data synchronously before creating async tasks.
 
@@ -10049,7 +10050,8 @@ class TestSynchronousCompression:
         # Verify tasks were created
         assert len(tasks) > 0, "Should have created at least one async task"
 
-    def test_send_data_to_xsiam_async_empty_data_assets(self, mocker):
+    @pytest.mark.asyncio
+    async def test_send_data_to_xsiam_async_empty_data_assets(self, mocker):
         """
         Tests that send_data_to_xsiam_async handles empty data for asset seal correctly.
 
