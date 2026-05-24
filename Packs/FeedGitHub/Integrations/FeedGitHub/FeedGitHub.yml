@@ -136,7 +136,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Feed Expiration Policy
+- display: ""
   name: feedExpirationPolicy
   type: 17
   required: false
