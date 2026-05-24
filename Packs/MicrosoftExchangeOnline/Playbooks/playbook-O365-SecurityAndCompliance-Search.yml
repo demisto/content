@@ -1,4 +1,6 @@
+deprecated: true
 description: |-
+  Deprecated. Use the Microsoft Graph Security integration instead.
   This playbook performs the following steps:
   1. Creates a compliance search.
   2. Starts a compliance search.
@@ -954,8 +956,7 @@ view: |-
   }
 fromversion: 5.5.0
 tests:
-- O365-SecurityAndCompliance-Test
-- O365-SecurityAndCompliance-ContextResults-Test
+- No tests (deprecated)
 supportedModules:
 - agentix
 - cloud

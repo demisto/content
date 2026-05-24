@@ -1,7 +1,8 @@
 id: Office 365 Search and Delete
 version: -1
 name: Office 365 Search and Delete
-description: "Run a ComplianceSearch on Office 365 and delete the results."
+deprecated: true
+description: "Deprecated. Use the Microsoft Graph Security integration instead. Run a ComplianceSearch on Office 365 and delete the results."
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -368,7 +369,7 @@ inputs:
   description: Compliance Search query
 outputs: []
 tests:
-- No test
+- No tests (deprecated)
 supportedModules:
 - agentix
 - cloud
