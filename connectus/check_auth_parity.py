@@ -946,10 +946,101 @@ class RunResult:
     requests: list[dict[str, Any]] = field(default_factory=list)
 
 
-def _seed_url_params(params: dict[str, Any], proxy_port: int) -> None:
-    """Apply §2.7.2 URL-rewrite + insecure flag in-place."""
-    params["url"] = f"http://127.0.0.1:{proxy_port}"
+# YML param names commonly used by integrations to hold the API base
+# endpoint. The capture proxy can only intercept HTTP if the
+# integration's *actual* base-URL param is rewritten — hardcoding
+# ``url`` silently no-op'd on the ~45 integrations that use one of the
+# other aliases (e.g. JiraV3 uses ``server_url``), letting them call
+# the real API during parity runs.
+_URL_PARAM_ALIASES = (
+    "url",
+    "server_url",
+    "serverUrl",
+    "host",
+    "base_url",
+    "baseUrl",
+    "endpoint",
+    "server",
+    "api_url",
+    "instance_url",
+)
+
+
+def _seed_url_params(
+    params: dict[str, Any],
+    proxy_port: int,
+    integration_id: str | None = None,
+) -> None:
+    """Apply §2.7.2 URL-rewrite + insecure flag in-place.
+
+    Rewrites every key in :data:`_URL_PARAM_ALIASES` that is already
+    present in ``params``. Does **not** add missing keys — that would
+    inject an unknown param the integration's YML may not declare.
+
+    If no alias is present, emits a loud stderr warning: the integration
+    will bypass the capture proxy and may hit a real API. This is a tool
+    bug — the alias list needs extending.
+    """
+    proxy = f"http://127.0.0.1:{proxy_port}"
+    rewritten: list[str] = []
+    for key in _URL_PARAM_ALIASES:
+        if key in params:
+            params[key] = proxy
+            rewritten.append(key)
     params["insecure"] = True
+    if not rewritten:
+        sys.stderr.write(
+            f"[auth_parity] WARNING: no URL-aliased param found in params for "
+            f"integration {integration_id!r}; expected one of "
+            f"{list(_URL_PARAM_ALIASES)}. The integration may bypass the "
+            f"capture proxy and make real HTTP calls. This is a tool bug if "
+            f"the integration has a YML config param holding its base "
+            f"endpoint — extend _URL_PARAM_ALIASES.\n"
+        )
+
+
+def _seed_proxy_env(
+    params: dict[str, Any],
+    env: dict[str, str],
+    proxy_port: int,
+    *,
+    integration_id: str | None = None,
+) -> None:
+    """Apply §2.7 HTTPS_PROXY env-var seeding + force proxy/insecure in-place.
+
+    Companion to :func:`_seed_url_params` — runs unconditionally alongside
+    it (the "both mechanisms, every run" decision from the MITM refactor
+    plan). Together they form a belt-and-suspenders: either the
+    integration's HTTP client honors the ``HTTPS_PROXY`` env var and
+    routes CONNECT through the proxy's MITM path, or it ignores the env
+    and uses the proxy URL injected by :func:`_seed_url_params` directly.
+    Either way the request lands at the same capture proxy.
+
+    Mutations:
+
+    * ``params["proxy"] = True`` — CommonServerPython's :class:`BaseClient`
+      gates env-var honoring on this flag.
+    * ``params["insecure"] = True`` — the proxy presents a self-signed
+      cert; verification must be off (the URL-rewrite seeder sets this
+      too, but we set it unconditionally here as well).
+    * ``env`` gets ``HTTPS_PROXY`` / ``HTTP_PROXY`` (and lowercase
+      variants) pointing at ``http://127.0.0.1:<port>``.
+    * ``env["NO_PROXY"] = ""`` / ``env["no_proxy"] = ""`` — override any
+      localhost-bypass default that would let a request skip the proxy.
+
+    ``integration_id`` is accepted for parity with :func:`_seed_url_params`
+    but is currently unused; reserved for future per-integration diagnostics.
+    """
+    del integration_id  # reserved for future per-integration diagnostics
+    params["proxy"] = True
+    params["insecure"] = True
+    proxy_url = f"http://127.0.0.1:{proxy_port}"
+    env["HTTPS_PROXY"] = proxy_url
+    env["HTTP_PROXY"] = proxy_url
+    env["https_proxy"] = proxy_url
+    env["http_proxy"] = proxy_url
+    env["NO_PROXY"] = ""
+    env["no_proxy"] = ""
 
 
 def _build_base_params(
@@ -1021,6 +1112,7 @@ def run_old(
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
     param_defaults: dict[str, Any] | None = None,
+    integration_id: str | None = None,
 ) -> RunResult:
     """Execute the integration with sentinels seeded into ``demisto.params()``.
 
@@ -1039,6 +1131,7 @@ def run_old(
         docker_cfg=docker_cfg,
         ucp_enabled=False,
         ucp_credentials=None,
+        integration_id=integration_id,
     )
 
 
@@ -1053,6 +1146,7 @@ def run_new(
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
     param_defaults: dict[str, Any] | None = None,
+    integration_id: str | None = None,
 ) -> RunResult:
     """Execute the integration with ``xsoar_param_map`` keys omitted and UCP on.
 
@@ -1084,6 +1178,7 @@ def run_new(
         docker_cfg=docker_cfg,
         ucp_enabled=True,
         ucp_credentials=ucp_shape,
+        integration_id=integration_id,
     )
 
 
@@ -1097,9 +1192,21 @@ def _execute_run(
     docker_cfg: _ccp.DockerConfig | None,
     ucp_enabled: bool,
     ucp_credentials: dict[str, Any] | None,
+    integration_id: str | None = None,
 ) -> RunResult:
     """Shared run pipeline for old + new: prep content, exec child, read proxy."""
-    _seed_url_params(params, proxy.port)
+    # Belt-and-suspenders: BOTH the URL-rewrite seeder AND the env-var
+    # seeder run unconditionally every run (see plan
+    # plans/auth-parity-proxy-mitm-refactor.md §1 "we don't care how it
+    # got here"). Either path lands the request at the same capture proxy.
+    _seed_url_params(params, proxy.port, integration_id=integration_id)
+    extra_env: dict[str, str] = {}
+    _seed_proxy_env(params, extra_env, proxy.port, integration_id=integration_id)
+    # Mount the proxy's cert dir into the child (so the in-Docker side
+    # of the child can pin its TLS trust at the MITM cert if it wants).
+    cert_dir = proxy.cert_dir()
+    if cert_dir is not None:
+        extra_env["AUTH_PARITY_CERT_DIR"] = str(cert_dir)
     session_id = proxy.new_session()
     with tempfile.TemporaryDirectory(prefix="auth_parity_") as raw_tmp:
         tmp = Path(raw_tmp)
@@ -1119,6 +1226,8 @@ def _execute_run(
                 timeout=timeout,
                 docker_cfg=docker_cfg,
                 image=(docker_cfg.resolve_image_for(yml_data) if docker_cfg else None),
+                extra_env=extra_env,
+                extra_mounts=([(str(cert_dir), str(cert_dir), "ro")] if cert_dir else None),
             )
         except _ccp.DynamicAnalysisError as exc:
             return _crashed_run(rc=-1, stderr=f"docker error: {exc}")
@@ -1485,6 +1594,7 @@ def check_connection_parity(
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
     param_defaults: dict[str, Any] | None = None,
+    integration_id: str | None = None,
 ) -> dict[str, Any]:
     """Run old + new for each command, collect diffs, classify status."""
     skip = _connection_skip_status(entry, py_source, yml_data)
@@ -1503,6 +1613,7 @@ def check_connection_parity(
             timeout=timeout,
             docker_cfg=docker_cfg,
             param_defaults=param_defaults,
+            integration_id=integration_id,
         )
         commands_block[command] = {"status": cmd_block["status"]}
         diagnostics_commands[command] = cmd_diag
@@ -1529,6 +1640,7 @@ def _run_one_command(
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
     param_defaults: dict[str, Any] | None = None,
+    integration_id: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Run old + new for one command — isolated per-command exception handling."""
     proxy = CaptureProxy(port=0)
@@ -1540,6 +1652,7 @@ def _run_one_command(
                 integration_path, yml_data, command, sentinel_map,
                 entry.name, proxy, timeout, docker_cfg,
                 param_defaults=param_defaults,
+                integration_id=integration_id,
             )
         except Exception as exc:  # noqa: BLE001 — per-command isolation
             old = _crashed_run(rc=-1, stderr=f"run_old exception: {exc}")
@@ -1548,6 +1661,7 @@ def _run_one_command(
                 integration_path, yml_data, command, sentinel_map,
                 entry.name, entry, proxy, timeout, docker_cfg,
                 param_defaults=param_defaults,
+                integration_id=integration_id,
             )
         except Exception as exc:  # noqa: BLE001 — per-command isolation
             new = _crashed_run(rc=-1, stderr=f"run_new exception: {exc}")
@@ -1741,6 +1855,7 @@ def _run_all_connections(
             timeout=timeout,
             docker_cfg=docker_cfg,
             param_defaults=param_defaults,
+            integration_id=display,
         )
         auth_parity[entry.name] = {
             "status": per_conn["status"], "commands": per_conn["commands"],

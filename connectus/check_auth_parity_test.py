@@ -1131,3 +1131,296 @@ def test_plain_integration_salesforce_iam() -> None:
 @pytest.mark.skip(reason="integration — separate ticket")
 def test_oauth2_integration_crowdstrike_falcon() -> None:
     """End-to-end parity on CrowdStrike Falcon (OAuth2 client-creds)."""
+
+
+# --------------------------------------------------------------------------
+# _seed_url_params — URL alias rewrite (regression for the silent no-op
+# that let 45+ integrations bypass the capture proxy because their
+# YML param was named ``server_url`` / ``host`` / ``base_url`` rather
+# than the hardcoded ``url``).
+# --------------------------------------------------------------------------
+
+
+class TestUrlParamRewrite:
+    PROXY_PORT = 54321
+    PROXY_URL = f"http://127.0.0.1:{PROXY_PORT}"
+
+    def test_rewrites_url_key(self) -> None:
+        params = {"url": "https://real.com"}
+        cap._seed_url_params(params, self.PROXY_PORT)
+        assert params["url"] == self.PROXY_URL
+
+    def test_rewrites_server_url_key(self) -> None:
+        """The Jira V3 regression: ``server_url`` must be rewritten."""
+        params = {"server_url": "https://api.atlassian.com/ex/jira"}
+        cap._seed_url_params(params, self.PROXY_PORT)
+        assert params["server_url"] == self.PROXY_URL
+
+    def test_rewrites_multiple_aliases_if_present(self) -> None:
+        params = {
+            "url": "https://real.com",
+            "server_url": "https://other.com",
+        }
+        cap._seed_url_params(params, self.PROXY_PORT)
+        assert params["url"] == self.PROXY_URL
+        assert params["server_url"] == self.PROXY_URL
+
+    def test_warns_when_no_url_param_present(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        params: dict[str, object] = {"some_other_param": "foo"}
+        cap._seed_url_params(params, self.PROXY_PORT, integration_id="MyInt")
+        captured = capsys.readouterr()
+        assert "[auth_parity] WARNING" in captured.err
+        assert "'MyInt'" in captured.err
+        # The integration_id-less variant should still warn (just less informative).
+        params2: dict[str, object] = {"foo": "bar"}
+        cap._seed_url_params(params2, self.PROXY_PORT)
+        captured2 = capsys.readouterr()
+        assert "[auth_parity] WARNING" in captured2.err
+
+    def test_insecure_always_set_to_true(self) -> None:
+        # Matched-alias case.
+        params_with_url = {"url": "https://real.com"}
+        cap._seed_url_params(params_with_url, self.PROXY_PORT)
+        assert params_with_url["insecure"] is True
+        # Aliased-key case.
+        params_with_alias = {"server_url": "https://real.com"}
+        cap._seed_url_params(params_with_alias, self.PROXY_PORT)
+        assert params_with_alias["insecure"] is True
+        # No-match case (still set, even when warning fires).
+        params_no_match: dict[str, object] = {"foo": "bar"}
+        cap._seed_url_params(params_no_match, self.PROXY_PORT)
+        assert params_no_match["insecure"] is True
+
+    def test_does_not_create_url_key_if_absent(self) -> None:
+        """Guard against the previous silent-no-op behavior: when only
+        ``server_url`` is present, we must NOT inject an unrelated
+        ``url`` key the YML never declared."""
+        params = {"server_url": "https://api.atlassian.com"}
+        cap._seed_url_params(params, self.PROXY_PORT)
+        assert params["server_url"] == self.PROXY_URL
+        assert "url" not in params
+        # And the symmetric case — params with only ``host`` shouldn't
+        # gain ``url`` or any other alias key.
+        params_host = {"host": "https://example.com"}
+        cap._seed_url_params(params_host, self.PROXY_PORT)
+        assert params_host["host"] == self.PROXY_URL
+        for alias in cap._URL_PARAM_ALIASES:
+            if alias != "host":
+                assert alias not in params_host
+
+    def test_runs_side_by_side_with_seed_proxy_env(self) -> None:
+        """Confirm both seeders run on the same params dict with no conflict.
+
+        Regression for the §2.7 "both mechanisms, every run" decision —
+        ``_seed_url_params`` and ``_seed_proxy_env`` mutate the same
+        ``params`` and the result is consistent: the URL alias points at
+        the proxy, ``proxy=True``, ``insecure=True``, and the env-var
+        seeder has not clobbered the alias rewrite.
+        """
+        params = {"server_url": "https://api.atlassian.com"}
+        env: dict[str, str] = {}
+        cap._seed_url_params(params, self.PROXY_PORT, integration_id="MyInt")
+        cap._seed_proxy_env(params, env, self.PROXY_PORT, integration_id="MyInt")
+        assert params["server_url"] == self.PROXY_URL
+        assert params["proxy"] is True
+        assert params["insecure"] is True
+        assert env["HTTPS_PROXY"] == self.PROXY_URL
+
+
+# --------------------------------------------------------------------------
+# _seed_proxy_env — HTTPS_PROXY env-var seeding for the MITM CONNECT path.
+# Companion to TestUrlParamRewrite (see plan
+# plans/auth-parity-proxy-mitm-refactor.md §2.2). Both run unconditionally
+# every parity run.
+# --------------------------------------------------------------------------
+
+
+class TestSeedProxyEnv:
+    PROXY_PORT = 54321
+    PROXY_URL = f"http://127.0.0.1:{PROXY_PORT}"
+
+    def test_seeds_https_proxy_env_var(self) -> None:
+        params: dict[str, object] = {}
+        env: dict[str, str] = {}
+        cap._seed_proxy_env(params, env, self.PROXY_PORT)
+        assert env["HTTPS_PROXY"] == self.PROXY_URL
+        assert env["https_proxy"] == self.PROXY_URL
+
+    def test_seeds_http_proxy_env_var(self) -> None:
+        params: dict[str, object] = {}
+        env: dict[str, str] = {}
+        cap._seed_proxy_env(params, env, self.PROXY_PORT)
+        assert env["HTTP_PROXY"] == self.PROXY_URL
+        assert env["http_proxy"] == self.PROXY_URL
+
+    def test_sets_proxy_param_true(self) -> None:
+        """``BaseClient`` gates env-var honoring on ``params['proxy']``."""
+        params: dict[str, object] = {"proxy": False}
+        env: dict[str, str] = {}
+        cap._seed_proxy_env(params, env, self.PROXY_PORT)
+        assert params["proxy"] is True
+
+    def test_sets_insecure_true(self) -> None:
+        """The MITM cert is self-signed; verification must be off."""
+        params: dict[str, object] = {"insecure": False}
+        env: dict[str, str] = {}
+        cap._seed_proxy_env(params, env, self.PROXY_PORT)
+        assert params["insecure"] is True
+
+    def test_clears_no_proxy_default(self) -> None:
+        """``NO_PROXY=localhost,127.0.0.1`` would let requests skip the proxy
+        and hit a real upstream; we explicitly clear it.
+        """
+        params: dict[str, object] = {}
+        env: dict[str, str] = {"NO_PROXY": "localhost,127.0.0.1", "no_proxy": "*"}
+        cap._seed_proxy_env(params, env, self.PROXY_PORT)
+        assert env["NO_PROXY"] == ""
+        assert env["no_proxy"] == ""
+
+
+# --------------------------------------------------------------------------
+# CONNECT MITM tunnel: the proxy must terminate ``CONNECT host:port`` from
+# HTTPS_PROXY-aware clients, wrap the socket in TLS with its self-signed
+# cert, and record the inner decrypted request tagged
+# ``"transport": "connect-mitm"``. Loopback CONNECT to the proxy's own
+# port must be refused with 403.
+# --------------------------------------------------------------------------
+
+
+class TestConnectMitm:
+    @pytest.fixture()
+    def proxy(self):  # type: ignore[no-untyped-def]
+        # Import inside the fixture so a missing ``cryptography`` blows up
+        # the one test class that needs it rather than the whole module.
+        from capture_proxy import CaptureProxy  # noqa: WPS433
+
+        p = CaptureProxy(port=0)
+        p.start()
+        try:
+            yield p
+        finally:
+            p.stop()
+
+    @staticmethod
+    def _send_connect(port: int, target: str):  # type: ignore[no-untyped-def]
+        import socket
+
+        s = socket.create_connection(("127.0.0.1", port), timeout=5)
+        s.sendall(
+            f"CONNECT {target} HTTP/1.1\r\nHost: {target}\r\n\r\n".encode("ascii")
+        )
+        buf = b""
+        deadline = 0
+        while b"\r\n\r\n" not in buf:
+            chunk = s.recv(4096)
+            if not chunk:
+                break
+            buf += chunk
+            deadline += 1
+            if deadline > 50:
+                break
+        return buf, s
+
+    def test_connect_returns_200_then_tls_wraps(self, proxy) -> None:  # type: ignore[no-untyped-def]
+        """Happy path: 200 Connection Established, then TLS handshake succeeds."""
+        import ssl
+
+        resp, sock = self._send_connect(proxy.port, "api.example.com:443")
+        try:
+            head = resp.split(b"\r\n", 1)[0]
+            assert b"200" in head, f"expected 200, got {head!r}"
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            tls = ctx.wrap_socket(sock, server_hostname="api.example.com")
+            try:
+                # Issuer CN proves it's our MITM cert, not the real one.
+                der = tls.getpeercert(binary_form=True)
+                assert der is not None and len(der) > 0
+            finally:
+                tls.close()
+        finally:
+            try:
+                sock.close()
+            except OSError:
+                pass
+
+    def test_connect_records_inner_request_with_transport_tag(self, proxy) -> None:  # type: ignore[no-untyped-def]
+        """Inner HTTP request flows through ``_handle_capture`` tagged
+        ``transport="connect-mitm"`` and ``connect_host`` set to the
+        CONNECT target."""
+        import ssl
+
+        sid = proxy.new_session()
+        resp, sock = self._send_connect(proxy.port, "api.example.com:443")
+        assert b"200" in resp.split(b"\r\n", 1)[0]
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        tls = ctx.wrap_socket(sock, server_hostname="api.example.com")
+        try:
+            tls.sendall(
+                b"POST /v1/widgets HTTP/1.1\r\n"
+                b"Host: api.example.com\r\n"
+                b"Content-Length: 11\r\n\r\n"
+                b"hello world"
+            )
+            buf = b""
+            while b"\r\n\r\n" not in buf:
+                chunk = tls.recv(4096)
+                if not chunk:
+                    break
+                buf += chunk
+            assert b"200" in buf.split(b"\r\n", 1)[0]
+        finally:
+            tls.close()
+        requests = proxy.get_requests(sid)
+        assert len(requests) == 1
+        req = requests[0]
+        assert req["transport"] == "connect-mitm"
+        assert req["connect_host"] == "api.example.com"
+        assert req["connect_port"] == 443
+        assert req["method"] == "POST"
+        assert req["path"] == "/v1/widgets"
+        assert req["body"] == "hello world"
+
+    def test_connect_refuses_loopback_to_own_port(self, proxy) -> None:  # type: ignore[no-untyped-def]
+        """A CONNECT aimed at the proxy itself must 403; otherwise a
+        misconfigured client could tunnel TLS into the control-plane
+        handler."""
+        target = f"127.0.0.1:{proxy.port}"
+        resp, sock = self._send_connect(proxy.port, target)
+        try:
+            head = resp.split(b"\r\n", 1)[0]
+            assert b"403" in head, f"expected 403 Loopback Forbidden, got {head!r}"
+            assert b"Loopback Forbidden" in resp
+        finally:
+            try:
+                sock.close()
+            except OSError:
+                pass
+
+    def test_cert_files_exist_during_proxy_lifetime(self, proxy) -> None:  # type: ignore[no-untyped-def]
+        cert_dir = proxy.cert_dir()
+        cert_path = proxy.ca_cert_path()
+        assert cert_dir is not None and cert_dir.exists()
+        assert cert_path is not None and cert_path.exists()
+        # key.pem alongside cert.pem.
+        assert (cert_dir / "key.pem").exists()
+        # PEM-encoded cert.
+        assert cert_path.read_bytes().startswith(b"-----BEGIN CERTIFICATE-----")
+
+    def test_cert_dir_cleaned_up_on_proxy_stop(self) -> None:
+        """The tempdir must be removed when the proxy stops — no leaked
+        certs on disk between runs."""
+        from capture_proxy import CaptureProxy  # noqa: WPS433
+
+        p = CaptureProxy(port=0)
+        p.start()
+        cert_dir = p.cert_dir()
+        assert cert_dir is not None and cert_dir.exists()
+        p.stop()
+        assert p.cert_dir() is None
+        assert not cert_dir.exists()

@@ -2953,6 +2953,7 @@ def _run_child_docker(
     image: str,
     pulled_cache: set[str],
     proxy_url: str,
+    extra_mounts: list[tuple[str, str, str]] | None = None,
 ) -> tuple[int, str, str, bool]:
     """Run the child inside a Docker container.
 
@@ -2960,6 +2961,12 @@ def _run_child_docker(
     ``unified_integration.py``, and ``mock/`` into ``tmp_dir``. We mount
     ``tmp_dir`` read-only at ``/check`` and execute
     ``python3 /check/bootstrap.py`` inside ``image``.
+
+    ``extra_mounts`` is an optional list of ``(host_path, container_path,
+    mode)`` triples forwarded as ``-v`` flags. The auth-parity harness
+    uses this to expose its self-signed MITM cert dir at the same host
+    path inside the container so env-var-honoring HTTP clients can pin
+    their CA bundle at it.
     """
     _ensure_image_pulled(image, pulled_cache)
     container_proxy, network_args = _docker_proxy_host(proxy_url)
@@ -2986,6 +2993,9 @@ def _run_child_docker(
         "-v",
         f"{tmp_dir}:/check:ro",
     ]
+    if extra_mounts:
+        for host_path, container_path, mode in extra_mounts:
+            cmd.extend(["-v", f"{host_path}:{container_path}:{mode}"])
     for key, value in docker_env.items():
         cmd.extend(["-e", f"{key}={value}"])
     cmd.extend([image, "python3", "/check/bootstrap.py"])
@@ -3014,6 +3024,9 @@ def run_integration(
     timeout: int,
     docker_cfg: DockerConfig | None = None,
     image: str | None = None,
+    *,
+    extra_env: dict[str, str] | None = None,
+    extra_mounts: list[tuple[str, str, str]] | None = None,
 ) -> tuple[int, str, str, bool]:
     """Run the integration in a child process. Returns ``(rc, stdout, stderr, timed_out)``.
 
@@ -3046,6 +3059,8 @@ def run_integration(
         unified_path=str(unified_path),
         mock_dir=str(mock_dir),
     )
+    if extra_env:
+        env.update(extra_env)
 
     if not use_docker:
         return _run_child_host(bootstrap_path, env, timeout)
@@ -3059,6 +3074,7 @@ def run_integration(
         image=effective_image,
         pulled_cache=docker_cfg.pulled_images,
         proxy_url=proxy_url,
+        extra_mounts=extra_mounts,
     )
 
 

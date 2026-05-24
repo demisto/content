@@ -356,14 +356,22 @@ take the legacy `get_access_token_()` path or the UCP path.
 
 Requests must be allowed to leave the integration code but MUST be
 intercepted before hitting the real API.
-[`capture_proxy.py`](connectus/capture_proxy.py:1) already does this:
-it accepts any HTTP method on any path, returns `200 {}`, and records
-the full request (method, path, query, headers, body, timestamp).
+[`capture_proxy.py`](connectus/capture_proxy.py:1) does this: it
+accepts any HTTP method on any path (plain HTTP origin **and** —
+since the 2026-05 MITM refactor (see
+[`plans/auth-parity-proxy-mitm-refactor.md`](../plans/auth-parity-proxy-mitm-refactor.md))
+— terminates `CONNECT` requests as a TLS-MITM proxy), returns
+`200 {}`, and records the full request (method, path, query,
+headers, body, timestamp, transport).
 
-The integration's `url` / `base_url` param is pointed at
-`http://localhost:<proxy_port>` so all traffic routes through the
-proxy. Responses are canned/empty; the test only inspects the
-**request** side.
+Two complementary mechanisms route the integration's traffic to the
+proxy in every parity run; the harness does **not** auto-select
+between them — both are installed unconditionally. See §2.7.2 for
+the full description.
+
+Responses are canned/empty; the test only inspects the **request**
+side. The proxy never opens an outbound connection to the real origin
+under either mechanism.
 
 ### 2.7 Execution model
 
@@ -406,31 +414,113 @@ construction (the pre-import param seeding pattern from
 
 #### 2.7.2 How the proxy is wired in
 
-Since the auth parity test **requires** [`BaseClient`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9703)
-usage, proxy wiring is simpler than in
-[`check_command_params.py`](connectus/check_command_params.py:2889):
+> **Why this changed (2026-05).** The pre-2026-05 design relied on
+> URL-rewrite alone, citing the `boto3` proxy-bypass problem as
+> justification for skipping the HTTPS_PROXY path. That reasoning
+> was correct but incomplete: in practice URL-rewrite hit three
+> integration bugs we had to keep papering over —
+>
+> 1. **Jira `cloud_id` precondition** —
+>    [`JiraV3.py:3590`](Packs/Jira/Integrations/JiraV3/JiraV3.py:3590)
+>    rejects any `server_url` not equal to the production
+>    Atlassian endpoint when `cloud_id` is set. URL-rewrite trips it
+>    deterministically.
+> 2. **`_URL_PARAM_ALIASES` denylist** — the harness had to know
+>    every YML param name an integration uses for its base URL
+>    (`url`, `server_url`, `host`, `base_url`, `endpoint`, `server`,
+>    `api_url`, `instance_url`, …). Fundamentally a "list every
+>    integration's choice" game.
+> 3. **URL-template leakage** — required-but-unset params (e.g.
+>    Jira's `cloud_id`) get sentinel-seeded into URL paths because
+>    the integration constructs URLs by templating
+>    `https://api.example.com/ex/jira/{cloud_id}/…` before any
+>    rewrite happens.
+>
+> The 2026-05 refactor — see
+> [`plans/auth-parity-proxy-mitm-refactor.md`](../plans/auth-parity-proxy-mitm-refactor.md)
+> — switches the **primary capture mechanism** to an HTTPS_PROXY
+> MITM that terminates `CONNECT` with a self-signed cert and runs
+> URL-rewrite **alongside** it as a peer mechanism. Integrations
+> see their real production URLs everywhere; the three bugs
+> disappear because URLs are no longer rewritten as the only path
+> to capture.
 
-1. **URL rewriting:** The `url` param in `demisto.params()` is set to
-   `http://127.0.0.1:<proxy.port>`. Since we require `BaseClient`,
-   this covers all HTTP traffic — `BaseClient.__init__` stores
-   [`self._base_url = base_url`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9746)
-   from the `url` param, and all subsequent
-   [`_http_request()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10186)
-   calls use `urljoin(self._base_url, url_suffix)`.
+Two mechanisms are installed in every parity run. The harness does
+**not** auto-detect which to use — both fire unconditionally, and
+the proxy is agnostic about which one delivered any given request.
 
-2. **Insecure flag:** Set `demisto.params()["insecure"] = True` so
-   `BaseClient.__init__` calls
-   [`skip_cert_verification()`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9764)
-   and does not reject the plain HTTP connection.
+1. **HTTPS_PROXY MITM (primary).** The harness sets the proxy env
+   vars (`HTTP_PROXY`, `HTTPS_PROXY`, lowercase variants too) on
+   the child process to `http://127.0.0.1:<proxy.port>`, and forces
+   `demisto.params()["proxy"] = True` and
+   `demisto.params()["insecure"] = True`. The capture proxy adds a
+   `do_CONNECT` handler that:
+   - Returns `200 Connection Established`.
+   - Wraps the client socket with a self-signed TLS cert (generated
+     once at proxy startup; see §2.7.3).
+   - Reads the inner HTTP request from the now-decrypted tunnel.
+   - Routes it through the existing `_handle_capture` path, tagging
+     the record with `"transport": "connect-mitm"` and the original
+     CONNECT host.
+   - Returns canned `200 {}` — the proxy never opens an outbound
+     connection to the real origin (preserves the "no outbound
+     traffic" invariant).
+   Integrations see their real production URLs everywhere.
 
-3. **No `HTTP_PROXY` env var needed.** Unlike
-   [`check_command_params.py`](connectus/check_command_params.py:2889)
-   which sets `HTTP_PROXY` / `HTTPS_PROXY` env vars to catch traffic
-   from non-BaseClient code paths, the auth parity test does NOT need
-   this — we require `BaseClient`, so URL rewriting is sufficient.
-   This avoids the `boto3` proxy-bypass problem entirely.
+2. **URL-rewrite (peer).** Every YML param name in
+   `_URL_PARAM_ALIASES` present in `demisto.params()` is rewritten
+   to `http://127.0.0.1:<proxy.port>` — the pre-2026-05 behaviour.
+   `params["insecure"] = True` is forced (already done by the MITM
+   limb). This catches integrations whose HTTP stack ignores proxy
+   env vars (`boto3` being the canonical example), and is the
+   reason the original §2.7.2 boto3-bypass concern is preserved.
+   Captured records from this limb carry `"transport": "url-rewrite"`.
 
-#### 2.7.3 Sentinel injection — old vs new run
+The two mechanisms are deliberately not mutually exclusive. The
+captured record is identical regardless of which one delivered the
+request, modulo the `transport` field used purely for diagnostics.
+Sentinel-location extraction and parity comparison are
+transport-agnostic. See
+[`plans/auth-parity-proxy-mitm-refactor.md`](../plans/auth-parity-proxy-mitm-refactor.md)
+§6 for the "we don't care how it got here" design principle and
+why no auto-detection branch exists.
+
+#### 2.7.3 Cert + env-var lifecycle
+
+The harness process generates a self-signed cert **once** at
+`CaptureProxy.start()` using the
+[`cryptography`](https://cryptography.io/) library (a transitive
+dep already locked in [`poetry.lock`](../poetry.lock:673) — no new
+top-level dependency). The cert has CN `auth-parity-proxy` and
+`subjectAltName: DNS:*, DNS:localhost, IP:127.0.0.1`, validity
+365 days, RSA 2048. PEM + private key are written to a per-proxy
+`tempfile.TemporaryDirectory` and removed on `CaptureProxy.stop()`.
+
+The env vars seeded into the child process are:
+
+| Var | Value | Why |
+|-----|-------|-----|
+| `HTTP_PROXY` / `http_proxy` | `http://127.0.0.1:<port>` | Catch plain HTTP requests via proxy env. |
+| `HTTPS_PROXY` / `https_proxy` | `http://127.0.0.1:<port>` | Catch HTTPS requests — triggers CONNECT to the MITM handler. |
+| `NO_PROXY` / `no_proxy` | empty | We want everything proxied. |
+| `REQUESTS_CA_BUNDLE` | `<cert_dir>/cert.pem` | Trust seam for stacks that respect it. |
+| `SSL_CERT_FILE` | `<cert_dir>/cert.pem` | Trust seam for `urllib` / `openssl`. |
+| `CURL_CA_BUNDLE` | `<cert_dir>/cert.pem` | Trust seam for libcurl users. |
+
+`params["insecure"] = True` covers the
+[`BaseClient`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9764)
+path that calls `skip_cert_verification()`; the CA-bundle env vars
+are a belt-and-suspenders trust seam for integrations whose HTTP
+stack doesn't honour `insecure` consistently.
+
+When `--use-integration-docker` is active the cert directory MUST
+be bind-mounted into the child container at the same path so the
+env-var paths resolve. The Docker config in
+[`check_command_params.DockerConfig`](connectus/check_command_params.py:1)
+already mounts the mock_dir; the cert dir is one additional
+`-v <cert_dir>:<cert_dir>:ro`.
+
+#### 2.7.4 Sentinel injection — old vs new run
 
 For each `(connection, command)` pair, the harness executes two runs:
 
@@ -449,7 +539,7 @@ For each `(connection, command)` pair, the harness executes two runs:
 Both runs use the same sentinel values so the location comparison
 is meaningful.
 
-#### 2.7.4 Sequence diagram — one connection, one command
+#### 2.7.5 Sequence diagram — one connection, one command
 
 ```
 Harness                    Proxy                Integration
@@ -512,7 +602,7 @@ Harness                    Proxy                Integration
   |   NO  -> FAIL + classify diffs                   |
 ```
 
-#### 2.7.5 Crash handling
+#### 2.7.6 Crash handling
 
 When the integration crashes during a run (old or new):
 
@@ -805,7 +895,7 @@ a non-zero process exit code.
 | `ERROR_NO_BASECLIENT` | `11` | The integration is Python but its `.py` file does not import or instantiate `BaseClient` (or a subclass). Detection: statically check whether the source contains `class <Name>(BaseClient)`, `BaseClient(`, or `from CommonServerPython import ... BaseClient`. | `"Auth parity test requires BaseClient usage. This integration does not use BaseClient. Mark its auth as interpolated if it cannot use BaseClient injection."` |
 | `ERROR_ALL_INTERPOLATED` | `12` | Every `auth_types[]` entry in `Auth Details` has `"interpolated": true`. | `"All auth types are interpolated. Auth parity test is not applicable — interpolated connections are handled by infrastructure, not integration code. Step #11 (auth parity test passes) is effectively migrated — markpass."` |
 | `ERROR_CONNECTION_INTERPOLATED` | `13` | A specific connection name was requested via `--connection <name>` but that connection has `"interpolated": true`. | `"Connection '<name>' is interpolated. Auth parity test only applies to non-interpolated connections. Remove the interpolated flag or skip this connection."` |
-| `ERROR_INTEGRATION_REJECTS_HTTP` | `14` | The integration code checks that the URL starts with `https://` and rejects `http://`, causing the proxy-redirected URL to fail. Detected when the old run crashes with an error message containing `http://` or `https` and `scheme`/`protocol`. | `"Integration rejects HTTP URLs. Auth parity test requires BaseClient URL rewriting to http://. Mark its auth as interpolated if it cannot use BaseClient injection."` |
+| `ERROR_INTEGRATION_REJECTS_HTTP` | `14` | The integration code checks that the URL starts with `https://` and rejects `http://`, causing the URL-rewrite limb (§2.7.2) to fail. Detected when the old run crashes with an error message containing `http://` or `https` and `scheme`/`protocol`. **Substantially less common since the 2026-05 MITM refactor** — the MITM limb leaves URLs intact, so this error now only fires when the integration validates `params["url"]` itself before any HTTP call. Preserved for the URL-rewrite path. See §6.4.2 for the reachability note. | `"Integration rejects HTTP URLs. Auth parity test requires BaseClient URL rewriting to http://. Mark its auth as interpolated if it cannot use BaseClient injection."` |
 
 **JSON shape on hard error:**
 
@@ -999,18 +1089,27 @@ Akamai EdgeGrid patterns. The analyzer can flag these statically.
 ### 6.4 mTLS / cert-key auth (YML type 14)
 
 The "secret" is a PEM certificate/key. It typically lands in the TLS
-handshake, not in the HTTP request body or headers.
-[`capture_proxy.py`](connectus/capture_proxy.py:1) operates at the
-HTTP layer and does **not** surface TLS client-certificate
-negotiation.
+handshake, not in the HTTP request body or headers. The capture
+proxy **does** terminate TLS as of the 2026-05 refactor (see §2.7.2
+and [`plans/auth-parity-proxy-mitm-refactor.md`](../plans/auth-parity-proxy-mitm-refactor.md)),
+but the TLS it terminates is **server-side**: the proxy presents a
+cert TO the integration. mTLS requires the inverse direction — the
+integration presents a **client** cert to its upstream, negotiated
+during a handshake that, in our setup, terminates inside the proxy
+and never reaches an upstream that would request a client cert. The
+MITM cert chain does not solicit a client cert (no
+`CertificateRequest` in the handshake), and even if we modified the
+SSLContext to set `verify_mode = ssl.CERT_REQUIRED`, the integration
+would present the cert to **us** and we'd record only the
+fingerprint, not a wire location attributable to a sentinel string.
 
-**Recommendation: skip with `status: "skipped_mtls"`.**
-
-The limitation is structural — the capture proxy would need to be
-replaced with a TLS-terminating MITM proxy to observe client certs,
-which is a significant complexity increase for a rare auth type.
-Document the skip and recommend a manual TLS-layer probe for these
-integrations.
+**Recommendation: skip with `status: "skipped_mtls"`.** Unchanged
+from the pre-2026-05 design. The rationale is now "the TLS-MITM we
+have is the wrong direction for mTLS" rather than "we have no TLS
+MITM at all." A real mTLS parity test would need to also configure
+the SSLContext to request and capture the client cert and then
+diff its fingerprint between legacy and UCP runs — out of scope
+for this phase.
 
 ### 6.4.1 Multiple base URLs
 
@@ -1037,14 +1136,33 @@ covers auth paths that flow through `demisto.params()["url"]`.
 ### 6.4.2 HTTPS enforcement in code
 
 If the integration code checks that the URL starts with `https://`
-and rejects `http://`, the test will fail during the old run before
-any HTTP request is made. This is caught as
-`ERROR_INTEGRATION_REJECTS_HTTP` (see [§5.5](#55-error-codes--hard-errors))
-with a specific diagnostic: `"integration_rejects_http"`.
+and rejects `http://`, the URL-rewrite limb (§2.7.2) will fail
+during the old run before any HTTP request is made, because the
+URL-rewrite mechanism replaces a `https://...` value with
+`http://127.0.0.1:<port>`. The MITM limb does NOT trip this check
+— it leaves the integration's `https://` URL intact and intercepts
+the CONNECT — so under the 2026-05 architecture this error class is
+**substantially less common** than it was when URL-rewrite was the
+sole capture mechanism. It still fires when the integration
+validates `params["url"]` before any HTTP call (the URL-rewrite
+limb has already mutated the param at that point even if no socket
+work has happened).
 
-The skill should treat this the same as `ERROR_NO_BASECLIENT` — mark
+The error is caught as `ERROR_INTEGRATION_REJECTS_HTTP` (see
+[§5.5](#55-error-codes--hard-errors)) with diagnostic
+`"integration_rejects_http"`. The detection heuristic
+(`detect_integration_rejects_http`) is preserved unchanged. The
+skill should treat this the same as `ERROR_NO_BASECLIENT` — mark
 the affected connections as `"interpolated": true` and re-run
 `set-auth`.
+
+> **Reachability note.** Because the MITM limb leaves the
+> integration's URL alone, integrations that *only* validate the
+> URL inside a code path triggered by an actual HTTP request (most
+> of them) will now pass parity even with strict `https://`
+> enforcement. This error class is preserved for the URL-rewrite
+> limb's pre-flight validators; it is no longer the dominant
+> failure mode it was pre-2026-05.
 
 ### 6.4.3 OAuth token exchange
 
