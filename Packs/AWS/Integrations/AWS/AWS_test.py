@@ -17225,3 +17225,630 @@ def test_inventory_list_command_pagination(mocker):
     assert call_kwargs["MaxResults"] == 1
     assert call_kwargs["NextToken"] == "prev-inv-tok"
     assert result.outputs["AWS.SSM(true)"]["InventoryNextToken"] == "next-inv-tok"
+
+
+def test_describe_firewall_command(mocker):
+    """
+    Given:
+        - A valid firewall name.
+    When:
+        - Calling describe_firewall_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the correct outputs.
+    """
+    from AWS import NetworkFirewall
+    from http import HTTPStatus
+
+    client = mocker.MagicMock()
+    client.describe_firewall.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "token123",
+        "FirewallStatus": {"Status": "READY", "ConfigurationSyncStateSummary": "IN_SYNC"},
+        "Firewall": {
+            "FirewallName": "test-firewall",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "VpcId": "vpc-12345678",
+            "Description": "Test firewall",
+            "FirewallId": "fw-12345678",
+        },
+    }
+
+    args = {"firewall_name": "test-firewall"}
+
+    result = NetworkFirewall.describe_firewall_command(client, args)
+
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["FirewallStatus"]["Status"] == "READY"
+    assert result.outputs["UpdateToken"] == "token123"
+
+    client.describe_firewall.assert_called_once_with(FirewallName="test-firewall")
+
+
+def test_describe_firewall_command_missing_args(mocker):
+    """
+    Given:
+        - No firewall name or ARN.
+    When:
+        - Calling describe_firewall_command.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from AWS import NetworkFirewall
+    from CommonServerPython import DemistoException
+
+    client = mocker.MagicMock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.describe_firewall_command(client, args)
+
+
+def test_list_firewalls_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for listing firewalls.
+    When:
+        - Calling list_firewalls_command.
+    Then:
+        - Ensure the command returns the expected results.
+    """
+    from AWS import NetworkFirewall
+    from http import HTTPStatus
+
+    client = mocker.MagicMock()
+    client.list_firewalls.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "token123",
+        "Firewalls": [
+            {
+                "FirewallName": "test-firewall-1",
+                "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall-1",
+            }
+        ],
+    }
+
+    args = {"vpc_ids": "vpc-12345678,vpc-87654321", "limit": "1", "next_token": "token000"}
+
+    result = NetworkFirewall.list_firewalls_command(client, args)
+
+    assert result.outputs["AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)"] == [
+        {
+            "FirewallName": "test-firewall-1",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall-1",
+        }
+    ]
+    assert result.outputs["AWS.NetworkFirewall(true)"]["FirewallsNextToken"] == "token123"
+
+    client.list_firewalls.assert_called_once_with(VpcIds=["vpc-12345678", "vpc-87654321"], MaxResults=1, NextToken="token000")
+
+
+def test_list_firewalls_command_no_args(mocker):
+    """
+    Given:
+        - No arguments for listing firewalls.
+    When:
+        - Calling list_firewalls_command.
+    Then:
+        - Ensure the command returns the expected results and calls the client with empty kwargs.
+    """
+    from AWS import NetworkFirewall
+    from http import HTTPStatus
+
+    client = mocker.MagicMock()
+    client.list_firewalls.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Firewalls": []}
+
+    args = {}
+
+    result = NetworkFirewall.list_firewalls_command(client, args)
+
+    assert result.outputs["AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)"] == []
+    assert result.outputs["AWS.NetworkFirewall(true)"]["FirewallsNextToken"] is None
+
+    client.list_firewalls.assert_called_once_with(MaxResults=50)
+
+
+def test_create_firewall_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for creating a firewall.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure the command returns the expected results and calls the client with correct kwargs.
+    """
+    from AWS import NetworkFirewall
+    from http import HTTPStatus
+
+    client = mocker.MagicMock()
+    client.create_firewall.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Firewall": {
+            "FirewallName": "test-firewall",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "VpcId": "vpc-12345678",
+            "SubnetMappings": [{"SubnetId": "subnet-12345678"}],
+            "Description": "Test firewall",
+            "Tags": [
+                {"Key": "Key1", "Value": "Value1"},
+                {"Key": "Key2", "Value": "Value2"},
+            ],
+        },
+        "FirewallStatus": {"Status": "PROVISIONING", "ConfigurationSyncStateSummary": "PENDING"},
+    }
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "vpc_id": "vpc-12345678",
+        "subnet_mappings": '[{"SubnetId": "subnet-12345678"}]',
+        "description": "Test firewall",
+        "delete_protection": "true",
+        "tags": "key=Key1,value=Value1;key=Key2,value=Value2",
+    }
+
+    result = NetworkFirewall.create_firewall_command(client, args)
+
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["FirewallStatus"]["Status"] == "PROVISIONING"
+
+    client.create_firewall.assert_called_once_with(
+        FirewallName="test-firewall",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        VpcId="vpc-12345678",
+        SubnetMappings=[{"SubnetId": "subnet-12345678"}],
+        Description="Test firewall",
+        DeleteProtection=True,
+        Tags=[{"Key": "Key1", "Value": "Value1"}, {"Key": "Key2", "Value": "Value2"}],
+    )
+
+
+def test_create_firewall_command_invalid_subnet_mappings(mocker):
+    """
+    Given:
+        - Invalid JSON string for subnet_mappings.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure a ValueError is raised.
+    """
+    from AWS import NetworkFirewall
+
+    client = mocker.MagicMock()
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "vpc_id": "vpc-12345678",
+        "subnet_mappings": "invalid-json",
+    }
+
+    with pytest.raises(ValueError, match="subnet_mappings must be a valid JSON string"):
+        NetworkFirewall.create_firewall_command(client, args)
+
+
+def test_create_firewall_command_minimal_args(mocker):
+    """
+    Given:
+        - Minimal required arguments for creating a firewall.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure the command returns the expected results and calls the client with correct kwargs.
+    """
+    from AWS import NetworkFirewall
+    from http import HTTPStatus
+
+    client = mocker.MagicMock()
+    client.create_firewall.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Firewall": {
+            "FirewallName": "test-firewall",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "VpcId": "vpc-12345678",
+            "SubnetMappings": [{"SubnetId": "subnet-12345678"}],
+        },
+        "FirewallStatus": {"Status": "PROVISIONING", "ConfigurationSyncStateSummary": "PENDING"},
+    }
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "vpc_id": "vpc-12345678",
+        "subnet_mappings": '[{"SubnetId": "subnet-12345678"}]',
+    }
+
+    result = NetworkFirewall.create_firewall_command(client, args)
+
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+
+    client.create_firewall.assert_called_once_with(
+        FirewallName="test-firewall",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        VpcId="vpc-12345678",
+        SubnetMappings=[{"SubnetId": "subnet-12345678"}],
+    )
+
+
+def test_delete_firewall_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall name.
+    When: delete_firewall_command is called successfully.
+    Then: It should return CommandResults with success message and firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Firewall": {
+            "FirewallName": "test-firewall",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "VpcId": "vpc-12345678",
+            "Description": "Test firewall",
+            "FirewallId": "fw-1234567890abcdef0",
+        },
+        "FirewallStatus": {"Status": "DELETING", "ConfigurationSyncStateSummary": "PENDING"},
+    }
+    mock_client.delete_firewall.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall"}
+
+    result = NetworkFirewall.delete_firewall_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall was deleted successfully." in result.readable_output
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["FirewallStatus"]["Status"] == "DELETING"
+    mock_client.delete_firewall.assert_called_once_with(FirewallName="test-firewall")
+
+
+def test_delete_firewall_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall ARN.
+    When: delete_firewall_command is called successfully.
+    Then: It should return CommandResults with success message and firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Firewall": {
+            "FirewallName": "test-firewall",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "VpcId": "vpc-12345678",
+            "Description": "Test firewall",
+            "FirewallId": "fw-1234567890abcdef0",
+        },
+        "FirewallStatus": {"Status": "DELETING", "ConfigurationSyncStateSummary": "PENDING"},
+    }
+    mock_client.delete_firewall.return_value = mock_response
+
+    args = {"firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall"}
+
+    result = NetworkFirewall.delete_firewall_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall was deleted successfully." in result.readable_output
+    mock_client.delete_firewall.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall"
+    )
+
+
+def test_delete_firewall_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no arguments.
+    When: delete_firewall_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.delete_firewall_command(mock_client, args)
+
+
+def test_delete_firewall_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: delete_firewall_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.delete_firewall.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.delete_firewall_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_firewall_delete_protection_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall name and delete protection flag.
+    When: update_firewall_delete_protection_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "DeleteProtection": True,
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_firewall_delete_protection.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "delete_protection": "true"}
+
+    result = NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The delete protection flag of the firewall was updated successfully." in result.readable_output
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["DeleteProtection"] is True
+    mock_client.update_firewall_delete_protection.assert_called_once_with(FirewallName="test-firewall", DeleteProtection=True)
+
+
+def test_update_firewall_delete_protection_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall ARN and delete protection flag.
+    When: update_firewall_delete_protection_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "DeleteProtection": False,
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_firewall_delete_protection.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "delete_protection": "false",
+    }
+
+    result = NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The delete protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_firewall_delete_protection.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall", DeleteProtection=False
+    )
+
+
+def test_update_firewall_delete_protection_command_success_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name, delete protection flag, and update token.
+    When: update_firewall_delete_protection_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "DeleteProtection": True,
+        "UpdateToken": "token-456",
+    }
+    mock_client.update_firewall_delete_protection.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "delete_protection": "true", "update_token": "token-123"}
+
+    result = NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The delete protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_firewall_delete_protection.assert_called_once_with(
+        FirewallName="test-firewall", DeleteProtection=True, UpdateToken="token-123"
+    )
+
+
+def test_update_firewall_delete_protection_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no arguments.
+    When: update_firewall_delete_protection_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"delete_protection": "true"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
+
+
+def test_update_firewall_delete_protection_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_firewall_delete_protection_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.update_firewall_delete_protection.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "delete_protection": "true", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_firewall_description_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall name and description.
+    When: update_firewall_description_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "Description": "New description",
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_firewall_description.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "description": "New description"}
+
+    result = NetworkFirewall.update_firewall_description_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The firewall description was updated successfully." in result.readable_output
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["Description"] == "New description"
+    mock_client.update_firewall_description.assert_called_once_with(FirewallName="test-firewall", Description="New description")
+
+
+def test_update_firewall_description_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall ARN and description.
+    When: update_firewall_description_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "Description": "New description",
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_firewall_description.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "description": "New description",
+    }
+
+    result = NetworkFirewall.update_firewall_description_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The firewall description was updated successfully." in result.readable_output
+    mock_client.update_firewall_description.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall", Description="New description"
+    )
+
+
+def test_update_firewall_description_command_success_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name, description, and update token.
+    When: update_firewall_description_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "Description": "New description",
+        "UpdateToken": "token-456",
+    }
+    mock_client.update_firewall_description.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "description": "New description", "update_token": "token-123"}
+
+    result = NetworkFirewall.update_firewall_description_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The firewall description was updated successfully." in result.readable_output
+    mock_client.update_firewall_description.assert_called_once_with(
+        FirewallName="test-firewall", Description="New description", UpdateToken="token-123"
+    )
+
+
+def test_update_firewall_description_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no arguments.
+    When: update_firewall_description_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"description": "New description"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.update_firewall_description_command(mock_client, args)
+
+
+def test_update_firewall_description_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_firewall_description_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.update_firewall_description.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "description": "New description", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_firewall_description_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")

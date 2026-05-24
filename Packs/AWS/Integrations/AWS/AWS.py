@@ -812,6 +812,18 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def validate_network_firewall_identifier(kwargs: dict):
+    """
+    Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
+    a DemistoException otherwise.
+
+    Args:
+        kwargs (dict): The arguments dictionary containing the firewall identifiers.
+    """
+    if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
+        raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -9737,8 +9749,7 @@ class NetworkFirewall:
         """
         kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
         remove_nulls_from_dictionary(kwargs)
-        if not kwargs:
-            raise DemistoException("Please enter at least one of the arguments firewall_name and firewall_arn.")
+        validate_network_firewall_identifier(kwargs)
         print_debug_logs(client, f"Describing firewall with parameters: {kwargs}")
         response = client.describe_firewall(**kwargs)
 
@@ -9793,7 +9804,7 @@ class NetworkFirewall:
 
         outputs = {
             "AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)": firewalls,
-            "AWS.NetworkFirewall(true)": {'FirewallsNextToken': response.get("NextToken")},
+            "AWS.NetworkFirewall(true)": {"FirewallsNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -9891,8 +9902,7 @@ class NetworkFirewall:
             "FirewallArn": args.get("firewall_arn"),
         }
         remove_nulls_from_dictionary(kwargs)
-        if not kwargs:
-            raise DemistoException("Please enter at least one of the arguments firewall_name, or firewall_arn.")
+        validate_network_firewall_identifier(kwargs)
         print_debug_logs(client, f"Deleting firewall with parameters: {kwargs}")
         response = client.delete_firewall(**kwargs)
 
@@ -9929,8 +9939,7 @@ class NetworkFirewall:
             "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
-            raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+        validate_network_firewall_identifier(kwargs)
 
         print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs}")
         response = client.update_firewall_delete_protection(**kwargs)
@@ -9968,8 +9977,7 @@ class NetworkFirewall:
             "Description": args.get("description"),
         }
         remove_nulls_from_dictionary(kwargs)
-        if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
-            raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+        validate_network_firewall_identifier(kwargs)
 
         print_debug_logs(client, f"Updating firewall description with parameters: {kwargs}")
         response = client.update_firewall_description(**kwargs)
