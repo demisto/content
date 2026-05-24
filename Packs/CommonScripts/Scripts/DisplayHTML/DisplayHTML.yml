@@ -11,7 +11,7 @@ system: true
 args:
 - name: html
   required: true
-  description: The HTML to display
+  description: The HTML to display.
 - name: markAsNote
   auto: PREDEFINED
   predefined:
@@ -19,9 +19,9 @@ args:
   - "false"
   description: Should the entry be marked as a note?
 - name: header
-  description: Add a header text to the output
+  description: Add a header text to the output.
 scripttarget: 0
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (auto formatted)

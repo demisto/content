@@ -555,10 +555,6 @@
     "fromVersion": "6.5.0",
     "supportedModules": [
         "agentix",
-        "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security",
-        "cloud_posture"
+        "xsiam"
     ]
 }

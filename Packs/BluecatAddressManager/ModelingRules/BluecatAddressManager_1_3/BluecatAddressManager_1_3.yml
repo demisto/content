@@ -4,3 +4,5 @@ name: Bluecat Address Manager Modeling Rule
 rules: ''
 schema: ''
 tags: Bluecat Address Manager
+supportedModules:
+- xsiam

@@ -4,3 +4,5 @@ name: Zscaler Private Access Modeling Rule
 rules: ''
 schema: ''
 tags: Zscaler Private Access
+supportedModules:
+- xsiam

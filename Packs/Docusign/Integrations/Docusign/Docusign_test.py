@@ -10,6 +10,9 @@ from Docusign import (
     get_user_data,
     fetch_audit_user_data,
     UserDataClient,
+    get_events_command,
+    CUSTOMER_EVENTS_TYPE,
+    USER_DATA_TYPE,
 )
 
 
@@ -378,7 +381,7 @@ class TestGetUserData:
 
         # Initial state - first fetch
         initial_last_run = {}
-        result_last_run, users = fetch_audit_user_data(initial_last_run, mock_auth_client, test_mode=True)
+        result_last_run, users = fetch_audit_user_data(initial_last_run, mock_auth_client, limit=limit, test_mode=True)
 
         assert len(users) == limit
         assert result_last_run["continuing_fetch_info"].get("url") == "next_url_2"
@@ -398,7 +401,7 @@ class TestGetUserData:
         # --- SECOND CALL TO fetch_audit_user_data: Process excess users from previous fetch before fetching new page ---
 
         # Second fetch using last_run from first fetch
-        result_last_run_2, users_2 = fetch_audit_user_data(result_last_run, mock_auth_client, test_mode=True)
+        result_last_run_2, users_2 = fetch_audit_user_data(result_last_run, mock_auth_client, limit=limit, test_mode=True)
 
         assert len(users_2) == limit
 
@@ -417,7 +420,7 @@ class TestGetUserData:
         assert excess_info["url"] == "next_url_3"
 
         # Third fetch using last_run from second fetch
-        result_last_run_3, users_3 = fetch_audit_user_data(result_last_run_2, mock_auth_client, test_mode=True)
+        result_last_run_3, users_3 = fetch_audit_user_data(result_last_run_2, mock_auth_client, limit=limit, test_mode=True)
 
         # Should return exactly 6 users
         assert len(users_3) == 6
@@ -433,3 +436,94 @@ class TestGetUserData:
         assert result_last_run_3["excess_users_info"] is None
         # Should remove continuing_fetch_info from last run (next page is none, next fetch will start a new fetch window)
         assert result_last_run_3["continuing_fetch_info"] is None
+
+
+class TestGetEventsCommand:
+    def test_get_events_command_customer_events(self, mocker):
+        """
+        Given:
+            - event_type is 'Customer events' and limit is 2
+        When:
+            - get_events_command is called
+        Then:
+            - It should call fetch_customer_events and return the events as CommandResults
+        """
+        mock_events = [
+            {
+                "timestamp": "2024-06-30T07:08:06.3038365Z",
+                "eventId": "event-1",
+                "source_log_type": "customerevent",
+                "_time": "2024-06-30T07:08:06Z",
+            },
+            {
+                "timestamp": "2024-06-30T06:44:26.8948106Z",
+                "eventId": "event-2",
+                "source_log_type": "customerevent",
+                "_time": "2024-06-30T06:44:26Z",
+            },
+        ]
+
+        mocker.patch.object(demisto, "args", return_value={"event_type": CUSTOMER_EVENTS_TYPE, "limit": "2"})
+        mocker.patch.object(demisto, "params", return_value={"url": DEFAULT_SERVER_DEV_URL})
+        mocker.patch.object(demisto, "debug")
+
+        mock_fetch = mocker.patch("Docusign.fetch_customer_events", return_value=({}, mock_events))
+
+        mock_auth_client = mocker.MagicMock()
+        mock_auth_client.access_token = "test_token"
+
+        result = get_events_command(mock_auth_client)
+
+        assert "fetched 2" in result.readable_output
+        assert result.raw_response == mock_events
+        mock_fetch.assert_called_once_with(last_run={}, access_token="test_token", limit=2)
+
+    def test_get_events_command_audit_users(self, mocker):
+        """
+        Given:
+            - event_type is 'Audit Users' and limit is 3
+        When:
+            - get_events_command is called
+        Then:
+            - It should call fetch_audit_user_data and return the events as CommandResults
+        """
+        mock_users = [
+            {"id": "user-1", "user_name": "alice"},
+            {"id": "user-2", "user_name": "bob"},
+            {"id": "user-3", "user_name": "charlie"},
+        ]
+
+        mocker.patch.object(demisto, "args", return_value={"event_type": USER_DATA_TYPE, "limit": "3"})
+        mocker.patch.object(demisto, "params", return_value={"url": DEFAULT_SERVER_DEV_URL})
+        mocker.patch.object(demisto, "debug")
+
+        mock_fetch = mocker.patch("Docusign.fetch_audit_user_data", return_value=({}, mock_users))
+
+        mock_auth_client = mocker.MagicMock()
+        mock_auth_client.access_token = "test_token"
+
+        result = get_events_command(mock_auth_client)
+
+        assert "fetched 3" in result.readable_output
+        assert result.raw_response == mock_users
+        mock_fetch.assert_called_once_with(last_run={}, auth_client=mock_auth_client, limit=3, test_mode=True)
+
+    def test_get_events_command_unknown_event_type(self, mocker):
+        """
+        Given:
+            - event_type is an unknown value
+        When:
+            - get_events_command is called
+        Then:
+            - It should raise a DemistoException
+        """
+        mocker.patch.object(demisto, "args", return_value={"event_type": "InvalidType", "limit": "10"})
+        mocker.patch.object(demisto, "params", return_value={})
+        mocker.patch.object(demisto, "debug")
+
+        mock_auth_client = mocker.MagicMock()
+
+        import pytest
+
+        with pytest.raises(DemistoException, match="Unknown event type"):
+            get_events_command(mock_auth_client)

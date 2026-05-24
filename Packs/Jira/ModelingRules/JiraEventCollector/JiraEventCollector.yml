@@ -4,6 +4,5 @@ name: JiraEventCollector
 rules: ''
 schema: ''
 supportedModules:
-- agentix
 - xsiam
 toversion: 6.9.9
