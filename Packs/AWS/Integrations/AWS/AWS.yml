@@ -18207,7 +18207,7 @@ script:
       description: The unique identifier of the VPC where the firewall is in use.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.Description
-      description: A description of the firewall.
+      description: The description of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
       description: The unique identifier for the firewall.
@@ -18222,13 +18222,13 @@ script:
       description: The subnet's IP address type.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-      description: A flag indicating whether it is possible to delete the firewall.
+      description: The flag indicating whether it is possible to delete the firewall.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
-      description: A setting indicating whether the firewall is protected against changes to the subnet associations.
+      description: The setting indicating whether the firewall is protected against changes to the subnet associations.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-      description: A setting indicating whether the firewall is protected against a change to the firewall policy association.
+      description: The setting indicating whether the firewall is protected against a change to the firewall policy association.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Key
       description: The key of the tag.
@@ -18258,7 +18258,7 @@ script:
       description: The Availability Zone.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
-      description: A setting indicating whether the firewall is protected against changes to the Availability Zone associations.
+      description: The setting indicating whether the firewall is protected against changes to the Availability Zone associations.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
       description: The readiness status of the firewall.
@@ -18272,7 +18272,7 @@ script:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.CapacityUsageSummary
       description: Describes the capacity usage of the resources contained in a firewall’s reference sets.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState.AttachmentId
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState
       description: The synchronization state of the transit gateway attachment. This indicates whether the firewall’s transit gateway configuration is properly synchronized and operational.
       type: Unknown
   - name: aws-network-firewall-firewalls-list
@@ -18323,9 +18323,9 @@ script:
     - name: limit
       description: The maximum number of objects that you want Network Firewall to return for this request.
     - name: next_token
-      description: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      description: The NextToken value returned from a previous paginated ListFirewalls request.
     - name: vpc_ids
-      description: The unique identifiers of the VPCs that you want to retrieve the firewalls for.
+      description: A comma-separated list of unique identifiers of the VPCs that you want to retrieve the firewalls for.
       isArray: true
     outputs:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
@@ -18335,7 +18335,7 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.FirewallsNextToken
-      description: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
       type: String
 
   - name: aws-network-firewall-firewall-create
@@ -18394,26 +18394,25 @@ script:
       description: The unique identifier of the VPC where Network Firewall should create the firewall.
     - name: subnet_mappings
       required: true
-      isArray: true
       description: 'A JSON string specifying the public subnets to use for your Network Firewall firewalls. [{\"SubnetId\": \"string\", \"IPAddressType\": \"DUALSTACK\"}]. The possible values for the IPAddressType are DUALSTACK, IPV4 ,IPV6.'
     - name: delete_protection
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
+      description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
     - name: subnet_change_protection
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: A flag indicating whether it is possible to change the associated subnet(s).
+      description: Whether it is possible to change the associated subnet(s).
     - name: firewall_policy_change_protection
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: A flag indicating whether it is possible to change the associated firewall policy.
+      description: Whether it is possible to change the associated firewall policy.
     - name: description
       description: A description of the firewall.
     - name: tags
@@ -18427,7 +18426,7 @@ script:
         - CUSTOM_KMS
         - AWS_OWNED_KMS_KEY
     - name: enabled_analysis_types
-      description: The enabled analysis types.
+      description: A comma-separated list of the enabled analysis types.
       isArray: true
     - name: transit_gateway_id
       description: The unique identifier for the transit gateway.
@@ -18435,7 +18434,7 @@ script:
       description: A comma-separated list of Availability Zones to use for your Network Firewall firewalls.
       isArray: true
     - name: availability_zone_change_protection
-      description: A setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
+      description: Whether the firewall is protected against changes to its Availability Zone configuration.
       auto: PREDEFINED
       predefined:
         - "true"
@@ -18460,16 +18459,16 @@ script:
       description: The subnet's IP address type.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-      description: A flag indicating whether it is possible to delete the firewall.
+      description: The flag indicating whether it is possible to delete the firewall.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
-      description: A flag indicating whether it is possible to change the associated subnet(s).
+      description: The flag indicating whether it is possible to change the associated subnet(s).
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-      description: A flag indicating whether it is possible to change the associated firewall policy.
+      description: The flag indicating whether it is possible to change the associated firewall policy.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.Description
-      description: A description of the firewall.
+      description: The description of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
       description: The unique identifier for the firewall.
@@ -18502,8 +18501,8 @@ script:
       description: The ID of the Availability Zone where the firewall endpoint is located.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
-      description: A setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
-      type: String
+      description: The setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
+      type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
       description: The readiness status of the firewall.
       type: String
@@ -18587,16 +18586,16 @@ script:
         description: The subnet's IP address type.
         type: String
       - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-        description: A flag indicating whether it is possible to delete the firewall.
+        description: The flag indicating whether it is possible to delete the firewall.
         type: Boolean
       - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
-        description: A flag indicating whether it is possible to change the associated subnet(s).
+        description: The flag indicating whether it is possible to change the associated subnet(s).
         type: Boolean
       - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-        description: A flag indicating whether it is possible to change the associated firewall policy.
+        description: The flag indicating whether it is possible to change the associated firewall policy.
         type: Boolean
       - contextPath: AWS.NetworkFirewall.Firewalls.Description
-        description: A description of the firewall.
+        description: The description of the firewall.
         type: String
       - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
         description: The unique identifier for the firewall.
@@ -18629,8 +18628,8 @@ script:
         description: The ID of the Availability Zone where the firewall endpoint is located.
         type: String
       - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
-        description: A setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
-        type: String
+        description: The setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
+        type: Boolean
       - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
         description: The readiness status of the firewall.
         type: String
@@ -18697,7 +18696,7 @@ script:
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall.
     - name: delete_protection
-      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to TRUE.
+      description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to TRUE.
       required: true
       auto: PREDEFINED
       predefined:
@@ -18711,7 +18710,7 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
+      description: The flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
       description: An optional token that you can use for optimistic locking.
@@ -18776,7 +18775,7 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-      description: A flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
+      description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
       description: An optional token that you can use for optimistic locking.
