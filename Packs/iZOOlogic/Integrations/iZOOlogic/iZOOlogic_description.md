@@ -1,5 +1,7 @@
 ## iZOOlogic
 
+Use this integration to fetch threat incidents (phishing, brand abuse, malware, and more) from the iZOOlogic platform into Cortex for centralized monitoring and analysis.
+
 ### Obtaining API Credentials
 
 To configure this integration, you need an **API Key** and a **Secret Key** from the iZOOlogic platform.

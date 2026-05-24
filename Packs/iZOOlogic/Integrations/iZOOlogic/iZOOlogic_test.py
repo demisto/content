@@ -11,6 +11,7 @@ from pytest_mock import MockerFixture
 from iZOOlogic import (
     Client,
     COMMAND_MAP,
+    IZOOlogicAuthHandler,
     _validate_api_response,
     date_to_unix_timestamp,
     get_current_unix_timestamp,
@@ -90,11 +91,163 @@ def mock_client(mocker: MockerFixture) -> Client:
 def valid_params() -> dict:
     return {
         "url": "https://api.izoologic.com/",
-        "api_key": "test-key",
+        "api_key": {"password": "test-key"},
         "secret_key": {"password": "test-secret"},
         "incident_types_filter": ["phishing", "malware"],
         "max_fetch": "5000",
     }
+
+
+# endregion
+
+# region Auth Handler Tests
+
+
+class TestIZOOlogicAuthHandler:
+    """Tests for the IZOOlogicAuthHandler two-step token auth."""
+
+    def test_initial_state(self):
+        """Verify handler initializes with no token, not authenticating, and has a lock."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        assert handler._token is None
+        assert handler._authenticating is False
+        assert hasattr(handler, "_auth_lock")
+
+    def test_on_request_authenticates_when_no_token(self):
+        """on_request should call _authenticate when no token is set."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        mock_client = AsyncMock()
+        mock_request = AsyncMock()
+        mock_request.headers = {}
+
+        handler._authenticate = AsyncMock()
+        handler._authenticate.side_effect = lambda client: setattr(handler, "_token", "new-token")
+
+        asyncio.get_event_loop().run_until_complete(handler.on_request(mock_client, mock_request))
+
+        handler._authenticate.assert_called_once_with(mock_client)
+        assert mock_request.headers["Authorization"] == "Bearer new-token"
+
+    def test_on_request_skips_auth_when_token_exists(self):
+        """on_request should skip _authenticate when token is already set."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        handler._token = "existing-token"
+        mock_client = AsyncMock()
+        mock_request = AsyncMock()
+        mock_request.headers = {}
+
+        handler._authenticate = AsyncMock()
+
+        asyncio.get_event_loop().run_until_complete(handler.on_request(mock_client, mock_request))
+
+        handler._authenticate.assert_not_called()
+        assert mock_request.headers["Authorization"] == "Bearer existing-token"
+
+    def test_on_request_skips_during_authentication(self):
+        """on_request should not add auth header when _authenticating is True (prevents recursion)."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        handler._authenticating = True
+        mock_client = AsyncMock()
+        mock_request = AsyncMock()
+        mock_request.headers = {}
+
+        asyncio.get_event_loop().run_until_complete(handler.on_request(mock_client, mock_request))
+
+        assert "Authorization" not in mock_request.headers
+
+    def test_on_auth_failure_re_authenticates(self):
+        """on_auth_failure should clear token, call _authenticate, and return True to retry."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        handler._token = "expired-token"
+        mock_client = AsyncMock()
+        mock_response = AsyncMock()
+
+        handler._authenticate = AsyncMock()
+
+        result = asyncio.get_event_loop().run_until_complete(handler.on_auth_failure(mock_client, mock_response))
+
+        handler._authenticate.assert_called_once_with(mock_client)
+        assert result is True
+
+    def test_authenticate_skips_when_token_exists(self):
+        """_authenticate should skip API call when token is already set (double-check pattern)."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        handler._token = "existing-token"
+        mock_client = AsyncMock()
+        mock_client._request = AsyncMock()
+
+        asyncio.get_event_loop().run_until_complete(handler._authenticate(mock_client))
+
+        mock_client._request.assert_not_called()
+        assert handler._token == "existing-token"
+
+    def test_authenticate_success(self):
+        """_authenticate should store the token on successful API response."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        mock_client = AsyncMock()
+
+        mock_raw_response = AsyncMock()
+        mock_raw_response.json.return_value = {
+            "success": True,
+            "result": {"accessToken": "test-token-123"},
+            "message": "",
+            "errorCode": "",
+        }
+        mock_client._request = AsyncMock(return_value=mock_raw_response)
+
+        asyncio.get_event_loop().run_until_complete(handler._authenticate(mock_client))
+
+        assert handler._token == "test-token-123"
+        assert handler._authenticating is False
+
+    def test_authenticate_api_error(self):
+        """_authenticate should raise DemistoException on API error response."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        mock_client = AsyncMock()
+
+        mock_raw_response = AsyncMock()
+        mock_raw_response.json.return_value = {
+            "success": False,
+            "result": None,
+            "message": "Invalid credentials",
+            "errorCode": "AUTH_FAILED",
+        }
+        mock_client._request = AsyncMock(return_value=mock_raw_response)
+
+        with pytest.raises(DemistoException, match="Authentication failed"):
+            asyncio.get_event_loop().run_until_complete(handler._authenticate(mock_client))
+
+        assert handler._authenticating is False
+
+    def test_authenticate_no_token_in_response(self):
+        """_authenticate should raise DemistoException when no token is returned."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        mock_client = AsyncMock()
+
+        mock_raw_response = AsyncMock()
+        mock_raw_response.json.return_value = {
+            "success": True,
+            "result": {},
+            "message": "",
+            "errorCode": "",
+        }
+        mock_client._request = AsyncMock(return_value=mock_raw_response)
+
+        with pytest.raises(DemistoException, match="No token received"):
+            asyncio.get_event_loop().run_until_complete(handler._authenticate(mock_client))
+
+        assert handler._authenticating is False
+
+    def test_authenticating_flag_reset_on_exception(self):
+        """_authenticating flag should be reset even if _request raises."""
+        handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
+        mock_client = AsyncMock()
+        mock_client._request = AsyncMock(side_effect=Exception("Network error"))
+
+        with pytest.raises(Exception, match="Network error"):
+            asyncio.get_event_loop().run_until_complete(handler._authenticate(mock_client))
+
+        assert handler._authenticating is False
 
 
 # endregion
@@ -166,7 +319,7 @@ class TestCreateIncidents:
             (
                 [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}],
                 "iZOOlogic - Phishing - abc",
-                "100",
+                "1970-01-01T00:01:40+00:00",
             ),
             (
                 [{"incidentID": "1"}],
@@ -328,7 +481,7 @@ class TestParseIntegrationParams:
         "override, error_match",
         [
             ({"url": ""}, "Server URL is required"),
-            ({"api_key": ""}, "API Key is required"),
+            ({"api_key": {"password": ""}}, "API Key is required"),
             ({"secret_key": {"password": ""}}, "Secret Key is required"),
             ({"max_fetch": "-1"}, "Invalid max_fetch value"),
         ],
@@ -825,7 +978,7 @@ class TestMain:
             "params",
             return_value={
                 "url": "https://api.izoologic.com",
-                "api_key": "k",
+                "api_key": {"password": "k"},
                 "secret_key": {"password": "s"},
                 "max_fetch": "1000",
                 "incident_types_filter": ["phishing"],
@@ -850,7 +1003,7 @@ class TestMain:
             "params",
             return_value={
                 "url": "https://x.com",
-                "api_key": "k",
+                "api_key": {"password": "k"},
                 "secret_key": {"password": "s"},
             },
         )
@@ -869,7 +1022,7 @@ class TestMain:
             "params",
             return_value={
                 "url": "https://api.izoologic.com",
-                "api_key": "k",
+                "api_key": {"password": "k"},
                 "secret_key": {"password": "s"},
             },
         )

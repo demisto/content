@@ -1,5 +1,6 @@
 import asyncio
 import json
+import threading
 import traceback
 from datetime import datetime, UTC
 from typing import Any
@@ -164,9 +165,11 @@ def create_incidents(raw_incidents: list[dict]) -> list[dict]:
         incident_id = raw.get("incidentID", "Unknown")
         created_on = raw.get("createdOn", "")
 
+        occurred_iso = datetime.fromtimestamp(int(created_on), tz=UTC).isoformat() if created_on else ""
+
         incident = {
             "name": f"iZOOlogic - {incident_type} - {incident_id}",
-            "occurred": created_on,
+            "occurred": occurred_iso,
             "rawJSON": json.dumps(raw),
         }
         incidents.append(incident)
@@ -248,12 +251,13 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     if not base_url:
         raise DemistoException("Server URL is required.")
 
-    api_key = params.get("api_key", "")
+    api_key_param = params.get("api_key", {})
+    api_key = api_key_param.get("password", "") if isinstance(api_key_param, dict) else api_key_param
     if not api_key:
         raise DemistoException("API Key is required.")
 
     secret_key_param = params.get("secret_key", {})
-    secret_key = secret_key_param.get("password", "")
+    secret_key = secret_key_param.get("password", "") if isinstance(secret_key_param, dict) else secret_key_param
     if not secret_key:
         raise DemistoException("Secret Key is required.")
 
@@ -361,6 +365,7 @@ class IZOOlogicAuthHandler(AuthHandler):
         self._secret_key = secret_key
         self._token: str | None = None
         self._authenticating: bool = False
+        self._auth_lock = threading.Lock()
 
     async def on_request(self, client: ContentClient, request: Any) -> None:
         """Add Bearer token to each request, authenticating if needed."""
@@ -373,48 +378,58 @@ class IZOOlogicAuthHandler(AuthHandler):
     async def on_auth_failure(self, client: ContentClient, response: Any) -> bool:
         """Re-authenticate on 401 and retry the request."""
         demisto.debug("[Auth] Authentication failed (401). Re-authenticating...")
+        self._token = None  # Clear expired token so _authenticate doesn't skip
         await self._authenticate(client)
         return True  # Retry the request with new token
 
     async def _authenticate(self, client: ContentClient) -> None:
-        """Authenticate with the iZOOlogic API and store the token."""
-        demisto.debug("[Auth] Authenticating with iZOOlogic API...")
-        self._authenticating = True
+        """Authenticate with the iZOOlogic API and store the token.
 
-        try:
-            body = {
-                "apikey": self._api_key,
-                "secretkey": self._secret_key,
-            }
+        Uses a threading.Lock to ensure thread safety when concurrent fetches
+        run via asyncio.to_thread. The double-check on self._token prevents
+        redundant auth calls when multiple threads queue up on the lock.
+        """
+        with self._auth_lock:
+            if self._token:
+                demisto.debug("[Auth] Token already obtained by another thread, skipping.")
+                return
 
-            # Use the client's async _request method directly for auth
-            raw_response = await client._request(
-                method="POST",
-                url_suffix=ApiPaths.AUTHENTICATE,
-                json_data=body,
-            )
-            response: dict = raw_response.json()
+            demisto.debug("[Auth] Authenticating with iZOOlogic API...")
+            self._authenticating = True
 
-            # Check for API-level errors
-            if not response.get("success", True):
-                error_code = response.get("errorCode", "")
-                message = response.get("message", "Unknown error")
-                raise DemistoException(
-                    f"Authentication failed: {message} (errorCode: {error_code}). "
-                    "Verify your API Key and Secret Key are correct."
+            try:
+                body = {
+                    "apikey": self._api_key,
+                    "secretkey": self._secret_key,
+                }
+
+                raw_response = await client._request(
+                    method="POST",
+                    url_suffix=ApiPaths.AUTHENTICATE,
+                    json_data=body,
                 )
+                response: dict = raw_response.json()
 
-            result = response.get("result", {})
-            token = result.get("accessToken") if isinstance(result, dict) else None
-            if not token:
-                raise DemistoException(
-                    "Authentication failed: No token received from the API. " "Verify your API Key and Secret Key are correct."
-                )
+                if not response.get("success", True):
+                    error_code = response.get("errorCode", "")
+                    message = response.get("message", "Unknown error")
+                    raise DemistoException(
+                        f"Authentication failed: {message} (errorCode: {error_code}). "
+                        "Verify your API Key and Secret Key are correct."
+                    )
 
-            self._token = token
-            demisto.debug("[Auth] Successfully authenticated")
-        finally:
-            self._authenticating = False
+                result = response.get("result", {})
+                token = result.get("accessToken") if isinstance(result, dict) else None
+                if not token:
+                    raise DemistoException(
+                        "Authentication failed: No token received from the API. "
+                        "Verify your API Key and Secret Key are correct."
+                    )
+
+                self._token = token
+                demisto.debug("[Auth] Successfully authenticated")
+            finally:
+                self._authenticating = False
 
 
 # endregion
@@ -618,6 +633,7 @@ def get_incidents_command(
     limit = arg_to_number(args.get("limit", Config.DEFAULT_LIMIT))
     if not limit or limit <= 0:
         raise DemistoException(f"Invalid limit value: {args.get('limit')}. Must be a positive integer.")
+    limit = int(limit)
 
     start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
     end_time_input = args.get("end_time")

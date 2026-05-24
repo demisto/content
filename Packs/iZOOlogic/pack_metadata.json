@@ -1,6 +1,6 @@
 {
     "name": "iZOOlogic",
-    "description": "Access and manage iZOOlogic incident data, allowing for automated ingestion, status updates, and communication history tracking.",
+    "description": "Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

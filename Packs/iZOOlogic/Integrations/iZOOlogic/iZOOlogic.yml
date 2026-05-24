@@ -1,3 +1,5 @@
+display: iZOOlogic
+name: iZOOlogic
 category: Network Security
 sectionorder:
 - Connect
@@ -15,7 +17,9 @@ configuration:
 - name: api_key
   display: API Key
   required: true
-  type: 14
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
   additionalinfo: 'The API key provided by iZOOlogic for authentication.'
   section: Connect
 - name: secret_key
@@ -30,13 +34,13 @@ configuration:
   display: Trust any certificate (not secure)
   type: 8
   required: false
-  additionalinfo: 'When selected, certificates are not checked.'
+  additionalinfo: 'Whether to trust any certificate (not secure).'
   section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   required: false
-  additionalinfo: 'When selected, uses the system proxy settings.'
+  additionalinfo: 'Whether to use the system proxy settings.'
   section: Connect
 - name: isFetch
   display: Fetch incidents
@@ -60,26 +64,21 @@ configuration:
   - social media
   - other
   - email
-  additionalinfo: 'Select which incident types to fetch from iZOOlogic. By default, all types are selected.'
+  additionalinfo: 'A comma-separated list of incident types to fetch from iZOOlogic. By default, all types are selected.'
   section: Collect
 - name: max_fetch
-  display: The maximum number of incidents per type per fetch
+  display: Maximum Incidents Per Fetch Per Type
   required: true
   defaultvalue: '5000'
   type: 0
-  additionalinfo: 'Maximum number of incidents to fetch per type per fetch cycle (default: 5000).'
+  additionalinfo: 'The maximum number of incidents to fetch per type per fetch cycle.'
   section: Collect
-- display: Incident type
+- display: Incident Type
   name: incidentType
   type: 13
   section: Collect
   required: false
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-description: Access and manage iZOOlogic incident data, allowing for automated ingestion, status updates, and communication history tracking.
-display: iZOOlogic
-name: iZOOlogic
+description: Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.
 script:
   commands:
   - name: izoologic-get-incidents
@@ -89,9 +88,9 @@ script:
       description: The maximum number of incidents to return per type.
       defaultValue: '50'
     - name: start_time
-      description: 'Filter incidents detected at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
+      description: 'The time to filter incidents detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
     - name: end_time
-      description: 'Filter incidents detected at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
+      description: 'The time to filter incidents detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
     - name: incident_type
       description: 'Filter by incident type(s). If not specified, uses the types configured in the integration parameters.'
       isArray: true

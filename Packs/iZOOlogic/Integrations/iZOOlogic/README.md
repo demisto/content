@@ -1,4 +1,4 @@
-Access and manage iZOOlogic incident data, allowing for automated ingestion, status updates, and communication history tracking.
+Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.
 
 ## Configure iZOOlogic in Cortex
 
@@ -34,7 +34,7 @@ Gets incidents from iZOOlogic. Use this command for development and debugging on
 | limit | The maximum number of incidents to return per type. Default is 50. | Optional |
 | start_time | Filter incidents detected at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
 | end_time | Filter incidents detected at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
-| incident_type | Filter by incident type(s). If not specified, uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
+| incident_type | Filter by incident type(s). If not specified, the command uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
 
 #### Context Output
 
@@ -63,6 +63,6 @@ Gets incidents from iZOOlogic. Use this command for development and debugging on
 >
 >|incidentID|incidentType|subIncidentType|brand|url|status|statusCode|threatType|detectionDate|createdOn|closedOn|detectedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| uVJxla1s1 | Brand Abuse - Fake Website | Fake Website | TVS Motor | <https://tvsmotor.com.mt> | Waiting | 17 | Substantial Threat | 1760941801 | 1769509374 |  | Reported By iZOOLogic |
->| 1JrJzZBip | Phishing |  | TVS Credit | <https://tvs-credit.dev.veefin.in> | Closed | 16 | High Threat | 1769792260 | 1769792260 | 1770180062 | Reported By iZOOLogic |
->| KIks8sE3U | Social Media - Facebook | Facebook | TVS King | <https://www.facebook.com/ads/library/?id=917334661007536> | Waiting | 17 | Substantial Threat | 1769626014 | 1769626014 |  | Reported By iZOOLogic |
+>| uVJxla1s1 | Brand Abuse - Fake Website | Fake Website | TVS Motor | https://tvsmotor.com.mt | Waiting | 17 | Substantial Threat | 1760941801 | 1769509374 |  | Reported By iZOOLogic |
+>| 1JrJzZBip | Phishing |  | TVS Credit | https://tvs-credit.dev.veefin.in | Closed | 16 | High Threat | 1769792260 | 1769792260 | 1770180062 | Reported By iZOOLogic |
+>| KIks8sE3U | Social Media - Facebook | Facebook | TVS King | https://www.facebook.com/ads/library/?id=917334661007536 | Waiting | 17 | Substantial Threat | 1769626014 | 1769626014 |  | Reported By iZOOLogic |
