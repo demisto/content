@@ -248,7 +248,7 @@ def test_storage_account_update_command(mocker, client, mock_params):
     result = storage_account_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccount"
+    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "teststorage"
     assert result.outputs["properties"]["supportsHttpsTrafficOnly"] is True
@@ -319,7 +319,7 @@ def test_create_policy_assignment_command(mocker, client, mock_params):
     result = create_policy_assignment_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.PolicyAssignment"
+    assert result.outputs_prefix == "Azure.Policy.PolicyAssignments"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-policy"
     assert result.outputs["properties"]["displayName"] == "Test Policy"
@@ -493,7 +493,7 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     result = monitor_log_profile_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.LogProfile"
+    assert result.outputs_prefix == "Azure.Monitor.LogProfiles"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-profile"
     assert result.outputs["location"] == "westus"
@@ -3288,11 +3288,11 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
         "Etag": "0x8DB7F5589F2DC4A",
         "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
         "Date": "Wed, 14 Aug 2024 10:05:00 GMT",
-        "x-ms-request-id": "req-id-12345",
-        "x-ms-lease-status": "unlocked",
-        "x-ms-lease-state": "available",
-        "x-ms-has-immutability-policy": "false",
-        "x-ms-has-legal-hold": "false",
+        "X-Ms-Request-Id": "req-id-12345",
+        "X-Ms-Lease-Status": "unlocked",
+        "X-Ms-Lease-State": "available",
+        "X-Ms-Has-Immutability-Policy": "false",
+        "X-Ms-Has-Legal-Hold": "false",
     }
     mock_response.headers = CaseInsensitiveDict(raw_response_data)
 
@@ -3305,7 +3305,7 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Verify client.get_storage_container_properties_request was called with correct parameters
     client.get_storage_container_properties_request.assert_called_once_with("testaccount", "testcontainer")
 
-    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_prefix == "Azure.Storage.Container"
     assert result.outputs_key_field == "name"
 
 

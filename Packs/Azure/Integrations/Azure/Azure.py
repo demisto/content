@@ -2795,7 +2795,7 @@ def storage_account_update_command(client: AzureClient, params: dict, args: dict
     }
 
     return CommandResults(
-        outputs_prefix="Azure.StorageAccount",
+        outputs_prefix="Azure.Storage.StorageAccounts",
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -3385,11 +3385,11 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.PolicyAssignment",
+        outputs_prefix="Azure.Policy.PolicyAssignments",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3572,11 +3572,11 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.LogProfile",
+        outputs_prefix="Azure.Monitor.LogProfiles",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 

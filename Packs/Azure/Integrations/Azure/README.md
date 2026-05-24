@@ -81,8 +81,8 @@ Updates a specific account storage.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
 | account_name | The name of the storage account. | Required |
 | sku | Gets or sets the SKU name, Required for account creation; optional for update. Possible values are: Premium_LRS, Premium_ZRS, Standard_GRS, Standard_GZRS, Standard_LRS, Standard_RAGRS, Standard_RAGZRS, Standard_ZRS. | Optional |
 | kind | Indicates the type of storage account, Required for account creation; optional for update. Possible values are: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage. | Optional |
@@ -111,30 +111,30 @@ Updates a specific account storage.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
-| Azure.StorageAccount.kind | String | The kind of storage account. |
-| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
-| Azure.StorageAccount.name | String | The name of the resource. |
-| Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
-| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
-| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
-| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Entra ID \(Azure AD\). |
-| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
-| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
-| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
-| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
-| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
-| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
-| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
-| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
-| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
-| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
-| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
-| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
-| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
-| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
-| Azure.StorageAccount.tags | unknown | Resource tags. |
-| Azure.StorageAccount.type | String | The storage account type. |
+| Azure.Storage.StorageAccounts.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.StorageAccounts.kind | String | The kind of storage account. |
+| Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
+| Azure.Storage.StorageAccounts.name | String | The name of the resource. |
+| Azure.Storage.StorageAccounts.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
+| Azure.Storage.StorageAccounts.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.Storage.StorageAccounts.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Entra ID \(Azure AD\). |
+| Azure.Storage.StorageAccounts.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.Storage.StorageAccounts.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.Storage.StorageAccounts.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.Storage.StorageAccounts.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.Storage.StorageAccounts.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.Storage.StorageAccounts.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.Storage.StorageAccounts.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.Storage.StorageAccounts.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
+| Azure.Storage.StorageAccounts.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.Storage.StorageAccounts.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.Storage.StorageAccounts.tags | unknown | Resource tags. |
+| Azure.Storage.StorageAccounts.type | String | The storage account type. |
 
 ### azure-storage-blob-service-properties-set
 
@@ -185,7 +185,7 @@ Creates a policy assignment.
 | --- | --- | --- |
 | name | Name of the policy assignment. | Required |
 | subscription_id | Subscription ID. | Required |
-| scope | The scope of the policy assignment. | Optional |
+| scope | The scope of the policy assignment. | Required |
 | policy_definition_id | The ID of the policy definition or policy set definition being assigned. | Optional |
 | display_name | The assignment display name. | Optional |
 | parameters | The JSON object for policy properties parameters and their values. | Optional |
@@ -195,25 +195,25 @@ Creates a policy assignment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.PolicyAssignment.ID | string | The resource ID of the policy assignment. |
-| Azure.PolicyAssignment.Name | string | The name of the policy assignment. |
-| Azure.PolicyAssignment.Type | string | The type of the resource \(e.g., 'Microsoft.Authorization/policyAssignments'\). |
-| Azure.PolicyAssignment.Location | string | The location of the policy assignment. |
-| Azure.PolicyAssignment.Identity | unknown | The managed identity associated with the policy assignment. |
-| Azure.PolicyAssignment.Properties.DisplayName | string | The display name of the policy assignment. |
-| Azure.PolicyAssignment.Properties.Description | string | The description of the policy assignment. |
-| Azure.PolicyAssignment.Properties.PolicyDefinitionId | string | The ID of the policy definition or policy set definition being assigned. |
-| Azure.PolicyAssignment.Properties.Scope | string | The scope of the policy assignment. |
-| Azure.PolicyAssignment.Properties.NotScopes | unknown | The list of scopes that are excluded from the policy assignment. |
-| Azure.PolicyAssignment.Properties.Parameters | unknown | The parameter values for the assigned policy rule. |
-| Azure.PolicyAssignment.Properties.Metadata | unknown | The metadata associated with the policy assignment. |
-| Azure.PolicyAssignment.Properties.EnforcementMode | string | The policy assignment enforcement mode \(e.g., 'Default' or 'DoNotEnforce'\). |
-| Azure.PolicyAssignment.Properties.latestDefinitionVersion | string | The latest version of the policy definition available. This is only present if requested via the $expand query parameter. |
-| Azure.PolicyAssignment.Properties.NonComplianceMessages | unknown | The messages that describe why a resource is non-compliant with the policy. |
-| Azure.PolicyAssignment.Properties.DefinitionVersion | string | The version of the policy definition to use. |
-| Azure.PolicyAssignment.Properties.Overrides | unknown | The policy property value overrides. |
-| Azure.PolicyAssignment.Properties.ResourceSelectors | unknown | The resource selectors to filter policies by resource properties. |
-| Azure.PolicyAssignment.SystemData | unknown | The system metadata relating to this resource. |
+| Azure.Policy.PolicyAssignments.ID | string | The resource ID of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Name | string | The name of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Type | string | The type of the resource \(e.g., 'Microsoft.Authorization/policyAssignments'\). |
+| Azure.Policy.PolicyAssignments.Location | string | The location of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Identity | unknown | The managed identity associated with the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.DisplayName | string | The display name of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.Description | string | The description of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.PolicyDefinitionId | string | The ID of the policy definition or policy set definition being assigned. |
+| Azure.Policy.PolicyAssignments.Properties.Scope | string | The scope of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.NotScopes | unknown | The list of scopes that are excluded from the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.Parameters | unknown | The parameter values for the assigned policy rule. |
+| Azure.Policy.PolicyAssignments.Properties.Metadata | unknown | The metadata associated with the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.EnforcementMode | string | The policy assignment enforcement mode \(e.g., 'Default' or 'DoNotEnforce'\). |
+| Azure.Policy.PolicyAssignments.Properties.latestDefinitionVersion | string | The latest version of the policy definition available. This is only present if requested via the $expand query parameter. |
+| Azure.Policy.PolicyAssignments.Properties.NonComplianceMessages | unknown | The messages that describe why a resource is non-compliant with the policy. |
+| Azure.Policy.PolicyAssignments.Properties.DefinitionVersion | string | The version of the policy definition to use. |
+| Azure.Policy.PolicyAssignments.Properties.Overrides | unknown | The policy property value overrides. |
+| Azure.Policy.PolicyAssignments.Properties.ResourceSelectors | unknown | The resource selectors to filter policies by resource properties. |
+| Azure.Policy.PolicyAssignments.SystemData | unknown | The system metadata relating to this resource. |
 
 ### azure-postgres-config-set
 
@@ -386,7 +386,7 @@ Updates a log profile in Azure Monitoring REST API.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_profile_name | The name of the log profile to update. | Required |
-| subscription_id | subscription ID. | Optional |
+| subscription_id | subscription ID. | Required |
 | location | Resource location. | Optional |
 | retention_policy_days | Number of days to retain logs. | Optional |
 | retention_policy_enabled | Whether to enable the retention policy. Possible values are: true, false. | Optional |
@@ -395,17 +395,17 @@ Updates a log profile in Azure Monitoring REST API.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.LogProfile.id | String | The fully qualified Azure resource ID for the log profile. |
-| Azure.LogProfile.name | String | The name of the log profile. |
-| Azure.LogProfile.type | String | The type of the resource \(Microsoft.Insights/logProfiles\). |
-| Azure.LogProfile.location | String | The location of the log profile. |
-| Azure.LogProfile.tags | Object | Resource tags. |
-| Azure.LogProfile.properties.storageAccountId | String | The resource ID of the storage account to which diagnostic logs are delivered. |
-| Azure.LogProfile.properties.serviceBusRuleId | String | The service bus rule ID to which diagnostic logs are sent. |
-| Azure.LogProfile.properties.locations | Array | A list of regions for which events are collected. |
-| Azure.LogProfile.properties.categories | Array | A list of categories of logs that are collected. |
-| Azure.LogProfile.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
-| Azure.LogProfile.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
+| Azure.Monitor.LogProfiles.id | String | The fully qualified Azure resource ID for the log profile. |
+| Azure.Monitor.LogProfiles.name | String | The name of the log profile. |
+| Azure.Monitor.LogProfiles.type | String | The type of the resource \(Microsoft.Insights/logProfiles\). |
+| Azure.Monitor.LogProfiles.location | String | The location of the log profile. |
+| Azure.Monitor.LogProfiles.tags | Object | Resource tags. |
+| Azure.Monitor.LogProfiles.properties.storageAccountId | String | The resource ID of the storage account to which diagnostic logs are delivered. |
+| Azure.Monitor.LogProfiles.properties.serviceBusRuleId | String | The service bus rule ID to which diagnostic logs are sent. |
+| Azure.Monitor.LogProfiles.properties.locations | Array | A list of regions for which events are collected. |
+| Azure.Monitor.LogProfiles.properties.categories | Array | A list of categories of logs that are collected. |
+| Azure.Monitor.LogProfiles.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
+| Azure.Monitor.LogProfiles.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
 
 ### azure-disk-update
 
@@ -1480,13 +1480,13 @@ Retrieve properties for the specified Container.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.Container.Property.Last-Modified | Date | Last modified time of the container. | 
-| Azure.Storage.Container.Property.Etag | String | The entity tag for the container. | 
-| Azure.Storage.Container.Property.X-Ms-Lease-Status | String | The lease status of the container. | 
-| Azure.Storage.Container.Property.X-Ms-Lease-State | String | The lease state of the container. | 
-| Azure.Storage.Container.Property.X-Ms-Has-Immutability-Policy | String | Indicates whether the container has an immutability policy set on it. | 
-| Azure.Storage.Container.Property.X-Ms-Has-Legal-Hold | String | Indicates whether the container has a legal hold. | 
-| Azure.Storage.Container.ContainerName | String | Container name. | 
+| Azure.Storage.Container.Property.Last-Modified | Date | Last modified time of the container. |
+| Azure.Storage.Container.Property.Etag | String | The entity tag for the container. |
+| Azure.Storage.Container.Property.X-Ms-Lease-Status | String | The lease status of the container. |
+| Azure.Storage.Container.Property.X-Ms-Lease-State | String | The lease state of the container. |
+| Azure.Storage.Container.Property.X-Ms-Has-Immutability-Policy | String | Indicates whether the container has an immutability policy set on it. |
+| Azure.Storage.Container.Property.X-Ms-Has-Legal-Hold | String | Indicates whether the container has a legal hold. |
+| Azure.Storage.Container.ContainerName | String | Container name. |
 
 ### azure-storage-container-create
 
@@ -2898,28 +2898,28 @@ Run this command to get the blob service properties of a specific account storag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required | 
-| resource_group_name | The resource group name. | Required | 
-| account_name | The storage account name. | Required | 
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.BlobService.id | String | Fully qualified resource ID for the resource. | 
-| Azure.Storage.BlobService.name | String | The name of the resource. | 
-| Azure.Storage.BlobService.type | String | The resource type. | 
-| Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. | 
-| Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled | Boolean | Deprecated in favor of isVersioningEnabled property. | 
-| Azure.Storage.BlobService.properties.changeFeed | Unknown | The blob service properties for change feed events. | 
-| Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. | 
-| Azure.Storage.BlobService.properties.cors | Unknown | Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service. | 
-| Azure.Storage.BlobService.properties.defaultServiceVersion | String | DefaultServiceVersion indicates the default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions. | 
-| Azure.Storage.BlobService.properties.deleteRetentionPolicy | Unknown | The blob service properties for blob soft delete. | 
-| Azure.Storage.BlobService.properties.isVersioningEnabled | Boolean | Versioning is enabled if set to true. | 
-| Azure.Storage.BlobService.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. | 
-| Azure.Storage.BlobService.sku.name | String | The SKU name. | 
-| Azure.Storage.BlobService.sku.tier | String | The SKU tier. | 
+| Azure.Storage.BlobService.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.BlobService.name | String | The name of the resource. |
+| Azure.Storage.BlobService.type | String | The resource type. |
+| Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. |
+| Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled | Boolean | Deprecated in favor of isVersioningEnabled property. |
+| Azure.Storage.BlobService.properties.changeFeed | Unknown | The blob service properties for change feed events. |
+| Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. |
+| Azure.Storage.BlobService.properties.cors | Unknown | Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service. |
+| Azure.Storage.BlobService.properties.defaultServiceVersion | String | DefaultServiceVersion indicates the default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
+| Azure.Storage.BlobService.properties.deleteRetentionPolicy | Unknown | The blob service properties for blob soft delete. |
+| Azure.Storage.BlobService.properties.isVersioningEnabled | Boolean | Versioning is enabled if set to true. |
+| Azure.Storage.BlobService.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. |
+| Azure.Storage.BlobService.sku.name | String | The SKU name. |
+| Azure.Storage.BlobService.sku.tier | String | The SKU tier. |
 
 ### azure-storage-blob-service-property-set
 
@@ -2934,27 +2934,27 @@ Sets properties for the blob service in a specific account storage. Required per
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required | 
-| subscription_id | The subscription ID. | Required | 
-| account_name | The name of the storage account. | Required | 
-| delete_rentention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional | 
-| delete_rentention_policy_days | The number of days the deleted item should be retained. | Optional | 
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
+| account_name | The name of the storage account. | Required |
+| delete_rentention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
+| delete_rentention_policy_days | The number of days the deleted item should be retained. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.BlobService.id | String | The resource ID. | 
-| Azure.Storage.BlobService.name | String | The name of the resource. | 
-| Azure.Storage.BlobService.type | String | The type of the resource. | 
-| Azure.Storage.BlobService.properties.cors | String | Specifies CORS rules for the Blob service. | 
-| Azure.Storage.BlobService.properties.defaultServiceVersion | Date | The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions. | 
-| Azure.Storage.BlobService.properties.deleteRetentionPolicy | unknown | The service properties for soft delete. | 
-| Azure.Storage.BlobService.properties.isVersioningEnabled | Boolean | If set to true, enables versioning. | 
-| Azure.Storage.BlobService.properties.changeFeed | Unknown | The blob service properties for change feed events. | 
-| Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled | Boolean | Deprecated in favor of isVersioningEnabled property. | 
-| Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. | 
-| Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. | 
-| Azure.Storage.BlobService.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. | 
-| Azure.Storage.BlobService.sku.name | String | The SKU name. | 
-| Azure.Storage.BlobService.sku.tier | String | The SKU tier. | 
+| Azure.Storage.BlobService.id | String | The resource ID. |
+| Azure.Storage.BlobService.name | String | The name of the resource. |
+| Azure.Storage.BlobService.type | String | The type of the resource. |
+| Azure.Storage.BlobService.properties.cors | String | Specifies CORS rules for the Blob service. |
+| Azure.Storage.BlobService.properties.defaultServiceVersion | Date | The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
+| Azure.Storage.BlobService.properties.deleteRetentionPolicy | unknown | The service properties for soft delete. |
+| Azure.Storage.BlobService.properties.isVersioningEnabled | Boolean | If set to true, enables versioning. |
+| Azure.Storage.BlobService.properties.changeFeed | Unknown | The blob service properties for change feed events. |
+| Azure.Storage.BlobService.properties.automaticSnapshotPolicyEnabled | Boolean | Deprecated in favor of isVersioningEnabled property. |
+| Azure.Storage.BlobService.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. |
+| Azure.Storage.BlobService.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. |
+| Azure.Storage.BlobService.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. |
+| Azure.Storage.BlobService.sku.name | String | The SKU name. |
+| Azure.Storage.BlobService.sku.tier | String | The SKU tier. |
