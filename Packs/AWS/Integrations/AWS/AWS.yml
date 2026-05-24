@@ -18521,7 +18521,7 @@ script:
       type: Unknown
 
   - name: aws-network-firewall-firewall-delete
-    description: "Deletes the specified firewall and its firewall policy. This operation requires the firewall’s DeleteProtection flag to be FALSE. You can’t revert this operation. Required permissions: network-firewall:DeleteFirewall."
+    description: "Deletes the specified Firewall and its FirewallStatus. This operation requires the firewall’s DeleteProtection flag to be FALSE. You can’t revert this operation. Required permissions: network-firewall:DeleteFirewall."
     arguments:
     - name: account_id
       description: The AWS account ID.
