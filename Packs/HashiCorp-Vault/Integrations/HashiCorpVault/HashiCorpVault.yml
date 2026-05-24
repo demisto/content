@@ -396,6 +396,7 @@ script:
       type: string
     description: Retrieves the AppRole ID for a specified role.
   dockerimage: demisto/vendors-sdk:1.0.0.4577311
+  isfetchcredentials: true
 tests:
 - hashicorp_test
 fromversion: 5.0.0
