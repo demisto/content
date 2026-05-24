@@ -1,7 +1,5 @@
 # Microsoft Security & Compliance Center - Content Search Integration
 
-Deprecated. Use the **Microsoft Graph Security** integration instead.
-
 ## ⚠️ Deprecation Notice
 
 This integration is **deprecated**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
