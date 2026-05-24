@@ -250,8 +250,9 @@ def map_auth_type_to_ucp_shape(
     """Build the UCP credential dict for ``entry`` using its sentinels.
 
     Implements the §8.5 ``match`` table on :class:`AuthType`. Returns
-    ``None`` for :data:`AuthType.Other` and :data:`AuthType.NoneRequired`
-    (no synthesizable shape — handled as skips by the caller).
+    ``None`` for :data:`AuthType.Passthrough` and
+    :data:`AuthType.NoneRequired` (no synthesizable shape — handled
+    as skips by the caller).
 
     The slot-selection inside each per-type helper is **role-driven**:
     each helper looks up the :class:`SentinelLeaf` whose ``role``
@@ -268,9 +269,9 @@ def map_auth_type_to_ucp_shape(
             return _ucp_shape_api_key(entry, sentinels)
         case AuthType.Plain:
             return _ucp_shape_plain(entry, sentinels)
-        case AuthType.OAuth2ClientCreds | AuthType.OAuth2AuthCode | AuthType.OAuth2JWT:
+        case AuthType.OAuth2ClientCreds | AuthType.OAuth2JWT:
             return _ucp_shape_oauth2(entry, sentinels)
-        case AuthType.Other:
+        case AuthType.Passthrough:
             return None
         case AuthType.NoneRequired:
             return None
@@ -1433,8 +1434,8 @@ def _connection_skip_status(
     """Return a ``skipped_*`` status for this entry, or ``None`` to run it."""
     if entry.interpolated:
         return "skipped_interpolated"
-    if entry.type in (AuthType.Other, AuthType.NoneRequired):
-        return "skipped_other_type"
+    if entry.type in (AuthType.Passthrough, AuthType.NoneRequired):
+        return "skipped_passthrough"
     if detect_signed_auth(py_source):
         return "skipped_signed"
     if detect_mtls(yml_data):
@@ -1679,7 +1680,6 @@ def _install_oauth_if_relevant(proxy: CaptureProxy, entry: AuthEntry) -> list[st
     """When ``entry`` is OAuth2, install the canned token-exchange reply."""
     oauth_types = (
         AuthType.OAuth2ClientCreds,
-        AuthType.OAuth2AuthCode,
         AuthType.OAuth2JWT,
     )
     if entry.type not in oauth_types:
@@ -1801,8 +1801,7 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
 
 def _empty_details() -> AuthDetails:
     """Return an empty ``AuthDetails`` for integrations with no Auth Details cell."""
-    from auth_config_parser.types import ConfigExpression
-    return AuthDetails(auth_types=[], config=ConfigExpression(none_required=True))
+    return AuthDetails(auth_types=[])
 
 
 def _check_interpolation_hard_errors(

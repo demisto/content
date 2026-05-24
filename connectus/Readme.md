@@ -8,50 +8,58 @@ Each integration's authentication is classified into an **Auth Class** string
 value, with per-parameter details captured in a structured **Auth Detail** JSON
 object.
 
-### Auth Config Expression Format
+### Profile Model (post-2026-05)
 
-This is the format used inside the `config` field of the **Auth Detail** JSON
-(it is not a separate CSV column). It is a human-readable string with two parts
-separated by ` — `:
+Each entry in `auth_types[]` is one **profile** — one self-contained,
+mutually-exclusive way the user can configure the integration. The
+relationship between profiles is **implicit and always exclusive-OR**:
 
-**Part 1**: Auth types grouped by type with names (pipe-separated between types)
-**Part 2**: Requirement expression using `REQUIRED()`, `OPTIONAL()`, `CHOICE()`, combined with `+`
+- `auth_types: []` → no authentication required (the historical
+  `NoneRequired`).
+- `auth_types: [X]` → profile X is always used.
+- `auth_types: [X, Y, …]` → the user picks exactly ONE profile at
+  configuration time.
 
-Special case: `NoneRequired` (no auth params)
+The pre-2026-05 `config` expression key
+(`REQUIRED(...)` / `OPTIONAL(...)` / `CHOICE(...)` / `+`-joining /
+`NoneRequired`) was removed: it carried no information beyond what
+`auth_types[]` already encodes (length + names). `set-auth` hard-rejects
+any payload still containing a `config` key. See
+[`column-schemas.md`](column-schemas.md:1) §"Migration from `config`"
+for re-classification rules.
 
 #### Auth Type Values
 
-| Value | Description | Examples |
+Each value maps onto one of the canonical UCP authentication profile types (see [`column-schemas.md`](column-schemas.md:1) "Authentication Profile Types — Fields Reference" for the per-profile field shapes). `Passthrough` is the explicit "doesn't fit a canonical profile" catch-all.
+
+| Value | UCP Profile Type | Description | Examples |
+|---|---|---|---|
+| `OAuth2ClientCreds` | `oauth2_client_credentials` | OAuth 2.0 Client Credentials flow (`client_id` + `client_secret`) | CrowdStrike Falcon, Wiz |
+| `OAuth2JWT` | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer flow (service-account / signed assertion) | Google integrations |
+| `APIKey` | `api_key` | **Single** static secret (header / query param / single-secret HMAC). Two-or-more keys → `Passthrough`. | Abnormal Security, VirusTotal |
+| `Plain` | `plain` | Single username + password pair (basic auth, login form, bearer-token-as-password, single-cert pair) | ActiveMQ, AWS S3, CyberArk |
+| `Passthrough` | n/a (no canonical profile) | Catch-all: OAuth2 **Authorization Code** (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's 3 tokens, GitHub App), custom HMAC schemes. **When in doubt, prefer `Passthrough`.** | Lansweeper (Authorization Code), Azure WAF (Managed Identity), Datadog (dual-key) |
+| `NoneRequired` | n/a | No authentication needed | AlienVault Reputation Feed |
+
+> **Enum history (2026-05).** The previous `OAuth2AuthCode` value was removed (Authorization Code flows are now classified as `Passthrough`), and the previous `Other` value was renamed to `Passthrough`. There is no backward-compatibility alias — payloads using either old name are rejected by `set-auth`.
+
+#### Worked Examples (post-2026-05 profile model)
+
+| Integration | `auth_types[]` shape | Why |
 |---|---|---|
-| `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow | Lansweeper, Gmail |
-| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow | CrowdStrike Falcon, Wiz |
-| `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
-| `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
-| `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
-| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow, Managed Identity, ROPC). | Azure WAF, Azure Kubernetes Services |
-| `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
+| Abnormal Security | `[APIKey(api_key)]` | Single required API key — one profile, exclusive-OR is vacuous |
+| AlienVault Reputation Feed | `[]` | No auth params; integration requires no authentication |
+| CrowdStrike Falcon | `[OAuth2ClientCreds(credentials)]` | OAuth client credentials — one profile fits `oauth2_client_credentials` |
+| Darktrace Admin | `[Passthrough(darktrace)]` | Two co-equal API keys (`privateApiKey` + `publicApiKey`); doesn't fit single-`api_key` profile → one `Passthrough` profile with both leaves in `xsoar_param_map` |
+| Datadog | `[Passthrough(datadog)]` | `api_key` + `application_key` — two co-equal keys → `Passthrough`, same reason as Darktrace |
+| AbuseIPDB | `[APIKey(credentials), APIKey(hunting_credentials)]` | Two **separate** API-key auth flows; user picks one (implicit exclusive-OR via 2-entry list) |
+| Salesforce IAM | `[Plain(credentials), Passthrough(credentials_consumer)]` | Two alternative auth paths; user picks Plain or OAuth1 (consumer key/secret); implicit exclusive-OR |
+| Wiz | `[OAuth2ClientCreds(credentials)]` | OAuth client credentials — single profile |
+| Lansweeper / Gmail OAuth | `[Passthrough(oauth_code)]` | Browser-flow Authorization Code — no canonical `metadata.auth.parameter` shape → single `Passthrough` profile |
+| Azure WAF | `[OAuth2ClientCreds(client_creds), Passthrough(managed_identity)]` | Two alternative auth paths; user picks Client-Credentials or Managed-Identity (implicit exclusive-OR) |
+| Microsoft 4-flow | `[OAuth2ClientCreds(client_creds), Passthrough(auth_code), Passthrough(device_code), Passthrough(managed_identity)]` | Four alternative auth paths; user picks one (implicit exclusive-OR via 4-entry list) |
 
-#### Requirement Expression
-
-| Expression | Meaning |
-|---|---|
-| `REQUIRED(Type)` | One required param of that type |
-| `REQUIRED(Type, Type)` | Two required params of the same type |
-| `OPTIONAL(Type)` | Optional param(s) of that type |
-| `CHOICE(Type1, Type2)` | Multiple types, all optional — pick one |
-| `REQUIRED(X) + OPTIONAL(Y)` | X is required, Y is optional |
-
-#### Auth Config Expression Examples
-
-| Integration | Auth Config Expression | Why |
-|---|---|---|
-| Abnormal Security | `APIKey(api_key) — REQUIRED(APIKey)` | Single required API key |
-| AlienVault Reputation Feed | `NoneRequired` | No auth params |
-| CrowdStrike Falcon | `OAuth2ClientCreds(credentials) — REQUIRED(OAuth2ClientCreds)` | OAuth client credentials (effectively required) |
-| Darktrace Admin | `APIKey(privateApiKey, publicApiKey) — REQUIRED(APIKey, APIKey)` | Two required API keys |
-| AbuseIPDB | `APIKey(credentials, hunting_credentials) — OPTIONAL(APIKey)` | Two optional API key params |
-| Salesforce IAM | `OAuth2ClientCreds(credentials_consumer) \| Plain(credentials) — REQUIRED(Plain) + OPTIONAL(OAuth2ClientCreds)` | Plain required, OAuth optional |
-| Wiz | `OAuth2ClientCreds(credentials) — REQUIRED(OAuth2ClientCreds)` | OAuth client credentials |
+> **Reading the table.** Each `auth_types[]` shape is the value of the `Auth Details` JSON's `auth_types` field. `T(name)` reads as "type=T, name=name". The implicit exclusive-OR fires automatically when there are 2+ entries; no `config` expression key is needed (and is hard-rejected if present).
 
 ### How to Read the CSV Columns
 
@@ -141,7 +149,7 @@ State is **purely derived from row contents** — there is no separate "current 
 | # | Step (== CSV column) | Kind | Set via |
 |---|---|---|---|
 | 1 | `assignee` | data | `set-assignee` |
-| 2 | `Auth Details` | data (JSON; includes `auth_types`, `config`, **and `other_connection`** — see [`column-schemas.md`](column-schemas.md)) | `set-auth` |
+| 2 | `Auth Details` | data (JSON; `auth_types[]` + optional `other_connection` — see [`column-schemas.md`](column-schemas.md)) | `set-auth` |
 | 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
 | 4 | `verify button placement` | flag (`connection`/`configuration`/`none`; default `connection` on read) | `set-verify-placement` |
 | 5 | `generated manifest` | checkpoint | `markpass` |
@@ -201,7 +209,7 @@ python3 connectus/workflow_state.py show-step "Cisco Spark" "Auth Details"
 # Set the assignee (admin-only; never cascades)
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
-# Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
+# Set Auth Details (validates JSON schema; cascade-resets steps #3-#14)
 # Each auth_types[] entry is one full UCP connection type. xsoar_param_map is
 # a dict whose keys are XSOAR field paths supplying the secrets and whose
 # values are the role each field plays in the connection (credentials params
@@ -210,7 +218,7 @@ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 # connection-adjacent but not auth secrets (url, proxy, insecure, port, host,
 # region, ...). It lives INSIDE the Auth Details JSON, not as a separate CSV
 # column. See column-schemas.md (incl. the per-type role-enum table).
-python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"credentials","xsoar_param_map":{"credentials.password":"key"}}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"credentials","xsoar_param_map":{"credentials.password":"key"}}],"other_connection":["insecure","proxy","url"]}'
 
 # Set Params to Commands (validates JSON; cascade-resets steps #4-#14).
 # REJECTED if any param in the payload also appears in Auth Details
@@ -415,7 +423,7 @@ $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_param_map":{"credentials.identifier":"username","credentials.password":"password"}}],"config":"REQUIRED(credentials)","other_connection":["insecure","proxy","url"]}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials","xsoar_param_map":{"credentials.identifier":"username","credentials.password":"password"}}],"other_connection":["insecure","proxy","url"]}'
 Set 'Auth Details' (step 2/14) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 
@@ -438,7 +446,7 @@ $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest
 #### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NoneRequired","other_connection":[]}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"other_connection":[]}'
 Set 'Auth Details' (step 2/14) for 'Cisco Spark'.
   Cleared 3 subsequent step(s): ['Params to Commands', 'verify button placement', 'generated manifest']
   Current step: #3 Params to Commands

@@ -61,7 +61,6 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
         ...         "xsoar_param_map": {
         ...             "credentials.identifier": "username",
         ...             "credentials.password": "password"}}],
-        ...     "config": "REQUIRED(creds)",
         ...     "other_connection": ["url", "proxy"],
         ... })
         >>> sorted(auth_param_ids(details))
@@ -110,7 +109,6 @@ def auth_param_ids_with_sources(
         ...         "xsoar_param_map": {
         ...             "credentials.identifier": "username",
         ...             "credentials.password": "password"}}],
-        ...     "config": "REQUIRED(creds)",
         ...     "other_connection": ["url"],
         ... })
         >>> sources = auth_param_ids_with_sources(details)

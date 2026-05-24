@@ -7,9 +7,6 @@ from auth_config_parser import (
     AuthDetails,
     AuthEntry,
     AuthType,
-    ClauseOperator,
-    ConfigClause,
-    ConfigExpression,
     auth_param_ids,
     auth_param_ids_with_sources,
     parse_auth_details,
@@ -69,7 +66,6 @@ class TestAuthParamIds:
                     },
                 },
             ],
-            "config": "REQUIRED(api_key) + REQUIRED(credentials)",
             "other_connection": ["insecure", "proxy", "url"],
         })
         result = auth_param_ids(details)
@@ -88,7 +84,6 @@ class TestAuthParamIds:
                     },
                 }
             ],
-            "config": "REQUIRED(creds)",
             "other_connection": [],
         })
         result = auth_param_ids(details)
@@ -100,7 +95,6 @@ class TestAuthParamIds:
         """NoneRequired + other_connection → only other_connection."""
         details = parse_auth_details({
             "auth_types": [],
-            "config": "NoneRequired",
             "other_connection": ["host", "port"],
         })
         result = auth_param_ids(details)
@@ -113,7 +107,6 @@ class TestAuthParamIds:
                 {"type": "APIKey", "name": "api_key",
                  "xsoar_param_map": {"api_key": "key"}}
             ],
-            "config": "REQUIRED(api_key)",
         })
         assert details.other_connection is None
         result = auth_param_ids(details)
@@ -123,7 +116,6 @@ class TestAuthParamIds:
         """NoneRequired + no other_connection → empty set."""
         details = parse_auth_details({
             "auth_types": [],
-            "config": "NoneRequired",
             "other_connection": [],
         })
         result = auth_param_ids(details)
@@ -144,7 +136,6 @@ class TestAuthParamIds:
                     },
                 },
             ],
-            "config": "REQUIRED(api_key) + REQUIRED(credentials)",
             "other_connection": ["insecure", "proxy", "url"],
         })
         result = sorted(auth_param_ids(details))
@@ -165,7 +156,6 @@ class TestAuthParamIds:
                     },
                 }
             ],
-            "config": "REQUIRED(creds)",
             "other_connection": [],
         })
         # Both projected ids should be present; sorting yields the
@@ -195,7 +185,6 @@ class TestAuthParamIdsWithSources:
                     },
                 },
             ],
-            "config": "REQUIRED(api_key) + REQUIRED(credentials)",
             "other_connection": ["url"],
         })
         sources = auth_param_ids_with_sources(details)
@@ -232,7 +221,6 @@ class TestAuthParamIdsWithSources:
                     },
                 }
             ],
-            "config": "REQUIRED(creds)",
             "other_connection": [],
         })
         sources = auth_param_ids_with_sources(details)
@@ -244,7 +232,6 @@ class TestAuthParamIdsWithSources:
         """other_connection items → 'other_connection' source."""
         details = parse_auth_details({
             "auth_types": [],
-            "config": "NoneRequired",
             "other_connection": ["proxy", "url"],
         })
         sources = auth_param_ids_with_sources(details)
@@ -258,7 +245,6 @@ class TestAuthParamIdsWithSources:
                 {"type": "APIKey", "name": "api_key",
                  "xsoar_param_map": {"api_key": "key"}}
             ],
-            "config": "REQUIRED(api_key)",
         })
         sources = auth_param_ids_with_sources(details)
         assert "api_key" in sources
@@ -285,7 +271,6 @@ class TestAuthParamIdsWithSources:
                     },
                 },
             ],
-            "config": "CHOICE(creds_a, creds_b)",
             "other_connection": [],
         })
         sources = auth_param_ids_with_sources(details)
@@ -307,7 +292,6 @@ class TestAuthParamIdsWithSources:
                     "xsoar_param_map": {"credentials.password": "key"},
                 }
             ],
-            "config": "REQUIRED(credentials)",
             "other_connection": [],
         })
         sources = auth_param_ids_with_sources(details)

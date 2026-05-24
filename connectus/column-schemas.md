@@ -22,7 +22,7 @@ Per-integration authentication classification. One JSON object per row.
   "auth_types": [
     {
       "type": "<AuthEnum>",
-      "name": "<connection_type_name>",
+      "name": "<profile_name>",
       "xsoar_param_map": {
         "<xsoar_field_path>": "<role>",
         "<xsoar_field_path>": "<role>"
@@ -30,26 +30,42 @@ Per-integration authentication classification. One JSON object per row.
       "interpolated": <bool>
     }
   ],
-  "config": "REQUIRED(<connection_type_name>, ...) [+ OPTIONAL(<connection_type_name2>, ...)] | CHOICE(<connection_type_name>, <connection_type_name>) | NoneRequired",
   "other_connection": ["<yml_param_id>", "<yml_param_id>", ...]
 }
 ```
 
-All three top-level keys (`auth_types`, `config`, `other_connection`) are
-**required** on every `set-auth` write. Legacy CSV rows written before
-`other_connection` existed lack the key; the read/display path tolerates
-that and surfaces a `(not set — re-run set-auth)` hint, but new writes
-must include it.
+The only required top-level key is `auth_types` (a list).
+`other_connection` is optional (defaults to absent for legacy rows; new
+writes should always include it as either a list or `[]`). The
+historical `config` expression field was removed in the 2026-05 schema
+simplification (see [Migration from `config`](#migration-from-config)
+below for the migration story).
 
-- `auth_types` — **Each entry is one complete UCP connection type** — for
-  example, one `APIKey` auth, one `Plain` auth (which bundles a username
-  **and** a password as a single connection), one `OAuth2ClientCreds`
-  auth, etc. The entry is *not* one XSOAR param; it groups together every
-  field needed to stand up that one auth flow. A single XSOAR field that
-  legitimately feeds more than one connection type (e.g. the same
-  `credentials.password` backing both a Plain profile and an OAuth
-  profile) appears in **multiple entries**, listed inside each entry's
-  `xsoar_param_map`. Entries are sorted by `(type, name)`.
+### Profile model — one entry = one mutually-exclusive way to authenticate
+
+**Each `auth_types[]` entry is one complete UCP authentication
+profile** — one self-contained, mutually-exclusive way the user can
+configure the integration. The relationship between profiles is
+**implicit and always exclusive-OR** (the only legal inter-profile
+operator):
+
+- `len(auth_types) == 0` → no authentication required.
+- `len(auth_types) == 1` → that single profile is always used.
+- `len(auth_types) >= 2` → **exclusive-OR**; the user picks exactly one
+  at configuration time.
+
+There is no inter-profile AND, no OPTIONAL, and no clause-joining.
+AND-ed secrets within a single auth flow (e.g. an API key paired with a
+vendor-required client certificate) live inside **one** profile's
+`xsoar_param_map`, not across multiple profiles. See
+[`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
+§1.2.2a "Multi-secret auth flows" for the classification procedure.
+
+A single XSOAR field that legitimately feeds more than one profile
+(e.g. the same `credentials.password` backing both a Plain profile and
+an OAuth profile that share the same secret) appears in **multiple
+entries**, listed inside each entry's `xsoar_param_map`. Entries are
+sorted by `(type, name)` ascending.
 - `auth_types[].type` — Auth-type enum value identifying the kind of
   connection this entry describes (see the enum table in
   [`Readme.md`](Readme.md:19)). Pick exactly one.
@@ -85,12 +101,16 @@ must include it.
   |---|---|
   | `APIKey` | `"key"` |
   | `Plain` | `"username"`, `"password"` |
-  | `OAuth2ClientCreds`, `OAuth2AuthCode`, `OAuth2JWT`, `Other` | any non-empty string (enum **deliberately undefined for now** — will be narrowed in a future PR) |
+  | `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` | any non-empty string (enum **deliberately undefined for now** — will be narrowed in a future PR). Typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`. |
   | `NoneRequired` | n/a (no entries in `auth_types[]` at all) |
 
+  > **Enum history (2026-05).** The previous `"OAuth2AuthCode"` value was removed (Authorization Code flows are now classified as `"Passthrough"`), and the previous `"Other"` value was renamed to `"Passthrough"`. There is no backward-compatibility alias in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) — payloads using either old name are rejected by `set-auth`.
+
   See [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
-  for the full classification procedure that picks the right role for
-  each XSOAR field.
+  §1.2.6 "Authentication Profile Types — Fields Reference" for the
+  canonical UCP profile-type field shapes that this classification maps
+  to, and the full classification procedure that picks the right role
+  for each XSOAR field.
 - `auth_types[].interpolated` — Optional boolean (defaults to `false`).
   When `true`, the manifest generator sets the `interpolated` flag in
   this entry's metadata in the generated manifest (signaling that the
@@ -99,24 +119,34 @@ must include it.
   required and non-empty on interpolated entries — the map describes
   the role each XSOAR field plays regardless of whether the value is
   user-supplied or templated at runtime.
-- `config` — Auth Config Expression. Same operators as the README grammar
-  in [`Auth Config Expression Format`](Readme.md:8) — `REQUIRED(...)`,
-  `OPTIONAL(...)`, `CHOICE(...)`, joined with `+`, plus the literal
-  `NoneRequired`. **The operands inside the parens are connection-type
-  names that must each appear as some `auth_types[].name`** — not
-  auth-type enum values and not XSOAR param ids. Examples:
-  - `REQUIRED(api_key)` — single required connection type named `api_key`
-  - `REQUIRED(privateApiKey, publicApiKey)` — two required connection types
-  - `CHOICE(credentials, hunting_credentials)` — pick one of two optional connection types
-  - `REQUIRED(credentials) + OPTIONAL(credentials_consumer)` — Plain connection required, OAuth connection optional
-  - `NoneRequired` — no auth required
 - `other_connection` — Flat sorted list of YML param ids that are
-  **connection-adjacent but not auth secrets**: everything you reasonably
-  need to define the integration's connection besides the secrets
-  themselves. Typical members: `url`, `proxy`, `insecure`, `port`,
-  `verify_certificate`, `server`, `host`, `region`. The list captures
-  the ids exactly as they appear in the integration YML's
-  `configuration[].name`. Constraints:
+  **purely connection-wide / transport-level metadata** with **no
+  bearing on how authentication itself is performed**: things every
+  profile uses the same way regardless of which auth flow the user
+  picks. Typical members: `url`, `proxy`, `insecure`, `port`,
+  `verify_certificate`, `server`, `host`, `region`,
+  `use_system_proxy`. The list captures the ids exactly as they appear
+  in the integration YML's `configuration[].name`.
+
+  **Anything that has an implication on the auth itself goes INSIDE
+  the profile's `xsoar_param_map`, not in `other_connection`.** For
+  example: if an integration requires an API key paired with a vendor
+  client certificate (the cert is part of the authentication
+  handshake), the cert's YML id goes in the APIKey profile's
+  `xsoar_param_map` (with whatever role string makes sense — for
+  `APIKey`/`Plain` the validator only privileges the canonical roles
+  `key` / `username` / `password`, so adding cert/extra roles to those
+  types may currently surface a role-enum violation; the long-term
+  plan is to relax the enum to admit extras). The general rule:
+
+  - **Belongs in `other_connection`**: URL, port, region, insecure,
+    proxy — every profile uses these the same way.
+  - **Belongs in the profile's `xsoar_param_map`**: API keys, client
+    certs / mTLS keypairs that participate in the auth handshake,
+    vendor-required HMAC salts, OAuth client IDs/secrets — anything
+    the auth flow itself reads.
+
+  Constraints on the list:
   - Must be a JSON array of non-empty strings.
   - Strings must be unique within the list.
   - Must be sorted ascending (alphabetical). The validator rejects
@@ -125,9 +155,9 @@ must include it.
     params besides its auth secrets).
   - There is **no overlap requirement** with `auth_types[].xsoar_param_map`
     — keeping the two lists disjoint is the classifier's responsibility,
-    not the validator's. (Auth secrets are keyed in
-    `auth_types[].xsoar_param_map`; per-command behavioral params go
-    in `Params to Commands`; framework params like
+    not the validator's. (Auth secrets and auth-adjacent fields are
+    keyed in `auth_types[].xsoar_param_map`; per-command behavioral
+    params go in `Params to Commands`; framework params like
     `longRunning`/`feedReputation` are ignored entirely.)
 
 ### Hidden-leaf suppression rules
@@ -185,6 +215,45 @@ at this section). To re-classify a legacy row:
    exactly as it did before — the schema change does not alter reset
    semantics.
 
+### Migration from `config`
+
+The pre-2026-05 `config` expression field was **removed** in the
+schema simplification. Its grammar
+(`REQUIRED(...)` / `OPTIONAL(...)` / `CHOICE(...)` / `+`-joining /
+`NoneRequired`) carried no information beyond what `auth_types[]`
+already encodes (the **only** legal inter-profile relation is
+exclusive-OR, and that is fully derivable from the list's length).
+`set-auth` now **hard-rejects** any payload that still contains a
+`config` key with a migration-help error pointing here.
+
+To re-classify a legacy row:
+
+1. **Drop the `config` key entirely.** No replacement is needed.
+2. **Re-shape `auth_types[]` to fit the new profile model.** Apply
+   the rules:
+   - **`REQUIRED(<name>)`** (single operand) → the integration has a
+     single profile; keep just one entry in `auth_types[]`.
+   - **`REQUIRED(a, b, …)` (multi-arg AND) → REJECTED in the new
+     model.** AND-ed secrets within one auth flow live inside a
+     single profile's `xsoar_param_map`. Merge the entries into one
+     `Passthrough` profile (if the combined shape doesn't fit a
+     canonical profile) and put every leaf in its map. See
+     [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
+     §1.2.2a for the multi-secret rule.
+   - **`CHOICE(a, b, …)`** → keep all entries; the OR is now implicit
+     (length ≥ 2).
+   - **`REQUIRED(a) + OPTIONAL(b)`** → mostly meant "two separate
+     ways to authenticate". Rewrite as exclusive-OR between two
+     profiles (`auth_types == [a, b]`).
+   - **`OPTIONAL(...)`** → also gone. The "optional add-on" pattern
+     should be re-expressed as either: (a) a separate alternative
+     profile (if the option is large enough to be its own auth
+     flow), or (b) extra leaves inside the existing profile's
+     `xsoar_param_map` (if the option is just an additional
+     auth-handshake field).
+   - **`NoneRequired`** → `auth_types: []` with no `config` key.
+3. Re-run `set-auth`. The cascade reset still applies.
+
 ### Canonical worked examples
 
 **Example 1 — APIVoid pattern: APIKey with `hiddenusername: true`** (the identifier leaf is suppressed):
@@ -200,7 +269,6 @@ at this section). To re-classify a legacy row:
       }
     }
   ],
-  "config": "REQUIRED(credentials)",
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
@@ -219,7 +287,6 @@ at this section). To re-classify a legacy row:
       }
     }
   ],
-  "config": "REQUIRED(credentials)",
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
@@ -238,12 +305,11 @@ at this section). To re-classify a legacy row:
       }
     }
   ],
-  "config": "REQUIRED(auth)",
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
 
-**Example 4 — OAuth2ClientCreds with credentials widget (enum-undefined regime, any non-empty string accepted):**
+**Example 4 — OAuth2ClientCreds with credentials widget (enum-undefined regime, any non-empty string accepted; maps to the `oauth2_client_credentials` profile with `client_key`/`client_secret` fields):**
 
 ```json
 {
@@ -254,21 +320,56 @@ at this section). To re-classify a legacy row:
       "xsoar_param_map": {
         "credentials.identifier": "client_id",
         "credentials.password": "client_secret"
-      }
+      },
+      "interpolated": true
     }
   ],
-  "config": "REQUIRED(credentials)",
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
 
-**Example 5 — NoneRequired:**
+**Example 5 — NoneRequired (no `auth_types[]` entries; `config` key is absent in the new schema):**
 
 ```json
 {
   "auth_types": [],
-  "config": "NoneRequired",
   "other_connection": []
+}
+```
+
+**Example 6 — Microsoft multi-flow integration (CHOICE of three profiles, joined implicitly by exclusive-OR):**
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "OAuth2ClientCreds",
+      "name": "client_creds",
+      "xsoar_param_map": {
+        "credentials.identifier": "client_id",
+        "credentials.password": "client_secret"
+      },
+      "interpolated": true
+    },
+    {
+      "type": "Passthrough",
+      "name": "auth_code",
+      "xsoar_param_map": {
+        "auth_code": "authorization_code",
+        "redirect_uri": "redirect_uri"
+      },
+      "interpolated": true
+    },
+    {
+      "type": "Passthrough",
+      "name": "device_code",
+      "xsoar_param_map": {
+        "device_code_grant": "device_code"
+      },
+      "interpolated": true
+    }
+  ],
+  "other_connection": ["insecure", "proxy"]
 }
 ```
 
@@ -288,6 +389,92 @@ ignores the `preserve_on_reset` carve-out that `reset-to`/`fail`
 honour, because auth-classification changes invalidate every
 downstream artifact (in particular, the per-command param contract
 validated by `params_to_commands_no_auth_overlap`).
+
+---
+
+## Authentication Profile Types — Fields Reference
+
+This section is the schema-side counterpart to
+[`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1) §1.2.6
+"Authentication Profile Types — Fields Reference". The classification
+written into `Auth Details` (above) maps onto these UCP profile types
+when the manifest is generated. The five canonical profiles each have
+a fixed field shape; anything that doesn't fit is `Passthrough` (the
+on-disk JSON value is `"Passthrough"`).
+
+### Quick reference — fields by connection type
+
+| Profile Type | Profile-Level Properties | User-Facing `metadata.auth.parameter` Fields | Maps from `Auth Details` classification |
+|---|---|---|---|
+| `oauth2_client_credentials` | `discovery_url` **OR** `token_endpoint` | `client_key`, `client_secret` | `OAuth2ClientCreds` |
+| `oauth2_jwt_bearer` | `discovery_url` **OR** `token_endpoint` | `subject_email`, `credentials_file` | `OAuth2JWT` |
+| `plain` | *(none beyond `id`/`type`/`title`/`description`)* | `username`, `password` | `Plain` |
+| `api_key` | *(none beyond `id`/`type`/`title`/`description`)* | `api_key` | `APIKey` (single key only) |
+| `Passthrough` (no canonical profile) | n/a | n/a — define fields ad-hoc in the manifest | `Passthrough` — includes browser-flow Authorization Code, Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog 2-key, AWS SigV4, Akamai EdgeGrid, GitHub App), custom signing |
+
+> **Browser-flow OAuth2 Authorization Code** has a sibling profile (`oauth2_authorization_code`) whose **profile-level** keys include `client_id`, `client_secret` (both via the `{SAAS_REGISTRY.*}` pattern), `discovery_url` **OR** (`authorization_endpoint` + `token_endpoint`), and `refresh_token_scope`. It has **no user-facing `metadata.auth.parameter` fields** (the flow is browser-driven). Per the project-wide rule, classify it as `Passthrough` regardless — it has no canonical `auth.parameter` field-list to match against.
+
+### Detailed per-profile breakdown
+
+#### 1. `oauth2_client_credentials`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description`, plus exactly one of (`discovery_url` | `token_endpoint`).
+- **`metadata.auth.parameter` fields:**
+  - `client_key` — OAuth2 client ID / consumer key (`input`, unmasked).
+  - `client_secret` — OAuth2 client secret (`input`, `mask: true`).
+- **Classification:** `OAuth2ClientCreds`. Any integration whose code does `grant_type=client_credentials` with exactly two secrets (`client_id` + `client_secret`) fed in directly — no JWT, no browser redirect.
+
+#### 2. `oauth2_jwt_bearer`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description`, plus exactly one of (`discovery_url` | `token_endpoint`).
+- **`metadata.auth.parameter` fields:**
+  - `subject_email` — impersonation subject (`input`, usually in `general_configurations`).
+  - `credentials_file` — JSON key file (`file_upload`, `formats: ".json"`, `mask: true`).
+- **Classification:** `OAuth2JWT`. Typically Google service-account integrations: signed JWT assertion + `grant_type=jwt-bearer` token endpoint.
+
+#### 3. `plain`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description` only.
+- **`metadata.auth.parameter` fields:**
+  - `username` — account identifier (`input`, unmasked).
+  - `password` — secret (`input`, `mask: true`).
+- **Classification:** `Plain`. Username/password basic auth, login-form-to-session-cookie, any single-pair credential where one half is an identifier and the other half is a secret.
+
+#### 4. `api_key`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description` only.
+- **`metadata.auth.parameter` fields:**
+  - `api_key` — token (`input`, `mask: true`).
+- **Classification:** `APIKey`. **Single static secret only.** Bearer tokens, custom `X-API-Key` headers, query-param keys, and single-secret HMAC signing all fit.
+- **Multi-key NOT supported.** Datadog (`api_key`+`application_key`), AWS (`access_key`+`secret_key`), Akamai EdgeGrid (3 tokens), GitHub App (`app_id`+`private_key`+`installation_id`) — these are all `Passthrough` because the `api_key` profile only exposes one `api_key` field. The legacy `application_key` slot is not part of the canonical profile.
+
+#### 5. `Passthrough` (catch-all)
+
+- **No canonical profile type or field list.** The manifest defines whatever fields the integration actually needs, ad-hoc.
+- **Classification triggers (use `Passthrough` whenever):**
+  - The flow is OAuth2 Authorization Code (browser redirect, `code`+`redirect_uri`, `oauth-start`/`oauth-complete` commands).
+  - The flow needs two or more secrets to authenticate one request, where the (role, count) combo doesn't fit `plain`'s `username`+`password` shape.
+  - The flow is ROPC (`grant_type=password`), Device Code, Managed Identity, mTLS, certificate-based, or any custom signing scheme.
+  - You can't decide cleanly which canonical profile applies. **When in doubt, prefer `Passthrough`.**
+- **All `Passthrough` entries MUST have `"interpolated": true`** (see §"Auth Details" above).
+
+### Closed set of valid `metadata.auth.parameter` values
+
+| Parameter | Used By | Notes |
+|---|---|---|
+| `client_key` | `oauth2_client_credentials` | OAuth client id |
+| `client_secret` | `oauth2_client_credentials` | OAuth client secret |
+| `username` | `plain` | Basic-auth identifier |
+| `password` | `plain` | Basic-auth secret |
+| `api_key` | `api_key` | Single static secret |
+| `credentials_file` | `oauth2_jwt_bearer` | JSON key file upload |
+| `subject_email` | `oauth2_jwt_bearer` | Impersonation subject |
+
+> **Duplicate-value rejection (OPA Check 17).** Duplicate `metadata.auth.parameter` values within a profile's effective scope (the profile's own `configurations` + the connection.yaml's `general_configurations`) are rejected. If a vendor legitimately needs two copies of the same role (extremely rare), the integration cannot fit a canonical profile and must be classified as `Passthrough`.
+
+### Decision rule (one-line summary)
+
+> **If — and only if — every secret the integration consumes maps cleanly into one of the four canonical profiles' field lists above, use that profile's classification (`OAuth2ClientCreds` / `OAuth2JWT` / `Plain` / `APIKey`). Otherwise, classify as `Passthrough`.** `oauth2_authorization_code` is always `Passthrough` — its user-facing config lives on the profile itself, not in `metadata.auth.parameter`, so there is no canonical field shape to match against from the classification side.
 
 ---
 

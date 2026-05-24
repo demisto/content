@@ -25,7 +25,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import check_auth_parity as cap  # noqa: E402
 from auth_config_parser import AuthDetails, AuthEntry, AuthType  # noqa: E402
-from auth_config_parser.types import ConfigClause, ConfigExpression, ClauseOperator  # noqa: E402
 
 
 # --------------------------------------------------------------------------
@@ -36,10 +35,6 @@ from auth_config_parser.types import ConfigClause, ConfigExpression, ClauseOpera
 def _details(*entries: AuthEntry) -> AuthDetails:
     return AuthDetails(
         auth_types=list(entries),
-        config=ConfigExpression(
-            clauses=[ConfigClause(operator=ClauseOperator.REQUIRED,
-                                  names=[e.name for e in entries])]
-        ),
         other_connection=[],
     )
 
@@ -176,7 +171,7 @@ class TestMapAuthTypeToUcpShape:
 
     @pytest.mark.parametrize(
         "subtype",
-        [AuthType.OAuth2ClientCreds, AuthType.OAuth2AuthCode, AuthType.OAuth2JWT],
+        [AuthType.OAuth2ClientCreds, AuthType.OAuth2JWT],
     )
     def test_oauth2_variants(self, subtype: AuthType) -> None:
         entry = _oauth_entry(subtype=subtype)
@@ -187,9 +182,9 @@ class TestMapAuthTypeToUcpShape:
             "oauth2": {"access_token": "S_TOK", "token_type": "Bearer"},
         }
 
-    def test_other_returns_none(self) -> None:
+    def test_passthrough_returns_none(self) -> None:
         entry = AuthEntry(
-            type=AuthType.Other, name="x",
+            type=AuthType.Passthrough, name="x",
             xsoar_param_map={"x": "x"},
         )
         sentinels = [_make_leaf("x", "x", "S")]
@@ -628,7 +623,6 @@ class TestHardErrors:
     # immaterial for these tests; any well-formed payload works.
     _STUB_AUTH_DETAILS = json.dumps({
         "auth_types": [],
-        "config": "NoneRequired",
         "other_connection": [],
     })
 
@@ -663,7 +657,6 @@ class TestHardErrors:
                 {"type": "APIKey", "name": "api_key",
                  "xsoar_param_map": {"api_key": "key"}, "interpolated": True},
             ],
-            "config": "REQUIRED(api_key)",
             "other_connection": [],
         }
         rc, payload = _run_main_capture(
@@ -687,7 +680,6 @@ class TestHardErrors:
                 {"type": "APIKey", "name": "kept",
                  "xsoar_param_map": {"api_key": "key"}, "interpolated": False},
             ],
-            "config": "REQUIRED(kept) + OPTIONAL(dropped)",
             "other_connection": [],
         }
         rc, payload = _run_main_capture(

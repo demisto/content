@@ -5,15 +5,44 @@ All public types live here. Pure Python, no external dependencies.
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 class AuthType(str, enum.Enum):
-    """The 7 valid auth-type enum values for Auth Details entries.
+    """The 6 valid auth-type enum values for Auth Details entries.
 
     Inherits from ``str`` so that ``AuthType("APIKey")`` construction
     from JSON values works naturally and ``entry.type.value`` returns
     the string for serialization.
+
+    Each value maps onto one of the canonical UCP authentication
+    profile types — see
+    ``connectus/connectus-migration-SKILL.md`` §1.2.6
+    "Authentication Profile Types — Fields Reference" for the per-
+    profile field shapes:
+
+    - ``OAuth2ClientCreds`` → ``oauth2_client_credentials`` profile
+      (fields: ``client_key``, ``client_secret``).
+    - ``OAuth2JWT`` → ``oauth2_jwt_bearer`` profile
+      (fields: ``subject_email``, ``credentials_file``).
+    - ``APIKey`` → ``api_key`` profile
+      (field: ``api_key``; single static secret only).
+    - ``Plain`` → ``plain`` profile
+      (fields: ``username``, ``password``).
+    - ``Passthrough`` → no canonical UCP profile shape; catch-all for
+      Authorization Code (browser flow), Device Code, ROPC, Managed
+      Identity, mTLS, multi-secret packages (Datadog 2-key, AWS
+      SigV4, Akamai EdgeGrid, GitHub App, …), and custom signing.
+      When in doubt, prefer ``Passthrough``.
+    - ``NoneRequired`` → no profile; used when the integration has
+      no authentication at all.
+
+    The previous ``OAuth2AuthCode`` value was removed in 2026-05;
+    Authorization Code flows are now classified as ``Passthrough``.
+    The previous ``Other`` value was renamed to ``Passthrough`` in
+    the same revision. There is no backward-compatibility alias —
+    in-flight payloads using the old names are rejected by
+    :func:`auth_config_parser.validator.validate_auth_details`.
 
     Examples:
         >>> AuthType("APIKey")
@@ -22,30 +51,16 @@ class AuthType(str, enum.Enum):
         'APIKey'
         >>> AuthType("APIKey") == "APIKey"
         True
+        >>> AuthType("Passthrough")
+        <AuthType.Passthrough: 'Passthrough'>
     """
 
-    OAuth2AuthCode = "OAuth2AuthCode"
     OAuth2ClientCreds = "OAuth2ClientCreds"
     OAuth2JWT = "OAuth2JWT"
     APIKey = "APIKey"
     Plain = "Plain"
-    Other = "Other"
+    Passthrough = "Passthrough"
     NoneRequired = "NoneRequired"
-
-
-class ClauseOperator(str, enum.Enum):
-    """Operators in the config expression mini-grammar.
-
-    Examples:
-        >>> ClauseOperator("REQUIRED")
-        <ClauseOperator.REQUIRED: 'REQUIRED'>
-        >>> ClauseOperator.CHOICE.value
-        'CHOICE'
-    """
-
-    REQUIRED = "REQUIRED"
-    OPTIONAL = "OPTIONAL"
-    CHOICE = "CHOICE"
 
 
 @dataclass(frozen=True)
@@ -67,8 +82,8 @@ class AuthEntry:
 
             - ``APIKey`` → values must be ``"key"``.
             - ``Plain`` → values must be ``"username"`` or ``"password"``.
-            - ``OAuth2ClientCreds`` / ``OAuth2AuthCode`` /
-              ``OAuth2JWT`` / ``Other`` → any non-empty string
+            - ``OAuth2ClientCreds`` / ``OAuth2JWT`` /
+              ``Passthrough`` → any non-empty string
               (enum deliberately undefined for now).
             - ``NoneRequired`` → does not appear in ``auth_types[]``.
 
@@ -96,72 +111,30 @@ class AuthEntry:
 
 
 @dataclass(frozen=True)
-class ConfigClause:
-    """One clause in a config expression.
-
-    Attributes:
-        operator: REQUIRED, OPTIONAL, or CHOICE.
-        names: The connection-type names referenced by this clause.
-
-    Examples:
-        >>> clause = ConfigClause(
-        ...     operator=ClauseOperator.REQUIRED,
-        ...     names=["api_key"],
-        ... )
-        >>> clause.operator
-        <ClauseOperator.REQUIRED: 'REQUIRED'>
-    """
-
-    operator: ClauseOperator
-    names: list[str]
-
-
-@dataclass(frozen=True)
-class ConfigExpression:
-    """Parsed config expression.
-
-    Attributes:
-        none_required: True when the expression is the literal
-            'NoneRequired'. When True, clauses is empty.
-        clauses: Ordered list of parsed clauses. Empty when
-            none_required is True.
-
-    Examples:
-        >>> expr = ConfigExpression(none_required=True)
-        >>> expr.referenced_names
-        []
-
-        >>> expr = ConfigExpression(clauses=[
-        ...     ConfigClause(operator=ClauseOperator.REQUIRED, names=["a"]),
-        ...     ConfigClause(operator=ClauseOperator.OPTIONAL, names=["b"]),
-        ... ])
-        >>> expr.referenced_names
-        ['a', 'b']
-    """
-
-    none_required: bool = False
-    clauses: list[ConfigClause] = field(default_factory=list)
-
-    @property
-    def referenced_names(self) -> list[str]:
-        """All connection-type names referenced across all clauses,
-        in order, possibly with duplicates."""
-        names: list[str] = []
-        for clause in self.clauses:
-            names.extend(clause.names)
-        return names
-
-
-@dataclass(frozen=True)
 class AuthDetails:
     """Fully parsed Auth Details JSON object.
 
+    The 2026-05 schema simplification removed the ``config`` expression
+    field. Each entry in ``auth_types`` is one profile = one mutually-
+    exclusive way to authenticate the integration. The relationship
+    between profiles is implicit:
+
+    - ``len(auth_types) == 0`` → integration requires no authentication.
+    - ``len(auth_types) == 1`` → the single profile, always selected.
+    - ``len(auth_types) >= 2`` → exclusive-OR; the user picks exactly
+      one profile.
+
+    There is no inter-profile AND, no OPTIONAL, no clause-joining.
+    AND-ed secrets within a single auth flow live inside one profile's
+    ``xsoar_param_map``. See ``connectus/column-schemas.md`` §
+    "Auth Details" for the canonical schema.
+
     Attributes:
-        auth_types: List of auth entries, sorted by (type, name).
-        config: Parsed config expression.
+        auth_types: List of profile entries, sorted by (type, name).
         other_connection: Sorted list of YML param ids for
-            connection-adjacent non-auth params. None when the key
-            is absent (legacy rows).
+            connection-adjacent non-auth params (purely transport /
+            network: URL, port, proxy, insecure, …). None when the
+            key is absent (legacy rows).
 
     Examples:
         >>> details = AuthDetails(
@@ -169,21 +142,28 @@ class AuthDetails:
         ...         AuthEntry(type=AuthType.APIKey, name="api_key",
         ...                   xsoar_param_map={"api_key": "key"}),
         ...     ],
-        ...     config=ConfigExpression(clauses=[
-        ...         ConfigClause(operator=ClauseOperator.REQUIRED,
-        ...                      names=["api_key"]),
-        ...     ]),
         ...     other_connection=["proxy", "url"],
         ... )
         >>> details.auth_type_names
         {'api_key'}
+        >>> details.requires_choice
+        False
     """
 
     auth_types: list[AuthEntry]
-    config: ConfigExpression
     other_connection: list[str] | None = None
 
     @property
     def auth_type_names(self) -> set[str]:
         """Set of all auth_types[].name values."""
         return {e.name for e in self.auth_types}
+
+    @property
+    def requires_choice(self) -> bool:
+        """True when 2+ profiles exist and the user must pick one."""
+        return len(self.auth_types) >= 2
+
+    @property
+    def is_none_required(self) -> bool:
+        """True when no authentication is required at all."""
+        return len(self.auth_types) == 0

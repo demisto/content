@@ -1,7 +1,17 @@
 """Validation functions for the auth_config_parser package.
 
 Returns error lists (empty = valid). Never raises. Matches the current
-``validate_auth_detail()`` contract in ``workflow_state.py``.
+``validate_auth_detail()`` contract in
+:mod:`workflow_state.validators` (which is a thin wrapper around
+:func:`validate_auth_details` defined here).
+
+The 2026-05 schema simplification removed the ``config`` expression
+field entirely (the only inter-profile relation is exclusive OR, which
+is fully encoded by ``auth_types``'s length and entries). Payloads
+that still contain a ``config`` key are hard-rejected with a
+migration-help error. See
+:func:`auth_config_parser.parser.parse_auth_details` for the parsing-
+side equivalent.
 """
 from __future__ import annotations
 
@@ -10,8 +20,8 @@ import json
 from auth_config_parser.parser import (
     _ROLE_ENUM_BY_TYPE,
     _VALID_AUTH_TYPE_VALUES,
+    _legacy_config_key_error,
     _legacy_xsoar_params_error,
-    _parse_config_impl,
 )
 from auth_config_parser.types import AuthType
 
@@ -19,35 +29,6 @@ from auth_config_parser.types import AuthType
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-
-def validate_config(expr: str) -> list[str]:
-    """Validate a config expression string.
-
-    Returns a list of human-readable error strings. Empty list means
-    the expression is syntactically valid.
-
-    This validates syntax only — it does NOT check that operand names
-    match any ``auth_types[].name``. Use :func:`validate_auth_details`
-    for cross-referencing validation.
-
-    Args:
-        expr: The config expression string.
-
-    Returns:
-        List of error strings (empty = valid).
-
-    Examples:
-        >>> validate_config("REQUIRED(api_key)")
-        []
-        >>> validate_config("NoneRequired")
-        []
-        >>> validate_config("REQUIRED()")
-        ["clause 'REQUIRED(...)' has no operands"]
-        >>> validate_config("FOO(bar)")  # doctest: +ELLIPSIS
-        ["malformed clause 'FOO(bar)' ..."]
-    """
-    _, errors = _parse_config_impl(expr)
-    return errors
 
 
 def validate_auth_details(data: str | dict) -> list[str]:
@@ -57,7 +38,7 @@ def validate_auth_details(data: str | dict) -> list[str]:
     ``validate_auth_detail()``, including:
 
     - JSON parsing
-    - Required keys: ``auth_types``, ``config``, ``other_connection``
+    - Required keys: ``auth_types`` (a list)
     - ``auth_types[]`` entry shape (type enum, name uniqueness,
       ``xsoar_param_map`` non-empty ``dict[str, str]`` with non-empty
       keys and non-empty role values, ``interpolated`` bool)
@@ -66,19 +47,20 @@ def validate_auth_details(data: str | dict) -> list[str]:
 
       * ``APIKey`` → values must be from ``{"key"}``.
       * ``Plain`` → values must be from ``{"username", "password"}``.
-      * ``OAuth2ClientCreds`` / ``OAuth2AuthCode`` / ``OAuth2JWT`` /
-        ``Other`` → any non-empty string (enum deliberately
-        undefined for now; to be narrowed in a future PR).
+      * ``OAuth2ClientCreds`` / ``OAuth2JWT`` / ``Passthrough`` →
+        any non-empty string (enum deliberately undefined for now;
+        to be narrowed in a future PR).
       * ``NoneRequired`` → no entries in ``auth_types[]``; rule moot.
     - Legacy ``xsoar_params`` key is **rejected** with a
       migration-help error pointing at
       ``connectus/column-schemas.md`` §Auth Details.
+    - **Legacy ``config`` key is rejected** with a migration-help
+      error. The 2026-05 schema removed the ``config`` expression
+      entirely; the relationship between profiles is now implicit
+      (0 entries → no auth, 1 → always used, ≥2 → exclusive OR).
     - ``auth_types[]`` sort order by ``(type, name)``
-    - ``config`` expression syntax (via :func:`validate_config`)
-    - ``config`` operand names cross-referenced against
-      ``auth_types[].name``
-    - ``NoneRequired`` ↔ empty ``auth_types`` coherence
     - ``other_connection``: list of non-empty unique sorted strings
+      (optional key; absence is tolerated for legacy rows)
 
     Args:
         data: JSON string or pre-parsed dict.
@@ -87,8 +69,8 @@ def validate_auth_details(data: str | dict) -> list[str]:
         List of error strings (empty = valid).
 
     Examples:
-        >>> validate_auth_details('{"auth_types":[],'
-        ...     '"config":"NoneRequired","other_connection":[]}')
+        >>> # NoneRequired equivalent: empty auth_types, no config key.
+        >>> validate_auth_details('{"auth_types":[],"other_connection":[]}')
         []
     """
     errors: list[str] = []
@@ -105,10 +87,17 @@ def validate_auth_details(data: str | dict) -> list[str]:
     if not isinstance(detail, dict):
         return [f"Expected a JSON object, got {type(detail).__name__}"]
 
-    required_keys = {"auth_types", "config", "other_connection"}
-    missing = required_keys - set(detail.keys())
-    if missing:
-        errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
+    # --- Legacy ``config`` key (2026-05 removal): hard-reject ---
+    if "config" in detail:
+        errors.append(_legacy_config_key_error())
+        # Return immediately — every downstream check assumes the
+        # caller has migrated to the new shape; piling on additional
+        # errors here would just obscure the migration message.
+        return errors
+
+    # --- Required keys ---
+    if "auth_types" not in detail:
+        errors.append("Missing required key: auth_types")
         return errors
 
     seen_names: set[str] = set()
@@ -256,79 +245,45 @@ def validate_auth_details(data: str | dict) -> list[str]:
                 )
                 break
 
-    if not isinstance(detail["config"], str):
-        errors.append(
-            f"'config' must be a string, got "
-            f"{type(detail['config']).__name__}"
-        )
-    else:
-        config_str = detail["config"]
-        config_expr, parse_errors = _parse_config_impl(config_str)
-        for pe in parse_errors:
-            errors.append(f"'config': {pe}")
-        for n in config_expr.referenced_names:
-            if n not in seen_names:
-                errors.append(
-                    f"'config' references unknown connection-type name "
-                    f"'{n}' (must match an auth_types[].name)"
-                )
-        # Coherence between `config` and `auth_types`.
-        if valid_auth_types_list:
-            auth_types_empty = len(detail["auth_types"]) == 0
-            if config_str.strip() == "NoneRequired":
-                if not auth_types_empty:
+    # --- other_connection (optional; tolerated absence for legacy rows) ---
+    if "other_connection" in detail:
+        other_connection = detail["other_connection"]
+        if not isinstance(other_connection, list):
+            errors.append(
+                f"'other_connection' must be a list, got "
+                f"{type(other_connection).__name__}"
+            )
+        else:
+            all_strings = True
+            for j, item in enumerate(other_connection):
+                if not isinstance(item, str):
                     errors.append(
-                        "'config' is 'NoneRequired' but 'auth_types' "
-                        "contains entries; remove the entries or change "
-                        "'config'"
+                        f"'other_connection'[{j}]: must be a string, got "
+                        f"{type(item).__name__}"
                     )
-            else:
-                # Only flag the empty-auth_types mismatch if the config
-                # itself parsed cleanly (otherwise the parse error is
-                # the more informative signal).
-                if not parse_errors and auth_types_empty:
+                    all_strings = False
+                elif not item:
                     errors.append(
-                        "'config' is not 'NoneRequired' but 'auth_types' "
-                        "is empty"
+                        f"'other_connection'[{j}]: must be a non-empty string"
                     )
-
-    other_connection = detail["other_connection"]
-    if not isinstance(other_connection, list):
-        errors.append(
-            f"'other_connection' must be a list, got "
-            f"{type(other_connection).__name__}"
-        )
-    else:
-        all_strings = True
-        for j, item in enumerate(other_connection):
-            if not isinstance(item, str):
-                errors.append(
-                    f"'other_connection'[{j}]: must be a string, got "
-                    f"{type(item).__name__}"
-                )
-                all_strings = False
-            elif not item:
-                errors.append(
-                    f"'other_connection'[{j}]: must be a non-empty string"
-                )
-                all_strings = False
-        if all_strings:
-            if len(set(other_connection)) != len(other_connection):
-                seen: set[str] = set()
-                dups: list[str] = []
-                for item in other_connection:
-                    if item in seen and item not in dups:
-                        dups.append(item)
-                    seen.add(item)
-                errors.append(
-                    "'other_connection' contains duplicate entries: "
-                    f"{dups}"
-                )
-            sorted_oc = sorted(other_connection)
-            if other_connection != sorted_oc:
-                errors.append(
-                    "'other_connection' must be sorted ascending; got "
-                    f"{other_connection}, expected {sorted_oc}"
-                )
+                    all_strings = False
+            if all_strings:
+                if len(set(other_connection)) != len(other_connection):
+                    seen: set[str] = set()
+                    dups: list[str] = []
+                    for item in other_connection:
+                        if item in seen and item not in dups:
+                            dups.append(item)
+                        seen.add(item)
+                    errors.append(
+                        "'other_connection' contains duplicate entries: "
+                        f"{dups}"
+                    )
+                sorted_oc = sorted(other_connection)
+                if other_connection != sorted_oc:
+                    errors.append(
+                        "'other_connection' must be sorted ascending; got "
+                        f"{other_connection}, expected {sorted_oc}"
+                    )
 
     return errors

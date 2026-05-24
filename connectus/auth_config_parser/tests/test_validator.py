@@ -1,100 +1,48 @@
-"""Tests for auth_config_parser.validator — validate_auth_details() and validate_config().
+"""Tests for auth_config_parser.validator — validate_auth_details().
 
 Covers the structural rules ported from ``workflow_state.py``'s
 ``validate_auth_detail()`` (now under the new ``xsoar_param_map``
-shape) plus the per-type role-enum rules and the legacy-shape
-rejection introduced in the auth-details migration.
+shape and the 2026-05 schema simplification that removed the
+``config`` expression entirely) plus the per-type role-enum rules
+and the two legacy-shape rejections (``xsoar_params`` and ``config``).
 """
 from __future__ import annotations
 
 import json
 
-import pytest
-
 from auth_config_parser import (
     AuthType,
     validate_auth_details,
-    validate_config,
 )
 
 # ---------------------------------------------------------------------------
-# Reusable test data (new xsoar_param_map shape)
+# Reusable test data (post-2026-05 shape — no `config` key)
 # ---------------------------------------------------------------------------
 
 VALID_AUTH_JSON = (
     '{"auth_types":[{"type":"APIKey","name":"api_key",'
     '"xsoar_param_map":{"api_key":"key"}}],'
-    '"config":"REQUIRED(api_key)",'
     '"other_connection":["insecure","proxy","url"]}'
 )
 
 VALID_AUTH_JSON_NONE = (
-    '{"auth_types":[],"config":"NoneRequired","other_connection":[]}'
+    '{"auth_types":[],"other_connection":[]}'
 )
 
 VALID_AUTH_TYPES = {t.value for t in AuthType}
 
 
-def _wrap(entry_dict: dict, *, config: str = "REQUIRED(x)",
-          other_connection: list | None = None) -> str:
+def _wrap(entry_dict: dict, *, other_connection: list | None = None) -> str:
     """Helper: build a complete auth-details JSON document around one
     ``auth_types[]`` entry dict."""
-    return json.dumps({
-        "auth_types": [entry_dict],
-        "config": config,
-        "other_connection": other_connection if other_connection is not None else [],
-    })
+    payload: dict = {"auth_types": [entry_dict]}
+    if other_connection is not None:
+        payload["other_connection"] = other_connection
+    return json.dumps(payload)
 
 
 # ---------------------------------------------------------------------------
-# validate_config() standalone tests
-# ---------------------------------------------------------------------------
-
-
-class TestValidateConfig:
-    def test_valid_required(self) -> None:
-        assert validate_config("REQUIRED(api_key)") == []
-
-    def test_valid_none_required(self) -> None:
-        assert validate_config("NoneRequired") == []
-
-    def test_valid_multi_clause(self) -> None:
-        assert validate_config("REQUIRED(a) + OPTIONAL(b)") == []
-
-    def test_valid_choice(self) -> None:
-        assert validate_config("CHOICE(a, b)") == []
-
-    def test_empty_expression(self) -> None:
-        errors = validate_config("")
-        assert any("config expression is empty" in e for e in errors)
-
-    def test_empty_operands(self) -> None:
-        errors = validate_config("REQUIRED()")
-        assert any("no operands" in e for e in errors)
-
-    def test_bad_keyword(self) -> None:
-        errors = validate_config("FOO(bar)")
-        assert any("malformed clause" in e for e in errors)
-
-    def test_trailing_plus(self) -> None:
-        errors = validate_config("REQUIRED(a) +")
-        assert any("ends with '+'" in e for e in errors)
-
-    def test_leading_plus(self) -> None:
-        errors = validate_config("+ REQUIRED(a)")
-        assert any("starts with '+'" in e for e in errors)
-
-    def test_bad_operand_name(self) -> None:
-        errors = validate_config("REQUIRED(123bad)")
-        assert any("not a valid identifier" in e for e in errors)
-
-    def test_stray_comma(self) -> None:
-        errors = validate_config("REQUIRED(a,,b)")
-        assert any("empty operand" in e for e in errors)
-
-
-# ---------------------------------------------------------------------------
-# validate_auth_details() tests — mirrors TestValidateAuthDetail
+# validate_auth_details() core tests
 # ---------------------------------------------------------------------------
 
 
@@ -103,21 +51,26 @@ class TestValidateAuthDetails:
         assert validate_auth_details(VALID_AUTH_JSON) == []
 
     def test_valid_none_required(self) -> None:
+        """Empty auth_types list = the integration requires no auth."""
         assert validate_auth_details(VALID_AUTH_JSON_NONE) == []
+
+    def test_valid_none_required_no_other_connection(self) -> None:
+        """``other_connection`` is optional — its absence is tolerated."""
+        assert validate_auth_details('{"auth_types":[]}') == []
 
     def test_invalid_json(self) -> None:
         errors = validate_auth_details("not json")
         assert "Invalid JSON" in errors[0]
 
-    def test_missing_keys(self) -> None:
-        errors = validate_auth_details('{"auth_types":[]}')
-        assert "Missing required keys" in errors[0]
+    def test_missing_auth_types_key(self) -> None:
+        errors = validate_auth_details('{}')
+        assert any("Missing required key" in e and "auth_types" in e
+                   for e in errors)
 
     def test_invalid_auth_type(self) -> None:
         bad = (
             '{"auth_types":[{"type":"INVALID","name":"x",'
-            '"xsoar_param_map":{"p":"key"}}],"config":"REQUIRED(x)",'
-            '"other_connection":[]}'
+            '"xsoar_param_map":{"p":"key"}}]}'
         )
         errors = validate_auth_details(bad)
         assert any("invalid type 'INVALID'" in e for e in errors)
@@ -130,16 +83,12 @@ class TestValidateAuthDetails:
             "APIKey": {"p": "key"},
             "Plain": {"u": "username", "p": "password"},
             "OAuth2ClientCreds": {"p": "client_secret"},
-            "OAuth2AuthCode": {"p": "auth_code"},
             "OAuth2JWT": {"p": "private_key"},
-            "Other": {"p": "anything"},
+            "Passthrough": {"p": "anything"},
         }
         for at in VALID_AUTH_TYPES:
             if at == "NoneRequired":
-                detail = (
-                    '{"auth_types":[],"config":"NoneRequired",'
-                    '"other_connection":[]}'
-                )
+                detail = '{"auth_types":[]}'
                 assert validate_auth_details(detail) == [], (
                     f"NoneRequired (empty auth_types) should be valid"
                 )
@@ -147,14 +96,14 @@ class TestValidateAuthDetails:
             map_json = json.dumps(per_type_map[at])
             detail = (
                 f'{{"auth_types":[{{"type":"{at}","name":"x",'
-                f'"xsoar_param_map":{map_json}}}],'
-                '"config":"REQUIRED(x)","other_connection":[]}'
+                f'"xsoar_param_map":{map_json}}}]}}'
             )
             assert validate_auth_details(detail) == [], (
                 f"Type '{at}' should be valid"
             )
 
-    def test_valid_two_clause_config(self) -> None:
+    def test_valid_two_profile_choice(self) -> None:
+        """Two profiles → implicit exclusive-OR (no `config` needed)."""
         detail = (
             '{"auth_types":['
             '{"type":"OAuth2ClientCreds","name":"credentials_consumer",'
@@ -163,13 +112,11 @@ class TestValidateAuthDetails:
             '{"type":"Plain","name":"credentials",'
             '"xsoar_param_map":{"credentials.identifier":"username",'
             '"credentials.password":"password"}}'
-            '],'
-            '"config":"REQUIRED(credentials) + OPTIONAL(credentials_consumer)",'
-            '"other_connection":[]}'
+            ']}'
         )
         assert validate_auth_details(detail) == []
 
-    def test_valid_choice(self) -> None:
+    def test_valid_choice_of_two_plain(self) -> None:
         detail = (
             '{"auth_types":['
             '{"type":"Plain","name":"credentials",'
@@ -178,95 +125,9 @@ class TestValidateAuthDetails:
             '{"type":"Plain","name":"hunting_credentials",'
             '"xsoar_param_map":{"hunting_credentials.identifier":"username",'
             '"hunting_credentials.password":"password"}}'
-            '],'
-            '"config":"CHOICE(credentials, hunting_credentials)",'
-            '"other_connection":[]}'
+            ']}'
         )
         assert validate_auth_details(detail) == []
-
-    def test_config_unknown_name(self) -> None:
-        detail = (
-            '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(missing_name)","other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "unknown connection-type name 'missing_name'" in e
-            for e in errors
-        ), errors
-
-    def test_config_empty_required(self) -> None:
-        detail = (
-            '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED()","other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config'" in e and "no operands" in e for e in errors
-        ), errors
-
-    def test_config_trailing_plus(self) -> None:
-        detail = (
-            '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key) +","other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config'" in e and "ends with '+'" in e for e in errors
-        ), errors
-
-    def test_config_unknown_keyword(self) -> None:
-        detail = (
-            '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"FOO(api_key)","other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config'" in e and "malformed clause" in e for e in errors
-        ), errors
-
-    def test_config_missing_parens(self) -> None:
-        detail = (
-            '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED api_key","other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config'" in e and "malformed clause" in e for e in errors
-        ), errors
-
-    def test_none_required_with_entries(self) -> None:
-        detail = (
-            '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"NoneRequired","other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config' is 'NoneRequired' but 'auth_types' contains entries"
-            in e
-            for e in errors
-        ), errors
-
-    def test_non_none_required_empty_types(self) -> None:
-        detail = (
-            '{"auth_types":[],"config":"REQUIRED(api_key)",'
-            '"other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config' is not 'NoneRequired' but 'auth_types' is empty" in e
-            for e in errors
-        ), errors
-        # And the unknown-name check should also fire.
-        assert any(
-            "unknown connection-type name 'api_key'" in e for e in errors
-        ), errors
 
     def test_sort_order_violation(self) -> None:
         # APIKey < Plain by type; placing Plain first is out of order.
@@ -277,9 +138,7 @@ class TestValidateAuthDetails:
             '"credentials.password":"password"}},'
             '{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}'
-            '],'
-            '"config":"REQUIRED(api_key) + REQUIRED(credentials)",'
-            '"other_connection":[]}'
+            ']}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -297,8 +156,7 @@ class TestValidateAuthDetails:
             '{"auth_types":['
             '{"type":"APIKey","name":"b","xsoar_param_map":{"p":"key"}},'
             '{"type":"APIKey","name":"a","xsoar_param_map":{"p":"key"}}'
-            '],'
-            '"config":"REQUIRED(a) + REQUIRED(b)","other_connection":[]}'
+            ']}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -310,8 +168,7 @@ class TestValidateAuthDetails:
             '{"auth_types":['
             '{"type":"APIKey","name":"x","xsoar_param_map":{"p":"key"}},'
             '{"type":"APIKey","name":"x","xsoar_param_map":{"q":"key"}}'
-            '],'
-            '"config":"REQUIRED(x)","other_connection":[]}'
+            ']}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -322,7 +179,6 @@ class TestValidateAuthDetails:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)",'
             '"other_connection":["insecure","proxy","url"]}'
         )
         assert validate_auth_details(detail) == []
@@ -331,27 +187,25 @@ class TestValidateAuthDetails:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)","other_connection":[]}'
+            '"other_connection":[]}'
         )
         assert validate_auth_details(detail) == []
 
-    def test_other_connection_missing_key(self) -> None:
+    def test_other_connection_missing_key_tolerated(self) -> None:
+        """Absence of ``other_connection`` is now tolerated (it was
+        required pre-2026-05 alongside ``config``; both were dropped
+        from the required-keys set when ``config`` was removed)."""
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)"}'
+            '"xsoar_param_map":{"api_key":"key"}}]}'
         )
-        errors = validate_auth_details(detail)
-        assert any(
-            "Missing required keys" in e and "other_connection" in e
-            for e in errors
-        ), errors
+        assert validate_auth_details(detail) == []
 
     def test_other_connection_not_list(self) -> None:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)","other_connection":"url"}'
+            '"other_connection":"url"}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -362,7 +216,7 @@ class TestValidateAuthDetails:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)","other_connection":["url",42]}'
+            '"other_connection":["url",42]}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -374,7 +228,6 @@ class TestValidateAuthDetails:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)",'
             '"other_connection":["url",""]}'
         )
         errors = validate_auth_details(detail)
@@ -387,7 +240,6 @@ class TestValidateAuthDetails:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)",'
             '"other_connection":["proxy","url","url"]}'
         )
         errors = validate_auth_details(detail)
@@ -399,7 +251,6 @@ class TestValidateAuthDetails:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
             '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(api_key)",'
             '"other_connection":["url","proxy"]}'
         )
         errors = validate_auth_details(detail)
@@ -409,14 +260,6 @@ class TestValidateAuthDetails:
             for e in errors
         ), errors
 
-    def test_validate_config_standalone(self) -> None:
-        """validate_config() works independently of validate_auth_details()."""
-        assert validate_config("REQUIRED(api_key)") == []
-        assert validate_config("NoneRequired") == []
-        errors = validate_config("FOO(bar)")
-        assert len(errors) > 0
-        assert any("malformed clause" in e for e in errors)
-
     def test_accepts_dict_input(self) -> None:
         """validate_auth_details() accepts pre-parsed dict."""
         data = {
@@ -424,7 +267,6 @@ class TestValidateAuthDetails:
                 {"type": "APIKey", "name": "x",
                  "xsoar_param_map": {"p": "key"}}
             ],
-            "config": "REQUIRED(x)",
             "other_connection": [],
         }
         assert validate_auth_details(data) == []
@@ -436,8 +278,7 @@ class TestValidateAuthDetails:
 
     def test_auth_types_not_list(self) -> None:
         detail = (
-            '{"auth_types":"not a list","config":"NoneRequired",'
-            '"other_connection":[]}'
+            '{"auth_types":"not a list","other_connection":[]}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -446,8 +287,7 @@ class TestValidateAuthDetails:
 
     def test_auth_types_entry_not_dict(self) -> None:
         detail = (
-            '{"auth_types":["not a dict"],"config":"REQUIRED(x)",'
-            '"other_connection":[]}'
+            '{"auth_types":["not a dict"],"other_connection":[]}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -455,20 +295,10 @@ class TestValidateAuthDetails:
             for e in errors
         ), errors
 
-    def test_config_not_string(self) -> None:
-        detail = (
-            '{"auth_types":[],"config":42,"other_connection":[]}'
-        )
-        errors = validate_auth_details(detail)
-        assert any(
-            "'config' must be a string" in e for e in errors
-        ), errors
-
     def test_interpolated_non_bool(self) -> None:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"x",'
-            '"xsoar_param_map":{"p":"key"},"interpolated":"yes"}],'
-            '"config":"REQUIRED(x)","other_connection":[]}'
+            '"xsoar_param_map":{"p":"key"},"interpolated":"yes"}]}'
         )
         errors = validate_auth_details(detail)
         assert any(
@@ -477,7 +307,73 @@ class TestValidateAuthDetails:
 
 
 # ---------------------------------------------------------------------------
-# NEW xsoar_param_map structural + role-enum tests (plan §5.2)
+# Legacy `config` key rejection (2026-05 schema simplification)
+# ---------------------------------------------------------------------------
+
+
+class TestLegacyConfigKeyRejection:
+    def test_legacy_config_required_rejected(self) -> None:
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"api_key",'
+            '"xsoar_param_map":{"api_key":"key"}}],'
+            '"config":"REQUIRED(api_key)",'
+            '"other_connection":["insecure","proxy","url"]}'
+        )
+        errors = validate_auth_details(detail)
+        joined = "\n".join(errors)
+        assert "'config'" in joined
+        assert "2026-05" in joined
+        assert "removed" in joined
+        assert "exclusive OR" in joined or "exclusive-OR" in joined.lower()
+        assert "connectus/column-schemas.md" in joined
+
+    def test_legacy_config_none_required_rejected(self) -> None:
+        detail = (
+            '{"auth_types":[],"config":"NoneRequired",'
+            '"other_connection":[]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any("'config'" in e and "removed" in e for e in errors)
+
+    def test_legacy_config_choice_rejected(self) -> None:
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"a","xsoar_param_map":{"p":"key"}},'
+            '{"type":"APIKey","name":"b","xsoar_param_map":{"q":"key"}}'
+            '],"config":"CHOICE(a, b)"}'
+        )
+        errors = validate_auth_details(detail)
+        assert any("'config'" in e and "removed" in e for e in errors)
+
+    def test_legacy_config_optional_rejected(self) -> None:
+        """OPTIONAL was part of the legacy grammar; payload-level
+        rejection of the `config` key fires before grammar parsing
+        can complain about OPTIONAL specifically."""
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"x",'
+            '"xsoar_param_map":{"p":"key"}}],'
+            '"config":"OPTIONAL(x)"}'
+        )
+        errors = validate_auth_details(detail)
+        assert any("'config'" in e and "removed" in e for e in errors)
+
+    def test_legacy_config_rejection_is_immediate(self) -> None:
+        """The ``config`` rejection short-circuits — downstream errors
+        from other broken parts of the payload are NOT piled on, so the
+        migration error stands alone and isn't drowned out."""
+        detail = (
+            '{"auth_types":[{"type":"INVALID","name":""}],'
+            '"config":"REQUIRED(x)","other_connection":"not a list"}'
+        )
+        errors = validate_auth_details(detail)
+        # Only the config-rejection should be present.
+        assert len(errors) == 1
+        assert "'config'" in errors[0]
+        assert "removed" in errors[0]
+
+
+# ---------------------------------------------------------------------------
+# xsoar_param_map structural + role-enum tests
 # ---------------------------------------------------------------------------
 
 
@@ -638,13 +534,6 @@ class TestXsoarParamMapRoleEnum:
         })
         assert validate_auth_details(detail) == []
 
-    def test_oauth_authcode_value_any_string_positive(self) -> None:
-        detail = _wrap({
-            "type": "OAuth2AuthCode", "name": "x",
-            "xsoar_param_map": {"x": "auth_code"},
-        })
-        assert validate_auth_details(detail) == []
-
     def test_oauth_jwt_value_any_string_positive(self) -> None:
         detail = _wrap({
             "type": "OAuth2JWT", "name": "x",
@@ -652,12 +541,35 @@ class TestXsoarParamMapRoleEnum:
         })
         assert validate_auth_details(detail) == []
 
-    def test_other_value_any_string_positive(self) -> None:
+    def test_passthrough_value_any_string_positive(self) -> None:
         detail = _wrap({
-            "type": "Other", "name": "x",
+            "type": "Passthrough", "name": "x",
             "xsoar_param_map": {"weird_path": "arbitrary_role"},
         })
         assert validate_auth_details(detail) == []
+
+    def test_legacy_other_value_rejected(self) -> None:
+        """The pre-2026-05 ``Other`` enum value was renamed to
+        ``Passthrough`` with no alias — payloads using the legacy
+        name MUST be rejected so the migration error is loud."""
+        detail = _wrap({
+            "type": "Other", "name": "x",
+            "xsoar_param_map": {"x": "anything"},
+        })
+        errors = validate_auth_details(detail)
+        assert any("invalid type 'Other'" in e for e in errors)
+
+    def test_legacy_oauth2authcode_value_rejected(self) -> None:
+        """The pre-2026-05 ``OAuth2AuthCode`` enum value was removed
+        without an alias — Authorization Code flows are now
+        classified as ``Passthrough``. Payloads using the legacy
+        name MUST be rejected."""
+        detail = _wrap({
+            "type": "OAuth2AuthCode", "name": "x",
+            "xsoar_param_map": {"x": "auth_code"},
+        })
+        errors = validate_auth_details(detail)
+        assert any("invalid type 'OAuth2AuthCode'" in e for e in errors)
 
     def test_apikey_two_paths_same_role_allowed(self) -> None:
         """APIKey with two paths both mapping to 'key' — accepted
@@ -678,7 +590,7 @@ class TestXsoarParamMapRoleEnum:
         detail = _wrap({
             "type": "APIKey", "name": "credentials",
             "xsoar_param_map": {"credentials.identifier": "key"},
-        }, config="REQUIRED(credentials)")
+        })
         assert validate_auth_details(detail) == []
 
 
@@ -688,8 +600,7 @@ class TestLegacyXsoarParamsRejection:
         migration-help error."""
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"x",'
-            '"xsoar_params":["api_key"]}],'
-            '"config":"REQUIRED(x)","other_connection":[]}'
+            '"xsoar_params":["api_key"]}]}'
         )
         errors = validate_auth_details(detail)
         joined = "\n".join(errors)
@@ -703,8 +614,7 @@ class TestLegacyXsoarParamsRejection:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"x",'
             '"xsoar_params":["api_key"],'
-            '"xsoar_param_map":{"api_key":"key"}}],'
-            '"config":"REQUIRED(x)","other_connection":[]}'
+            '"xsoar_param_map":{"api_key":"key"}}]}'
         )
         errors = validate_auth_details(detail)
         joined = "\n".join(errors)

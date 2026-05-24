@@ -3,31 +3,26 @@
 Converts raw input (strings, dicts, JSON) into typed data model objects.
 Raises :class:`~auth_config_parser.exceptions.AuthConfigParseError` on
 invalid input.
+
+The 2026-05 schema simplification removed the ``config`` expression
+entirely. The relationship between profiles is implicit (see
+:class:`auth_config_parser.types.AuthDetails`): 0 entries → no auth, 1
+entry → the single profile is always used, ≥2 entries → exclusive-OR.
 """
 from __future__ import annotations
 
 import json
-import re
 
 from auth_config_parser.exceptions import AuthConfigParseError
 from auth_config_parser.types import (
     AuthDetails,
     AuthEntry,
     AuthType,
-    ClauseOperator,
-    ConfigClause,
-    ConfigExpression,
 )
 
 # ---------------------------------------------------------------------------
-# Regex constants (ported from workflow_state.py)
+# Validation constants
 # ---------------------------------------------------------------------------
-
-_CLAUSE_RE = re.compile(
-    r"^\s*(REQUIRED|OPTIONAL|CHOICE)\s*\(\s*([^)]*?)\s*\)\s*$"
-)
-_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-_SPLIT_RE = re.compile(r"\s*\+\s*")
 
 # Valid auth type string values (for fast membership check during parsing).
 _VALID_AUTH_TYPE_VALUES = {t.value for t in AuthType}
@@ -40,13 +35,21 @@ _VALID_AUTH_TYPE_VALUES = {t.value for t in AuthType}
 # the canonical reference and is re-used by validator.py.
 # ---------------------------------------------------------------------------
 
-# Types whose xsoar_param_map values are constrained to a fixed enum.
-# Types not present in this mapping (OAuth2*, Other) accept any non-empty
-# string. ``NoneRequired`` never appears in ``auth_types[]``.
-_ROLE_ENUM_BY_TYPE: dict[AuthType, set[str]] = {
+# Canonical role-name sets per profile type. Per the 2026-05
+# "AND-ed secrets go in one profile" rule, these sets are NO LONGER
+# exhaustive — the validator privileges them (at least one canonical
+# role MUST appear in the map) but accepts ANY non-empty string for
+# additional "extras" keys (vendor-required certs, HMAC salts, etc.).
+# Types not present in this mapping (``OAuth2*``, ``Passthrough``)
+# accept any non-empty string for every key. ``NoneRequired`` never
+# appears in ``auth_types[]``.
+_CANONICAL_ROLES_BY_TYPE: dict[AuthType, set[str]] = {
     AuthType.APIKey: {"key"},
     AuthType.Plain: {"username", "password"},
 }
+
+# Back-compat alias (read by validator.py).
+_ROLE_ENUM_BY_TYPE = _CANONICAL_ROLES_BY_TYPE
 
 
 def _legacy_xsoar_params_error(index: int) -> str:
@@ -64,7 +67,7 @@ def _legacy_xsoar_params_error(index: int) -> str:
         "dict mapping each XSOAR field path to the role that secret "
         "plays for this connection). For 'APIKey' the only allowed "
         "value is \"key\"; for 'Plain' values must be in "
-        '{"username", "password"}; for OAuth2*/Other any non-empty '
+        '{"username", "password"}; for OAuth2*/Passthrough any non-empty '
         "string is accepted. See connectus/column-schemas.md "
         "§Auth Details for examples. Example: "
         '{"type": "APIKey", "name": "credentials", '
@@ -72,87 +75,32 @@ def _legacy_xsoar_params_error(index: int) -> str:
     )
 
 
+def _legacy_config_key_error() -> str:
+    """Build the standard migration-help error for the legacy ``config`` key.
+
+    Fired by both the parser and the validator whenever an ``Auth
+    Details`` payload still contains the pre-2026-05 ``config``
+    expression field. The error names the offending key, explains
+    why it was removed (the only inter-profile relation is exclusive
+    OR, so ``config`` carried no information beyond ``auth_types``),
+    and tells the caller exactly what to do (drop the key).
+    """
+    return (
+        "'config': the 'config' expression key was removed in the "
+        "2026-05 schema simplification and is no longer accepted. "
+        "The relationship between profiles is now implicit: "
+        "len(auth_types) == 0 means no auth, == 1 means the single "
+        "profile is always used, >= 2 means the user picks exactly "
+        "one (exclusive OR). AND-ed secrets within one auth flow "
+        "live inside one profile's xsoar_param_map. Drop the "
+        "'config' key from the payload. See connectus/column-schemas.md "
+        "§Auth Details for the new shape."
+    )
+
+
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
-
-def _parse_config_impl(config: str) -> tuple[ConfigExpression, list[str]]:
-    """Core config parsing implementation.
-
-    Returns ``(ConfigExpression, parse_errors)`` where ``parse_errors``
-    is a list of human-readable issues with the expression.
-
-    This is the internal workhorse extracted from
-    ``workflow_state._parse_auth_config()``. The public
-    :func:`parse_config` raises on errors; the validator calls this
-    directly to collect errors without raising.
-    """
-    parse_errors: list[str] = []
-    clauses: list[ConfigClause] = []
-
-    stripped = config.strip()
-    if stripped == "":
-        parse_errors.append("config expression is empty")
-        return ConfigExpression(), parse_errors
-    if stripped == "NoneRequired":
-        return ConfigExpression(none_required=True), parse_errors
-
-    # Detect leading/trailing `+` before splitting.
-    if stripped.startswith("+"):
-        parse_errors.append(
-            "config expression starts with '+' (no leading clause)"
-        )
-    if stripped.endswith("+"):
-        parse_errors.append(
-            "config expression ends with '+' (no trailing clause)"
-        )
-
-    segments = _SPLIT_RE.split(stripped)
-    for seg_idx, segment in enumerate(segments):
-        if segment.strip() == "":
-            # Already covered by the leading/trailing checks above OR a
-            # genuine "+ +" in the middle.
-            if not (seg_idx == 0 and stripped.startswith("+")) and not (
-                seg_idx == len(segments) - 1 and stripped.endswith("+")
-            ):
-                parse_errors.append("empty clause between '+' separators")
-            continue
-        m = _CLAUSE_RE.match(segment)
-        if not m:
-            parse_errors.append(
-                f"malformed clause '{segment}' (expected "
-                "REQUIRED(...), OPTIONAL(...), or CHOICE(...))"
-            )
-            continue
-        keyword, inner = m.group(1), m.group(2)
-        if inner.strip() == "":
-            parse_errors.append(f"clause '{keyword}(...)' has no operands")
-            continue
-        operands = [op.strip() for op in inner.split(",")]
-        clause_names: list[str] = []
-        for op in operands:
-            if op == "":
-                parse_errors.append(
-                    f"clause '{keyword}(...)' has an empty operand "
-                    "(stray comma?)"
-                )
-                continue
-            if not _NAME_RE.fullmatch(op):
-                parse_errors.append(
-                    f"clause '{keyword}(...)' operand '{op}' is not a "
-                    "valid identifier (must match [A-Za-z_][A-Za-z0-9_]*)"
-                )
-                continue
-            clause_names.append(op)
-        if clause_names:
-            clauses.append(
-                ConfigClause(
-                    operator=ClauseOperator(keyword),
-                    names=clause_names,
-                )
-            )
-
-    return ConfigExpression(none_required=False, clauses=clauses), parse_errors
 
 
 def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, list[str]]:
@@ -274,72 +222,46 @@ def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, lis
 # Public API
 # ---------------------------------------------------------------------------
 
-def parse_config(expr: str) -> ConfigExpression:
-    """Parse a config expression string into a ConfigExpression.
-
-    Args:
-        expr: The config expression string, e.g.
-            ``'REQUIRED(api_key) + OPTIONAL(oauth_creds)'``
-            or ``'NoneRequired'``.
-
-    Returns:
-        A :class:`~auth_config_parser.types.ConfigExpression` with
-        parsed clauses.
-
-    Raises:
-        AuthConfigParseError: If the expression is malformed.
-
-    Examples:
-        >>> parse_config("NoneRequired")
-        ConfigExpression(none_required=True, clauses=[])
-
-        >>> parse_config("REQUIRED(api_key)")
-        ConfigExpression(none_required=False, clauses=[ConfigClause(operator=<ClauseOperator.REQUIRED: 'REQUIRED'>, names=['api_key'])])
-
-        >>> parse_config("REQUIRED(creds) + OPTIONAL(oauth)")
-        ConfigExpression(none_required=False, clauses=[ConfigClause(operator=<ClauseOperator.REQUIRED: 'REQUIRED'>, names=['creds']), ConfigClause(operator=<ClauseOperator.OPTIONAL: 'OPTIONAL'>, names=['oauth'])])
-    """
-    result, errors = _parse_config_impl(expr)
-    if errors:
-        raise AuthConfigParseError(
-            f"config parse errors: {'; '.join(errors)}",
-            errors=errors,
-        )
-    return result
-
 
 def parse_auth_details(data: str | dict) -> AuthDetails:
     """Parse Auth Details from a JSON string or pre-parsed dict.
 
     Performs structural parsing only — converts raw JSON into typed
     objects. Does NOT perform cross-referencing validation (e.g.
-    checking that config names match auth_types names). Use
+    checking ``auth_types[].name`` uniqueness or sort order). Use
     :func:`~auth_config_parser.validator.validate_auth_details` for
     full validation.
 
+    The 2026-05 schema removed the ``config`` expression field. If a
+    payload still contains it, the parser raises with a migration-help
+    error pointing at this fact — do not pass through pre-2026-05
+    rows without first stripping the ``config`` key.
+
     Args:
-        data: Either a JSON string or an already-parsed dict.
+        data: Either a JSON string or an already-parsed dict. Must
+            contain the key ``auth_types`` (a list). ``other_connection``
+            is optional. The legacy ``config`` key is hard-rejected.
 
     Returns:
         An :class:`~auth_config_parser.types.AuthDetails` object.
 
     Raises:
         AuthConfigParseError: If the input is not valid JSON, not a
-            dict, or is missing required keys / has wrong types.
+            dict, is missing required keys, has wrong types, or still
+            contains the removed ``config`` key.
 
     Examples:
         >>> details = parse_auth_details({
         ...     "auth_types": [{"type": "APIKey", "name": "api_key",
         ...                     "xsoar_param_map": {"api_key": "key"}}],
-        ...     "config": "REQUIRED(api_key)",
-        ...     "other_connection": ["url", "proxy"],
+        ...     "other_connection": ["proxy", "url"],
         ... })
         >>> details.auth_types[0].type
         <AuthType.APIKey: 'APIKey'>
         >>> details.auth_types[0].xsoar_param_map
         {'api_key': 'key'}
-        >>> details.config.clauses[0].operator
-        <ClauseOperator.REQUIRED: 'REQUIRED'>
+        >>> details.is_none_required
+        False
     """
     errors: list[str] = []
 
@@ -355,13 +277,17 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
             f"Expected a JSON object, got {type(data).__name__}"
         )
 
-    # --- Check required keys (auth_types and config are always required;
-    #     other_connection is optional for legacy compat) ---
-    required_keys = {"auth_types", "config"}
-    missing = required_keys - set(data.keys())
-    if missing:
+    # --- Legacy config key (2026-05): hard-reject with migration help ---
+    if "config" in data:
         raise AuthConfigParseError(
-            f"Missing required keys: {', '.join(sorted(missing))}"
+            _legacy_config_key_error(),
+            errors=[_legacy_config_key_error()],
+        )
+
+    # --- Required keys ---
+    if "auth_types" not in data:
+        raise AuthConfigParseError(
+            "Missing required key: auth_types"
         )
 
     # --- Parse auth_types ---
@@ -378,18 +304,6 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
             errors.extend(entry_errors)
         if entry is not None:
             auth_entries.append(entry)
-
-    # --- Parse config ---
-    if not isinstance(data["config"], str):
-        errors.append(
-            f"'config' must be a string, got "
-            f"{type(data['config']).__name__}"
-        )
-        config_expr = ConfigExpression()
-    else:
-        config_expr, config_errors = _parse_config_impl(data["config"])
-        for ce in config_errors:
-            errors.append(f"'config': {ce}")
 
     # --- Parse other_connection (optional) ---
     other_connection: list[str] | None = None
@@ -423,6 +337,5 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
 
     return AuthDetails(
         auth_types=auth_entries,
-        config=config_expr,
         other_connection=other_connection,
     )

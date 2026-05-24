@@ -1,31 +1,33 @@
-"""auth_config_parser — Standalone Auth Details Config parser package.
+"""auth_config_parser — Standalone Auth Details parser package.
 
-Extracts and formalizes the Auth Details Config parser previously
-embedded in ``workflow_state.py``. Provides typed data models,
-pure parsing functions, validation, and utility helpers.
+Extracts and formalizes the Auth Details parser previously embedded
+in ``workflow_state.py``. Provides typed data models, pure parsing
+functions, validation, and utility helpers.
+
+The 2026-05 schema simplification removed the ``config`` expression
+field. The relationship between profiles is implicit:
+
+- 0 entries in ``auth_types`` → integration requires no authentication.
+- 1 entry → the single profile, always selected.
+- 2+ entries → exclusive-OR; the user picks exactly one profile.
 
 Usage::
 
-    from auth_config_parser import parse_config, parse_auth_details, AuthDetails
+    from auth_config_parser import parse_auth_details, AuthDetails
     from auth_config_parser import validate_auth_details, auth_param_ids
 """
 from __future__ import annotations
 
 from auth_config_parser.exceptions import (
     AuthConfigParseError,
-    AuthConfigValidationError,
 )
 from auth_config_parser.parser import (
     parse_auth_details,
-    parse_config,
 )
 from auth_config_parser.types import (
     AuthDetails,
     AuthEntry,
     AuthType,
-    ClauseOperator,
-    ConfigClause,
-    ConfigExpression,
 )
 from auth_config_parser.utils import (
     auth_param_ids,
@@ -34,25 +36,19 @@ from auth_config_parser.utils import (
 )
 from auth_config_parser.validator import (
     validate_auth_details,
-    validate_config,
 )
 
 __all__ = [
-    # Types
+    # Exceptions
     "AuthConfigParseError",
-    "AuthConfigValidationError",
+    # Types
     "AuthDetails",
     "AuthEntry",
     "AuthType",
-    "ClauseOperator",
-    "ConfigClause",
-    "ConfigExpression",
     # Parsing
     "parse_auth_details",
-    "parse_config",
     # Validation
     "validate_auth_details",
-    "validate_config",
     # Utilities
     "auth_param_ids",
     "auth_param_ids_with_sources",

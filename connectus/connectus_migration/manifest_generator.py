@@ -1266,7 +1266,7 @@ def generate_manifest(
         "{}",
         help=(
             "JSON string describing authentication methods. Shape:\n"
-            '{"auth_types": [...], "config": "...", "additional_params": [...]}\n'
+            '{"auth_types": [...], "other_connection": [...]}\n'
             "Used to generate connection.yaml in a future iteration. "
             "Pass '{}' or omit to disable."
         ),

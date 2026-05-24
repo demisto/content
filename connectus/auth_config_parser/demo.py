@@ -14,7 +14,6 @@ under ``Packs/``, this script:
    "connection-adjacent" non-secret (``other_connection``).
 3. Feeds the JSON through the parser's full public API:
    - ``parse_auth_details()``  -> typed :class:`AuthDetails`
-   - ``parse_config()``        -> typed :class:`ConfigExpression`
    - ``validate_auth_details()`` -> validation error list
    - ``auth_param_ids()``      -> set of bare YML param ids
    - ``auth_param_ids_with_sources()`` -> source-attributed mapping
@@ -53,7 +52,6 @@ from auth_config_parser import (  # noqa: E402
     auth_param_ids,
     auth_param_ids_with_sources,
     parse_auth_details,
-    parse_config,
     validate_auth_details,
 )
 
@@ -86,7 +84,6 @@ SAMPLES: list[dict] = [
                     "xsoar_param_map": {"token": "key"},
                 },
             ],
-            "config": "REQUIRED(api_token)",
             "other_connection": ["after", "proxy", "verify"],
         },
     },
@@ -130,7 +127,6 @@ SAMPLES: list[dict] = [
                     },
                 },
             ],
-            "config": "CHOICE(edgegrid_legacy, edgegrid_v2)",
             "other_connection": ["host", "insecure", "proxy"],
         },
     },
@@ -163,7 +159,6 @@ SAMPLES: list[dict] = [
                     },
                 },
             ],
-            "config": "CHOICE(api_token, oauth_jwt)",
             "other_connection": ["insecure", "proxy", "url", "use_oauth"],
         },
     },
@@ -208,7 +203,6 @@ SAMPLES: list[dict] = [
                     },
                 },
             ],
-            "config": "CHOICE(client_certificate, client_credentials)",
             "other_connection": [
                 "auth_type",
                 "insecure",
@@ -279,13 +273,18 @@ def _print_auth_details(details: AuthDetails) -> None:
             f"xsoar_param_map={dict(e.xsoar_param_map)}{flag}"
         )
 
-    print("  config:")
-    if details.config.none_required:
-        print("    NoneRequired")
+    if details.is_none_required:
+        print("  profile relation: (no authentication required — empty auth_types)")
+    elif details.requires_choice:
+        print(
+            f"  profile relation: exclusive-OR ({len(details.auth_types)} profiles — "
+            f"pick one of {sorted(details.auth_type_names)})"
+        )
     else:
-        for c in details.config.clauses:
-            print(f"    {c.operator.value}({', '.join(c.names)})")
-        print(f"    referenced_names = {details.config.referenced_names}")
+        print(
+            f"  profile relation: single profile required "
+            f"({next(iter(details.auth_type_names))})"
+        )
 
     print(f"  other_connection: {details.other_connection}")
     print(f"  auth_type_names (derived): {sorted(details.auth_type_names)}")
@@ -317,19 +316,6 @@ def run_sample(sample: dict) -> bool:
     _print_subheader("Input Auth Details JSON (hand-crafted from YAML)")
     raw_json = json.dumps(sample["auth_details"], indent=2, sort_keys=False)
     print(raw_json)
-
-    # --- parse_config() on the bare expression string -------------------
-    _print_subheader("parse_config(<config string>)")
-    try:
-        expr_obj = parse_config(sample["auth_details"]["config"])
-        print(f"  none_required = {expr_obj.none_required}")
-        for c in expr_obj.clauses:
-            print(f"  clause: {c.operator.value}({', '.join(c.names)})")
-    except AuthConfigParseError as e:
-        print(f"  AuthConfigParseError: {e.message}")
-        for err in e.errors:
-            print(f"    - {err}")
-        return False
 
     # --- parse_auth_details() on the full dict --------------------------
     _print_subheader("parse_auth_details(<dict>)  -> typed AuthDetails")
