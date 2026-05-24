@@ -4983,7 +4983,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 ### aws-redshift-cluster-modify
 
 ***
-Modifies the settings of a cluster. Requires the redshift:ModifyCluster permission. Required IAM Permission: redshift:ModifyCluster.
+Modifies the settings of a cluster. Required IAM Permission: redshift:ModifyCluster.
 
 #### Base Command
 
@@ -5141,7 +5141,7 @@ Modifies the settings of a cluster. Requires the redshift:ModifyCluster permissi
 ### aws-rds-db-instances-describe
 
 ***
-Returns information about provisioned RDS instances. Requires the rds:DescribeDBInstances permission. Required IAM Permission: rds:DescribeDBInstances.
+Returns information about provisioned RDS instances. Required IAM Permission: rds:DescribeDBInstances.
 
 #### Base Command
 
@@ -5311,7 +5311,7 @@ Returns information about provisioned RDS instances. Requires the rds:DescribeDB
 ### aws-lambda-function-configuration-update
 
 ***
-Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission. Required IAM Permission: lambda:UpdateFunctionConfiguration.
+Updates the configuration for a Lambda function. Required IAM Permission: lambda:UpdateFunctionConfiguration.
 
 #### Base Command
 
