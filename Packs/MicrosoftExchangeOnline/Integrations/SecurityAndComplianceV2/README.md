@@ -4,7 +4,7 @@ Deprecated. Use the **Microsoft Graph Security** integration instead.
 
 ## ⚠️ Deprecation Notice
 
-This integration is **deprecated**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
+This integration is **deprecated**. Customers should transition to the **Microsoft Graph Security** integration for equivalent functionality.
 
 Note: The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery). Content searches are now performed within the context of an eDiscovery case.
 
