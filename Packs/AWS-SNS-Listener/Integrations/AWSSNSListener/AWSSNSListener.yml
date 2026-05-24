@@ -45,7 +45,7 @@ configuration:
   type: 8
   section: Connect
   required: false
-- additionalinfo: "Determines how incoming SNS notifications are processed. Choose 'concurrent' to handle multiple notifications at the same time, which helps avoid duplicate notifications during bursts of traffic, or 'sequential' to handle them one at a time."
+- additionalinfo: "The processing mode for incoming SNS notifications. Choose 'concurrent' to handle multiple notifications at the same time, which helps avoid duplicate notifications during bursts of traffic, or 'sequential' to handle them one at a time."
   display: Request processing mode
   name: processing_mode
   type: 15
