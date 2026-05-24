@@ -8130,22 +8130,22 @@ def cve_request(cve_id: list[str] | None) -> dict:
 def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[CommandResults]:
     """Search Spotlight vulnerabilities with cursor-based pagination via ``next_token``.
 
+    The pagination cursor returned by CrowdStrike (``meta.pagination.after``) is always
+    emitted to the ``CrowdStrike.VulnerabilityNextToken`` context output when present,
+    and never rendered in the human-readable war-room output.
+
     Args:
-        args: Command arguments (filter, limit, next_token, omit_next_token, etc.).
+        args: Command arguments (filter, limit, next_token, etc.).
 
     Returns:
-        list[CommandResults]: Bulk-data entry, optionally followed by a cursor entry.
-
-    A 404 ``Search context expired`` response is intercepted and re-raised with a friendly message.
+        list[CommandResults]: Bulk-data entry, followed by a cursor entry when the
+        API returned a non-empty ``after`` cursor.
     """
     next_token = args.get("next_token")
 
-    requested_limit = arg_to_number(args.get("limit", 50))
-    limit = requested_limit
+    limit = arg_to_number(args.get("limit", 50))
     if limit is not None and limit > MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE:
         limit = MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
-
-    omit_next_token = argToBoolean(args.get("omit_next_token", "true"))
 
     try:
         vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
@@ -8194,9 +8194,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[Command
         )
     human_readable = tableToMarkdown("List Vulnerabilities", outputs, removeNull=True, headers=headers)
 
-    # Extract the next-page cursor; treat empty string as "no more pages".
     raw_after = vulnerability_response.get("meta", {}).get("pagination", {}).get("after")
-    next_token_out: str | None = raw_after if raw_after else None
 
     results: list[CommandResults] = [
         CommandResults(
@@ -8208,17 +8206,13 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[Command
         )
     ]
 
-    # Suppress the cursor entry for small ad-hoc requests by default (token is opt-in
-    # via omit_next_token=false). Suppression requires that the caller's
-    # *requested* limit (before our internal cap-down) is set and <= the page size; when
-    # the caller asked for an over-cap limit, we DID cap internally, so the cursor is
-    # still needed to retrieve the remainder.
-    suppress_cursor = omit_next_token and requested_limit is not None and requested_limit <= MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
-    if not suppress_cursor:
+    if raw_after:
         results.append(
             CommandResults(
-                outputs_prefix="CrowdStrike.VulnerabilityNextToken",
-                outputs=next_token_out,
+                outputs_prefix="CrowdStrike",
+                outputs_key_field=None,
+                outputs={"VulnerabilityNextToken": raw_after},
+                readable_output="",
             )
         )
 

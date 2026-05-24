@@ -2926,15 +2926,8 @@ script:
       defaultValue: '50'
       type: String
       name: limit
-    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit <= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`."
+    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities."
       name: next_token
-    - name: omit_next_token
-      description: When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor.
-      defaultValue: 'true'
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -3080,7 +3073,7 @@ script:
       description: The vulnerability name.
       type: String
     - contextPath: CrowdStrike.VulnerabilityNextToken
-      description: "Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with `limit <= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`."
+      description: "Pagination cursor returned by CrowdStrike when more results are available. Pass this value back as the `next_token` argument on the next invocation. Absent when no more pages exist."
       type: String
   - arguments:
     - description: Deprecated. Use cve instead.
