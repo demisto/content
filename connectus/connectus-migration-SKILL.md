@@ -1101,10 +1101,13 @@ Optional flags the skill should know about:
 - `--no-sentinel-coercion` — disable automatic sentinel-value coercion. By default the analyzer coerces sentinels for params whose **NAME** (case-insensitive substring match) contains `thumbprint`, `certificate`, or `private_key`, replacing the generic `SENTINEL_PARAM_<name>` string with a syntactically-valid stub (40-char hex thumbprint, stub PEM cert, stub PEM private key). This prevents the cert-thumbprint-hex-validator pattern (see §1.6 row #9) from killing the entire dynamic phase. Pass `--no-sentinel-coercion` for strict-sentinel debug mode.
 - `--seed-param NAME=VALUE` — repeatable. Operator/AI escape hatch: provide an explicit value to seed for a specific YML param, overriding all other sources (YML default, cert coercion, generic sentinel). Use this when an integration has a param the auto-coercion didn't anticipate (e.g., a different format-validating credential, an enum-value selector that needs a specific value to traverse a code path). Values >= 4 chars long act as ad-hoc sentinels — they're grep-able in captured HTTP and the post-hoc attribution code looks for them too.
 - `--no-auto-retry-integration-docker` — disable the automatic retry. By default, when the FIRST command's diagnostic comes back as `module_not_found` AND the analyzer is using the default `demisto/py3-native` image, it will automatically restart the dynamic phase with `--use-integration-docker` (which uses the integration's own production image, usually with the missing package preinstalled). Pass `--no-auto-retry-integration-docker` to disable, in which case the analyzer fast-fails the remaining commands as `module_not_found` (~30s × N saved) and returns immediately.
+- `--with-diagnostics` — opt-in. Emits a top-level `diagnostics` key in the stdout JSON in addition to `integration` and `commands`. **Do NOT pass this flag inside the migration workflow** — `set-params-to-commands` will reject any payload containing extra top-level keys. Only pass it for interactive / debug use when you specifically want to read per-command status / failure attribution / Hybrid narrowing signal. (See §§3a/4/5/6 below; all of that documentation applies only when `--with-diagnostics` is set.)
 
 The script writes its result to **stdout** as a single JSON document. All progress and warnings go to **stderr**. Exit code `0` means success; `2` means bad CLI args / path; `3` means an unhandled analyzer error.
 
 ### 3. Output schema (annotated example)
+
+> **Default payload is two keys: `integration` + `commands`.** Diagnostics are **opt-in** via `--with-diagnostics` (the analyzer flipped its default after a breaking change to prevent `diagnostics` from leaking into `Params to Commands` when stdout was piped verbatim into `set-params-to-commands`). The schema below shows the diagnostic-rich payload; with the default flags you will see only the first two keys.
 
 ```json
 {
@@ -1119,7 +1122,7 @@ The script writes its result to **stdout** as a single JSON document. All progre
       "query", "retry_events_fetch"
     ]
   },
-  "diagnostics": {
+  "diagnostics": {                         // ONLY present with --with-diagnostics
     "test-module": {
       "status": "param_caused_failure",
       "captured_requests": 0,
@@ -1138,7 +1141,7 @@ The script writes its result to **stdout** as a single JSON document. All progre
 
 `commands` is the **finished, polished result** — these are the per-command param lists the skill writes into the pipeline data.
 
-`diagnostics` is **internal AI signal only** — see section 5 below.
+`diagnostics` is **internal AI signal only**, and is only present when you re-ran the analyzer with `--with-diagnostics` — see section 5 below. **In normal workflow usage you will not see the `diagnostics` block at all.** If you need the diagnostic signal (e.g., a command failed unexpectedly and you want to see the failure_excerpt), re-invoke the analyzer with `--with-diagnostics` to inspect it, then RE-INVOKE WITHOUT THE FLAG to get the clean payload to persist.
 
 #### 3a. Per-field reference
 
@@ -1311,6 +1314,23 @@ When the analyzer reports `status: no_data` AND the failure_excerpt suggests a f
 
 Coerced auto-defaults (cert/thumbprint/private_key) do NOT need `--seed-param` — they're already handled. Use `--seed-param` only when the auto-coercion misses a case.
 
+**YML `type:9` credentials widgets use the dotted-leaf form.** When the integration code reads `params.get("<name>", {}).get("identifier")` / `.get("password")` (the standard XSOAR credentials-widget shape), the analyzer seeds a dict-shaped value by default. To override either leaf, use `--seed-param <name>.identifier=<value>` and/or `--seed-param <name>.password=<value>`. Each leaf can be supplied independently — omitted leaves keep their `SENTINEL_PARAM_<name>_identifier` / `SENTINEL_PARAM_<name>_password` defaults.
+
+The common case: an integration's `Client.__init__` (or test-module path) validates the password leaf as JSON, a PEM key, or another structured format, and the generic sentinel string fails validation. Seed the password leaf with a plausible structured stub:
+
+```bash
+# Google service-account JWT — code validates user_creds.password as JSON
+--seed-param 'user_creds.identifier=stub@stub.iam.gserviceaccount.com' \
+--seed-param 'user_creds.password={"type":"service_account","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"stub@stub.iam.gserviceaccount.com",...}'
+```
+
+**Flat `--seed-param <name>=<value>` on a `type:9` credentials param is rejected with exit code 2** and an actionable error pointing at the dotted-leaf form. The reason: integration code expects `params.get(name, {}).get(...)` to return a leaf value from a dict; a flat string replacement makes the whole value a string and crashes the consumer with `AttributeError: 'str' object has no attribute 'get'`.
+
+**Stray dotted-leaf overrides surface as `[seed] WARNING` lines** without aborting the run:
+- `--seed-param ghost.password=x` where `ghost` isn't a YML param → "dotted-leaf override(s) … reference parent(s) that are not in this integration's visible YML config".
+- `--seed-param api_key.identifier=x` where `api_key` is a YML `type:4` (encrypted) param, not `type:9` → "dotted-leaf override(s) … are invalid. Dotted-leaf form is only supported for YML type:9 credentials widgets".
+- `--seed-param creds.weird_leaf=x` where `creds` IS type:9 but `weird_leaf` isn't `identifier`/`password` → same WARNING with `leaf 'weird_leaf' not in {'identifier', 'password'}`.
+
 ### 7. The "err on inclusion" principle
 
 When the skill is uncertain whether a param belongs to a command, it should INCLUDE the param. The cost of a false positive (an unused param shown in the column) is much lower than a false negative (a real param missing, which would silently break the migrated integration).
@@ -1338,6 +1358,16 @@ The skill ONLY needs to:
 - Have `python3` available on the host.
 - Have `docker` available on the host (for non-trivial integrations; otherwise pass `--docker never`).
 - Pass [`connectus/default_ignore_params.txt`](default_ignore_params.txt) via `--ignore-params-file` to filter out auth/connection/framework noise.
+- **Set `DEMISTO_SDK_LOG_FILE_PATH` to a workspace-local directory** when running in a sandboxed environment (e.g., from inside the IDEX agent). The analyzer's dynamic phase shells out to `demisto-sdk prepare-content`, which uses `loguru` to open a debug log file. By default `demisto-sdk` writes to `~/.demisto-sdk/logs/demisto_sdk_debug.log`, which is outside the workspace and triggers `PermissionError: [Errno 1] Operation not permitted` (EPERM from macOS sandboxd / TCC, not from POSIX perms) → the analyzer crashes with `DynamicPrepError: prepare-content failed: rc=1` and exits rc=3. Workaround: prepend the analyzer invocation with `DEMISTO_SDK_LOG_FILE_PATH="$PWD/.tmp_migration/sdk-logs"` (the env var is inherited by the `demisto-sdk` subprocess). Any workspace-writable directory works.
+
+  ```bash
+  DEMISTO_SDK_LOG_FILE_PATH="$PWD/.tmp_migration/sdk-logs" \
+    python3 connectus/check_command_params.py <integration_dir> \
+      --ignore-params-file connectus/default_ignore_params.txt \
+      --integration-id "<Integration ID>"
+  ```
+
+  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 9 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
 
 ### 9. Runtime expectations
 
@@ -1414,13 +1444,44 @@ This column records the **per-param defaults that `test-module` relies on** when
 
 **JSON shape is unchanged** — a flat object `{<yml_param_id>: <default value>}`. Empty `{}` is valid. The schema is enforced by [`validate_param_defaults()`](workflow_state/validators.py:155) (top-level JSON object, non-empty string keys, any JSON-typed values). What changes in this revision is **which params qualify** for the cell and **what code edits the migration must perform** as a side effect.
 
-#### Qualification rule — a YML param belongs in this column ONLY when ALL of the following hold
+#### Qualification rule — derived from `Params to Commands`, NOT from source-code review
 
-1. It is consumed by the `test-module` command's code path (per analyzer signal OR explicit source review of the integration's `test_module(...)` / `test_function(...)` handler and every helper it calls).
-2. It is **not** a key in any `auth_types[].xsoar_param_map` (i.e. not an auth secret already declared in `Auth Details`).
-3. It is **not** in `auth_types[].xsoar_param_map`-projected ids and **not** in `other_connection` (i.e. it is not connection-adjacent transport metadata already declared in `Auth Details`).
+> **2026-05 rule change.** The qualification source for this column is the `test-module` entry of the already-validated `Params to Commands` cell (Step 2). Do NOT re-derive by reading the integration source or running the analyzer again — Step 2 already curated, validated, and persisted that list, and re-doing the work invites drift between the two columns.
 
-A test-module param that ALSO appears in other commands' `Params to Commands` lists still qualifies — overlap with `Params to Commands` is fine; the disjointness rule is only with `Auth Details`. Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` to inspect the live exclusion list (same set the analyzer pulls when given `--integration-id`).
+The canonical qualification list is:
+
+```bash
+python3 connectus/workflow_state.py test-module-params "<Integration ID>"
+```
+
+(`--format=json` for programmatic consumption; the same value is available programmatically as [`test_module_params(integration_id)`](workflow_state/api.py:1) returning `list[str]`.)
+
+**What that list contains and excludes, by construction:**
+
+- It is exactly `commands["test-module"]` from the `Params to Commands` cell.
+- It is already disjoint from `Auth Details` — `set-params-to-commands` rejected any overlap when Step 2 was applied, so no further auth-exclusion check is needed at this step.
+- It already excludes hidden YML params (per skill §1.3) and the framework noise in [`connectus/default_ignore_params.txt`](default_ignore_params.txt).
+
+**Additional filter — REQUIRED params only.** Of the params in the qualification list, this column applies ONLY to those whose YML configuration carries `required: true`. Optional params (`required: false` or omitted) are intentionally **excluded** even when test-module consumes them, because:
+
+- The YML `required: false` contract is "operator may leave this unset; integration code must handle absence". Inventing a migration-defined default for an optional param contradicts that contract.
+- Under UCP / connectus runtime the param will simply be absent when the operator didn't set it; the code's existing `params.get(name)` returns `None` (or its own existing fallback), and that's the documented behavior.
+- This column is for params where omission would break test-module — i.e. required params that the connectus runtime might fail to inject.
+
+**Filter the list:**
+
+1. Get the canonical qualification list via `test-module-params`.
+2. For each param, open the integration's YML `configuration` section, find the param entry, check its `required:` field.
+3. Drop every param whose `required:` is `false` (or absent — XSOAR treats absent `required:` as `false`).
+4. The remaining list (required + test-module-consumed) is what applies for the branch (a/b/c) workflow below.
+
+**When the filtered list is empty (`[]`):** the payload for this column is `{}`. Skip the branch (a/b/c) workflow entirely; record an empty object via `set-param-defaults` and move on. This is the **most common case** in practice — most integrations only have auth-secret params marked `required: true`, and those are excluded by the `Auth Details` disjointness rule above.
+
+**When the filtered list is non-empty:** iterate per-param and apply branch (a/b/c) as documented below.
+
+**Why this changed:** the previous rule said "consumed by the test-module code path (per source review of `test_module()` and every helper it calls)". In practice this conflated three different things — (1) params read in `main()` before dispatch but never reaching `test_module`, (2) params read by `test_module` directly, (3) params read by `main()` and passed into `test_module`. Source review consistently over-counted (1), because those reads happen on every command invocation including test-module. The `Params to Commands` analyzer already disambiguates: it captures the params each command actually used end-to-end, and test-module's entry is the answer this column needs. Trust it.
+
+**Precondition:** Step 2 must be complete. If `Params to Commands` is not set, the CLI helper exits with a clear error pointing at Step 2 — do that first.
 
 #### Per-qualifying-param workflow
 
@@ -1437,7 +1498,36 @@ For each YML param that qualifies, apply exactly one of these three branches:
 - **PAUSE and ask the user** (this is the per-param confirmation interaction; see §B.2): "Param `foo` is consumed by `test-module` but has no YML default. Propose a reasonable default value: `<your suggestion>`. Confirm, edit, or skip?"
 - Once confirmed, edit the integration's `.py` to add the same `or "<confirmed default>"` fallback as branch (a).
 - Record the confirmed default under key `"foo"` in the JSON payload.
-- Suggest a default that matches the param's semantics: `false` for booleans, a small safe integer for limits (`50`), a short safe duration for `first_fetch` ("3 days"), an empty string for optional text. Be explicit about the type.
+- Suggest a default that matches the param's semantics. Recommended starters:
+  - **`false`** for booleans (`type:8`).
+  - **`50`** for incident/page limits.
+  - **`"2 minutes"`** for `first_fetch` (small window keeps test-module fast and avoids backfilling huge ranges on misconfigured instances). Use a longer window only if the integration's `parse_date_range` raises on `"2 minutes"` or similar.
+  - **`""`** for optional free-text params.
+  - **`[]`** for optional multi-select params (`type:16`).
+  Be explicit about the type. For per-integration overrides (e.g. a vendor whose `first_fetch` parser doesn't accept sub-hour windows), the user override at confirmation time wins.
+
+#### Presenting branch-(b) defaults for confirmation
+
+When you have multiple branch-(b) params, format the proposal as **one decision per line** so the user can edit one without re-reading the others. Always annotate the **source** of every default so the user can see at a glance which defaults are pre-existing vs proposed-new:
+
+```
+Branch (b) — NEW defaults to confirm (no YML default, no code fallback; .py edit will be added):
+  drive_item_search_field  → ""              (PROPOSED — line 687)
+  drive_item_search_value  → ""              (PROPOSED — line 687)
+  isFetch                  → false           (PROPOSED — line 712)
+
+Branch (c) — PRE-EXISTING code fallback, no code edit:
+  action_detail_case_include  → ""              (PRE-EXISTING — line 284: args.get(..., ""))
+  first_fetch                 → "10 minutes"   (PRE-EXISTING — line 684: params.get(..., "10 minutes"))
+  max_fetch                   → 50             (PRE-EXISTING — line 1904: params.get(..., 50))
+```
+
+Source-tag conventions:
+- **`PROPOSED — <line>`** — branch (b), this migration is adding the fallback at the named line. The user can override the default at confirmation time.
+- **`PRE-EXISTING — <line>: <expression>`** — branch (c), the code already supplies this fallback. The user can still override, but doing so requires editing the integration's code (the cell value otherwise drifts from runtime behavior).
+- **`YML defaultvalue — added at line <N>`** — branch (a), YML declares a default, this migration is adding the matching `or "<yml default>"` fallback in the .py.
+
+Don't dump the JSON payload at this stage — that's for the final `set-param-defaults` confirmation.
 
 **(c) Code ALREADY supplies a fallback** (`params.get("foo", "bar")` or `params.get("foo") or "bar"`).
 
@@ -1448,11 +1538,20 @@ For each YML param that qualifies, apply exactly one of these three branches:
 
 #### Discovery procedure (operational)
 
-1. Open the integration's YML and list every param in the `configuration` section.
-2. Filter out everything in `Auth Details` — auth secrets (`auth_types[].xsoar_param_map` keys, dotted leaves collapsed to the segment before the first `.`) and connection-adjacent metadata (`other_connection`). Use `auth-params "<id>"` for the exact set.
-3. For each remaining YML param, grep the integration's `.py` for the param id within the `test_module` / `test-module` handler's code path (including every helper function it calls). The analyzer's `commands["test-module"]` list is a useful starting point but is NOT authoritative for the per-param classification — re-read the handler source to be sure.
-4. For each param that is consumed by test-module: apply branch (a) / (b) / (c) above.
-5. Collect the JSON payload and call `set-param-defaults`.
+1. Fetch the canonical qualification list:
+
+   ```bash
+   python3 connectus/workflow_state.py test-module-params "<Integration ID>"
+   ```
+
+2. If the list is empty, the payload is `{}` — call `set-param-defaults "<id>" '{}'` and proceed to Step 3b. Skip steps 3–5 below.
+3. For each param in the list, classify into branch (a) / (b) / (c) by reading the integration's `.py`. The point of this read is **only** to determine the per-param branch — NOT to re-derive whether the param qualifies. Specifically:
+   - Look for the param's read site (`params.get("foo")` or `demisto.params().get("foo")`).
+   - **Branch (a):** YML declares `defaultvalue` for `foo`, code reads without fallback (`params.get("foo")` with no `or ...` and no two-arg form). → Edit code to add `or "<yml default>"`. Record YML default in JSON.
+   - **Branch (b):** YML declares NO `defaultvalue` for `foo`. → Pause and ask the user for a proposed default; edit code; record confirmed default in JSON.
+   - **Branch (c):** Code already supplies a fallback (`params.get("foo", "bar")` or `params.get("foo") or "bar"`). → No code edit. Record the effective default in JSON.
+4. After all per-param branches are decided, verify the cumulative `.py` diff with `git diff` before calling `set-param-defaults`.
+5. Collect the JSON payload (one key per qualifying param) and call `set-param-defaults`.
 
 Example payload:
 
@@ -1467,10 +1566,12 @@ Example payload:
 
 #### Self-check before `set-param-defaults`
 
-- [ ] Every key in the JSON is consumed by the integration's `test_module` handler (or a helper it calls).
-- [ ] No key in the JSON appears in `Auth Details` (`auth_types[].xsoar_param_map` keys after dotted-leaf collapse, OR `other_connection`).
+- [ ] The set of keys in the JSON equals (or is a subset of) the **required-only** filtered list derived from `workflow_state.py test-module-params "<Integration ID>"`. No keys derived from source-code-only review — that source has been retired.
+- [ ] Every key in the JSON corresponds to a YML param with `required: true`. No `required: false` (or absent) params appear.
+- [ ] (Implied by the previous check, since `set-params-to-commands` already enforced it in Step 2:) no key in the JSON appears in `Auth Details`.
 - [ ] For every key: either the integration's `.py` already supplies a fallback (branch c), OR the migration has just added a `or "<default>"` fallback in `.py` (branches a and b). Verify the edit with a `git diff` of the integration's `.py` BEFORE running `set-param-defaults`.
 - [ ] For every branch-(b) key: the user explicitly confirmed the chosen default.
+- [ ] If the required-only filtered list is empty, the payload is `{}` (empty object) — branches (a/b/c) do not apply.
 
 ```bash
 python3 connectus/workflow_state.py set-param-defaults "<Integration ID>" '<JSON>'

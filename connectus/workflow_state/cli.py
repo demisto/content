@@ -15,6 +15,7 @@ from workflow_state.api import (
     _check_params_to_commands_overlap,
     auth_param_ids,
     get_integration_files,
+    test_module_params,
 )
 from workflow_state.config_loader import get_config
 from workflow_state.csv_io import (
@@ -1059,6 +1060,60 @@ def cmd_auth_params(args: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# test-module-params
+# ---------------------------------------------------------------------------
+
+def cmd_test_module_params(args: list[str]) -> None:
+    """Print the test-module param list from the Params to Commands cell.
+
+    This is the canonical qualification source for Step 3a
+    ('Params for test with default in code'). Step 3a iterates over
+    exactly these params; the per-param branch (a/b/c) decision still
+    happens per-param, but the QUALIFICATION question ('does this param
+    qualify?') is answered by membership in this list rather than by
+    re-reading the integration source.
+    """
+    fmt = "text"
+    positional: list[str] = []
+    for a in args:
+        if a.startswith("--format="):
+            fmt = a[len("--format="):]
+        else:
+            positional.append(a)
+
+    if not positional:
+        print(
+            "Usage: workflow_state.py test-module-params <integration_id> "
+            "[--format=text|json]"
+        )
+        sys.exit(1)
+
+    if fmt not in {"text", "json"}:
+        print(
+            f"ERROR: Unknown --format value '{fmt}'. Valid: text, json.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    integration_id = " ".join(positional)
+    try:
+        params = test_module_params(integration_id)
+    except WorkflowError as e:
+        print(f"ERROR: {e.message}", file=sys.stderr)
+        sys.exit(1)
+
+    if fmt == "json":
+        print(json.dumps(
+            {"integration_id": integration_id, "params": params},
+            indent=2,
+        ))
+        return
+
+    for p in params:
+        print(p)
+
+
+# ---------------------------------------------------------------------------
 # next
 # ---------------------------------------------------------------------------
 
@@ -1227,6 +1282,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "show-step": cmd_show_step,
     "files": cmd_files,
     "auth-params": cmd_auth_params,
+    "test-module-params": cmd_test_module_params,
     "help": cmd_help,
 }
 

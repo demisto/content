@@ -100,6 +100,104 @@ def auth_param_ids(integration_id: str) -> list[str]:
     return sorted(sources.keys())
 
 
+def test_module_params(integration_id: str) -> list[str]:
+    """Return the param ids that ``test-module`` consumes for an integration.
+
+    Reads the ``Params to Commands`` cell, parses it as JSON, and returns
+    the list under ``commands["test-module"]``. This is the canonical
+    qualification source for ``Params for test with default in code``
+    (Step 3a) — instead of re-doing source-code review to figure out
+    which params test-module reads, callers consume the validated
+    per-command list that was already curated in Step 2.
+
+    Returns an empty list when ``test-module`` is present in the JSON
+    but maps to no params (the analyzer's normal "test-module consumed
+    nothing besides auth" case).
+
+    Raises :class:`WorkflowError` when:
+      * the integration row is missing,
+      * the ``Params to Commands`` cell is not set (Step 2 hasn't run),
+      * the cell is not valid JSON / not a dict / has no ``commands`` key,
+      * the ``commands`` mapping has no ``test-module`` entry.
+
+    Each of these is a precondition violation rather than a recoverable
+    empty result, so the caller gets a precise error message instead of
+    silently treating "missing data" as "empty list".
+    """
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        raise WorkflowError(
+            f"Integration '{integration_id}' not found in the CSV."
+        )
+
+    raw = rows[idx].get("Params to Commands", "").strip()
+    if not raw:
+        raise WorkflowError(
+            f"'Params to Commands' is not set for integration "
+            f"'{rows[idx].get('Integration ID', integration_id)}'. "
+            f"Run 'set-params-to-commands' first — this helper is the "
+            f"canonical qualification source for 'Params for test with "
+            f"default in code', so the per-command analysis must be "
+            f"in place."
+        )
+
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise WorkflowError(
+            f"'Params to Commands' for integration '{integration_id}' "
+            f"is not valid JSON: {e}. Re-run 'set-params-to-commands' "
+            f"with a corrected payload."
+        )
+    if not isinstance(parsed, dict):
+        raise WorkflowError(
+            f"'Params to Commands' for integration '{integration_id}' "
+            f"is not a JSON object (got {type(parsed).__name__}). "
+            f"Re-run 'set-params-to-commands'."
+        )
+
+    commands = parsed.get("commands")
+    if not isinstance(commands, dict):
+        raise WorkflowError(
+            f"'Params to Commands' for integration '{integration_id}' "
+            f"is missing the 'commands' object (or it is not a dict). "
+            f"Re-run 'set-params-to-commands' with a payload conforming "
+            f"to column-schemas.md §'Params to Commands'."
+        )
+
+    if "test-module" not in commands:
+        raise WorkflowError(
+            f"'Params to Commands' for integration '{integration_id}' "
+            f"has no 'test-module' entry. Every integration's "
+            f"'Params to Commands' payload must include a 'test-module' "
+            f"key (use an empty list [] when test-module consumes no "
+            f"non-auth params). Re-run 'set-params-to-commands' with "
+            f"the test-module key included."
+        )
+
+    value = commands["test-module"]
+    if not isinstance(value, list):
+        raise WorkflowError(
+            f"'Params to Commands' for integration '{integration_id}' "
+            f"has 'commands.test-module' = {type(value).__name__}; "
+            f"expected list of param-id strings."
+        )
+
+    # Defensive: ensure each entry is a string. The set-params-to-commands
+    # validator should reject non-string entries, but this helper is the
+    # contract boundary, so re-check.
+    for i, p in enumerate(value):
+        if not isinstance(p, str) or not p:
+            raise WorkflowError(
+                f"'Params to Commands' for integration '{integration_id}' "
+                f"has 'commands.test-module[{i}]' = {p!r}; expected a "
+                f"non-empty string."
+            )
+
+    return sorted(value)
+
+
 # ---------------------------------------------------------------------------
 # Programmatic dict-returning API
 # ---------------------------------------------------------------------------

@@ -123,6 +123,7 @@ from workflow_state.api import (
     reset_integration_to_step,
     set_integration_auth,
     skip_integration_step,
+    test_module_params,
 )
 
 # ---- CLI -----------------------------------------------------------------
@@ -138,6 +139,7 @@ from workflow_state.cli import (
     _set_step_via_dispatch,
     cmd_at_step,
     cmd_auth_params,
+    cmd_test_module_params,
     cmd_dashboard,
     cmd_fail,
     cmd_files,
@@ -269,6 +271,7 @@ __all__ = [
     "reset_integration_to_step",
     "set_integration_auth",
     "skip_integration_step",
+    "test_module_params",
     # CLI
     "COMMANDS",
     "main",
@@ -296,6 +299,7 @@ __all__ = [
     "cmd_skip",
     "cmd_status",
     "cmd_status_all",
+    "cmd_test_module_params",
     "cmd_wipe_workflow_data",
     # Derived legacy constants
     "CHECK",

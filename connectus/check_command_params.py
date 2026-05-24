@@ -2310,11 +2310,43 @@ def build_param_values(
     YML param ``type`` drives the value shape (see the design doc table).
     A YML ``defaultvalue`` overrides the type-based default, but is parsed
     into the right Python type rather than left as a raw string.
+
+    Seed overrides (``--seed-param``) support two name shapes:
+
+    * Flat ``<name>=<value>`` — replaces the whole value for any param
+      type. For ``type: 9`` (credentials) params this is REJECTED with a
+      hard error, because the integration code expects a dict-shaped
+      value (``{"identifier": ..., "password": ...}``) and a flat string
+      would crash the consumer with
+      ``AttributeError: 'str' object has no attribute 'get'``. Use the
+      dotted-leaf form instead.
+    * Dotted leaf ``<name>.identifier=<value>`` / ``<name>.password=<value>``
+      — valid ONLY for ``type: 9`` credentials params. Each leaf can be
+      supplied independently; leaves not supplied keep their default
+      sentinel form (``SENTINEL_PARAM_<name>_identifier`` /
+      ``SENTINEL_PARAM_<name>_password``). The constructed dict is what
+      the integration's ``params.get("<name>", {}).get("identifier")``
+      / ``.get("password")`` consumer will see.
+
+    Stray dotted-leaf overrides (parent doesn't exist, parent isn't
+    type=9, leaf name isn't ``identifier``/``password``) are caught at
+    the call site in ``analyze_integration`` before this function runs
+    and surfaced as ``[seed] WARNING`` lines.
     """
     values: dict[str, Any] = {}
     sentinels: dict[str, list[str]] = {}
     non_traceable: set[str] = set()
     overrides = seed_overrides or {}
+    # Build the credentials-leaf override view: for each parent name, the
+    # leaves explicitly supplied (a dict {leaf: value}). This lets the
+    # type=9 branch below decide which leaves to substitute without
+    # re-scanning ``overrides`` per param.
+    cred_leaf_overrides: dict[str, dict[str, str]] = {}
+    for k, v in overrides.items():
+        if "." in k:
+            parent, _, leaf = k.partition(".")
+            if leaf in ("identifier", "password"):
+                cred_leaf_overrides.setdefault(parent, {})[leaf] = v
     for p in yml_params:
         name = p["name"]
         # We must STILL send a value for every YML param even if it's on
@@ -2350,6 +2382,32 @@ def build_param_values(
         # incidental matches unlikely; sentinel-attribution by exact
         # match still works because the override value IS the sentinel.
         if name in overrides:
+            # Special-case: a flat ``<name>=<value>`` override on a
+            # ``type: 9`` credentials param is almost always wrong —
+            # the integration code reads ``params.get(name, {}).get(
+            # "identifier")`` / ``.get("password")`` and expects a dict.
+            # A flat string replacement breaks the consumer with
+            # ``AttributeError: 'str' object has no attribute 'get'``.
+            # We fail loudly with an actionable message instead of
+            # silently producing the wrong shape.
+            if yml_type == YML_TYPE_CREDENTIALS:
+                raise ValueError(
+                    f"--seed-param {name!r} targets a YML type:9 "
+                    f"credentials widget but uses the flat NAME=VALUE "
+                    f"form. Credentials widgets expect a dict-shaped "
+                    f"value at runtime; a flat string would crash the "
+                    f"integration's "
+                    f"`params.get({name!r}, {{}}).get(...)` consumer.\n"
+                    f"\n"
+                    f"Use the dotted-leaf form to seed the identifier "
+                    f"and password leaves independently:\n"
+                    f"  --seed-param {name}.identifier=<user-or-email>\n"
+                    f"  --seed-param {name}.password=<secret-or-json>\n"
+                    f"\n"
+                    f"Either leaf may be omitted; omitted leaves keep "
+                    f"their default sentinel value "
+                    f"(SENTINEL_PARAM_{name}_identifier / _password)."
+                )
             override_val = overrides[name]
             print(
                 f"[seed] Operator override for {name!r}: using "
@@ -2394,7 +2452,17 @@ def build_param_values(
         # trade-off documented at :data:`_COERCED_THUMBPRINT_VALUE`. The
         # YML ``defaultvalue`` branch above takes priority so an operator
         # who hard-codes a real test cert in YML still gets it.
-        if coerce_certs:
+        #
+        # IMPORTANT: cert-coercion runs only for flat-shaped params
+        # (type != 9). For ``type:9`` credentials widgets — which a
+        # ``creds_certificate`` widget is — the per-leaf coercion lives
+        # below inside the ``YML_TYPE_CREDENTIALS`` branch so that the
+        # dict shape ``{"identifier": ..., "password": ...}`` is
+        # preserved (a flat-string replacement would crash the
+        # integration's ``params.get(name, {}).get("identifier")``
+        # consumer with ``AttributeError: 'str' object has no attribute
+        # 'get'``).
+        if coerce_certs and yml_type != YML_TYPE_CREDENTIALS:
             coerced_pair = coerce_sentinel_for_param(name)
             if coerced_pair is not None:
                 coerced_val, matched_pattern = coerced_pair
@@ -2418,8 +2486,80 @@ def build_param_values(
         if yml_type == YML_TYPE_CREDENTIALS:
             id_sent = f"{sentinel}_identifier"
             pw_sent = f"{sentinel}_password"
-            _record({"identifier": id_sent, "password": pw_sent},
-                    [id_sent, pw_sent], traceable=True)
+            leaf_overrides = cred_leaf_overrides.get(name, {})
+            id_val: Any = leaf_overrides.get("identifier", id_sent)
+            pw_val: Any = leaf_overrides.get("password", pw_sent)
+            # Per-leaf cert/key/thumbprint coercion. The convention for
+            # XSOAR cert-auth widgets (e.g. ``creds_certificate``) is:
+            # ``.identifier`` holds the thumbprint (40-char hex);
+            # ``.password`` holds the PEM private key. When the parent
+            # name matches the cert/key/thumbprint pattern AND the
+            # corresponding leaf has NOT been operator-overridden, swap
+            # the leaf sentinel for a syntactically-valid stub so the
+            # integration's module-load validators (``binascii.a2b_hex``,
+            # PEM regexes) pass instead of crashing on
+            # ``SENTINEL_PARAM_<name>_<leaf>``. The coerced stubs do NOT
+            # contain the SENTINEL_PARAM string so they cannot
+            # participate in name-keyed sentinel attribution — same
+            # trade-off as the flat-param coercion above.
+            id_coerced = False
+            pw_coerced = False
+            if (
+                coerce_certs
+                and "identifier" not in leaf_overrides
+                and coerce_sentinel_for_param(name) is not None
+            ):
+                # The thumbprint stub is the natural fit for the
+                # identifier leaf on a cert-widget. (Even if the parent
+                # name matches "private_key" or "certificate" rather
+                # than "thumbprint", the thumbprint stub is the safest
+                # default — it satisfies the most common module-load
+                # validator, `binascii.a2b_hex(thumbprint)`.)
+                id_val = _COERCED_THUMBPRINT_VALUE
+                id_coerced = True
+            if (
+                coerce_certs
+                and "password" not in leaf_overrides
+                and coerce_sentinel_for_param(name) is not None
+            ):
+                # The PEM private key stub fits the password leaf.
+                pw_val = _COERCED_PRIVATE_KEY_VALUE
+                pw_coerced = True
+            if id_coerced or pw_coerced:
+                coerced_leaves = [
+                    leaf for leaf, flag in
+                    [("identifier", id_coerced), ("password", pw_coerced)]
+                    if flag
+                ]
+                print(
+                    f"[seed] Coerced sentinel for {name!r} credentials "
+                    f"leaves {coerced_leaves} to satisfy format "
+                    f"validation",
+                    file=sys.stderr,
+                )
+            # Tracing tokens: for any leaf we overrode (operator), the
+            # seeded value IS the sentinel (>= 4 chars). For any leaf
+            # left at its default sentinel, the generated
+            # SENTINEL_PARAM_<name>_<leaf> string is the sentinel.
+            # Coerced cert/PEM stubs are NOT traceable (no sentinel
+            # substring), same convention as the flat-coercion branch.
+            tokens: list[str] = []
+            if not id_coerced and isinstance(id_val, str) and len(id_val) >= 4:
+                tokens.append(id_val)
+            if not pw_coerced and isinstance(pw_val, str) and len(pw_val) >= 4:
+                tokens.append(pw_val)
+            if leaf_overrides:
+                seeded_leaves = sorted(leaf_overrides.keys())
+                print(
+                    f"[seed] Operator override for {name!r} credentials "
+                    f"leaves {seeded_leaves}: using --seed-param values",
+                    file=sys.stderr,
+                )
+            _record(
+                {"identifier": id_val, "password": pw_val},
+                tokens,
+                traceable=bool(tokens),
+            )
             continue
 
         if yml_type == YML_TYPE_NUMERIC:
@@ -3627,19 +3767,79 @@ def analyze_integration(
                     f"docker image {chosen_image} (per YML script.dockerimage)",
                     file=sys.stderr,
                 )
-        # Validate seed_overrides against the visible YML param set —
-        # an override for a name not in the YML (or a hidden one) is
-        # almost certainly a typo on the operator's part. Log a single
-        # WARNING; the override is still passed through (build_param_values
-        # will simply ignore it).
+        # Validate seed_overrides against the visible YML param set.
+        # An override that doesn't match a known YML param is almost
+        # certainly a typo on the operator's part. Three failure modes
+        # are surfaced as separate WARNING lines so the operator can
+        # see exactly what went wrong:
+        #
+        #   1. Unknown name (flat form, no '.').
+        #      `--seed-param foo=bar` where `foo` isn't in the YML.
+        #
+        #   2. Dotted leaf with unknown parent.
+        #      `--seed-param foo.password=bar` where `foo` isn't in
+        #      the YML.
+        #
+        #   3. Dotted leaf on a non-credentials parent (or unsupported
+        #      leaf name).
+        #      `--seed-param api_key.identifier=...` where `api_key`
+        #      is a YML type=4 (encrypted) param, not type=9.
+        #      Or `--seed-param creds.weird_leaf=...`.
+        #
+        # All three are warnings (not fatal) because build_param_values
+        # below simply skips them. The flat-form-on-credentials misuse
+        # is caught later inside build_param_values and raises a hard
+        # error instead — that one IS fatal because the analyzer cannot
+        # produce a sensible runtime value for the param.
         if seed_overrides:
-            visible_names = {p["name"] for p in yml_params}
-            stray = sorted(set(seed_overrides) - visible_names)
-            if stray:
+            yml_by_name = {p["name"]: p for p in yml_params}
+            visible_names = set(yml_by_name)
+            unknown_flat: list[str] = []
+            unknown_dotted_parent: list[str] = []
+            bad_leaf_on_known_parent: list[str] = []
+            for key in seed_overrides:
+                if "." in key:
+                    parent, _, leaf = key.partition(".")
+                    if parent not in visible_names:
+                        unknown_dotted_parent.append(key)
+                    else:
+                        parent_yml = yml_by_name[parent]
+                        if parent_yml.get("type") != YML_TYPE_CREDENTIALS:
+                            bad_leaf_on_known_parent.append(
+                                f"{key} (parent type={parent_yml.get('type')!r}, "
+                                f"expected 9/credentials)"
+                            )
+                        elif leaf not in ("identifier", "password"):
+                            bad_leaf_on_known_parent.append(
+                                f"{key} (leaf {leaf!r} not in "
+                                f"{{'identifier', 'password'}})"
+                            )
+                else:
+                    if key not in visible_names:
+                        unknown_flat.append(key)
+            if unknown_flat:
                 print(
                     f"[seed] WARNING: --seed-param targets unknown param "
-                    f"name(s) {stray} (not in this integration's visible "
-                    f"YML config); the override(s) will have no effect.",
+                    f"name(s) {sorted(unknown_flat)} (not in this "
+                    f"integration's visible YML config); the override(s) "
+                    f"will have no effect.",
+                    file=sys.stderr,
+                )
+            if unknown_dotted_parent:
+                print(
+                    f"[seed] WARNING: --seed-param dotted-leaf override(s) "
+                    f"{sorted(unknown_dotted_parent)} reference parent(s) "
+                    f"that are not in this integration's visible YML "
+                    f"config; the override(s) will have no effect.",
+                    file=sys.stderr,
+                )
+            if bad_leaf_on_known_parent:
+                print(
+                    f"[seed] WARNING: --seed-param dotted-leaf override(s) "
+                    f"{sorted(bad_leaf_on_known_parent)} are invalid. "
+                    f"Dotted-leaf form is only supported for YML type:9 "
+                    f"credentials widgets, with leaf name 'identifier' "
+                    f"or 'password'. The override(s) will have no effect.",
                     file=sys.stderr,
                 )
         print(f"[dynamic] analyzing {integration_name!r}", file=sys.stderr)
@@ -4177,9 +4377,15 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "thumbprint auto-coercion (Change #2), and the generic "
             "SENTINEL_PARAM_<name> string. Repeatable: pass once per "
             "param. Use this when the analyzer's automatic seeding "
-            "still trips a format validator at module load. The "
-            "skill (connectus/connectus-migration-SKILL.md) documents "
-            "the recovery loop."
+            "still trips a format validator at module load. For YML "
+            "type:9 (credentials) widgets, use the dotted-leaf form "
+            "NAME.identifier=<v> / NAME.password=<v> (either leaf may "
+            "be omitted; omitted leaves keep their default sentinel). "
+            "Flat NAME=VALUE on a credentials widget is rejected with "
+            "a hard error because the integration expects a dict-shaped "
+            "value at runtime. The skill "
+            "(connectus/connectus-migration-SKILL.md) documents the "
+            "recovery loop."
         ),
     )
     return parser.parse_args(argv)
@@ -4285,6 +4491,14 @@ def main(argv: list[str] | None = None) -> int:
             with_diagnostics=args.with_diagnostics,
         )
     except FileNotFoundError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except ValueError as exc:
+        # ValueError is raised by build_param_values for
+        # operator-input misuse (specifically: flat NAME=VALUE on a
+        # type=9 credentials widget). Treat as a CLI-arg error (rc=2),
+        # no traceback — the exception message is the actionable
+        # guidance and tracebacks just obscure it.
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     except Exception as exc:  # noqa: BLE001 — loud-fail policy
