@@ -28,9 +28,19 @@ BASE_BACKOFF_SECONDS = 2
 EVENT_TYPES = ["message", "maillog", "audit"]
 DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-PING_TIMEOUT = 60  # Timeout for keepalive pings in seconds
+# Disable keepalive ping-timeout enforcement (do not require pong replies). The Proofpoint Logstream
+# server may not always respond promptly to keepalive pings, which previously caused the client to
+# close the connection with `1011 (internal error) keepalive ping timeout` and led to cascading
+# reconnect failures (e.g. `[Errno 104] Connection reset by peer`). Pings are still sent at the
+# `websockets` library's default interval; we just don't tear the connection down if a pong is late.
+PING_TIMEOUT = None
 CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
+# Disable the incoming message size limit. The `websockets` library defaults to 1 MiB (1048576),
+# which silently dropped large Proofpoint Logstream messages and caused partial log ingestion in
+# the XSIAM tenant. Setting this to `None` removes the limit, matching Proofpoint's reference
+# logstream-client implementation.
+MAX_MESSAGE_SIZE = None
 
 
 class EventConnection:
@@ -58,8 +68,19 @@ class EventConnection:
     def connect(self) -> Connection:
         """
         Establish a new WebSocket connection.
+
+        Note: `max_size` is explicitly set to `MAX_MESSAGE_SIZE` (None) to remove the
+        `websockets` library default 1 MiB incoming-message size cap, which was causing
+        Proofpoint Logstream messages larger than 1 MB to be rejected and the connection
+        to be torn down. See the bundled `logstream-client` reference implementation.
         """
-        return connect(self.url, additional_headers=self.headers, ping_timeout=PING_TIMEOUT, close_timeout=CLOSE_TIMEOUT)
+        return connect(
+            self.url,
+            additional_headers=self.headers,
+            ping_timeout=PING_TIMEOUT,
+            close_timeout=CLOSE_TIMEOUT,
+            max_size=MAX_MESSAGE_SIZE,
+        )
 
     @property
     def is_to_archive(self) -> bool:
