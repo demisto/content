@@ -1,6 +1,6 @@
 # iZOOlogic
 
-## Overview
+## What does this pack do?
 
 Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.
 
