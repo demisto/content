@@ -1,0 +1,13 @@
+{
+    "success": true,
+    "message": null,
+    "errorCode": null,
+    "result": {
+        "reportedincidentid": "RPT-12345",
+        "statuscode": 1,
+        "statusdescription": "Under Review",
+        "casetype": 6,
+        "casetypedescription": "Incident",
+        "success": true
+    }
+}

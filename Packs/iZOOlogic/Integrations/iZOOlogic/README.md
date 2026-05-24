@@ -66,3 +66,48 @@ Gets incidents from iZOOlogic. Use this command for development and debugging on
 >| uVJxla1s1 | Brand Abuse - Fake Website | Fake Website | TVS Motor | https://tvsmotor.com.mt | Waiting | 17 | Substantial Threat | 1760941801 | 1769509374 |  | Reported By iZOOLogic |
 >| 1JrJzZBip | Phishing |  | TVS Credit | https://tvs-credit.dev.veefin.in | Closed | 16 | High Threat | 1769792260 | 1769792260 | 1770180062 | Reported By iZOOLogic |
 >| KIks8sE3U | Social Media - Facebook | Facebook | TVS King | https://www.facebook.com/ads/library/?id=917334661007536 | Waiting | 17 | Substantial Threat | 1769626014 | 1769626014 |  | Reported By iZOOLogic |
+
+### izoolabs-incident-create
+
+***
+Creates a new security incident in iZOOlogic.
+
+#### Base Command
+
+`izoolabs-incident-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_url | URL, email, or target of the security incident (max 1000 characters). | Required |
+| incident_type | Type of incident. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email, executive. | Required |
+| brand_code | Brand identifier associated with the incident. | Required |
+| threat_type | Threat level. Defaults to moderate threat if not specified. Possible values are: low threat, critical threat, redirect to whitelist. | Optional |
+| case_type | Desired case type for processing. Defaults to incident if not specified. Possible values are: incident, brand abuse monitoring, domain monitoring, social media monitoring, mobile app monitoring, executive monitoring. | Optional |
+| comment | Comments about the incident (max 2500 characters). | Optional |
+| executive_name | Executive name. Required for executive-related incidents (max 2500 characters). | Optional |
+| client_code | Client identifier for validation and access control. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| iZOOlabs.Incident.reportedincidentid | String | Unique identifier for the created incident case. |
+| iZOOlabs.Incident.statuscode | Number | Numeric status code \(1 = under review\). |
+| iZOOlabs.Incident.statusdescription | String | Human-readable status description. |
+| iZOOlabs.Incident.casetype | Number | Case type code \(6 = incident\). |
+| iZOOlabs.Incident.casetypedescription | String | Human-readable case type description. |
+| iZOOlabs.Incident.success | Boolean | Whether the incident was successfully created. |
+
+#### Command example
+
+```!izoolabs-incident-create incident_url="https://malicious-site.example.com" incident_type="phishing" brand_code="BRAND001"```
+
+#### Human Readable Output
+
+>### iZOOlogic - New Incident Created
+>
+>|reportedincidentid|statuscode|statusdescription|casetype|casetypedescription|success|
+>|---|---|---|---|---|---|
+>| RPT-12345 | 1 | Under Review | 6 | Incident | true |

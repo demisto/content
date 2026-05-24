@@ -10,6 +10,7 @@ from pytest_mock import MockerFixture
 
 from iZOOlogic import (
     Client,
+    ApiCodes,
     COMMAND_MAP,
     IZOOlogicAuthHandler,
     _validate_api_response,
@@ -26,9 +27,12 @@ from iZOOlogic import (
     _filter_and_dedup,
     _compute_new_state,
     _fetch_for_type,
+    _resolve_code_by_name,
+    _validate_incident_creation_args,
     test_module as izoologic_test_module,
     get_incidents_command,
     fetch_incidents_command,
+    create_incident_command,
     main,
 )
 
@@ -493,7 +497,7 @@ class TestParseIntegrationParams:
     def test_no_filter_defaults_to_all(self, valid_params: dict):
         del valid_params["incident_types_filter"]
         config = parse_integration_params(valid_params)
-        assert len(config["incident_type_codes"]) == 10
+        assert len(config["incident_type_codes"]) == 11
 
     def test_trailing_slash_stripped(self, valid_params: dict):
         valid_params["url"] = "https://api.izoologic.com///"
@@ -969,7 +973,7 @@ class TestFetchIncidentsCommand:
 
 
 class TestMain:
-    @pytest.mark.parametrize("command", ["test-module", "fetch-incidents", "izoologic-get-incidents"])
+    @pytest.mark.parametrize("command", ["test-module", "fetch-incidents", "izoologic-get-incidents", "izoolabs-incident-create"])
     def test_main_dispatches(self, mocker: MockerFixture, command: str):
         mocker.patch("ContentClientApiModule.support_multithreading")
         mocker.patch.object(demisto, "command", return_value=command)
@@ -1035,6 +1039,251 @@ class TestMain:
         main()
         mock_err.assert_called_once()
         assert "Connection refused" in mock_err.call_args[0][0]
+
+
+# endregion
+
+# region Resolve Code By Name Tests
+
+
+class TestResolveCodeByName:
+    @pytest.mark.parametrize(
+        "raw_value, code_map, expected",
+        [
+            ("phishing", ApiCodes.INCIDENT_TYPE, 2),
+            ("PHISHING", ApiCodes.INCIDENT_TYPE, 2),
+            (" phishing ", ApiCodes.INCIDENT_TYPE, 2),
+            ("low threat", ApiCodes.THREAT_TYPE, 10),
+            ("critical threat", ApiCodes.THREAT_TYPE, 14),
+            ("incident", ApiCodes.CASE_TYPE, 6),
+            ("domain monitoring", ApiCodes.CASE_TYPE, 1),
+        ],
+    )
+    def test_valid_names(self, raw_value: str, code_map: dict, expected: int):
+        assert _resolve_code_by_name(raw_value, code_map, "test_field") == expected
+
+    @pytest.mark.parametrize(
+        "raw_value, code_map",
+        [
+            ("nonexistent", ApiCodes.INCIDENT_TYPE),
+            ("999", ApiCodes.INCIDENT_TYPE),
+            ("2", ApiCodes.INCIDENT_TYPE),  # Integer strings not accepted
+            ("invalid", ApiCodes.THREAT_TYPE),
+        ],
+    )
+    def test_invalid_names_raise(self, raw_value: str, code_map: dict):
+        with pytest.raises(DemistoException, match="Invalid 'test_field'"):
+            _resolve_code_by_name(raw_value, code_map, "test_field")
+
+
+# endregion
+
+# region Validate Incident Creation Args Tests
+
+
+class TestValidateIncidentCreationArgs:
+    @pytest.fixture
+    def valid_create_args(self) -> dict:
+        return {
+            "incident_url": "https://malicious-site.example.com",
+            "incident_type": "phishing",
+            "brand_code": "BRAND001",
+        }
+
+    def test_valid_required_only(self, valid_create_args: dict):
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_url"] == "https://malicious-site.example.com"
+        assert result["incident_type"] == 2
+        assert result["brand_code"] == "BRAND001"
+        assert result["threat_type"] is None
+        assert result["case_type"] is None
+        assert result["comment"] is None
+        assert result["executive_name"] is None
+        assert result["client_code"] is None
+
+    def test_valid_all_args(self, valid_create_args: dict):
+        valid_create_args.update(
+            {
+                "threat_type": "critical threat",
+                "case_type": "incident",
+                "comment": "Test comment",
+                "executive_name": "John Doe",
+                "client_code": "CLIENT001",
+            }
+        )
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_type"] == 2
+        assert result["threat_type"] == 14
+        assert result["case_type"] == 6
+        assert result["comment"] == "Test comment"
+        assert result["executive_name"] == "John Doe"
+        assert result["client_code"] == "CLIENT001"
+
+    @pytest.mark.parametrize(
+        "missing_field",
+        ["incident_url", "incident_type", "brand_code"],
+    )
+    def test_missing_required_raises(self, valid_create_args: dict, missing_field: str):
+        valid_create_args[missing_field] = ""
+        with pytest.raises(DemistoException, match=f"'{missing_field}' is a required argument"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_invalid_incident_type_raises(self, valid_create_args: dict):
+        valid_create_args["incident_type"] = "nonexistent"
+        with pytest.raises(DemistoException, match="Invalid 'incident_type'"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_invalid_threat_type_raises(self, valid_create_args: dict):
+        valid_create_args["threat_type"] = "invalid"
+        with pytest.raises(DemistoException, match="Invalid 'threat_type'"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_invalid_case_type_raises(self, valid_create_args: dict):
+        valid_create_args["case_type"] = "invalid"
+        with pytest.raises(DemistoException, match="Invalid 'case_type'"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_case_insensitive_incident_type(self, valid_create_args: dict):
+        valid_create_args["incident_type"] = "PHISHING"
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_type"] == 2
+
+    def test_executive_type(self, valid_create_args: dict):
+        valid_create_args["incident_type"] = "executive"
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_type"] == 56
+
+
+# endregion
+
+# region Client Report New Incident Tests
+
+
+class TestClientReportNewIncident:
+    def test_report_new_incident_full_body(self, mocker: MockerFixture, mock_client: Client):
+        """Test that report_new_incident sends correct body with all params."""
+        api_response = load_test_data("create_incident_response.json")
+        mock_req = mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        mock_client.report_new_incident(
+            incident_url="https://malicious.example.com",
+            incident_type=2,
+            brand_code="BRAND001",
+            threat_type=14,
+            case_type=6,
+            comment="Test comment",
+            executive_name="John Doe",
+            client_code="CLIENT001",
+        )
+
+        body = mock_req.call_args.kwargs["json_data"]
+        assert body["incidenturl"] == "https://malicious.example.com"
+        assert body["incidenttype"] == 2
+        assert body["brandcode"] == "BRAND001"
+        assert body["threattype"] == 14
+        assert body["casetype"] == 6
+        assert body["comment"] == "Test comment"
+        assert body["executivename"] == "John Doe"
+        assert body["clientcode"] == "CLIENT001"
+
+    def test_report_new_incident_minimal_body(self, mocker: MockerFixture, mock_client: Client):
+        """Without optional params, body only has required fields."""
+        api_response = load_test_data("create_incident_response.json")
+        mock_req = mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        mock_client.report_new_incident(
+            incident_url="https://malicious.example.com",
+            incident_type=2,
+            brand_code="BRAND001",
+        )
+
+        body = mock_req.call_args.kwargs["json_data"]
+        assert body == {
+            "incidenturl": "https://malicious.example.com",
+            "incidenttype": 2,
+            "brandcode": "BRAND001",
+        }
+        # Optional fields should not be present (assign_params removes None values)
+        assert "threattype" not in body
+        assert "casetype" not in body
+        assert "comment" not in body
+        assert "executivename" not in body
+        assert "clientcode" not in body
+
+
+# endregion
+
+# region Create Incident Command Tests
+
+
+class TestCreateIncidentCommand:
+    def test_success(self, mocker: MockerFixture, mock_client: Client):
+        api_response = load_test_data("create_incident_response.json")
+        mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "phishing",
+            "brand_code": "BRAND001",
+        }
+        result = create_incident_command(mock_client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "iZOOlabs.Incident"
+        assert result.outputs_key_field == "reportedincidentid"
+        assert result.outputs["reportedincidentid"] == "RPT-12345"
+        assert result.outputs["statuscode"] == 1
+        assert result.outputs["success"] is True
+
+    def test_api_error_raises(self, mocker: MockerFixture, mock_client: Client):
+        error_response = {
+            "success": False,
+            "message": "Invalid brand code",
+            "errorCode": "iZOO4001",
+            "result": None,
+        }
+        mocker.patch.object(mock_client, "_http_request", return_value=error_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "phishing",
+            "brand_code": "INVALID",
+        }
+        with pytest.raises(DemistoException, match="Failed to create incident"):
+            create_incident_command(mock_client, args)
+
+    def test_with_all_optional_args(self, mocker: MockerFixture, mock_client: Client):
+        api_response = load_test_data("create_incident_response.json")
+        mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "executive",
+            "brand_code": "BRAND001",
+            "threat_type": "critical threat",
+            "case_type": "executive monitoring",
+            "comment": "Executive impersonation detected",
+            "executive_name": "Jane Smith",
+            "client_code": "CLIENT001",
+        }
+        result = create_incident_command(mock_client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["reportedincidentid"] == "RPT-12345"
+
+    def test_readable_output(self, mocker: MockerFixture, mock_client: Client):
+        api_response = load_test_data("create_incident_response.json")
+        mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "phishing",
+            "brand_code": "BRAND001",
+        }
+        result = create_incident_command(mock_client, args)
+
+        assert "New Incident Created" in result.readable_output
+        assert "RPT-12345" in result.readable_output
 
 
 # endregion

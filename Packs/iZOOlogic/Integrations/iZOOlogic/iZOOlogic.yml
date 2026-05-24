@@ -51,7 +51,7 @@ configuration:
 - name: incident_types_filter
   display: Fetch Incident types
   required: true
-  defaultvalue: brand abuse,phishing,malware,pharming,smishing,vishing,mobile apps,social media,other,email
+  defaultvalue: brand abuse,phishing,malware,pharming,smishing,vishing,mobile apps,social media,other,email,executive
   type: 16
   options:
   - brand abuse
@@ -64,6 +64,7 @@ configuration:
   - social media
   - other
   - email
+  - executive
   additionalinfo: 'A comma-separated list of incident types to fetch from iZOOlogic. By default, all types are selected.'
   section: Collect
 - name: max_fetch
@@ -106,6 +107,7 @@ script:
       - social media
       - other
       - email
+      - executive
     outputs:
     - contextPath: iZOOlogic.Incident.incidentID
       description: The unique identifier of the incident.
@@ -143,6 +145,73 @@ script:
     - contextPath: iZOOlogic.Incident.detectedBy
       description: The entity that detected the incident.
       type: String
+  - name: izoolabs-incident-create
+    description: Creates a new security incident in iZOOlogic.
+    arguments:
+    - name: incident_url
+      description: URL, email, or target of the security incident (max 1000 characters).
+      required: true
+    - name: incident_type
+      description: Type of incident.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - brand abuse
+      - phishing
+      - malware
+      - pharming
+      - smishing
+      - vishing
+      - mobile apps
+      - social media
+      - other
+      - email
+      - executive
+    - name: brand_code
+      description: Brand identifier associated with the incident.
+      required: true
+    - name: threat_type
+      description: Threat level. Defaults to moderate threat if not specified.
+      auto: PREDEFINED
+      predefined:
+      - low threat
+      - critical threat
+      - redirect to whitelist
+    - name: case_type
+      description: Desired case type for processing. Defaults to incident if not specified.
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - brand abuse monitoring
+      - domain monitoring
+      - social media monitoring
+      - mobile app monitoring
+      - executive monitoring
+    - name: comment
+      description: Comments about the incident (max 2500 characters).
+    - name: executive_name
+      description: Executive name. Required for executive-related incidents (max 2500 characters).
+    - name: client_code
+      description: Client identifier for validation and access control.
+    outputs:
+    - contextPath: iZOOlabs.Incident.reportedincidentid
+      description: Unique identifier for the created incident case.
+      type: String
+    - contextPath: iZOOlabs.Incident.statuscode
+      description: Numeric status code (1 = under review).
+      type: Number
+    - contextPath: iZOOlabs.Incident.statusdescription
+      description: Human-readable status description.
+      type: String
+    - contextPath: iZOOlabs.Incident.casetype
+      description: Case type code (6 = incident).
+      type: Number
+    - contextPath: iZOOlabs.Incident.casetypedescription
+      description: Human-readable case type description.
+      type: String
+    - contextPath: iZOOlabs.Incident.success
+      description: Whether the incident was successfully created.
+      type: Boolean
   dockerimage: demisto/fastapi:0.125.0.7194517
   isfetch: true
   runonce: false
