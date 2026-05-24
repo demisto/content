@@ -1,3 +1,4 @@
+name: AWS-SNS-Listener
 category: Messaging and Conferencing
 provider: Amazon
 sectionorder:
@@ -70,7 +71,6 @@ configuration:
   section: Connect
 description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
 display: AWS-SNS-Listener
-name: AWS-SNS-Listener
 script:
   commands: []
   dockerimage: demisto/fastapi:0.125.0.8198656
