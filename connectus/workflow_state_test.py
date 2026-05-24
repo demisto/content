@@ -23,8 +23,6 @@ The replacement test suite lives in :mod:`workflow_state.tests`:
     validation rules.
   * :mod:`workflow_state.tests.test_state_machine` — cascade-reset
     engine and step actions.
-  * :mod:`workflow_state.tests.test_verify_button_placement` — the new
-    ``verify button placement`` flag column.
   * :mod:`workflow_state.tests.test_column_addressability` — 1-based
     column-number resolution shared by ``markpass``/``skip``/``fail``/
     ``reset-to``/``show-step``.

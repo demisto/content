@@ -305,6 +305,68 @@ class TestValidateAuthDetails:
             "'interpolated' must be a bool" in e for e in errors
         ), errors
 
+    # --- verify_connection_skip ---
+
+    def test_verify_connection_skip_absent_is_valid(self) -> None:
+        """Absence of the optional key is valid (defaults to False)."""
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"x",'
+            '"xsoar_param_map":{"p":"key"}}]}'
+        )
+        assert validate_auth_details(detail) == []
+
+    def test_verify_connection_skip_true_is_valid(self) -> None:
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"x",'
+            '"xsoar_param_map":{"p":"key"},"verify_connection_skip":true}]}'
+        )
+        assert validate_auth_details(detail) == []
+
+    def test_verify_connection_skip_false_is_valid(self) -> None:
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"x",'
+            '"xsoar_param_map":{"p":"key"},"verify_connection_skip":false}]}'
+        )
+        assert validate_auth_details(detail) == []
+
+    def test_verify_connection_skip_non_bool_string_rejected(self) -> None:
+        """String ``"true"`` is NOT a JSON bool — must be rejected."""
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"x",'
+            '"xsoar_param_map":{"p":"key"},"verify_connection_skip":"true"}]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "'verify_connection_skip' must be a bool" in e for e in errors
+        ), errors
+
+    def test_verify_connection_skip_non_bool_int_rejected(self) -> None:
+        """Int ``1`` is NOT a JSON bool — must be rejected."""
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"x",'
+            '"xsoar_param_map":{"p":"key"},"verify_connection_skip":1}]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "'verify_connection_skip' must be a bool" in e for e in errors
+        ), errors
+
+    def test_verify_connection_skip_per_profile_mixed(self) -> None:
+        """A multi-profile (exclusive-OR) row may set the key on one
+        profile and leave it default on the other."""
+        detail = (
+            '{"auth_types":['
+            '{"type":"OAuth2ClientCreds","name":"client_creds",'
+            '"xsoar_param_map":{"credentials.identifier":"client_id",'
+            '"credentials.password":"client_secret"},'
+            '"interpolated":true},'
+            '{"type":"Passthrough","name":"auth_code",'
+            '"xsoar_param_map":{"auth_code":"authorization_code"},'
+            '"interpolated":true,"verify_connection_skip":true}'
+            ']}'
+        )
+        assert validate_auth_details(detail) == []
+
 
 # ---------------------------------------------------------------------------
 # Legacy `config` key rejection (2026-05 schema simplification)

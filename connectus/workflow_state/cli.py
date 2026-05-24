@@ -480,11 +480,6 @@ def _set_flag_step_via_dispatch(
         print(f"  🎉 All {len(cfg.steps)} steps complete!")
 
 
-def cmd_set_verify_placement(args: list[str]) -> None:
-    """Set the 'verify button placement' flag (connection|configuration|none)."""
-    _set_flag_step_via_dispatch(args, "verify button placement", "set-verify-placement")
-
-
 def cmd_markpass(args: list[str]) -> None:
     cfg = get_config()
     non_checkpoint = cfg.non_checkpoint_steps
@@ -1217,7 +1212,6 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "set-params-to-commands": cmd_set_params_to_commands,
     "set-param-defaults": cmd_set_param_defaults,
     "set-params-to-capabilities": cmd_set_params_to_capabilities,
-    "set-verify-placement": cmd_set_verify_placement,
     "markpass": cmd_markpass,
     "skip": cmd_skip,
     "fail": cmd_fail,

@@ -228,6 +228,13 @@ def validate_auth_details(data: str | dict) -> list[str]:
                     f"auth_types[{i}]: 'interpolated' must be a bool, "
                     f"got {type(entry['interpolated']).__name__}"
                 )
+            if "verify_connection_skip" in entry and not isinstance(
+                entry["verify_connection_skip"], bool
+            ):
+                errors.append(
+                    f"auth_types[{i}]: 'verify_connection_skip' must be a bool, "
+                    f"got {type(entry['verify_connection_skip']).__name__}"
+                )
 
             if entry_type_ok and entry_name_ok:
                 sortable.append((i, entry["type"], entry["name"]))

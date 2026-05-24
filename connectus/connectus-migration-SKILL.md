@@ -7,29 +7,16 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-> **⚠️ Known drift (2026-05).** Two CSV columns
-> (`Params for test with default in code` and `Params to Capabilities`)
-> and their CLI verbs (`set-param-defaults`, `set-params-to-capabilities`)
-> are documented as removed in [`Readme.md`](Readme.md:1) but still
-> present in
-> [`workflow_state_config.yml`](workflow_state_config.yml), the live
-> CSV header, and the `workflow_state.py` CLI. The CLI currently
-> reports `[N/16]` and the actual workflow is **16 steps / 19
-> columns**. This file is written against the **actual current
-> behavior (16 steps)** — the "14 steps" target in `Readme.md`'s
-> §"The 14-Step Sequence" is forward-looking. If you migrate an
-> integration today, you WILL be prompted to fill the two extra
-> data columns; that's by design until the CSV/YAML simplification
-> ships.
+> _The workflow now has 15 steps after `verify button placement` was removed (2026-05Q3). The five data columns and ten checkpoints are unchanged; the per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` is the replacement signal (see §A.5 below)._
 
 This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
 
 The CSV has two kinds of columns:
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
-- **Workflow columns** (16, managed by the state machine — CSV total is 19):
+- **Workflow columns** (15, managed by the state machine — CSV total is 18):
   - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params to Capabilities` (5).
-  - **Workflow flag** (1): `verify button placement` (enum `connection|configuration|none`, default `connection` on read).
+  - **Workflow flag**: _(none)_
   - **Workflow checkpoints** (10, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
 
 Authentication classification is the **prerequisite for everything**: you must set `Auth Details` with `set-auth` before the workflow can meaningfully begin (setting it also resets the workflow). The Validate Auth Classification procedure below is run before invoking `set-auth`.
@@ -40,15 +27,15 @@ The skill supports three top-level invocation styles. Pick the matching flow bas
 
 | User phrase (examples) | Action |
 |---|---|
-| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 16-step procedure for that one integration. |
+| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 15-step procedure for that one integration. |
 | "migrate everything assigned to me" / "what's next for me" / "continue my work" / "keep going" | [Assignee batch flow](#assignee-batch-flow) — enumerate the user's in-progress + assigned integrations and walk them one by one. |
 | "migrate connector `<connector_id>`" / "work on connector `<connector_id>`" / "do the whole `<connector>` connector" | [Connector batch flow](#connector-batch-flow) — enumerate that connector's integrations and walk them one by one (with ownership disambiguation up front). |
 
-Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 16-step workflow — they pick *which* integration to run that workflow on next.
+Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 15-step workflow — they pick *which* integration to run that workflow on next.
 
 > **CLI column references accept numbers too.** Every CLI verb in this
 > skill that takes a column name (`show-step`, `markpass`, `skip`, `fail`,
-> `reset-to`) also accepts a **1-based CSV column number** (1..19).
+> `reset-to`) also accepts a **1-based CSV column number** (1..18).
 > Identity columns (#1-#3) are addressable only by read-only `show-step`;
 > write verbs reject them. Example:
 > `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5`
@@ -76,7 +63,7 @@ Use when the user says something like "migrate everything assigned to me" / "con
 
    Otherwise, **ask the user** for the work order. Suggest a sensible default ("furthest-along first" or "by connector then alphabetical") but let them override.
 5. **Walk one integration at a time.** For each integration in the chosen order:
-   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 16 steps here — the rest of this skill already documents them.
+   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 15 steps here — the rest of this skill already documents them.
    - Between integrations, print a short progress recap (`X/N done in this batch — next: <integration id>`) and confirm before moving on, **unless** the user has explicitly said "do them all without asking" / "no confirmations" / equivalent.
 6. **Mid-loop "what's next" check.** Re-run `python3 connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
 7. **Finish.** When the queue is empty, summarize what was done and ask whether to start a new batch (e.g., a connector batch, or assigning more work).
@@ -168,7 +155,7 @@ which is then applied verbatim).
 |---|---|---|---|
 | 1 | `set-auth` | `Auth Details` | The full JSON payload; a concise bullet list of source-code evidence per `auth_types[]` entry (which YML param + which code site justifies the type); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns. |
 | 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. |
-| 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload; for each entry, the YML default it overrides and the reason. |
+| 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: code fallback added — was `params.get("foo")`, now `params.get("foo") or "<yml default>"`, default sourced from YML `defaultvalue`.* **(b)** *param `foo`: NO YML default; proposed default `<value>` — please confirm/edit/skip before the code edit is applied.* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branch (b) is the only sub-confirmation that pauses the workflow per-param (within the same outer pause-before-`set-param-defaults` step). The skill MUST collect all branch-(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If any branch-(b) param is rejected, drop it from the JSON and skip its code edit. |
 | 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
 
 ### Run-through (do NOT ask) operations
@@ -217,7 +204,7 @@ that session and do not re-prompt about it.
 ## Linked Files
 
 - [`connectus/Readme.md`](Readme.md) — Full reference for auth types, CSV columns, walkthrough.
-- [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details` and `Params to Commands`, plus the `verify button placement` flag enum.
+- [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details`, `Params to Commands`, `Params for test with default in code`, and `Params to Capabilities`.
 - [`connectus/workflow_state.py`](workflow_state.py) — The state machine CLI (source of truth for workflow). Provides the `files <integration_id>` subcommand and the [`get_integration_files()`](workflow_state.py) helper used to resolve every source file for an integration (see [§1.1](#11-locate-integration-files)).
 - [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) — The tracking spreadsheet (DO NOT EDIT DIRECTLY).
 
@@ -240,7 +227,6 @@ The status output shows:
 - **Connector ID** — the ConnectUs connector this integration belongs to (data column)
 - **Auth Details** — authentication detail JSON (`auth_types[]` + optional `other_connection`; profile relations are implicit — see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression))
 - **Params to Commands** — JSON mapping of commands → param ids
-- **verify button placement** — flag (`connection` | `configuration` | `none`; default `connection` on read). Placeholder pending detailed spec.
 - **Workflow Checkpoints** — which checkpoints are done, which remain
 - **Current step** — what to work on next
 
@@ -418,6 +404,7 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
   > **Enum history (2026-05).** The validator/enum in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) accepts exactly the six values `OAuth2ClientCreds`, `OAuth2JWT`, `APIKey`, `Plain`, `Passthrough`, `NoneRequired`. The historical `OAuth2AuthCode` value was removed (Authorization Code flows are now classified as `Passthrough`) and the historical `Other` value was renamed to `Passthrough`. There is no backward-compatibility alias; payloads using the old names are rejected by `set-auth`.
 - **Multi-secret auth flows: extras go in the SAME profile (see §1.2.2a).** Every entry is one self-contained, mutually-exclusive profile. If an auth flow consumes more than one XSOAR field-path, they all go in the **same** entry's `xsoar_param_map` — never split across multiple entries (because the only inter-profile relation is exclusive-OR, not AND). When the combined shape doesn't fit a canonical profile (no dominant canonical role; co-equal multi-secret packages like Datadog/AWS/Akamai/GitHub App), use `Passthrough`. When one canonical role dominates and the rest are "extras" (e.g. APIKey + a vendor cert), keep the canonical type and add the extras to the same map.
 - **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** All other auth types (`OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough`) MUST set `interpolated: true` — these flows cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
+- **`verify_connection_skip`** (optional, defaults to `false`) — set to `true` when this profile's `test-module` code path manually raises an exception (`raise DemistoException(...)` / `return_error(...)`) instead of reaching an actual HTTP call. Most commonly OAuth Authorization Code / Device Code / ROPC flows where the user must first run an out-of-band `!auth-start`-style command before the connection-test button can succeed. Per-profile: a multi-profile (exclusive-OR) row may set it `true` on one profile and leave it default on another. Must be a JSON boolean — string `"true"`/`"false"` and int `0`/`1` are rejected.
 - **Sort order** — entries are sorted by `(type, name)` ascending. The validator enforces this — `set-auth` will reject unsorted input. Map keys, by contrast, are an unordered dict and have no sort requirement.
 
 ---
@@ -967,6 +954,7 @@ After determining the correct auth types, validate the Auth Details JSON against
 4. **Legacy `xsoar_params` key is rejected.** Any payload that still contains the pre-2026-05 `xsoar_params: list[str]` field on any entry is hard-rejected by `set-auth` with a migration-help error pointing at [`column-schemas.md`](column-schemas.md:171) §"Migration from `xsoar_params`".
 5. `auth_types[]` entries are sorted by `(type, name)` ascending. Map keys, by contrast, are an unordered dict — no sort requirement applies.
 6. The pre-2026-05 `config` expression key is **hard-rejected**. The relationship between profiles is now implicit (len(auth_types): 0 → no auth, 1 → single required, ≥2 → exclusive-OR). See `column-schemas.md` §"Migration from `config`".
+7. `auth_types[].verify_connection_skip` is optional; when present it MUST be a JSON boolean. Defaults to `false` when absent. Set `true` for profiles whose `test-module` code path manually raises (`raise DemistoException(...)` / `return_error(...)`) so the connection-test button cannot exercise the auth. Most common for OAuth Authorization Code and Device Code flows that require an out-of-band `!auth-start`-style command.
 9. `other_connection` must be a list of **non-empty unique strings, sorted ascending**. Empty list `[]` is valid. The validator rejects unsorted input with a message that suggests the sorted form. See [1.2.5](#125-building-the-other_connection-list) for what belongs here.
 
 ---
@@ -1051,6 +1039,7 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] Any OAuth2 Authorization Code flow (browser redirect, `code` + `redirect_uri`, `oauth-start`/`oauth-complete` commands) is classified as `Passthrough` — there is no canonical `oauth2_authorization_code` profile shape; the user-facing config lives on the profile itself, not in `metadata.auth.parameter`.
 - [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
 - [ ] Every entry whose `type` is NOT `Plain` or `APIKey` has `interpolated: true`. Only `Plain` and `APIKey` entries may be non-interpolated.
+- [ ] Every `auth_types[]` entry whose test-module path manually raises (`raise DemistoException(...)` / `return_error(...)`) for this auth — e.g. OAuth Authorization Code, Device Code, ROPC flows that require an out-of-band `!auth-start` command before the connection-test button can succeed — has `"verify_connection_skip": true`. Profiles whose test-module reaches an actual HTTP call leave `verify_connection_skip` at its default (`false`) or omit the key.
 - [ ] No `xsoar_params` legacy key is present in any entry — that key is rejected by the validator with a migration-help error.
 - [ ] Every name referenced in `config` exists as some `auth_types[].name`.
 - [ ] `auth_types[]` entries are sorted by `(type, name)` ascending. (Map keys are unordered — no sort requirement.)
@@ -1419,49 +1408,72 @@ Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` at any 
 
 Whenever you set params to command not strictly what the script returned, present the evidence clearly and concisely to the user why you decided to do it, and allow them to tweak the input.
 
-### Step 3: Set `verify button placement` (flag, placeholder)
+### Step 3a: Set `Params for test with default in code` (data column)
 
-> **Placeholder.** This step was added in the 2026-05 schema simplification.
-> Detailed semantics (UI behaviour, manifest implications) are **to be
-> filled in later**. For now: pick the value that matches the integration
-> and move on. Empty cells read as `connection`.
+This column records the **per-param defaults that `test-module` relies on** when UCP / the connectus runtime omits the YML default. The cell is consumed by [`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1) as the `PARAM_DEFAULTS_JSON` positional argument, and by [`connectus/check_auth_parity.py`](check_auth_parity.py:1) as the first-precedence source of non-auth required param values.
 
-Enum values:
+**JSON shape is unchanged** — a flat object `{<yml_param_id>: <default value>}`. Empty `{}` is valid. The schema is enforced by [`validate_param_defaults()`](workflow_state/validators.py:155) (top-level JSON object, non-empty string keys, any JSON-typed values). What changes in this revision is **which params qualify** for the cell and **what code edits the migration must perform** as a side effect.
 
-| Value | Meaning |
-|---|---|
-| `connection` | Verify/test button at the per-connection level (default). |
-| `configuration` | Verify/test button at the per-integration / per-configuration level. |
-| `none` | No verify/test button. |
+#### Qualification rule — a YML param belongs in this column ONLY when ALL of the following hold
 
-```bash
-python3 connectus/workflow_state.py set-verify-placement "<Integration ID>" connection
+1. It is consumed by the `test-module` command's code path (per analyzer signal OR explicit source review of the integration's `test_module(...)` / `test_function(...)` handler and every helper it calls).
+2. It is **not** a key in any `auth_types[].xsoar_param_map` (i.e. not an auth secret already declared in `Auth Details`).
+3. It is **not** in `auth_types[].xsoar_param_map`-projected ids and **not** in `other_connection` (i.e. it is not connection-adjacent transport metadata already declared in `Auth Details`).
+
+A test-module param that ALSO appears in other commands' `Params to Commands` lists still qualifies — overlap with `Params to Commands` is fine; the disjointness rule is only with `Auth Details`. Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` to inspect the live exclusion list (same set the analyzer pulls when given `--integration-id`).
+
+#### Per-qualifying-param workflow
+
+For each YML param that qualifies, apply exactly one of these three branches:
+
+**(a) YML declares a `defaultvalue` AND the Python code does NOT already supply a fallback** (no `or "..."`/`or <literal>` after `params.get("foo")` or `demisto.params().get("foo")` or equivalent).
+
+- Edit the integration's `.py` file: change `params.get("foo")` to `params.get("foo") or "<yml default>"`. Use the exact YML default value verbatim (preserve type — strings stay quoted, numbers stay unquoted, booleans become `True`/`False`).
+- Record the YML default value under key `"foo"` in the JSON payload for this cell.
+- Rationale: under UCP / the connectus runtime, the YML default is not necessarily injected; the code-side `or "<default>"` keeps `test-module` working in both the legacy XSOAR environment AND under connectus.
+
+**(b) YML declares NO `defaultvalue`.**
+
+- **PAUSE and ask the user** (this is the per-param confirmation interaction; see §B.2): "Param `foo` is consumed by `test-module` but has no YML default. Propose a reasonable default value: `<your suggestion>`. Confirm, edit, or skip?"
+- Once confirmed, edit the integration's `.py` to add the same `or "<confirmed default>"` fallback as branch (a).
+- Record the confirmed default under key `"foo"` in the JSON payload.
+- Suggest a default that matches the param's semantics: `false` for booleans, a small safe integer for limits (`50`), a short safe duration for `first_fetch` ("3 days"), an empty string for optional text. Be explicit about the type.
+
+**(c) Code ALREADY supplies a fallback** (`params.get("foo", "bar")` or `params.get("foo") or "bar"`).
+
+- No code edit required.
+- Still record the effective default under key `"foo"` in the JSON payload — the cell is the canonical record of what `test-module` will see in the connectus runtime.
+
+> **`params.get("foo", "bar")` vs `params.get("foo") or "bar"`.** Branch (c) accepts either form, but the two are NOT semantically equivalent: `params.get("foo", "bar")` returns `"bar"` only when `foo` is absent, whereas `params.get("foo") or "bar"` also returns `"bar"` when `foo` is the empty string `""`, `0`, or `False`. The rule's intent is the `or` semantics (UCP supplies `foo = ""` rather than absent), so when the migration is ADDING a fallback (branches (a) and (b)) it standardizes on the `or` form. When the integration's existing code already uses the safe two-arg form, leave it alone — do NOT rewrite into the `or` form.
+
+#### Discovery procedure (operational)
+
+1. Open the integration's YML and list every param in the `configuration` section.
+2. Filter out everything in `Auth Details` — auth secrets (`auth_types[].xsoar_param_map` keys, dotted leaves collapsed to the segment before the first `.`) and connection-adjacent metadata (`other_connection`). Use `auth-params "<id>"` for the exact set.
+3. For each remaining YML param, grep the integration's `.py` for the param id within the `test_module` / `test-module` handler's code path (including every helper function it calls). The analyzer's `commands["test-module"]` list is a useful starting point but is NOT authoritative for the per-param classification — re-read the handler source to be sure.
+4. For each param that is consumed by test-module: apply branch (a) / (b) / (c) above.
+5. Collect the JSON payload and call `set-param-defaults`.
+
+Example payload:
+
+```json
+{
+  "fetch_limit": 50,
+  "first_fetch": "3 days",
+  "isFetchEvents": false,
+  "adv_params": ""
+}
 ```
 
-This step is a `flag`, not a `data` column — the input is the bare enum
-string (no JSON wrapping). See
-[`connectus/column-schemas.md`](column-schemas.md) §`verify button placement`.
+#### Self-check before `set-param-defaults`
 
-### Step 4a: Set `Params for test with default in code` (data column)
-
-Set the JSON object mapping YML param name → default value. This cell
-feeds the next step (`Params to Capabilities`) by becoming the
-`PARAM_DEFAULTS_JSON` positional argument of
-[`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:618).
-
-Empty `{}` is valid AND is the recommended value when the integration
-has no defaults the user should override. Values may be any JSON type
-(string, number, bool, null, list, object).
+- [ ] Every key in the JSON is consumed by the integration's `test_module` handler (or a helper it calls).
+- [ ] No key in the JSON appears in `Auth Details` (`auth_types[].xsoar_param_map` keys after dotted-leaf collapse, OR `other_connection`).
+- [ ] For every key: either the integration's `.py` already supplies a fallback (branch c), OR the migration has just added a `or "<default>"` fallback in `.py` (branches a and b). Verify the edit with a `git diff` of the integration's `.py` BEFORE running `set-param-defaults`.
+- [ ] For every branch-(b) key: the user explicitly confirmed the chosen default.
 
 ```bash
 python3 connectus/workflow_state.py set-param-defaults "<Integration ID>" '<JSON>'
-```
-
-Example:
-
-```bash
-python3 connectus/workflow_state.py set-param-defaults "Gmail Single User" '{}'
-python3 connectus/workflow_state.py set-param-defaults "QRadar v3" '{"fetch_limit": 50, "first_fetch": "3 days", "isFetchEvents": false}'
 ```
 
 Validator reference:
@@ -1473,7 +1485,7 @@ top-level object, non-empty string keys, any JSON value. Full schema in
 > path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
 > `Params to Commands` carries `preserve_on_reset: true` today.
 
-### Step 4b: Set `Params to Capabilities` (data column)
+### Step 3b: Set `Params to Capabilities` (data column)
 
 Produce and persist the **bare capability dict** — exactly what
 [`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
@@ -1550,7 +1562,7 @@ list-of-unique-non-empty-strings values, no required keys, `{}` valid.
 > **Reset semantics.** `Params to Capabilities` is NOT preserved on any
 > reset path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it).
 
-### Step 4c: Mark `generated manifest` (first checkpoint)
+### Step 3c: Mark `generated manifest` (first checkpoint)
 
 After generating the ConnectUs manifest YAML for the integration:
 
@@ -1582,6 +1594,8 @@ python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make v
 ```
 
 ### Step 6: `wrote/checked code`
+
+> _If Step 3a populated `Params for test with default in code`, the `or "<default>"` code edits from that step should already be in place. Inspect the integration's `.py` and verify the diff before marking this step._
 
 Write or check the Python/JavaScript/PowerShell integration code. Follow patterns in `Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md) rules:
 

@@ -27,7 +27,8 @@ Per-integration authentication classification. One JSON object per row.
         "<xsoar_field_path>": "<role>",
         "<xsoar_field_path>": "<role>"
       },
-      "interpolated": <bool>
+      "interpolated": <bool>,
+      "verify_connection_skip": <bool, optional, default false>
     }
   ],
   "other_connection": ["<yml_param_id>", "<yml_param_id>", ...]
@@ -194,6 +195,18 @@ ONLY `<id>.password`. See Example 1 below.
   The empty map `{}` is rejected by `set-auth`.
 - `interpolated` is **optional** and defaults to `false`. When
   present it must be a JSON boolean.
+- `verify_connection_skip` is **optional** and defaults to `false`.
+  When present it MUST be a JSON boolean. Set `true` for a profile
+  whose `test-module` code path manually raises an exception (e.g.
+  `raise DemistoException(...)` / `return_error(...)`) so the
+  connection-test button is structurally unable to exercise the auth
+  — most commonly OAuth Authorization Code and Device Code flows
+  where the user must first run an out-of-band `!auth-start`-style
+  command. Profiles whose `test-module` reaches an actual HTTP call
+  leave `verify_connection_skip` at its default (`false`) or omit
+  the key entirely. The field is per-profile: a multi-profile
+  (exclusive-OR) row can mix `verify_connection_skip: true` on one
+  profile and the default-`false` on another. See Example 7.
 - `NoneRequired` integrations have **no** `auth_types[]` entries
   (the array is `[]`), so the map requirement is moot for them — see
   Example 5.
@@ -372,6 +385,37 @@ To re-classify a legacy row:
   "other_connection": ["insecure", "proxy"]
 }
 ```
+
+**Example 7 — per-profile `verify_connection_skip` on a Microsoft Graph Mail integration.** The Authorization Code profile's `test-module` raises `DemistoException("Run !msgraph-mail-auth-test after !msgraph-mail-auth-start to verify connectivity")` (or equivalent), so its `verify_connection_skip` is `true`. The Client Credentials profile's `test-module` reaches an HTTPS call to `https://graph.microsoft.com/v1.0/$metadata` and succeeds when the credentials are valid — `verify_connection_skip` is omitted (equivalent to `false`).
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "OAuth2ClientCreds",
+      "name": "client_creds",
+      "xsoar_param_map": {
+        "credentials.identifier": "client_id",
+        "credentials.password": "client_secret"
+      },
+      "interpolated": true
+    },
+    {
+      "type": "Passthrough",
+      "name": "auth_code",
+      "xsoar_param_map": {
+        "auth_code": "authorization_code",
+        "redirect_uri": "redirect_uri"
+      },
+      "interpolated": true,
+      "verify_connection_skip": true
+    }
+  ],
+  "other_connection": ["insecure", "proxy"]
+}
+```
+
+Note that `(type, name)` sort order is unchanged (`OAuth2ClientCreds` < `Passthrough`) and the absence of `verify_connection_skip` on the first profile is equivalent to `"verify_connection_skip": false`.
 
 Schema validation is enforced by
 [`auth_config_parser.validate_auth_details()`](auth_config_parser/validator.py:47)
@@ -780,33 +824,3 @@ The output file is then fed verbatim into
 python3 connectus/workflow_state.py set-params-to-capabilities "Gmail Single User" \
   "$(cat connectus/connectus_migration/_gmail_param_mapping.json)"
 ```
-
----
-
-## `verify button placement` (flag)
-
-> **Status:** placeholder added in the 2026-05 schema simplification.
-> Details (UI semantics, manifest implications) **to be filled in later**.
-
-Enum values: `connection`, `configuration`, `none`. The cell stores the
-raw enum string verbatim (no JSON wrapping).
-
-| Value | Intended meaning (TBD) |
-|---|---|
-| `connection` | The verify/test button lives at the per-connection level (default on read when the cell is empty). |
-| `configuration` | The verify/test button lives at the per-integration / per-configuration level. |
-| `none` | The integration exposes no verify/test button. |
-
-Setter:
-[`workflow_state.py set-verify-placement "<Integration ID>" <value>`](workflow_state/cli.py:1)
-([`cmd_set_verify_placement`](workflow_state/cli.py:1)). Case-insensitive
-input is canonicalised to the YAML spelling on write. Empty cells read
-as `connection` and do NOT block the workflow's "current step" from
-advancing past step #4.
-
-> **Reset semantics.** `verify button placement` is **wiped** by all
-> reset paths (`reset`, `set-auth`, `fail`, `reset-to`). It does not
-> carry `preserve_on_reset: true`. Today only `Params to Commands`
-> retains that flag (the historical `Params for test with default in
-> code` and `Params same in other handlers` columns were removed in the
-> 2026-05 schema simplification).

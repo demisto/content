@@ -203,6 +203,17 @@ def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, lis
         else:
             interpolated = raw_dict["interpolated"]
 
+    # --- verify_connection_skip (optional, defaults to False) ---
+    verify_connection_skip = False
+    if "verify_connection_skip" in raw_dict:
+        if not isinstance(raw_dict["verify_connection_skip"], bool):
+            errors.append(
+                f"auth_types[{index}]: 'verify_connection_skip' must be a bool, "
+                f"got {type(raw_dict['verify_connection_skip']).__name__}"
+            )
+        else:
+            verify_connection_skip = raw_dict["verify_connection_skip"]
+
     if errors:
         return None, errors
 
@@ -215,6 +226,7 @@ def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, lis
         name=entry_name,
         xsoar_param_map=xsoar_param_map,
         interpolated=interpolated,
+        verify_connection_skip=verify_connection_skip,
     ), errors
 
 

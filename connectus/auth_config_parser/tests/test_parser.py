@@ -200,6 +200,90 @@ class TestParseAuthDetails:
             for e in exc_info.value.errors
         )
 
+    # --- verify_connection_skip (optional, defaults to False) ---
+
+    def test_parse_verify_connection_skip_default_false(self) -> None:
+        """Absence of the key → ``verify_connection_skip`` is False."""
+        details = parse_auth_details({
+            "auth_types": [
+                {"type": "APIKey", "name": "x",
+                 "xsoar_param_map": {"p": "key"}}
+            ],
+        })
+        assert details.auth_types[0].verify_connection_skip is False
+
+    def test_parse_verify_connection_skip_true(self) -> None:
+        details = parse_auth_details({
+            "auth_types": [
+                {
+                    "type": "APIKey",
+                    "name": "x",
+                    "xsoar_param_map": {"p": "key"},
+                    "verify_connection_skip": True,
+                }
+            ],
+        })
+        assert details.auth_types[0].verify_connection_skip is True
+
+    def test_parse_verify_connection_skip_false_explicit(self) -> None:
+        details = parse_auth_details({
+            "auth_types": [
+                {
+                    "type": "APIKey",
+                    "name": "x",
+                    "xsoar_param_map": {"p": "key"},
+                    "verify_connection_skip": False,
+                }
+            ],
+        })
+        assert details.auth_types[0].verify_connection_skip is False
+
+    def test_parse_verify_connection_skip_round_trip_per_profile(self) -> None:
+        """Multi-profile (exclusive-OR) row: one profile may set
+        ``verify_connection_skip: true`` while a sibling profile leaves
+        it at the default."""
+        details = parse_auth_details({
+            "auth_types": [
+                {"type": "OAuth2ClientCreds", "name": "client_creds",
+                 "xsoar_param_map": {"credentials.identifier": "client_id",
+                                     "credentials.password": "client_secret"},
+                 "interpolated": True},
+                {"type": "Passthrough", "name": "auth_code",
+                 "xsoar_param_map": {"auth_code": "authorization_code"},
+                 "interpolated": True,
+                 "verify_connection_skip": True},
+            ],
+        })
+        # Sorted by (type, name): OAuth2ClientCreds < Passthrough.
+        assert details.auth_types[0].name == "client_creds"
+        assert details.auth_types[0].verify_connection_skip is False
+        assert details.auth_types[1].name == "auth_code"
+        assert details.auth_types[1].verify_connection_skip is True
+
+    @pytest.mark.parametrize(
+        "bad_value",
+        ["true", "false", 1, 0, None, [], {}],
+    )
+    def test_parse_verify_connection_skip_non_bool_raises(
+        self, bad_value: object,
+    ) -> None:
+        """Strings, ints, null, list, dict are all rejected — must be a JSON bool."""
+        with pytest.raises(AuthConfigParseError) as exc_info:
+            parse_auth_details({
+                "auth_types": [
+                    {
+                        "type": "APIKey",
+                        "name": "x",
+                        "xsoar_param_map": {"p": "key"},
+                        "verify_connection_skip": bad_value,
+                    }
+                ],
+            })
+        assert any(
+            "'verify_connection_skip' must be a bool" in e
+            for e in exc_info.value.errors
+        )
+
     def test_parse_other_connection_not_list_raises(self) -> None:
         with pytest.raises(AuthConfigParseError) as exc_info:
             parse_auth_details({

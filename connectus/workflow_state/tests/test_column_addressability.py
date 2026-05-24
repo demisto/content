@@ -29,15 +29,14 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (3 identity columns + 16 steps). If the YAML shifts, fix
+# bundled YAML (3 identity columns + 15 steps). If the YAML shifts, fix
 # these numbers in lock-step with the column references below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 19
+_EXPECTED_TOTAL_COLS = 18
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
-_COL_VERIFY_PLACEMENT = 7        # step #4 → CSV column 7
-_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Params for test with default in code + Params to Capabilities)
+_COL_GENERATED_MANIFEST = 9      # step #6 → CSV column 9 (first checkpoint, after Params for test with default in code + Params to Capabilities)
 
 
 @pytest.fixture(autouse=True)
@@ -62,7 +61,6 @@ def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     row["assignee"] = "tester"
     row["Auth Details"] = "{}"
     row["Params to Commands"] = "{}"
-    row["verify button placement"] = "connection"
     row["Params for test with default in code"] = "{}"
     row["Params to Capabilities"] = "{}"
     with open(p, "w", encoding="utf-8", newline="") as f:
@@ -80,7 +78,6 @@ def test_schema_canary(temp_csv: Path) -> None:
     assert len(cols) == _EXPECTED_TOTAL_COLS
     assert cols[_COL_INTEGRATION_ID - 1] == "Integration ID"
     assert cols[_COL_AUTH_DETAILS - 1] == "Auth Details"
-    assert cols[_COL_VERIFY_PLACEMENT - 1] == "verify button placement"
     assert cols[_COL_GENERATED_MANIFEST - 1] == "generated manifest"
 
 
@@ -92,12 +89,6 @@ def test_show_step_resolves_auth_details_by_number(temp_csv: Path, capsys) -> No
     wf_cli.cmd_show_step(["TestInt", str(_COL_AUTH_DETAILS)])
     out = capsys.readouterr().out
     assert "Auth Details" in out
-
-
-def test_show_step_resolves_verify_placement_by_number(temp_csv: Path, capsys) -> None:
-    wf_cli.cmd_show_step(["TestInt", str(_COL_VERIFY_PLACEMENT)])
-    out = capsys.readouterr().out
-    assert "verify button placement" in out
 
 
 def test_show_step_resolves_identity_column_by_number(temp_csv: Path, capsys) -> None:
@@ -134,31 +125,6 @@ def test_show_step_raw_flag_position_insensitive(temp_csv: Path, capsys) -> None
     wf_cli.cmd_show_step(["TestInt", "Auth Details", "--raw"])
     out = capsys.readouterr().out
     assert out == "{}\n"
-
-
-def test_show_step_raw_skips_flag_default(temp_csv: Path, capsys) -> None:
-    """--raw must NOT substitute the read-side default for empty flag cells.
-
-    The decorated form of ``verify button placement`` prints
-    ``connection (default; cell empty)`` when the cell is empty. ``--raw``
-    must instead emit nothing for an empty cell (the fixture seeds it,
-    so we re-clear by writing an empty value first).
-    """
-    # The fixture seeds verify-placement = "connection". Reach into the
-    # CSV directly to clear it, then verify --raw emits "".
-    import csv as _csv
-    with open(temp_csv, "r", encoding="utf-8", newline="") as fh:
-        rows = list(_csv.reader(fh))
-    header = rows[0]
-    col_idx = header.index("verify button placement")
-    rows[1][col_idx] = ""
-    with open(temp_csv, "w", encoding="utf-8", newline="") as fh:
-        w = _csv.writer(fh)
-        w.writerows(rows)
-
-    wf_cli.cmd_show_step(["--raw", "TestInt", "verify button placement"])
-    out = capsys.readouterr().out
-    assert out == ""
 
 
 def test_show_step_no_raw_still_decorates(temp_csv: Path, capsys) -> None:

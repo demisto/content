@@ -968,3 +968,56 @@ flowchart LR
   cover the new behaviour; legacy
   [`connectus/workflow_state_test.py`](workflow_state_test.py) is now a
   stub.
+
+### 2026-05Q3 — `verify button placement` removed; `verify_connection_skip` added to `Auth Details`
+
+- **Removed** the `verify button placement` flag column (was step #4
+  in the 2026-05-17 model). The CSV header drops from 19 columns to
+  18 (3 identity + 15 workflow); the workflow length drops from 16
+  to **15** steps. The companion CLI verb `set-verify-placement` and
+  its handler `cmd_set_verify_placement` are deleted from
+  [`workflow_state/cli.py`](workflow_state/cli.py:1) and from the
+  package re-exports in
+  [`workflow_state/__init__.py`](workflow_state/__init__.py:1). The
+  bundled test module
+  [`workflow_state/tests/test_verify_button_placement.py`](workflow_state/tests/test_verify_button_placement.py)
+  was deleted; per-row data in column #7 was wiped from
+  [`connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv)
+  via a one-shot script (`_drop_verify_button_placement_column.py`)
+  that was then removed from the repo after the rollout.
+- **Added** an optional per-profile field
+  `auth_types[].verify_connection_skip: bool` to the `Auth Details`
+  JSON schema. Defaults to `false`. Set `true` for profiles whose
+  `test-module` code path manually raises (`raise DemistoException(...)`
+  / `return_error(...)`) so the connection-test button cannot
+  exercise the auth — most commonly OAuth Authorization Code and
+  Device Code flows that require an out-of-band `!auth-start`-style
+  command. Parsed in
+  [`auth_config_parser/parser.py`](auth_config_parser/parser.py:1),
+  validated in
+  [`auth_config_parser/validator.py`](auth_config_parser/validator.py:1),
+  modeled on
+  [`AuthEntry`](auth_config_parser/types.py:66). Per-profile: a
+  multi-profile (exclusive-OR) row may set it on one profile and
+  leave it default on another.
+- **Tightened skill rule** for the `Params for test with default in
+  code` column. The JSON schema is unchanged
+  (`{<yml_param_id>: <default value>}` flat object, empty `{}` valid)
+  but the qualification rule for which params qualify and the per-
+  param `or "<default>"` code-edit obligations are now documented in
+  full at [`SKILL.md`](../.roo/skills/connectus-migration/SKILL.md:1)
+  §"Step 3a". Every row's `Params for test with default in code`
+  cell was wiped via a one-shot script
+  (`_wipe_params_for_test_defaults.py`) so each integration will
+  re-derive the cell under the new rule when next worked on. The
+  cell is `preserve_on_reset: false`, so losing the data here does
+  not introduce a new risk class.
+- **CLI column count:** column-number addressability is now `1..18`
+  (down from `1..17`); the canary in
+  [`workflow_state/tests/test_column_addressability.py`](workflow_state/tests/test_column_addressability.py:1)
+  was updated in lock-step.
+- **Step renaming in SKILL.md:** the prefixed sub-steps `Step 4a`,
+  `Step 4b`, `Step 4c` were renamed to `Step 3a`, `Step 3b`,
+  `Step 3c` (minimal-edit recipe — the rest of the numeric step
+  headings remain unchanged to limit anchor churn).
+- **Design source of truth:** [`plans/connectus-verify-skip-and-test-defaults.md`](../plans/connectus-verify-skip-and-test-defaults.md:1).

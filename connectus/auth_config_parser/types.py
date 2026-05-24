@@ -89,6 +89,18 @@ class AuthEntry:
 
         interpolated: When True, the value is templated at runtime
             rather than supplied by the user. Defaults to False.
+        verify_connection_skip: True when this auth profile's
+            ``test-module`` path manually raises an exception
+            (e.g. OAuth Authorization Code / Device Code flows
+            where the user must first call an out-of-band command
+            like ``!auth-start`` before the connection-test button
+            can succeed). Defaults to False — the connection-test
+            button can exercise the auth normally. See
+            ``.roo/skills/connectus-migration/SKILL.md`` §A.5
+            (per-profile skip rule) for the classification
+            procedure. Per-profile: a multi-profile (exclusive-OR)
+            integration may set it on one profile and leave it
+            default on another.
 
     Examples:
         >>> entry = AuthEntry(
@@ -100,6 +112,8 @@ class AuthEntry:
         <AuthType.APIKey: 'APIKey'>
         >>> entry.interpolated
         False
+        >>> entry.verify_connection_skip
+        False
         >>> entry.xsoar_param_map
         {'credentials.password': 'key'}
     """
@@ -108,6 +122,7 @@ class AuthEntry:
     name: str
     xsoar_param_map: dict[str, str]
     interpolated: bool = False
+    verify_connection_skip: bool = False
 
 
 @dataclass(frozen=True)
