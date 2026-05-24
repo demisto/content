@@ -15,7 +15,6 @@ configuration:
   additionalinfo: 'The iZOOlogic API server URL.'
   section: Connect
 - name: api_key
-  display: API Key
   required: true
   type: 9
   displaypassword: API Key
@@ -23,7 +22,6 @@ configuration:
   additionalinfo: 'The API key provided by iZOOlogic for authentication.'
   section: Connect
 - name: secret_key
-  display: Secret Key
   required: true
   type: 9
   displaypassword: Secret Key

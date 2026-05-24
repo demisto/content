@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 import demistomock as demisto
@@ -190,7 +190,7 @@ class TestIZOOlogicAuthHandler:
         handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
         mock_client = AsyncMock()
 
-        mock_raw_response = AsyncMock()
+        mock_raw_response = MagicMock()
         mock_raw_response.json.return_value = {
             "success": True,
             "result": {"accessToken": "test-token-123"},
@@ -209,7 +209,7 @@ class TestIZOOlogicAuthHandler:
         handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
         mock_client = AsyncMock()
 
-        mock_raw_response = AsyncMock()
+        mock_raw_response = MagicMock()
         mock_raw_response.json.return_value = {
             "success": False,
             "result": None,
@@ -228,7 +228,7 @@ class TestIZOOlogicAuthHandler:
         handler = IZOOlogicAuthHandler(api_key="key", secret_key="secret")
         mock_client = AsyncMock()
 
-        mock_raw_response = AsyncMock()
+        mock_raw_response = MagicMock()
         mock_raw_response.json.return_value = {
             "success": True,
             "result": {},
