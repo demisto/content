@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
 from AWSSNSListener import SNSCertificateManager, handle_notification, is_valid_integration_credentials
 from CommonServerPython import DemistoException
 
@@ -44,42 +43,39 @@ def test_handle_notification_valid():
     assert actual_incident == expected_notification
 
 
-@patch("AWSSNSListener.client")
 @patch("AWSSNSListener.X509")
 @patch("M2Crypto.EVP.PKey")
-def test_is_valid_sns_message(mock_client, mock_x509, mock_PKey):
+def test_is_valid_sns_message(mock_PKey, mock_x509, requests_mock):
+    """
+    Given a valid SNS payload whose SigningCertURL serves a (mocked) certificate
+    When SNSCertificateManager.is_valid_sns_message() is called
+    Then the signature verification path returns True.
+    """
     sNSCertificateManager = SNSCertificateManager()
-    mock_resp = requests.models.Response()
-    mock_resp.status_code = 200
-    response_content = """-----BEGIN VALID CERTIFICATE-----
-                          -----END CERTIFICATE-----"""
-    mock_resp._content = str.encode(response_content)
-    mock_client.get.return_value = mock_resp
+    requests_mock.get(VALID_PAYLOAD["SigningCertURL"], text="-----BEGIN CERT-----\n-----END CERT-----")
     mock_PKey.verify_final.return_value = 1
     mock_x509.get_pubkey.return_value = mock_PKey
     mock_x509.load_cert_string.return_value = mock_x509
     mock_x509.get_subject.return_value = MagicMock(CN="sns.amazonaws.com")
-    is_valid = sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD)
-    assert is_valid
+    assert sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD)
 
 
-@patch("AWSSNSListener.client")
 @patch("AWSSNSListener.X509")
 @patch("M2Crypto.EVP.PKey")
-def test_not_valid_sns_message(mock_client, mock_x509, mock_PKey, capfd):
+def test_not_valid_sns_message(mock_PKey, mock_x509, requests_mock, capfd):
+    """
+    Given a valid SNS payload whose signature fails verification
+    When SNSCertificateManager.is_valid_sns_message() is called
+    Then the method returns False.
+    """
     sNSCertificateManager = SNSCertificateManager()
-    mock_resp = requests.models.Response()
-    mock_resp.status_code = 200
-    response_content = """-----BEGIN INVALID CERTIFICATE-----
-                          -----END CERTIFICATE-----"""
-    mock_resp._content = str.encode(response_content)
-    mock_client.get.return_value = mock_resp
+    requests_mock.get(VALID_PAYLOAD["SigningCertURL"], text="-----BEGIN CERT-----\n-----END CERT-----")
     mock_PKey.verify_final.return_value = 2
     mock_x509.get_pubkey.return_value = mock_PKey
     mock_x509.load_cert_string.return_value = mock_x509
+    mock_x509.get_subject.return_value = MagicMock(CN="sns.amazonaws.com")
     with capfd.disabled():
-        is_valid = sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD)
-        assert is_valid is False
+        assert sNSCertificateManager.is_valid_sns_message(VALID_PAYLOAD) is False
 
 
 @patch("fastapi.security.http.HTTPBasicCredentials")
