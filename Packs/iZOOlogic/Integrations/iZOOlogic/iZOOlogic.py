@@ -783,8 +783,9 @@ def _fetch_for_type(
     last_created_on: str | None = type_state.get("last_created_on")
     last_ids: list[str] = type_state.get("last_ids", [])
 
+    effective_first_fetch = first_fetch_ts or date_to_unix_timestamp(Config.DEFAULT_FROM_TIME)
     from_date = snap_to_day_boundary_utc(
-        last_created_on if last_created_on else first_fetch_ts,
+        last_created_on if last_created_on else effective_first_fetch,
         "start",
     )
     to_date = get_current_unix_timestamp()

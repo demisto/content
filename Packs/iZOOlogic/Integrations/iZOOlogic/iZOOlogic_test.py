@@ -942,10 +942,10 @@ class TestFetchIncidentsCommand:
     ):
         """If one type raises an exception, other types still succeed."""
 
-        def side_effect(client, type_code, type_state, max_fetch):
+        def side_effect(client, type_code, type_state, max_fetch, first_fetch_ts=""):
             if type_code == 3:
                 raise DemistoException("API error for type 3")
-            return _fetch_for_type(client, type_code, type_state, max_fetch)
+            return _fetch_for_type(client, type_code, type_state, max_fetch, first_fetch_ts)
 
         mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
         mocker.patch.object(demisto, "getLastRun", return_value={})
