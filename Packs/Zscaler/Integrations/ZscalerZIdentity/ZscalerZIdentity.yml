@@ -237,7 +237,7 @@ script:
       description: A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example url=`["https://example.com/foo,bar"]`.
       isArray: true
     - name: ip
-      description: A comma-separated list of IP ranges to update the specified category. For example, 1.2.3.4,8.8.8.8.
+      description: "A comma-separated list of custom IP address ranges to update the specified category. Values must be in CIDR notation. For example, 1.2.3.4/32,8.8.8.8/32. Up to 2000 custom IP address ranges and retaining parent custom IP address ranges can be added, per organization, across all categories. Note: This field is available only if the option to configure custom IP ranges is enabled for your organization. To enable this option, contact Zscaler Support."
       isArray: true
     - name: action
       description: The action applied to the URL category.
@@ -838,7 +838,7 @@ script:
       type: String
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.6796194
+  dockerimage: demisto/python3:3.12.13.9059085
   type: python
 fromversion: 6.10.0
 tests:
