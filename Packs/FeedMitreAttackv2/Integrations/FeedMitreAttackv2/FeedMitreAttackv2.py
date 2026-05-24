@@ -62,9 +62,51 @@ ENTERPRISE_COLLECTION_NAME = "enterprise att&ck"  # pragma: no cover
 EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"  # pragma: no cover
 SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # pragma: no cover
 DEFAULT_YEAR = datetime(1970, 1, 1)  # pragma: no cover
+TAXII_QUERY_MAX_RETRIES = 3  # pragma: no cover
+TAXII_QUERY_RETRY_BASE_DELAY = 5  # seconds; doubles on each retry  # pragma: no cover
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v21").setLevel(logging.ERROR)
+
+
+def query_with_retry(tc_source: TAXIICollectionSource, input_filter, max_retries: int = TAXII_QUERY_MAX_RETRIES) -> list:
+    """Query a TAXIICollectionSource with exponential-backoff retry on 403 / rate-limit responses.
+
+    The MITRE TAXII server occasionally returns HTTP 403 when too many requests
+    are made in a short period.  This wrapper retries the query up to
+    ``max_retries`` times, waiting ``TAXII_QUERY_RETRY_BASE_DELAY * 2^attempt``
+    seconds between attempts, before re-raising the last exception.
+
+    Args:
+        tc_source: The :class:`TAXIICollectionSource` to query.
+        input_filter: The STIX2 filter (or list of filters) to pass to ``query()``.
+        max_retries: Maximum number of retry attempts (default: 3).
+
+    Returns:
+        The list of STIX objects returned by the query.
+
+    Raises:
+        Exception: Re-raises the last exception if all retries are exhausted.
+    """
+    last_exception: Exception | None = None
+    for attempt in range(max_retries + 1):
+        try:
+            return tc_source.query(input_filter)
+        except Exception as e:
+            last_exception = e
+            # Detect 403 / rate-limit by inspecting the exception message.
+            err_str = str(e).lower()
+            is_rate_limited = "403" in err_str or "forbidden" in err_str or "too many" in err_str
+            if not is_rate_limited or attempt >= max_retries:
+                raise
+            delay = TAXII_QUERY_RETRY_BASE_DELAY * (2**attempt)
+            demisto.debug(
+                f"MA: Received rate-limit/403 response on attempt {attempt + 1}/{max_retries + 1}. "
+                f"Retrying in {delay}s. Error: {e}"
+            )
+            safe_sleep(delay)
+    raise last_exception  # type: ignore[misc]  # unreachable, satisfies type checker
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -204,7 +246,7 @@ class Client:
                 input_filter = FILTER_OBJS[concept]["filter"]
                 try:
                     demisto.debug(f"MA: Fetching data for {concept}")
-                    mitre_data = tc_source.query(input_filter)
+                    mitre_data = query_with_retry(tc_source, input_filter)
 
                 except Exception as e:
                     demisto.debug(f"MA: Failed to fetch data for {concept} - {e}")
@@ -559,7 +601,7 @@ def get_mitre_data_by_filter(client, mitre_filter):
         demisto.debug("MA: Getting collection source")
         tc_source = TAXIICollectionSource(collection_data)
         demisto.debug("MA: Querying the tc source")
-        mitre_data += tc_source.query(mitre_filter)
+        mitre_data += query_with_retry(tc_source, mitre_filter)
 
     if mitre_data:
         demisto.debug("MA: Found mitre data")

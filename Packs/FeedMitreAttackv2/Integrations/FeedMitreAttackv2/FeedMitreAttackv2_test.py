@@ -556,3 +556,108 @@ def test_show_feeds_command(mocker):
  101010101010101010101010101010101 |\n| not_default | 2 |\n",
         "ReadableContentsFormat": "markdown",
     }
+
+
+# ── query_with_retry tests ────────────────────────────────────────────────────
+
+
+def test_query_with_retry_succeeds_on_first_attempt(mocker):
+    """
+    Given:
+        A TAXIICollectionSource whose query() succeeds immediately.
+    When:
+        query_with_retry is called.
+    Then:
+        The result is returned without any sleep calls.
+    """
+    from FeedMitreAttackv2 import query_with_retry
+
+    mock_source = mocker.MagicMock()
+    expected = [{"id": "attack-pattern--1"}]
+    mock_source.query.return_value = expected
+
+    sleep_mock = mocker.patch("FeedMitreAttackv2.safe_sleep")
+    result = query_with_retry(mock_source, [])
+
+    assert result == expected
+    mock_source.query.assert_called_once_with([])
+    sleep_mock.assert_not_called()
+
+
+def test_query_with_retry_retries_on_403_and_succeeds(mocker):
+    """
+    Given:
+        A TAXIICollectionSource whose query() raises a 403 error twice, then succeeds.
+    When:
+        query_with_retry is called with max_retries=3.
+    Then:
+        - query() is called 3 times total.
+        - safe_sleep is called twice with exponential delays (5s, 10s).
+        - The successful result is returned.
+    """
+    from FeedMitreAttackv2 import TAXII_QUERY_RETRY_BASE_DELAY, query_with_retry
+
+    mock_source = mocker.MagicMock()
+    expected = [{"id": "attack-pattern--2"}]
+    rate_limit_error = Exception("HTTP Error 403: Forbidden")
+    mock_source.query.side_effect = [rate_limit_error, rate_limit_error, expected]
+
+    sleep_mock = mocker.patch("FeedMitreAttackv2.safe_sleep")
+    result = query_with_retry(mock_source, [], max_retries=3)
+
+    assert result == expected
+    assert mock_source.query.call_count == 3
+    assert sleep_mock.call_count == 2
+    sleep_mock.assert_any_call(TAXII_QUERY_RETRY_BASE_DELAY * 1)   # attempt 0 → delay 5s
+    sleep_mock.assert_any_call(TAXII_QUERY_RETRY_BASE_DELAY * 2)   # attempt 1 → delay 10s
+
+
+def test_query_with_retry_raises_after_all_retries_exhausted(mocker):
+    """
+    Given:
+        A TAXIICollectionSource whose query() always raises a 403 error.
+    When:
+        query_with_retry is called with max_retries=2.
+    Then:
+        - query() is called max_retries+1 times (3 total).
+        - safe_sleep is called max_retries times (2 total).
+        - The last exception is re-raised.
+    """
+    from FeedMitreAttackv2 import query_with_retry
+
+    mock_source = mocker.MagicMock()
+    rate_limit_error = Exception("403 Too Many Requests")
+    mock_source.query.side_effect = rate_limit_error
+
+    sleep_mock = mocker.patch("FeedMitreAttackv2.safe_sleep")
+
+    with pytest.raises(Exception, match="403"):
+        query_with_retry(mock_source, [], max_retries=2)
+
+    assert mock_source.query.call_count == 3   # initial + 2 retries
+    assert sleep_mock.call_count == 2
+
+
+def test_query_with_retry_does_not_retry_non_403_errors(mocker):
+    """
+    Given:
+        A TAXIICollectionSource whose query() raises a non-403 error.
+    When:
+        query_with_retry is called.
+    Then:
+        - query() is called exactly once (no retries).
+        - safe_sleep is never called.
+        - The exception is re-raised immediately.
+    """
+    from FeedMitreAttackv2 import query_with_retry
+
+    mock_source = mocker.MagicMock()
+    mock_source.query.side_effect = Exception("Connection refused")
+
+    sleep_mock = mocker.patch("FeedMitreAttackv2.safe_sleep")
+
+    with pytest.raises(Exception, match="Connection refused"):
+        query_with_retry(mock_source, [], max_retries=3)
+
+    mock_source.query.assert_called_once()
+    sleep_mock.assert_not_called()
