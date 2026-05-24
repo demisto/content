@@ -1650,35 +1650,38 @@ def fetch_incidents(
     lookback_deduped_incidents: list = []
     current_lookback_ids: dict = {}
     if look_back > 0:
-        demisto.debug(f"Lookback enabled with {look_back} minutes")
+        try:
+            demisto.debug(f"Lookback enabled with {look_back} minutes")
 
-        # Calculate the lookback start time
-        lookback_start_time, _ = get_fetch_run_time_range(
-            last_run={"time": last_run.get("last_fetch_time")},
-            first_fetch=first_fetch_time,
-            look_back=look_back,
-            date_format=DATE_FORMAT,
-        )
+            # Calculate the lookback start time
+            lookback_start_time, _ = get_fetch_run_time_range(
+                last_run={"time": last_run.get("last_fetch_time")},
+                first_fetch=first_fetch_time,
+                look_back=look_back,
+                date_format=DATE_FORMAT,
+            )
 
-        lookback_incidents = fetch_incidents_lookback(
-            client=client,
-            lookback_start_time=lookback_start_time,
-            min_severity=min_severity,
-            statuses_to_fetch=statuses_to_fetch,
-        )
+            lookback_incidents = fetch_incidents_lookback(
+                client=client,
+                lookback_start_time=lookback_start_time,
+                min_severity=min_severity,
+                statuses_to_fetch=statuses_to_fetch,
+            )
 
-        # Dedup lookback incidents using the lookback incidents from loop before and the fetched incidents
-        incidents_ids_from_fetch = [incident["ID"] for incident in raw_incidents]
-        previous_lookback_ids = last_run.get("lookback_fetch_ids", {})
+            # Dedup lookback incidents using the lookback incidents from loop before and the fetched incidents
+            incidents_ids_from_fetch = [incident["ID"] for incident in raw_incidents]
+            previous_lookback_ids = last_run.get("lookback_fetch_ids", {})
 
-        lookback_deduped_incidents, current_lookback_ids = dedup_lookback_incidents(
-            lookback_incidents=lookback_incidents,
-            previous_lookback_ids=previous_lookback_ids,
-            incidents_ids_from_fetch=incidents_ids_from_fetch,
-            look_back=look_back,
-        )
+            lookback_deduped_incidents, current_lookback_ids = dedup_lookback_incidents(
+                lookback_incidents=lookback_incidents,
+                previous_lookback_ids=previous_lookback_ids,
+                incidents_ids_from_fetch=incidents_ids_from_fetch,
+                look_back=look_back,
+            )
 
-        demisto.debug(f"Lookback: {len(lookback_deduped_incidents)} new incidents to ingest")
+            demisto.debug(f"Lookback: {len(lookback_deduped_incidents)} new incidents to ingest")
+        except Exception as e:
+            demisto.error(f"Lookback mechanism failed, continuing with regular fetch only. Error: {e}")
 
     fetch_incidents_additional_info(client, raw_incidents)
 
