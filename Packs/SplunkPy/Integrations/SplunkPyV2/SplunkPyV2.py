@@ -4279,15 +4279,20 @@ INVESTIGATION_LIST_LIST_PARAMS = (
 def splunk_list_investigations_command(service: client.Service, args: dict) -> CommandResults:
     """List investigations via ``GET /public/v2/investigations``.
 
-    Splunk ES does not expose a dedicated ``GET /public/v2/investigations/{id}`` endpoint.
     This command supports the full set of list-investigations query filters
-    (``ids``, ``limit``, ``offset``, ``sort``, ``disposition``, ``status``, ``owner``,
-    ``urgency``, ``sensitivity``, ``create_time_min``/``max``, ``update_time_min``/``max``).
-    Multi-value arguments (``ids``, ``disposition``, ``status``, ``owner``, ``urgency``,
-    ``sensitivity``) are parsed with ``argToList()`` and forwarded to the matching query
-    parameter as a CSV string (e.g., ``ids=id1,id2``, ``urgency=high,critical``).
-    Investigation IDs accept either the GUID or the display ID (``ES-00001``).
+    (``investigation_ids``, ``limit``, ``offset``, ``sort``, ``disposition``, ``status``,
+    ``owner``, ``urgency``, ``sensitivity``, ``create_time_min``/``max``,
+    ``update_time_min``/``max``).
+    Multi-value arguments (``investigation_ids``, ``disposition``, ``status``, ``owner``,
+    ``urgency``, ``sensitivity``) are parsed with ``argToList()`` and forwarded to the
+    matching Splunk query parameter as a CSV string (e.g., ``ids=id1,id2``,
+    ``urgency=high,critical``). Investigation IDs accept either the GUID or the display
+    ID (``ES-00001``).
     """
+
+    if "investigation_ids" in args:
+        args["ids"] = args.get("investigation_ids")
+
     query: dict[str, Any] = {key: args.get(key) for key in INVESTIGATION_LIST_SCALAR_PARAMS}
     for key in INVESTIGATION_LIST_LIST_PARAMS:
         values = argToList(args.get(key))

@@ -8013,12 +8013,14 @@ def test_splunk_list_investigations_command_single_result_returns_dict(mocker):
 def test_splunk_list_investigations_command_with_filters_forwarded_as_csv(mocker):
     """
     Given:
-        - Args with multi-value filters (`ids`, `status`, `urgency`) and scalar filters
-          (`limit`, `offset`, `sort`).
+        - Args with multi-value filters (`investigation_ids`, `status`, `urgency`) and
+          scalar filters (`limit`, `offset`, `sort`).
     When:
         - splunk_list_investigations_command is called.
     Then:
-        - Multi-value args are forwarded as CSV strings.
+        - The XSOAR-facing `investigation_ids` arg is mapped to the Splunk API `ids`
+          query parameter and forwarded as a CSV string.
+        - Other multi-value args are forwarded as CSV strings.
         - Scalar args are forwarded unchanged.
         - The HR title includes the provided ids list.
     """
@@ -8029,7 +8031,7 @@ def test_splunk_list_investigations_command_with_filters_forwarded_as_csv(mocker
     )
 
     args = {
-        "ids": "ES-00001,ES-00002",
+        "investigation_ids": "ES-00001,ES-00002",
         "status": "New,In progress",
         "urgency": "high,critical",
         "limit": "10",

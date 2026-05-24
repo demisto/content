@@ -1330,7 +1330,7 @@ Lists investigations from Splunk Enterprise Security.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of investigation IDs (GUID or display ID such as `ES-00001`) to retrieve. | Optional |
+| investigation_ids | A comma-separated list of investigation IDs (GUID or display ID such as `ES-00001`) to retrieve. | Optional |
 | limit | The maximum number of investigations to return on the page. Maximum is 100. Default is 20. | Optional |
 | offset | Pagination offset used together with `limit` to specify the starting point of the returned results. | Optional |
 | sort | Sort expression for the returned investigations (for example, `create_time:asc,status:desc`). | Optional |

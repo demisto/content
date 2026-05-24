@@ -828,7 +828,7 @@ script:
       type: String
   - arguments:
     - description: A comma-separated list of investigation IDs (GUID or display ID such as `ES-00001`) to retrieve.
-      name: ids
+      name: investigation_ids
       isArray: true
     - defaultValue: '20'
       description: The maximum number of investigations to return on the page. Maximum is 100.
