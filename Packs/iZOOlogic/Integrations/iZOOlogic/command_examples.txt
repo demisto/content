@@ -3,3 +3,5 @@
 !izoologic-get-incidents limit=10 start_time="2024-01-01T00:00:00Z" end_time="2024-01-02T00:00:00Z"
 !izoologic-get-incidents limit=10 incident_type=phishing
 !izoolabs-incident-create incident_url="https://malicious-site.example.com" incident_type="phishing" brand_code="BRAND001"
+!izoolabs-incident-fetch from_date="1 day ago" incident_type="phishing"
+!izoolabs-incident-fetch from_date="2024-01-01T00:00:00Z" to_date="2024-01-02T00:00:00Z" brand_code="BRAND001"

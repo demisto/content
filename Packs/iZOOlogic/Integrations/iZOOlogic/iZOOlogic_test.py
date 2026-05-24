@@ -33,6 +33,7 @@ from iZOOlogic import (
     get_incidents_command,
     fetch_incidents_command,
     create_incident_command,
+    incident_fetch_command,
     main,
 )
 
@@ -973,7 +974,10 @@ class TestFetchIncidentsCommand:
 
 
 class TestMain:
-    @pytest.mark.parametrize("command", ["test-module", "fetch-incidents", "izoologic-get-incidents", "izoolabs-incident-create"])
+    @pytest.mark.parametrize(
+        "command",
+        ["test-module", "fetch-incidents", "izoologic-get-incidents", "izoolabs-incident-create", "izoolabs-incident-fetch"],
+    )
     def test_main_dispatches(self, mocker: MockerFixture, command: str):
         mocker.patch("ContentClientApiModule.support_multithreading")
         mocker.patch.object(demisto, "command", return_value=command)
@@ -1284,6 +1288,96 @@ class TestCreateIncidentCommand:
 
         assert "New Incident Created" in result.readable_output
         assert "RPT-12345" in result.readable_output
+
+
+# endregion
+
+# region Incident Fetch Command Tests
+
+
+class TestIncidentFetchCommand:
+    def test_basic_no_args(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Fetch with default args (no filters) returns incidents."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        result = incident_fetch_command(mock_client, {})
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "iZOOlabs.Incident"
+        assert result.outputs_key_field == "incidentID"
+        assert len(result.outputs) == 3  # type: ignore[arg-type]
+
+    def test_with_all_filters(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Fetch with all filters passes them to the API."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        args = {
+            "from_date": "2024-01-01T00:00:00Z",
+            "to_date": "2024-01-02T00:00:00Z",
+            "incident_type": "phishing",
+            "threat_type": "critical threat",
+            "brand_code": "BRAND001",
+            "executive_name": "John Doe",
+            "client_ref_id": "REF123",
+            "client_code": "CLIENT001",
+        }
+        result = incident_fetch_command(mock_client, args)
+
+        assert isinstance(result, CommandResults)
+        # Verify the API was called with the correct filters
+        call_kwargs = mock_fetch.call_args.kwargs
+        assert call_kwargs["incident_type"] == 2  # phishing
+        assert call_kwargs["threat_type"] == 14  # critical threat
+        assert call_kwargs["brand_code"] == "BRAND001"
+        assert call_kwargs["executive_name"] == "John Doe"
+        assert call_kwargs["client_ref_id"] == "REF123"
+        assert call_kwargs["client_code"] == "CLIENT001"
+
+    def test_invalid_incident_type_raises(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="Invalid 'incident_type'"):
+            incident_fetch_command(mock_client, {"incident_type": "nonexistent"})
+
+    def test_invalid_threat_type_raises(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="Invalid 'threat_type'"):
+            incident_fetch_command(mock_client, {"threat_type": "invalid"})
+
+    def test_inverted_date_range_raises(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="is before"):
+            incident_fetch_command(
+                mock_client,
+                {
+                    "from_date": "2024-01-15T00:00:00Z",
+                    "to_date": "2024-01-10T00:00:00Z",
+                },
+            )
+
+    def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        result = incident_fetch_command(mock_client, {})
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs == []
+
+    def test_readable_output_has_headers(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        result = incident_fetch_command(mock_client, {})
+
+        assert "iZOOlogic Incidents" in result.readable_output
+        assert "incidentID" in result.readable_output
+
+    def test_existing_commands_dont_pass_new_params(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Verify that _fetch_all_pages called from get_incidents_command does NOT pass new filter params."""
+        mock_fetch_all = mocker.patch("iZOOlogic._fetch_all_pages", return_value=[])
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        get_incidents_command(mock_client, {"limit": "10"}, [2])
+
+        # _fetch_all_pages should be called without the new params
+        call_kwargs = mock_fetch_all.call_args.kwargs
+        assert "threat_type" not in call_kwargs
+        assert "brand_code" not in call_kwargs
+        assert "executive_name" not in call_kwargs
+        assert "client_ref_id" not in call_kwargs
+        assert "client_code" not in call_kwargs
 
 
 # endregion

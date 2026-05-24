@@ -111,3 +111,54 @@ Creates a new security incident in iZOOlogic.
 >|reportedincidentid|statuscode|statusdescription|casetype|casetypedescription|success|
 >|---|---|---|---|---|---|
 >| RPT-12345 | 1 | Under Review | 6 | Incident | true |
+
+### izoolabs-incident-fetch
+
+***
+Fetches incidents from iZOOlogic based on specified filters including date range, brand, incident type, and other criteria.
+
+#### Base Command
+
+`izoolabs-incident-fetch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from_date | Start date for filtering incidents. Supports ISO 8601 format or relative time expressions (e.g., "1 day ago", "2024-01-01T00:00:00Z"). Maximum date range is 31 days. Default is 1 day ago. | Optional |
+| to_date | End date for filtering incidents. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). Maximum date range is 31 days. Default is now. | Optional |
+| incident_type | Type of incident to filter by. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email, executive. | Optional |
+| threat_type | Threat level to filter by. Possible values are: low threat, moderate threat, substantial threat, high threat, critical threat, redirect to whitelist. | Optional |
+| brand_code | Brand identifier to filter incidents by. | Optional |
+| executive_name | Executive name for filtering executive-related incidents (max 100 characters). | Optional |
+| client_ref_id | Client reference ID for specific incident lookup. | Optional |
+| client_code | Client identifier for filtering incidents. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| iZOOlabs.Incident.incidentID | String | The unique identifier of the incident. |
+| iZOOlabs.Incident.incidentType | String | The type and subtype of the incident. |
+| iZOOlabs.Incident.subIncidentType | String | The subtype of the incident. |
+| iZOOlabs.Incident.detectionDate | String | The detection date of the incident as a Unix timestamp. |
+| iZOOlabs.Incident.url | String | The URL associated with the incident. |
+| iZOOlabs.Incident.status | String | The current status of the incident. |
+| iZOOlabs.Incident.statusCode | Number | The numeric status code of the incident. |
+| iZOOlabs.Incident.brand | String | The brand associated with the incident. |
+| iZOOlabs.Incident.threatType | String | The threat level of the incident. |
+| iZOOlabs.Incident.createdOn | String | The creation date of the incident as a Unix timestamp. |
+| iZOOlabs.Incident.closedOn | String | The closing date of the incident as a Unix timestamp. |
+| iZOOlabs.Incident.detectedBy | String | The entity that detected the incident. |
+
+#### Command example
+
+```!izoolabs-incident-fetch from_date="1 day ago" incident_type="phishing"```
+
+#### Human Readable Output
+
+>### iZOOlogic Incidents
+>
+>|incidentID|incidentType|brand|url|status|statusCode|threatType|detectionDate|createdOn|detectedBy|
+>|---|---|---|---|---|---|---|---|---|---|
+>| abc123 | Phishing | ExampleBrand | https://example.com | Active | 1 | High Threat | 1700000000 | 1700000200 | Reported By iZOOLogic |

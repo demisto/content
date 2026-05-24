@@ -39,6 +39,7 @@ class Config:
 
     # Fetch defaults
     DEFAULT_FROM_TIME = "5 minutes ago"
+    DEFAULT_FETCH_COMMAND_FROM_TIME = "1 day ago"
 
     # Max date range for API (31 days)
     MAX_DATE_RANGE_DAYS = 31
@@ -68,6 +69,9 @@ class ApiCodes:
     # Mapping of threat type display names to API integer codes
     THREAT_TYPE: dict[str, int] = {
         "low threat": 10,
+        "moderate threat": 11,
+        "substantial threat": 12,
+        "high threat": 13,
         "critical threat": 14,
         "redirect to whitelist": 48,
     }
@@ -501,6 +505,11 @@ class Client(ContentClient):
         to_date: str,
         incident_type: int | None = None,
         page_token: str | None = None,
+        threat_type: int | None = None,
+        brand_code: str | None = None,
+        executive_name: str | None = None,
+        client_ref_id: str | None = None,
+        client_code: str | None = None,
     ) -> dict[str, Any]:
         """Fetch a single page of incidents from the iZOOlogic API.
 
@@ -515,20 +524,26 @@ class Client(ContentClient):
             to_date: End date as Unix timestamp string (floored to its day by the API).
             incident_type: Optional incident type code to filter by.
             page_token: Pagination token for retrieving the next page.
+            threat_type: Optional threat level code to filter by.
+            brand_code: Optional brand identifier to filter by.
+            executive_name: Optional executive name to filter by.
+            client_ref_id: Optional client reference ID for specific incident lookup.
+            client_code: Optional client identifier to filter by.
 
         Returns:
             The 'result' object from the API response containing incidents and pagination info.
         """
-        body: dict[str, Any] = {
-            "fromdate": from_date,
-            "todate": to_date,
-        }
-
-        if incident_type is not None:
-            body["incidenttype"] = incident_type
-
-        if page_token:
-            body["token"] = page_token
+        body: dict[str, Any] = assign_params(
+            fromdate=from_date,
+            todate=to_date,
+            incidenttype=incident_type,
+            token=page_token,
+            threattype=threat_type,
+            brandcode=brand_code,
+            executivename=executive_name,
+            clientrefid=client_ref_id,
+            clientcode=client_code,
+        )
 
         demisto.debug(f"[API Fetch] Fetching incidents | Params: {body}")
 
@@ -631,6 +646,11 @@ def _fetch_all_pages(
     from_date: str,
     to_date: str,
     incident_type: int | None = None,
+    threat_type: int | None = None,
+    brand_code: str | None = None,
+    executive_name: str | None = None,
+    client_ref_id: str | None = None,
+    client_code: str | None = None,
 ) -> list[dict]:
     """Fetch ALL pages of incidents until pagination is exhausted.
 
@@ -638,13 +658,19 @@ def _fetch_all_pages(
     or the API returns an empty page. No max_results cap — fetches everything
     in the time window.
 
-    Used by all commands: test_module, get_incidents_command, and fetch_incidents_command.
+    Used by all commands: test_module, get_incidents_command, fetch_incidents_command,
+    and izoolabs_incident_fetch_command.
 
     Args:
         client: The iZOOlogic client.
         from_date: Start date as Unix timestamp string (must be midnight UTC).
         to_date: End date as Unix timestamp string.
         incident_type: Optional incident type code.
+        threat_type: Optional threat level code to filter by.
+        brand_code: Optional brand identifier to filter by.
+        executive_name: Optional executive name to filter by.
+        client_ref_id: Optional client reference ID for specific incident lookup.
+        client_code: Optional client identifier to filter by.
 
     Returns:
         List of ALL raw incident dictionaries from all pages.
@@ -659,6 +685,11 @@ def _fetch_all_pages(
             to_date=to_date,
             incident_type=incident_type,
             page_token=page_token,
+            threat_type=threat_type,
+            brand_code=brand_code,
+            executive_name=executive_name,
+            client_ref_id=client_ref_id,
+            client_code=client_code,
         )
 
         page_incidents = result_obj.get("incidents") or []
@@ -1074,6 +1105,103 @@ def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
+def incident_fetch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Fetch incidents from iZOOlogic with advanced filtering.
+
+    Retrieves incidents based on specified filters including date range, brand,
+    incident type, threat type, and other criteria. Supports pagination for
+    large result sets.
+
+    Args:
+        client: The iZOOlogic client.
+        args: Command arguments from demisto.args().
+
+    Returns:
+        CommandResults with the retrieved incidents.
+    """
+    demisto.debug("[Command] izoolabs-incident-fetch triggered")
+
+    # Date range — default: 1 day ago to now
+    from_date_input = args.get("from_date", Config.DEFAULT_FETCH_COMMAND_FROM_TIME)
+    to_date_input = args.get("to_date")
+
+    from_ts = date_to_unix_timestamp(from_date_input)
+    from_date = snap_to_day_boundary_utc(from_ts, "start")
+    to_date = date_to_unix_timestamp(to_date_input) if to_date_input else get_current_unix_timestamp()
+
+    validate_date_range(from_date, to_date)
+
+    # When from_date and to_date are both at midnight of the same day, snap to_date to end of day
+    if int(to_date) == int(from_date):
+        to_date = snap_to_day_boundary_utc(to_date, "end")
+
+    # Optional: incident_type (name only, mapped to integer code)
+    incident_type: int | None = None
+    incident_type_raw = args.get("incident_type")
+    if incident_type_raw:
+        incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.INCIDENT_TYPE, "incident_type")
+
+    # Optional: threat_type (name only, mapped to integer code)
+    threat_type: int | None = None
+    threat_type_raw = args.get("threat_type")
+    if threat_type_raw:
+        threat_type = _resolve_code_by_name(str(threat_type_raw), ApiCodes.THREAT_TYPE, "threat_type")
+
+    # Optional string filters
+    brand_code = args.get("brand_code")
+    executive_name = args.get("executive_name")
+    client_ref_id = args.get("client_ref_id")
+    client_code = args.get("client_code")
+
+    demisto.debug(
+        f"[Command Params] From: {from_date}, To: {to_date}, "
+        f"IncidentType: {incident_type}, ThreatType: {threat_type}, "
+        f"BrandCode: {brand_code}, ExecutiveName: {executive_name}, "
+        f"ClientRefId: {client_ref_id}, ClientCode: {client_code}"
+    )
+
+    all_incidents = _fetch_all_pages(
+        client,
+        from_date=from_date,
+        to_date=to_date,
+        incident_type=incident_type,
+        threat_type=threat_type,
+        brand_code=brand_code,
+        executive_name=executive_name,
+        client_ref_id=client_ref_id,
+        client_code=client_code,
+    )
+
+    demisto.debug(f"[Command Result] Total incidents retrieved: {len(all_incidents)}")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Incidents",
+        all_incidents,
+        headers=[
+            "incidentID",
+            "incidentType",
+            "subIncidentType",
+            "brand",
+            "url",
+            "status",
+            "statusCode",
+            "threatType",
+            "detectionDate",
+            "createdOn",
+            "closedOn",
+            "detectedBy",
+        ],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="iZOOlabs.Incident",
+        outputs_key_field="incidentID",
+        outputs=all_incidents,
+    )
+
+
 # endregion
 
 # region Command Map and Main
@@ -1086,6 +1214,7 @@ COMMAND_MAP: dict[str, Any] = {
     "izoologic-get-incidents": get_incidents_command,
     "fetch-incidents": fetch_incidents_command,
     "izoolabs-incident-create": create_incident_command,
+    "izoolabs-incident-fetch": incident_fetch_command,
 }
 
 
@@ -1120,7 +1249,7 @@ def main() -> None:
         elif command == "izoologic-get-incidents":
             result = command_func(client, args, config["incident_type_codes"])
             return_results(result)
-        elif command == "izoolabs-incident-create":
+        elif command in ("izoolabs-incident-create", "izoolabs-incident-fetch"):
             result = command_func(client, args)
             return_results(result)
 
