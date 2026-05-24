@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "yc/ship_code_check_content_private"
+  CURRENT_BRANCH_NAME: "yc/ship_code_check_temp_dir"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "yc/ship_code_check_content_private"
+    ref: "yc/ship_code_check_temp_dir"
     project: "${CI_PROJECT_NAMESPACE}/infra"
