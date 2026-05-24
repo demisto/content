@@ -7,12 +7,13 @@ commonfields:
   id: AWS
   version: -1
 configuration:
-- display: Main Role
-  name: role_name
-  type: 0
+- display: Access Key
+  name: credentials
+  displaypassword: Secret Key
+  additionalinfo: "AWS Access Key ID (username) and Secret Access Key (password) paired together. Used for authentication when configuring the integration on XSOAR or XSIAM marketplaces. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
+  type: 9
   section: Connect
   required: false
-  additionalinfo: Main role for authentication, for example 'PowerUserAccess'.
 - display: Role ARN
   name: role_arn
   type: 0
@@ -39,27 +40,6 @@ configuration:
   advanced: true
   required: false
   additionalinfo: Max role session duration
-- display: Access Key
-  name: credentials
-  displaypassword: Secret Key
-  additionalinfo: "AWS Access Key ID (username) and Secret Access Key (password) paired together. Used for authentication when configuring the integration on XSOAR or XSIAM marketplaces. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
-  type: 9
-  section: Connect
-  required: false
-- display: Default AWS Access Key ID
-  name: access_key_id
-  additionalinfo: "AWS access key ID used for authentication when role-based authentication is not available. Must be used together with 'Default AWS Secret Access Key'. If provided, these credentials provide backup authentication when role assumption fails."
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
-- display: Default AWS Secret Access Key
-  name: secret_access_key
-  additionalinfo: "AWS Secret Access Key used for authentication when role-based authentication is not available. Must be used together with 'Default AWS Access Key ID'. If provided, these credentials will be used as a fallback when role assumption fails."
-  type: 9
-  section: Connect
-  advanced: true
-  required: false
 - display: Default AWS region.
   name: region
   type: 0
@@ -5415,6 +5395,7 @@ script:
     - name: account_id
       description: The AWS account ID.
       required: true
+      required:xsoar: false
     - name: region
       description: The AWS region to query instances from. Must be a valid AWS region identifier.
       required: true
