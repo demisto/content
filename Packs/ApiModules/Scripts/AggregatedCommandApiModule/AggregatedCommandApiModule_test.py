@@ -2637,6 +2637,8 @@ def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
         ([1], 10, [[1]]),
         # Single item, single chunk
         ([1], 1, [[1]]),
+        # No Chunks
+        ([1, 2, 3, 4], 0, [1, 2, 3, 4]),
     ],
 )
 def test_split_into_chunks(items: list, num_chunks: int, expected: list[list]):

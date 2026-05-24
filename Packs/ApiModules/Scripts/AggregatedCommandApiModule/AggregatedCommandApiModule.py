@@ -48,10 +48,11 @@ def split_into_chunks(items: list, num_chunks: int) -> list[list]:
 
         >>> split_into_chunks([], 3)
         []
-
     """
+    if num_chunks == 0:
+        return items
     k, m = divmod(len(items), num_chunks)
-    chunks = [items[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(num_chunks)]
+    chunks = [items[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(num_chunks)]
     return [c for c in chunks if c]
 
 
