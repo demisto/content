@@ -571,6 +571,7 @@ script:
   isFetchSamples: true
 supportsquickactions: true
 fromversion: 5.5.0
+toversion: 8.13.0
 tests:
 - SlackV3 TestPB
 - Test_SlackV3_NonCaching

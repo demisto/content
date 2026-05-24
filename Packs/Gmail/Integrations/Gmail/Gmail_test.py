@@ -5,6 +5,7 @@ from datetime import UTC
 import demistomock as demisto
 import pytest
 from freezegun import freeze_time
+from Gmail import validate_gmail_message_id
 from test_data import input_data
 
 MOCK_MAIL_NO_LABELS = {
@@ -1188,3 +1189,50 @@ def test_search_command_without_next_page_token(mocker):
     assert result is not None
     assert "EntryContext" in result
     assert "GmailEmails" not in result["EntryContext"]
+
+
+class TestValidateGmailMessageId:
+    """Tests for the validate_gmail_message_id function."""
+
+    def test_valid_internal_id(self):
+        """Test that a valid Gmail internal ID passes validation."""
+        assert validate_gmail_message_id("18a1b2c3d4e5f6g7") == "18a1b2c3d4e5f6g7"
+
+    def test_valid_internal_id_with_whitespace(self):
+        """Test that leading/trailing whitespace is stripped."""
+        assert validate_gmail_message_id("  18a1b2c3d4e5f6g7  ") == "18a1b2c3d4e5f6g7"
+
+    def test_empty_message_id(self):
+        """Test that an empty message ID raises ValueError."""
+        with pytest.raises(ValueError, match="'message-id' argument is required"):
+            validate_gmail_message_id("")
+
+    def test_none_message_id(self):
+        """Test that a None message ID raises ValueError."""
+        with pytest.raises(ValueError, match="'message-id' argument is required"):
+            validate_gmail_message_id(None)
+
+    def test_whitespace_only_message_id(self):
+        """Test that a whitespace-only message ID raises ValueError."""
+        with pytest.raises(ValueError, match="'message-id' argument is required"):
+            validate_gmail_message_id("   ")
+
+    def test_rfc822_message_id_with_angle_brackets(self):
+        """Test that an RFC 822 Message-ID with angle brackets is rejected."""
+        with pytest.raises(ValueError, match="Invalid Gmail message ID"):
+            validate_gmail_message_id("<CABx+XJ@mail.gmail.com>")
+
+    def test_rfc822_message_id_with_at_sign(self):
+        """Test that a message ID containing '@' is rejected."""
+        with pytest.raises(ValueError, match="Invalid Gmail message ID"):
+            validate_gmail_message_id("CABx+XJ@mail.gmail.com")
+
+    def test_message_id_with_spaces(self):
+        """Test that a message ID containing spaces (potential injection) is rejected."""
+        with pytest.raises(ValueError, match="Invalid Gmail message ID"):
+            validate_gmail_message_id("fake_id OR in:anywhere")
+
+    def test_message_id_with_angle_brackets_only(self):
+        """Test that angle brackets alone are rejected."""
+        with pytest.raises(ValueError, match="Invalid Gmail message ID"):
+            validate_gmail_message_id("<some_id>")

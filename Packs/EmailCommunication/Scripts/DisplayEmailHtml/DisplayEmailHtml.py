@@ -1,7 +1,77 @@
+import html as html_module
 import re
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+ALLOWED_EMAIL_TAGS = {
+    "p",
+    "br",
+    "div",
+    "span",
+    "b",
+    "i",
+    "u",
+    "a",
+    "img",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "pre",
+    "code",
+    "blockquote",
+    "strong",
+    "em",
+    "hr",
+    "font",
+    "center",
+    "small",
+    "big",
+    "sub",
+    "sup",
+    "dl",
+    "dt",
+    "dd",
+    "caption",
+}
+
+ALLOWED_EMAIL_ATTRIBUTES: dict[str, set[str]] = {
+    "*": {"style", "class", "id", "dir", "align", "width", "height", "bgcolor", "valign"},
+    "a": {"href", "target"},
+    "img": {"src", "alt", "title"},
+    "td": {"colspan", "rowspan"},
+    "th": {"colspan", "rowspan", "scope"},
+    "font": {"color", "face", "size"},
+    "table": {"border", "cellpadding", "cellspacing"},
+}
+
+
+def sanitize_html_body(html_body: str) -> str:
+    """Sanitize email body HTML using an allowlist of tags and attributes.
+
+    When nh3 is available, strips disallowed tags and attributes while preserving safe ones.
+    When nh3 is not available, returns the HTML as-is since full escaping
+    would break legitimate formatting in an HTML rendering context.
+    """
+    try:
+        import nh3
+
+        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS, attributes=ALLOWED_EMAIL_ATTRIBUTES)  # pylint: disable=no-member
+    except ImportError:
+        demisto.debug("nh3 is not available; HTML sanitization skipped")
+        return html_body
 
 
 def create_email_html(email_html="", entry_id_list=None):
@@ -13,9 +83,10 @@ def create_email_html(email_html="", entry_id_list=None):
     for entry_id in entry_id_list:
         # Handling inline attachments from Gmail mailboxes
         saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
-        if re.search(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', email_html):
+        escaped_name = re.escape(entry_id[0])
+        if re.search(f'src="[^>]+"(?=[^>]+alt="{escaped_name}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
+                f'src="[^>]+"(?=[^>]+alt="{escaped_name}")',
                 f"src={account_name}/{saas_xsoar_xsiam_prefix}entry/download/{entry_id[1]}",
                 email_html,
             )
@@ -65,16 +136,16 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, at
         str. Email reply.
     """
     single_reply = f"""
-    From: {email_from}
-    To: {email_to}
-    CC: {email_cc}
-    Subject: {email_subject}
+    From: {html_module.escape(email_from or '')}
+    To: {html_module.escape(email_to or '')}
+    CC: {html_module.escape(email_cc or '')}
+    Subject: {html_module.escape(email_subject or '')}
     """
     if attachments:
-        attachment_names = [attachment.get("name", "") for attachment in attachments]
+        attachment_names = [html_module.escape(attachment.get("name") or "") for attachment in attachments]
         single_reply += f"Attachments: {attachment_names}\n"
 
-    single_reply += f"\n{html_body}\n"
+    single_reply += f"\n{sanitize_html_body(html_body or '')}\n"
 
     return single_reply
 
@@ -110,7 +181,13 @@ def main(args):
             return_results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": email_reply})
 
     else:
-        return_results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": email_html_image})
+        return_results(
+            {
+                "ContentsFormat": formats["html"],
+                "Type": entryTypes["note"],
+                "Contents": sanitize_html_body(email_html_image or ""),
+            }
+        )
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):

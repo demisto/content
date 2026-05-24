@@ -6,3 +6,5 @@ filebeat.modules:
   error:
     enabled: true
     var.paths: ["C:/Windows/System32/LogFiles/HTTPERR/*.log"]
+supportedModules:
+- xsiam
