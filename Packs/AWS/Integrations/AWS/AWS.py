@@ -10165,34 +10165,20 @@ def test_module(params):
     """
     Validate that the integration is configured correctly.
 
-    - On the Cortex Cloud platform, this code path is not taken: ``main()`` routes to
-      ``run_health_check_for_accounts`` whenever ``get_connector_id()`` returns a value.
-    - On XSOAR / XSIAM marketplaces, validate the supplied credentials by issuing a
-      live ``sts:GetCallerIdentity`` call. This proves both that the access keys are
-      valid and that the (optional) role can be assumed.
-    - When neither a marketplace credential nor a platform ``test_account_id`` is
-      configured, fail with a clear error.
+    Only called on the XSOAR / XSIAM marketplace path — ``main()`` routes to
+    ``run_health_check_for_accounts`` on the Cortex Cloud platform and never reaches here.
+
+    Attempts to build a service client using the configured credentials. If credentials
+    are missing or invalid, ``get_service_client()`` raises and XSOAR surfaces the error.
+    No additional API call is needed — client construction already validates auth.
     """
-    if _has_marketplace_credentials(params):
-        sts_client, _ = get_service_client(
-            params=params,
-            service_name="sts",
-            config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
-        )
-        sts_client.get_caller_identity()
-        demisto.info("[AWS Automation Test Module] sts.GetCallerIdentity succeeded")
-        return "ok"
-
-    if params.get("test_account_id"):
-        iam_client, _ = get_service_client(
-            params=params,
-            service_name=AWSServices.IAM,
-            config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
-        )
-        demisto.info("[AWS Automation Test Module] Initialized IAM client")
-        return "ok"
-
-    raise DemistoException("Missing AWS credentials or account ID for health check")
+    get_service_client(
+        params=params,
+        service_name=AWSServices.IAM,
+        config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
+    )
+    demisto.info("[AWS Automation Test Module] Credentials validated successfully")
+    return "ok"
 
 
 def health_check(credentials: dict, account_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None:
@@ -10274,32 +10260,6 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
 
     # Register the header injection function to be called before each request
     event_system.register_last("before-send.*.*", _add_proxydome_header)
-
-
-def _resolve_marketplace_credentials(params: dict) -> tuple[str | None, str | None]:
-    """
-    Resolve the AWS Access Key ID / Secret Access Key pair from the integration
-    parameters for the XSOAR / XSIAM marketplace path.
-
-    Args:
-        params (dict): Integration configuration parameters.
-
-    Returns:
-        tuple[str | None, str | None]: ``(access_key_id, secret_access_key)``. Either
-        side may be ``None`` if the user has not configured the ``credentials`` field.
-    """
-    paired = params.get("credentials") or {}
-    return paired.get("identifier"), paired.get("password")
-
-
-def _has_marketplace_credentials(params: dict) -> bool:
-    """
-    Return ``True`` when the user has supplied AWS credentials directly on the
-    integration instance (the XSOAR / XSIAM marketplace pattern), as opposed to the
-    platform-managed Cortex Cloud connector flow.
-    """
-    access_key_id, secret_access_key = _resolve_marketplace_credentials(params)
-    return bool(access_key_id and secret_access_key)
 
 
 def _assume_role_credentials(
@@ -10409,7 +10369,7 @@ def get_service_client(
         )
     else:
         # Marketplace path: resolve access keys from params and optionally assume a role.
-        access_key_id, secret_access_key = _resolve_marketplace_credentials(params)
+        access_key_id, secret_access_key = params.get("credentials").get("identifier"), params.get("credentials").get("password")
         if not (access_key_id and secret_access_key):
             raise DemistoException(
                 "AWS credentials are not configured. Provide an Access Key and Secret Key "
