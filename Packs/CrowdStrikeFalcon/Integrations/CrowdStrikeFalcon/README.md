@@ -11,17 +11,18 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
 | Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
 | Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Mobile Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOM filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOA filter query | In the query parameter format: 'cloud_provider=aws&amp;amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html\#keyword-arguments-13 | False |
-| Detections from On-Demand Scans filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| OFP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Third Party Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM automated leads fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM cases fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM incidents fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| IDP Detections filter query | Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Mobile Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOM filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOA filter query | Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Detections from On-Demand Scans filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| OFP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Third Party Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM automated leads fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM cases fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM incidents fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Recon filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | Fetch incidents |  | False |
 | Fetch events |  | False |
 | Incident type |  | False |
@@ -64,6 +65,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Assessment - Read
 - Falcon Container Image - Read
 - Recon - Read and Write
+- Workflow - Read and Write
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -130,25 +132,7 @@ For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
 ### Indicator of Attack (IOA) Fetch Query
 
-The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
-
-Using multiple values for the same parameter is not supported.
-
-Available parameters:
-
-- `cloud_provider` (required by every query)
-- `account_id`
-- `aws_account_id`
-- `azure_subscription_id`
-- `azure_tenant_id`
-- `severity`
-- `region`
-- `service`
-- `state`
-
-For example: `cloud_provider=aws&region=eu-west-2`
-
-For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).
 
 ## Fetch Assets
 
@@ -6782,3 +6766,141 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
   }
 }
 ```
+
+## Workflow Commands
+
+The following commands are available from the CrowdStrike Falcon integration. Note that for these commands, the required API client scope is: `Workflows - Read and Write`.
+
+### cs-falcon-list-workflow-definitions
+
+***
+Lists workflow definitions from CrowdStrike Falcon.
+
+#### Base Command
+
+`cs-falcon-list-workflow-definitions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). For a list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| activity_id | The activity ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| name | The workflow name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| description | The workflow description to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| offset | The offset to start retrieving records from. Default is 0. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| sort | A comma-separated list of properties to sort by in the format property.direction (for example name.desc, time.asc, created_at.desc). | Optional |
+
+#### Context Output
+
+**`CrowdStrike.WorkflowDefinition.*`** - The raw API response containing workflow details.
+
+#### Command example
+
+`!cs-falcon-list-workflow-definitions limit=5`
+
+### cs-falcon-workflow-execute
+
+***
+Executes an on-demand workflow. Use `cs-falcon-list-workflow-definitions` to find workflows to run. Note: This command executes on-demand workflows only.
+
+#### Base Command
+
+`cs-falcon-workflow-execute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| definition_id | A comma-separated list of workflow definition IDs to execute. Either definition_id or name must be provided. | Optional |
+| name | The workflow name to execute. Either definition_id or name must be provided. | Optional |
+| execution_cid | A comma-separated list of CID(s) to execute the workflow on. | Optional |
+| key | The key used for deduplication of workflow executions. If not set, a new UUID is used. | Optional |
+| source_event_url | The URL of the source that triggered the workflow execution. | Optional |
+| body | The JSON body to pass to the workflow execution. Can be an empty object {}. Default is {}. | Optional |
+
+#### Context Output
+
+**`CrowdStrike.Workflow.*`** - The raw API response containing workflow execution details.
+
+#### Command example
+
+`!cs-falcon-workflow-execute definition_id="abc123" body="{}"`
+
+### cs-falcon-list-workflow-executions
+
+***
+Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execute to find executions IDs.
+
+#### Base Command
+
+`cs-falcon-list-workflow-executions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). For a list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| definition_name | The workflow definition name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| execution_id | The execution ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| offset | The offset to start retrieving records from. Default is 0. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| sort | A comma-separated list of properties to sort by in the format property.direction (for example name.desc, time.asc, created_at.desc). | Optional |
+
+#### Context Output
+
+**`CrowdStrike.Workflows.Execution.*`** - The raw API response containing workflow execution details.
+
+#### Command example
+
+`!cs-falcon-list-workflow-executions limit=10`
+
+### cs-falcon-list-workflow-execution-results
+
+***
+Gets detailed results for specific workflow executions. Use cs-falcon-list-workflow-executions to find execution IDs.
+
+#### Base Command
+
+`cs-falcon-list-workflow-execution-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of workflow execution IDs to retrieve results for. | Required |
+
+#### Context Output
+
+**`CrowdStrike.Workflows.ExecutionResult.*`** - The raw API response containing workflow execution results.
+
+#### Command example
+
+`!cs-falcon-list-workflow-execution-results ids="exec_id_1,exec_id_2"`
+
+### cs-falcon-workflow-execution-action
+
+***
+Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
+
+#### Base Command
+
+`cs-falcon-workflow-execution-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of workflow execution IDs to perform the action on. Get the workflow execution ID using cs-falcon-list-workflow-executions. | Required |
+| action_name | The action to perform on the workflow executions. Possible values are: cancel, resume. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-workflow-execution-action ids="exec_id_1" action_name="cancel"`

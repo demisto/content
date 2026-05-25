@@ -1,7 +1,7 @@
 [MODEL: dataset="abnormal_security_email_protection_raw"]
 alter
     xdm.event.id = threatId,
-    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, autoRemediated = "TRUE", XDM_CONST.OUTCOME_SUCCESS, postRemediated = "TRUE", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, to_string(autoRemediated) = "true", XDM_CONST.OUTCOME_SUCCESS, to_string(postRemediated) = "true", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.description = to_json_string(object_create("abxPortalUrl", abxPortalUrl, "fromName", fromName, "attackedParty", attackedParty, "replyToEmails", replyToEmails, "attackVector", attackVector, "autoRemediated", autoRemediated, "postRemediated", postRemediated, "isRead", isRead)),
     xdm.alert.category = attackType,
     xdm.alert.name = attackStrategy,
