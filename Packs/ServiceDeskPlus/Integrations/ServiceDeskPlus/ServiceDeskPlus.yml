@@ -562,7 +562,7 @@ script:
     description: Closes the specified request.
     name: service-desk-plus-request-close
   - arguments:
-    - description: The ID of the request to retrieve it's notes.
+    - description: The ID of the request to retrieve its notes.
       name: request_id
       required: true
     - description: The ID of the note to retrieve it's data.
@@ -572,64 +572,64 @@ script:
     description: Get a request specific note, or list all of its notes.
     outputs:
     - contextPath: ServiceDeskPlus.Request.Note.mark_first_response
-      description: 'mark first response or not.'
+      description: 'Mark first response or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_time.display_value
-      description: 'created time display value.'
+      description: 'Created time display value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_time.value
-      description: 'created time value.'
+      description: 'Created time value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.add_to_linked_requests
-      description: 'add to linked requests or not.'
+      description: 'Add to linked requests or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.request.display_id
-      description: 'request display id.'
+      description: 'Request display id.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.subject
-      description: 'request subject.'
+      description: 'Request subject.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.id
-      description: 'request id.'
-      type: Date
+      description: 'Request id.'
+      type: String
     - contextPath: ServiceDeskPlus.Request.Note.notify_technician
-      description: 'notify technician or not.'
+      description: 'Notify technician or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.show_to_requester
-      description: 'show to requester or not.'
+      description: 'Show to requester or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.description
-      description: 'note description.'
+      description: 'Note description.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
-      description: 'note id.'
+      description: 'Note id.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
-      description: 'email id of the creator.'
+      description: 'Email id of the creator.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_technician
-      description: 'whether the creator is technician or not.'
+      description: 'Whether the creator is technician or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_by.sms_mail
-      description: 'creator sms mail.'
+      description: 'Creator sms mail.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.phone
-      description: 'creator phone.'
+      description: 'Creator phone.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.name
-      description: 'creator name.'
+      description: 'Creator name.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.mobile
-      description: 'creator mobile.'
+      description: 'Creator mobile.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.id
-      description: 'creator id.'
+      description: 'Creator id.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.photo_url
-      description: 'creator photo url.'
+      description: 'Creator photo url.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
-      description: 'whether creator is vip user or not.'
+      description: 'Whether creator is vip user or not.'
       type: Boolean
   - arguments:
     - description: The ID of the request to retrieve it's notes.
@@ -659,7 +659,7 @@ script:
       predefined:
         - "true"
         - "false"
-    - description: whether to show to requester
+    - description: whether to show to requester.
       name: show_to_requester
       auto: PREDEFINED
       defaultValue: "false"
@@ -769,7 +769,7 @@ script:
       predefined:
         - "true"
         - "false"
-    - description: whether to show to requester
+    - description: whether to show to requester.
       name: show_to_requester
       auto: PREDEFINED
       defaultValue: "false"

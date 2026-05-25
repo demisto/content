@@ -360,12 +360,12 @@ def note_human_readable(res: dict | list):
         prefix = f"Note of request {res.get('request', {}).get('id')}:"
         res = [res]
     else:
-        prefix = f"Notes of request {res[0].get('request').get('id')}:"
+        prefix = f"Notes of request {res[0].get('request', {}).get('id')}:"
     hr = [
         {
             "Note ID": note.get("id"),
             "Description": note.get("description"),
-            "Created time": note.get("created_time").get("display_value"),
+            "Created time": note.get("created_time", {}).get("display_value"),
         }
         for note in res
     ]
