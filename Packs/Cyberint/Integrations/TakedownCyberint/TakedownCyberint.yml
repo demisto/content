@@ -5,7 +5,7 @@ commonfields:
   version: -1
 fromversion: 6.9.0
 name: Cyberint Takedowns
-display: Cyberint Takedowns
+display: Check Point EM Takedowns
 category: Data Enrichment & Threat Intelligence
 provider: Check Point Software Technologies
 description: Use the Cyberint Takedowns integration to manage takedowns requests.
@@ -270,7 +270,7 @@ script:
     - contextPath: Cyberint.takedowns_submit.id
       description: ID.
       type: String
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: false
   subtype: python3
 tests:
