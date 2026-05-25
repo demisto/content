@@ -139,7 +139,7 @@ Updates a specific account storage.
 ### azure-storage-blob-service-properties-set
 
 ***
-Sets properties for the blob service in a specific account storage.
+Sets properties for the blob service in a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-set.
 
 #### Base Command
 
@@ -1125,7 +1125,7 @@ Gets public IP addresses in a resource group. The command is deprecated, please 
 ### azure-storage-blob-service-properties-get
 
 ***
-Run this command to get the blob service properties of a specific account storage.
+Run this command to get the blob service properties of a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-get.
 
 #### Base Command
 
