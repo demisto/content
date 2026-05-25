@@ -287,6 +287,7 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f"Could not parse user query. \nError massage: {err}")
+    # NOTE: include event-level inherited tags which MISP strips by default; setdefault preserves any explicit value from the user's `query`.
     params.setdefault("includeEventTags", True)
     return params
 
