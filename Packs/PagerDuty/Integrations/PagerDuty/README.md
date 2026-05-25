@@ -17,6 +17,8 @@ This integration was integrated and tested with PagerDuty API v2.
     | Incident type | False |
     | Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run) | False |
     | Default requestor ID for adding people to incidents | False |
+    | Maximum number of incidents per fetch | False |
+    | Incident statuses to fetch | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

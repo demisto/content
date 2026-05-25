@@ -19,6 +19,11 @@ CREATE_EVENT_URL = "https://events.pagerduty.com/v2/enqueue"
 
 INCIDENT_API_LIMIT = 100
 
+DEFAULT_MAX_FETCH = 50
+MAX_FETCH_CAP = 200
+DEFAULT_FETCH_STATUSES = "triggered,acknowledged"
+DEDUP_RETENTION = 200
+
 DEFAULT_HEADERS = {
     "Authorization": f"Token token={API_KEY}",
     "Accept": "application/vnd.pagerduty+json;version=2",
@@ -544,35 +549,104 @@ def extract_responder_request(responder_request_response) -> CommandResults:
 """COMMANDS"""
 
 
-def fetch_incidents():
-    param_dict = {}
+def fetch_incidents(params: dict) -> None:
+    """
+    Fetch incidents from PagerDuty using pagination, configurable statuses, and a
+    `created_at`-based watermark with a dedup ID buffer.
+
+    Args:
+        params (dict): The integration parameters (typically ``demisto.params()``).
+            Reads ``max_fetch`` (clamped to ``MAX_FETCH_CAP``) and
+            ``incident_statuses`` (comma-separated string).
+
+    """
     now_time = datetime.utcnow()
-    now = datetime.isoformat(now_time)
-    lastRunObject = demisto.getLastRun()
-    if lastRunObject:
-        param_dict["since"] = lastRunObject["time"]
-    else:
-        param_dict["since"] = datetime.isoformat(now_time - timedelta(minutes=int(FETCH_INTERVAL)))
+    now_iso = datetime.isoformat(now_time)
 
-    param_dict["until"] = now
+    last_run: dict = demisto.getLastRun() or {}
+    fetch_interval_minutes = arg_to_number(params.get("FetchInterval")) or 1
+    since_iso: str = last_run.get("time") or datetime.isoformat(now_time - timedelta(minutes=fetch_interval_minutes))
+    seen_ids: set = set(last_run.get("ids", []))
 
-    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status()
-    res = http_request("GET", url, param_dict)
-    _, parsed_incidents, raw_responses = parse_incident_data(res.get("incidents", []))
+    # Resolve user-configurable params with safe defaults; clamp max_fetch to MAX_FETCH_CAP.
+    raw_max_fetch_param = params.get("max_fetch") or DEFAULT_MAX_FETCH
+    try:
+        raw_max_fetch = arg_to_number(raw_max_fetch_param) or DEFAULT_MAX_FETCH
+    except ValueError:
+        demisto.debug(f"PagerDuty fetch: invalid max_fetch={raw_max_fetch_param!r}, falling back to {DEFAULT_MAX_FETCH}")
+        raw_max_fetch = DEFAULT_MAX_FETCH
+    max_fetch: int = max(1, min(raw_max_fetch, MAX_FETCH_CAP))
 
-    incidents = []
-    for incident, raw_response in zip(parsed_incidents, raw_responses):
-        incidents.append(
-            {
-                "name": incident["ID"] + " - " + incident["Title"],
-                "occurred": incident["created_at"],
-                "severity": translate_severity(incident["urgency"]),
-                "rawJSON": json.dumps(raw_response),
-            }
+    raw_statuses = params.get("incident_statuses") or DEFAULT_FETCH_STATUSES
+    if isinstance(raw_statuses, list):
+        raw_statuses = ",".join(str(s) for s in raw_statuses if s)
+    statuses_csv: str = raw_statuses or DEFAULT_FETCH_STATUSES
+
+    param_dict: dict = {
+        "since": since_iso,
+        "until": now_iso,
+        "sortBy": "created_at:asc",  # ascending so watermark is monotonic
+    }
+    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(statuses_csv)
+
+    demisto.debug(
+        f"PagerDuty fetch: since={since_iso} until={now_iso} statuses={statuses_csv} "
+        f"max_fetch={max_fetch} seen_ids={len(seen_ids)}"
+    )
+
+    raw_incidents: list[dict] = pagination_incidents(
+        param_dict,
+        pagination_dict={"limit": max_fetch},
+        url=url,
+    )
+
+    demisto.debug(f"PagerDuty fetch: API returned {len(raw_incidents)} raw incidents")
+
+    # Strip empty-dict fallback returned by the paginator when nothing matched.
+    raw_incidents = [i for i in raw_incidents if i and i.get("id")]
+
+    # Dedup against ids already ingested in the previous run (since is inclusive).
+    new_raw = [i for i in raw_incidents if i.get("id") not in seen_ids]
+
+    demisto.debug(f"PagerDuty fetch: {len(new_raw)} new after dedup (of {len(raw_incidents)} fetched)")
+
+    # Hybrid watermark strategy:
+    #   - Active period (>=1 NEW incident emitted): trail data — watermark = max(created_at) of
+    #     the newly emitted incidents, so bursts larger than max_fetch are preserved across runs.
+    #   - Quiet / all-dedup'd period (0 new emitted): advance watermark to the wall-clock `now`
+    #     captured at the start of this fetch — same value sent as `until` — so the next
+    #     since→until window stays bounded and `next since == prior until` (no gap, no overlap).
+    if new_raw:
+        _, parsed_incidents, raw_responses = parse_incident_data(new_raw)
+
+        incidents: list[dict] = []
+        for parsed, raw in zip(parsed_incidents, raw_responses):
+            incidents.append(
+                {
+                    "name": f'{parsed["ID"]} - {parsed["Title"]}',
+                    "occurred": parsed["created_at"],
+                    "severity": translate_severity(parsed["urgency"]),
+                    "rawJSON": json.dumps(raw),
+                }
+            )
+
+        new_created_ats: list[str] = [str(i["created_at"]) for i in new_raw if i.get("created_at")]
+        next_watermark: str = max(new_created_ats) if new_created_ats else now_iso
+        merged_ids: list = list(seen_ids | {i["id"] for i in new_raw})[-DEDUP_RETENTION:]
+
+        demisto.debug(
+            f"PagerDuty fetch: emitting {len(incidents)} incidents, "
+            f"advancing watermark {since_iso} -> {next_watermark}, dedup buffer {len(merged_ids)}"
         )
 
-    demisto.incidents(incidents)
-    demisto.setLastRun({"time": now})
+        demisto.incidents(incidents)
+        demisto.setLastRun({"time": next_watermark, "ids": merged_ids})
+        return
+
+    # Quiet / all-dedup'd — advance to `now_iso` to keep the next since→until window bounded.
+    demisto.debug(f"PagerDuty fetch: 0 new incidents, advancing watermark to now={now_iso}")
+    demisto.incidents([])
+    demisto.setLastRun({"time": now_iso, "ids": list(seen_ids)})
 
 
 def configure_status(status="triggered,acknowledged") -> str:
@@ -911,7 +985,7 @@ def main():
         if command == "test-module":
             test_module()
         elif command == "fetch-incidents":
-            fetch_incidents()
+            fetch_incidents(demisto.params())
         elif command == "PagerDuty-incidents":
             demisto.results(get_incidents_command(args))
         elif command == "PagerDuty-submit-event":

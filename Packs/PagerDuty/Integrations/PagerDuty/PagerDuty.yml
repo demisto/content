@@ -57,6 +57,24 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: '50'
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Maximum number of incidents to retrieve per fetch cycle. Hard upper limit is 200. Increase if your environment ingests more than 50 PagerDuty incidents per fetch interval.
+- display: Incident statuses to fetch
+  name: incident_statuses
+  defaultvalue: triggered,acknowledged
+  type: 16
+  section: Collect
+  required: false
+  additionalinfo: Statuses of PagerDuty incidents to ingest. Include "resolved" to capture short-lived incidents that move to resolved between fetch cycles.
+  options:
+  - triggered
+  - acknowledged
+  - resolved
 description: Alert and notify users using PagerDuty.
 display: PagerDuty v2
 name: PagerDuty v2
