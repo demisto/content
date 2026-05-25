@@ -10164,14 +10164,11 @@ def print_debug_logs(client: BotoClient, message: str):
 def test_module(params):
     """
     Validate that the integration is configured correctly.
-
-    Only called on the XSOAR / XSIAM marketplace path — ``main()`` routes to
-    ``run_health_check_for_accounts`` on the Cortex Cloud platform and never reaches here.
-
     Attempts to build a service client using the configured credentials. If credentials
     are missing or invalid, ``get_service_client()`` raises and XSOAR surfaces the error.
     No additional API call is needed — client construction already validates auth.
     """
+
     get_service_client(
         params=params,
         service_name=AWSServices.IAM,
