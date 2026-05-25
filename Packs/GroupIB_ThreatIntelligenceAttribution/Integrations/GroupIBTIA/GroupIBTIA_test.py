@@ -1382,3 +1382,191 @@ def test_update_fetch_seen_ids_cache_disables_when_retention_is_zero(mocker):
         dedup_lookback_days=0,
     )
     assert state["found_incident_ids"] == {}
+
+
+# ---------------------------------------------------------------------------
+# Reputation pipeline — defensive behaviour on null / empty API responses
+# ---------------------------------------------------------------------------
+#
+# Group-IB API legitimately returns HTTP 200 with a `null` (or `[]`) body
+# when no data is available for an indicator. The reputation pipeline must
+# never raise; it must return a clean DBotScore.NONE with a "no data"
+# readable_output. The tests below pin that contract.
+
+
+def _make_reputation_processor(client):
+    """Construct a ReputationCommandProcessor with a stub args context."""
+    return GroupIBTIA.ReputationCommandProcessor(
+        client=client,
+        args={"value": "example.com"},
+    )
+
+
+@pytest.mark.parametrize(
+    "search_return",
+    [None, "", [], {}, {"oops": 1}, [None, "trash", {"apiPath": "x", "count": 1}]],
+)
+def test_get_search_data_tolerates_null_or_garbage(single_session_fixture, mocker, search_return):
+    """Every null / empty / non-list / mixed response collapses to a clean list."""
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "global_search", return_value=search_return)
+    processor = _make_reputation_processor(client)
+
+    result = processor._get_search_data("example.com")
+    # The only entry surviving from the mixed payload is {"apiPath":"x","count":1}.
+    expected = [("x", 1)] if search_return == [None, "trash", {"apiPath": "x", "count": 1}] else []
+    assert result == expected
+
+
+def test_get_search_data_swallows_global_search_exception(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "global_search", side_effect=RuntimeError("boom"))
+    processor = _make_reputation_processor(client)
+    assert processor._get_search_data("example.com") == []
+
+
+def test_get_indicator_data_handles_empty_search_data(single_session_fixture, mocker):
+    """An empty search_data must not crash; returns just {} (no per-collection work)."""
+    client = single_session_fixture
+    processor = _make_reputation_processor(client)
+    out = processor._get_indicator_data("domain", "example.com", [])
+    assert out == {}
+
+
+def test_get_indicator_data_skips_collection_on_exception(single_session_fixture, mocker):
+    """One failing collection must not abort the rest of the lookup."""
+    client = single_session_fixture
+    mocker.patch.object(
+        GroupIBTIA.IndicatorsHelper,
+        "collect_portions_for_indicator",
+        side_effect=RuntimeError("upstream null"),
+    )
+    processor = _make_reputation_processor(client)
+    # Pass at least one allowed path; the exception is swallowed, returns [].
+    out = processor._get_indicator_data("domain", "example.com", [("ioc/common", 5)])
+    assert out == {"ioc/common": []}
+
+
+def test_get_indicator_data_handles_ip_enrichment_failure(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(GroupIBTIA.IndicatorsHelper, "build_ip_enrichment", side_effect=RuntimeError("ip enrich boom"))
+    processor = _make_reputation_processor(client)
+    # No collections returned; ip-enrichment branch is exercised and the
+    # exception swallowed -> data_per_collections stays empty.
+    out = processor._get_indicator_data("ip", "8.8.8.8", [])
+    assert out == {}
+
+
+def test_collect_portions_handles_none_portions(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "create_update_generator", return_value=None)
+    out = GroupIBTIA.IndicatorsHelper.collect_portions_for_indicator(
+        indicator_name="domain",
+        indicator_value="example.com",
+        path="ioc/common",
+        poller=client.poller,
+        dates_mapping=None,
+        sensitive_collections=None,
+    )
+    assert out == []
+
+
+def test_collect_portions_handles_none_inner_portion(single_session_fixture, mocker):
+    client = single_session_fixture
+
+    class _P:
+        raw_dict = None
+
+    mocker.patch.object(client.poller, "create_update_generator", return_value=[None, _P()])
+    out = GroupIBTIA.IndicatorsHelper.collect_portions_for_indicator(
+        indicator_name="domain",
+        indicator_value="example.com",
+        path="ioc/common",
+        poller=client.poller,
+        dates_mapping=None,
+        sensitive_collections=None,
+    )
+    # Both portions yield no usable data; collector returns an empty list,
+    # never raises.
+    assert out == []
+
+
+def test_build_ip_enrichment_handles_null_scoring(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "scoring", return_value=None)
+    mocker.patch.object(client.poller, "graph_ip_search", return_value=None)
+    data = GroupIBTIA.IndicatorsHelper.build_ip_enrichment(poller=client.poller, indicator_value="8.8.8.8", mapping={})
+    # scoring null -> data["scoring"]["score"] == None, no crash.
+    assert data == {"scoring": {"score": None}}
+
+
+def test_build_ip_enrichment_handles_scoring_exception(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "scoring", side_effect=RuntimeError("scoring boom"))
+    mocker.patch.object(client.poller, "graph_ip_search", return_value=None)
+    data = GroupIBTIA.IndicatorsHelper.build_ip_enrichment(poller=client.poller, indicator_value="8.8.8.8", mapping={})
+    assert data == {"scoring": {"score": None}}
+
+
+def test_global_search_command_tolerates_null_response(single_session_fixture, mocker):
+    """A null response from global_search must yield a clean 'No results' CommandResults."""
+    client = single_session_fixture
+    mocker.patch.object(client, "search_proxy_function", return_value=None)
+    result = GroupIBTIA.global_search_command(client=client, args={"query": "example.com"})
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert "No results" in (result.readable_output or "")
+
+
+def test_global_search_command_tolerates_empty_list(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client, "search_proxy_function", return_value=[])
+    result = GroupIBTIA.global_search_command(client=client, args={"query": "example.com"})
+    assert result.outputs == []
+
+
+def test_global_search_command_skips_non_dict_entries(single_session_fixture, mocker):
+    client = single_session_fixture
+    # MAPPING is checked for the apiPath; we pass a known one + garbage.
+    known_path = next(iter(GroupIBTIA.MAPPING.keys()))
+    raw = [None, "trash", 42, {"apiPath": known_path, "count": 3, "link": "http://x"}]
+    mocker.patch.object(client, "search_proxy_function", return_value=raw)
+    result = GroupIBTIA.global_search_command(client=client, args={"query": "example.com"})
+    # Only the well-formed entry survives.
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+
+
+def test_local_search_command_tolerates_none_portions(mock_client, mock_common_helpers):
+    """`create_update_generator` returning None must yield an empty result list, not crash."""
+    mock_client.poller.create_update_generator.return_value = None
+    result = GroupIBTIA.local_search_command(mock_client, {"query": "q", "collection_name": "test_collection"})
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+
+
+def test_local_search_command_skips_none_portion_in_iter(mock_client, mock_common_helpers):
+    """Yielding None inside the portion generator must be skipped silently."""
+    portion = MagicMock()
+    portion.sequpdate = 1
+    portion.parse_portion.return_value = None
+    mock_client.poller.create_update_generator.return_value = [None, portion]
+    result = GroupIBTIA.local_search_command(mock_client, {"query": "q", "collection_name": "test_collection"})
+    assert result.outputs == []
+
+
+def test_reputation_run_no_data_emits_unknown_score(single_session_fixture, mocker):
+    """End-to-end: global_search returns null -> DBotScore.NONE (0) + 'No data' readable."""
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "global_search", return_value=None)
+    processor = GroupIBTIA.ReputationCommandProcessor(
+        client=client,
+        args={"value": "example.com"},
+    )
+
+    result = processor.run("domain", GroupIBTIA.DBotScoreType.DOMAIN)
+    assert isinstance(result, CommandResults)
+    # readable_output carries the "no data" note.
+    assert "No Group-IB" in (result.readable_output or "")
+    # DBotScore.NONE is the integer 0 in the public XSOAR API.
+    assert result.raw_response["score"] == 0

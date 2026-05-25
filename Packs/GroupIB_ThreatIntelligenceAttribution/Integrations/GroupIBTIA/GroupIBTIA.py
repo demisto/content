@@ -3144,9 +3144,7 @@ class ReputationCommandProcessor:
                 # collection must not abort the whole indicator lookup. The
                 # collection is treated as "no data" and the other
                 # collections continue to be queried.
-                demisto.debug(
-                    f"[reputation] collect_portions_for_indicator({path!r}, {indicator_value!r}) failed: {exc}"
-                )
+                demisto.debug(f"[reputation] collect_portions_for_indicator({path!r}, {indicator_value!r}) failed: {exc}")
                 portions_data = []
             data_per_collections[path] = portions_data or []
 
@@ -3404,9 +3402,7 @@ class ReputationCommandProcessor:
         # body), prepend a one-line note to the War-Room readable so the
         # analyst sees "no data" instead of a bare "Unknown" row. The
         # context contract (`raw_response` fields) is unchanged.
-        has_payload = any(
-            isinstance(v, list) and v for k, v in indicator_data.items() if k not in ("scoring", "graph_ip")
-        )
+        has_payload = any(isinstance(v, list) and v for k, v in indicator_data.items() if k not in ("scoring", "graph_ip"))
         base_readable = self._build_readable_output(
             title=f"Group-IB reputation for {indicator_value}",
             indicator_value=indicator_value,
