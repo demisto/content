@@ -7,11 +7,13 @@ Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.
 | Server URL | The iZOOlogic API server URL. | True |
 | API Key | The API key provided by iZOOlogic for authentication. | True |
 | Secret Key | The secret key corresponding to the API key. | True |
-| Trust any certificate (not secure) | When selected, certificates are not checked. | False |
-| Use system proxy settings | When selected, uses the system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate \(not secure\). | False |
+| Use system proxy settings | Whether to use the system proxy settings. | False |
 | Fetch incidents | Whether to fetch incidents from iZOOlogic. | False |
-| Fetch Incident types | Select which incident types to fetch from iZOOlogic. By default, all types are selected. | True |
-| The maximum number of incidents per type per fetch | Maximum number of incidents to fetch per type per fetch cycle \(default: 5000\). | True |
+| First fetch timestamp | The time range for the initial fetch \(e.g., "1 day", "3 days"\). Subsequent fetches use the last run timestamp. | False |
+| Fetch incident types | A comma-separated list of incident types to fetch from iZOOlogic. | True |
+| Maximum Incidents Per Fetch Per Type | The maximum number of incidents to fetch per type per fetch cycle. | True |
+| Incident type |  | False |
 
 ## Commands
 
@@ -32,9 +34,9 @@ Gets incidents from iZOOlogic. Use this command for development and debugging on
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of incidents to return per type. Default is 50. | Optional |
-| start_time | Filter incidents detected at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
-| end_time | Filter incidents detected at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
-| incident_type | Filter by incident type(s). If not specified, the command uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
+| start_time | The time to filter incidents detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
+| end_time | The time to filter incidents detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
+| incident_type | Filter by incident type(s). If not specified, uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
 
 #### Context Output
 
