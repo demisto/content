@@ -813,7 +813,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: "false"
+                  simple: "true"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
