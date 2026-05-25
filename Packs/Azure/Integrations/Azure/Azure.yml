@@ -448,7 +448,7 @@ script:
       description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
-      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Entra ID (Azure AD).
+      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.creationTime
       description: The creation date and time of the storage account in UTC.
@@ -580,22 +580,19 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.cors
-      description: Specifies CORS rules for the Blob service.
+      description: The specifies CORS rules for the Blob service.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
-      description: The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date
     - contextPath: Azure.Storage.BlobServices.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
     - contextPath: Azure.Storage.BlobServices.properties.isVersioningEnabled
-      description: If set to true, enables versioning.
+      description: Whether versioning is enabled.
       type: Boolean
     - contextPath: Azure.Storage.BlobServices.properties.changeFeed
       description: The blob service properties for change feed events.
       type: Unknown
-    - contextPath: Azure.Storage.BlobServices.properties.automaticSnapshotPolicyEnabled
-      description: Deprecated in favor of isVersioningEnabled property.
-      type: Boolean
     - contextPath: Azure.Storage.BlobServices.properties.containerDeleteRetentionPolicy
       description: The blob service properties for container soft delete.
       type: Unknown
@@ -663,9 +660,6 @@ script:
     - contextPath: Azure.Storage.BlobServices.properties.lastAccessTimeTrackingPolicy
       description: The blob service property to configure last access time based tracking policy.
       type: Unknown
-    - contextPath: Azure.Storage.BlobServices.properties.automaticSnapshotPolicyEnabled
-      description: Deprecated in favor of isVersioningEnabled property.
-      type: Boolean
     - contextPath: Azure.Storage.BlobServices.properties.changeFeed
       description: The blob service properties for change feed events.
       type: Unknown
@@ -676,7 +670,7 @@ script:
       description: Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service.
       type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
-      description: DefaultServiceVersion indicates the default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.deleteRetentionPolicy
       description: The blob service properties for blob soft delete.
@@ -5488,7 +5482,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version allowed for requests to the storage account. The default is TLS 1.0.
+      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -8080,7 +8074,7 @@ script:
       description: Specifies CORS rules for the Blob service.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
-      description: The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date
     - contextPath: Azure.Storage.BlobServices.properties.deleteRetentionPolicy
       description: The service properties for soft delete.

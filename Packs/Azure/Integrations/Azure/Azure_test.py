@@ -1035,7 +1035,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     result = storage_blob_service_properties_set_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.Storage.BlobService"
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
 
@@ -3306,7 +3306,7 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     client.get_storage_container_properties_request.assert_called_once_with("testaccount", "testcontainer")
 
     assert result.outputs_prefix == "Azure.Storage.Container"
-    assert result.outputs_key_field == "name"
+    assert result.outputs_key_field == "ContainerName"
 
 
 def test_storage_container_create_command(mocker, client, mock_params):
@@ -5071,7 +5071,7 @@ def test_storage_blob_service_properties_set_command_new(mocker, client, mock_pa
 
     result = storage_blob_service_properties_set_command(client, mock_params, args)
 
-    assert result.outputs_prefix == "Azure.Storage.BlobService"
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
     assert result.outputs_key_field == "id"
     assert result.outputs == properties_response
     assert result.raw_response == properties_response
@@ -5096,7 +5096,7 @@ def test_storage_blob_service_properties_get_command_new(mocker):
 
     result = storage_blob_service_properties_get_command(mock_client, params, args)
 
-    assert result.outputs_prefix == "Azure.Storage.BlobService"
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response
     assert result.raw_response == mock_response

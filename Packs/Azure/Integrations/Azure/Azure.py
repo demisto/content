@@ -99,14 +99,14 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-enable-soft-delete-quick-action",
         "azure-storage-blob-service-property-get",
         "azure-storage-blob-service-property-set",
-        "azure-storage-blob-soft-deletion-enable-quick-action"
+        "azure-storage-blob-soft-deletion-enable-quick-action",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/write": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
         "azure-storage-blob-enable-soft-delete-quick-action",
         "azure-storage-blob-service-property-set",
-        "azure-storage-blob-soft-deletion-enable-quick-action"
+        "azure-storage-blob-soft-deletion-enable-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
@@ -485,7 +485,7 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-storage-blob-service-property-get": "Azure.Storage.BlobServices",
     "azure-storage-blob-service-properties-set": "Azure.StorageAccountBlobServiceProperties",
     "azure-storage-blob-service-property-set": "Azure.Storage.BlobServices",
-    "azure-storage-blob-enable-soft-delete-quick-action": "Azure.StorageAccountBlobServiceProperties"
+    "azure-storage-blob-enable-soft-delete-quick-action": "Azure.StorageAccountBlobServiceProperties",
 }
 
 
@@ -2994,7 +2994,7 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Azure.Storage.Container",
-        outputs_key_field="name",
+        outputs_key_field="ContainerName",
         outputs=outputs,
         raw_response=raw_response,
     )
