@@ -367,3 +367,72 @@ Remove an indicator association from a case.
 |----------|-------------|----------|
 | case_id | The UUID of the case. | Yes |
 | indicator_id | The UUID of the indicator to remove. | Yes |
+
+---
+
+## v1.1.0 additions
+
+The commands below were added to track the upstream DFIRe API. For each command, `!<command-name> /?` from the CLI will show the full argument list and outputs as defined in the integration YAML. The full per-command tables can be regenerated with `demisto-sdk generate-docs -i Packs/DFIRe/Integrations/DFIRe`.
+
+### New arguments on existing commands
+
+- **dfire-case-create / dfire-case-update**: `notes`, `incident_category`, `outcome_verdict`, `investigators`, `viewers`, `investigator_ids`, `viewer_ids`, `attributes`. Plus on create: `create_slack_channel` (defaults to `false` so SOAR-driven case creation does not auto-create Slack channels).
+- **dfire-case-list**: `status_in` (comma-separated multi-status), `lead_investigator`, `created_at_gte`, `created_at_lte`, `ordering`.
+- **dfire-case-indicator-add**: `source`, `valid_until`, `publish`.
+- **dfire-indicator-list**: `parent`, `ordering`.
+
+### IOC commands
+
+| Command | Purpose |
+|---|---|
+| dfire-ioc-extract | Extract candidate IOCs from a block of text. Returns suggestions only. |
+| dfire-indicator-check | Batch-check whether IOCs already exist in the global registry. |
+| dfire-indicator-enrich | Trigger external enrichment for an indicator. |
+| dfire-indicator-enrichment-list | Get cached enrichment results for an indicator. |
+| dfire-indicator-publish / unpublish | Publish or unpublish an indicator. |
+| dfire-indicator-revoke / unrevoke | Revoke or unrevoke an indicator. |
+| dfire-indicator-decompose | Auto-decompose an indicator (URL→domain, etc.). |
+| dfire-indicator-add-tags | Merge tags into an indicator's tag set. |
+| dfire-indicator-correlated-list | List indicators that appear across multiple cases. |
+| dfire-indicator-bulk-classify | Bulk-update classification. |
+| dfire-indicator-bulk-confidence | Bulk-update confidence. |
+| dfire-indicator-bulk-tag | Bulk add/remove/set tags. |
+| dfire-indicator-bulk-tlp | Bulk-update TLP designation. |
+| dfire-indicator-bulk-publish | Bulk-publish indicators. |
+| dfire-indicator-bulk-revoke | Bulk-revoke indicators. |
+| dfire-indicator-bulk-delete | Bulk-delete indicators. |
+
+### Case automation commands
+
+| Command | Purpose |
+|---|---|
+| dfire-case-generate-summary | Trigger an AI executive summary for a case. |
+| dfire-case-chat | Send a message to the case AI assistant. |
+| dfire-case-update-report | Apply an advanced report update (raw JSON body). |
+| dfire-case-can-report-list / generate | List or generate CAN reports for a case. |
+| dfire-case-investigation-report-get / generate / finalize / ready-for-qa | Manage the investigation report lifecycle. |
+| dfire-case-timeline-change-phase | Move a case to a new IR phase. |
+
+### Case todos and timers
+
+| Command | Purpose |
+|---|---|
+| dfire-case-todo-list / get | List todos for a case or fetch one with full details. |
+| dfire-case-todo-assign | Assign a todo to a user. |
+| dfire-case-todo-note-set | Set or replace the note on a todo. |
+| dfire-case-todo-attach-runbook / detach-runbook | Attach or remove a runbook from a todo. |
+| dfire-case-timer-list / get | List SLA timers or fetch one. |
+| dfire-case-timer-complete / reset | Complete or reset a case SLA timer. |
+
+### Convenience and reference data
+
+| Command | Purpose |
+|---|---|
+| dfire-case-get-by-number | Look up a case by its human-readable case number. |
+| dfire-item-resolve-short-id | Resolve an 8-character item short ID to its full UUID. |
+| dfire-incident-category-list | List ENISA incident categories (picklist data). |
+| dfire-incident-phase-list | List configured incident-response phases. |
+| dfire-outcome-verdict-list | List outcome verdicts (true positive, false positive, etc.). |
+| dfire-project-list | List projects. |
+| dfire-runbook-list | List available runbooks. |
+| dfire-group-list | List user groups. |

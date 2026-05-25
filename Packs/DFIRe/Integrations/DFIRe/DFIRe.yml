@@ -83,6 +83,8 @@ script:
       - OPEN
       - CLOSED
       - ARCHIVED
+    - name: status_in
+      description: Filter by multiple statuses (comma-separated, e.g. "OPEN,CLOSED").
     - name: severity
       description: Filter by severity.
       predefined:
@@ -96,6 +98,14 @@ script:
       predefined:
       - investigation
       - incident
+    - name: lead_investigator
+      description: Filter by lead investigator user ID.
+    - name: created_at_gte
+      description: Filter cases created on or after this ISO-8601 datetime (e.g. "2026-05-01T00:00:00Z").
+    - name: created_at_lte
+      description: Filter cases created on or before this ISO-8601 datetime.
+    - name: ordering
+      description: Order results by field (e.g. "created_at", "-created_at" for descending).
     outputs:
     - contextPath: DFIRe.Case.id
       description: The case ID.
@@ -196,6 +206,8 @@ script:
       required: true
     - name: description
       description: The case description.
+    - name: notes
+      description: High-level case summary or notes.
     - name: severity
       description: The case severity.
       predefined:
@@ -211,10 +223,34 @@ script:
       - incident
     - name: lead_investigator
       description: User ID of the lead investigator.
+    - name: investigators
+      description: Comma-separated list of investigator user IDs.
+      isArray: true
+    - name: viewers
+      description: Comma-separated list of viewer user IDs.
+      isArray: true
+    - name: investigator_ids
+      description: Comma-separated list of investigator IDs (alternate write field).
+      isArray: true
+    - name: viewer_ids
+      description: Comma-separated list of viewer IDs (alternate write field).
+      isArray: true
+    - name: incident_category
+      description: ENISA incident category ID.
+    - name: outcome_verdict
+      description: Outcome verdict ID (true positive, false positive, etc.).
     - name: external_id
       description: External reference ID (e.g. ticket number).
     - name: project_id
       description: Project ID to associate the case with.
+    - name: attributes
+      description: JSON string of custom attributes to attach to the case.
+    - name: create_slack_channel
+      description: Whether to auto-create a Slack channel for this case. Defaults to false to avoid unintended channel creation from automated workflows.
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: DFIRe.Case.id
       description: The ID of the created case.
@@ -238,6 +274,8 @@ script:
       description: New title for the case.
     - name: description
       description: New description.
+    - name: notes
+      description: High-level case summary or notes.
     - name: status
       description: New status.
       predefined:
@@ -259,8 +297,26 @@ script:
       - incident
     - name: lead_investigator
       description: New lead investigator user ID.
+    - name: investigators
+      description: Replace investigator list (comma-separated user IDs).
+      isArray: true
+    - name: viewers
+      description: Replace viewer list (comma-separated user IDs).
+      isArray: true
+    - name: investigator_ids
+      description: Comma-separated list of investigator IDs (alternate write field).
+      isArray: true
+    - name: viewer_ids
+      description: Comma-separated list of viewer IDs (alternate write field).
+      isArray: true
+    - name: incident_category
+      description: ENISA incident category ID.
+    - name: outcome_verdict
+      description: Outcome verdict ID.
     - name: external_id
       description: New external reference ID.
+    - name: attributes
+      description: JSON string of custom attributes to attach to the case.
     outputs:
     - contextPath: DFIRe.Case.id
       description: The case ID.
@@ -388,6 +444,10 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: parent
+      description: Filter by parent indicator ID (returns children of this indicator).
+    - name: ordering
+      description: Order results by field (e.g. "created_at", "-confidence").
     outputs:
     - contextPath: DFIRe.Indicator.id
       description: The indicator ID.
@@ -808,7 +868,7 @@ script:
     - name: filename
       description: Override the filename (defaults to the uploaded file name).
     - name: category
-      description: Attachment category.
+      description: Attachment category. `general` routes to the encrypted file store and is what most playbooks want. `evidence` is reserved for evidence photos and routes to the image gallery, not the file store.
       defaultValue: general
       predefined:
       - general
@@ -994,9 +1054,28 @@ script:
     - name: tags
       description: Comma-separated tags.
       isArray: true
+    - name: source
+      description: How this IOC was obtained.
+      predefined:
+      - manual
+      - automated
+      - threat_intel
+      - sandbox
+      - enrichment
+      - import
+    - name: source_reference
+      description: Free-form reference identifying the source (URL, ticket, report name, etc.).
+    - name: valid_until
+      description: Auto-revoke after this ISO-8601 datetime (e.g. "2026-12-31T00:00:00Z").
     - name: decompose
-      description: Whether to auto-decompose the indicator.
+      description: Whether to auto-decompose the indicator (URL→domain, email→domain).
       defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - name: publish
+      description: Whether to publish the indicator immediately after creation.
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
@@ -1020,6 +1099,643 @@ script:
       description: The case indicator association ID.
       required: true
     outputs: []
+  - name: dfire-ioc-extract
+    description: Extract candidate IOCs from a block of text. Returns suggestions only — does not add them to any case.
+    arguments:
+    - name: text
+      description: Text to scan for IOCs.
+      required: true
+    outputs:
+    - contextPath: DFIRe.IOCExtraction.candidates
+      description: List of extracted IOC candidates.
+      type: Unknown
+  - name: dfire-indicator-check
+    description: Batch-check whether IOCs already exist in the global registry.
+    arguments:
+    - name: indicators
+      description: JSON array of {value, stix_type} objects (mutually exclusive with values+stix_type).
+    - name: values
+      description: Comma-separated IOC values to check (used with stix_type).
+      isArray: true
+    - name: stix_type
+      description: STIX type to use when checking the values arg.
+      predefined:
+      - ipv4-addr
+      - ipv6-addr
+      - domain-name
+      - url
+      - email-addr
+      - email-message
+      - file
+      - process
+      - windows-registry-key
+      - network-traffic
+      - user-account
+      - mac-addr
+      - software
+      - artifact
+      - autonomous-system
+      - directory
+      - mutex
+      - x509-certificate
+    outputs:
+    - contextPath: DFIRe.IndicatorCheck.results
+      description: Existence/metadata for each submitted indicator.
+      type: Unknown
+  - name: dfire-indicator-enrich
+    description: Trigger external enrichment for an indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    - name: providers
+      description: Comma-separated provider names (omit to run all applicable).
+      isArray: true
+    - name: force
+      description: Re-enrich even if cached results exist.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+  - name: dfire-indicator-enrichment-list
+    description: Get cached enrichment results for an indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Enrichment.enrichments
+      description: Enrichment records.
+      type: Unknown
+  - name: dfire-indicator-publish
+    description: Publish an indicator (make it visible to TAXII consumers and STIX exports).
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.is_published
+      description: Whether the indicator is published.
+      type: Boolean
+  - name: dfire-indicator-unpublish
+    description: Unpublish an indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.is_published
+      description: Whether the indicator is published.
+      type: Boolean
+  - name: dfire-indicator-revoke
+    description: Revoke an indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.is_revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+  - name: dfire-indicator-unrevoke
+    description: Unrevoke an indicator.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.is_revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+  - name: dfire-indicator-decompose
+    description: Auto-decompose an indicator (URL→domain, email→domain, etc.).
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+  - name: dfire-indicator-add-tags
+    description: Merge a list of tags into the indicator's existing tag set.
+    arguments:
+    - name: indicator_id
+      description: The indicator ID.
+      required: true
+    - name: tags
+      description: Comma-separated tags to add.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: DFIRe.Indicator.id
+      description: The indicator ID.
+      type: Number
+    - contextPath: DFIRe.Indicator.tags
+      description: Updated tag list.
+      type: Unknown
+  - name: dfire-indicator-correlated-list
+    description: List indicators that appear in multiple cases.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.IndicatorCorrelated.results
+      description: Correlated indicators across cases.
+      type: Unknown
+  - name: dfire-indicator-bulk-classify
+    description: Bulk-update classification for multiple indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    - name: classification
+      description: New classification.
+      required: true
+      predefined:
+      - unknown
+      - benign
+      - suspicious
+      - malicious
+    outputs:
+    - contextPath: DFIRe.BulkResult
+      description: Bulk operation result.
+      type: Unknown
+  - name: dfire-indicator-bulk-confidence
+    description: Bulk-update confidence for multiple indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    - name: confidence
+      description: New confidence level.
+      required: true
+      predefined:
+      - low
+      - medium
+      - high
+    outputs:
+    - contextPath: DFIRe.BulkResult
+      description: Bulk operation result.
+      type: Unknown
+  - name: dfire-indicator-bulk-tag
+    description: Bulk add/remove/set tags on multiple indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    - name: tags
+      description: Comma-separated tags.
+      required: true
+      isArray: true
+    - name: mode
+      description: How to apply the tags.
+      defaultValue: add
+      predefined:
+      - add
+      - remove
+      - set
+    outputs:
+    - contextPath: DFIRe.BulkResult
+      description: Bulk operation result.
+      type: Unknown
+  - name: dfire-indicator-bulk-tlp
+    description: Bulk-update TLP designation for multiple indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    - name: tlp
+      description: New TLP designation.
+      required: true
+      predefined:
+      - clear
+      - green
+      - amber
+      - amber_strict
+      - red
+    outputs:
+    - contextPath: DFIRe.BulkResult
+      description: Bulk operation result.
+      type: Unknown
+  - name: dfire-indicator-bulk-publish
+    description: Bulk-publish indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: DFIRe.BulkPublishResponse.published_count
+      description: Number of indicators published.
+      type: Number
+    - contextPath: DFIRe.BulkPublishResponse.skipped_revoked
+      description: Number skipped because revoked.
+      type: Number
+    - contextPath: DFIRe.BulkPublishResponse.skipped_red
+      description: Number skipped because TLP:RED.
+      type: Number
+  - name: dfire-indicator-bulk-revoke
+    description: Bulk-revoke indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: DFIRe.BulkResult
+      description: Bulk operation result.
+      type: Unknown
+  - name: dfire-indicator-bulk-delete
+    description: Bulk-delete indicators.
+    arguments:
+    - name: indicator_ids
+      description: Comma-separated indicator IDs.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: DFIRe.BulkResult
+      description: Bulk operation result.
+      type: Unknown
+  - name: dfire-case-generate-summary
+    description: Trigger AI-generated executive summary for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseSummary
+      description: Summary result.
+      type: Unknown
+  - name: dfire-case-chat
+    description: Send a chat message to the case AI assistant.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: message
+      description: The user message to send.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseChat
+      description: Chat response.
+      type: Unknown
+  - name: dfire-case-update-report
+    description: Update the text of an AI-generated report attached to a case (e.g. an executive summary).
+    arguments:
+    - name: case_id
+      description: The case ID the report belongs to.
+      required: true
+    - name: report_id
+      description: ID of the generated report to update.
+      required: true
+    - name: report_text
+      description: New report text content.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseReport
+      description: Updated report.
+      type: Unknown
+  - name: dfire-case-can-report-list
+    description: List CAN (Case Activity Notice) reports for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CANReport.id
+      description: CAN report ID.
+      type: Number
+  - name: dfire-case-can-report-generate
+    description: Generate a new CAN report for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: body
+      description: Optional JSON body describing the report parameters.
+    outputs:
+    - contextPath: DFIRe.CANReport.id
+      description: Generated report ID.
+      type: Number
+  - name: dfire-case-investigation-report-get
+    description: Get the investigation report for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.InvestigationReport
+      description: Investigation report.
+      type: Unknown
+  - name: dfire-case-investigation-report-generate
+    description: Generate AI content for a single section of a case's investigation report. Returns preview content; does not auto-save.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: section_id
+      description: ID of the report section to generate content for.
+      required: true
+    outputs:
+    - contextPath: DFIRe.InvestigationReport.content
+      description: Generated section content.
+      type: String
+    - contextPath: DFIRe.InvestigationReport.model
+      description: Model used to generate the content.
+      type: String
+  - name: dfire-case-investigation-report-finalize
+    description: Finalize the investigation report for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.InvestigationReport
+      description: Finalized investigation report.
+      type: Unknown
+  - name: dfire-case-investigation-report-ready-for-qa
+    description: Mark a single section of the investigation report as ready for QA review.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: section_id
+      description: ID of the report section to mark ready for QA.
+      required: true
+    outputs:
+    - contextPath: DFIRe.InvestigationReport
+      description: Investigation report section after the state change.
+      type: Unknown
+  - name: dfire-case-timeline-change-phase
+    description: Move a case to a new incident-response phase.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: phase_id
+      description: Target phase ID.
+    - name: phase_name
+      description: Target phase name (used if phase_id is omitted).
+    - name: note
+      description: Optional note explaining the phase change.
+    outputs:
+    - contextPath: DFIRe.TimelineEvent.id
+      description: Created phase-change timeline event ID.
+      type: Number
+  - name: dfire-case-todo-list
+    description: List todos for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTodo.id
+      description: Todo ID.
+      type: Number
+    - contextPath: DFIRe.CaseTodo.title
+      description: Todo title.
+      type: String
+    - contextPath: DFIRe.CaseTodo.status
+      description: Todo status.
+      type: String
+  - name: dfire-case-todo-get
+    description: Get a single todo with full details.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: todo_id
+      description: The todo ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTodo.id
+      description: Todo ID.
+      type: Number
+  - name: dfire-case-todo-assign
+    description: Assign a todo to a user.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: todo_id
+      description: The todo ID.
+      required: true
+    - name: assignee_id
+      description: User ID of the assignee.
+    outputs:
+    - contextPath: DFIRe.CaseTodo.id
+      description: Todo ID.
+      type: Number
+    - contextPath: DFIRe.CaseTodo.assignee_name
+      description: Assignee display name.
+      type: String
+  - name: dfire-case-todo-note-set
+    description: Set or replace the note on a todo.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: todo_id
+      description: The todo ID.
+      required: true
+    - name: note
+      description: New note content.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTodo.id
+      description: Todo ID.
+      type: Number
+  - name: dfire-case-todo-attach-runbook
+    description: Attach a runbook to a todo.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: todo_id
+      description: The todo ID.
+      required: true
+    - name: runbook_slug
+      description: Runbook slug to attach.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTodo.id
+      description: Todo ID.
+      type: Number
+    - contextPath: DFIRe.CaseTodo.runbook_slug
+      description: Attached runbook slug.
+      type: String
+  - name: dfire-case-todo-detach-runbook
+    description: Detach the runbook from a todo.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: todo_id
+      description: The todo ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTodo.id
+      description: Todo ID.
+      type: Number
+  - name: dfire-case-timer-list
+    description: List SLA timers for a case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTimer.id
+      description: Timer ID.
+      type: Number
+    - contextPath: DFIRe.CaseTimer.name
+      description: Timer name.
+      type: String
+    - contextPath: DFIRe.CaseTimer.framework
+      description: Compliance framework.
+      type: String
+  - name: dfire-case-timer-get
+    description: Get a single SLA timer.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: timer_id
+      description: The timer ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTimer.id
+      description: Timer ID.
+      type: Number
+  - name: dfire-case-timer-complete
+    description: Mark a case SLA timer as complete.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: timer_id
+      description: The timer ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTimer.id
+      description: Timer ID.
+      type: Number
+  - name: dfire-case-timer-reset
+    description: Reset a case SLA timer.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: timer_id
+      description: The timer ID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.CaseTimer.id
+      description: Timer ID.
+      type: Number
+  - name: dfire-case-get-by-number
+    description: Look up a case by its human-readable case number.
+    arguments:
+    - name: case_number
+      description: The case number (e.g. "CASE-2026-0001").
+      required: true
+    outputs:
+    - contextPath: DFIRe.Case.id
+      description: The case ID.
+      type: Number
+    - contextPath: DFIRe.Case.case_number
+      description: The case number.
+      type: String
+  - name: dfire-item-resolve-short-id
+    description: Resolve an 8-character item short ID to its full UUID and parent case ID.
+    arguments:
+    - name: short_id
+      description: First 8 characters of the item UUID.
+      required: true
+    outputs:
+    - contextPath: DFIRe.Item.uuid
+      description: The full item UUID.
+      type: String
+    - contextPath: DFIRe.Item.case
+      description: The parent case ID.
+      type: Number
+  - name: dfire-incident-category-list
+    description: List ENISA incident categories (useful for picklists).
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.IncidentCategory.id
+      description: Category ID.
+      type: Number
+    - contextPath: DFIRe.IncidentCategory.name
+      description: Category name.
+      type: String
+  - name: dfire-incident-phase-list
+    description: List configured incident-response phases.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.IncidentPhase.id
+      description: Phase ID.
+      type: Number
+    - contextPath: DFIRe.IncidentPhase.name
+      description: Phase name.
+      type: String
+  - name: dfire-outcome-verdict-list
+    description: List case outcome verdicts (true positive, false positive, etc.).
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.OutcomeVerdict.id
+      description: Verdict ID.
+      type: Number
+    - contextPath: DFIRe.OutcomeVerdict.name
+      description: Verdict name.
+      type: String
+  - name: dfire-project-list
+    description: List projects.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.Project.id
+      description: Project ID.
+      type: Number
+    - contextPath: DFIRe.Project.name
+      description: Project name.
+      type: String
+  - name: dfire-runbook-list
+    description: List available runbooks (used for todo runbook attachments).
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.Runbook.slug
+      description: Runbook slug.
+      type: String
+    - contextPath: DFIRe.Runbook.name
+      description: Runbook name.
+      type: String
+  - name: dfire-group-list
+    description: List user groups.
+    arguments: []
+    outputs:
+    - contextPath: DFIRe.Group.id
+      description: Group ID.
+      type: Number
+    - contextPath: DFIRe.Group.name
+      description: Group name.
+      type: String
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

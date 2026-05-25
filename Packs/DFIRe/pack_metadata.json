@@ -2,7 +2,7 @@
     "name": "DFIRe",
     "description": "DFIRe is a self-hosted Digital Forensics and Incident Response (DFIR) case management platform. This integration enables automated case creation and updates, bi-directional IOC indicator synchronisation, evidence item tracking with chain of custody, file attachment uploads, and incident timeline enrichment — all from Cortex XSIAM playbooks.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.3",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "harri.ruuttila@gmail.com",
