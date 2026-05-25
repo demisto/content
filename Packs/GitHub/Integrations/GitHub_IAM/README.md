@@ -11,14 +11,17 @@ For more information, please refer to the [Identity Lifecycle Management article
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | GitHub URL https://&lt;domain&gt;.github.com/ | True |
-| token | Token | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| create-user-enabled | Allow creating users | False |
-| update-user-enabled | Allow updating users | False |
-| disable-user-enabled | Allow disabling users | False |
-| mapper-in | Incoming Mapper | True |
-| mapper-out | Outgoing Mapper | True |
+| GitHub URL https://&lt;domain&gt;.github.com/ |  | True |
+| Token |  | False |
+| Organization name |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Allow creating users |  | False |
+| Allow updating users |  | False |
+| Allow disabling users |  | False |
+| Automatically create user if not found in update and enable commands |  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
 
