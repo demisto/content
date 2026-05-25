@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Generic v2
 deprecated: true
-description: 'Deprecated. Use the Microsoft Graph Security integration instead. This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense.'
+description: 'Deprecated. A new version of this playbook will be available. This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense.'
 starttaskid: "0"
 tasks:
   "0":

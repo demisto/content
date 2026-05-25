@@ -1,5 +1,4 @@
 # O365 - Security And Compliance - Content Search V2
-Deprecated. Use the Microsoft Graph Security integration instead.
 
 **⚠️ Deprecation Notice**
 
