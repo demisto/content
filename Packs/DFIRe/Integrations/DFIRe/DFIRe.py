@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line("DFIRe", "start", __line__())  # type: ignore[name-defined]  # pylint: disable=E0602
-CONSTANT_PACK_VERSION = "1.1.3"
-demisto.debug("pack id = DFIRe, pack version = 1.1.3")
+# register_module_line("DFIRe", "start", __line__())
+CONSTANT_PACK_VERSION = "1.1.4"
+demisto.debug("pack id = DFIRe, pack version = 1.1.4")
 """DFIRe Integration for Cortex XSOAR / XSIAM
 
 Integrates with DFIRe (Digital Forensics and Incident Response) platform
@@ -1718,4 +1718,4 @@ def main():
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
 
-register_module_line("DFIRe", "end", __line__())  # type: ignore[name-defined]  # pylint: disable=E0602
+# register_module_line("DFIRe", "end", __line__())
