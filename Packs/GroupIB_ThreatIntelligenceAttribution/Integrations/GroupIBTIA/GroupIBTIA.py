@@ -2094,15 +2094,26 @@ class IndicatorsHelper:
         dates_mapping: dict[str, dict[str, str]] | None,
         sensitive_collections: list[str] | None,
     ) -> list:
-        """Collect parsed portions for a given path."""
+        """Collect parsed portions for a given path.
+
+        Tolerant to the Group-IB API returning a null body (no matches) and
+        to malformed portion objects: any of those collapses to an empty
+        result, never an exception.
+        """
         portions = poller.create_update_generator(collection_name=path, query=indicator_value)
-        portions_data = []
+        if portions is None:
+            return []
+        portions_data: list[Any] = []
         use_dates = path in (sensitive_collections or [])
         for portion in portions:
+            if portion is None:
+                continue
             if use_dates and dates_mapping:
                 parsed_portion = portion.parse_portion(keys=dates_mapping.get(path))
             else:
-                parsed_portion = portion.raw_dict
+                parsed_portion = getattr(portion, "raw_dict", None)
+            if parsed_portion in (None, "", []):
+                continue
             cleaned_feed = parsed_portion[0] if isinstance(parsed_portion, list) else parsed_portion  # type: ignore
             portions_data.append(cleaned_feed)
         return portions_data
@@ -2113,16 +2124,28 @@ class IndicatorsHelper:
         indicator_value: str,
         mapping: dict[str, Any],
     ) -> dict[str, Any]:
-        """Build scoring and graph IP enrichment block."""
+        """Build scoring and graph IP enrichment block.
+
+        Each upstream call (scoring, graph_ip_search) may legitimately
+        return a 200/null response when the IP is unknown to Group-IB.
+        We swallow these as "no data" rather than letting them bubble up
+        as `AttributeError: 'NoneType' object has no attribute 'get'`.
+        """
         data: dict[str, Any] = {}
-        scoring = poller.scoring(indicator_value)
-        score = scoring.get("items", {}).get(indicator_value, {}).get("riskScore")
-        data.update({"scoring": {"score": score}})
+        try:
+            scoring = poller.scoring(indicator_value) or {}
+            items = (scoring or {}).get("items") or {}
+            score = (items.get(indicator_value) or {}).get("riskScore")
+            data.update({"scoring": {"score": score}})
+        except Exception as exc:
+            demisto.debug(f"[scoring] failed for {indicator_value}: {exc}")
+            data.update({"scoring": {"score": None}})
 
         try:
             graph_ip = poller.graph_ip_search(indicator_value)
-            graph_data = ParserHelper.find_by_template(graph_ip, keys=mapping)
-            data.update({"graph_ip": graph_data})
+            if graph_ip:
+                graph_data = ParserHelper.find_by_template(graph_ip, keys=mapping)
+                data.update({"graph_ip": graph_data})
         except Exception as e:
             demisto.debug(f"[graph_ip_search] failed for {indicator_value}: {e}")
         return data
@@ -2865,9 +2888,15 @@ def get_info_by_id_command(collection_name: str):
 
 def global_search_command(client: Client, args: dict) -> CommandResults:
     query = str(args.get("query"))
+    # `search_proxy_function` (and `global_search` under the hood) may
+    # legitimately return null or an empty list when Group-IB has no
+    # data on the query. Treat both as "no results" instead of letting
+    # `for result in raw_response` raise TypeError.
     raw_response = client.search_proxy_function(query=query)
-    handled_list = []
-    for result in raw_response:
+    handled_list: list[dict[str, Any]] = []
+    for result in raw_response or []:
+        if not isinstance(result, dict):
+            continue
         if result.get("apiPath") in MAPPING:
             apiPath = result.get("apiPath")
             handled_list.append(
@@ -2950,10 +2979,14 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
 
     requests_count = 0
     result_list: list[dict[str, Any]] = []
-    for portion in portions:
+    for portion in portions or []:
+        if portion is None:
+            continue
         sequpdate = getattr(portion, "sequpdate", None)
-        new_parsed_json = portion.parse_portion(keys=mapping, as_json=False)
+        new_parsed_json = portion.parse_portion(keys=mapping, as_json=False) or []
         for feed in new_parsed_json:
+            if not isinstance(feed, dict):
+                continue
             name = feed.get("name")
             additional_info = f"Name: {name}" if name else None
             entry: dict[str, Any] = {
@@ -3092,10 +3125,12 @@ class ReputationCommandProcessor:
         return [p for p in base_paths if p not in exclude_set]
 
     def _get_indicator_data(self, indicator_name: str, indicator_value: str, search_data: list) -> dict:
-        data_per_collections = {}
+        data_per_collections: dict[str, Any] = {}
         allowed_paths = self.ALLOWED_PATHS.get(indicator_name, [])
-        for path, _count in search_data:
-            if path in allowed_paths:
+        for path, _count in search_data or []:
+            if path not in allowed_paths:
+                continue
+            try:
                 portions_data = IndicatorsHelper.collect_portions_for_indicator(
                     indicator_name=indicator_name,
                     indicator_value=indicator_value,
@@ -3104,24 +3139,58 @@ class ReputationCommandProcessor:
                     dates_mapping=self.DATES_MAPPING.get(indicator_name),
                     sensitive_collections=self.SENSITIVE_TO_DATES_COLLECTIONS.get(indicator_name, []),
                 )
-                data_per_collections.update({path: portions_data})
+            except Exception as exc:
+                # A 200/null or generator-yields-None response from any one
+                # collection must not abort the whole indicator lookup. The
+                # collection is treated as "no data" and the other
+                # collections continue to be queried.
+                demisto.debug(
+                    f"[reputation] collect_portions_for_indicator({path!r}, {indicator_value!r}) failed: {exc}"
+                )
+                portions_data = []
+            data_per_collections[path] = portions_data or []
 
         if indicator_name == "ip":
-            ip_data = IndicatorsHelper.build_ip_enrichment(
-                poller=self.client.poller,
-                indicator_value=indicator_value,
-                mapping=self.GRAPH_MAPPING.get(indicator_name, {}),
-            )
-            data_per_collections.update(ip_data)
+            try:
+                ip_data = IndicatorsHelper.build_ip_enrichment(
+                    poller=self.client.poller,
+                    indicator_value=indicator_value,
+                    mapping=self.GRAPH_MAPPING.get(indicator_name, {}),
+                )
+            except Exception as exc:
+                demisto.debug(f"[reputation] build_ip_enrichment failed for {indicator_value!r}: {exc}")
+                ip_data = {}
+            data_per_collections.update(ip_data or {})
         return data_per_collections
 
     def _get_search_data(self, indicator_value):
-        search = self.client.poller.global_search(indicator_value)
-        finding = []
+        """Return [(apiPath, count), ...] for the indicator, or [] if no data.
+
+        The Group-IB `global_search` endpoint legitimately returns HTTP 200
+        with a `null` body when nothing is known about an indicator (and in
+        rare schema-drift cases a dict instead of a list). Both shapes must
+        produce an empty result — never a TypeError — so the reputation
+        command can still return a clean DBotScore.NONE response.
+        """
+        try:
+            search = self.client.poller.global_search(indicator_value)
+        except Exception as exc:
+            demisto.debug(f"[reputation] global_search failed for {indicator_value!r}: {exc}")
+            return []
+        if search in (None, "", [], {}):
+            demisto.debug(f"[reputation] global_search returned no data for {indicator_value!r}")
+            return []
+        if not isinstance(search, list):
+            demisto.debug(
+                f"[reputation] global_search returned non-list ({type(search).__name__}) "
+                f"for {indicator_value!r}; treating as no data"
+            )
+            return []
+        finding: list[tuple[Any, Any]] = []
         for found in search:
-            apiPath = found.get("apiPath")
-            count = found.get("count")
-            finding.append((apiPath, count))
+            if not isinstance(found, dict):
+                continue
+            finding.append((found.get("apiPath"), found.get("count")))
         return finding
 
     def _parse_date(self, s):
@@ -3331,12 +3400,23 @@ class ReputationCommandProcessor:
             # hash type is not specified; pass as md5 for DBot correlation
             indicator_obj = Common.File(md5=indicator_value, dbot_score=d_bot_score)
 
-        readable_output = self._build_readable_output(
+        # When Group-IB has no data across every collection (HTTP 200 / null
+        # body), prepend a one-line note to the War-Room readable so the
+        # analyst sees "no data" instead of a bare "Unknown" row. The
+        # context contract (`raw_response` fields) is unchanged.
+        has_payload = any(
+            isinstance(v, list) and v for k, v in indicator_data.items() if k not in ("scoring", "graph_ip")
+        )
+        base_readable = self._build_readable_output(
             title=f"Group-IB reputation for {indicator_value}",
             indicator_value=indicator_value,
             score_value=score,
             reliability=reliability,
         )
+        if not has_payload:
+            readable_output = f"No Group-IB Threat Intelligence data was found for `{indicator_value}`.\n\n" + base_readable
+        else:
+            readable_output = base_readable
 
         return CommandResults(
             readable_output=readable_output,
