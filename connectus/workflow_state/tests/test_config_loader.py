@@ -102,7 +102,10 @@ class TestLoadDefault:
     def test_default_yaml_loads(self) -> None:
         cfg = load_config()
         assert isinstance(cfg, WorkflowConfig)
-        # The bundled YAML has 15 steps and 3 identity columns.
+        # The bundled YAML has 15 steps and 3 identity columns
+        # (16 minus the removed `shadowed command test passes`
+        # checkpoint, which the new `Shadowed Integration Commands`
+        # data column replaced).
         assert len(cfg.steps) == 15
         assert len(cfg.identity_columns) == 3
         # Markers match the expected sentinels.

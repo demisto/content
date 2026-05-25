@@ -36,7 +36,7 @@ from workflow_state.config_loader import _reset_config_for_testing
 _EXPECTED_TOTAL_COLS = 18
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
-_COL_GENERATED_MANIFEST = 9      # step #6 → CSV column 9 (first checkpoint, after Params for test with default in code + Params to Capabilities)
+_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Params for test with default in code + Shadowed Integration Commands + Params to Capabilities)
 
 
 @pytest.fixture(autouse=True)
@@ -62,6 +62,7 @@ def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     row["Auth Details"] = "{}"
     row["Params to Commands"] = "{}"
     row["Params for test with default in code"] = "{}"
+    row["Shadowed Integration Commands"] = "{}"
     row["Params to Capabilities"] = "{}"
     with open(p, "w", encoding="utf-8", newline="") as f:
         w = _csv.writer(f)

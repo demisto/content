@@ -87,6 +87,7 @@ from workflow_state.validators import (  # noqa: I001
     validate_param_defaults,
     validate_params_to_capabilities,
     validate_params_to_commands,
+    validate_shadowed_commands,
 )
 
 # ---- Display -------------------------------------------------------------
@@ -141,6 +142,7 @@ from workflow_state.cli import (
     cmd_auth_params,
     cmd_test_module_params,
     cmd_dashboard,
+    cmd_detect_shadowed_commands,
     cmd_fail,
     cmd_files,
     cmd_help,
@@ -156,6 +158,7 @@ from workflow_state.cli import (
     cmd_set_assignee_by_connector,
     cmd_set_auth,
     cmd_set_param_defaults,
+    cmd_set_shadowed_commands,
     cmd_set_params_to_capabilities,
     cmd_set_params_to_commands,
     cmd_show_step,
@@ -249,6 +252,7 @@ __all__ = [
     "validate_param_defaults",
     "validate_params_to_capabilities",
     "validate_params_to_commands",
+    "validate_shadowed_commands",
     # Display
     "format_by_assignee",
     "format_dashboard_row",
@@ -278,6 +282,7 @@ __all__ = [
     "cmd_at_step",
     "cmd_auth_params",
     "cmd_dashboard",
+    "cmd_detect_shadowed_commands",
     "cmd_fail",
     "cmd_files",
     "cmd_help",
@@ -293,6 +298,7 @@ __all__ = [
     "cmd_set_assignee_by_connector",
     "cmd_set_auth",
     "cmd_set_param_defaults",
+    "cmd_set_shadowed_commands",
     "cmd_set_params_to_capabilities",
     "cmd_set_params_to_commands",
     "cmd_show_step",

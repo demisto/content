@@ -151,11 +151,11 @@ State is **purely derived from row contents** — there is no separate "current 
 | 2 | `Auth Details` | data (JSON; `auth_types[]` + optional `other_connection` — see [`column-schemas.md`](column-schemas.md)) | `set-auth` |
 | 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
 | 4 | `Params for test with default in code` | data (JSON) | `set-param-defaults` |
-| 5 | `Params to Capabilities` | data (JSON) | `set-params-to-capabilities` |
-| 6 | `generated manifest` | checkpoint | `markpass` |
-| 7 | `run manifest make validate` | checkpoint | `markpass` |
-| 8 | `wrote/checked code` | checkpoint | `markpass` |
-| 9 | `shadowed command test passes` | checkpoint | `markpass` |
+| 5 | `Shadowed Integration Commands` | data (JSON) | `set-shadowed-commands` |
+| 6 | `Params to Capabilities` | data (JSON) | `set-params-to-capabilities` |
+| 7 | `generated manifest` | checkpoint | `markpass` |
+| 8 | `run manifest make validate` | checkpoint | `markpass` |
+| 9 | `wrote/checked code` | checkpoint | `markpass` |
 | 10 | `write tests` | checkpoint | `markpass` |
 | 11 | `precommit/validate/unit tests passed` | checkpoint | `markpass` |
 | 12 | `auth parity test passes` | checkpoint | `markpass` (unconditional; the historical `requires auth parity test` gate flag was removed in 2026-05) |
@@ -174,7 +174,7 @@ State is **purely derived from row contents** — there is no separate "current 
    - **Explicit-target carve-out:** if the user names a preserved step **directly** as the `reset-to`/`fail` target, that one step IS cleared (the user's intent wins), but later preserved steps in the same operation are still preserved.
    - **`set-auth` is NOT covered by `preserve_on_reset`.** Auth changes invalidate every downstream artifact — `set-auth` continues to wipe steps #3-#15 (`Params to Commands` included) by design. See `apply_step_action` in [`connectus/workflow_state/state_machine.py`](workflow_state/state_machine.py).
 7. **`reset` (no step).** Clears all 15 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved. **`preserve_on_reset` is intentionally ignored** — `reset` is the "wipe the row" verb with no carve-outs.
-8. **Column-number addressability.** Every CLI verb that takes a column name (`show-step`, `markpass`, `skip`, `fail`, `reset-to`) also accepts a **1-based CSV column number** (1..18). Identity columns (#1-#3) are addressable only for read-only `show-step`; write verbs reject them with a verb-aware error. Example: `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5` resolves to `Auth Details`.
+8. **Column-number addressability.** Every CLI verb that takes a column name (`show-step`, `markpass`, `skip`, `fail`, `reset-to`) also accepts a **1-based CSV column number** (1..18). Identity columns (#1-#3) are addressable only for read-only `show-step`; write verbs reject them with a verb-aware error. Example: `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5` resolves to `Auth Details`. The CSV total of 18 reflects the 2026-05Q4 schema (3 identity + 15 workflow columns), after the `shadowed command test passes` checkpoint was replaced by the `Shadowed Integration Commands` data column.
 
 ### CLI Commands
 
@@ -365,11 +365,11 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
     2. Auth Details                           : (not set)
     3. Params to Commands                     : (not set)
     4. Params for test with default in code   : (not set)
-    5. Params to Capabilities                 : (not set)
-    6. generated manifest                     : ⬜
-    7. run manifest make validate             : ⬜
-    8. wrote/checked code                     : ⬜
-    9. shadowed command test passes           : ⬜
+    5. Shadowed Integration Commands          : (not set)
+    6. Params to Capabilities                 : (not set)
+    7. generated manifest                     : ⬜
+    8. run manifest make validate             : ⬜
+    9. wrote/checked code                     : ⬜
    10. write tests                            : ⬜
    11. precommit/validate/unit tests passed   : ⬜
    12. auth parity test passes                : ⬜

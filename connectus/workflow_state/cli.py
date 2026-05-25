@@ -7,9 +7,11 @@ up validators / cross-checks by their ``Step.json_schema`` /
 from __future__ import annotations
 
 import json
+import os
+import re
 import subprocess
 import sys
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from workflow_state.api import (
     _check_params_to_commands_overlap,
@@ -59,6 +61,7 @@ from workflow_state.validators import (
     validate_param_defaults,
     validate_params_to_capabilities,
     validate_params_to_commands,
+    validate_shadowed_commands,
 )
 
 
@@ -287,6 +290,236 @@ def cmd_set_param_defaults(args: list[str]) -> None:
                 print(f"  - {err}")
             sys.exit(1)
     _set_json_data_step(args, "Params for test with default in code", "set-param-defaults")
+
+
+# ---------------------------------------------------------------------------
+# Shadowed Integration Commands — detector helper + CLI verbs
+# ---------------------------------------------------------------------------
+
+_SHADOWED_BRAND_INVALID_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _normalize_brand(raw: str) -> str:
+    """Lowercase ``raw``, replace runs of non-alphanumeric chars with '-',
+    strip leading/trailing '-'. Used to derive the integration brand
+    suffix for renamed commands.
+    """
+    return _SHADOWED_BRAND_INVALID_RE.sub("-", raw.lower()).strip("-")
+
+
+def _load_yaml_commands(yml_path: str) -> tuple[Optional[str], list[str]]:
+    """Read ``yml_path`` and return ``(yml_name, [command_name, ...])``.
+
+    Returns ``(None, [])`` if the file is unreadable / malformed / has no
+    ``script.commands``. Warns on stderr for missing files.
+    """
+    import yaml  # local import — yaml is a project dep already
+
+    if not os.path.isfile(yml_path):
+        print(f"WARN: YML not found: {yml_path}", file=sys.stderr)
+        return None, []
+    try:
+        with open(yml_path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+    except (yaml.YAMLError, OSError) as e:
+        print(f"WARN: failed to parse YML {yml_path}: {e}", file=sys.stderr)
+        return None, []
+    if not isinstance(data, dict):
+        return None, []
+    name = data.get("name") if isinstance(data.get("name"), str) else None
+    script = data.get("script") or {}
+    if not isinstance(script, dict):
+        return name, []
+    commands = script.get("commands") or []
+    if not isinstance(commands, list):
+        return name, []
+    out: list[str] = []
+    for c in commands:
+        if isinstance(c, dict):
+            cname = c.get("name")
+            if isinstance(cname, str) and cname:
+                out.append(cname)
+    return name, out
+
+
+def _detect_shadowed_commands_for_integration(integration_id: str) -> dict[str, str]:
+    """Scan all integration rows sharing this integration's Connector ID,
+    parse each sibling's YML for top-level ``script.commands[].name``, and
+    return a dict mapping any command name in THIS integration that also
+    appears in at least one sibling integration (i.e. is shadowed within
+    the connector) to the proposed renamed form ``f"{name}-{brand}"``.
+
+    ``brand`` is derived from THIS integration's YML top-level ``name``
+    (lowercased, non-alphanumerics replaced with ``-``, collapsed,
+    stripped). If the YML has no ``name``, falls back to the
+    ``Integration ID`` cell transformed the same way.
+
+    Returns ``{}`` if no shadowed commands are detected. Raises
+    ``WorkflowError`` if ``integration_id`` is unknown.
+    """
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        raise WorkflowError(
+            f"Integration '{integration_id}' not found in pipeline CSV."
+        )
+
+    me = rows[idx]
+    my_connector = me.get("Connector ID", "").strip()
+    if not my_connector:
+        # No connector grouping → nothing to compare against.
+        return {}
+    my_yml = me.get("Integration File Path", "").strip()
+
+    my_yml_name, my_commands = _load_yaml_commands(my_yml) if my_yml else (None, [])
+    if not my_commands:
+        return {}
+
+    # Brand derivation.
+    brand_source = my_yml_name or integration_id
+    brand = _normalize_brand(brand_source)
+    if not brand:
+        # Fall back to a stripped integration id if even that yielded nothing
+        brand = _normalize_brand(integration_id) or "integration"
+
+    # Collect sibling command names.
+    sibling_command_names: set[str] = set()
+    for i, row in enumerate(rows):
+        if i == idx:
+            continue
+        if row.get("Connector ID", "").strip() != my_connector:
+            continue
+        sib_yml = row.get("Integration File Path", "").strip()
+        if not sib_yml:
+            continue
+        _sib_name, sib_commands = _load_yaml_commands(sib_yml)
+        sibling_command_names.update(sib_commands)
+
+    if not sibling_command_names:
+        return {}
+
+    shadowed: dict[str, str] = {}
+    seen: set[str] = set()
+    for cname in my_commands:
+        if cname in seen:
+            continue
+        seen.add(cname)
+        if cname in sibling_command_names:
+            shadowed[cname] = f"{cname}-{brand}"
+    return shadowed
+
+
+def cmd_detect_shadowed_commands(args: list[str]) -> None:
+    """CLI: detect-shadowed-commands <Integration ID>.
+
+    Prints the JSON rename-map (one line) to stdout. Empty dict ``{}``
+    if no shadowed commands are detected. On error, prints to stderr
+    and exits 1.
+    """
+    if len(args) != 1 or not args[0]:
+        print(
+            "Usage: workflow_state.py detect-shadowed-commands <Integration ID>",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    integration_id = args[0]
+    try:
+        result = _detect_shadowed_commands_for_integration(integration_id)
+    except WorkflowError as e:
+        print(f"ERROR: {e.message}", file=sys.stderr)
+        sys.exit(1)
+    print(json.dumps(result, separators=(",", ":"), sort_keys=True))
+
+
+def cmd_set_shadowed_commands(args: list[str]) -> None:
+    """CLI: set-shadowed-commands <Integration ID> '<JSON>'.
+
+    Follows the cmd_set_param_defaults pattern. After schema validation
+    passes, performs on-commit semantic validation:
+
+      1. Each ``original`` must currently be detected as shadowed
+         within the connector (re-runs the detector).
+      2. The integration's YML must now contain a command named
+         ``renamed`` and must NOT contain a command named ``original``.
+
+    Any failure prints all collected semantic errors and exits 1 BEFORE
+    the cell is written. Otherwise delegates to ``_set_json_data_step``.
+    """
+    if len(args) >= 2:
+        integration_id = args[0]
+        raw = " ".join(args[1:])
+
+        # Step 1: schema validation (same shape as cmd_set_param_defaults)
+        schema_errors = validate_shadowed_commands(raw)
+        if schema_errors:
+            print("ERROR: Shadowed Integration Commands does not match the required schema.")
+            for err in schema_errors:
+                print(f"  - {err}")
+            sys.exit(1)
+
+        # Parse for semantic validation.
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError as e:
+            # Cannot happen here (schema validator already caught it), but
+            # be defensive.
+            print(f"ERROR: invalid JSON: {e}")
+            sys.exit(1)
+
+        if not isinstance(payload, dict):
+            print("ERROR: top-level value must be a JSON object.")
+            sys.exit(1)
+
+        # Step 2: semantic validation (skip when payload is empty {})
+        if payload:
+            semantic_errors: list[str] = []
+
+            # Re-run the detector to confirm each original was shadowed.
+            try:
+                detected = _detect_shadowed_commands_for_integration(integration_id)
+            except WorkflowError as e:
+                print(f"ERROR: {e.message}")
+                sys.exit(1)
+
+            rows = load_csv()
+            row_idx = find_row(rows, integration_id)
+            if row_idx is None:
+                print(f"ERROR: Integration '{integration_id}' not found.")
+                sys.exit(1)
+            row = rows[row_idx]
+            connector_id = row.get("Connector ID", "").strip() or "<unset>"
+            my_yml_path = row.get("Integration File Path", "").strip()
+            _yml_name, current_commands = (
+                _load_yaml_commands(my_yml_path) if my_yml_path else (None, [])
+            )
+            current_command_names = set(current_commands)
+
+            for original, renamed in payload.items():
+                if original not in detected:
+                    semantic_errors.append(
+                        f"'{original}' was not detected as a shadowed "
+                        f"command within connector '{connector_id}'"
+                    )
+                if renamed not in current_command_names:
+                    semantic_errors.append(
+                        f"renamed command '{renamed}' is not present in "
+                        f"this integration's YML ({my_yml_path or '<no path>'})"
+                    )
+                if original in current_command_names:
+                    semantic_errors.append(
+                        f"original command '{original}' is still present "
+                        f"in this integration's YML "
+                        f"({my_yml_path or '<no path>'}); rename it to "
+                        f"'{renamed}' in both .py and .yml before committing"
+                    )
+
+            if semantic_errors:
+                print("ERROR: Shadowed Integration Commands semantic checks failed:")
+                for err in semantic_errors:
+                    print(f"  - {err}")
+                sys.exit(1)
+
+    _set_json_data_step(args, "Shadowed Integration Commands", "set-shadowed-commands")
 
 
 def cmd_set_params_to_capabilities(args: list[str]) -> None:
@@ -1266,6 +1499,8 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "set-auth": cmd_set_auth,
     "set-params-to-commands": cmd_set_params_to_commands,
     "set-param-defaults": cmd_set_param_defaults,
+    "set-shadowed-commands": cmd_set_shadowed_commands,
+    "detect-shadowed-commands": cmd_detect_shadowed_commands,
     "set-params-to-capabilities": cmd_set_params_to_capabilities,
     "markpass": cmd_markpass,
     "skip": cmd_skip,
@@ -1319,4 +1554,6 @@ __all__ = sorted({
     "validate_params_to_commands",
     "validate_param_defaults",
     "validate_params_to_capabilities",
+    "validate_shadowed_commands",
+    "_detect_shadowed_commands_for_integration",
 })

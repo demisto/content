@@ -7,7 +7,7 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-> _The workflow now has 15 steps after `verify button placement` was removed (2026-05Q3). The five data columns and ten checkpoints are unchanged; the per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` is the replacement signal (see §A.5 below)._
+> _The workflow now has 15 steps (2026-05Q4): the new `Shadowed Integration Commands` data column replaced the old `shadowed command test passes` checkpoint, so the data-column count went from 5 to 6 and the checkpoint count went from 10 to 9. The per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` remains the replacement signal (see §A.5 below) for the historical `verify button placement` step removed in 2026-05Q3._
 
 This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
 
@@ -15,9 +15,9 @@ The CSV has two kinds of columns:
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
 - **Workflow columns** (15, managed by the state machine — CSV total is 18):
-  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params to Capabilities` (5).
+  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Shadowed Integration Commands`, `Params to Capabilities` (6).
   - **Workflow flag**: _(none)_
-  - **Workflow checkpoints** (10, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
+  - **Workflow checkpoints** (9, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
 
 Authentication classification is the **prerequisite for everything**: you must set `Auth Details` with `set-auth` before the workflow can meaningfully begin (setting it also resets the workflow). The Validate Auth Classification procedure below is run before invoking `set-auth`.
 
@@ -1367,7 +1367,7 @@ The skill ONLY needs to:
       --integration-id "<Integration ID>"
   ```
 
-  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 9 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
+  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 8 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
 
 ### 9. Runtime expectations
 
@@ -1586,6 +1586,73 @@ top-level object, non-empty string keys, any JSON value. Full schema in
 > path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
 > `Params to Commands` carries `preserve_on_reset: true` today.
 
+### Step 3a-bis: Set `Shadowed Integration Commands` (data column)
+
+**Purpose:** ensure no two integrations within the same connector expose
+a command with the same name. When the migration pipeline scans all
+integrations in a connector and finds a shadowed (shared) command name,
+the "losing" integration(s) must rename their copy to a brand-suffixed
+variant so the connector remains unambiguous at runtime. This data
+column replaces the former `shadowed command test passes` checkpoint
+(removed 2026-05Q4) — the rename evidence is now the cell value itself.
+
+#### Detector
+
+```bash
+python3 connectus/workflow_state.py detect-shadowed-commands "<Integration ID>"
+```
+
+Prints a JSON object mapping each shadowed command name in THIS
+integration to the proposed renamed form `<original>-<brand>`. The
+**brand** is derived from this integration's YML top-level `name`,
+lowercased, with any non-alphanumeric character replaced by `-` (runs
+collapsed, leading/trailing dashes stripped). An empty `{}` means no
+shadowed commands were detected and the cell should be committed as
+`{}`.
+
+#### AI responsibility — rename BEFORE committing
+
+For each `(original, renamed)` pair the detector emits:
+
+1. Edit the integration's `.py` to rename the command. This typically
+   means updating the `command` string in the dispatcher / `if-elif`
+   block (`if command == "<renamed>"`) and the handler function name if
+   it embeds the command (e.g. `def <renamed>_command(...)`). Keep all
+   arguments and outputs identical.
+2. Edit the integration's `.yml`: update the matching
+   `script.commands[].name` entry from `<original>` to `<renamed>`. Do
+   NOT touch the command's `arguments` / `outputs` blocks.
+3. Do NOT touch the winning integration in the connector — it keeps the
+   original command name.
+
+#### Commit
+
+```bash
+python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '<JSON>'
+# or, when there are no shadowed commands:
+python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '{}'
+```
+
+#### Validation guarantees
+
+The setter validates both the JSON schema (see
+[`column-schemas.md`](column-schemas.md) §`Shadowed Integration Commands`)
+AND on-commit semantics:
+
+- Each `original` must currently be detected as shadowed within the
+  connector (i.e. present in this integration's YML AND in at least one
+  sibling integration's YML when the connector is scanned).
+- The renamed command MUST exist in this integration's YML
+  (`script.commands[].name == <renamed>`).
+- The original command MUST NO LONGER exist in this integration's YML.
+
+Any failure prints all collected errors and refuses to write the cell.
+
+> **Reset semantics.** `Shadowed Integration Commands` is NOT preserved
+> on any reset path (`fail`, `reset-to`, `set-auth`, `reset` all wipe
+> it). Only `Params to Commands` carries `preserve_on_reset: true`
+> today.
+
 ### Step 3b: Set `Params to Capabilities` (data column)
 
 Produce and persist the **bare capability dict** — exactly what
@@ -1717,7 +1784,7 @@ When UCP is enabled, [`BaseClient._http_request`](Packs/Base/Scripts/CommonServe
 
 **The problem.** Many vendors do NOT use `Authorization`. APIVoid uses `X-API-Key`; some vendors use `Apikey`; some carry the secret in a custom query parameter; signed-request schemes (HMAC, AWS SigV4) write into multiple headers at once. For any such integration, the default UCP injection writes the secret into the **wrong** header. The integration's own code reads from the ORIGINAL header — which is empty under UCP because the user-facing params were stripped from `demisto.params()`. Net result: **the outbound request goes out unauthenticated**, but no exception is raised at the injection layer.
 
-**Detection.** This manifests as the auth parity tool (Step 10) reporting `MISSING_IN_NEW` for the secret's role-tagged sentinel. The old run's `locations` show the secret at the integration's actual header (e.g. `header:x-api-key`); the new run's `locations` are empty.
+**Detection.** This manifests as the auth parity tool (Step 9) reporting `MISSING_IN_NEW` for the secret's role-tagged sentinel. The old run's `locations` show the secret at the integration's actual header (e.g. `header:x-api-key`); the new run's `locations` are empty.
 
 **Fix.** Override the appropriate `_apply_ucp_<type>` method on the integration's `Client` class (the `BaseClient` subclass). The override receives the UCP credentials dict and a request-context object with mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes, and is expected to write the secret into the slot the integration's own request code actually reads from.
 
@@ -1773,9 +1840,9 @@ class Client(BaseClient):
 
 - **YOU NEED IT** if the integration's existing code reads the secret from a non-`Authorization` header. Grep the integration's `Client.__init__` for the `headers={...}` dict it passes to `super().__init__` — anything other than `Authorization: Bearer <...>` (for APIKey / OAuth2) or `Authorization: Basic <...>` / `HTTPBasicAuth(...)` (for Plain) means UCP's default writes to the wrong slot.
 - **YOU PROBABLY DON'T NEED IT** if the integration sends `Authorization: Bearer <token>` for APIKey / OAuth2, or uses `HTTPBasicAuth(user, pass)` (or the equivalent `auth=(user, pass)` tuple) for Plain — the defaults already cover these.
-- **The auth parity tool (Step 10) will surface `MISSING_IN_NEW`** for the relevant role-tagged sentinel if you forgot the override. Use it as the regression catch.
+- **The auth parity tool (Step 9) will surface `MISSING_IN_NEW`** for the relevant role-tagged sentinel if you forgot the override. Use it as the regression catch.
 
-**Test it.** Run the auth parity tool per the Step 10 procedure after applying the override. The new run should now route the sentinel into the integration's actual header (matching the old run's location set), and the parity check passes.
+**Test it.** Run the auth parity tool per the Step 9 procedure after applying the override. The new run should now route the sentinel into the integration's actual header (matching the old run's location set), and the parity check passes.
 
 #### Multi-auth integrations with startup-time auth-combo validation
 
@@ -1825,15 +1892,7 @@ When code is written/checked:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "wrote/checked code"
 ```
 
-### Step 7: `shadowed command test passes`
-
-Verify that integrations in the same connector do not have conflicting or shadowed commands. (The exact tooling is defined elsewhere; for now this is a manual review.)
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "shadowed command test passes"
-```
-
-### Step 8: `write tests`
+### Step 7: `write tests`
 
 Write unit tests for the integration:
 
@@ -1841,7 +1900,7 @@ Write unit tests for the integration:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "write tests"
 ```
 
-### Step 9: `precommit/validate/unit tests passed`
+### Step 8: `precommit/validate/unit tests passed`
 
 Run pre-commit, validate, and unit tests via demisto-sdk pre-commit (Docker):
 
@@ -1855,7 +1914,7 @@ When everything passes (Yuval decides which checks may be skipped):
 python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
 ```
 
-### Step 10: `auth parity test passes`
+### Step 9: `auth parity test passes`
 
 > **Scope note:** the parity tool is **not** applicable to every integration in the pipeline. Three categories of integrations are valid permanent `interpolated: true` candidates — the parity tool will structurally short-circuit on them, and that is the **correct** outcome (not a bug to chase):
 >
@@ -1938,7 +1997,7 @@ The parity tool's structural-skip gates fire in a **fixed order** — the first 
 
 **Detection during classification:** grep the integration's `.py` for `import boto3|from boto3|import botocore|from botocore|AWSApiModule`. If any match, mark `interpolated: true` up front on every `auth_types[]` entry and skip the parity-test reasoning entirely — the gate will short-circuit regardless.
 
-### Step 11: `param parity test passes`
+### Step 10: `param parity test passes`
 
 Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
 
@@ -1946,7 +2005,7 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
 ```
 
-### Step 12: `code reviewed`
+### Step 11: `code reviewed`
 
 After code review is complete:
 
@@ -1954,7 +2013,7 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
 ```
 
-### Step 13: `code merged`
+### Step 12: `code merged`
 
 After the code is merged to the branch:
 

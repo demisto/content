@@ -9,6 +9,7 @@ validation logic for the two real schemas.
 from __future__ import annotations
 
 import json
+import re
 from typing import Callable, Optional
 
 from auth_config_parser import (
@@ -263,6 +264,92 @@ def validate_params_to_capabilities(value: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Shadowed Integration Commands
+# ---------------------------------------------------------------------------
+
+# Allowed characters in a renamed command name. Mirrors the convention used
+# elsewhere in the migration: letters, digits, dot, underscore,
+# hyphen. The original command name has no shape check beyond non-empty
+# string (some legacy XSOAR commands use mixed case / underscores).
+_SHADOWED_COMMAND_RENAMED_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+
+
+def validate_shadowed_commands(raw: str) -> list[str]:
+    """Validate ``Shadowed Integration Commands`` JSON shape. Returns errors ([] = valid).
+
+    Strict shape::
+
+        { "<original_command_name>": "<original>-<brand>", ... }
+
+    Rules:
+      * Must be a JSON object (dict). Empty ``{}`` is valid.
+      * Each key (the original command name) is a non-empty string.
+      * Each value (the renamed command name) is a non-empty string matching
+        ``^[A-Za-z0-9._-]+$``.
+      * The renamed value must equal ``f"{original}-{brand}"`` for some
+        non-empty brand suffix.
+      * No two keys may map to the same renamed value.
+
+    See ``connectus/column-schemas.md`` §``Shadowed Integration Commands``
+    for the full schema.
+    """
+    errors: list[str] = []
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as e:
+        return [f"invalid JSON: {e}"]
+
+    if not isinstance(payload, dict):
+        return ["top-level value must be a JSON object"]
+
+    if not payload:
+        return []
+
+    renamed_to_originals: dict[str, list[str]] = {}
+
+    for key, value in payload.items():
+        if not isinstance(key, str) or key == "":
+            errors.append(f"key {key!r} must be a non-empty string")
+            continue
+        if not isinstance(value, str) or value == "":
+            errors.append(
+                f"value for key {key!r} must be a non-empty string, "
+                f"got {value!r}"
+            )
+            continue
+        if not _SHADOWED_COMMAND_RENAMED_RE.match(value):
+            errors.append(
+                f"renamed command {value!r} (for original {key!r}) contains "
+                f"disallowed characters; allowed: [A-Za-z0-9._-]"
+            )
+            continue
+        prefix = f"{key}-"
+        if not value.startswith(prefix) or len(value) <= len(prefix):
+            errors.append(
+                f"renamed command {value!r} must equal '<original>-<brand>' "
+                f"with a non-empty brand; expected prefix {prefix!r}"
+            )
+            continue
+        renamed_to_originals.setdefault(value, []).append(key)
+
+    duplicates = {
+        renamed: keys for renamed, keys in renamed_to_originals.items()
+        if len(keys) >= 2
+    }
+    if duplicates:
+        parts = [
+            f"{renamed!r} <- {sorted(keys)}"
+            for renamed, keys in sorted(duplicates.items())
+        ]
+        errors.append(
+            "duplicate renamed value(s) mapped from multiple originals: "
+            + "; ".join(parts)
+        )
+
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # Generic "any JSON" validator (used by the JSON-shaped data steps that
 # don't have a richer schema, e.g. "Params for test with default in code").
 # ---------------------------------------------------------------------------
@@ -307,6 +394,7 @@ _NAMED_VALIDATORS: dict[str, ValidatorFn] = {
     "params_to_commands": validate_params_to_commands,
     "param_defaults": validate_param_defaults,
     "params_to_capabilities": validate_params_to_capabilities,
+    "shadowed_commands": validate_shadowed_commands,
     "any_json": validate_any_json,
 }
 

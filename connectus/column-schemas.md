@@ -702,6 +702,88 @@ Must be valid JSON.
 
 ---
 
+## `Shadowed Integration Commands`
+
+JSON object mapping each command name in THIS integration that is also
+defined in at least one sibling integration within the same connector
+(i.e. shadowed inside the connector's command namespace) to the
+proposed renamed form `<original>-<brand>`. The "losing" integration
+must rename its command in BOTH the `.py` (dispatcher / handler) and
+the `.yml` (`script.commands[].name`) before this cell is committed.
+Replaces the former `shadowed command test passes` checkpoint
+(removed 2026-05Q4).
+
+Empty object `{}` is valid and is the recommended value when no
+shadowed commands were detected for this integration.
+
+```json
+{
+  "<original_command_name>": "<original>-<brand>",
+  ...
+}
+```
+
+Where:
+
+- `<original_command_name>` is a non-empty string (matches the legacy
+  XSOAR command name; case / underscores allowed).
+- `<original>-<brand>` is a non-empty string drawn from
+  `^[A-Za-z0-9._-]+$`, and MUST equal the literal prefix
+  `<original>-` followed by a non-empty brand suffix.
+- The brand is derived from the integration's YML top-level `name`,
+  lowercased, with any non-alphanumeric character replaced by `-`
+  (runs collapsed, leading/trailing `-` stripped). If the YML has no
+  `name`, the `Integration ID` cell is transformed the same way.
+
+Worked example:
+
+```json
+{
+  "ip": "ip-apivoid",
+  "url": "url-apivoid"
+}
+```
+
+Validator: `shadowed_commands` (a.k.a.
+[`validate_shadowed_commands()`](workflow_state/validators.py:1))
+enforces:
+
+1. Valid JSON.
+2. Top-level is a JSON object (not list / not scalar). Empty `{}` is valid.
+3. Every key is a non-empty string.
+4. Every value is a non-empty string matching `^[A-Za-z0-9._-]+$`.
+5. Every value MUST equal `<key>-<non-empty brand>` (starts with
+   `<key>-` and the brand portion is non-empty).
+6. No two keys may map to the same renamed value.
+
+In addition, the CLI setter [`set-shadowed-commands`](workflow_state/cli.py:1)
+performs on-commit semantic validation against the integration's YML
+and its connector siblings:
+
+- Each `original` must currently be detected as shadowed within the
+  connector (re-runs the detector below).
+- The integration's YML MUST now contain a command named `renamed`
+  AND MUST NOT contain a command named `original`.
+
+Use the read-only detector to compute the rename map without
+modifying anything:
+
+```bash
+python3 connectus/workflow_state.py detect-shadowed-commands "<Integration ID>"
+```
+
+Then apply the `.py` / `.yml` renames yourself, then commit:
+
+```bash
+python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '<JSON>'
+```
+
+> **Reset semantics.** `Shadowed Integration Commands` is **wiped** by
+> every reset path (`reset`, `set-auth`, `fail`, `reset-to`). It does
+> NOT carry `preserve_on_reset: true`.
+
+---
+
 ## `Params to Capabilities`
 
 Bare capability dict — exactly the JSON written by
