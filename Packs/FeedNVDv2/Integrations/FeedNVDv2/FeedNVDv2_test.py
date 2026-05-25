@@ -293,26 +293,40 @@ def test_resolve_auto_fetch_window_first_run(client):
         _resolve_auto_fetch_window is called.
 
     Then:
-        Returns a start_date derived from first_fetch and use_pub_date=True.
+        Returns a start_date derived from first_fetch, use_pub_date=True,
+        and no resume bucket info (cvss_version / severity both None).
     """
     with patch("FeedNVDv2.demisto") as demisto_mock:
         demisto_mock.getLastRun.return_value = {}
-        start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
+        (
+            start_date,
+            use_pub_date,
+            resume_ids,
+            resume_start_index,
+            resume_cvss_version,
+            resume_severity,
+        ) = _resolve_auto_fetch_window(client)
         assert start_date is not None
         assert use_pub_date is True
         assert resume_ids == []
+        assert resume_start_index == 0
+        assert resume_cvss_version is None
+        assert resume_severity is None
 
 
 def test_resolve_auto_fetch_window_resume(client):
     """
     Given:
-        lastRun data with a resumeFrom key and usePubDate=True.
+        lastRun data with a resumeFrom key and usePubDate=True (no bucket
+        info – simulates a resume from an older lastRun that predates the
+        bucket-aware persistence).
 
     When:
         _resolve_auto_fetch_window is called.
 
     Then:
-        Returns the resume date and the saved usePubDate flag.
+        Returns the resume date and the saved usePubDate flag, with
+        bucket identifiers defaulting to None.
     """
     with patch("FeedNVDv2.demisto") as demisto_mock:
         demisto_mock.getLastRun.return_value = {
@@ -320,10 +334,20 @@ def test_resolve_auto_fetch_window_resume(client):
             "resumeFrom": "2024-03-01T00:00:00Z",
             "usePubDate": True,
         }
-        start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
+        (
+            start_date,
+            use_pub_date,
+            resume_ids,
+            resume_start_index,
+            resume_cvss_version,
+            resume_severity,
+        ) = _resolve_auto_fetch_window(client)
         assert start_date == parse("2024-03-01T00:00:00Z")
+        assert resume_start_index == 0
         assert use_pub_date is True
         assert resume_ids == []
+        assert resume_cvss_version is None
+        assert resume_severity is None
 
 
 def test_ingest_batch_creates_indicators(client):
@@ -734,6 +758,114 @@ def test_include_rejected_true_omits_no_rejected_param(client):
     assert "noRejected" not in params, "noRejected should be absent when include_rejected=True"
 
 
+# --- Budget accounting tests ---
+
+
+def test_budget_consumed_when_single_page_complete(client):
+    """
+    Given:
+        An API call budget of 1 and an NVD response that fits in a single page
+        (total_results <= results_per_page).
+
+    When:
+        _retrieve_cves_single_query is called.
+
+    Then:
+        The call budget IS decremented, because every non-empty API call
+        counts toward the budget to ensure the integration respects rate limits.
+    """
+    from datetime import datetime
+    from unittest.mock import patch
+
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2024, 1, 2, tzinfo=UTC)
+    remaining_calls: list[int] = [1]
+
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        mock_get_cves.return_value = {
+            "vulnerabilities": [{"cve": {"id": "CVE-2024-0001"}}],
+            "totalResults": 1,
+            "resultsPerPage": 2000,
+            "startIndex": 0,
+        }
+        _retrieve_cves_single_query(client, start, end, use_pub_date=True, remaining_calls=remaining_calls)
+
+    assert remaining_calls[0] == 0, "Budget must be consumed for every non-empty API response to respect rate limits."
+
+
+def test_budget_consumed_when_more_pages_remain(client):
+    """
+    Given:
+        An API call budget of 2 and an NVD response indicating more pages
+        are waiting (total_results > results_per_page).
+
+    When:
+        _retrieve_cves_single_query is called.
+
+    Then:
+        The call budget IS decremented, since the fetch is a partial first
+        page of a larger result set — this is the genuine "exhaustion"
+        scenario that should trigger the resume cursor on stop.
+    """
+    from datetime import datetime
+    from unittest.mock import patch
+
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2024, 6, 1, tzinfo=UTC)
+    remaining_calls: list[int] = [2]
+
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        # First call returns a full page with more pages remaining,
+        # second call returns the budget-zero short-circuit (no third call).
+        page = [{"cve": {"id": f"CVE-2024-{i:04d}"}} for i in range(2000)]
+        mock_get_cves.return_value = {
+            "vulnerabilities": page,
+            "totalResults": 5000,
+            "resultsPerPage": 2000,
+            "startIndex": 0,
+        }
+        _retrieve_cves_single_query(client, start, end, use_pub_date=True, remaining_calls=remaining_calls)
+
+    # First page consumed 1 from budget (more pages waiting after it).
+    # Second iteration tried to fetch page 2: response still claims 5000 total,
+    # so more_to_process stays True → also consumes 1.  Budget should be 0.
+    assert remaining_calls[0] == 0, (
+        f"Budget should be 0 after two pages with more results remaining, " f"got {remaining_calls[0]}"
+    )
+
+
+def test_budget_not_consumed_on_empty_response(client):
+    """
+    Given:
+        An API call budget of 1 and an empty NVD response (totalResults == 0).
+
+    When:
+        _retrieve_cves_single_query is called.
+
+    Then:
+        The call budget is NOT decremented.  Empty responses are lightweight
+        probes (e.g. sparse KEV-filter 120-day windows) and must not count
+        against the budget.
+    """
+    from datetime import datetime
+    from unittest.mock import patch
+
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2024, 1, 2, tzinfo=UTC)
+    remaining_calls: list[int] = [1]
+
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        mock_get_cves.return_value = {
+            "vulnerabilities": [],
+            "totalResults": 0,
+            "resultsPerPage": 2000,
+            "startIndex": 0,
+        }
+        _retrieve_cves_single_query(client, start, end, use_pub_date=True, remaining_calls=remaining_calls)
+
+    assert remaining_calls[0] == 1, "Empty response must not consume the budget"
+
+
 # --- Same-timestamp dedup tests (XSUP-68648) ---
 
 
@@ -756,13 +888,15 @@ def _make_raw_cve(cve_id: str, last_modified: str, published: str | None = None)
 def test_resolve_auto_fetch_window_returns_resume_ids(client):
     """
     Given:
-        lastRun data with resumeFrom, usePubDate, and resumeIds.
+        lastRun data with resumeFrom, usePubDate, resumeIds, and the
+        bucket identifiers persisted from a prior budget-exhausted run.
 
     When:
         _resolve_auto_fetch_window is called.
 
     Then:
-        Returns the resume_ids from lastRun so they can be used for dedup.
+        Returns the resume_ids, start index, and the ``(cvss_version,
+        severity)`` bucket the cursor belongs to.
     """
     with patch("FeedNVDv2.demisto") as demisto_mock:
         demisto_mock.getLastRun.return_value = {
@@ -770,10 +904,23 @@ def test_resolve_auto_fetch_window_returns_resume_ids(client):
             "resumeFrom": "2024-01-01T00:00:00Z",
             "usePubDate": False,
             "resumeIds": ["CVE-2024-0001", "CVE-2024-0002"],
+            "resumeStartIndex": 42,
+            "resumeCvssVersion": "CVSS v3",
+            "resumeSeverity": "CRITICAL",
         }
-        start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
+        (
+            start_date,
+            use_pub_date,
+            resume_ids,
+            resume_start_index,
+            resume_cvss_version,
+            resume_severity,
+        ) = _resolve_auto_fetch_window(client)
         assert resume_ids == ["CVE-2024-0001", "CVE-2024-0002"]
+        assert resume_start_index == 42
         assert use_pub_date is False
+        assert resume_cvss_version == "CVSS v3"
+        assert resume_severity == "CRITICAL"
 
 
 def test_fetch_indicators_skips_already_processed_cves_on_resume(client):
@@ -796,10 +943,11 @@ def test_fetch_indicators_skips_already_processed_cves_on_resume(client):
         _make_raw_cve("CVE-2024-0003", boundary_ts),
     ]
 
-    with patch("FeedNVDv2.demisto") as demisto_mock, \
-         patch("FeedNVDv2.retrieve_cves", return_value=cves), \
-         patch("FeedNVDv2._ingest_batch", return_value=1) as mock_ingest:
-
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves", return_value=cves),
+        patch("FeedNVDv2._ingest_batch", return_value=1) as mock_ingest,
+    ):
         demisto_mock.getLastRun.return_value = {
             "lastRun": boundary_ts,
             "resumeFrom": boundary_ts,
@@ -841,11 +989,12 @@ def test_fetch_indicators_saves_resume_ids_on_budget_exhaustion(client):
     # Use a very small max_indicators to force budget exhaustion
     client.max_indicators = 2000
 
-    with patch("FeedNVDv2.demisto") as demisto_mock, \
-         patch("FeedNVDv2.retrieve_cves", return_value=cves) as mock_retrieve, \
-         patch("FeedNVDv2._ingest_batch", return_value=3), \
-         patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run:
-
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves", return_value=cves) as mock_retrieve,
+        patch("FeedNVDv2._ingest_batch", return_value=3),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
         demisto_mock.getLastRun.return_value = {}
         demisto_mock.params.return_value = {}
 
@@ -863,7 +1012,11 @@ def test_fetch_indicators_saves_resume_ids_on_budget_exhaustion(client):
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert "resumeIds" in last_run_arg, "resumeIds should be saved when budget is exhausted"
         assert set(last_run_arg["resumeIds"]) == {"CVE-2024-0001", "CVE-2024-0002", "CVE-2024-0003"}
-        assert last_run_arg["resumeFrom"] == boundary_ts
+        # resumeFrom should be the exact boundary timestamp (not advanced by 1 ms).
+        assert last_run_arg["resumeFrom"] == "2024-06-01T12:00:00.000000Z"
+        # Boundary advanced from the fresh-fetch start_date to the CVE timestamp, so
+        # the cursor must reset (startIndex is only valid within a fixed query window).
+        assert last_run_arg["resumeStartIndex"] == 0
 
 
 def test_fetch_indicators_accumulates_resume_ids_when_timestamp_unchanged(client):
@@ -878,7 +1031,8 @@ def test_fetch_indicators_accumulates_resume_ids_when_timestamp_unchanged(client
     Then:
         The new CVE IDs are accumulated with the previous ones in resumeIds.
     """
-    boundary_ts = "2024-06-01T12:00:00Z"
+    # Use NVD_DATE_FORMAT-compatible timestamp so the boundary comparison works.
+    boundary_ts = "2024-06-01T12:00:00.000000Z"
     # Previous run already processed CVE-0001 and CVE-0002
     previous_ids = ["CVE-2024-0001", "CVE-2024-0002"]
     # This run finds CVE-0003 (new) at the same timestamp
@@ -888,16 +1042,18 @@ def test_fetch_indicators_accumulates_resume_ids_when_timestamp_unchanged(client
 
     client.max_indicators = 2000
 
-    with patch("FeedNVDv2.demisto") as demisto_mock, \
-         patch("FeedNVDv2.retrieve_cves") as mock_retrieve, \
-         patch("FeedNVDv2._ingest_batch", return_value=1), \
-         patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run:
-
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves") as mock_retrieve,
+        patch("FeedNVDv2._ingest_batch", return_value=1),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
         demisto_mock.getLastRun.return_value = {
             "lastRun": boundary_ts,
             "resumeFrom": boundary_ts,
             "usePubDate": False,
             "resumeIds": previous_ids,
+            "resumeStartIndex": 2,
         }
         demisto_mock.params.return_value = {}
 
@@ -914,6 +1070,7 @@ def test_fetch_indicators_accumulates_resume_ids_when_timestamp_unchanged(client
         assert "resumeIds" in last_run_arg
         # Should contain both previous and new IDs
         assert set(last_run_arg["resumeIds"]) == {"CVE-2024-0001", "CVE-2024-0002", "CVE-2024-0003"}
+        assert last_run_arg["resumeStartIndex"] == 3
 
 
 def test_fetch_indicators_clears_resume_ids_when_timestamp_advances(client):
@@ -928,11 +1085,12 @@ def test_fetch_indicators_clears_resume_ids_when_timestamp_advances(client):
     Then:
         The lastRun does NOT contain resumeIds (clean state, no dedup needed).
     """
-    with patch("FeedNVDv2.demisto") as demisto_mock, \
-         patch("FeedNVDv2.retrieve_cves", return_value=[]), \
-         patch("FeedNVDv2._ingest_batch", return_value=0), \
-         patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run:
-
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves", return_value=[]),
+        patch("FeedNVDv2._ingest_batch", return_value=0),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
         demisto_mock.getLastRun.return_value = {
             "lastRun": "2024-01-01T00:00:00Z",
         }
@@ -943,3 +1101,453 @@ def test_fetch_indicators_clears_resume_ids_when_timestamp_advances(client):
         last_run_arg = mock_set_last_run.call_args[0][0]
         # When budget is NOT exhausted, no resumeIds should be saved
         assert "resumeIds" not in last_run_arg
+
+
+def test_fetch_indicators_saves_resume_ids_with_variable_precision_timestamp(client):
+    """
+    Given:
+        NVD returns CVEs whose ``lastModified`` field uses variable precision
+        (3-digit fractional seconds, no trailing ``Z``) — different from the
+        6-digit ``NVD_DATE_FORMAT`` rendering produced by ``strftime``.
+
+    When:
+        fetch_indicators_command exhausts the call budget so that
+        ``resumeFrom`` equals the last CVE's ``lastModified`` boundary.
+
+    Then:
+        ``resumeIds`` in the saved ``lastRun`` contains the CVE IDs at that
+        boundary timestamp — proving the comparison parses both sides to
+        datetimes instead of comparing raw strings.
+    """
+    # Variable-precision timestamp as actually emitted by NVD (3-digit ms, no 'Z').
+    boundary_ts = "2024-06-01T12:00:00.287"
+    cves = [
+        _make_raw_cve("CVE-2024-1001", boundary_ts),
+        _make_raw_cve("CVE-2024-1002", boundary_ts),
+        _make_raw_cve("CVE-2024-1003", boundary_ts),
+    ]
+
+    client.max_indicators = 2000
+
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves") as mock_retrieve,
+        patch("FeedNVDv2._ingest_batch", return_value=3),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
+        demisto_mock.getLastRun.return_value = {}
+        demisto_mock.params.return_value = {}
+
+        def exhaust_budget(*args, remaining_calls=None, **kwargs):
+            if remaining_calls is not None:
+                remaining_calls[0] = 0
+            return cves
+
+        mock_retrieve.side_effect = exhaust_budget
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        # All three boundary-timestamp CVE IDs should be saved, despite the
+        # API's 3-digit-precision timestamp not equaling the 6-digit
+        # NVD_DATE_FORMAT string rendering of the same instant.
+        assert set(last_run_arg["resumeIds"]) == {"CVE-2024-1001", "CVE-2024-1002", "CVE-2024-1003"}
+
+
+def test_fetch_indicators_resets_start_index_when_boundary_advances(client):
+    """
+    Given:
+        A resume scenario where the previous run saved a ``resumeFrom`` of
+        ``2024-06-01T12:00:00.000000Z`` with ``resumeStartIndex == 5``, and
+        the new fetch returns CVEs whose newest ``lastModified`` is strictly
+        greater than that resume timestamp.
+
+    When:
+        fetch_indicators_command exhausts the call budget mid-fetch.
+
+    Then:
+        ``resumeStartIndex`` is reset to ``0`` (the cursor is only valid
+        within a fixed ``lastModStartDate`` query and the boundary just
+        advanced), ``resumeFrom`` equals the new boundary timestamp, and
+        ``resumeIds`` contains ONLY the CVE IDs whose ``lastModified``
+        equals that new boundary.
+    """
+    prev_resume_ts = "2024-06-01T12:00:00.000000Z"
+    older_ts = "2024-06-02T08:00:00.000000Z"
+    new_boundary_ts = "2024-06-02T09:30:15.287000Z"
+    cves = [
+        _make_raw_cve("CVE-2024-2001", older_ts),
+        _make_raw_cve("CVE-2024-2002", new_boundary_ts),
+        _make_raw_cve("CVE-2024-2003", new_boundary_ts),
+    ]
+
+    client.max_indicators = 2000
+
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves") as mock_retrieve,
+        patch("FeedNVDv2._ingest_batch", return_value=3),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": prev_resume_ts,
+            "resumeFrom": prev_resume_ts,
+            "usePubDate": False,
+            "resumeIds": [],
+            "resumeStartIndex": 5,
+        }
+        demisto_mock.params.return_value = {}
+
+        def exhaust_budget(*args, remaining_calls=None, **kwargs):
+            if remaining_calls is not None:
+                remaining_calls[0] = 0
+            return cves
+
+        mock_retrieve.side_effect = exhaust_budget
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        # Boundary advanced past the resume timestamp → cursor must reset.
+        assert last_run_arg["resumeStartIndex"] == 0
+        assert last_run_arg["resumeFrom"] == new_boundary_ts
+        # Only IDs at the new boundary timestamp should be persisted for dedup.
+        assert set(last_run_arg["resumeIds"]) == {"CVE-2024-2002", "CVE-2024-2003"}
+
+
+def test_fetch_indicators_advances_cursor_by_pre_dedup_count(client):
+    """
+    Given:
+        A resume scenario where ``resumeIds`` overlaps with the CVEs that
+        ``retrieve_cves`` returns at the same boundary timestamp and bucket,
+        so the post-dedup list is strictly shorter than what NVD actually
+        returned (e.g. 3 dedup'd out of 5).
+
+    When:
+        ``fetch_indicators_command`` exhausts the call budget and persists
+        ``resumeStartIndex``.
+
+    Then:
+        ``resumeStartIndex`` advances by the **pre-dedup** count (what NVD
+        returned), not by the post-dedup count (what we emitted). Otherwise
+        the next run would re-fetch the already-skipped items because
+        ``startIndex`` is a position in the NVD result set, not a count of
+        items we processed.
+    """
+    boundary_ts = "2024-06-01T12:00:00.000000Z"
+    previous_ids = ["CVE-A", "CVE-B", "CVE-C"]
+    # NVD returns 5 CVEs at the boundary — A/B/C overlap with resumeIds
+    # (dedup removes 3), D/E are new and get emitted.
+    cves = [
+        _make_raw_cve("CVE-A", boundary_ts),
+        _make_raw_cve("CVE-B", boundary_ts),
+        _make_raw_cve("CVE-C", boundary_ts),
+        _make_raw_cve("CVE-D", boundary_ts),
+        _make_raw_cve("CVE-E", boundary_ts),
+    ]
+
+    client.max_indicators = 2000
+
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves") as mock_retrieve,
+        patch("FeedNVDv2._ingest_batch", return_value=2),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": boundary_ts,
+            "resumeFrom": boundary_ts,
+            "usePubDate": False,
+            "resumeIds": previous_ids,
+            "resumeStartIndex": 10,
+        }
+        demisto_mock.params.return_value = {}
+
+        def exhaust_budget(*args, remaining_calls=None, **kwargs):
+            if remaining_calls is not None:
+                remaining_calls[0] = 0
+            return cves
+
+        mock_retrieve.side_effect = exhaust_budget
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        # 10 (previous startIndex) + 5 (pre-dedup count from NVD) == 15.
+        # The buggy behaviour would yield 10 + 2 == 12 (post-dedup count).
+        assert last_run_arg["resumeStartIndex"] == 15
+
+
+def test_retrieve_cves_resumes_only_matching_bucket(client):
+    """
+    Given:
+        A severity-filtered fetch spanning multiple (cvss_version, severity)
+        buckets, with ``resume_cvss_version="CVSS v3"`` and
+        ``resume_severity="CRITICAL"`` and ``start_index=42``.
+
+    When:
+        retrieve_cves is called.
+
+    Then:
+        Only the (CVSS v3, CRITICAL) sub-query is issued with
+        ``startIndex=42``; every other bucket uses ``startIndex=0``.
+        Buckets ordered before the resume bucket are NOT called.
+    """
+    client.cvss_severity = ["CRITICAL", "HIGH"]
+    client.cvss_versions = ["CVSS v3", "CVSS v2"]
+
+    captured: list[dict] = []
+
+    def fake_get_cves(url_suffix, params, severity_param="", severity_value=""):
+        captured.append(
+            {
+                "startIndex": params.get("startIndex"),
+                "severity_param": severity_param,
+                "severity_value": severity_value,
+            }
+        )
+        # Return zero results so pagination stops after one call per bucket.
+        return {"totalResults": 0, "vulnerabilities": []}
+
+    with patch("FeedNVDv2.Client.get_cves", side_effect=fake_get_cves):
+        retrieve_cves(
+            client,
+            parse("2024-01-01T00:00:00Z"),
+            parse("2024-01-04T00:00:00Z"),
+            use_pub_date=True,
+            start_index=42,
+            resume_cvss_version="CVSS v3",
+            resume_severity="CRITICAL",
+        )
+
+    by_bucket = {(c["severity_param"], c["severity_value"]): c["startIndex"] for c in captured}
+    # The resume bucket uses startIndex=42; the only other bucket called
+    # after it (in iteration order) is (CVSS v3, HIGH) and both CVSS v2 ones.
+    assert by_bucket[("cvssV3Severity", "CRITICAL")] == 42
+    # Every OTHER bucket that ran must have used startIndex=0.
+    for bucket, start_index in by_bucket.items():
+        if bucket != ("cvssV3Severity", "CRITICAL"):
+            assert start_index == 0, f"bucket {bucket} should use startIndex=0, got {start_index}"
+
+
+def test_retrieve_cves_skips_buckets_before_resume(client):
+    """
+    Given:
+        A severity-filtered fetch with ``resume_cvss_version="CVSS v3"``
+        and ``resume_severity="HIGH"``. Iteration order is
+        versions=[CVSS v3, CVSS v2], severities=[CRITICAL, HIGH] so the
+        bucket (CVSS v3, CRITICAL) is BEFORE the resume bucket and must
+        be skipped entirely (already processed in a prior run).
+
+    When:
+        retrieve_cves is called.
+
+    Then:
+        No API call is issued for (CVSS v3, CRITICAL). Calls begin at
+        the resume bucket and continue to subsequent buckets.
+    """
+    client.cvss_severity = ["CRITICAL", "HIGH"]
+    client.cvss_versions = ["CVSS v3", "CVSS v2"]
+
+    captured: list[tuple] = []
+
+    def fake_get_cves(url_suffix, params, severity_param="", severity_value=""):
+        captured.append((severity_param, severity_value))
+        return {"totalResults": 0, "vulnerabilities": []}
+
+    with patch("FeedNVDv2.Client.get_cves", side_effect=fake_get_cves):
+        retrieve_cves(
+            client,
+            parse("2024-01-01T00:00:00Z"),
+            parse("2024-01-04T00:00:00Z"),
+            use_pub_date=True,
+            start_index=10,
+            resume_cvss_version="CVSS v3",
+            resume_severity="HIGH",
+        )
+
+    # (CVSS v3, CRITICAL) is ordered BEFORE the resume bucket → must be skipped.
+    assert ("cvssV3Severity", "CRITICAL") not in captured
+    # Resume bucket and everything after it must be called.
+    assert ("cvssV3Severity", "HIGH") in captured
+    assert ("cvssV2Severity", "CRITICAL") in captured
+    assert ("cvssV2Severity", "HIGH") in captured
+
+
+def test_retrieve_cves_populates_last_bucket(client):
+    """
+    Given:
+        A severity-filtered fetch.
+
+    When:
+        retrieve_cves is invoked with a mutable ``last_bucket`` list.
+
+    Then:
+        On return, ``last_bucket`` holds the (cvss_version, severity) of
+        the most-recently-queried bucket, allowing the caller to persist
+        the exhausted bucket on budget exhaustion.
+    """
+    client.cvss_severity = ["CRITICAL"]
+    client.cvss_versions = ["CVSS v3"]
+    last_bucket: list = []
+
+    with patch("FeedNVDv2.Client.get_cves", return_value={"totalResults": 0, "vulnerabilities": []}):
+        retrieve_cves(
+            client,
+            parse("2024-01-01T00:00:00Z"),
+            parse("2024-01-04T00:00:00Z"),
+            use_pub_date=True,
+            last_bucket=last_bucket,
+        )
+
+    assert last_bucket == ["CVSS v3", "CRITICAL"]
+
+
+def test_fetch_indicators_saves_bucket_with_resume_state(client):
+    """
+    Given:
+        A severity-filtered fetch that exhausts the call budget while
+        paginating the (CVSS v3, HIGH) bucket.
+
+    When:
+        fetch_indicators_command persists lastRun.
+
+    Then:
+        ``resumeCvssVersion`` and ``resumeSeverity`` in the saved state
+        match the bucket that was active when the budget ran out, so
+        the next run can correctly resume that exact sub-query.
+    """
+    boundary_ts = "2024-06-01T12:00:00Z"
+    cves = [_make_raw_cve("CVE-2024-9001", boundary_ts)]
+    client.max_indicators = 2000
+    client.cvss_severity = ["HIGH"]
+    client.cvss_versions = ["CVSS v3"]
+
+    def exhaust_budget(*args, remaining_calls=None, last_bucket=None, **kwargs):
+        if remaining_calls is not None:
+            remaining_calls[0] = 0
+        if last_bucket is not None:
+            last_bucket[:] = ["CVSS v3", "HIGH"]
+        return cves
+
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves", side_effect=exhaust_budget),
+        patch("FeedNVDv2._ingest_batch", return_value=1),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
+        demisto_mock.getLastRun.return_value = {}
+        demisto_mock.params.return_value = {}
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["resumeCvssVersion"] == "CVSS v3"
+        assert last_run_arg["resumeSeverity"] == "HIGH"
+
+
+def test_fetch_indicators_saves_lastrun_with_microsecond_precision(client):
+    """
+    Given:
+        A normal fetch that completes without exhausting the call budget
+        (so the ``else`` branch in ``fetch_indicators_command`` persists
+        ``lastRun`` with the end-of-window timestamp).
+
+    When:
+        ``fetch_indicators_command`` saves ``lastRun``.
+
+    Then:
+        The saved ``lastRun`` timestamp uses microsecond precision
+        (``NVD_DATE_FORMAT``: ``%Y-%m-%dT%H:%M:%S.%fZ``), matching the
+        format used by the budget-exhaustion ``resumeFrom`` path. Format
+        consistency protects future code that does string comparison.
+    """
+    import re
+
+    client.max_indicators = 2000
+
+    with (
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves", return_value=[]),
+        patch("FeedNVDv2._ingest_batch", return_value=0),
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
+        demisto_mock.getLastRun.return_value = {}
+        demisto_mock.params.return_value = {}
+
+        fetch_indicators_command(client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        # Microsecond-precision ISO8601 with trailing Z, e.g.
+        # ``2024-06-01T12:00:00.123456Z``.
+        assert re.fullmatch(
+            r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z", last_run_arg["lastRun"]
+        ), f"lastRun {last_run_arg['lastRun']!r} does not match NVD_DATE_FORMAT pattern"
+
+
+def test_fetch_indicators_only_applies_resume_to_first_window(client):
+    """
+    Given:
+        A resume scenario where the fetch range spans more than 120 days
+        so ``fetch_indicators_command``'s outer loop slices into multiple
+        windows, and ``lastRun`` carries a ``resumeStartIndex`` plus a
+        bucket. The ``startIndex`` belongs to the *first* window's query
+        — applying it to subsequent windows would silently skip CVEs.
+
+    When:
+        The outer loop in ``fetch_indicators_command`` walks the windows.
+
+    Then:
+        The first ``retrieve_cves`` call receives ``start_index`` /
+        ``resume_cvss_version`` / ``resume_severity`` from lastRun;
+        every subsequent window's call receives ``start_index=0`` and
+        ``None`` resume bucket identifiers.
+    """
+    from freezegun import freeze_time
+
+    # 200-day span → at least two 120-day windows.
+    resume_from = "2024-01-01T00:00:00.000000Z"
+
+    calls: list[dict] = []
+
+    def capture(*args, **kwargs):
+        calls.append(
+            {
+                "start_index": kwargs.get("start_index"),
+                "resume_cvss_version": kwargs.get("resume_cvss_version"),
+                "resume_severity": kwargs.get("resume_severity"),
+            }
+        )
+        return []
+
+    with (
+        freeze_time("2024-07-20T00:00:00Z"),  # ~201 days after resume_from
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.retrieve_cves", side_effect=capture),
+        patch("FeedNVDv2._ingest_batch", return_value=0),
+        patch("FeedNVDv2.set_feed_last_run"),
+    ):
+        demisto_mock.getLastRun.return_value = {
+            "lastRun": resume_from,
+            "resumeFrom": resume_from,
+            "usePubDate": False,
+            "resumeIds": [],
+            "resumeStartIndex": 42,
+            "resumeCvssVersion": "CVSS v3",
+            "resumeSeverity": "CRITICAL",
+        }
+        demisto_mock.params.return_value = {}
+
+        fetch_indicators_command(client)
+
+    # The outer loop must have made at least two window calls.
+    assert len(calls) >= 2, f"expected multi-window iteration, got {len(calls)} call(s)"
+    # First window: resume params propagated.
+    assert calls[0]["start_index"] == 42
+    assert calls[0]["resume_cvss_version"] == "CVSS v3"
+    assert calls[0]["resume_severity"] == "CRITICAL"
+    # All subsequent windows: fresh cursor, no bucket scoping.
+    for i, c in enumerate(calls[1:], start=1):
+        assert c["start_index"] == 0, f"window #{i} should have start_index=0, got {c['start_index']}"
+        assert c["resume_cvss_version"] is None, f"window #{i} should have resume_cvss_version=None"
+        assert c["resume_severity"] is None, f"window #{i} should have resume_severity=None"

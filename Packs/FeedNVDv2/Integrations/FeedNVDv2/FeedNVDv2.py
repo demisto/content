@@ -14,6 +14,7 @@ from dateparser import parse
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+NVD_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # Microsecond-precision format accepted by the NVD API.
 
 # NVD API severity parameters – mutually exclusive, only one per request.
 CVSS_VERSION_TO_PARAM: dict[str, str] = {
@@ -485,6 +486,7 @@ def _retrieve_cves_single_query(
     severity_param: str = "",
     severity_value: str = "",
     remaining_calls: list[int] | None = None,
+    start_index: int = 0,
 ) -> list[dict]:
     """Fetch CVE pages for a single NVD API query.
 
@@ -511,18 +513,18 @@ def _retrieve_cves_single_query(
     """
     url_suffix = "/rest/json/cves/2.0/"
     results_per_page = NVD_API_MAX_RESULTS_PER_PAGE
-    param: dict[str, str | int] = {"startIndex": 0, "resultsPerPage": results_per_page}
+    param: dict[str, str | int] = {"startIndex": start_index, "resultsPerPage": results_per_page}
     if not client.include_rejected:
         param["noRejected"] = ""
     raw_cves: list[dict] = []
     more_to_process = True
 
     if use_pub_date:
-        param["pubStartDate"] = start_date.strftime(DATE_FORMAT)
-        param["pubEndDate"] = end_date.strftime(DATE_FORMAT)
+        param["pubStartDate"] = start_date.strftime(NVD_DATE_FORMAT)
+        param["pubEndDate"] = end_date.strftime(NVD_DATE_FORMAT)
     else:
-        param["lastModStartDate"] = start_date.strftime(DATE_FORMAT)
-        param["lastModEndDate"] = end_date.strftime(DATE_FORMAT)
+        param["lastModStartDate"] = start_date.strftime(NVD_DATE_FORMAT)
+        param["lastModEndDate"] = end_date.strftime(NVD_DATE_FORMAT)
 
     if client.has_kev:
         param["hasKev"] = True
@@ -541,11 +543,6 @@ def _retrieve_cves_single_query(
 
             total_results = res.get("totalResults", 0)
 
-            # Only count API calls that returned data toward the budget.
-            # Empty responses (totalResults == 0) are lightweight probes
-            # and should not consume the limited call allowance — this is
-            # critical for sparse datasets (e.g. KEV filter) where most
-            # 120-day windows are empty.
             if remaining_calls is not None and total_results > 0:
                 remaining_calls[0] -= 1
 
@@ -573,6 +570,10 @@ def retrieve_cves(
     end_date: Any,
     use_pub_date: bool = False,
     remaining_calls: list[int] | None = None,
+    start_index: int = 0,
+    resume_cvss_version: str | None = None,
+    resume_severity: str | None = None,
+    last_bucket: list | None = None,
 ) -> list[dict]:
     """Retrieve CVEs from NVD, querying each selected CVSS version
     separately when a severity filter is active (the NVD severity
@@ -588,16 +589,35 @@ def retrieve_cves(
         remaining_calls: Mutable ``[n]`` counter shared across the
             entire fetch round.  See
             :func:`_retrieve_cves_single_query`.
+        start_index: NVD ``startIndex`` cursor for the bucket
+            identified by ``(resume_cvss_version, resume_severity)``.
+            Applied ONLY to that bucket; all other buckets start at 0.
+        resume_cvss_version: CVSS version label of the bucket whose
+            pagination was interrupted on a previous run (or ``None``
+            for a fresh run / unfiltered path).
+        resume_severity: Severity value of the interrupted bucket (or
+            ``None``).
+        last_bucket: Optional mutable list used as an out-parameter.
+            When provided, ``retrieve_cves`` writes ``[version, severity]``
+            of the bucket whose ``_retrieve_cves_single_query`` call
+            was made most recently — letting the caller know which
+            bucket exhausted the call budget so it can be persisted
+            to ``lastRun`` for accurate resume.
 
     Returns:
         A list of raw CVE vulnerability dicts.
     """
-    demisto.debug(f"cvss_severity={client.cvss_severity}, cvss_versions={client.cvss_versions}")
+    demisto.debug(
+        f"cvss_severity={client.cvss_severity}, cvss_versions={client.cvss_versions}, "
+        f"resume_bucket=({resume_cvss_version!r}, {resume_severity!r})"
+    )
 
     if not client.cvss_severity:
-        # No severity filter – single query, no severity param needed.
+        # No severity filter – single bucket identified by (None, None).
+        if last_bucket is not None:
+            last_bucket[:] = [None, None]
         return _retrieve_cves_single_query(
-            client, start_date, end_date, use_pub_date=use_pub_date, remaining_calls=remaining_calls
+            client, start_date, end_date, use_pub_date=use_pub_date, remaining_calls=remaining_calls, start_index=start_index
         )
 
     # Severity filter is set – query each (CVSS version, severity value)
@@ -605,6 +625,11 @@ def retrieve_cves(
     # cvss*Severity param per request AND one severity value per param.
     seen_ids: set[str] = set()
     deduplicated: list[dict] = []
+
+    # When resuming, skip buckets that were fully completed before the
+    # resume point. ``start_index`` is only valid for the specific bucket
+    # that was being paginated when the budget ran out.
+    reached_resume_bucket = resume_cvss_version is None and resume_severity is None
 
     versions_to_query = client.cvss_versions or list(CVSS_VERSION_TO_PARAM.keys())
     for version_label in versions_to_query:
@@ -619,7 +644,23 @@ def retrieve_cves(
         for sev_value in client.cvss_severity:
             if remaining_calls is not None and remaining_calls[0] <= 0:
                 break
-            demisto.debug(f"Querying NVD: {severity_param}={sev_value} (version={version_label})")
+
+            # Skip buckets fully processed in a prior run.
+            if not reached_resume_bucket:
+                if version_label == resume_cvss_version and sev_value == resume_severity:
+                    reached_resume_bucket = True
+                else:
+                    continue
+
+            # ``start_index`` only applies to the exact resume bucket;
+            # subsequent buckets must start at 0 or they would silently
+            # skip the first ``start_index`` CVEs of unrelated filters.
+            effective_start = start_index if (version_label == resume_cvss_version and sev_value == resume_severity) else 0
+
+            demisto.debug(f"Querying NVD: {severity_param}={sev_value} (version={version_label}, startIndex={effective_start})")
+
+            if last_bucket is not None:
+                last_bucket[:] = [version_label, sev_value]
 
             cves = _retrieve_cves_single_query(
                 client,
@@ -629,6 +670,7 @@ def retrieve_cves(
                 severity_param=severity_param,
                 severity_value=sev_value,
                 remaining_calls=remaining_calls,
+                start_index=effective_start,
             )
 
             for cve in cves:
@@ -663,12 +705,33 @@ def _ensure_utc(dt: datetime) -> datetime:
     return dt
 
 
-def _resolve_auto_fetch_window(client: Client) -> tuple[datetime, bool, list[str]]:
-    """Determine the start date, query mode, and already-processed IDs for the fetch.
+def _is_boundary_ts(ts: str | None, boundary: datetime) -> bool:
+    """Return ``True`` if *ts* parses to the same instant as *boundary*.
+
+    Compare datetimes rather than strings: NVD returns variable-precision
+    timestamps (e.g. ``2024-06-01T12:00:00.287``) which do not equal a
+    ``strftime(NVD_DATE_FORMAT)`` rendering of the same instant.
+    """
+    if not ts:
+        return False
+    parsed = parse(ts)
+    if parsed is None:
+        return False
+    return _ensure_utc(parsed) == boundary
+
+
+def _resolve_auto_fetch_window(
+    client: Client,
+) -> tuple[datetime, bool, list[str], int, str | None, str | None]:
+    """Determine the start date, query mode, already-processed IDs, start index,
+    and the ``(cvss_version, severity)`` bucket the cursor belongs to.
 
     Returns:
-        ``(start_date, use_pub_date, resume_ids)`` where ``resume_ids``
-        lists CVE IDs already ingested at ``start_date`` (for dedup on resume).
+        ``(start_date, use_pub_date, resume_ids, resume_start_index,
+        resume_cvss_version, resume_severity)``. ``resume_cvss_version`` and
+        ``resume_severity`` identify the specific NVD sub-query whose
+        pagination was interrupted by budget exhaustion — ``start_index``
+        is only meaningful for that exact bucket.
     """
     last_run_data = demisto.getLastRun()
     if last_run_data:
@@ -676,15 +739,28 @@ def _resolve_auto_fetch_window(client: Client) -> tuple[datetime, bool, list[str
         if resume_date:
             use_pub_date = last_run_data.get("usePubDate", False)
             resume_ids: list[str] = last_run_data.get("resumeIds", [])
-            demisto.debug(f"Resuming from {resume_date}, {len(resume_ids)} dedup IDs")
-            return _ensure_utc(parse(resume_date)), use_pub_date, resume_ids  # type: ignore[arg-type]
-        return _ensure_utc(parse(last_run_data.get("lastRun", ""))), False, []  # type: ignore[arg-type]
+            resume_start_index: int = last_run_data.get("resumeStartIndex", 0)
+            resume_cvss_version: str | None = last_run_data.get("resumeCvssVersion")
+            resume_severity: str | None = last_run_data.get("resumeSeverity")
+            demisto.debug(
+                f"Resuming from {resume_date}, {len(resume_ids)} dedup IDs, "
+                f"startIndex={resume_start_index}, bucket=({resume_cvss_version!r}, {resume_severity!r})"
+            )
+            return (
+                _ensure_utc(parse(resume_date)),  # type: ignore[arg-type]
+                use_pub_date,
+                resume_ids,
+                resume_start_index,
+                resume_cvss_version,
+                resume_severity,
+            )
+        return _ensure_utc(parse(last_run_data.get("lastRun", ""))), False, [], 0, None, None  # type: ignore[arg-type]
 
     # First run
     first_fetch: tuple[Any, Any] = parse_date_range(client.first_fetch, DATE_FORMAT)
     start_date: datetime = _ensure_utc(parse(first_fetch[0]))  # type: ignore[arg-type]
     demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
-    return start_date, True, []
+    return start_date, True, [], 0, None, None
 
 
 def _ingest_batch(
@@ -784,8 +860,19 @@ def fetch_indicators_command(client: Client) -> None:
     layers so every ``get_cves`` call decrements it, regardless
     of which 120-day window or severity sub-query triggered it.
     """
-    start_date, use_pub_date, resume_ids = _resolve_auto_fetch_window(client)
-    demisto.debug(f"Auto-fetch: start_date={start_date}, use_pub_date={use_pub_date}, max_indicators={client.max_indicators}")
+    (
+        start_date,
+        use_pub_date,
+        resume_ids,
+        resume_start_index,
+        resume_cvss_version,
+        resume_severity,
+    ) = _resolve_auto_fetch_window(client)
+    demisto.debug(
+        f"Auto-fetch: start_date={start_date}, use_pub_date={use_pub_date}, "
+        f"max_indicators={client.max_indicators}, startIndex={resume_start_index}, "
+        f"resume_bucket=({resume_cvss_version!r}, {resume_severity!r})"
+    )
     end_date = datetime.now(timezone.utc)
 
     # Compute the global API-call budget for this fetch round.
@@ -798,8 +885,13 @@ def fetch_indicators_command(client: Client) -> None:
     total_created = 0
     last_completed_end: datetime = start_date
     last_raw_cves: list[dict] = []
+    last_raw_count: int = 0
     window_start: datetime | None = start_date
     processed_ids_at_boundary: set[str] = set(resume_ids)
+    # Out-parameter populated by ``retrieve_cves`` with the bucket of the most
+    # recent API call — used to persist ``resumeCvssVersion`` / ``resumeSeverity``
+    # when the budget runs out mid-bucket.
+    last_bucket: list = [resume_cvss_version, resume_severity]
 
     while window_start:
         # Stop if the call budget is already exhausted.
@@ -817,18 +909,37 @@ def fetch_indicators_command(client: Client) -> None:
         demisto.debug(
             f"Fetching CVEs from {window_start:%Y-%m-%d} to {window_end:%Y-%m-%d} " f"(remaining_calls={remaining_calls[0]})"
         )
-        raw_cves = retrieve_cves(client, window_start, window_end, use_pub_date=use_pub_date, remaining_calls=remaining_calls)
+        # Bucket-scoped resume info is only meaningful for the first window
+        # (the one starting at ``start_date``); subsequent windows are fresh.
+        is_first_window = window_start == start_date
+        raw_cves = retrieve_cves(
+            client,
+            window_start,
+            window_end,
+            use_pub_date=use_pub_date,
+            remaining_calls=remaining_calls,
+            start_index=resume_start_index if is_first_window else 0,
+            resume_cvss_version=resume_cvss_version if is_first_window else None,
+            resume_severity=resume_severity if is_first_window else None,
+            last_bucket=last_bucket,
+        )
+
+        # Capture pre-dedup count for cursor advancement — ``startIndex`` is a
+        # position in the NVD result set, not a count of items we emitted, so
+        # it must advance by what NVD returned (including dedup'd items).
+        raw_count = len(raw_cves)
 
         # Skip CVEs already ingested at the boundary timestamp (dedup on resume).
         if processed_ids_at_boundary and raw_cves:
             before = len(raw_cves)
             raw_cves = [cve for cve in raw_cves if cve.get("cve", {}).get("id", "") not in processed_ids_at_boundary]
-            if (skipped := before - len(raw_cves)):
+            if skipped := before - len(raw_cves):
                 demisto.debug(f"Dedup: skipped {skipped} already-processed CVEs.")
 
         created = _ingest_batch(client, raw_cves)
         total_created += created
         last_raw_cves = raw_cves
+        last_raw_count = raw_count
         last_completed_end = window_end
 
         if remaining_calls[0] <= 0:
@@ -842,21 +953,43 @@ def fetch_indicators_command(client: Client) -> None:
 
     if remaining_calls[0] <= 0:
         date_field = "published" if use_pub_date else "lastModified"
-        resume_point = last_completed_end.strftime(DATE_FORMAT)
+        resume_point = last_completed_end.strftime(NVD_DATE_FORMAT)
         if last_raw_cves:
             cve_date = last_raw_cves[-1].get("cve", {}).get(date_field, "")
             if cve_date:
                 resume_point = cve_date
 
+        # Keep the exact boundary timestamp and rely on resumeIds to filter out
+        # already-processed CVEs at this boundary.
+        parsed_resume = parse(resume_point)
+        if parsed_resume:
+            parsed_resume = _ensure_utc(parsed_resume)
+            resume_point = parsed_resume.strftime(NVD_DATE_FORMAT)
+
         # Collect IDs at the boundary timestamp so they're skipped on next resume.
+        boundary_ts = last_raw_cves[-1].get("cve", {}).get(date_field, "") if last_raw_cves else ""
+        # Parse once to compare via datetimes (NVD timestamps have variable precision).
+        parsed_boundary = parse(boundary_ts) if boundary_ts else None
+        boundary_dt = _ensure_utc(parsed_boundary) if parsed_boundary else None
         new_resume_ids: list[str] = [
             cve.get("cve", {}).get("id", "")
             for cve in last_raw_cves
-            if cve.get("cve", {}).get(date_field, "") == resume_point and cve.get("cve", {}).get("id")
+            if boundary_dt is not None
+            and _is_boundary_ts(cve.get("cve", {}).get(date_field), boundary_dt)
+            and cve.get("cve", {}).get("id")
         ]
         # Accumulate with previous IDs if timestamp hasn't advanced.
-        if resume_ids and resume_point == start_date.strftime(DATE_FORMAT):
+        same_boundary = _is_boundary_ts(boundary_ts, start_date)
+        if resume_ids and same_boundary:
             new_resume_ids = list(set(resume_ids) | set(new_resume_ids))
+
+        # The bucket where the last API call (and thus budget exhaustion) occurred.
+        exhausted_cvss_version, exhausted_severity = (last_bucket + [None, None])[:2]
+        # ``resume_start_index`` is only valid to extend when the bucket AND the
+        # boundary timestamp both match the previous resume point — otherwise
+        # the cursor belongs to a different filter combination and must reset.
+        same_bucket = exhausted_cvss_version == resume_cvss_version and exhausted_severity == resume_severity
+        next_start_index = resume_start_index + last_raw_count if (same_boundary and same_bucket) else 0
 
         set_feed_last_run(
             {
@@ -864,11 +997,16 @@ def fetch_indicators_command(client: Client) -> None:
                 "resumeFrom": resume_point,
                 "usePubDate": use_pub_date,
                 "resumeIds": new_resume_ids,
+                "resumeStartIndex": next_start_index,
+                "resumeCvssVersion": exhausted_cvss_version,
+                "resumeSeverity": exhausted_severity,
             }
         )
-        demisto.debug(f"Budget exhausted after {total_created} indicators. Resume from {resume_point}, {len(new_resume_ids)} dedup IDs.")
+        demisto.debug(
+            f"Budget exhausted after {total_created} indicators. Resume from {resume_point}, {len(new_resume_ids)} dedup IDs."
+        )
     else:
-        set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT)})
+        set_feed_last_run({"lastRun": end_date.strftime(NVD_DATE_FORMAT)})
 
     demisto.debug(
         f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), " f"Fetched {total_created} indicators."
