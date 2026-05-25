@@ -260,6 +260,7 @@ def build_params_dict(
         },
         "limit": limit,
         "page": page,
+        "includeEventTags": True,
     }
     if from_timestamp:
         params["attribute_timestamp"] = str(from_timestamp)
@@ -286,6 +287,7 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f"Could not parse user query. \nError massage: {err}")
+    params.setdefault("includeEventTags", True)
     return params
 
 
