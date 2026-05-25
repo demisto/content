@@ -5492,7 +5492,6 @@ script:
       description: The AWS account ID.
       required: false
       required:platform: true
-      required:xsoar: false
     - name: region
       description: The AWS region to query instances from. Must be a valid AWS region identifier.
       required: false
