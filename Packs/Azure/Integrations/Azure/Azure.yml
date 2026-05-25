@@ -445,7 +445,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      description: The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -580,13 +580,14 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.cors
-      description: The specifies CORS rules for the Blob service.
+      description: The CORS rules for the Blob service.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
-      type: Date
+      type: String
     - contextPath: Azure.Storage.BlobServices.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
+      type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.isVersioningEnabled
       description: Whether versioning is enabled.
       type: Boolean
@@ -667,7 +668,7 @@ script:
       description: The blob service properties for container soft delete.
       type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.cors
-      description: The specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service.
+      description: The CORS rules for the Blob service.
       type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
@@ -5482,7 +5483,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      description: The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -6107,7 +6108,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      description: The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -6339,7 +6340,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      description: The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -7483,7 +7484,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      description: The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -7656,7 +7657,7 @@ script:
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
-      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      description: The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
       description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
@@ -8041,7 +8042,7 @@ script:
       defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-    - description: Name of the storage account.
+    - description: The name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
@@ -8055,7 +8056,7 @@ script:
       type: bool
       defaultValue: 'true'
       hidden: true
-    - description: Number of days to retain deleted items.
+    - description: The number of days to retain deleted items.
       name: delete_retention_policy_days
       defaultValue: '30'
       type: number
@@ -8071,13 +8072,14 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.cors
-      description: The specifies CORS rules for the Blob service.
+      description: The CORS rules for the Blob service.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date
     - contextPath: Azure.Storage.BlobServices.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
+      type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.isVersioningEnabled
       description: Whether versioning is enabled.
       type: Boolean
