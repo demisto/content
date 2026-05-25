@@ -849,19 +849,20 @@ def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
 
 
 def _get_process_memory_mb() -> str:
-    """Get current process RSS memory usage for monitoring backpressure effectiveness.
+    """Get current process RSS memory usage and Python's tracked allocations.
 
     Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
     which reflects actual physical memory usage at this moment.
-    The `resource` module is imported locally as `resource_mod` to avoid shadowing
-    the `resource` loop variable used elsewhere in this file (ruff F402).
+    Also reports tracemalloc's tracked Python allocations to quantify arena fragmentation
+    (difference between OS RSS and Python's tracked memory = fragmentation overhead).
 
     Returns:
-        Formatted string with current and peak RSS in MB, e.g. "current=1234.5 MB, peak=3198.4 MB"
+        Formatted string with current RSS, peak RSS, and Python tracked memory in MB.
     """
     # Import locally to avoid shadowing the `resource` loop variable used in other functions
     import resource as resource_mod  # noqa: F811
     import sys
+    import tracemalloc
 
     # Current RSS: read from /proc/self/status (Linux only)
     # VmRSS shows the actual physical memory currently used by the process
@@ -884,7 +885,19 @@ def _get_process_memory_mb() -> str:
     else:
         peak_rss_mb = rusage.ru_maxrss / 1024
 
-    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
+    # Python tracked allocations via tracemalloc
+    # The gap between RSS and traced = arena fragmentation + non-Python allocations
+    traced_mb = 0.0
+    traced_peak_mb = 0.0
+    if tracemalloc.is_tracing():
+        traced_current, traced_peak = tracemalloc.get_traced_memory()
+        traced_mb = traced_current / (1024 * 1024)
+        traced_peak_mb = traced_peak / (1024 * 1024)
+
+    return (
+        f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
+        + (f", py_traced={traced_mb:.1f} MB, py_peak={traced_peak_mb:.1f} MB" if traced_mb > 0 else "")
+    )
 
 
 def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
@@ -5042,6 +5055,12 @@ async def fetch_spotlight_assets():
     """
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
     fetch_start_time = time.monotonic()
+
+    # Start tracemalloc to track Python allocations vs OS RSS (quantifies arena fragmentation)
+    import tracemalloc
+    if not tracemalloc.is_tracing():
+        tracemalloc.start()
+        log_falcon_assets("tracemalloc started for memory diagnostics")
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
