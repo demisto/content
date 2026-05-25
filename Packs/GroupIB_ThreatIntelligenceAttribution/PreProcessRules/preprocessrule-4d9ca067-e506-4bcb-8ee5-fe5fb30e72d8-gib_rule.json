@@ -85,9 +85,5 @@
     "system": false,
     "toServerVersion": "",
     "version": -1,
-    "fromVersion": "6.10.0",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "fromVersion": "6.10.0"
 }

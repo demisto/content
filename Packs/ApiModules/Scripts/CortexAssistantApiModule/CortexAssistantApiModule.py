@@ -43,9 +43,6 @@ class BackendErrorCode(IntEnum):
     CONVERSATION_NOT_FOUND = 103201
     WRONG_USER = 103204
 
-    # Agent errors
-    AGENT_DISABLED = 103502
-
     @property
     def error_type(self) -> "BackendErrorType":
         """Return the corresponding BackendErrorType for this code."""
@@ -78,7 +75,6 @@ class BackendErrorType(str, Enum):
     PERMISSION_DENIED = "permission_denied"
     CONVERSATION_NOT_FOUND = "conversation_not_found"
     WRONG_USER = "wrong_user"
-    AGENT_DISABLED = "agent_disabled"
     UNKNOWN = "unknown"
 
     @property
@@ -94,7 +90,6 @@ _CODE_TO_ERROR_TYPE: dict[BackendErrorCode, BackendErrorType] = {
     BackendErrorCode.PERMISSION_DENIED: BackendErrorType.PERMISSION_DENIED,
     BackendErrorCode.CONVERSATION_NOT_FOUND: BackendErrorType.CONVERSATION_NOT_FOUND,
     BackendErrorCode.WRONG_USER: BackendErrorType.WRONG_USER,
-    BackendErrorCode.AGENT_DISABLED: BackendErrorType.AGENT_DISABLED,
 }
 
 # Mapping from BackendErrorCode → debug log message
@@ -104,7 +99,6 @@ _CODE_TO_DEBUG_MESSAGE: dict[BackendErrorCode, str] = {
     BackendErrorCode.PERMISSION_DENIED: "Permission denied",
     BackendErrorCode.CONVERSATION_NOT_FOUND: "Conversation not found",
     BackendErrorCode.WRONG_USER: "Wrong user for conversation",
-    BackendErrorCode.AGENT_DISABLED: "Agent is disabled",
 }
 
 
@@ -338,7 +332,6 @@ class AssistantMessages:
     # Generic error messages
     GENERIC_ERROR = "❌ An error occurred. Please try again later or contact your administrator if the issue persists."
     CONVERSATION_NOT_FOUND_ERROR = "❌ This conversation is no longer active."
-    AGENT_DISABLED = "❌ The selected agent is currently disabled. Please contact your administrator to enable it."
     SYSTEM_ERROR = "❌ A system error occurred. Please try again later or contact your administrator if the issue persists."
 
     # Reset session messages
@@ -431,7 +424,6 @@ _ERROR_TYPE_TO_USER_MESSAGE: dict[BackendErrorType, str] = {
     BackendErrorType.PERMISSION_DENIED: AssistantMessages.NO_ASSISTANT_PERMISSIONS,
     BackendErrorType.WRONG_USER: AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK,
     BackendErrorType.CONVERSATION_NOT_FOUND: AssistantMessages.CONVERSATION_NOT_FOUND_ERROR,
-    BackendErrorType.AGENT_DISABLED: AssistantMessages.AGENT_DISABLED,
     BackendErrorType.UNKNOWN: AssistantMessages.SYSTEM_ERROR,
 }
 

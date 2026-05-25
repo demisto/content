@@ -78,7 +78,7 @@ configuration:
   required: false
   type: 19
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from RSA to Cortex XSOAR), Outgoing (from Cortex XSOAR to RSA), or Incoming and Outgoing (from/to Cortex XSOAR and RSA). Cortex XSOAR only parameter.'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from RSA to Cortex XSOAR), Outgoing (from Cortex XSOAR to RSA), or Incoming and Outgoing (from/to Cortex XSOAR and RSA).'
   display: Incident Mirroring Direction
   name: mirror_direction
   options:
@@ -89,19 +89,13 @@ configuration:
   required: false
   type: 15
   section: Mirroring
-  hidden:
-  - marketplacev2
-  - platform
 - defaultvalue: "true"
   display: Close Mirrored XSOAR Incident
-  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness. Cortex XSOAR only parameter.
+  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
   name: close_incident
   required: false
   type: 8
   section: Mirroring
-  hidden:
-  - marketplacev2
-  - platform
 - additionalinfo: This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days.
   display: Mirroring Days Limit
   defaultvalue: '3'

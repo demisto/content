@@ -506,9 +506,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -586,9 +584,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -619,9 +615,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -733,9 +727,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -769,9 +761,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -883,9 +873,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -954,9 +942,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
@@ -987,9 +973,7 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options:
-                value:
-                  simple: case_insensitive
+              options: {}
               optionsB: {}
               rhs:
                 value:
