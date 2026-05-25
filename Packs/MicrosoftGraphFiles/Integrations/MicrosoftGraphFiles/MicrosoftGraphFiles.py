@@ -587,10 +587,9 @@ class MsGraphClient:
             Raw HTTP response object so the caller can inspect the status code and headers.
         """
         uri = self._build_drive_item_uri(object_type, object_type_id, item_id) + "/assignSensitivityLabel"
-        body: dict = {
-            "sensitivityLabelId": sensitivity_label_id,
-            "assignmentMethod": assignment_method,
-        }
+        body: dict = {"sensitivityLabelId": sensitivity_label_id}
+        if assignment_method:
+            body["assignmentMethod"] = assignment_method
         if justification_text:
             body["justificationText"] = justification_text
         return self.ms_client.http_request(
@@ -1192,7 +1191,7 @@ def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]
             item_id (Required): The drive item ID.
             sensitivity_label_id (Optional): The GUID of the sensitivity label to assign.
                 An empty string instructs Microsoft Graph to remove the existing label.
-            assignment_method (Optional): One of standard, privileged, auto. Default standard.
+            assignment_method (Optional): One of standard, privileged, auto.
             justification_text (Optional): Free-text justification recorded with the
                 assignment.
 
@@ -1204,7 +1203,7 @@ def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]
     object_type_id = args.get("object_type_id", "")
     item_id = args.get("item_id", "")
     sensitivity_label_id = args.get("sensitivity_label_id", "")
-    assignment_method = args.get("assignment_method", "") or "standard"
+    assignment_method = args.get("assignment_method", "")
     justification_text = args.get("justification_text", "")
 
     response = client.assign_sensitivity_label(

@@ -851,7 +851,6 @@ script:
       - standard
       - privileged
       - auto
-      defaultValue: standard
     - description: Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label.
       name: justification_text
     description: Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as a long-running operation and returns the operation status URL in the Location response header; poll that URL to track completion. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.

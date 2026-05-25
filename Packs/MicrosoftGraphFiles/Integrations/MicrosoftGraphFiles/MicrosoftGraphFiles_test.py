@@ -1230,11 +1230,12 @@ def test_assign_sensitivity_label_uri_branching(mocker: MockerFixture, object_ty
           Graph treats assignSensitivityLabel as a long-running operation, returning 202
           Accepted with a Location header that points to an operations URL.
     When:
-        - Running the assign_sensitivity_label_command without supplying justification_text.
+        - Running the assign_sensitivity_label_command without supplying assignment_method
+          or justification_text.
     Then:
         - The Graph URL uses the correct drive-prefix branching for each object_type.
-        - The request body contains only sensitivityLabelId and assignmentMethod
-          (no justificationText is sent when the caller did not supply one).
+        - The request body contains only sensitivityLabelId (no assignmentMethod and no
+          justificationText are sent when the caller did not supply them).
     """
     object_type_id_map = {
         "drives": "drive-1",
@@ -1262,7 +1263,6 @@ def test_assign_sensitivity_label_uri_branching(mocker: MockerFixture, object_ty
     assert call_kwargs["resp_type"] == "response"
     assert call_kwargs["json_data"] == {
         "sensitivityLabelId": "label-guid-1",
-        "assignmentMethod": "standard",
     }
 
 
@@ -1339,7 +1339,7 @@ def test_assign_sensitivity_label_command_removes_label_when_empty_string(mocker
 
     sent_body = http_mock.call_args.kwargs["json_data"]
     assert sent_body["sensitivityLabelId"] == ""
-    assert sent_body["assignmentMethod"] == "standard"
+    assert "assignmentMethod" not in sent_body
     assert "justificationText" not in sent_body
     assert result.outputs["sensitivityLabelId"] == ""
 
@@ -1371,7 +1371,38 @@ def test_assign_sensitivity_label_command_omits_justification_when_empty(mocker:
 
     sent_body = http_mock.call_args.kwargs["json_data"]
     assert "justificationText" not in sent_body
-    assert sent_body == {"sensitivityLabelId": "label-guid-1", "assignmentMethod": "standard"}
+    assert sent_body == {"sensitivityLabelId": "label-guid-1"}
+
+
+def test_assign_sensitivity_label_command_omits_assignment_method_when_empty(mocker: MockerFixture) -> None:
+    """
+    Given:
+        - An assign command invocation that does not supply `assignment_method`
+          (or supplies it as an empty string).
+    When:
+        - Running the assign_sensitivity_label_command.
+    Then:
+        - The JSON body sent to Microsoft Graph does NOT contain an `assignmentMethod`
+          key at all (rather than sending `"assignmentMethod": ""` or silently
+          substituting a default value).
+    """
+    http_mock = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value=MockedResponse(status_code=202, json={}, headers={"Location": "https://contoso.example/monitor/x"}),
+    )
+    args = {
+        "object_type": "drives",
+        "object_type_id": "d1",
+        "item_id": "i1",
+        "sensitivity_label_id": "label-guid-1",
+        "assignment_method": "",
+    }
+    assign_sensitivity_label_command(CLIENT_MOCKER, args)
+
+    sent_body = http_mock.call_args.kwargs["json_data"]
+    assert "assignmentMethod" not in sent_body
+    assert sent_body == {"sensitivityLabelId": "label-guid-1"}
 
 
 @pytest.mark.parametrize("status_code", [400, 403, 404, 503])
