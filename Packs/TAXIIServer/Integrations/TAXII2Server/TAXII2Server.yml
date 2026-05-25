@@ -98,6 +98,44 @@ configuration:
   type: 12
   additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   section: Connect
+- additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
+  defaultvalue: 30 minutes
+  display: Refresh Rate
+  name: cache_refresh_rate
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value.
+  defaultvalue: 1h
+  display: Cache Lock Timeout
+  name: cache_lock_timeout
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout.
+  defaultvalue: 1h
+  display: Cache Lock Age
+  name: cache_lock_age
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: The TTL for 404 responses in the cache.
+  defaultvalue: 1m
+  display: Cache 404 TTL
+  name: cache_404_ttl
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: The default TTL for responses in the cache.
+  defaultvalue: 1m
+  display: Cache Default TTL
+  name: cache_default_ttl
+  type: 0
+  section: Connect
   advanced: true
   required: false
 - display: STIX types for STIX indicator Domain Object
@@ -160,7 +198,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.6091652
+  dockerimage: demisto/flask-nginx:1.0.0.8240011
   longRunning: true
   longRunningPort: true
   script: '-'

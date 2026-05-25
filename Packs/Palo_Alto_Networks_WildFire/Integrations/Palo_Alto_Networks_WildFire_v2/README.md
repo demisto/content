@@ -420,11 +420,11 @@ Retrieves results for a file hash using WildFire.
 
 #### Command Example
 
-```!wildfire-report url=https://www.XSOAR.com```
+```!wildfire-report url=https://www.paloaltonetworks.com```
 
 #### Human Readable Output
 
->### Wildfire URL report for https://www.XSOAR.com
+>### Wildfire URL report for https://www.paloaltonetworks.com
 >
 >|sha256|type|verdict|
 >|---|---|---|
@@ -502,12 +502,6 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 | DBotScore.Type | string | The indicator type. |
 | DBotScore.Vendor | string | Vendor used to calculate the score. |
 | DBotScore.Score | number | The actual score. |
-
-#### Command Example
-
-``````
-
-#### Human Readable Output
 
 ### wildfire-upload-url
 
@@ -606,7 +600,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Command Example
 
-```!wildfire-upload-url upload=https://www.XSOAR.com```
+```!wildfire-upload-url upload=https://www.paloaltonetworks.com```
 
 #### Human Readable Output
 
@@ -614,7 +608,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 >
 >|MD5|SHA256|Status|URL|
 >|---|---|---|---|
->| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.XSOAR.com |
+>| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.paloaltonetworks.com |
 
 ### wildfire-get-sample
 

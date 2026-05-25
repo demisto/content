@@ -109,6 +109,9 @@ class SlackAssistantHandler(AssistantMessagingHandler):
     Handles all Assistant interactions specific to Slack platform.
     """
 
+    PLATFORM_NAME = "Slack"
+    SUPPORTS_MESSAGE_HISTORY = True
+
     def __init__(self):
         """Initialize the Slack Assistant handler"""
         super().__init__()
@@ -297,6 +300,31 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             Slack blocks for approval
         """
         return get_approval_buttons_block()
+
+    def create_script_notice_ui(self) -> dict | None:
+        """
+        Create Slack script availability notice UI using a rich_text quote block
+        for a visually framed appearance.
+
+        Returns:
+            Slack rich_text block with a quoted notice, or None.
+        """
+        return {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_quote",
+                    "elements": [
+                        {"type": "emoji", "name": "clipboard"},
+                        {
+                            "type": "text",
+                            "text": f" {AssistantMessages.SCRIPT_AVAILABLE_NOTICE}",
+                            "style": {"bold": True},
+                        },
+                    ],
+                }
+            ],
+        }
 
     def create_feedback_ui(self, message_id: str) -> dict:
         """
@@ -3432,12 +3460,18 @@ def conversation_history() -> None:
     limit = arg_to_number(args.get("limit"))
     from_time = args.get("from_time")
     page_token = args.get("page_token")
+    thread_id = args.get("thread_id")
 
     if not conversation_id and not conversation_name:
         raise ValueError("Either conversation_id or conversation_name must be provided.")
 
     if not conversation_id:
         conversation_id = resolve_conversation_id_from_name(conversation_name)
+
+    # When thread_id is provided, delegate to conversation replies logic
+    if thread_id:
+        conversation_replies(channel_id=conversation_id, thread_timestamp=thread_id)
+        return
 
     body = {"channel": conversation_id, "limit": limit}
     if from_time:
@@ -3523,16 +3557,24 @@ def conversation_history() -> None:
     return_results(results)
 
 
-def conversation_replies():
+def conversation_replies(
+    channel_id: str | None = None,
+    thread_timestamp: str | None = None,
+):
     """
     Retrieves replies to specific messages, regardless of whether it's
     from a public or private channel, direct message, or otherwise.
+
+    Args:
+        channel_id: Optional channel ID override. Falls back to demisto.args().
+        thread_timestamp: Optional thread timestamp override. Falls back to demisto.args().
     """
     args = demisto.args()
-    channel_id = args.get("channel_id")
+    channel_id = channel_id or args.get("channel_id")
+    thread_timestamp = thread_timestamp or args.get("thread_timestamp")
     context: list = []
     readable_output: str = ""
-    body = {"channel": channel_id, "ts": args.get("thread_timestamp"), "limit": arg_to_number(args.get("limit"))}
+    body = {"channel": channel_id, "ts": thread_timestamp, "limit": arg_to_number(args.get("limit"))}
     raw_response = send_slack_request_sync(CLIENT, "conversations.replies", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
     if not raw_response.get("ok"):
