@@ -1749,8 +1749,7 @@ def get_token():
         response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload, timeout=API_REQUEST_TIMEOUT)
     except requests.Timeout:
         raise Exception(
-            f"Wiz authentication request timed out after {API_REQUEST_TIMEOUT}s. "
-            "Check Wiz API availability and retry."
+            f"Wiz authentication request timed out after {API_REQUEST_TIMEOUT}s. Check Wiz API availability and retry."
         )
 
     if response.status_code != requests.codes.ok:
