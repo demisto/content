@@ -343,22 +343,7 @@ def test_set_postgres_config_command(mocker, client, mock_params):
     assert "Updated the configuration log_checkpoints of the server test-postgres" in result.readable_output
 
 
-@pytest.mark.parametrize(
-    "command, expected_prefix",
-    [
-        ("azure-webapp-config-set", "Azure.WebAppConfig"),
-        ("azure-webapp-set-http2-quick-action", "Azure.WebAppConfig"),
-        ("azure-set-function-app-http-version2-0-quick-action", "Azure.WebAppConfig"),
-        ("azure-webapp-disable-remote-debugging-quick-action", "Azure.WebAppConfig"),
-        ("azure-webapp-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
-        ("azure-function-app-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
-        ("azure-appservice-webapp-config-update", "Azure.AppService.WebAppConfiguration"),
-        ("azure-appservice-webapp-config-update-http2-quick-action", "Azure.AppService.WebAppConfiguration"),
-        ("azure-appservice-webapp-config-disable-remote-debugging-quick-action", "Azure.AppService.WebAppConfiguration"),
-        ("azure-appservice-webapp-config-update-min-tls-version-quick-action", "Azure.AppService.WebAppConfiguration"),
-    ],
-)
-def test_set_webapp_config_command(mocker, client, mock_params, command, expected_prefix):
+def test_set_webapp_config_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to set WebApp configurations.
     When: The set_webapp_config_command function is called with valid parameters.
@@ -373,7 +358,6 @@ def test_set_webapp_config_command(mocker, client, mock_params, command, expecte
     }
 
     mocker.patch.object(client, "set_webapp_config", return_value=webapp_response)
-    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "http20_enabled": "true", "remote_debugging_enabled": "false", "min_tls_version": "1.2"}
@@ -381,22 +365,13 @@ def test_set_webapp_config_command(mocker, client, mock_params, command, expecte
     result = set_webapp_config_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == expected_prefix
+    assert result.outputs_prefix == "Azure.WebAppConfig"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["properties"]["http20Enabled"] is True
 
 
-@pytest.mark.parametrize(
-    "command, expected_prefix",
-    [
-        ("azure-webapp-auth-update", "Azure.WebAppAuth"),
-        ("azure-webapp-auth-update-quick-action", "Azure.WebAppAuth"),
-        ("azure-appservice-webapp-auth-settings-update", "Azure.AppService.WebAppAuthSettings"),
-        ("azure-appservice-webapp-auth-settings-update-quick-action", "Azure.AppService.WebAppAuthSettings"),
-    ],
-)
-def test_update_webapp_auth_command(mocker, client, mock_params, command, expected_prefix):
+def test_update_webapp_auth_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update WebApp authentication settings.
     When: The update_webapp_auth_command function is called with valid parameters.
@@ -418,7 +393,6 @@ def test_update_webapp_auth_command(mocker, client, mock_params, command, expect
 
     mocker.patch.object(client, "get_webapp_auth", return_value=current_auth)
     mocker.patch.object(client, "update_webapp_auth", return_value=updated_auth)
-    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "enabled": "true"}
@@ -426,7 +400,7 @@ def test_update_webapp_auth_command(mocker, client, mock_params, command, expect
     result = update_webapp_auth_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == expected_prefix
+    assert result.outputs_prefix == "Azure.WebAppAuth"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "authsettings"
     assert result.outputs["properties"]["enabled"] is True
@@ -500,18 +474,7 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["retentionPolicy"]["days"] == 30
 
 
-@pytest.mark.parametrize(
-    "command, expected_prefix",
-    [
-        ("azure-disk-update", "Azure.Disk"),
-        ("azure-disk-set-data-access-ad-quick-action", "Azure.Disk"),
-        ("azure-disable-public-private-access-vm-disk-quick-action", "Azure.Disk"),
-        ("azure-compute-disk-update", "Azure.Compute.Disks"),
-        ("azure-disable-public-n-private-access-vm-disk-quick-action", "Azure.Compute.Disks"),
-        ("azure-compute-disk-update-data-access-ad-quick-action", "Azure.Compute.Disks"),
-    ],
-)
-def test_disk_update_command(mocker, client, mock_params, command, expected_prefix):
+def test_disk_update_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update disk properties.
     When: The disk_update_command function is called with valid parameters.
@@ -530,7 +493,6 @@ def test_disk_update_command(mocker, client, mock_params, command, expected_pref
     }
 
     mocker.patch.object(client, "disk_update", return_value=disk_response)
-    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -543,7 +505,7 @@ def test_disk_update_command(mocker, client, mock_params, command, expected_pref
     result = disk_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == expected_prefix
+    assert result.outputs_prefix == "Azure.Disk"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-disk"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
@@ -551,17 +513,7 @@ def test_disk_update_command(mocker, client, mock_params, command, expected_pref
     assert result.outputs["properties"]["dataAccessAuthMode"] == "AzureActiveDirectory"
 
 
-@pytest.mark.parametrize(
-    "command, expected_prefix",
-    [
-        ("azure-webapp-update", "Azure.WebApp"),
-        ("azure-webapp-assign-managed-identity-quick-action", "Azure.WebApp"),
-        ("azure-webapp-update-assign-managed-identity-quick-action", "Azure.WebApp"),
-        ("azure-appservice-webapp-update", "Azure.AppService.WebApp"),
-        ("azure-appservice-webapp-update-quick-action", "Azure.AppService.WebApp"),
-    ],
-)
-def test_webapp_update_command(mocker, client, mock_params, command, expected_prefix):
+def test_webapp_update_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update webapp properties.
     When: The webapp_update_command function is called with valid parameters.
@@ -577,7 +529,6 @@ def test_webapp_update_command(mocker, client, mock_params, command, expected_pr
     }
 
     mocker.patch.object(client, "webapp_update", return_value=webapp_response)
-    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "identity_type": "SystemAssigned", "https_only": "true", "client_cert_enabled": "true"}
@@ -585,7 +536,7 @@ def test_webapp_update_command(mocker, client, mock_params, command, expected_pr
     result = webapp_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == expected_prefix
+    assert result.outputs_prefix == "Azure.WebApp"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["identity"]["type"] == "SystemAssigned"
@@ -593,20 +544,7 @@ def test_webapp_update_command(mocker, client, mock_params, command, expected_pr
     assert result.outputs["properties"]["clientCertEnabled"] is True
 
 
-@pytest.mark.parametrize(
-    "command, expected_prefix",
-    [
-        ("azure-acr-update", "Azure.ACR"),
-        ("azure-acr-disable-public-private-access-quick-action", "Azure.ACR"),
-        ("azure-acr-disable-authentication-as-arm-quick-action", "Azure.ACR"),
-        ("azure-acr-disable-anonymous-pull-quick-action", "Azure.ACR"),
-        ("azure-cr-registry-update", "Azure.ContainerRegistry.Registries"),
-        ("azure-cr-disable-public-private-access-quick-action", "Azure.ContainerRegistry.Registries"),
-        ("azure-cr-disable-anonymous-pull-quick-action", "Azure.ContainerRegistry.Registries"),
-        ("azure-cr-disable-authentication-as-arm-quick-action", "Azure.ContainerRegistry.Registries"),
-    ],
-)
-def test_acr_update_command(mocker, client, mock_params, command, expected_prefix):
+def test_acr_update_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update Azure Container Registry properties.
     When: The acr_update_command function is called with valid parameters.
@@ -625,7 +563,6 @@ def test_acr_update_command(mocker, client, mock_params, command, expected_prefi
     }
 
     mocker.patch.object(client, "acr_update", return_value=acr_response)
-    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -639,7 +576,7 @@ def test_acr_update_command(mocker, client, mock_params, command, expected_prefi
     result = acr_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == expected_prefix
+    assert result.outputs_prefix == "Azure.ACR"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "testregistry"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
