@@ -5,8 +5,7 @@ from CommonServerPython import *  # noqa: F401
 """
 from CommonServerUserPython import *  # noqa
 
-from datetime import datetime, timedelta
-from dateparser import parse
+from datetime import datetime, timedelta, UTC
 from typing import Any
 import json
 import urllib3
@@ -19,7 +18,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-MAX_FETCH_DEFAULT = 20
+MAX_FETCH_DEFAULT = 200
 NUM_OF_RETRIES = 3
 BACKOFF_FACTOR = 1.0
 
@@ -36,7 +35,6 @@ class Client(BaseClient):
             "url": url_suffix,
             "params": kwargs.get("params"),
             "json_data": kwargs.get("json_data"),
-            "headers": kwargs.get("headers"),
         }
         try:
             resp = self._http_request(
@@ -46,12 +44,12 @@ class Client(BaseClient):
                 backoff_factor=BACKOFF_FACTOR,
                 **kwargs,
             )
-            if demisto.is_debug:
-                demisto.results(f"API Request: {request_info}\nAPI Response: {resp}")
+            demisto.debug(f"API Request: {request_info}")
+            demisto.debug(f"API Response: {resp}")
             return resp
         except DemistoException as e:
-            if demisto.is_debug:
-                demisto.results(f"API Request: {request_info}\nAPI Error: {e}")
+            demisto.debug(f"API Request failed: {request_info}")
+            demisto.debug(f"API Error: {e}")
             raise
 
     def get_ransomware_alerts(
@@ -98,8 +96,7 @@ class Client(BaseClient):
 
     def suppress_ransomware_alert_by_id(self, alert_id: str):
         """Patch API call to suppress ransomware alert by id."""
-        if demisto.is_debug:
-            demisto.results(f"Suppressing alert: {alert_id}")
+        demisto.debug(f"Suppressing alert: {alert_id}")
         return self._api_request(
             method="PATCH",
             url_suffix="/mcm/alerts/" + alert_id,
@@ -110,8 +107,7 @@ class Client(BaseClient):
 
     def resolve_ransomware_alert_by_id(self, alert_id: str):
         """Patch API call to resolve ransomware alert by id."""
-        if demisto.is_debug:
-            demisto.results(f"Resolving alert: {alert_id}")
+        demisto.debug(f"Resolving alert: {alert_id}")
         return self._api_request(
             method="PATCH",
             url_suffix="/mcm/alerts/" + alert_id,
@@ -123,8 +119,9 @@ class Client(BaseClient):
     def get_incidence_details(self, alert_id: str) -> dict[str, Any]:
         """Gets incidence details via /mcm/argus/api/v1/public/incidences API.
 
-        Returns the antiRansomwareDetails dict which contains entityId, entityName,
-        clusterId, latestCleanSnapshotId, environment, anomalyStrength, etc.
+        Returns the first incidence object from the response.
+        antiRansomwareDetails data is available under the returned dict key
+        "antiRansomwareDetails".
         """
         resp = self._api_request(
             method="GET",
@@ -148,8 +145,7 @@ class Client(BaseClient):
 
         client_headers["accessClusterId"] = str(cluster_id)
 
-        if demisto.is_debug:
-            demisto.results(f"Creating recovery on cluster_id={cluster_id}, payload={payload}")
+        demisto.debug(f"Creating recovery on cluster_id={cluster_id}.")
         return self._api_request(
             method="POST",
             url_suffix="/v2/data-protect/recoveries",
@@ -163,20 +159,11 @@ class Client(BaseClient):
 
 def get_date_time_from_usecs(time_in_usecs):
     """Get date time from epoch usecs"""
-    return datetime.fromtimestamp(time_in_usecs / 1000000.0)
+    return datetime.fromtimestamp(time_in_usecs / 1000000.0, tz=UTC)
 
 
 def get_usecs_from_date_time(dt):
     """Get epoch milllis from date time"""
-    return int(dt.timestamp() * 1000000)
-
-
-def datestring_to_usecs(ds: str):
-    """Get epoch usecs from datestring"""
-    dt = parse(ds)
-    if dt is None:
-        return dt
-
     return int(dt.timestamp() * 1000000)
 
 
@@ -275,8 +262,10 @@ def get_ransomware_alerts_command(client: Client, args: dict[str, Any]) -> Comma
 
     Returns command result with the list of fetched ransomware alerts.
     """
-    start_time_usecs = datestring_to_usecs(args.get("created_after", ""))
-    end_time_usecs = datestring_to_usecs(args.get("created_before", ""))
+    created_after_dt = arg_to_datetime(args.get("created_after"), arg_name="created_after")
+    created_before_dt = arg_to_datetime(args.get("created_before"), arg_name="created_before")
+    start_time_usecs = get_usecs_from_date_time(created_after_dt) if created_after_dt else None
+    end_time_usecs = get_usecs_from_date_time(created_before_dt) if created_before_dt else None
     alert_severity_list = argToList(args.get("alert_severity_list", []))
     alert_id_list = argToList(args.get("alert_id_list", []))
     region_id_list = argToList(args.get("region_id_list", []))
@@ -310,6 +299,7 @@ def get_ransomware_alerts_command(client: Client, args: dict[str, Any]) -> Comma
     )
     return CommandResults(
         readable_output=readable_output,
+        raw_response=resp,
         outputs_prefix="CohesityHelios.RansomwareAlert",
         outputs_key_field="alert_id",
         outputs=ransomware_alerts,
@@ -325,7 +315,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: dict[str, Any]) -> s
     try:
         client.suppress_ransomware_alert_by_id(alert_id)
     except DemistoException as e:
-        return_error(f"Failed to suppress alert {alert_id}", error=str(e))
+        raise DemistoException(f"Failed to suppress alert {alert_id}: {e}") from e
 
     return f"Ignored alert {alert_id}."
 
@@ -344,7 +334,7 @@ def restore_latest_clean_snapshot(client: Client, args: dict[str, Any]) -> str:
     try:
         incidence = client.get_incidence_details(alert_id)
     except DemistoException as e:
-        return_error(f"Failed to get incidence details for alert {alert_id}", error=str(e))
+        raise DemistoException(f"Failed to get incidence details for alert {alert_id}: {e}") from e
     details = incidence.get("antiRansomwareDetails") or {}
 
     snapshot_id = details.get("latestCleanSnapshotId", "")
@@ -353,11 +343,10 @@ def restore_latest_clean_snapshot(client: Client, args: dict[str, Any]) -> str:
     entity_id = details.get("entityId", "")
     environment = details.get("protectionEnvType", "kVMware")
 
-    if demisto.is_debug:
-        demisto.results(
-            f"Incidence details: entity_name={entity_name}, entity_id={entity_id}, "
-            f"cluster_id={cluster_id}, snapshot_id={snapshot_id}, environment={environment}"
-        )
+    demisto.debug(
+        f"Incidence details: entity_name={entity_name}, entity_id={entity_id}, "
+        f"cluster_id={cluster_id}, snapshot_id={snapshot_id}, environment={environment}"
+    )
 
     if not snapshot_id:
         raise ValueError(
@@ -367,7 +356,7 @@ def restore_latest_clean_snapshot(client: Client, args: dict[str, Any]) -> str:
     if not cluster_id:
         raise ValueError(f"CohesityHelios error: cluster_id not found in incidence details for alert_id={alert_id}.")
 
-    recovery_name = datetime.now().strftime("Recover_VM_%b_%d_%Y_%-I_%M_%p")
+    recovery_name = datetime.now(UTC).strftime("Recover_VM_%b_%d_%Y_%-I_%M_%p")
     request_payload = {
         "name": recovery_name,
         "snapshotEnvironment": environment,
@@ -393,12 +382,12 @@ def restore_latest_clean_snapshot(client: Client, args: dict[str, Any]) -> str:
     try:
         client.create_recovery(cluster_id, request_payload)
     except DemistoException as e:
-        return_error(f"Recovery failed for {entity_name} (id={entity_id})", error=str(e))
+        raise DemistoException(f"Recovery failed for {entity_name} (id={entity_id}): {e}") from e
 
     try:
         client.resolve_ransomware_alert_by_id(alert_id)
     except DemistoException as e:
-        return_error(f"Recovery succeeded but failed to resolve alert {alert_id}", error=str(e))
+        raise DemistoException(f"Recovery succeeded but failed to resolve alert {alert_id}: {e}") from e
 
     return f"Restored {entity_name} (id={entity_id}) from latest clean snapshot."
 
@@ -417,7 +406,7 @@ def fetch_incidents_command(client: Client):
     start_time_usecs = (
         int(last_run.get("start_time"))
         if (last_run and "start_time" in last_run)
-        else get_usecs_from_date_time(datetime.now() - timedelta(days=7))
+        else get_usecs_from_date_time(datetime.now(UTC) - timedelta(days=7))
     )
 
     # Fetch all new incidents.
