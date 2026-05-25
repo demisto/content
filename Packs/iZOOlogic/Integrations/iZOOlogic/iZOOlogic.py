@@ -46,6 +46,10 @@ class Config:
 # API error codes
 NO_DATA_FOUND_ERROR_CODE = "iZOO2011"
 
+# Lock for thread-safe access to demisto.getLastRun/setLastRun
+# during multi-window fetches where concurrent threads may update last_run.
+_last_run_lock = threading.Lock()
+
 # Mapping of incident type display names to API integer codes
 INCIDENT_TYPE_CODES: dict[str, int] = {
     "brand abuse": 1,
@@ -753,6 +757,75 @@ def _compute_new_state(
     }
 
 
+def _fetch_single_window(
+    client: Client,
+    type_code: int,
+    from_date: str,
+    to_date: str,
+    last_created_on: str | None,
+    last_ids: list[str],
+    max_fetch_per_type: int,
+) -> tuple[list[dict], dict]:
+    """Fetch incidents for a single type within a single ≤31-day window.
+
+    Args:
+        client: The iZOOlogic client.
+        type_code: Incident type code.
+        from_date: Start date as Unix timestamp string (midnight UTC).
+        to_date: End date as Unix timestamp string.
+        last_created_on: Timestamp of the last consumed incident (for dedup).
+        last_ids: IDs already consumed at last_created_on (for dedup).
+        max_fetch_per_type: Maximum incidents to return.
+
+    Returns:
+        Tuple of (cortex_incidents, updated_state).
+    """
+    type_key = str(type_code)
+
+    raw_incidents = _fetch_all_pages(client, from_date, to_date, type_code)
+
+    if not raw_incidents:
+        demisto.debug(f"[Fetch] Type {type_key}: No incidents in window {from_date}-{to_date}.")
+        return [], {"last_created_on": to_date, "last_ids": []}
+
+    raw_incidents = _filter_and_dedup(raw_incidents, last_created_on, last_ids, type_key)
+
+    if not raw_incidents:
+        demisto.debug(f"[Fetch] Type {type_key}: All incidents filtered out in window {from_date}-{to_date}.")
+        return [], {"last_created_on": to_date, "last_ids": []}
+
+    raw_incidents.sort(key=lambda inc: int(inc.get("createdOn", "0")))
+    consumed = raw_incidents[:max_fetch_per_type]
+    demisto.debug(f"[Fetch] Type {type_key}: Window {from_date}-{to_date}: consuming {len(consumed)} incidents")
+
+    updated_state = _compute_new_state(consumed, type_key)
+    cortex_incidents = create_incidents(consumed)
+    return cortex_incidents, updated_state
+
+
+def _generate_windows(from_ts: int, to_ts: int, window_days: int = Config.MAX_DATE_RANGE_DAYS) -> list[tuple[str, str]]:
+    """Split a date range into ≤window_days windows.
+
+    Args:
+        from_ts: Start Unix timestamp (int).
+        to_ts: End Unix timestamp (int).
+        window_days: Maximum days per window.
+
+    Returns:
+        List of (window_start, window_end) Unix timestamp string pairs.
+    """
+    window_seconds = window_days * 86400
+    windows: list[tuple[str, str]] = []
+    current = from_ts
+
+    while current < to_ts:
+        window_end = min(current + window_seconds, to_ts)
+        windows.append((str(current), str(window_end)))
+        current = window_end
+
+    return windows
+
+
 def _fetch_for_type(
     client: Client,
     type_code: int,
@@ -760,21 +833,19 @@ def _fetch_for_type(
     max_fetch_per_type: int,
     first_fetch_ts: str = "",
 ) -> tuple[str, list[dict], dict]:
-    """Fetch incidents for a single type using fetch-all-sort-slice pattern.
+    """Fetch incidents for a single type, splitting into 31-day windows if needed.
 
-    Algorithm:
-    1. Determine fromdate = midnight UTC of last_created_on day (or first_fetch)
-    2. todate = current time
-    3. Fetch ALL pages via _fetch_all_pages()
-    4. Client-side filter + dedup via _filter_and_dedup()
-    5. Sort ascending by createdOn, slice to max_fetch_per_type
-    6. Compute new state via _compute_new_state()
+    On first fetch with a large lookback (e.g., 90 days), the date range is split
+    into ≤31-day windows. Each window is processed sequentially, and the state is
+    updated after each window so that if a timeout occurs, the next run resumes
+    from where it left off.
 
     Args:
         client: The iZOOlogic client.
         type_code: Incident type code.
         type_state: Per-type state from last_run.
         max_fetch_per_type: Maximum incidents to return for this type.
+        first_fetch_ts: Unix timestamp for first fetch fallback.
 
     Returns:
         Tuple of (type_key, cortex_incidents, updated_state).
@@ -795,34 +866,56 @@ def _fetch_for_type(
         f"last_created_on={last_created_on}, last_ids({len(last_ids)})={last_ids}"
     )
 
-    try:
-        validate_date_range(from_date, to_date)
-    except DemistoException as e:
-        demisto.debug(f"[Fetch] Type {type_key}: {e!s}. Skipping.")
+    from_ts = int(from_date)
+    to_ts = int(to_date)
+
+    if from_ts >= to_ts:
+        demisto.debug(f"[Fetch] Type {type_key}: from_date >= to_date. Skipping.")
         return type_key, [], type_state
 
-    raw_incidents = _fetch_all_pages(client, from_date, to_date, type_code)
+    windows = _generate_windows(from_ts, to_ts)
+    demisto.debug(f"[Fetch] Type {type_key}: Processing {len(windows)} window(s)")
 
-    # Advance cursor to to_date when no incidents are returned so we don't
-    # re-query the same empty window on the next run.
-    if not raw_incidents:
-        demisto.debug(f"[Fetch] Type {type_key}: No incidents found. Advancing cursor to {to_date}.")
-        return type_key, [], {"last_created_on": to_date, "last_ids": []}
+    all_cortex_incidents: list[dict] = []
+    current_state = type_state
+    is_multi_window = len(windows) > 1
 
-    raw_incidents = _filter_and_dedup(raw_incidents, last_created_on, last_ids, type_key)
+    for i, (window_start, window_end) in enumerate(windows):
+        window_last_created_on: str | None = current_state.get("last_created_on")
+        window_last_ids: list[str] = current_state.get("last_ids", [])
 
-    # Advance cursor even when all incidents were filtered/deduped out.
-    if not raw_incidents:
-        demisto.debug(f"[Fetch] Type {type_key}: All incidents filtered out. Advancing cursor to {to_date}.")
-        return type_key, [], {"last_created_on": to_date, "last_ids": []}
+        cortex_incidents, updated_state = _fetch_single_window(
+            client,
+            type_code,
+            window_start,
+            window_end,
+            window_last_created_on,
+            window_last_ids,
+            max_fetch_per_type,
+        )
 
-    raw_incidents.sort(key=lambda inc: int(inc.get("createdOn", "0")))
-    consumed = raw_incidents[:max_fetch_per_type]
-    demisto.debug(f"[Fetch] Type {type_key}: Sorted {len(raw_incidents)} incidents, consuming {len(consumed)}")
+        all_cortex_incidents.extend(cortex_incidents)
+        current_state = updated_state
 
-    updated_state = _compute_new_state(consumed, type_key)
-    cortex_incidents = create_incidents(consumed)
-    return type_key, cortex_incidents, updated_state
+        # For multi-window fetches (first fetch with large lookback), persist
+        # incidents and state after each window so that if a timeout occurs,
+        # the next run resumes from where we left off.
+        if is_multi_window and cortex_incidents:
+            demisto.debug(
+                f"[Fetch] Type {type_key}: Window {i + 1}/{len(windows)}: "
+                f"persisting {len(cortex_incidents)} incidents and updating state"
+            )
+            demisto.incidents(cortex_incidents)
+            with _last_run_lock:
+                last_run = demisto.getLastRun()
+                last_run[type_key] = current_state
+                demisto.setLastRun(last_run)
+
+    if is_multi_window:
+        # Incidents were already persisted per-window, return empty to avoid duplicates
+        return type_key, [], current_state
+
+    return type_key, all_cortex_incidents, current_state
 
 
 async def fetch_incidents_command(

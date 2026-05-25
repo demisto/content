@@ -26,6 +26,8 @@ from iZOOlogic import (
     _filter_and_dedup,
     _compute_new_state,
     _fetch_for_type,
+    _fetch_single_window,
+    _generate_windows,
     test_module as izoologic_test_module,
     get_incidents_command,
     fetch_incidents_command,
@@ -1047,6 +1049,164 @@ class TestMain:
         main()
         mock_err.assert_called_once()
         assert "Connection refused" in mock_err.call_args[0][0]
+
+
+# endregion
+
+# region Window Splitting Tests
+
+
+class TestGenerateWindows:
+    """Tests for _generate_windows — splitting date ranges into ≤31-day windows."""
+
+    def test_single_window_within_31_days(self):
+        """Range ≤31 days should produce a single window."""
+        from_ts = 1700000000  # ~Nov 14, 2023
+        to_ts = from_ts + (30 * 86400)  # 30 days later
+        windows = _generate_windows(from_ts, to_ts)
+        assert len(windows) == 1
+        assert windows[0] == (str(from_ts), str(to_ts))
+
+    def test_exactly_31_days(self):
+        """Range of exactly 31 days should produce a single window."""
+        from_ts = 1700000000
+        to_ts = from_ts + (31 * 86400)
+        windows = _generate_windows(from_ts, to_ts)
+        assert len(windows) == 1
+        assert windows[0] == (str(from_ts), str(to_ts))
+
+    def test_two_windows_for_45_days(self):
+        """45-day range should produce 2 windows: 31 days + 14 days."""
+        from_ts = 1700000000
+        to_ts = from_ts + (45 * 86400)
+        windows = _generate_windows(from_ts, to_ts)
+        assert len(windows) == 2
+        mid = from_ts + (31 * 86400)
+        assert windows[0] == (str(from_ts), str(mid))
+        assert windows[1] == (str(mid), str(to_ts))
+
+    def test_three_windows_for_90_days(self):
+        """90-day range should produce 3 windows."""
+        from_ts = 1700000000
+        to_ts = from_ts + (90 * 86400)
+        windows = _generate_windows(from_ts, to_ts)
+        assert len(windows) == 3
+
+    def test_empty_range(self):
+        """from_ts == to_ts should produce no windows."""
+        windows = _generate_windows(1700000000, 1700000000)
+        assert len(windows) == 0
+
+
+class TestFetchSingleWindow:
+    """Tests for _fetch_single_window — fetching within a single ≤31-day window."""
+
+    def test_returns_incidents_and_state(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Should return incidents and updated state for a window with data."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        cortex_incidents, state = _fetch_single_window(
+            mock_client,
+            2,
+            "1700000000",
+            "1700100000",
+            None,
+            [],
+            10000,
+        )
+
+        assert len(cortex_incidents) == 3
+        assert state["last_created_on"] == "1700000200"
+
+    def test_empty_window_advances_cursor(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        """Empty window should advance cursor to window end."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+
+        cortex_incidents, state = _fetch_single_window(
+            mock_client,
+            2,
+            "1700000000",
+            "1700100000",
+            None,
+            [],
+            10000,
+        )
+
+        assert len(cortex_incidents) == 0
+        assert state["last_created_on"] == "1700100000"
+
+
+class TestMultiWindowFetch:
+    """Tests for _fetch_for_type with multi-window (>31 day) date ranges."""
+
+    def test_multi_window_persists_per_window_and_returns_empty(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+    ):
+        """Multi-window fetch should persist incidents/state per window and return empty lists."""
+        window1_incidents = load_test_data("incidents_response_window1.json")["result"]["incidents"]
+        window2_incidents = load_test_data("incidents_response_window2.json")["result"]["incidents"]
+
+        # Mock _fetch_all_pages directly to return different incidents per window
+        mocker.patch(
+            "iZOOlogic._fetch_all_pages",
+            side_effect=[window1_incidents, window2_incidents],
+        )
+
+        # Fix "now" to Dec 19, 2023 so the test data timestamps fall within the windows:
+        # Window 1 data: createdOn=1700000100 (~Nov 14, 2023)
+        # Window 2 data: createdOn=1702678400 (~Dec 15, 2023)
+        fixed_now = 1703000000  # ~Dec 19, 2023
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value=str(fixed_now))
+        first_fetch_ts = str(fixed_now - (45 * 86400))  # ~Nov 4, 2023
+
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_lr = mocker.patch.object(demisto, "setLastRun")
+
+        type_key, cortex_incidents, state = _fetch_for_type(
+            mock_client,
+            2,
+            {},
+            10000,
+            first_fetch_ts,
+        )
+
+        # Multi-window: returns empty incidents (already persisted per-window)
+        assert type_key == "2"
+        assert cortex_incidents == []
+        # State should be updated to the latest window's state
+        assert "last_created_on" in state
+
+        # 45 days = 2 windows, both with unique data → 2 calls each
+        assert mock_incidents.call_count == 2
+        assert mock_set_lr.call_count == 2
+        # Verify setLastRun was called with the type key
+        for call in mock_set_lr.call_args_list:
+            last_run_arg = call[0][0]
+            assert "2" in last_run_arg
+
+    def test_single_window_returns_incidents_normally(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Single-window fetch should return incidents normally without per-window persistence."""
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mock_set_lr = mocker.patch.object(demisto, "setLastRun")
+
+        type_key, cortex_incidents, state = _fetch_for_type(
+            mock_client,
+            2,
+            {},
+            10000,
+        )
+
+        # Single window: incidents returned normally for fetch_incidents_command to handle
+        assert len(cortex_incidents) == 3
+        assert state["last_created_on"] == "1700000200"
+        # demisto.incidents/setLastRun should NOT have been called inside _fetch_for_type
+        mock_incidents.assert_not_called()
+        mock_set_lr.assert_not_called()
 
 
 # endregion

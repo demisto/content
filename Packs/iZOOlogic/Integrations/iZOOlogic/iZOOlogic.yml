@@ -55,7 +55,7 @@ configuration:
   additionalinfo: 'The time range for the initial fetch (e.g., "1 day", "3 days"). Subsequent fetches use the last run timestamp.'
   section: Collect
 - name: incident_types_filter
-  display: Fetch Incident types
+  display: Fetch incident types
   required: true
   defaultvalue: brand abuse,phishing,malware,pharming,smishing,vishing,mobile apps,social media,other,email
   type: 16
@@ -70,7 +70,7 @@ configuration:
   - social media
   - other
   - email
-  additionalinfo: 'A comma-separated list of incident types to fetch from iZOOlogic. By default, all types are selected.'
+  additionalinfo: 'A comma-separated list of incident types to fetch from iZOOlogic.'
   section: Collect
 - name: max_fetch
   display: Maximum Incidents Per Fetch Per Type
