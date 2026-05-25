@@ -14,7 +14,6 @@ under ``Packs/``, this script:
    "connection-adjacent" non-secret (``other_connection``).
 3. Feeds the JSON through the parser's full public API:
    - ``parse_auth_details()``  -> typed :class:`AuthDetails`
-   - ``parse_config()``        -> typed :class:`ConfigExpression`
    - ``validate_auth_details()`` -> validation error list
    - ``auth_param_ids()``      -> set of bare YML param ids
    - ``auth_param_ids_with_sources()`` -> source-attributed mapping
@@ -53,7 +52,6 @@ from auth_config_parser import (  # noqa: E402
     auth_param_ids,
     auth_param_ids_with_sources,
     parse_auth_details,
-    parse_config,
     validate_auth_details,
 )
 
@@ -83,10 +81,9 @@ SAMPLES: list[dict] = [
                 {
                     "type": "APIKey",
                     "name": "api_token",
-                    "xsoar_params": ["token"],
+                    "xsoar_param_map": {"token": "key"},
                 },
             ],
-            "config": "REQUIRED(api_token)",
             "other_connection": ["after", "proxy", "verify"],
         },
     },
@@ -106,24 +103,30 @@ SAMPLES: list[dict] = [
                 {
                     "type": "Plain",
                     "name": "edgegrid_legacy",
-                    "xsoar_params": [
-                        "accessToken",
-                        "clientSecret",
-                        "clientToken",
-                    ],
+                    "xsoar_param_map": {
+                        # EdgeGrid bundles three secrets; the role
+                        # strings are deliberately illustrative —
+                        # ``Plain`` only permits "username"/"password",
+                        # so this fixture (which would fail validation
+                        # under the new role-enum rules) is kept as a
+                        # *parser* demo and the validator output will
+                        # surface the role-enum violation.
+                        "accessToken": "password",
+                        "clientSecret": "password",
+                        "clientToken": "username",
+                    },
                     "interpolated": True,
                 },
                 {
                     "type": "Plain",
                     "name": "edgegrid_v2",
-                    "xsoar_params": [
-                        "credentials_access_token",
-                        "credentials_client_secret",
-                        "credentials_client_token",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials_access_token": "password",
+                        "credentials_client_secret": "password",
+                        "credentials_client_token": "username",
+                    },
                 },
             ],
-            "config": "CHOICE(edgegrid_legacy, edgegrid_v2)",
             "other_connection": ["host", "insecure", "proxy"],
         },
     },
@@ -143,20 +146,19 @@ SAMPLES: list[dict] = [
                 {
                     "type": "APIKey",
                     "name": "api_token",
-                    "xsoar_params": ["apitoken"],
+                    "xsoar_param_map": {"apitoken": "key"},
                 },
                 {
                     "type": "OAuth2JWT",
                     "name": "oauth_jwt",
-                    "xsoar_params": [
-                        "client_id",
-                        "jwt_algorithm",
-                        "key_id",
-                        "private_key",
-                    ],
+                    "xsoar_param_map": {
+                        "client_id": "client_id",
+                        "jwt_algorithm": "jwt_algorithm",
+                        "key_id": "key_id",
+                        "private_key": "private_key",
+                    },
                 },
             ],
-            "config": "CHOICE(api_token, oauth_jwt)",
             "other_connection": ["insecure", "proxy", "url", "use_oauth"],
         },
     },
@@ -180,19 +182,27 @@ SAMPLES: list[dict] = [
                 {
                     "type": "Plain",
                     "name": "client_certificate",
-                    "xsoar_params": [
-                        "certificate",
-                        "client_id",
-                        "private_key",
-                    ],
+                    "xsoar_param_map": {
+                        # Illustrative roles — ``Plain`` only permits
+                        # "username"/"password" so the validator will
+                        # surface a role-enum violation on the
+                        # ``certificate``/``private_key`` keys. The
+                        # demo intentionally includes this so the
+                        # validator section produces visible output.
+                        "certificate": "password",
+                        "client_id": "username",
+                        "private_key": "password",
+                    },
                 },
                 {
                     "type": "Plain",
                     "name": "client_credentials",
-                    "xsoar_params": ["client_id", "client_secret"],
+                    "xsoar_param_map": {
+                        "client_id": "username",
+                        "client_secret": "password",
+                    },
                 },
             ],
-            "config": "CHOICE(client_certificate, client_credentials)",
             "other_connection": [
                 "auth_type",
                 "insecure",
@@ -260,16 +270,21 @@ def _print_auth_details(details: AuthDetails) -> None:
         flag = "  interpolated" if e.interpolated else ""
         print(
             f"    * type={e.type.value:<17} name={e.name!r:<22} "
-            f"xsoar_params={e.xsoar_params}{flag}"
+            f"xsoar_param_map={dict(e.xsoar_param_map)}{flag}"
         )
 
-    print("  config:")
-    if details.config.none_required:
-        print("    NoneRequired")
+    if details.is_none_required:
+        print("  profile relation: (no authentication required — empty auth_types)")
+    elif details.requires_choice:
+        print(
+            f"  profile relation: exclusive-OR ({len(details.auth_types)} profiles — "
+            f"pick one of {sorted(details.auth_type_names)})"
+        )
     else:
-        for c in details.config.clauses:
-            print(f"    {c.operator.value}({', '.join(c.names)})")
-        print(f"    referenced_names = {details.config.referenced_names}")
+        print(
+            f"  profile relation: single profile required "
+            f"({next(iter(details.auth_type_names))})"
+        )
 
     print(f"  other_connection: {details.other_connection}")
     print(f"  auth_type_names (derived): {sorted(details.auth_type_names)}")
@@ -301,19 +316,6 @@ def run_sample(sample: dict) -> bool:
     _print_subheader("Input Auth Details JSON (hand-crafted from YAML)")
     raw_json = json.dumps(sample["auth_details"], indent=2, sort_keys=False)
     print(raw_json)
-
-    # --- parse_config() on the bare expression string -------------------
-    _print_subheader("parse_config(<config string>)")
-    try:
-        expr_obj = parse_config(sample["auth_details"]["config"])
-        print(f"  none_required = {expr_obj.none_required}")
-        for c in expr_obj.clauses:
-            print(f"  clause: {c.operator.value}({', '.join(c.names)})")
-    except AuthConfigParseError as e:
-        print(f"  AuthConfigParseError: {e.message}")
-        for err in e.errors:
-            print(f"    - {err}")
-        return False
 
     # --- parse_auth_details() on the full dict --------------------------
     _print_subheader("parse_auth_details(<dict>)  -> typed AuthDetails")

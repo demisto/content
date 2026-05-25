@@ -29,15 +29,14 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (3 identity columns + 16 steps). If the YAML shifts, fix
+# bundled YAML (3 identity columns + 15 steps). If the YAML shifts, fix
 # these numbers in lock-step with the column references below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 19
+_EXPECTED_TOTAL_COLS = 18
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
-_COL_VERIFY_PLACEMENT = 7        # step #4 → CSV column 7
-_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Param Defaults + Params to Capabilities)
+_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Params for test with default in code + Shadowed Integration Commands + Params to Capabilities)
 
 
 @pytest.fixture(autouse=True)
@@ -62,8 +61,8 @@ def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     row["assignee"] = "tester"
     row["Auth Details"] = "{}"
     row["Params to Commands"] = "{}"
-    row["verify button placement"] = "connection"
-    row["Param Defaults"] = "{}"
+    row["Params for test with default in code"] = "{}"
+    row["Shadowed Integration Commands"] = "{}"
     row["Params to Capabilities"] = "{}"
     with open(p, "w", encoding="utf-8", newline="") as f:
         w = _csv.writer(f)
@@ -80,7 +79,6 @@ def test_schema_canary(temp_csv: Path) -> None:
     assert len(cols) == _EXPECTED_TOTAL_COLS
     assert cols[_COL_INTEGRATION_ID - 1] == "Integration ID"
     assert cols[_COL_AUTH_DETAILS - 1] == "Auth Details"
-    assert cols[_COL_VERIFY_PLACEMENT - 1] == "verify button placement"
     assert cols[_COL_GENERATED_MANIFEST - 1] == "generated manifest"
 
 
@@ -94,16 +92,48 @@ def test_show_step_resolves_auth_details_by_number(temp_csv: Path, capsys) -> No
     assert "Auth Details" in out
 
 
-def test_show_step_resolves_verify_placement_by_number(temp_csv: Path, capsys) -> None:
-    wf_cli.cmd_show_step(["TestInt", str(_COL_VERIFY_PLACEMENT)])
-    out = capsys.readouterr().out
-    assert "verify button placement" in out
-
-
 def test_show_step_resolves_identity_column_by_number(temp_csv: Path, capsys) -> None:
     wf_cli.cmd_show_step(["TestInt", str(_COL_INTEGRATION_ID)])
     out = capsys.readouterr().out
     assert "Integration ID" in out
+
+
+# ---------------------------------------------------------------------------
+# show-step --raw (machine-consumer contract; no header, no pretty-printing)
+# ---------------------------------------------------------------------------
+
+def test_show_step_raw_emits_cell_verbatim(temp_csv: Path, capsys) -> None:
+    """--raw on a non-empty cell prints only the raw cell value + newline."""
+    wf_cli.cmd_show_step(["--raw", "TestInt", "Auth Details"])
+    out = capsys.readouterr().out
+    # The fixture seeds Auth Details = "{}". With --raw we must get
+    # exactly that — no header, no decoration, no pretty-printing.
+    assert out == "{}\n"
+
+
+def test_show_step_raw_empty_cell_prints_nothing(temp_csv: Path, capsys) -> None:
+    """--raw on an empty cell emits no output at all (not even a default)."""
+    # ``Params to Capabilities`` is seeded to "{}" in the fixture; clear it
+    # by writing an empty string directly into the loaded row so we can
+    # exercise the empty-cell branch.
+    wf_cli.cmd_show_step(["--raw", "TestInt", "generated manifest"])
+    out = capsys.readouterr().out
+    assert out == ""
+
+
+def test_show_step_raw_flag_position_insensitive(temp_csv: Path, capsys) -> None:
+    """--raw may appear anywhere in argv (before, between, or after positionals)."""
+    wf_cli.cmd_show_step(["TestInt", "Auth Details", "--raw"])
+    out = capsys.readouterr().out
+    assert out == "{}\n"
+
+
+def test_show_step_no_raw_still_decorates(temp_csv: Path, capsys) -> None:
+    """Default (no --raw) output continues to include the decorative header."""
+    wf_cli.cmd_show_step(["TestInt", "Auth Details"])
+    out = capsys.readouterr().out
+    assert "=" in out
+    assert "Auth Details" in out
 
 
 # ---------------------------------------------------------------------------

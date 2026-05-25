@@ -87,6 +87,7 @@ from workflow_state.validators import (  # noqa: I001
     validate_param_defaults,
     validate_params_to_capabilities,
     validate_params_to_commands,
+    validate_shadowed_commands,
 )
 
 # ---- Display -------------------------------------------------------------
@@ -123,6 +124,7 @@ from workflow_state.api import (
     reset_integration_to_step,
     set_integration_auth,
     skip_integration_step,
+    test_module_params,
 )
 
 # ---- CLI -----------------------------------------------------------------
@@ -138,7 +140,9 @@ from workflow_state.cli import (
     _set_step_via_dispatch,
     cmd_at_step,
     cmd_auth_params,
+    cmd_test_module_params,
     cmd_dashboard,
+    cmd_detect_shadowed_commands,
     cmd_fail,
     cmd_files,
     cmd_help,
@@ -154,9 +158,9 @@ from workflow_state.cli import (
     cmd_set_assignee_by_connector,
     cmd_set_auth,
     cmd_set_param_defaults,
+    cmd_set_shadowed_commands,
     cmd_set_params_to_capabilities,
     cmd_set_params_to_commands,
-    cmd_set_verify_placement,
     cmd_show_step,
     cmd_skip,
     cmd_status,
@@ -248,6 +252,7 @@ __all__ = [
     "validate_param_defaults",
     "validate_params_to_capabilities",
     "validate_params_to_commands",
+    "validate_shadowed_commands",
     # Display
     "format_by_assignee",
     "format_dashboard_row",
@@ -270,12 +275,14 @@ __all__ = [
     "reset_integration_to_step",
     "set_integration_auth",
     "skip_integration_step",
+    "test_module_params",
     # CLI
     "COMMANDS",
     "main",
     "cmd_at_step",
     "cmd_auth_params",
     "cmd_dashboard",
+    "cmd_detect_shadowed_commands",
     "cmd_fail",
     "cmd_files",
     "cmd_help",
@@ -291,13 +298,14 @@ __all__ = [
     "cmd_set_assignee_by_connector",
     "cmd_set_auth",
     "cmd_set_param_defaults",
+    "cmd_set_shadowed_commands",
     "cmd_set_params_to_capabilities",
     "cmd_set_params_to_commands",
-    "cmd_set_verify_placement",
     "cmd_show_step",
     "cmd_skip",
     "cmd_status",
     "cmd_status_all",
+    "cmd_test_module_params",
     "cmd_wipe_workflow_data",
     # Derived legacy constants
     "CHECK",

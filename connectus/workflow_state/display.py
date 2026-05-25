@@ -190,8 +190,7 @@ def _example_value_for(step: Step) -> str:
     cfg = get_config()
     if step.kind == "data" and step.name in cfg.json_valued_columns:
         if step.name == "Auth Details":
-            return ("'{\"auth_types\":[],\"config\":\"NoneRequired\","
-                    "\"other_connection\":[]}'")
+            return "'{\"auth_types\":[],\"other_connection\":[]}'"
         return "'{}'"
     if step.name == "assignee":
         return '"<your name>"'

@@ -1,0 +1,13 @@
+{
+  "general_configurations": [],
+  "Automation": [
+    "longRunning",
+    "longRunningPort",
+    "auto_notifications",
+    "external_form_url_header",
+    "incident_notifications_channel",
+    "team",
+    "allow_external_incidents_creation",
+    "new_incident_welcome_message"
+  ]
+}

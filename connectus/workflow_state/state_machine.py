@@ -50,10 +50,10 @@ def step_flag_values(step: Step) -> tuple[str, ...]:
 def _is_flag_value_match(step: Step, candidate: str) -> bool:
     """True iff ``candidate`` matches any of the step's enum values.
 
-    Per-step enums (e.g. ``verify button placement`` →
-    ``connection|configuration|none``) are matched case-sensitively.
-    The global YES/NO/N/A enum is matched case-insensitively to keep
-    backwards-compatible CLI behaviour.
+    Per-step enums (declared via a step's own ``flag_values`` list)
+    are matched case-sensitively. The global YES/NO/N/A enum is
+    matched case-insensitively to keep backwards-compatible CLI
+    behaviour.
     """
     values = step_flag_values(step)
     if step.flag_values is not None:

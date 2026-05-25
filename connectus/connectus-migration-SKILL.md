@@ -7,15 +7,17 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
+> _The workflow now has 15 steps (2026-05Q4): the new `Shadowed Integration Commands` data column replaced the old `shadowed command test passes` checkpoint, so the data-column count went from 5 to 6 and the checkpoint count went from 10 to 9. The per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` remains the replacement signal (see §A.5 below) for the historical `verify button placement` step removed in 2026-05Q3._
+
 This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
 
-The CSV has two kinds of columns (see [`connectus/Readme.md`](Readme.md) for full details):
+The CSV has two kinds of columns:
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
-- **Workflow columns** (16, managed by the state machine — CSV total is 19):
-  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Param Defaults`, `Params to Capabilities` (5).
-  - **Workflow flag** (1): `verify button placement` (enum `connection|configuration|none`, default `connection` on read).
-  - **Workflow checkpoints** (10, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
+- **Workflow columns** (15, managed by the state machine — CSV total is 18):
+  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Shadowed Integration Commands`, `Params to Capabilities` (6).
+  - **Workflow flag**: _(none)_
+  - **Workflow checkpoints** (9, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
 
 Authentication classification is the **prerequisite for everything**: you must set `Auth Details` with `set-auth` before the workflow can meaningfully begin (setting it also resets the workflow). The Validate Auth Classification procedure below is run before invoking `set-auth`.
 
@@ -25,15 +27,15 @@ The skill supports three top-level invocation styles. Pick the matching flow bas
 
 | User phrase (examples) | Action |
 |---|---|
-| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 16-step procedure for that one integration. |
+| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 15-step procedure for that one integration. |
 | "migrate everything assigned to me" / "what's next for me" / "continue my work" / "keep going" | [Assignee batch flow](#assignee-batch-flow) — enumerate the user's in-progress + assigned integrations and walk them one by one. |
 | "migrate connector `<connector_id>`" / "work on connector `<connector_id>`" / "do the whole `<connector>` connector" | [Connector batch flow](#connector-batch-flow) — enumerate that connector's integrations and walk them one by one (with ownership disambiguation up front). |
 
-Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 16-step workflow — they pick *which* integration to run that workflow on next.
+Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 15-step workflow — they pick *which* integration to run that workflow on next.
 
 > **CLI column references accept numbers too.** Every CLI verb in this
 > skill that takes a column name (`show-step`, `markpass`, `skip`, `fail`,
-> `reset-to`) also accepts a **1-based CSV column number** (1..19).
+> `reset-to`) also accepts a **1-based CSV column number** (1..18).
 > Identity columns (#1-#3) are addressable only by read-only `show-step`;
 > write verbs reject them. Example:
 > `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5`
@@ -61,7 +63,7 @@ Use when the user says something like "migrate everything assigned to me" / "con
 
    Otherwise, **ask the user** for the work order. Suggest a sensible default ("furthest-along first" or "by connector then alphabetical") but let them override.
 5. **Walk one integration at a time.** For each integration in the chosen order:
-   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 16 steps here — the rest of this skill already documents them.
+   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 15 steps here — the rest of this skill already documents them.
    - Between integrations, print a short progress recap (`X/N done in this batch — next: <integration id>`) and confirm before moving on, **unless** the user has explicitly said "do them all without asking" / "no confirmations" / equivalent.
 6. **Mid-loop "what's next" check.** Re-run `python3 connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
 7. **Finish.** When the queue is empty, summarize what was done and ask whether to start a new batch (e.g., a connector batch, or assigning more work).
@@ -130,10 +132,79 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (the historical `Params for test with default in code` and `Params same in other handlers` columns were removed in 2026-05; today only `Params to Commands` carries `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
 
+## Interaction Policy
+
+This section defines the **only** points at which the skill must pause for
+user input. Everything not listed here runs straight through without
+asking — including file reads (`files`, `status`, `show-step`,
+`auth-params`, reading YML / Python / README / description),
+[`check_command_params.py`](check_command_params.py) analyzer runs,
+`markpass`, `skip`, `pre-commit`, `format`, `validate`, test execution,
+shadowed-command tests, parity tests, and any other read-only or
+derivable operation.
+
+### Pause-and-confirm checkpoints (the only ones)
+
+Pause before executing any of the **4 JSON-write CLI calls** that persist
+workflow-data columns to the CSV. For each, present the payload and the
+evidence behind it, then wait for the user to reply **yes** (apply),
+**no** (revise / abort), or **edit** (user supplies a modified JSON
+which is then applied verbatim).
+
+| # | CLI verb | Column written | What to show before asking |
+|---|---|---|---|
+| 1 | `set-auth` | `Auth Details` | The full JSON payload; a concise bullet list of source-code evidence per `auth_types[]` entry (which YML param + which code site justifies the type); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns. |
+| 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. |
+| 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: code fallback added — was `params.get("foo")`, now `params.get("foo") or "<yml default>"`, default sourced from YML `defaultvalue`.* **(b)** *param `foo`: NO YML default; proposed default `<value>` — please confirm/edit/skip before the code edit is applied.* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branch (b) is the only sub-confirmation that pauses the workflow per-param (within the same outer pause-before-`set-param-defaults` step). The skill MUST collect all branch-(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If any branch-(b) param is rejected, drop it from the JSON and skip its code edit. |
+| 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
+
+### Run-through (do NOT ask) operations
+
+For clarity, these run without prompting even though they mutate state:
+
+- `markpass`, `skip`, `fail`, `reset-to`, `reset` — workflow-checkpoint
+  bookkeeping. (Rationale: these reflect verification work the skill has
+  already done; the JSON writes above are the substantive decisions.)
+- `set-assignee`, `set-assignee-by-connector` — ownership writes.
+  (Rationale: these are negotiated up front in the batch-flow ownership
+  step, which has its own explicit prompts already.)
+- All read-only CLI verbs (`status`, `show-step`, `list`, `list-by-connector`,
+  `list-connectors`, `next`, `dashboard`, `files`, `auth-params`).
+- All analyzer runs, formatter runs, test runs, pre-commit / validate.
+- All file reads, greps, code edits, and test-file authorship.
+
+### Order-of-work prompts (batch flows only)
+
+In addition to the 4 JSON writes above, the [Assignee batch flow](#assignee-batch-flow)
+and [Connector batch flow](#connector-batch-flow) explicitly require a
+user prompt in the specific ambiguous-ordering cases enumerated in
+[Order-of-work disambiguation](#order-of-work-disambiguation). Those
+prompts stand — this section does NOT override them. When the order is
+"obvious" by the rules in that section, proceed silently.
+
+### User-overrides to this policy
+
+Users can widen or narrow the pause list per-session by saying so
+explicitly. Common overrides:
+
+- *"don't ask, just do it"* / *"no confirmations"* / *"run the whole thing"* →
+  skip the 4 JSON-write prompts for the remainder of the session; still
+  honor the order-of-work prompts.
+- *"ask before every CLI call"* → pause on every state-mutating verb
+  (including `markpass`, `set-assignee`, `fail`, `reset-to`, `reset`),
+  not just the 4 JSON writes.
+- *"also confirm before rewinds"* → add `fail`, `reset-to`, `reset` to
+  the pause list.
+- *"also confirm before commits / PRs"* → if/when the workflow reaches
+  git-commit or PR-creation steps, pause first.
+
+If the user gives a session-level override, honor it for the rest of
+that session and do not re-prompt about it.
+
 ## Linked Files
 
 - [`connectus/Readme.md`](Readme.md) — Full reference for auth types, CSV columns, walkthrough.
-- [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details` and `Params to Commands`, plus the `verify button placement` flag enum.
+- [`connectus/column-schemas.md`](column-schemas.md) — JSON shapes for `Auth Details`, `Params to Commands`, `Params for test with default in code`, and `Params to Capabilities`.
 - [`connectus/workflow_state.py`](workflow_state.py) — The state machine CLI (source of truth for workflow). Provides the `files <integration_id>` subcommand and the [`get_integration_files()`](workflow_state.py) helper used to resolve every source file for an integration (see [§1.1](#11-locate-integration-files)).
 - [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) — The tracking spreadsheet (DO NOT EDIT DIRECTLY).
 
@@ -154,9 +225,8 @@ The status output shows:
 - **Assignee** — who is working on it
 - **File Path** — path to the integration's source files (data column). If you need every related file (YML + code + description + README + test), don't infer sibling names — run `python3 connectus/workflow_state.py files "<Integration ID>"` (see [§1.1](#11-locate-integration-files)).
 - **Connector ID** — the ConnectUs connector this integration belongs to (data column)
-- **Auth Details** — authentication detail JSON (with embedded `config` expression)
+- **Auth Details** — authentication detail JSON (`auth_types[]` + optional `other_connection`; profile relations are implicit — see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression))
 - **Params to Commands** — JSON mapping of commands → param ids
-- **verify button placement** — flag (`connection` | `configuration` | `none`; default `connection` on read). Placeholder pending detailed spec.
 - **Workflow Checkpoints** — which checkpoints are done, which remain
 - **Current step** — what to work on next
 
@@ -181,7 +251,7 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 3. ☐ Extract every auth-related param from the YML `configuration` section — see [1.3](#13-yml-analysis-procedure)
 4. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime — see [1.4](#14-python-code-analysis--specific-patterns)
 5. ☐ Cross-reference each YML param with where/how it is consumed in code — see [1.5](#15-cross-reference-yml-params-with-code-usage)
-6. ☐ Classify each connection via the [decision table](#121-classification-decision-table); build each entry per [1.2.2](#122-building-each-auth_types-entry); compose `config` per [1.2.3](#123-building-the-config-expression)
+6. ☐ Classify each connection via the [decision table](#121-classification-decision-table); build each entry per [1.2.2](#122-building-each-auth_types-entry); note that profile relations are implicit per [1.2.3](#123-profile-relations-are-implicit-no-config-expression) (no `config` expression to compose)
 7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
 8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
 9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
@@ -248,7 +318,7 @@ For background only: integration files conventionally live at `Packs/<PackName>/
 
 #### 1.2 Researching `Auth Details` — the four sources of truth
 
-Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_details()`](auth_config_parser/validator.py:47) (called via the [`workflow_state.validators.validate_auth_detail()`](workflow_state/validators.py:25) wrapper); the validator now checks the `config` expression grammar AND that every name referenced in `config` exists as some `auth_types[].name`. Wrong input is rejected at the CLI — better to catch it at research time.
+Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_details()`](auth_config_parser/validator.py:47) (called via the [`workflow_state.validators.validate_auth_detail()`](workflow_state/validators.py:25) wrapper). The validator hard-rejects the pre-2026-05 `config` expression key and the pre-2026-05 `xsoar_params` key with migration-help guidance; profile relations are now implicit from `len(auth_types)` (see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression)). Wrong input is rejected at the CLI — better to catch it at research time.
 
 Read these four files **in this order**, treating each one as a cross-check on the previous:
 
@@ -273,10 +343,10 @@ Read these four files **in this order**, treating each one as a cross-check on t
    - The `test-module` command — what it tries to authenticate with (this is usually the cleanest auth flow read).
 
    For each YML param, trace where its value flows:
-   - Becomes an `Authorization` header / API request signature → **auth secret**.
-   - Becomes the URL / host / region → **connection metadata, NOT auth**.
+   - Becomes an `Authorization` header / API request signature → **auth secret** → add as a key in the matching entry's `xsoar_param_map`, with the **role** that secret plays as the value (see §1.2.2 for the role enum per `type`).
+   - Becomes the URL / host / region → **connection metadata, NOT auth** → goes in `other_connection`.
    - Becomes a feature flag / fetch cadence / proxy toggle / verify-SSL boolean → **NOT auth**.
-   - Sent to a token endpoint as `client_id` / `client_secret` / `assertion` / `refresh_token` → **part of an OAuth connection**.
+   - Sent to a token endpoint as `client_id` / `client_secret` / `assertion` / `refresh_token` → **part of an OAuth connection** → add as a key in the OAuth entry's `xsoar_param_map`, with an OAuth-flavored role string as the value (e.g. `"client_id"`, `"client_secret"`, `"access_token"`).
 
 3. **`<IntegrationName>_description.md`.** The short blurb shown in the XSOAR UI under the integration. Often spells out the auth method in one sentence — e.g. *"Generate an API key from the Settings page"*, *"Use OAuth 2.0 client credentials"*, *"Service account JSON key file required"*. Use it to confirm what the code is doing.
 
@@ -297,11 +367,15 @@ Map "what you saw in the source" → "auth-type enum value" (the values are deri
 | `X-API-Key: <key>` / `apikey=<key>` query param / similar static header | `APIKey` |
 | `Authorization: Basic <user>:<pass>` from a credentials (type `9`) or two flat params | `Plain` |
 | Username + password posted to a login endpoint that returns a session cookie | `Plain` |
-| OAuth2 with user-driven `code` + `redirect_uri` flow | `OAuth2AuthCode` |
+| OAuth2 with user-driven `code` + `redirect_uri` flow | `Passthrough` |
 | OAuth2 with `client_id` + `client_secret` (no user code, `grant_type=client_credentials`) | `OAuth2ClientCreds` |
 | OAuth2 with a signed JWT assertion (private key + claims, `grant_type=jwt-bearer`) | `OAuth2JWT` |
-| OAuth2 ROPC (`grant_type=password`), Device Code, Managed Identity, mTLS-only, HMAC signing, custom challenge/response | `Other` |
+| OAuth2 ROPC (`grant_type=password`), Device Code, Managed Identity, mTLS-only, HMAC signing, custom challenge/response | `Passthrough` |
+| Two or more API keys / secrets used together (regardless of how they're issued — Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's three tokens, etc.) | `Passthrough` |
+| Any auth flow that doesn't cleanly fit one of the five canonical profile types in §1.2.6 | `Passthrough` |
 | No credentials at all (public API, or a feed that just hits a URL) | `NoneRequired` |
+
+> **`Passthrough` is the "doesn't fit a profile" catch-all.** The five canonical UCP profile types — `oauth2_client_credentials`, `oauth2_jwt_bearer`, `plain`, `api_key`, and `NoneRequired` — each have a fixed field shape (see §1.2.6 "Authentication Profile Types — Fields Reference"). Anything that doesn't fit one of those shapes (multi-key packages, OAuth2 Authorization Code's browser flow, ROPC, Device Code, Managed Identity, custom HMAC schemes, mTLS, certificate-based flows, etc.) becomes `Passthrough`. When in doubt, prefer `Passthrough` — it is the safe, explicit "we couldn't classify this into a known profile" signal.
 
 ---
 
@@ -310,53 +384,83 @@ Map "what you saw in the source" → "auth-type enum value" (the values are deri
 Each `auth_types[]` entry describes **one complete UCP connection type** — one full auth flow, not one XSOAR param. See [`column-schemas.md`](column-schemas.md:34) for the authoritative shape. The rules you'll be applying as you build entries:
 
 - **`type`** — the enum value chosen via the table above.
-- **`name`** — a free-form logical id you choose (e.g. `"api_key"`, `"credentials"`, `"oauth_client"`, `"hunting_credentials"`). Must be unique within the row. **`config` references these names**, NOT the YML param ids and NOT the auth-type enum values.
-- **`xsoar_params`** — the list of XSOAR field paths that supply the secrets for **this one** connection type:
-  - For a flat param (YML type `0`/`4`/`14`/`17` etc.): use the bare param id, e.g. `"api_key"`, `"server_token"`.
-  - For a credentials param (YML type `9`): list **both** sub-fields with dotted notation, e.g. `["credentials.identifier", "credentials.password"]`. Listing only one is wrong.
-  - For a `Plain` auth built from two **separate** flat params: list both ids directly, e.g. `["server_user", "server_password"]`.
-  - The same field path MAY appear in multiple entries (e.g. when one `credentials.password` backs both a Plain profile and an OAuth profile) — that's correct, list it in each entry's `xsoar_params`.
-- **`interpolated`** (optional, defaults to `false`) — set to `true` only when the value is templated in at runtime by the manifest generator rather than supplied by the user. Rare; leave it out if you are not certain it applies.
-- **Sort order** — entries are sorted by `(type, name)` ascending. The validator now enforces this — `set-auth` will reject unsorted input.
+- **`name`** — a free-form logical id you choose (e.g. `"api_key"`, `"credentials"`, `"oauth_client"`, `"hunting_credentials"`). Must be unique within the row. The name is a free-form identifier you choose to refer to the profile in human-facing diagnostics; it does NOT need to match any YML param id or auth-type enum value.
+- **`xsoar_param_map`** — a **JSON object** mapping each XSOAR field path that supplies a secret for **this one** connection type (the key) to the **role** that secret plays inside the ConnectUs envelope (the value). The map is **required and non-empty** for every entry — including entries with `"interpolated": true` (the role still has to be declared even if the value is templated at runtime). Key conventions:
+  - For a flat param (YML type `0`/`4`/`14`/`17` etc.): use the bare param id as the key, e.g. `"api_key"`, `"server_token"`.
+  - For a credentials param (YML type `9`): use dotted-leaf notation — `"<paramid>.identifier"` for the username slot and `"<paramid>.password"` for the password slot. Both leaves get their own keys IF both are used; suppress `<paramid>.identifier` or `<paramid>.password` according to `hiddenusername:true` / `hiddenpassword:true` flags (see §1.3 for the leaf-suppression rules).
+  - For a `Plain` auth built from two **separate** flat params: key each id directly, e.g. `{"server_user": "username", "server_password": "password"}`.
+  - The same field path MAY appear as a key in the maps of multiple entries (e.g. one `credentials.password` backing both a Plain profile and an OAuth profile) — that's correct; map it in each entry independently with whatever role applies to that connection.
+- **Role enum is constrained per `type`.** The allowed values on the right-hand side of each map entry depend on the entry's `type`:
+
+  | `auth_types[].type` | Allowed `xsoar_param_map` values |
+  |---|---|
+  | `APIKey` | `"key"` |
+  | `Plain` | `"username"`, `"password"` |
+  | `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` | any non-empty string (enum **deliberately undefined for now** — typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`) |
+  | `NoneRequired` | n/a — no entry in `auth_types[]` at all |
+
+  The validator enforces the APIKey and Plain constraints strictly; OAuth/Passthrough values are only checked for "non-empty string".
+
+  > **Enum history (2026-05).** The validator/enum in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) accepts exactly the six values `OAuth2ClientCreds`, `OAuth2JWT`, `APIKey`, `Plain`, `Passthrough`, `NoneRequired`. The historical `OAuth2AuthCode` value was removed (Authorization Code flows are now classified as `Passthrough`) and the historical `Other` value was renamed to `Passthrough`. There is no backward-compatibility alias; payloads using the old names are rejected by `set-auth`.
+- **Multi-secret auth flows: extras go in the SAME profile (see §1.2.2a).** Every entry is one self-contained, mutually-exclusive profile. If an auth flow consumes more than one XSOAR field-path, they all go in the **same** entry's `xsoar_param_map` — never split across multiple entries (because the only inter-profile relation is exclusive-OR, not AND). When the combined shape doesn't fit a canonical profile (no dominant canonical role; co-equal multi-secret packages like Datadog/AWS/Akamai/GitHub App), use `Passthrough`. When one canonical role dominates and the rest are "extras" (e.g. APIKey + a vendor cert), keep the canonical type and add the extras to the same map.
+- **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** All other auth types (`OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough`) MUST set `interpolated: true` — these flows cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
+- **`verify_connection_skip`** (optional, defaults to `false`) — set to `true` when this profile's `test-module` code path manually raises an exception (`raise DemistoException(...)` / `return_error(...)`) instead of reaching an actual HTTP call. Most commonly OAuth Authorization Code / Device Code / ROPC flows where the user must first run an out-of-band `!auth-start`-style command before the connection-test button can succeed. Per-profile: a multi-profile (exclusive-OR) row may set it `true` on one profile and leave it default on another. Must be a JSON boolean — string `"true"`/`"false"` and int `0`/`1` are rejected.
+- **Sort order** — entries are sorted by `(type, name)` ascending. The validator enforces this — `set-auth` will reject unsorted input. Map keys, by contrast, are an unordered dict and have no sort requirement.
 
 ---
 
-#### 1.2.2a When to use one entry vs multiple entries for multi-secret auth flows
+#### 1.2.2a Multi-secret auth flows — extras go INSIDE the profile
 
-Some auth schemes require multiple secrets to authenticate a single request (AWS SigV4 = access_key + secret_key; Akamai EdgeGrid = client_token + access_token + client_secret). The classification rule is:
+> **Schema change, 2026-05.** Every entry in `auth_types[]` is **one self-contained, mutually-exclusive profile**. The only inter-profile relation is exclusive-OR (implicit when `len(auth_types) >= 2`). AND-ed secrets within a single auth flow live inside **one profile's** `xsoar_param_map` — never as separate profiles.
 
-- **One entry, multiple `xsoar_params`** — when the secrets are **issued together as a single credential** (the user goes to one place, downloads/copies one credential package). Example: AWS access_key + secret_key are issued together for one IAM user; both go in one `auth_types[]` entry: `xsoar_params: ["access_key", "secret_key"]`.
+##### Picking the profile `type` for a multi-field auth flow
 
-- **Multiple entries, joined by `REQUIRED(...)`** — when the secrets are **separately issued** (the user goes through separate setup steps to obtain each one, often from different parts of the vendor's UI). Example: Akamai EdgeGrid's three tokens are obtained in three distinct setup steps; each gets its own entry, and `config` reads `REQUIRED(access_token, client_secret, client_token)`.
+For an auth flow that consumes more than one XSOAR field, count the **canonical-role-bearing leaves** (the ones that fit a canonical UCP profile's field list per §1.2.6) and pick the type accordingly:
 
-**Rule of thumb:** if you can describe the credential as "one set of values you copy from one screen", use one entry. If the user has to perform multiple distinct credential-issuance flows (each producing its own value), use multiple entries.
+- **Exactly one canonical-role leaf, plus N "extras"** → keep the canonical type.
+  - Examples:
+    - **`Plain` + a vendor client certificate** (the cert participates in the TLS handshake alongside username/password): one `Plain` entry whose `xsoar_param_map` holds `<id>.identifier`/`<id>.password` AND the cert leaf.
+    - **`APIKey` + a vendor client certificate** (mTLS-protected endpoint that also needs a static API key): one `APIKey` entry whose `xsoar_param_map` holds both the `key` and the cert leaf.
+    - **`OAuth2ClientCreds` + an "scopes" or "tenant_id" string that the OAuth flow itself requires**: one `OAuth2ClientCreds` entry whose `xsoar_param_map` holds the OAuth client id + secret AND the extra leaf.
+- **Two-or-more co-equal canonical leaves (no obvious "dominant" canonical role)** → `Passthrough`.
+  - Examples:
+    - **Datadog** (`api_key` + `application_key` — two equal-rank API-key-style values, neither dominates).
+    - **AWS SigV4** (`access_key` + `secret_key` — two co-equal HMAC inputs).
+    - **Akamai EdgeGrid** (three co-equal tokens).
+    - **GitHub App** (`app_id` + `private_key` + `installation_id` — three co-equal inputs).
+  - All `Passthrough` entries MUST have `"interpolated": true` (see §1.2.2).
 
-Both shapes still use the appropriate enum (`APIKey`, `Plain`, etc.) — the question is only how to subdivide `auth_types[]`. The wire-protocol mechanism (HMAC, Bearer, signed query string, etc.) does not change the entry-count decision; it only determines the enum value.
+> **Decisive heuristic** — count the **canonical** roles only (`key`, `username`/`password`, `client_id`/`client_secret` for OAuth, `subject_email`/`credentials_file` for JWT). If exactly one canonical pattern is present, the profile keeps that canonical type and the rest are "extras" living inside the same `xsoar_param_map`. If two-or-more independent canonical patterns appear (or none does, e.g. AWS-style two-key HMAC), use `Passthrough`.
 
-**HMAC note:** custom HMAC-signed requests (Akamai EdgeGrid, AWS-style SigV4) are classified as `APIKey` per the table in §1.2.1 — the operationally-distinguishing trait is "static secret(s) producing a per-request header / signature", which fits the `APIKey` family rather than `Other`. The §"Auth Type Reference" table at the bottom of this document agrees ("API Key, HMAC, and similar static secret mechanisms").
+> **Where do extras go?** **Inside the profile's `xsoar_param_map`**, NOT in `other_connection`. `other_connection` is reserved for **connection-wide / transport-level metadata that has no bearing on the auth flow** — URL, port, region, insecure, proxy. If a field has any implication on how authentication itself happens (a cert that participates in the handshake; an HMAC salt; a vendor-required header value), it belongs in the profile.
+>
+> **Caveat (validator role enum).** The validator currently restricts `APIKey` role values to `"key"` and `Plain` to `{"username", "password"}`. Adding an extra leaf with a non-canonical role string (e.g. `{"client_cert": "certificate"}` on an `APIKey` profile) will surface a role-enum violation under the current validator. Until the role enum is relaxed (planned), classifications that need extras on `APIKey`/`Plain` may need to either (a) demote the profile to `Passthrough` so the role enum is free-form, or (b) live with the validator complaint and follow up. The model is correct; the validator just lags behind it.
+
+**Single-secret flows stay on their natural profile type.** If the integration has exactly one API key (one header / one query param / one HMAC secret-of-one) and nothing else auth-relevant, keep it as `APIKey`. If it has exactly one username+password pair (`Plain` profile has two fields by design) and nothing else, keep it as `Plain`. The "extras go in the profile" rule fires only when there ARE extras AND there is still a dominant canonical role; otherwise (no canonical dominance) use `Passthrough`.
+
+**HMAC of one** (single static secret producing per-request signature) stays `APIKey`. **HMAC of two-plus** (e.g. AWS SigV4's pair, Akamai's triple) is multi-secret with no dominant canonical pattern → `Passthrough`. The wire-protocol mechanism (HMAC, Bearer, signed query string, etc.) is irrelevant to the classification — only the **count of co-equal canonical patterns** matters.
 
 ---
 
-#### 1.2.3 Building the `config` expression
+#### 1.2.3 Profile relations are implicit (no `config` expression)
 
-The grammar is small. See the worked examples in [`column-schemas.md`](column-schemas.md:73) for the canonical list.
+The pre-2026-05 `config` expression field is **gone**. There is no
+`REQUIRED(...)` / `OPTIONAL(...)` / `CHOICE(...)` / `+` grammar to
+write. The relationship between profiles is encoded by the **length
+and order** of `auth_types[]`:
 
-- The literal `NoneRequired` — used **only** when there is genuinely no auth (and `auth_types` is `[]`).
-- One or more clauses joined by ` + ` (with spaces around the plus). Each clause is one of:
-  - `REQUIRED(name1, name2, ...)` — every listed connection type must be configured.
-  - `OPTIONAL(name1, name2, ...)` — each listed connection type may be configured.
-  - `CHOICE(name1, name2, ...)` — exactly one of the listed connection types must be configured.
-- Operand names refer to `auth_types[].name` values. The validator REJECTS unknown names (it's the most common cause of `set-auth` failures).
+| `len(auth_types)` | Meaning |
+|---|---|
+| `0` | The integration requires NO authentication (the historical `NoneRequired`). |
+| `1` | A single profile, always used. |
+| `>= 2` | **Exclusive-OR.** The user picks exactly one profile at configuration time. There is no AND between profiles, no OPTIONAL, no clause-joining. |
 
-Worked examples (re-using the canonical set):
+`set-auth` **hard-rejects** any payload that still contains a `config`
+key with a migration-help error. Drop the key from any pre-2026-05
+payload and re-shape `auth_types[]` per
+[`column-schemas.md`](column-schemas.md:1) §"Migration from `config`".
 
-- `REQUIRED(api_key)` — single required connection.
-- `REQUIRED(privateApiKey, publicApiKey)` — two required connections.
-- `CHOICE(credentials, hunting_credentials)` — pick one of two.
-- `REQUIRED(credentials) + OPTIONAL(credentials_consumer)` — mandatory Plain plus optional OAuth.
-- `NoneRequired` — no auth.
-
-Don't strictly stick to if the corresponding xsoar parameters are required or not. There might be cases it isnt required due to supporting legacy, now hidden parameters. These should be required in this case if there is no alternate auth acceptable.
+> **Don't strictly stick to whether the corresponding XSOAR parameters are marked `required: true`.** Some integrations leave a legacy hidden alternative in the YML that makes the visible param appear optional even when it is in practice the only configurable path. Treat the visible parameter as required if there is no alternate visible auth path the user could pick.
 
 ---
 
@@ -376,7 +480,7 @@ when empty (use `[]`).
 
 A YML param qualifies if it is BOTH:
 
-1. **Not an auth secret** (auth secrets go in `auth_types[].xsoar_params`), AND
+1. **Not an auth secret** (auth secrets are keyed in `auth_types[].xsoar_param_map`), AND
 2. **Not a per-command behavioral param** (those go in `Params to Commands`).
 
 Concretely: things needed to direct the connection at the right server
@@ -393,13 +497,13 @@ with the right network settings.
   to pick the endpoint**, not to authenticate against a tenant.
 - `tenant_id`, `subscription_id`, `account_id` — when used as a routing /
   identifier and **NOT** as an auth secret. (If the param is hashed into
-  a signed request → it is an auth secret, classify it under
-  `auth_types[].xsoar_params` instead.)
+  a signed request → it is an auth secret, classify it as a key in
+  `auth_types[].xsoar_param_map` instead.)
 - `api_version` — when it changes the URL path.
 
 ##### Examples to EXCLUDE
 
-- **Auth secrets** — already captured in `auth_types[].xsoar_params`. Do
+- **Auth secrets** — already keyed in `auth_types[].xsoar_param_map`. Do
   not list them again here.
 - **Per-command behavioral params** — `fetch_interval`, `first_fetch`,
   `max_fetch`, `incident_type`, `mirror_options`, `mirror_direction`,
@@ -448,9 +552,118 @@ Resulting field inside `Auth Details`:
 
 ---
 
+#### 1.2.6 Authentication Profile Types — Fields Reference
+
+> **What this section is.** The canonical, copy-paste reference for the five UCP authentication profile types and the user-facing fields each one exposes. Use it to answer "does this integration fit a known profile, or is it `Passthrough`?" while you classify `Auth Details`. The shapes here are the source of truth for the manifest's `metadata.auth.parameter` block; OPA Check 17 rejects duplicate `auth.parameter` values within a profile's effective scope (profile configurations + connection.yaml `general_configurations`).
+
+##### Quick reference — fields by connection type
+
+| Profile Type | Profile-Level Properties | User-Facing `auth.parameter` Fields | Maps from classification |
+|---|---|---|---|
+| `oauth2_client_credentials` | `discovery_url` **OR** `token_endpoint` | `client_key`, `client_secret` | `OAuth2ClientCreds` |
+| `oauth2_jwt_bearer` | `discovery_url` **OR** `token_endpoint` | `subject_email`, `credentials_file` | `OAuth2JWT` |
+| `plain` | *(none beyond id/type/title/description)* | `username`, `password` | `Plain` |
+| `api_key` | *(none beyond id/type/title/description)* | `api_key` | `APIKey` (single key only) |
+| `Passthrough` (no canonical profile) | n/a | n/a — define fields ad-hoc in the manifest | `Passthrough` — includes `oauth2_authorization_code` (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (e.g. Datadog `api_key`+`application_key`), AWS SigV4, Akamai EdgeGrid, GitHub App, custom signing |
+
+\* For browser-flow OAuth2 Authorization Code, the legacy/sibling profile `oauth2_authorization_code` exists at the profile level (`client_id`, `client_secret`, `discovery_url` **OR** `authorization_endpoint` + `token_endpoint`, `refresh_token_scope`; profile-level `client_id` / `client_secret` MUST use the `{SAAS_REGISTRY.*}` pattern) but it has **no user-facing `auth.parameter` fields** (the entire flow is browser-driven). Per the project-wide rule, **classify it as `Passthrough` regardless** — there is no single profile-type field shape we can pin it to from a classification perspective.
+
+##### Detailed breakdown
+
+###### 1. `oauth2_client_credentials`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description`, (`discovery_url` **OR** `token_endpoint`)
+- **`metadata.auth.parameter` fields:**
+  - `client_key` — OAuth2 client ID / consumer key (`input`, unmasked)
+  - `client_secret` — OAuth2 client secret (`input`, `mask: true`)
+- **Classification:** any integration whose code does `grant_type=client_credentials` with exactly two secrets (`client_id` + `client_secret`) fed in directly — no JWT, no browser redirect.
+
+###### 2. `oauth2_jwt_bearer`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description`, (`discovery_url` **OR** `token_endpoint`)
+- **`metadata.auth.parameter` fields:**
+  - `subject_email` — impersonation subject (`input`, usually in `general_configurations`)
+  - `credentials_file` — JSON key file (`file_upload`, `formats: ".json"`, `mask: true`)
+- **Classification:** any integration that signs a JWT assertion with a private key (typically a Google service-account JSON file) and posts it to a `grant_type=jwt-bearer` token endpoint.
+
+###### 3. `plain`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description` (nothing more)
+- **`metadata.auth.parameter` fields:**
+  - `username` — account identifier (`input`, unmasked)
+  - `password` — secret (`input`, `mask: true`)
+- **Classification:** username + password basic auth, login-form-to-session-cookie flows, any single-pair credential where one half is an identifier and the other half is a secret.
+
+###### 4. `api_key`
+
+- **Profile-level keys:** `id`, `type`, `title`, `description` (nothing more)
+- **`metadata.auth.parameter` fields:**
+  - `api_key` — token (`input`, `mask: true`)
+- **Classification:** **single static secret only.** Bearer tokens, custom headers like `X-API-Key`, query-param API keys, and single-secret HMAC signing all fit here. **Two-or-more-secret packages do NOT fit and become `Passthrough`** (see §1.2.2a) — even when they're conceptually "API keys" (Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's three tokens, etc.).
+- **Legacy note:** older docs mentioned a dual-key `application_key` slot under `api_key`. That slot is **NOT part of the canonical `api_key` profile** in the current schema; dual-key integrations are `Passthrough`.
+
+###### 5. `NoneRequired`
+
+- **Profile-level keys:** none (no profile generated at all)
+- **`metadata.auth.parameter` fields:** none
+- **Classification:** public APIs, RSS/feed endpoints that need no auth header.
+
+##### All valid `metadata.auth.parameter` values (closed set per profile)
+
+| Parameter | Used By | Notes |
+|---|---|---|
+| `client_key` | `oauth2_client_credentials` | OAuth client id |
+| `client_secret` | `oauth2_client_credentials` | OAuth client secret |
+| `username` | `plain` | Basic-auth identifier |
+| `password` | `plain` | Basic-auth secret |
+| `api_key` | `api_key` | Single static secret |
+| `credentials_file` | `oauth2_jwt_bearer` | JSON key file upload |
+| `subject_email` | `oauth2_jwt_bearer` | Impersonation subject |
+
+> **Duplicate-value rejection.** OPA Check 17 rejects duplicate `auth.parameter` values within a profile's effective scope (the union of the profile's own `configurations` and the `connection.yaml`'s `general_configurations`). If an integration legitimately needs a second copy of the same role-named field (extremely rare), it cannot fit a canonical profile and must be classified as `Passthrough`.
+
+##### Decision rule (one-line summary)
+
+> **If — and only if — every secret the integration consumes maps cleanly into one of the four canonical profiles' field lists above, use that profile's classification (`OAuth2ClientCreds` / `OAuth2JWT` / `Plain` / `APIKey`). Otherwise, classify as `Passthrough`.** `oauth2_authorization_code` is always `Passthrough` — its user-facing config lives on the profile itself, not in `metadata.auth.parameter`, so it has no canonical field shape to match against from the classification side.
+
+---
+
 #### 1.2.4 Two end-to-end worked examples
 
 **Example A — Bearer token API key (single flat param).**
+
+YML excerpt:
+
+```yaml
+- name: api_key
+  display: API Key
+  type: 4
+  required: true
+```
+
+Code excerpt:
+
+```python
+headers = {"Authorization": f"Bearer {params.get('api_key')}"}
+```
+
+Resulting JSON to pass to `set-auth` (no `config` key in the 2026-05 schema; the single profile is implicit):
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "APIKey",
+      "name": "api_key",
+      "xsoar_param_map": {
+        "api_key": "key"
+      }
+    }
+  ],
+  "other_connection": ["insecure", "proxy", "url"]
+}
+```
+
 
 YML excerpt:
 
@@ -477,10 +690,42 @@ resulting JSON to pass to `set-auth`:
     {
       "type": "APIKey",
       "name": "api_key",
-      "xsoar_params": ["api_key"]
+      "xsoar_param_map": {
+        "api_key": "key"
+      }
     }
   ],
-  "config": "REQUIRED(api_key)",
+  "other_connection": ["insecure", "proxy", "url"]
+}
+```
+
+**Example A' — APIVoid pattern: APIKey delivered via a credentials widget with `hiddenusername: true`.**
+
+When an integration uses a `type: 9` credentials widget purely to collect an API key (the username slot is hidden via `hiddenusername: true`), the identifier leaf is suppressed and the map keys ONLY the password leaf, with role `"key"`. See §1.3 for the leaf-suppression rules.
+
+YML excerpt:
+
+```yaml
+- name: credentials
+  display: API Key (Username — hidden)
+  type: 9
+  hiddenusername: true
+  required: true
+```
+
+Resulting JSON:
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "APIKey",
+      "name": "credentials",
+      "xsoar_param_map": {
+        "credentials.password": "key"
+      }
+    }
+  ],
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
@@ -518,7 +763,7 @@ oauth = OAuth1(params['credentials_consumer']['identifier'],
                params['credentials_consumer']['password'], ...)
 ```
 
-Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < `Plain` alphabetically; `other_connection` sorted ascending):
+Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < `Plain` alphabetically; `other_connection` sorted ascending; the OAuth entry uses free-form role strings while the Plain entry is constrained to `"username"`/`"password"`):
 
 ```json
 {
@@ -526,15 +771,20 @@ Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < 
     {
       "type": "OAuth2ClientCreds",
       "name": "credentials_consumer",
-      "xsoar_params": ["credentials_consumer.identifier", "credentials_consumer.password"]
+      "xsoar_param_map": {
+        "credentials_consumer.identifier": "client_id",
+        "credentials_consumer.password": "client_secret"
+      }
     },
     {
       "type": "Plain",
       "name": "credentials",
-      "xsoar_params": ["credentials.identifier", "credentials.password"]
+      "xsoar_param_map": {
+        "credentials.identifier": "username",
+        "credentials.password": "password"
+      }
     }
   ],
-  "config": "REQUIRED(credentials) + OPTIONAL(credentials_consumer)",
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
@@ -551,18 +801,47 @@ Open the YML file and examine the `configuration` section. Extract ALL auth-rela
 | Params with `type: 4` (encrypted text) | These are encrypted fields — may be API keys, tokens, or OAuth secrets |
 | Params with `type: 14` (certificate/key) | Certificate-based auth |
 | Params with `type: 15` (select dropdown) | May be an `auth_type` selector for multi-auth integrations |
-| `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password |
+| `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password. The `<id>.identifier` leaf is **suppressed** — do NOT include it as a key in `xsoar_param_map`. The `<id>.password` leaf (if not also hidden) still maps normally. |
+| `hiddenpassword: true` on type=9 params | The `<id>.password` leaf is **suppressed** analogously — do NOT include it as a key in `xsoar_param_map`. The `<id>.identifier` leaf (if not also hidden) still maps normally. |
 | `display` and `displaypassword` labels | Reveal what the credential actually is (e.g., "Client ID" / "Client Secret" vs "Username" / "Password") |
-| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — not in `auth_types[].xsoar_params`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
+| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — does not appear as a key in any `xsoar_param_map`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
 | `deprecated: true` or `_deprecated` in param names | Ignore these entirely — they are no longer functional |
 | `additionalinfo` text | Often describes the auth mechanism in plain English |
 | Params named `auth_type` with `type: 15` | Indicates multi-auth integrations with user-selectable auth flow |
 
 **Key rule for hidden/deprecated params (strict):**
 
-> Hidden YML params (either `hidden: true` or `hidden: [<list>]`) are **invisible to all migration tooling**. They are excluded from every workflow-data column. The visible siblings define the entire authentication / connection / per-command surface. This rule supersedes the older "check if they represent an old input path" guidance — even if a hidden param backs the same secret as a visible one, you do NOT list the hidden id in `xsoar_params`. List ONLY the visible id(s).
+> Hidden YML params (either `hidden: true` or `hidden: [<list>]`) are **invisible to all migration tooling**. They are excluded from every workflow-data column. The visible siblings define the entire authentication / connection / per-command surface. This rule supersedes the older "check if they represent an old input path" guidance — even if a hidden param backs the same secret as a visible one, you do NOT key the hidden id in any `xsoar_param_map`. Key ONLY the visible id(s).
 >
 > Rationale: the migration produces a clean, forward-looking ConnectUs manifest. Hidden params are by definition not exposed to the user; carrying them through the migration would re-surface them in places they shouldn't appear and would confuse downstream tooling that has no notion of XSOAR's per-platform `hidden` list.
+
+**Hidden-leaf suppression for `type: 9` credentials (per-leaf, not per-param):**
+
+The `hiddenusername` / `hiddenpassword` flags suppress only the **named leaf** of the credentials widget — they do NOT remove the whole param. The other leaf (if not also hidden) still goes in `xsoar_param_map` as usual.
+
+- `hiddenusername: true` → omit `<id>.identifier` from the map; map `<id>.password` if it carries a secret.
+- `hiddenpassword: true` → omit `<id>.password` from the map; map `<id>.identifier` if it carries a secret.
+- If both flags are set, the param has no live leaves — treat it as if `hidden: true` applied at the whole-param level and exclude it from `Auth Details` entirely.
+
+**Worked mini-example — APIVoid pattern (`hiddenusername: true` on an APIKey).** The credentials widget collects only the password (used as the API key), so the resulting map has exactly one key:
+
+```yaml
+- name: credentials
+  display: API Key
+  type: 9
+  hiddenusername: true
+  required: true
+```
+
+```json
+{
+  "type": "APIKey",
+  "name": "credentials",
+  "xsoar_param_map": {
+    "credentials.password": "key"
+  }
+}
+```
 
 ---
 
@@ -585,17 +864,17 @@ grep -n "authorization_code\|redirect_uri\|oauth-start\|oauth-complete\|auth_cod
 grep -n "jwt\.encode\|jwt-bearer\|ServiceAccountCredentials\|google\.auth\|google\.oauth2\|service_account\|private_key.*sign" <file>.py
 ```
 
-**OAuth2 ROPC (Resource Owner Password Credentials) — classified as `Other`:**
+**OAuth2 ROPC (Resource Owner Password Credentials) — classified as `Passthrough`:**
 ```bash
 grep -n "grant_type.*password\|resource_owner\|ROPC" <file>.py
 ```
 
-**OAuth2 Device Code — classified as `Other`:**
+**OAuth2 Device Code — classified as `Passthrough`:**
 ```bash
 grep -n "device_code\|devicecode\|device_authorization" <file>.py
 ```
 
-**Managed Identity — classified as `Other`:**
+**Managed Identity — classified as `Passthrough`:**
 ```bash
 grep -n "managed_identit\|MANAGED_IDENTITIES\|use_managed_identities\|managed_identities_client_id" <file>.py
 ```
@@ -630,9 +909,9 @@ Based on manual review of 148 integrations (71 corrections found), these are the
 | 1 | `type=9` credentials used for OAuth2 client_credentials | 9 | `Plain(credentials)` | `OAuth2ClientCreds(credentials)` | Code does `grant_type=client_credentials` or uses `MicrosoftClient` |
 | 2 | Bearer token classified as Plain | 8 | `Plain(credentials)` | `APIKey(credentials)` | Code sets `Authorization: Bearer {token}` with a static token from params |
 | 3 | False positive OAuth2ClientCreds from code patterns | 25 | `OPTIONAL(OAuth2ClientCreds)` added | Should be removed | Code has `client_id`/`access_token` strings but they're not OAuth2 — they're proprietary token exchange |
-| 4 | Microsoft/Azure missing ManagedIdentity | 23 | No mention | Add to `auth_types` as `Other` | Code imports `MicrosoftClient` and has `managed_identities_client_id` param |
-| 5 | Microsoft/Azure missing DeviceCode | 12 | No mention | Add to `auth_types` as `Other` | Code has `device_code` grant type support |
-| 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Other` (ROPC) | Code does `grant_type=password` |
+| 4 | Microsoft/Azure missing ManagedIdentity | 23 | No mention | Add to `auth_types` as `Passthrough` | Code imports `MicrosoftClient` and has `managed_identities_client_id` param |
+| 5 | Microsoft/Azure missing DeviceCode | 12 | No mention | Add to `auth_types` as `Passthrough` | Code has `device_code` grant type support |
+| 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Passthrough` (ROPC) | Code does `grant_type=password` |
 | 7 | Hidden old param creates false CHOICE | ~10 | `CHOICE(APIKey, Plain)` | Single mechanism | Old `type=4` param is `hidden: true`, new `type=9` param is visible — same credential |
 | 8 | `type=4` OAuth client secret classified as APIKey | ~5 | `APIKey(client_secret)` | `OAuth2ClientCreds(client_secret)` | Param named `client_secret` or `enc_key` used in OAuth flow |
 | 9 | Microsoft cert-thumbprint integrations seed-fail at module load | many | 100% `no_data` across every command | Not a misclassification; analyzer limitation. Use the full static union; do NOT retry with `--use-integration-docker` (failure is in `MicrosoftApiModule.MicrosoftClient.__init__` cert validator, not a missing package). `--ignore-params <name>` does NOT help — the slot is still seeded, it only filters output. | Stderr contains `Error: Odd-length string` or `non-hexadecimal number found in fromhex()`; integration's YML has `certificate_thumbprint` (type=4) or `creds_certificate` (type=9) consumed by `MicrosoftClient`. Until the analyzer ships per-param seed overrides, manual source review is the only path. |
@@ -648,17 +927,17 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
   > **Important: 4 flows is the upper bound, not the default.** Many Microsoft integrations support only a subset. Common variants observed in the codebase:
   >
   > - **All 4 flows** — `auth_type` selector (type=15) with `Client Credentials` / `Authorization Code` / `Device Code` options + `managed_identities_client_id` param.
-  > - **Client-creds-only with cert OR secret + Managed Identity** (Azure Sentinel pattern) — 3 entries: `OAuth2ClientCreds(cert)` + `OAuth2ClientCreds(secret)` + `Other(managed_identity)`. No `auth_type` selector param.
+  > - **Client-creds-only with cert OR secret + Managed Identity** (Azure Sentinel pattern) — 3 entries: `OAuth2ClientCreds(cert)` + `OAuth2ClientCreds(secret)` + `Passthrough(managed_identity)`. No `auth_type` selector param.
   > - **Pure Client Credentials** (no cert, no MI) — 1 entry.
   >
   > The decisive evidence is **always** the source code, not the import. Read `main()` to determine which auth paths are reachable — never assume "imports `MicrosoftClient` ⇒ all 4 flows".
 
-  - It likely supports **4 auth flows**: OAuth2ClientCreds, OAuth2AuthCode, DeviceCode, ManagedIdentity
+  - It likely supports **4 auth flows**: `OAuth2ClientCreds`, plus three flavours of `Passthrough` (Authorization Code, Device Code, Managed Identity).
   - Check for `auth_type` selector param (`type: 15`) with options like `Client Credentials`, `Authorization Code`, `Device Code`
-  - Check for `managed_identities_client_id` param → indicates ManagedIdentity support
-  - Check for `redirect_uri` and `auth_code` params → indicates OAuth2AuthCode support
-  - The config should typically be: `CHOICE(OAuth2AuthCode, OAuth2ClientCreds, DeviceCode, ManagedIdentity)` or similar
-  - DeviceCode and ManagedIdentity are classified as `Other` in the enum
+  - Check for `managed_identities_client_id` param → indicates Managed Identity support (Passthrough entry)
+  - Check for `redirect_uri` and `auth_code` params → indicates Authorization Code support (Passthrough entry)
+  - Each supported flow becomes its own entry in `auth_types[]`. The user picks one at configuration time (implicit exclusive-OR; no `config` key needed). Pick distinct `auth_types[].name` values per entry.
+  - Authorization Code, Device Code, and Managed Identity are all classified as `Passthrough` (none fits the `oauth2_client_credentials` / `oauth2_jwt_bearer` profile shape).
 
 ---
 
@@ -666,13 +945,17 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
 
 After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md:16). The same rules are enforced at runtime by [`validate_auth_details()`](auth_config_parser/validator.py:47):
 
-1. Must be valid JSON with top-level keys `auth_types` (array), `config` (string), AND `other_connection` (array of strings). All three are REQUIRED on every `set-auth` write — the validator rejects payloads missing any of them.
-2. Each `auth_types[]` entry has a `type` (one of the [`AuthType`](auth_config_parser/types.py:11) enum values, also re-exported as `VALID_AUTH_TYPES`), a unique `name`, and a non-empty `xsoar_params` array (unless the entry is `NoneRequired`-shaped).
-3. `auth_types[]` entries are sorted by `(type, name)` ascending.
-4. `config` is either the literal `NoneRequired`, or one or more clauses joined with ` + `, each clause being `REQUIRED(...)`, `OPTIONAL(...)`, or `CHOICE(...)`.
-5. Every operand name appearing inside `config`'s parens MUST exist as some `auth_types[].name` (the most common cause of `set-auth` rejection).
-6. If `config` is `NoneRequired`, then `auth_types` MUST be `[]`.
-7. `other_connection` must be a list of **non-empty unique strings, sorted ascending**. Empty list `[]` is valid. The validator rejects unsorted input with a message that suggests the sorted form. See [1.2.5](#125-building-the-other_connection-list) for what belongs here.
+1. Must be valid JSON with top-level key `auth_types` (array). The `other_connection` key (array of strings) is optional but recommended for new writes. The pre-2026-05 `config` expression key was removed and is hard-rejected — see `connectus/column-schemas.md` §"Migration from `config`".
+2. Each `auth_types[]` entry has a `type` (one of the [`AuthType`](auth_config_parser/types.py:11) enum values, also re-exported as `VALID_AUTH_TYPES`), a unique `name`, and a non-empty `xsoar_param_map` JSON object (the empty object `{}` is rejected; `NoneRequired` integrations have no entries in `auth_types[]` at all so the requirement is moot for them).
+3. Every `xsoar_param_map` key is a non-empty string (the XSOAR field path); every value is a non-empty string (the role). The **role enum is constrained per `type`**:
+   - `APIKey` → values MUST be `"key"`.
+   - `Plain` → values MUST be in `{"username", "password"}`.
+   - `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` → any non-empty string (enum deliberately undefined for now; typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`).
+4. **Legacy `xsoar_params` key is rejected.** Any payload that still contains the pre-2026-05 `xsoar_params: list[str]` field on any entry is hard-rejected by `set-auth` with a migration-help error pointing at [`column-schemas.md`](column-schemas.md:171) §"Migration from `xsoar_params`".
+5. `auth_types[]` entries are sorted by `(type, name)` ascending. Map keys, by contrast, are an unordered dict — no sort requirement applies.
+6. The pre-2026-05 `config` expression key is **hard-rejected**. The relationship between profiles is now implicit (len(auth_types): 0 → no auth, 1 → single required, ≥2 → exclusive-OR). See `column-schemas.md` §"Migration from `config`".
+7. `auth_types[].verify_connection_skip` is optional; when present it MUST be a JSON boolean. Defaults to `false` when absent. Set `true` for profiles whose `test-module` code path manually raises (`raise DemistoException(...)` / `return_error(...)`) so the connection-test button cannot exercise the auth. Most common for OAuth Authorization Code and Device Code flows that require an out-of-band `!auth-start`-style command.
+9. `other_connection` must be a list of **non-empty unique strings, sorted ascending**. Empty list `[]` is valid. The validator rejects unsorted input with a message that suggests the sorted form. See [1.2.5](#125-building-the-other_connection-list) for what belongs here.
 
 ---
 
@@ -686,7 +969,7 @@ Is there a credentials param (type=9)?
 │   ├── Sends as Basic Auth (HTTPBasicAuth) → Plain
 │   ├── Sends as Bearer token (Authorization: Bearer) → APIKey
 │   ├── Uses in OAuth2 client_credentials flow → OAuth2ClientCreds
-│   ├── Uses in OAuth2 ROPC flow (grant_type=password) → Other (ROPC)
+│   ├── Uses in OAuth2 ROPC flow (grant_type=password) → Passthrough (ROPC)
 │   └── Uses as username/password for login → Plain
 ├── NO: Is there an encrypted param (type=4)?
 │   ├── YES: What is it?
@@ -700,6 +983,18 @@ Is there a credentials param (type=9)?
 
 ---
 
+#### 1.9.1 Feed-framework integrations (always `interpolated: true`)
+
+Integrations that import from any `*FeedApiModule` — `JSONFeedApiModule`, `RSSFeedApiModule`, `CSVFeedApiModule`, `FeedApiModule`, etc. — do **NOT** subclass `BaseClient` directly. They use the feed framework's own `Client` class, which is its own auth-injection ecosystem and is incompatible with the parity tool's BaseClient-based UCP injection.
+
+The parity tool short-circuits on these with `ERROR_NO_BASECLIENT` (exit 11). **Required action: classify with `interpolated: true` on every `auth_types[]` entry. There is no code-change alternative** — re-architecting feed integrations on top of `BaseClient` is out of scope for the migration.
+
+**Detection during classification:** grep the integration's `.py` for `from .*FeedApiModule import`. If present, mark `interpolated: true` up front on every entry — do **not** waste time deriving `auth_types[].xsoar_param_map` shapes that the parity tool will never exercise (still populate the map per §1.2.2; the role declarations are required even when `interpolated: true`, but you do not need to second-guess them).
+
+Examples currently in the pipeline: `SpamhausFeed`, `MalwareBazaarFeed`, `AbuseIPDBFeed`, and effectively any pack named `Feed*`.
+
+---
+
 #### 1.10 Applying Corrections
 
 When corrections are needed (or for the initial set), use `set-auth`:
@@ -710,15 +1005,15 @@ python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details J
 
 This command:
 
-- Validates the Auth Details JSON against the schema (`auth_types` + `config`) — see [`validate_auth_details()`](auth_config_parser/validator.py:47).
+- Validates the Auth Details JSON against the schema (`auth_types[]` + optional `other_connection`) — see [`validate_auth_details()`](auth_config_parser/validator.py:47).
 - Sets the `Auth Details` workflow data column in the CSV.
-- Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag. **This includes wiping the three Params\* data columns**, even though they carry `preserve_on_reset: true` for `reset-to`/`fail` — `set-auth` deliberately ignores that flag because auth-classification changes invalidate every downstream artifact (in particular, the per-command param contract validated by `params_to_commands_no_auth_overlap`).
-- Rejects invalid JSON with specific error messages — including unsorted `auth_types[]`, unknown names referenced from `config`, and malformed `config` expressions.
+- Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag. **This includes wiping the `Params to Commands` data column**, even though it carries `preserve_on_reset: true` for `reset-to`/`fail` — `set-auth` deliberately ignores that flag because auth-classification changes invalidate every downstream artifact (in particular, the per-command param contract validated by `params_to_commands_no_auth_overlap`).
+- Rejects invalid JSON with specific error messages — including unsorted `auth_types[]`, role-enum violations (e.g. `APIKey` entries whose role isn't `"key"`), and any payload still using the pre-2026-05 `config` or `xsoar_params` keys (which short-circuits with a migration-help message).
 
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)","other_connection":["insecure","proxy","url"]}'
+python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_param_map":{"api_key":"key"}}],"other_connection":["insecure","proxy","url"]}'
 ```
 
 After setting, verify it looks correct:
@@ -735,16 +1030,23 @@ Note: there is **no `markpass "auth params set"`** anymore — the verification 
 
 Before invoking `set-auth`, walk this checklist mentally. The validator will catch most of these but it's faster (and clearer) to catch them locally.
 
-- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears anywhere in `auth_types[].xsoar_params`, `other_connection`, or `Params to Commands`. Hidden params are excluded entirely. (See §1.3.)
-- [ ] Every YML param the source code reads as an auth secret is covered by some `auth_types[].xsoar_params`.
-- [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is in any `xsoar_params`.
-- [ ] Every credentials-typed (YML type `9`) auth param appears as **both** `<id>.identifier` AND `<id>.password` (not just one).
+- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears as a key in any `auth_types[].xsoar_param_map`, in `other_connection`, or in `Params to Commands`. Hidden params are excluded entirely. (See §1.3.)
+- [ ] Every YML param the source code reads as an auth secret is keyed in some `auth_types[].xsoar_param_map`.
+- [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is keyed in any `xsoar_param_map`.
+- [ ] Every credentials-typed (YML type `9`) auth param appears in `xsoar_param_map` as the appropriate leaves, with `<id>.identifier` suppressed if YML `hiddenusername: true` and `<id>.password` suppressed if YML `hiddenpassword: true`. (See §1.3.)
+- [ ] Every map value matches the role-enum for its entry's `type` (APIKey: `"key"`; Plain: `"username"`/`"password"`; OAuth/Passthrough: any non-empty string).
+- [ ] Any entry with 2+ map keys whose roles DON'T fit the canonical `plain` profile's `username`+`password` shape is classified as `Passthrough`, not as `APIKey` or `OAuth2*`. See §1.2.2a (multi-secret rule).
+- [ ] Any OAuth2 Authorization Code flow (browser redirect, `code` + `redirect_uri`, `oauth-start`/`oauth-complete` commands) is classified as `Passthrough` — there is no canonical `oauth2_authorization_code` profile shape; the user-facing config lives on the profile itself, not in `metadata.auth.parameter`.
+- [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
+- [ ] Every entry whose `type` is NOT `Plain` or `APIKey` has `interpolated: true`. Only `Plain` and `APIKey` entries may be non-interpolated.
+- [ ] Every `auth_types[]` entry whose test-module path manually raises (`raise DemistoException(...)` / `return_error(...)`) for this auth — e.g. OAuth Authorization Code, Device Code, ROPC flows that require an out-of-band `!auth-start` command before the connection-test button can succeed — has `"verify_connection_skip": true`. Profiles whose test-module reaches an actual HTTP call leave `verify_connection_skip` at its default (`false`) or omit the key.
+- [ ] No `xsoar_params` legacy key is present in any entry — that key is rejected by the validator with a migration-help error.
 - [ ] Every name referenced in `config` exists as some `auth_types[].name`.
-- [ ] `auth_types[]` entries are sorted by `(type, name)` ascending.
-- [ ] If there is genuinely no auth, `config` is exactly `NoneRequired` AND `auth_types` is `[]`.
+- [ ] `auth_types[]` entries are sorted by `(type, name)` ascending. (Map keys are unordered — no sort requirement.)
+- [ ] If there is genuinely no auth, `auth_types` is `[]` (the pre-2026-05 `config: "NoneRequired"` key is no longer used; see column-schemas.md §"Migration from `config`").
 - [ ] Connection metadata (URL, instance host, region) is intentionally NOT in `auth_types` — it goes in `other_connection` instead (see [1.2.5](#125-building-the-other_connection-list)).
 - [ ] `other_connection` lists every connection-adjacent YML param (`url`, `proxy`, `insecure`, `port`, `host`, `region`, etc.).
-- [ ] `other_connection` does NOT contain any auth-secret param (those are in `auth_types[].xsoar_params`).
+- [ ] `other_connection` does NOT contain any auth-secret param (those are keyed in `auth_types[].xsoar_param_map`).
 - [ ] `other_connection` does NOT contain any per-command behavioral param (those go in `Params to Commands`).
 - [ ] `other_connection` list is sorted ascending.
 
@@ -752,17 +1054,17 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 
 #### Auth Type Reference
 
-See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions.
+See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions and §1.2.6 below for the canonical UCP profile-type field shapes.
 
-| Value | Description |
-|---|---|
-| `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow |
-| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow |
-| `OAuth2JWT` | OAuth 2.0 JWT Bearer flow |
-| `APIKey` | API Key, HMAC, and similar static secret mechanisms |
-| `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates |
-| `Other` | Catch-all (e.g., DeviceCode, ROPC, ManagedIdentity, custom signing) |
-| `NoneRequired` | No authentication needed |
+| Value | UCP profile type | Description |
+|---|---|---|
+| `OAuth2ClientCreds` | `oauth2_client_credentials` | OAuth 2.0 Client Credentials flow (`client_id` + `client_secret`) |
+| `OAuth2JWT` | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer flow (service-account / signed-assertion) |
+| `APIKey` | `api_key` | Single API key, single-secret HMAC, or other single-static-secret mechanisms |
+| `Plain` | `plain` | Single username + password pair (basic auth, login form, etc.) |
+| `Passthrough` | n/a (no canonical profile shape) | Authorization Code (browser flow), Device Code, ROPC, Managed Identity, mTLS, multi-secret packages (Datadog 2-key, AWS SigV4, Akamai EdgeGrid, GitHub App, etc.), custom signing, and anything else that doesn't cleanly fit one of the four profile shapes above. When in doubt, prefer `Passthrough`. |
+| `NoneRequired` | n/a | No authentication needed |
+
 
 ## Analyzing per-command parameters
 
@@ -786,7 +1088,7 @@ python3 connectus/check_command_params.py <integration_dir> \
 
 Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`).
 
-The `--integration-id "<Integration ID>"` flag is **strongly recommended inside the migration workflow.** When supplied, the analyzer additionally calls [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions every YML param id declared in the integration's `Auth Details` cell (auth-secret params projected from `auth_types[].xsoar_params` plus every `other_connection` entry) into its own ignore set. This removes the entire burden of "remembering which params already live in `Auth Details`" from the AI — those params will simply not appear in the analyzer's per-command output. The flag is OPTIONAL; standalone runs (outside the migration workflow, or on integrations that haven't been classified yet) can omit it and the analyzer falls back to the file-based ignore set with a single-line stderr WARNING.
+The `--integration-id "<Integration ID>"` flag is **strongly recommended inside the migration workflow.** When supplied, the analyzer additionally calls [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions every YML param id declared in the integration's `Auth Details` cell (auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — plus every `other_connection` entry) into its own ignore set. This removes the entire burden of "remembering which params already live in `Auth Details`" from the AI — those params will simply not appear in the analyzer's per-command output. The flag is OPTIONAL; standalone runs (outside the migration workflow, or on integrations that haven't been classified yet) can omit it and the analyzer falls back to the file-based ignore set with a single-line stderr WARNING.
 
 Optional flags the skill should know about:
 
@@ -799,10 +1101,13 @@ Optional flags the skill should know about:
 - `--no-sentinel-coercion` — disable automatic sentinel-value coercion. By default the analyzer coerces sentinels for params whose **NAME** (case-insensitive substring match) contains `thumbprint`, `certificate`, or `private_key`, replacing the generic `SENTINEL_PARAM_<name>` string with a syntactically-valid stub (40-char hex thumbprint, stub PEM cert, stub PEM private key). This prevents the cert-thumbprint-hex-validator pattern (see §1.6 row #9) from killing the entire dynamic phase. Pass `--no-sentinel-coercion` for strict-sentinel debug mode.
 - `--seed-param NAME=VALUE` — repeatable. Operator/AI escape hatch: provide an explicit value to seed for a specific YML param, overriding all other sources (YML default, cert coercion, generic sentinel). Use this when an integration has a param the auto-coercion didn't anticipate (e.g., a different format-validating credential, an enum-value selector that needs a specific value to traverse a code path). Values >= 4 chars long act as ad-hoc sentinels — they're grep-able in captured HTTP and the post-hoc attribution code looks for them too.
 - `--no-auto-retry-integration-docker` — disable the automatic retry. By default, when the FIRST command's diagnostic comes back as `module_not_found` AND the analyzer is using the default `demisto/py3-native` image, it will automatically restart the dynamic phase with `--use-integration-docker` (which uses the integration's own production image, usually with the missing package preinstalled). Pass `--no-auto-retry-integration-docker` to disable, in which case the analyzer fast-fails the remaining commands as `module_not_found` (~30s × N saved) and returns immediately.
+- `--with-diagnostics` — opt-in. Emits a top-level `diagnostics` key in the stdout JSON in addition to `integration` and `commands`. **Do NOT pass this flag inside the migration workflow** — `set-params-to-commands` will reject any payload containing extra top-level keys. Only pass it for interactive / debug use when you specifically want to read per-command status / failure attribution / Hybrid narrowing signal. (See §§3a/4/5/6 below; all of that documentation applies only when `--with-diagnostics` is set.)
 
 The script writes its result to **stdout** as a single JSON document. All progress and warnings go to **stderr**. Exit code `0` means success; `2` means bad CLI args / path; `3` means an unhandled analyzer error.
 
 ### 3. Output schema (annotated example)
+
+> **Default payload is two keys: `integration` + `commands`.** Diagnostics are **opt-in** via `--with-diagnostics` (the analyzer flipped its default after a breaking change to prevent `diagnostics` from leaking into `Params to Commands` when stdout was piped verbatim into `set-params-to-commands`). The schema below shows the diagnostic-rich payload; with the default flags you will see only the first two keys.
 
 ```json
 {
@@ -817,7 +1122,7 @@ The script writes its result to **stdout** as a single JSON document. All progre
       "query", "retry_events_fetch"
     ]
   },
-  "diagnostics": {
+  "diagnostics": {                         // ONLY present with --with-diagnostics
     "test-module": {
       "status": "param_caused_failure",
       "captured_requests": 0,
@@ -836,7 +1141,7 @@ The script writes its result to **stdout** as a single JSON document. All progre
 
 `commands` is the **finished, polished result** — these are the per-command param lists the skill writes into the pipeline data.
 
-`diagnostics` is **internal AI signal only** — see section 5 below.
+`diagnostics` is **internal AI signal only**, and is only present when you re-ran the analyzer with `--with-diagnostics` — see section 5 below. **In normal workflow usage you will not see the `diagnostics` block at all.** If you need the diagnostic signal (e.g., a command failed unexpectedly and you want to see the failure_excerpt), re-invoke the analyzer with `--with-diagnostics` to inspect it, then RE-INVOKE WITHOUT THE FLAG to get the clean payload to persist.
 
 #### 3a. Per-field reference
 
@@ -1009,6 +1314,23 @@ When the analyzer reports `status: no_data` AND the failure_excerpt suggests a f
 
 Coerced auto-defaults (cert/thumbprint/private_key) do NOT need `--seed-param` — they're already handled. Use `--seed-param` only when the auto-coercion misses a case.
 
+**YML `type:9` credentials widgets use the dotted-leaf form.** When the integration code reads `params.get("<name>", {}).get("identifier")` / `.get("password")` (the standard XSOAR credentials-widget shape), the analyzer seeds a dict-shaped value by default. To override either leaf, use `--seed-param <name>.identifier=<value>` and/or `--seed-param <name>.password=<value>`. Each leaf can be supplied independently — omitted leaves keep their `SENTINEL_PARAM_<name>_identifier` / `SENTINEL_PARAM_<name>_password` defaults.
+
+The common case: an integration's `Client.__init__` (or test-module path) validates the password leaf as JSON, a PEM key, or another structured format, and the generic sentinel string fails validation. Seed the password leaf with a plausible structured stub:
+
+```bash
+# Google service-account JWT — code validates user_creds.password as JSON
+--seed-param 'user_creds.identifier=stub@stub.iam.gserviceaccount.com' \
+--seed-param 'user_creds.password={"type":"service_account","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"stub@stub.iam.gserviceaccount.com",...}'
+```
+
+**Flat `--seed-param <name>=<value>` on a `type:9` credentials param is rejected with exit code 2** and an actionable error pointing at the dotted-leaf form. The reason: integration code expects `params.get(name, {}).get(...)` to return a leaf value from a dict; a flat string replacement makes the whole value a string and crashes the consumer with `AttributeError: 'str' object has no attribute 'get'`.
+
+**Stray dotted-leaf overrides surface as `[seed] WARNING` lines** without aborting the run:
+- `--seed-param ghost.password=x` where `ghost` isn't a YML param → "dotted-leaf override(s) … reference parent(s) that are not in this integration's visible YML config".
+- `--seed-param api_key.identifier=x` where `api_key` is a YML `type:4` (encrypted) param, not `type:9` → "dotted-leaf override(s) … are invalid. Dotted-leaf form is only supported for YML type:9 credentials widgets".
+- `--seed-param creds.weird_leaf=x` where `creds` IS type:9 but `weird_leaf` isn't `identifier`/`password` → same WARNING with `leaf 'weird_leaf' not in {'identifier', 'password'}`.
+
 ### 7. The "err on inclusion" principle
 
 When the skill is uncertain whether a param belongs to a command, it should INCLUDE the param. The cost of a false positive (an unused param shown in the column) is much lower than a false negative (a real param missing, which would silently break the migrated integration).
@@ -1036,6 +1358,16 @@ The skill ONLY needs to:
 - Have `python3` available on the host.
 - Have `docker` available on the host (for non-trivial integrations; otherwise pass `--docker never`).
 - Pass [`connectus/default_ignore_params.txt`](default_ignore_params.txt) via `--ignore-params-file` to filter out auth/connection/framework noise.
+- **Set `DEMISTO_SDK_LOG_FILE_PATH` to a workspace-local directory** when running in a sandboxed environment (e.g., from inside the IDEX agent). The analyzer's dynamic phase shells out to `demisto-sdk prepare-content`, which uses `loguru` to open a debug log file. By default `demisto-sdk` writes to `~/.demisto-sdk/logs/demisto_sdk_debug.log`, which is outside the workspace and triggers `PermissionError: [Errno 1] Operation not permitted` (EPERM from macOS sandboxd / TCC, not from POSIX perms) → the analyzer crashes with `DynamicPrepError: prepare-content failed: rc=1` and exits rc=3. Workaround: prepend the analyzer invocation with `DEMISTO_SDK_LOG_FILE_PATH="$PWD/.tmp_migration/sdk-logs"` (the env var is inherited by the `demisto-sdk` subprocess). Any workspace-writable directory works.
+
+  ```bash
+  DEMISTO_SDK_LOG_FILE_PATH="$PWD/.tmp_migration/sdk-logs" \
+    python3 connectus/check_command_params.py <integration_dir> \
+      --ignore-params-file connectus/default_ignore_params.txt \
+      --integration-id "<Integration ID>"
+  ```
+
+  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 8 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
 
 ### 9. Runtime expectations
 
@@ -1075,7 +1407,7 @@ error into the persisted pipeline data.**
 
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
 
-- **Pull the auth-aware ignore list first.** Run `python3 connectus/workflow_state.py auth-params "<Integration ID>"` to get every YML param id that's already declared in `Auth Details` (both the auth-secret params projected from `auth_types[].xsoar_params` and every entry in `other_connection`). These params MUST NOT appear in `Params to Commands` — `set-params-to-commands` will hard-reject the call if any of them does. The analyzer can pull this list automatically — pass `--integration-id "<Integration ID>"` (see "Analyzing per-command parameters" → "How to invoke it" above) and the auth-derived ids are unioned into the analyzer's ignore set up front.
+- **Pull the auth-aware ignore list first.** Run `python3 connectus/workflow_state.py auth-params "<Integration ID>"` to get every YML param id that's already declared in `Auth Details` (both the auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — and every entry in `other_connection`). These params MUST NOT appear in `Params to Commands` — `set-params-to-commands` will hard-reject the call if any of them does. The analyzer can pull this list automatically — pass `--integration-id "<Integration ID>"` (see "Analyzing per-command parameters" → "How to invoke it" above) and the auth-derived ids are unioned into the analyzer's ignore set up front.
 - Hidden YML params (`hidden: true` or `hidden: [<list>]`) MUST NOT appear in any per-command list. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
 
 ```bash
@@ -1092,7 +1424,7 @@ Example (post-ignore-list — only behavioral params; `url`,
 python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"IBM QRadar v3","commands":{"test-module":["adv_params","fetch_interval"],"qradar-offenses-list":["adv_params","fetch_interval"]}}'
 ```
 
-**Validation:** The command rejects (a) invalid JSON with the parse error, AND (b) any payload whose per-command param lists overlap with the integration's `Auth Details` cell — every offending `(command, param_id)` pair is named, the auth-detail source for each offending param is named (e.g. `param 'credentials' overlaps with auth_types[].name='credentials' (xsoar_params=['credentials.identifier','credentials.password'])` or `param 'proxy' overlaps with other_connection`), and the row is NOT mutated.
+**Validation:** The command rejects (a) invalid JSON with the parse error, AND (b) any payload whose per-command param lists overlap with the integration's `Auth Details` cell — every offending `(command, param_id)` pair is named, the auth-detail source for each offending param is named (e.g. `param 'credentials' overlaps with auth_types[].name='credentials' (xsoar_param_map keys=['credentials.identifier','credentials.password'])` or `param 'proxy' overlaps with other_connection`), and the row is NOT mutated.
 
 #### When `set-params-to-commands` is rejected for overlap
 
@@ -1100,67 +1432,228 @@ If `set-params-to-commands` rejects your payload because a param is already in `
 
 1. **The param really belongs to Auth Details** (e.g., the analyzer picked up `proxy` for a command but `proxy` is just a connection-level toggle). Strip it from your per-command payload, re-invoke `set-params-to-commands` with the cleaned list, and proceed.
 
-2. **The param was misclassified into Auth Details and is genuinely used per-command** (rare but real — e.g., a YML param that doubles as both a connection setting AND a per-command override). Revert to Step 1: re-run `set-auth` with a corrected `Auth Details` JSON that removes the param from `auth_types[].xsoar_params` / `other_connection`. This will reset the workflow back to `generated manifest`, but that's the correct outcome — the original auth classification was wrong and downstream artifacts need to be regenerated against the fix. Do NOT bypass the rejection by hand-stripping just to make the call go through.
+2. **The param was misclassified into Auth Details and is genuinely used per-command** (rare but real — e.g., a YML param that doubles as both a connection setting AND a per-command override). Revert to Step 1: re-run `set-auth` with a corrected `Auth Details` JSON that removes the param from `auth_types[].xsoar_param_map` / `other_connection`. This will reset the workflow back to `generated manifest`, but that's the correct outcome — the original auth classification was wrong and downstream artifacts need to be regenerated against the fix. Do NOT bypass the rejection by hand-stripping just to make the call go through.
 
 Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` at any time to inspect the current exclusion list. The same list is what the analyzer pulls when invoked with `--integration-id "<Integration ID>"`, so re-running the analyzer with the flag after fixing scenario (2) will produce a payload that is disjoint from `Auth Details` by construction.
 
 Whenever you set params to command not strictly what the script returned, present the evidence clearly and concisely to the user why you decided to do it, and allow them to tweak the input.
 
-### Step 3: Set `verify button placement` (flag, placeholder)
+### Step 3a: Set `Params for test with default in code` (data column)
 
-> **Placeholder.** This step was added in the 2026-05 schema simplification.
-> Detailed semantics (UI behaviour, manifest implications) are **to be
-> filled in later**. For now: pick the value that matches the integration
-> and move on. Empty cells read as `connection`.
+This column records the **per-param defaults that `test-module` relies on** when UCP / the connectus runtime omits the YML default. The cell is consumed by [`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1) as the `PARAM_DEFAULTS_JSON` positional argument, and by [`connectus/check_auth_parity.py`](check_auth_parity.py:1) as the first-precedence source of non-auth required param values.
 
-Enum values:
+**JSON shape is unchanged** — a flat object `{<yml_param_id>: <default value>}`. Empty `{}` is valid. The schema is enforced by [`validate_param_defaults()`](workflow_state/validators.py:155) (top-level JSON object, non-empty string keys, any JSON-typed values). What changes in this revision is **which params qualify** for the cell and **what code edits the migration must perform** as a side effect.
 
-| Value | Meaning |
-|---|---|
-| `connection` | Verify/test button at the per-connection level (default). |
-| `configuration` | Verify/test button at the per-integration / per-configuration level. |
-| `none` | No verify/test button. |
+#### Qualification rule — derived from `Params to Commands`, NOT from source-code review
+
+> **2026-05 rule change.** The qualification source for this column is the `test-module` entry of the already-validated `Params to Commands` cell (Step 2). Do NOT re-derive by reading the integration source or running the analyzer again — Step 2 already curated, validated, and persisted that list, and re-doing the work invites drift between the two columns.
+
+The canonical qualification list is:
 
 ```bash
-python3 connectus/workflow_state.py set-verify-placement "<Integration ID>" connection
+python3 connectus/workflow_state.py test-module-params "<Integration ID>"
 ```
 
-This step is a `flag`, not a `data` column — the input is the bare enum
-string (no JSON wrapping). See
-[`connectus/column-schemas.md`](column-schemas.md) §`verify button placement`.
+(`--format=json` for programmatic consumption; the same value is available programmatically as [`test_module_params(integration_id)`](workflow_state/api.py:1) returning `list[str]`.)
 
-### Step 4a: Set `Param Defaults` (data column)
+**What that list contains and excludes, by construction:**
 
-Set the JSON object mapping YML param name → default value. This cell
-feeds the next step (`Params to Capabilities`) by becoming the
-`PARAM_DEFAULTS_JSON` positional argument of
-[`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:618).
+- It is exactly `commands["test-module"]` from the `Params to Commands` cell.
+- It is already disjoint from `Auth Details` — `set-params-to-commands` rejected any overlap when Step 2 was applied, so no further auth-exclusion check is needed at this step.
+- It already excludes hidden YML params (per skill §1.3) and the framework noise in [`connectus/default_ignore_params.txt`](default_ignore_params.txt).
 
-Empty `{}` is valid AND is the recommended value when the integration
-has no defaults the user should override. Values may be any JSON type
-(string, number, bool, null, list, object).
+**Additional filter — REQUIRED params only.** Of the params in the qualification list, this column applies ONLY to those whose YML configuration carries `required: true`. Optional params (`required: false` or omitted) are intentionally **excluded** even when test-module consumes them, because:
+
+- The YML `required: false` contract is "operator may leave this unset; integration code must handle absence". Inventing a migration-defined default for an optional param contradicts that contract.
+- Under UCP / connectus runtime the param will simply be absent when the operator didn't set it; the code's existing `params.get(name)` returns `None` (or its own existing fallback), and that's the documented behavior.
+- This column is for params where omission would break test-module — i.e. required params that the connectus runtime might fail to inject.
+
+**Filter the list:**
+
+1. Get the canonical qualification list via `test-module-params`.
+2. For each param, open the integration's YML `configuration` section, find the param entry, check its `required:` field.
+3. Drop every param whose `required:` is `false` (or absent — XSOAR treats absent `required:` as `false`).
+4. The remaining list (required + test-module-consumed) is what applies for the branch (a/b/c) workflow below.
+
+**When the filtered list is empty (`[]`):** the payload for this column is `{}`. Skip the branch (a/b/c) workflow entirely; record an empty object via `set-param-defaults` and move on. This is the **most common case** in practice — most integrations only have auth-secret params marked `required: true`, and those are excluded by the `Auth Details` disjointness rule above.
+
+**When the filtered list is non-empty:** iterate per-param and apply branch (a/b/c) as documented below.
+
+**Why this changed:** the previous rule said "consumed by the test-module code path (per source review of `test_module()` and every helper it calls)". In practice this conflated three different things — (1) params read in `main()` before dispatch but never reaching `test_module`, (2) params read by `test_module` directly, (3) params read by `main()` and passed into `test_module`. Source review consistently over-counted (1), because those reads happen on every command invocation including test-module. The `Params to Commands` analyzer already disambiguates: it captures the params each command actually used end-to-end, and test-module's entry is the answer this column needs. Trust it.
+
+**Precondition:** Step 2 must be complete. If `Params to Commands` is not set, the CLI helper exits with a clear error pointing at Step 2 — do that first.
+
+#### Per-qualifying-param workflow
+
+For each YML param that qualifies, apply exactly one of these three branches:
+
+**(a) YML declares a `defaultvalue` AND the Python code does NOT already supply a fallback** (no `or "..."`/`or <literal>` after `params.get("foo")` or `demisto.params().get("foo")` or equivalent).
+
+- Edit the integration's `.py` file: change `params.get("foo")` to `params.get("foo") or "<yml default>"`. Use the exact YML default value verbatim (preserve type — strings stay quoted, numbers stay unquoted, booleans become `True`/`False`).
+- Record the YML default value under key `"foo"` in the JSON payload for this cell.
+- Rationale: under UCP / the connectus runtime, the YML default is not necessarily injected; the code-side `or "<default>"` keeps `test-module` working in both the legacy XSOAR environment AND under connectus.
+
+**(b) YML declares NO `defaultvalue`.**
+
+- **PAUSE and ask the user** (this is the per-param confirmation interaction; see §B.2): "Param `foo` is consumed by `test-module` but has no YML default. Propose a reasonable default value: `<your suggestion>`. Confirm, edit, or skip?"
+- Once confirmed, edit the integration's `.py` to add the same `or "<confirmed default>"` fallback as branch (a).
+- Record the confirmed default under key `"foo"` in the JSON payload.
+- Suggest a default that matches the param's semantics. Recommended starters:
+  - **`false`** for booleans (`type:8`).
+  - **`50`** for incident/page limits.
+  - **`"2 minutes"`** for `first_fetch` (small window keeps test-module fast and avoids backfilling huge ranges on misconfigured instances). Use a longer window only if the integration's `parse_date_range` raises on `"2 minutes"` or similar.
+  - **`""`** for optional free-text params.
+  - **`[]`** for optional multi-select params (`type:16`).
+  Be explicit about the type. For per-integration overrides (e.g. a vendor whose `first_fetch` parser doesn't accept sub-hour windows), the user override at confirmation time wins.
+
+#### Presenting branch-(b) defaults for confirmation
+
+When you have multiple branch-(b) params, format the proposal as **one decision per line** so the user can edit one without re-reading the others. Always annotate the **source** of every default so the user can see at a glance which defaults are pre-existing vs proposed-new:
+
+```
+Branch (b) — NEW defaults to confirm (no YML default, no code fallback; .py edit will be added):
+  drive_item_search_field  → ""              (PROPOSED — line 687)
+  drive_item_search_value  → ""              (PROPOSED — line 687)
+  isFetch                  → false           (PROPOSED — line 712)
+
+Branch (c) — PRE-EXISTING code fallback, no code edit:
+  action_detail_case_include  → ""              (PRE-EXISTING — line 284: args.get(..., ""))
+  first_fetch                 → "10 minutes"   (PRE-EXISTING — line 684: params.get(..., "10 minutes"))
+  max_fetch                   → 50             (PRE-EXISTING — line 1904: params.get(..., 50))
+```
+
+Source-tag conventions:
+- **`PROPOSED — <line>`** — branch (b), this migration is adding the fallback at the named line. The user can override the default at confirmation time.
+- **`PRE-EXISTING — <line>: <expression>`** — branch (c), the code already supplies this fallback. The user can still override, but doing so requires editing the integration's code (the cell value otherwise drifts from runtime behavior).
+- **`YML defaultvalue — added at line <N>`** — branch (a), YML declares a default, this migration is adding the matching `or "<yml default>"` fallback in the .py.
+
+Don't dump the JSON payload at this stage — that's for the final `set-param-defaults` confirmation.
+
+**(c) Code ALREADY supplies a fallback** (`params.get("foo", "bar")` or `params.get("foo") or "bar"`).
+
+- No code edit required.
+- Still record the effective default under key `"foo"` in the JSON payload — the cell is the canonical record of what `test-module` will see in the connectus runtime.
+
+> **`params.get("foo", "bar")` vs `params.get("foo") or "bar"`.** Branch (c) accepts either form, but the two are NOT semantically equivalent: `params.get("foo", "bar")` returns `"bar"` only when `foo` is absent, whereas `params.get("foo") or "bar"` also returns `"bar"` when `foo` is the empty string `""`, `0`, or `False`. The rule's intent is the `or` semantics (UCP supplies `foo = ""` rather than absent), so when the migration is ADDING a fallback (branches (a) and (b)) it standardizes on the `or` form. When the integration's existing code already uses the safe two-arg form, leave it alone — do NOT rewrite into the `or` form.
+
+#### Discovery procedure (operational)
+
+1. Fetch the canonical qualification list:
+
+   ```bash
+   python3 connectus/workflow_state.py test-module-params "<Integration ID>"
+   ```
+
+2. If the list is empty, the payload is `{}` — call `set-param-defaults "<id>" '{}'` and proceed to Step 3b. Skip steps 3–5 below.
+3. For each param in the list, classify into branch (a) / (b) / (c) by reading the integration's `.py`. The point of this read is **only** to determine the per-param branch — NOT to re-derive whether the param qualifies. Specifically:
+   - Look for the param's read site (`params.get("foo")` or `demisto.params().get("foo")`).
+   - **Branch (a):** YML declares `defaultvalue` for `foo`, code reads without fallback (`params.get("foo")` with no `or ...` and no two-arg form). → Edit code to add `or "<yml default>"`. Record YML default in JSON.
+   - **Branch (b):** YML declares NO `defaultvalue` for `foo`. → Pause and ask the user for a proposed default; edit code; record confirmed default in JSON.
+   - **Branch (c):** Code already supplies a fallback (`params.get("foo", "bar")` or `params.get("foo") or "bar"`). → No code edit. Record the effective default in JSON.
+4. After all per-param branches are decided, verify the cumulative `.py` diff with `git diff` before calling `set-param-defaults`.
+5. Collect the JSON payload (one key per qualifying param) and call `set-param-defaults`.
+
+Example payload:
+
+```json
+{
+  "fetch_limit": 50,
+  "first_fetch": "3 days",
+  "isFetchEvents": false,
+  "adv_params": ""
+}
+```
+
+#### Self-check before `set-param-defaults`
+
+- [ ] The set of keys in the JSON equals (or is a subset of) the **required-only** filtered list derived from `workflow_state.py test-module-params "<Integration ID>"`. No keys derived from source-code-only review — that source has been retired.
+- [ ] Every key in the JSON corresponds to a YML param with `required: true`. No `required: false` (or absent) params appear.
+- [ ] (Implied by the previous check, since `set-params-to-commands` already enforced it in Step 2:) no key in the JSON appears in `Auth Details`.
+- [ ] For every key: either the integration's `.py` already supplies a fallback (branch c), OR the migration has just added a `or "<default>"` fallback in `.py` (branches a and b). Verify the edit with a `git diff` of the integration's `.py` BEFORE running `set-param-defaults`.
+- [ ] For every branch-(b) key: the user explicitly confirmed the chosen default.
+- [ ] If the required-only filtered list is empty, the payload is `{}` (empty object) — branches (a/b/c) do not apply.
 
 ```bash
 python3 connectus/workflow_state.py set-param-defaults "<Integration ID>" '<JSON>'
 ```
 
-Example:
-
-```bash
-python3 connectus/workflow_state.py set-param-defaults "Gmail Single User" '{}'
-python3 connectus/workflow_state.py set-param-defaults "QRadar v3" '{"fetch_limit": 50, "first_fetch": "3 days", "isFetchEvents": false}'
-```
-
 Validator reference:
 [`validate_param_defaults()`](workflow_state/validators.py:147) — enforces
 top-level object, non-empty string keys, any JSON value. Full schema in
-[`column-schemas.md`](column-schemas.md) §`Param Defaults`.
+[`column-schemas.md`](column-schemas.md) §`Params for test with default in code`.
 
-> **Reset semantics.** `Param Defaults` is NOT preserved on any reset
+> **Reset semantics.** `Params for test with default in code` is NOT preserved on any reset
 > path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
 > `Params to Commands` carries `preserve_on_reset: true` today.
 
-### Step 4b: Set `Params to Capabilities` (data column)
+### Step 3a-bis: Set `Shadowed Integration Commands` (data column)
+
+**Purpose:** ensure no two integrations within the same connector expose
+a command with the same name. When the migration pipeline scans all
+integrations in a connector and finds a shadowed (shared) command name,
+the "losing" integration(s) must rename their copy to a brand-suffixed
+variant so the connector remains unambiguous at runtime. This data
+column replaces the former `shadowed command test passes` checkpoint
+(removed 2026-05Q4) — the rename evidence is now the cell value itself.
+
+#### Detector
+
+```bash
+python3 connectus/workflow_state.py detect-shadowed-commands "<Integration ID>"
+```
+
+Prints a JSON object mapping each shadowed command name in THIS
+integration to the proposed renamed form `<original>-<brand>`. The
+**brand** is derived from this integration's YML top-level `name`,
+lowercased, with any non-alphanumeric character replaced by `-` (runs
+collapsed, leading/trailing dashes stripped). An empty `{}` means no
+shadowed commands were detected and the cell should be committed as
+`{}`.
+
+#### AI responsibility — rename BEFORE committing
+
+For each `(original, renamed)` pair the detector emits:
+
+1. Edit the integration's `.py` to rename the command. This typically
+   means updating the `command` string in the dispatcher / `if-elif`
+   block (`if command == "<renamed>"`) and the handler function name if
+   it embeds the command (e.g. `def <renamed>_command(...)`). Keep all
+   arguments and outputs identical.
+2. Edit the integration's `.yml`: update the matching
+   `script.commands[].name` entry from `<original>` to `<renamed>`. Do
+   NOT touch the command's `arguments` / `outputs` blocks.
+3. Do NOT touch the winning integration in the connector — it keeps the
+   original command name.
+
+#### Commit
+
+```bash
+python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '<JSON>'
+# or, when there are no shadowed commands:
+python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '{}'
+```
+
+#### Validation guarantees
+
+The setter validates both the JSON schema (see
+[`column-schemas.md`](column-schemas.md) §`Shadowed Integration Commands`)
+AND on-commit semantics:
+
+- Each `original` must currently be detected as shadowed within the
+  connector (i.e. present in this integration's YML AND in at least one
+  sibling integration's YML when the connector is scanned).
+- The renamed command MUST exist in this integration's YML
+  (`script.commands[].name == <renamed>`).
+- The original command MUST NO LONGER exist in this integration's YML.
+
+Any failure prints all collected errors and refuses to write the cell.
+
+> **Reset semantics.** `Shadowed Integration Commands` is NOT preserved
+> on any reset path (`fail`, `reset-to`, `set-auth`, `reset` all wipe
+> it). Only `Params to Commands` carries `preserve_on_reset: true`
+> today.
+
+### Step 3b: Set `Params to Capabilities` (data column)
 
 Produce and persist the **bare capability dict** — exactly what
 [`connectus/connectus_migration/connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
@@ -1183,8 +1676,8 @@ immediately.
 # 1. Params to Commands cell (already set in Step 2)
 python3 connectus/workflow_state.py show-step "<Integration ID>" "Params to Commands"
 
-# 2. Param Defaults cell (just set in Step 4a)
-python3 connectus/workflow_state.py show-step "<Integration ID>" "Param Defaults"
+# 2. Params for test with default in code cell (just set in Step 4a)
+python3 connectus/workflow_state.py show-step "<Integration ID>" "Params for test with default in code"
 
 # 3. Integration YML path
 python3 connectus/workflow_state.py files "<Integration ID>"
@@ -1200,7 +1693,7 @@ the four positionals come straight after the script path:
 ```bash
 python3 connectus/connectus_migration/connector_param_mapper.py \
   '<COMMAND_PARAMS_JSON from Params to Commands cell>' \
-  '<PARAM_DEFAULTS_JSON from Param Defaults cell>' \
+  '<PARAM_DEFAULTS_JSON from Params for test with default in code cell>' \
   '<INTEGRATION_YML_PATH from workflow_state.py files>' \
   '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
   -o connectus/connectus_migration/_<integration>_param_mapping.json
@@ -1237,7 +1730,7 @@ list-of-unique-non-empty-strings values, no required keys, `{}` valid.
 > **Reset semantics.** `Params to Capabilities` is NOT preserved on any
 > reset path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it).
 
-### Step 4c: Mark `generated manifest` (first checkpoint)
+### Step 3c: Mark `generated manifest` (first checkpoint)
 
 After generating the ConnectUs manifest YAML for the integration:
 
@@ -1270,6 +1763,8 @@ python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make v
 
 ### Step 6: `wrote/checked code`
 
+> _If Step 3a populated `Params for test with default in code`, the `or "<default>"` code edits from that step should already be in place. Inspect the integration's `.py` and verify the diff before marking this step._
+
 Write or check the Python/JavaScript/PowerShell integration code. Follow patterns in `Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md) rules:
 
 - Import `demistomock as demisto` at the top
@@ -1279,21 +1774,125 @@ Write or check the Python/JavaScript/PowerShell integration code. Follow pattern
 - Use `return_error()` for user-facing errors
 - Use `demisto.debug()` / `demisto.info()` for logging, never `print()`
 
+#### UCP support for integrations using non-standard auth headers
+
+When UCP is enabled, [`BaseClient._http_request`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10200) auto-injects credentials via [`_inject_ucp_credentials`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9919) → `_apply_ucp_credentials` → `_apply_ucp_<type>`. The defaults assume vendors use the standard `Authorization` header:
+
+- [`_apply_ucp_api_key`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9855) → writes `Authorization: Bearer <key>`.
+- [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881) → sets `ctx.auth = (username, password)` (a tuple consumed by `requests` as HTTP Basic Auth, equivalent to `Authorization: Basic <base64(user:pass)>`).
+- [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836) → writes `Authorization: <token_type> <access_token>` (default token type `Bearer`).
+
+**The problem.** Many vendors do NOT use `Authorization`. APIVoid uses `X-API-Key`; some vendors use `Apikey`; some carry the secret in a custom query parameter; signed-request schemes (HMAC, AWS SigV4) write into multiple headers at once. For any such integration, the default UCP injection writes the secret into the **wrong** header. The integration's own code reads from the ORIGINAL header — which is empty under UCP because the user-facing params were stripped from `demisto.params()`. Net result: **the outbound request goes out unauthenticated**, but no exception is raised at the injection layer.
+
+**Detection.** This manifests as the auth parity tool (Step 9) reporting `MISSING_IN_NEW` for the secret's role-tagged sentinel. The old run's `locations` show the secret at the integration's actual header (e.g. `header:x-api-key`); the new run's `locations` are empty.
+
+**Fix.** Override the appropriate `_apply_ucp_<type>` method on the integration's `Client` class (the `BaseClient` subclass). The override receives the UCP credentials dict and a request-context object with mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes, and is expected to write the secret into the slot the integration's own request code actually reads from.
+
+**Worked example — APIVoid.** APIVoid's `Client.__init__` constructs `headers = {"X-API-Key": apikey, ...}`. To make UCP route the credential into the same slot, add `_apply_ucp_api_key`:
+
+```python
+class Client(BaseClient):
+    def __init__(self, base_url, apikey, verify, proxy):
+        headers = {"X-API-Key": apikey, "Content-Type": "application/json"}
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
+
+    def _apply_ucp_api_key(self, credentials: dict, ctx: Any) -> None:
+        """
+        UCP override: write the API key into the non-standard ``X-API-Key`` header
+        instead of the default ``Authorization: Bearer ...``.
+        """
+        api_key_data = credentials.get("api_key", credentials)
+        ctx.headers["X-API-Key"] = api_key_data.get("key", "")
+```
+
+**Sibling overrides for other auth types.** The same pattern applies to the other two `_apply_ucp_*` methods. The `credentials` argument is the dict returned by the UCP shape (see [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.5 for the per-type shapes); `ctx` has mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes.
+
+- **`Plain` with custom header(s)** — override [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881):
+
+  ```python
+  def _apply_ucp_plain(self, credentials: dict, ctx: Any) -> None:
+      plain_data = credentials.get("plain", credentials)
+      # Example: vendor wants username + password in two separate custom headers
+      ctx.headers["X-Vendor-User"] = plain_data.get("username", "")
+      ctx.headers["X-Vendor-Pass"] = plain_data.get("password", "")
+      # — OR — preserve Basic Auth but use HTTPBasicAuth for additional flexibility:
+      # from requests.auth import HTTPBasicAuth
+      # ctx.auth = HTTPBasicAuth(plain_data.get("username", ""), plain_data.get("password", ""))
+  ```
+
+- **`OAuth2*` with non-`Authorization: Bearer`** — override [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836):
+
+  ```python
+  def _apply_ucp_oauth2(self, credentials: dict, ctx: Any) -> None:
+      oauth2_data = credentials.get("oauth2", credentials)
+      ctx.headers["X-Auth-Token"] = oauth2_data.get("access_token", "")
+  ```
+
+**Cross-reference to CSP source** for the default implementations and the entry point — read these when you need to confirm exactly what defaults you are replacing:
+
+- [`_apply_ucp_api_key`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9855) (default writes `Authorization: Bearer <key>`; docstring shows the canonical override at lines 9865–9870).
+- [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881) (default sets `ctx.auth = (username, password)` for `requests` Basic Auth).
+- [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836) (default writes `Authorization: <token_type> <access_token>`).
+- [`_inject_ucp_credentials`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9919) — the per-request entry point invoked from `BaseClient._http_request`.
+- [`_http_request`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10200) — the UCP block inside the HTTP request loop.
+
+**Cheat sheet — when you need the override:**
+
+- **YOU NEED IT** if the integration's existing code reads the secret from a non-`Authorization` header. Grep the integration's `Client.__init__` for the `headers={...}` dict it passes to `super().__init__` — anything other than `Authorization: Bearer <...>` (for APIKey / OAuth2) or `Authorization: Basic <...>` / `HTTPBasicAuth(...)` (for Plain) means UCP's default writes to the wrong slot.
+- **YOU PROBABLY DON'T NEED IT** if the integration sends `Authorization: Bearer <token>` for APIKey / OAuth2, or uses `HTTPBasicAuth(user, pass)` (or the equivalent `auth=(user, pass)` tuple) for Plain — the defaults already cover these.
+- **The auth parity tool (Step 9) will surface `MISSING_IN_NEW`** for the relevant role-tagged sentinel if you forgot the override. Use it as the regression catch.
+
+**Test it.** Run the auth parity tool per the Step 9 procedure after applying the override. The new run should now route the sentinel into the integration's actual header (matching the old run's location set), and the parity check passes.
+
+#### Multi-auth integrations with startup-time auth-combo validation
+
+Some integrations (Jira V3 is the canonical example) gate `main()` on a `validate_auth_params()` / `check_credentials()` / `assert_auth()` helper that runs **before** the `Client` is constructed. The helper inspects `demisto.params()` and raises `DemistoException` / `return_error` if some required combination of auth fields is empty. Under UCP this is a precondition that fires before any HTTP call.
+
+**Detection — grep recipe.** Look for a validator function whose body raises before any client is built:
+
+```bash
+grep -nE "def (validate_auth|check_credentials|assert_auth)" Packs/<Pack>/Integrations/<Name>/<Name>.py
+# then read its body — if it ends in `raise DemistoException(...)` / `return_error(...)`
+# AND it is called from `main()` BEFORE the Client constructor, this section applies.
+```
+
+**Why it breaks under UCP.** `demisto.params()` is intentionally empty for auth fields under UCP — UCP supplies the secrets per-request via `getUCPCredentials`, not via `params`. The startup validator sees nothing in `params`, concludes no auth was configured, and raises before any HTTP call. The parity tool never reaches the request-emission stage.
+
+**Detection from the parity tool.** Identical-shape `RUN_FAILED_OLD` + `RUN_FAILED_NEW` (or `MISSING_IN_BOTH`) errors across **every** auth profile in a multi-profile (exclusive-OR) configuration; the `stderr_excerpt` contains phrases like *"are mandatory"*, *"must be provided together"*, or *"the required parameters were not provided"*.
+
+**TWO valid fixes.**
+
+**Option A — Gate the validator under UCP** (preferred when the integration is going to be a first-class UCP citizen and you want continued parity coverage):
+
+```python
+# BEFORE
+validate_auth_params(username, api_key, client_id, client_secret, pat)
+
+# AFTER
+if not is_ucp_enabled():
+    validate_auth_params(username, api_key, client_id, client_secret, pat)
+```
+
+Import `is_ucp_enabled` from `CommonServerPython` — it is already exported via `from CommonServerPython import *`. Worked example: [`Packs/Jira/Integrations/JiraV3/JiraV3.py:4857`](Packs/Jira/Integrations/JiraV3/JiraV3.py:4857).
+
+**Option B — Mark every `auth_types[]` entry as `interpolated: true`:**
+
+No code change. Re-classify `Auth Details` so that every `auth_types[]` entry carries `"interpolated": true`. The auth-parity test step is auto-N/A'd, the workflow advances, and the integration's existing startup validator stays in place untouched. This is the **simpler, faster path** when the integration's UCP behavior is not the migration's first priority.
+
+**When to pick A vs B.**
+
+- Pick **A** if this integration is queued to be migrated to UCP soon AND you want parity coverage to catch the next round of UCP-related bugs (e.g., non-standard auth header overrides — see the previous sub-section).
+- Pick **B** if the integration is queued for later, or if its UCP wiring is genuinely complex (multi-auth combined with per-`Client`-construction header building, conditional flags computed from `params` at init, etc.). Re-visit when the integration is actually prioritized.
+
+**Completeness note if you pick A.** Gating the validator is necessary but **not sufficient** for a fully UCP-aware multi-auth integration. If the `Client.__init__` computes flags from params (e.g., Jira's `is_basic_auth = bool(username and api_key)`), those flags will be `False` under UCP and the `Client`'s branching will pick the wrong path at request time. The `Client` itself needs to consult `get_ucp_credentials()` per-request to pick the right header style — see the existing "UCP support for integrations using non-standard auth headers" sub-section above for the per-request override pattern. **For multi-auth integrations, Option A may require BOTH the startup gate AND the `Client` UCP-awareness override.** This is the principal reason Option B (`interpolated: true`) is often the pragmatic choice.
+
 When code is written/checked:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "wrote/checked code"
 ```
 
-### Step 7: `shadowed command test passes`
-
-Verify that integrations in the same connector do not have conflicting or shadowed commands. (The exact tooling is defined elsewhere; for now this is a manual review.)
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "shadowed command test passes"
-```
-
-### Step 8: `write tests`
+### Step 7: `write tests`
 
 Write unit tests for the integration:
 
@@ -1301,7 +1900,7 @@ Write unit tests for the integration:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "write tests"
 ```
 
-### Step 9: `precommit/validate/unit tests passed`
+### Step 8: `precommit/validate/unit tests passed`
 
 Run pre-commit, validate, and unit tests via demisto-sdk pre-commit (Docker):
 
@@ -1315,22 +1914,90 @@ When everything passes (Yuval decides which checks may be skipped):
 python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
 ```
 
-### Step 10: `auth parity test passes`
+### Step 9: `auth parity test passes`
+
+> **Scope note:** the parity tool is **not** applicable to every integration in the pipeline. Three categories of integrations are valid permanent `interpolated: true` candidates — the parity tool will structurally short-circuit on them, and that is the **correct** outcome (not a bug to chase):
+>
+> 1. **Legacy HTTP layer / no `BaseClient` subclass** — short-circuits with `ERROR_NO_BASECLIENT` (exit 11). Example: CrowdStrike Falcon.
+> 2. **Feed-framework integrations** (any `*FeedApiModule` import) — short-circuits with `ERROR_NO_BASECLIENT`. See §1.9.1.
+> 3. **`boto3` / `botocore` / `AWSApiModule` integrations** — short-circuits with `ERROR_NO_BASECLIENT`. See the gate-ordering paragraph below.
+>
+> For all three, the fix is to classify with `interpolated: true` on every `auth_types[]` entry. Do **not** attempt to refactor the integration onto `BaseClient` just to make the parity tool reachable — that is out of scope for the migration.
 
 > **Schema change (2026-05):** the historical `requires auth parity test`
 > gate flag was removed. `auth parity test passes` is now **unconditional** —
 > there is no longer a setter that auto-N/A's it. If you decide the
 > test is not applicable, mark it `markpass` with the `N/A` sentinel via
 > the standard markpass machinery (see CLI help).
+>
+> **Sentinel format note (2026-05):** parity sentinels now encode both the
+> XSOAR path AND the **role** the secret plays, in the form
+> `__AUTHPARITY__<connection>__<xsoar_path>__<role>__<uuid8>` — e.g.
+> `__AUTHPARITY__credentials__credentials.password__key__86ad7936`.
+> Diff messages can be grepped by role, which makes
+> "missing-in-new on the `key` sentinel of `credentials`" trivially
+> attributable to a missing `_apply_ucp_api_key` override (see §Step 6
+> "UCP support for integrations using non-standard auth headers"). See
+> [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.3 for
+> the full sentinel grammar.
 
 Run the auth parity test to verify authentication works identically.
+The analyzer is **stateless** — the skill is the layer that reads the
+relevant pipeline cells via `workflow_state.py show-step --raw` and
+passes them as CLI flags. The analyzer does NOT shell out to
+`workflow_state.py` or read the CSV itself.
+
+Invocation pattern (replace `<id>` with the Integration ID and the
+path with the integration's directory):
+
+```bash
+AUTH=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Auth Details")
+DEFAULTS=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Params for test with default in code")
+python3 connectus/check_auth_parity.py Packs/<PackName>/Integrations/<IntegrationName> \
+    --integration-id "<id>" \
+    --auth-details "$AUTH" \
+    --param-defaults "${DEFAULTS:-{}}"
+```
+
+Flag notes:
+
+- `--auth-details` is **required** (mutually exclusive with
+  `--auth-details-file <path>` if you'd rather pass the JSON via a
+  file). Pass `'-'` to read from stdin. Empty input is a hard error
+  (exit 2) — the orchestrator must always provide a value.
+- `--param-defaults` is optional; absence and empty input both default
+  to `{}`. The shell substitution `${DEFAULTS:-{}}` covers the
+  common "cell unset" case.
+- `--display-name "<Human Name>"` optionally overrides the
+  `integration` field in the output JSON; otherwise falls back to YML
+  `display`, then to `--integration-id`.
+- All other flags (`--commands`, `--connection`, `--timeout`,
+  `--docker*`) are unchanged.
+
 When it passes:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "auth parity test passes"
 ```
 
-### Step 11: `param parity test passes`
+#### Structural-skip gate ordering and the boto3 / AWS family
+
+The parity tool's structural-skip gates fire in a **fixed order** — the first one matched wins, and downstream gates are never evaluated. The order is:
+
+1. `ERROR_NON_PYTHON` (exit 10)
+2. `ERROR_NO_BASECLIENT` (exit 11)
+3. `ERROR_ALL_INTERPOLATED` (exit 12)
+4. `ERROR_CONNECTION_INTERPOLATED` (exit 13)
+5. `ERROR_INTEGRATION_REJECTS_HTTP` (exit 14)
+6. Per-connection skips inside the run: `skipped_signed`, `skipped_mtls`, `skipped_passthrough`.
+
+**Boto3 / AWS integrations always trip `ERROR_NO_BASECLIENT` first**, NOT `skipped_signed`. They use `boto3.Session.client()` directly rather than subclassing `BaseClient`, so gate #2 catches them before gate #6 is even reached. The `skipped_signed` path conceptually exists for boto3 but is structurally unreachable for it — `skipped_signed` only fires for integrations that DO subclass `BaseClient` AND ALSO import `hmac` (or another signed-request module). That's an unusual combination — examples might include some custom HMAC-based vendor APIs that wrap their signing on top of a `BaseClient` subclass.
+
+**Required action for boto3 / AWS integrations: classify with `interpolated: true` on every `auth_types[]` entry. There is no code-change alternative.** Same reasoning as the feed framework (§1.9.1): no `BaseClient` → no UCP injection → no parity testing possible without re-architecting the integration onto `BaseClient`, which is out of scope.
+
+**Detection during classification:** grep the integration's `.py` for `import boto3|from boto3|import botocore|from botocore|AWSApiModule`. If any match, mark `interpolated: true` up front on every `auth_types[]` entry and skip the parity-test reasoning entirely — the gate will short-circuit regardless.
+
+### Step 10: `param parity test passes`
 
 Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
 
@@ -1338,7 +2005,7 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
 ```
 
-### Step 12: `code reviewed`
+### Step 11: `code reviewed`
 
 After code review is complete:
 
@@ -1346,7 +2013,7 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
 ```
 
-### Step 13: `code merged`
+### Step 12: `code merged`
 
 After the code is merged to the branch:
 
@@ -1356,7 +2023,7 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 
 ## Error Recovery Commands
 
-`fail` and `reset-to` share semantics. Both clear the named step and every later step that is **not** tagged `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml). Today only the three Params\* data columns carry that tag — they survive a failed checkpoint so per-command param research is not lost. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept.
+`fail` and `reset-to` share semantics. Both clear the named step and every later step that is **not** tagged `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml). Today only `Params to Commands` carries that tag (per [`workflow_state_config.yml:72`](workflow_state_config.yml:72)); the two adjacent data columns `Params for test with default in code` and `Params to Capabilities` deliberately set `preserve_on_reset: false`. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept.
 
 **Explicit-target carve-out:** if the user names a preserved step EXPLICITLY as the target of `fail`/`reset-to`, that one step IS cleared (the user's intent wins). Later preserved steps in the same blast radius are still preserved. Example: with the 2026-05 schema, `fail "Auth Details"` keeps `Params to Commands`; `fail "Params to Commands"` clears `Params to Commands` itself (there are no later preserved data columns to keep).
 
@@ -1433,24 +2100,28 @@ Each summary dict contains: `integration_id`, `connector_id`, `assignee`, `curre
 
 ## Auth Type Reference
 
-When analyzing an integration's authentication, use these enum values inside `Auth Details` `auth_types[].type` and `params.<name>.type`:
+When analyzing an integration's authentication, use these classification values inside `Auth Details` `auth_types[].type`. Each maps to one of the five canonical UCP profile types (see §1.2.6 for the field shapes); `Passthrough` is the explicit "doesn't fit a canonical profile" catch-all.
 
-| Auth Type Enum | Description |
-|---|---|
-| `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow |
-| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow |
-| `OAuth2JWT` | OAuth 2.0 JWT Bearer flow |
-| `APIKey` | API key authentication (header or query parameter) |
-| `Plain` | Simple credentials (username/password, token, etc.) |
-| `Other` | Catch-all (DeviceCode, ROPC, ManagedIdentity, custom signing) |
-| `NoneRequired` | No authentication required |
+| Auth Type | UCP Profile | Description |
+|---|---|---|
+| `OAuth2ClientCreds` | `oauth2_client_credentials` | OAuth 2.0 Client Credentials flow (`client_id` + `client_secret`) |
+| `OAuth2JWT` | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer flow (`subject_email` + `credentials_file`) |
+| `APIKey` | `api_key` | Single static secret (header / query param / single-secret HMAC). Two-or-more keys → `Passthrough`. |
+| `Plain` | `plain` | Single username + password pair (`username` + `password`) |
+| `Passthrough` | n/a | OAuth2 Authorization Code (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog, AWS, Akamai EdgeGrid, GitHub App), custom HMAC/signing, and anything else that doesn't cleanly fit one of the four profiles above. **When in doubt, prefer `Passthrough`.** |
+| `NoneRequired` | n/a | No authentication required |
 
-## Auth Requirement Semantics
+> **Enum history (2026-05).** The previous `OAuth2AuthCode` value was removed (Authorization Code flows are now classified as `Passthrough`), and the previous `Other` value was renamed to `Passthrough`. There is no backward-compatibility alias — payloads using either old name are rejected by `set-auth`.
 
-- **REQUIRED(X)** — Auth type X must be configured
-- **OPTIONAL(X)** — Auth type X can optionally be configured
-- **CHOICE(X, Y)** — User picks one of X or Y
-- **REQUIRED(X) + OPTIONAL(Y)** — X is mandatory, Y is additional/optional
+## Profile Relation Semantics (post-2026-05)
+
+Profiles in `auth_types[]` are joined implicitly by **exclusive-OR**. There is no inter-profile AND, no OPTIONAL, no `config` expression key.
+
+- `auth_types: []` → integration requires no authentication.
+- `auth_types: [X]` → profile X is always selected.
+- `auth_types: [X, Y, ...]` → the user picks exactly ONE of these profiles at configuration time.
+
+AND-ed secrets within a single auth flow (e.g. an API key paired with a vendor-required client certificate) live inside ONE profile's `xsoar_param_map`, not as separate profiles. See §1.2.2a "Multi-secret auth flows" for the classification heuristic.
 
 ## Mode Switching Guidance
 

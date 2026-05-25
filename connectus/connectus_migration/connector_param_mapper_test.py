@@ -1558,7 +1558,7 @@ class TestLongRunningRouting:
         all_locations = [
             cap for cap, params in result.items() if "longRunning" in params
         ]
-        assert all_locations == ["Log Collection"]
+        assert all_locations == ["Log Collection"]<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------

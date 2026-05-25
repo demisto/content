@@ -2468,6 +2468,201 @@ class TestSeedOverrides:
         assert values["api_token"] == ccp.SENTINEL_PREFIX + "api_token"
 
 
+class TestCredentialsSeedOverride:
+    """Dotted-leaf ``--seed-param`` support for YML type:9 credentials."""
+
+    def test_dotted_leaf_password_only(self) -> None:
+        """Seeding only the password leaf substitutes it; identifier
+        keeps its sentinel default."""
+        params = [{"name": "creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"creds.password": "my-real-password-12345"},
+        )
+        assert isinstance(values["creds"], dict)
+        # Identifier stays at its sentinel default.
+        assert values["creds"]["identifier"] == (
+            ccp.SENTINEL_PREFIX + "creds_identifier"
+        )
+        # Password is the operator-supplied value.
+        assert values["creds"]["password"] == "my-real-password-12345"
+        # Both values are tracked (each >= 4 chars).
+        assert ccp.SENTINEL_PREFIX + "creds_identifier" in sentinels["creds"]
+        assert "my-real-password-12345" in sentinels["creds"]
+
+    def test_dotted_leaf_identifier_only(self) -> None:
+        """Seeding only the identifier leaf substitutes it; password
+        keeps its sentinel default."""
+        params = [{"name": "creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"creds.identifier": "stub@example.com"},
+        )
+        assert values["creds"]["identifier"] == "stub@example.com"
+        assert values["creds"]["password"] == (
+            ccp.SENTINEL_PREFIX + "creds_password"
+        )
+
+    def test_dotted_leaf_both_leaves(self) -> None:
+        """Both leaves overridden — neither sentinel default is used."""
+        params = [{"name": "user_creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={
+                "user_creds.identifier": "user@example.com",
+                "user_creds.password": '{"key":"value"}',
+            },
+        )
+        assert values["user_creds"] == {
+            "identifier": "user@example.com",
+            "password": '{"key":"value"}',
+        }
+        assert "user@example.com" in sentinels["user_creds"]
+        assert '{"key":"value"}' in sentinels["user_creds"]
+
+    def test_dotted_leaf_short_value_not_traced(self) -> None:
+        """A leaf override < 4 chars is non-traceable (same convention
+        as the flat short-override branch)."""
+        params = [{"name": "creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"creds.password": "ab"},
+        )
+        assert values["creds"]["password"] == "ab"
+        # The short override is NOT in the sentinel token list.
+        assert "ab" not in sentinels["creds"]
+        # But the (unseeded) identifier default still is.
+        assert ccp.SENTINEL_PREFIX + "creds_identifier" in sentinels["creds"]
+
+    def test_dotted_leaf_with_unknown_parent_silently_skipped(self) -> None:
+        """When the dotted-leaf parent isn't a YML param at all, the
+        credentials branch never runs for it (the parent never appears
+        in yml_params). The override is effectively a no-op here —
+        the WARNING is logged at the call site in analyze_integration."""
+        params = [{"name": "real_creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"ghost.password": "wont-apply"},
+        )
+        # `real_creds` keeps its default sentinel shape.
+        assert values["real_creds"] == {
+            "identifier": ccp.SENTINEL_PREFIX + "real_creds_identifier",
+            "password": ccp.SENTINEL_PREFIX + "real_creds_password",
+        }
+        # `ghost` is not in values.
+        assert "ghost" not in values
+
+    def test_flat_override_on_credentials_param_raises(self) -> None:
+        """Flat NAME=VALUE on a type:9 credentials param raises with
+        an actionable error pointing at the dotted-leaf form."""
+        params = [{"name": "user_creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        with pytest.raises(ValueError, match="credentials widget"):
+            ccp.build_param_values(
+                params, "http://x", set(),
+                seed_overrides={"user_creds": '{"identifier":"x"}'},
+            )
+
+    def test_flat_override_error_mentions_dotted_form(self) -> None:
+        """The error message explicitly tells the user the right form."""
+        params = [{"name": "user_creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        with pytest.raises(ValueError) as excinfo:
+            ccp.build_param_values(
+                params, "http://x", set(),
+                seed_overrides={"user_creds": "x"},
+            )
+        msg = str(excinfo.value)
+        assert "user_creds.identifier" in msg
+        assert "user_creds.password" in msg
+
+    def test_flat_override_on_non_credentials_still_works(self) -> None:
+        """The credentials-shape protection ONLY fires for type:9 —
+        flat overrides on type:4 (encrypted) and similar still work."""
+        params = [{"name": "api_key", "type": ccp.YML_TYPE_ENCRYPTED}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"api_key": "operator-override-value"},
+        )
+        assert values["api_key"] == "operator-override-value"
+
+
+class TestCredentialsCertCoercion:
+    """Per-leaf cert/key/thumbprint coercion for YML type:9 credentials
+    widgets. Prevents a flat coerced PEM string from clobbering the dict
+    shape that integration consumers (``params.get(name, {}).get(...)``)
+    rely on.
+    """
+
+    def test_creds_certificate_gets_per_leaf_coercion(self) -> None:
+        """A type:9 widget named with 'certificate' substring should
+        keep its dict shape AND get cert-stub values per leaf."""
+        params = [{"name": "creds_certificate", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, non_traceable = ccp.build_param_values(
+            params, "http://x", set(),
+        )
+        # Dict shape preserved.
+        assert isinstance(values["creds_certificate"], dict)
+        assert set(values["creds_certificate"]) == {"identifier", "password"}
+        # Identifier got the thumbprint stub (40-char hex).
+        assert values["creds_certificate"]["identifier"] == (
+            ccp._COERCED_THUMBPRINT_VALUE
+        )
+        # Password got the PEM stub.
+        assert values["creds_certificate"]["password"] == (
+            ccp._COERCED_PRIVATE_KEY_VALUE
+        )
+        # Both coerced leaves are non-traceable (no SENTINEL_PARAM
+        # substring) — sentinel list is empty.
+        assert sentinels["creds_certificate"] == []
+        assert "creds_certificate" in non_traceable
+
+    def test_creds_certificate_disabled_via_coerce_certs_false(self) -> None:
+        """When --no-sentinel-coercion is set, even type:9 cert-named
+        widgets keep their default sentinel leaves (no coercion)."""
+        params = [{"name": "creds_certificate", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set(), coerce_certs=False,
+        )
+        assert values["creds_certificate"]["identifier"] == (
+            ccp.SENTINEL_PREFIX + "creds_certificate_identifier"
+        )
+        assert values["creds_certificate"]["password"] == (
+            ccp.SENTINEL_PREFIX + "creds_certificate_password"
+        )
+        # Both default sentinels are traceable.
+        assert len(sentinels["creds_certificate"]) == 2
+
+    def test_operator_override_wins_over_cert_coercion(self) -> None:
+        """A dotted-leaf operator override should win over the per-leaf
+        cert coercion for that specific leaf. The unseeded leaf still
+        gets coerced."""
+        params = [{"name": "creds_certificate", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, _, _ = ccp.build_param_values(
+            params, "http://x", set(),
+            seed_overrides={"creds_certificate.password": "MY-REAL-PEM-12345"},
+        )
+        # Operator value wins for password.
+        assert values["creds_certificate"]["password"] == "MY-REAL-PEM-12345"
+        # Identifier still gets the thumbprint stub.
+        assert values["creds_certificate"]["identifier"] == (
+            ccp._COERCED_THUMBPRINT_VALUE
+        )
+
+    def test_non_cert_credentials_widget_uses_plain_sentinels(self) -> None:
+        """A type:9 widget whose name doesn't match cert/key/thumbprint
+        keeps its plain sentinel leaves (no coercion)."""
+        params = [{"name": "user_creds", "type": ccp.YML_TYPE_CREDENTIALS}]
+        values, sentinels, _ = ccp.build_param_values(
+            params, "http://x", set(),
+        )
+        assert values["user_creds"]["identifier"] == (
+            ccp.SENTINEL_PREFIX + "user_creds_identifier"
+        )
+        assert values["user_creds"]["password"] == (
+            ccp.SENTINEL_PREFIX + "user_creds_password"
+        )
+        assert len(sentinels["user_creds"]) == 2
+
+
 class TestParseSeedOverrides:
     def test_simple_pair(self) -> None:
         out = ccp.parse_seed_overrides(["foo=bar"])

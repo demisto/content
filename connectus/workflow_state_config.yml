@@ -8,7 +8,7 @@
 schema_version: 1
 
 # Identity / metadata columns — present in the CSV but NOT part of the
-# 16-step workflow. Never cleared by cascade reset. Order matters: this
+# 15-step workflow. Never cleared by cascade reset. Order matters: this
 # is the leftmost prefix of the CSV header.
 identity_columns:
   - {"name": "Integration ID", "description": "Unique human-readable id; primary key for find_row()."}
@@ -33,7 +33,7 @@ markers:
     - "N/A"
   # Default valid values for any step whose kind is `flag` and which does
   # NOT declare its own ``flag_values``. Per-step ``flag_values`` always
-  # win over this default (see e.g. "verify button placement").
+  # win over this default when a step declares them.
   flag_values:
     - "YES"
     - "NO"
@@ -72,21 +72,21 @@ steps:
     preserve_on_reset: true
     description: "Map each integration command to the parameter IDs it consumes (JSON). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
 
-  - name: "verify button placement"
-    kind: flag
-    optional: false
-    setter: set-verify-placement
-    flag_values: ["connection", "configuration", "none"]
-    default: "connection"
-    description: "Verify the location of the test/verify button in the UI: 'connection' (per-connection), 'configuration' (per-integration), or 'none'. Defaults to 'connection' on read when unset; details to be filled in later."
-
-  - name: "Param Defaults"
+  - name: "Params for test with default in code"
     kind: data
     optional: false
     setter: set-param-defaults
     json_schema: {"validator": "param_defaults"}
     preserve_on_reset: false
-    description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument."
+    description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument, and consumed by check_auth_parity.py as the first-precedence source of non-auth required param values."
+
+  - name: "Shadowed Integration Commands"
+    kind: data
+    optional: false
+    setter: set-shadowed-commands
+    json_schema: {"validator": "shadowed_commands"}
+    preserve_on_reset: false
+    description: "JSON object mapping original command name -> renamed command name (form `<original>-<integrationbrand>`). When integrations within the same connector share (shadow) a command name, the losing integration(s) must rename their command in both the .py and the .yml (keeping arguments identical). An empty object {} means no shadowed commands were detected for this integration. Use `python connectus/workflow_state.py detect-shadowed-commands <Integration ID>` to compute the required renames; the AI must apply the .py/.yml edits BEFORE committing this cell. The setter validates on commit that (a) each `original` was actually shadowed within the connector (present in this integration's YML AND in at least one sibling integration's YML at the time the connector was scanned), and (b) the renamed command now exists in this integration's YML and the original no longer does."
 
   - name: "Params to Capabilities"
     kind: data
@@ -113,12 +113,6 @@ steps:
     optional: false
     setter: null
     description: "Write or review the integration source code."
-
-  - name: "shadowed command test passes"
-    kind: checkpoint
-    optional: false
-    setter: null
-    description: "Verify there are no shadowed/conflicting commands in the same connector."
 
   - name: "write tests"
     kind: checkpoint

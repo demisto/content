@@ -7,9 +7,6 @@ from auth_config_parser import (
     AuthDetails,
     AuthEntry,
     AuthType,
-    ClauseOperator,
-    ConfigClause,
-    ConfigExpression,
     auth_param_ids,
     auth_param_ids_with_sources,
     parse_auth_details,
@@ -55,17 +52,20 @@ class TestAuthParamIds:
         """APIKey + Plain + other_connection → correct union."""
         details = parse_auth_details({
             "auth_types": [
-                {"type": "APIKey", "name": "api_key", "xsoar_params": ["api_key"]},
+                {
+                    "type": "APIKey",
+                    "name": "api_key",
+                    "xsoar_param_map": {"api_key": "key"},
+                },
                 {
                     "type": "Plain",
                     "name": "credentials",
-                    "xsoar_params": [
-                        "credentials.identifier",
-                        "credentials.password",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 },
             ],
-            "config": "REQUIRED(api_key) + REQUIRED(credentials)",
             "other_connection": ["insecure", "proxy", "url"],
         })
         result = auth_param_ids(details)
@@ -78,13 +78,12 @@ class TestAuthParamIds:
                 {
                     "type": "Plain",
                     "name": "creds",
-                    "xsoar_params": [
-                        "credentials.identifier",
-                        "credentials.password",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 }
             ],
-            "config": "REQUIRED(creds)",
             "other_connection": [],
         })
         result = auth_param_ids(details)
@@ -96,7 +95,6 @@ class TestAuthParamIds:
         """NoneRequired + other_connection → only other_connection."""
         details = parse_auth_details({
             "auth_types": [],
-            "config": "NoneRequired",
             "other_connection": ["host", "port"],
         })
         result = auth_param_ids(details)
@@ -106,9 +104,9 @@ class TestAuthParamIds:
         """Legacy None → only auth_types ids."""
         details = parse_auth_details({
             "auth_types": [
-                {"type": "APIKey", "name": "api_key", "xsoar_params": ["api_key"]}
+                {"type": "APIKey", "name": "api_key",
+                 "xsoar_param_map": {"api_key": "key"}}
             ],
-            "config": "REQUIRED(api_key)",
         })
         assert details.other_connection is None
         result = auth_param_ids(details)
@@ -118,7 +116,6 @@ class TestAuthParamIds:
         """NoneRequired + no other_connection → empty set."""
         details = parse_auth_details({
             "auth_types": [],
-            "config": "NoneRequired",
             "other_connection": [],
         })
         result = auth_param_ids(details)
@@ -128,21 +125,43 @@ class TestAuthParamIds:
         """Callers that need sorted output can call sorted()."""
         details = parse_auth_details({
             "auth_types": [
-                {"type": "APIKey", "name": "api_key", "xsoar_params": ["api_key"]},
+                {"type": "APIKey", "name": "api_key",
+                 "xsoar_param_map": {"api_key": "key"}},
                 {
                     "type": "Plain",
                     "name": "credentials",
-                    "xsoar_params": [
-                        "credentials.identifier",
-                        "credentials.password",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 },
             ],
-            "config": "REQUIRED(api_key) + REQUIRED(credentials)",
             "other_connection": ["insecure", "proxy", "url"],
         })
         result = sorted(auth_param_ids(details))
         assert result == ["api_key", "credentials", "insecure", "proxy", "url"]
+
+    def test_auth_param_ids_returns_map_keys_sorted(self) -> None:
+        """The set produced by auth_param_ids() is the set of projected
+        map keys; ``sorted()`` returns them lex-sorted. The descriptor
+        consumer (workflow_state.api) explicitly sorts before display."""
+        details = parse_auth_details({
+            "auth_types": [
+                {
+                    "type": "Plain",
+                    "name": "creds",
+                    "xsoar_param_map": {
+                        "zeta_user": "username",
+                        "alpha_pass": "password",
+                    },
+                }
+            ],
+            "other_connection": [],
+        })
+        # Both projected ids should be present; sorting yields the
+        # stable lex order.
+        result = sorted(auth_param_ids(details))
+        assert result == ["alpha_pass", "zeta_user"]
 
 
 # ---------------------------------------------------------------------------
@@ -155,17 +174,17 @@ class TestAuthParamIdsWithSources:
         """Correct source descriptors for each param."""
         details = parse_auth_details({
             "auth_types": [
-                {"type": "APIKey", "name": "api_key", "xsoar_params": ["api_key"]},
+                {"type": "APIKey", "name": "api_key",
+                 "xsoar_param_map": {"api_key": "key"}},
                 {
                     "type": "Plain",
                     "name": "credentials",
-                    "xsoar_params": [
-                        "credentials.identifier",
-                        "credentials.password",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 },
             ],
-            "config": "REQUIRED(api_key) + REQUIRED(credentials)",
             "other_connection": ["url"],
         })
         sources = auth_param_ids_with_sources(details)
@@ -174,7 +193,8 @@ class TestAuthParamIdsWithSources:
         assert "api_key" in sources
         assert len(sources["api_key"]) == 1
         assert "auth_types[].name='api_key'" in sources["api_key"][0]
-        assert "xsoar_params=['api_key']" in sources["api_key"][0]
+        assert "xsoar_param_map=" in sources["api_key"][0]
+        assert "'api_key': 'key'" in sources["api_key"][0]
 
         # credentials comes from dotted forms.
         assert "credentials" in sources
@@ -182,6 +202,7 @@ class TestAuthParamIdsWithSources:
         assert "auth_types[].name='credentials'" in sources["credentials"][0]
         assert "credentials.identifier" in sources["credentials"][0]
         assert "credentials.password" in sources["credentials"][0]
+        assert "xsoar_param_map=" in sources["credentials"][0]
 
         # url comes from other_connection.
         assert "url" in sources
@@ -194,13 +215,12 @@ class TestAuthParamIdsWithSources:
                 {
                     "type": "Plain",
                     "name": "creds",
-                    "xsoar_params": [
-                        "credentials.identifier",
-                        "credentials.password",
-                    ],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 }
             ],
-            "config": "REQUIRED(creds)",
             "other_connection": [],
         })
         sources = auth_param_ids_with_sources(details)
@@ -212,7 +232,6 @@ class TestAuthParamIdsWithSources:
         """other_connection items → 'other_connection' source."""
         details = parse_auth_details({
             "auth_types": [],
-            "config": "NoneRequired",
             "other_connection": ["proxy", "url"],
         })
         sources = auth_param_ids_with_sources(details)
@@ -223,9 +242,9 @@ class TestAuthParamIdsWithSources:
         """Legacy None other_connection → only auth_types sources."""
         details = parse_auth_details({
             "auth_types": [
-                {"type": "APIKey", "name": "api_key", "xsoar_params": ["api_key"]}
+                {"type": "APIKey", "name": "api_key",
+                 "xsoar_param_map": {"api_key": "key"}}
             ],
-            "config": "REQUIRED(api_key)",
         })
         sources = auth_param_ids_with_sources(details)
         assert "api_key" in sources
@@ -238,15 +257,20 @@ class TestAuthParamIdsWithSources:
                 {
                     "type": "Plain",
                     "name": "creds_a",
-                    "xsoar_params": ["credentials.identifier"],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 },
                 {
                     "type": "Plain",
                     "name": "creds_b",
-                    "xsoar_params": ["credentials.password"],
+                    "xsoar_param_map": {
+                        "credentials.identifier": "username",
+                        "credentials.password": "password",
+                    },
                 },
             ],
-            "config": "CHOICE(creds_a, creds_b)",
             "other_connection": [],
         })
         sources = auth_param_ids_with_sources(details)
@@ -255,3 +279,28 @@ class TestAuthParamIdsWithSources:
         assert len(sources["credentials"]) == 2
         assert any("creds_a" in d for d in sources["credentials"])
         assert any("creds_b" in d for d in sources["credentials"])
+
+    def test_auth_param_ids_with_sources_descriptor_shape(self) -> None:
+        """Descriptor quotes the new field name verbatim and includes
+        the full map (keys + role values) inline so the cross-check
+        rejection messages can show the operator both sides."""
+        details = parse_auth_details({
+            "auth_types": [
+                {
+                    "type": "APIKey",
+                    "name": "credentials",
+                    "xsoar_param_map": {"credentials.password": "key"},
+                }
+            ],
+            "other_connection": [],
+        })
+        sources = auth_param_ids_with_sources(details)
+        assert "credentials" in sources
+        descriptor = sources["credentials"][0]
+        # New-shape field name (not legacy ``xsoar_params=``).
+        assert "xsoar_param_map={" in descriptor
+        assert "xsoar_params=" not in descriptor
+        # The full map (keys + role values) is quoted verbatim.
+        assert "'credentials.password': 'key'" in descriptor
+        # The entry-level name is also quoted.
+        assert "auth_types[].name='credentials'" in descriptor
