@@ -15,6 +15,40 @@ import re
 import copy
 
 
+DEFAULT_MAX_RETRIES: int = 5
+DEFAULT_SESSION_NAME = "cortex-session"
+DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
+DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
+TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
+DEFAULT_REGION = "us-east-1"
+MAX_FILTERS = 50
+MAX_TAGS = 50
+MAX_FILTER_VALUES = 200
+MAX_TARGET_VALUES = 5
+MAX_TRIPLE_FILTER_VALUE = 5
+MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
+MAX_LIMIT_VALUE = 1000
+DEFAULT_LIMIT_VALUE = 50
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
+TERMINAL_COMMAND_STATUSES = {  # the status for run command command
+    "Success": "The command completed successfully.",
+    "Failed": "The command failed to complete successfully on the managed node.",
+    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
+    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
+    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
+    "Cancelled": "The command was canceled before it was completed.",
+    "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
+    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
+    "The system has canceled the command before executing it on any node.",
+    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
+    "doesn't count against the parent command's max-errors limit, "
+    "but does contribute to whether the parent command status is Success or Failed.",
+    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
+    "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
+}
+
+
 def get_timeout(timeout) -> tuple[int, int]:
     """
     Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.
@@ -48,40 +82,6 @@ def get_timeout(timeout) -> tuple[int, int]:
             "timeout followed after a comma (for example 60,10). If a connect timeout is "
             "not specified, a default of 10 seconds will be used."
         )
-
-
-DEFAULT_MAX_RETRIES: int = 5
-DEFAULT_SESSION_NAME = "cortex-session"
-DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
-DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
-TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
-DEFAULT_REGION = "us-east-1"
-MAX_FILTERS = 50
-MAX_TAGS = 50
-MAX_FILTER_VALUES = 200
-MAX_TARGET_VALUES = 5
-MAX_TRIPLE_FILTER_VALUE = 5
-MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
-MAX_LIMIT_VALUE = 1000
-DEFAULT_LIMIT_VALUE = 50
-DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
-DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
-TERMINAL_COMMAND_STATUSES = {  # the status for run command command
-    "Success": "The command completed successfully.",
-    "Failed": "The command failed to complete successfully on the managed node.",
-    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
-    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
-    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
-    "Cancelled": "The command was canceled before it was completed.",
-    "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
-    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
-    "The system has canceled the command before executing it on any node.",
-    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
-    "doesn't count against the parent command's max-errors limit, "
-    "but does contribute to whether the parent command status is Success or Failed.",
-    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
-    "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
-}
 
 
 def handle_port_range(args: dict) -> tuple:
