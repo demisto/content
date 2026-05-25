@@ -667,7 +667,7 @@ script:
       description: The blob service properties for container soft delete.
       type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.cors
-      description: Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service.
+      description: The specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service.
       type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
@@ -676,7 +676,7 @@ script:
       description: The blob service properties for blob soft delete.
       type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.isVersioningEnabled
-      description: Versioning is enabled if set to true.
+      description: Whether versioning is enabled.
       type: Boolean
     - contextPath: Azure.Storage.BlobServices.properties.restorePolicy
       description: The blob service properties for blob restore policy.
@@ -8071,7 +8071,7 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.cors
-      description: Specifies CORS rules for the Blob service.
+      description: The specifies CORS rules for the Blob service.
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
@@ -8079,7 +8079,7 @@ script:
     - contextPath: Azure.Storage.BlobServices.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
     - contextPath: Azure.Storage.BlobServices.properties.isVersioningEnabled
-      description: If set to true, enables versioning.
+      description: Whether versioning is enabled.
       type: Boolean
     - contextPath: Azure.Storage.BlobServices.properties.changeFeed
       description: The blob service properties for change feed events.
