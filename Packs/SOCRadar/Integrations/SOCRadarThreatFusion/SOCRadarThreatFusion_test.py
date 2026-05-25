@@ -30,12 +30,7 @@ def test_test_module(requests_mock):
     mock_response = util_load_json("test_data/check_auth_response.json")
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     response = test_module(client)
 
@@ -50,12 +45,7 @@ def test_test_module_handles_authorization_error(requests_mock):
     suffix = f"threat/analysis/check/auth?key={mock_socradar_api_key}"
     mock_response = util_load_json("test_data/check_auth_response_auth_error.json")
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response, status_code=401)
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
     with pytest.raises(DemistoException, match=MESSAGES["AUTHORIZATION_ERROR"]):
         test_module(client)
 
@@ -76,12 +66,7 @@ def test_ip_command(requests_mock):
 
     mock_args = {"ip": "1.1.1.1"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     result = ip_command(
         client=client,
@@ -105,12 +90,7 @@ def test_ip_command_handles_incorrect_entity_type():
     mock_socradar_api_key = "APIKey"
     mock_args = {"ip": "INCORRECT IP ADDRESS"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     with pytest.raises(ValueError):
         ip_command(
@@ -135,12 +115,7 @@ def test_domain_command(requests_mock):
 
     mock_args = {"domain": "paloaltonetworks.com"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     result = domain_command(
         client=client,
@@ -163,12 +138,7 @@ def test_domain_command_handles_incorrect_entity_type():
     mock_socradar_api_key = "APIKey"
     mock_args = {"domain": "INCORRECT DOMAIN"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     with pytest.raises(ValueError):
         domain_command(
@@ -193,12 +163,7 @@ def test_file_command(requests_mock):
 
     mock_args = {"file": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     result = file_command(
         client=client,
@@ -225,12 +190,7 @@ def test_file_command_handles_incorrect_entity_type():
     mock_socradar_api_key = "APIKey"
     mock_args = {"file": "INCORRECT HASH"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     with pytest.raises(ValueError):
         file_command(
@@ -255,12 +215,7 @@ def test_score_ip(requests_mock):
 
     mock_args = {"ip": "1.1.1.1"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     result = score_ip_command(
         client=client,
@@ -283,12 +238,7 @@ def test_score_ip_handles_incorrect_entity_type():
     mock_socradar_api_key = "APIKey"
     mock_args = {"ip": "INCORRECT IP ADDRESS"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     with pytest.raises(ValueError):
         score_ip_command(
@@ -313,12 +263,7 @@ def test_score_domain(requests_mock):
 
     mock_args = {"domain": "paloaltonetworks.com"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     result = score_domain_command(
         client=client,
@@ -340,12 +285,7 @@ def test_score_domain_handles_incorrect_entity_type():
     mock_socradar_api_key = "APIKey"
     mock_args = {"domain": "INCORRECT DOMAIN"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     with pytest.raises(ValueError):
         score_domain_command(
@@ -370,12 +310,7 @@ def test_score_hash(requests_mock):
 
     mock_args = {"hash": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     result = score_hash_command(client=client, args=mock_args)
 
@@ -398,12 +333,7 @@ def test_score_hash_handles_incorrect_entity_type():
     mock_socradar_api_key = "APIKey"
     mock_args = {"hash": "INCORRECT HASH"}
 
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=mock_socradar_api_key,
-        verify=False,
-        proxy=False,
-    )
+    client = Client(base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, verify=False, proxy=False)
 
     with pytest.raises(ValueError):
         score_hash_command(
