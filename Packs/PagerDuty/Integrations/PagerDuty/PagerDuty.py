@@ -632,7 +632,9 @@ def fetch_incidents(params: dict) -> None:
 
         new_created_ats: list[str] = [str(i["created_at"]) for i in new_raw if i.get("created_at")]
         next_watermark: str = max(new_created_ats) if new_created_ats else now_iso
-        merged_ids: list = list(seen_ids | {i["id"] for i in new_raw})[-DEDUP_RETENTION:]
+        prior_ids = last_run.get("ids") or []
+        all_ids = prior_ids + [i["id"] for i in new_raw]
+        merged_ids: list = list(dict.fromkeys(all_ids))[-DEDUP_RETENTION:]
 
         demisto.debug(
             f"PagerDuty fetch: emitting {len(incidents)} incidents, "
@@ -646,7 +648,7 @@ def fetch_incidents(params: dict) -> None:
     # Quiet / all-dedup'd — advance to `now_iso` to keep the next since→until window bounded.
     demisto.debug(f"PagerDuty fetch: 0 new incidents, advancing watermark to now={now_iso}")
     demisto.incidents([])
-    demisto.setLastRun({"time": now_iso, "ids": list(seen_ids)})
+    demisto.setLastRun({"time": now_iso, "ids": last_run.get("ids") or []})
 
 
 def configure_status(status="triggered,acknowledged") -> str:

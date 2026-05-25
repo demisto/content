@@ -790,8 +790,7 @@ def test_fetch_incidents_dedup_against_lastrun_ids(requests_mock: MockerCore, mo
     assert emitted[0]["name"].startswith("P0002 - ")
 
     saved = set_last_run.call_args.args[0]
-    assert "P0002" in saved["ids"]
-    assert "P0001" in saved["ids"]
+    assert saved["ids"] == ["P0001", "P0002"]
     # Watermark must advance to the newest incident's created_at (P0002), not stay pinned.
     assert saved["time"] == "2026-05-24T09:05:00Z"
 
@@ -837,7 +836,7 @@ def test_fetch_incidents_no_new_advances_watermark_to_now(requests_mock: MockerC
     assert set_incidents.call_args.args[0] == []
     saved = set_last_run.call_args.args[0]
     assert saved["time"] == expected_now_iso
-    assert saved["ids"] == list(set(last_run["ids"]))
+    assert saved["ids"] == last_run["ids"]
 
 
 def test_fetch_incidents_first_run_uses_fetch_interval(requests_mock: MockerCore, mocker: MockerFixture) -> None:

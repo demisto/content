@@ -7,18 +7,18 @@ This integration was integrated and tested with PagerDuty API v2.
 2. Search for PagerDuty v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | False |
-    | Service Key (for triggering, acknowledging and resolving events only) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run) | False |
-    | Default requestor ID for adding people to incidents | False |
-    | Maximum number of incidents per fetch | False |
-    | Incident statuses to fetch | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Key |  | False |
+    | Service Key (for triggering, acknowledging and resolving events only) |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run) |  | False |
+    | Default requestor ID for adding people to incidents |  | False |
+    | Maximum number of incidents per fetch | The maximum number of incidents to retrieve per fetch cycle. Hard upper limit is 200. | False |
+    | Incident statuses to fetch | The statuses of PagerDuty incidents to ingest. Include "resolved" to capture short-lived incidents. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
