@@ -443,3 +443,318 @@ Then: Make sure removing self references works as expected.
         $outDict.NestedProperty.NestedProperty2.DeeplyNestedProperty.Deep3 | Should -Be "DeepValue"
     }
 }
+
+# Module-level shared state used by the UCP `class DemistoObject` redefinition
+# pattern. Each It-block sets these before invoking the helper under test.
+$script:UcpTestMetadata    = $null
+$script:UcpTestCredentials = @{}
+$script:UcpTestCalls       = 0
+$script:UcpTestLastMethod  = ''
+$script:UcpTestCurrentCmd  = ''
+
+Describe 'UCP-Helpers' {
+    BeforeEach {
+        # Reset module-level state (declared in CommonServerPowerShell.ps1) and
+        # the shared test state used by the per-test DemistoObject stubs.
+        $script:UcpCredentialsCache       = @{}
+        $script:UCP_AUTH_PARAMS_INJECTED = $false
+        $script:UcpTestMetadata    = $null
+        $script:UcpTestCredentials = @{}
+        $script:UcpTestCalls       = 0
+        $script:UcpTestLastMethod  = ''
+        $script:UcpTestCurrentCmd  = ''
+    }
+
+    It 'Test-UcpEnabled returns False when metadata is null' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = $null
+        Test-UcpEnabled | Should -BeFalse
+    }
+
+    It 'Test-UcpEnabled returns False when connectionProfiles is empty' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{ connectionProfiles = @() }
+        Test-UcpEnabled | Should -BeFalse
+    }
+
+    It 'Test-UcpEnabled returns True when connectionProfiles is non-empty' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        Test-UcpEnabled | Should -BeTrue
+    }
+
+    It 'Test-ShouldUseUcpAuth honors the UCP_AUTH_PARAMS_INJECTED flag' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        Test-ShouldUseUcpAuth | Should -BeTrue
+        $script:UCP_AUTH_PARAMS_INJECTED = $true
+        Test-ShouldUseUcpAuth | Should -BeFalse
+    }
+
+    It 'Resolve-UcpCapability maps known commands and falls back to default' {
+        class DemistoObject {
+            DemistoObject () {}
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        Resolve-UcpCapability -Command 'fetch-incidents' | Should -Be 'collection-and-ingestion'
+        Resolve-UcpCapability -Command 'fetch-assets'    | Should -Be 'collection-and-ingestion'
+        Resolve-UcpCapability -Command 'some-other-cmd'  | Should -Be 'automation-and-remediation'
+
+        # Falls back to $demisto.GetCommand() when not given
+        $script:UcpTestCurrentCmd = 'fetch-incidents'
+        Resolve-UcpCapability | Should -Be 'collection-and-ingestion'
+    }
+
+    It 'Get-UcpMethodUniqueId matches by sub_capability first' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(
+                @{ method_unique_id = 'm1'; capability = 'automation-and-remediation'; sub_capabilities = @() },
+                @{ method_unique_id = 'm2'; capability = 'automation-and-remediation'; sub_capabilities = @('salesforce-iam') }
+            )
+        }
+        Get-UcpMethodUniqueId -SubCapability 'salesforce-iam' | Should -Be 'm2'
+    }
+
+    It 'Get-UcpMethodUniqueId matches by capability when sub_capability not given' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(
+                @{ method_unique_id = 'm1'; capability = 'other' },
+                @{ method_unique_id = 'm2'; capability = 'automation-and-remediation' }
+            )
+        }
+        Get-UcpMethodUniqueId -Capability 'automation-and-remediation' | Should -Be 'm2'
+    }
+
+    It 'Get-UcpMethodUniqueId falls back to the first profile when nothing matches' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(
+                @{ method_unique_id = 'm1'; capability = 'other-1' },
+                @{ method_unique_id = 'm2'; capability = 'other-2' }
+            )
+        }
+        Get-UcpMethodUniqueId -Capability 'no-such-capability' | Should -Be 'm1'
+    }
+
+    It 'Get-UcpCredentials returns $null when UCP is not enabled' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) { return $null }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = $null
+        Get-UcpCredentials | Should -BeNullOrEmpty
+    }
+
+    It 'Get-UcpCredentials flattens oauth2 credentials and caches them' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) {
+                $script:UcpTestCalls += 1
+                $script:UcpTestLastMethod = $id
+                if ($script:UcpTestCredentials.Contains($id)) { return $script:UcpTestCredentials[$id] }
+                return $null
+            }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        $script:UcpTestCredentials = @{
+            'm1' = @{
+                type   = 'oauth2'
+                oauth2 = @{
+                    access_token = 'tok-1'
+                    token_type   = 'Bearer'
+                    expires_at   = ([DateTime]::UtcNow.AddMinutes(10).ToString('o'))
+                }
+            }
+        }
+
+        $first = Get-UcpCredentials
+        $first.type         | Should -Be 'oauth2'
+        $first.access_token | Should -Be 'tok-1'
+        $first.token_type   | Should -Be 'Bearer'
+        $script:UcpTestCalls | Should -Be 1
+
+        # Second call - should hit the cache, no extra GetUCPCredentials request.
+        $second = Get-UcpCredentials
+        $second.access_token | Should -Be 'tok-1'
+        $script:UcpTestCalls | Should -Be 1
+    }
+
+    It 'Get-UcpCredentials throws on empty oauth2 access_token' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) {
+                if ($script:UcpTestCredentials.Contains($id)) { return $script:UcpTestCredentials[$id] }
+                return $null
+            }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        $script:UcpTestCredentials = @{
+            'm1' = @{ type = 'oauth2'; oauth2 = @{ access_token = ''; token_type = 'Bearer' } }
+        }
+        { Get-UcpCredentials } | Should -Throw -ExpectedMessage '*UCP*'
+    }
+
+    It 'Get-UcpCredentials flattens api_key credentials' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) {
+                if ($script:UcpTestCredentials.Contains($id)) { return $script:UcpTestCredentials[$id] }
+                return $null
+            }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        $script:UcpTestCredentials = @{
+            'm1' = @{ type = 'api_key'; api_key = @{ key = 'k-1' } }
+        }
+        $creds = Get-UcpCredentials
+        $creds.type | Should -Be 'api_key'
+        $creds.key  | Should -Be 'k-1'
+    }
+
+    It 'Get-UcpCredentials flattens plain credentials' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) {
+                if ($script:UcpTestCredentials.Contains($id)) { return $script:UcpTestCredentials[$id] }
+                return $null
+            }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        $script:UcpTestCredentials = @{
+            'm1' = @{ type = 'plain'; plain = @{ username = 'u1'; password = 'p1' } }
+        }
+        $creds = Get-UcpCredentials
+        $creds.type     | Should -Be 'plain'
+        $creds.username | Should -Be 'u1'
+        $creds.password | Should -Be 'p1'
+    }
+
+    It 'Invalidate-UcpCredentialsCache forces a re-fetch on the next call' {
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) {
+                $script:UcpTestCalls += 1
+                if ($script:UcpTestCredentials.Contains($id)) { return $script:UcpTestCredentials[$id] }
+                return $null
+            }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        $script:UcpTestCredentials = @{
+            'm1' = @{ type = 'api_key'; api_key = @{ key = 'k-1' } }
+        }
+
+        Get-UcpCredentials | Out-Null
+        $script:UcpTestCalls | Should -Be 1
+
+        Invalidate-UcpCredentialsCache -methodUniqueId 'm1'
+        Get-UcpCredentials | Out-Null
+        $script:UcpTestCalls | Should -Be 2
+    }
+}
