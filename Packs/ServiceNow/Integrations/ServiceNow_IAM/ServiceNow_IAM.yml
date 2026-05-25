@@ -57,12 +57,8 @@ configuration:
 - defaultvalue: User Profile - ServiceNow (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: false
+  required: true
   type: 0
-  additionalinfo: Cortex XSOAR only parameter.
-  hidden:
-  - marketplacev2
-  - platform
 description: Integrate with ServiceNow's services to execute CRUD operations for employee lifecycle processes.
 display: ServiceNow IAM
 name: ServiceNow IAM

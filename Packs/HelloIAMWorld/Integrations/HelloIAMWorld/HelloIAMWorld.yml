@@ -53,12 +53,8 @@ configuration:
 - defaultvalue: User Profile - IAM Template (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: false
+  required: true
   type: 0
-  hidden:
-  - marketplacev2
-  - platform
-  additionalinfo: Cortex XSOAR only parameter.
 description: An Identity and Access Management integration template.
 display: Hello World IAM
 name: Hello IAM World

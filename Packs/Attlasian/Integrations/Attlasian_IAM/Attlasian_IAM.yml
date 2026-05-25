@@ -64,12 +64,8 @@ configuration:
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: false
+  required: true
   type: 0
-  hidden:
-  - marketplacev2
-  - platform
-  additionalinfo: Cortex XSOAR only parameter.
 
 description: Integrate with Atlassian's services to execute CRUD operations for employee lifecycle processes.
 display: Atlassian IAM

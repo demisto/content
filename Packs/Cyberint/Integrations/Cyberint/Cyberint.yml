@@ -75,7 +75,7 @@ configuration:
   required: false
   section: Collect
 - display: Incident Mirroring Direction
-  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cyberint to Cortex XSOAR), Outgoing (from Cortex XSOAR to Cyberint), or Incoming and Outgoing (from/to Cortex XSOAR and Cyberint). Cortex XSOAR only parameter.'
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cyberint to Cortex XSOAR), Outgoing (from Cortex XSOAR to Cyberint), or Incoming and Outgoing (from/to Cortex XSOAR and Cyberint).'
   name: mirror_direction
   type: 15
   required: false
@@ -86,9 +86,6 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
 - display: Incident type
   name: incidentType
   type: 13
@@ -98,12 +95,9 @@ configuration:
   defaultvalue: 'false'
   name: close_incident
   type: 8
-  additionalinfo: When selected, closing the Cyberint alert is mirrored in Cortex XSOAR. Cortex XSOAR only parameter.
+  additionalinfo: When selected, closing the Cyberint alert is mirrored in Cortex XSOAR.
   required: false
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
 - display: Close Mirrored Cyberint Alert
   name: close_alert
   type: 8

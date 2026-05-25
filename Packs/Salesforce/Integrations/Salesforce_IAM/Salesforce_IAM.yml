@@ -84,13 +84,9 @@ configuration:
 - defaultvalue: User Profile - Salesforce (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: false
+  required: true
   type: 0
   section: Collect
-  additionalinfo: Cortex XSOAR only parameter.
-  hidden:
-  - marketplacev2
-  - platform
 - additionalinfo: Used when creating a new user.
   defaultvalue: en_US
   display: Default Local Sid Key

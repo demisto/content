@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 13
   section: Connect
-- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to Cortex XSOAR), Outgoing (from Cortex XSOAR to Doppel), Incoming and Outgoing (from/to Cortex XSOAR and Doppel). Cortex XSOAR only parameter.'
+- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to Cortex XSOAR), Outgoing (from Cortex XSOAR to Doppel), Incoming and Outgoing (from/to Cortex XSOAR and Doppel).'
   display: Mirror Direction
   name: mirror_direction
   required: false
@@ -64,9 +64,6 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   - None
-  hidden:
-  - marketplacev2
-  - platform
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: "1 day"
   display: First fetch
