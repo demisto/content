@@ -152,12 +152,9 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
     Returns:
         tuple[list[dict], str]: A tuple containing a list of relevant file information and the SHA of the current repository head.
     """
-    try:
-        all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
-        relevant_files = filter_out_files_by_status(all_commits_files)
-        return relevant_files, current_repo_head_sha
-    except IndexError:
-        return [], base_commit
+    all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
+    relevant_files = filter_out_files_by_status(all_commits_files)
+    return relevant_files, current_repo_head_sha
 
 
 def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
