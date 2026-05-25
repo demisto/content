@@ -95,24 +95,23 @@ Creates a new security incident in iZOOlogic.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| iZOOlabs.Incident.reportedincidentid | String | Unique identifier for the created incident case. |
-| iZOOlabs.Incident.statuscode | Number | Numeric status code \(1 = under review\). |
-| iZOOlabs.Incident.statusdescription | String | Human-readable status description. |
-| iZOOlabs.Incident.casetype | Number | Case type code \(6 = incident\). |
-| iZOOlabs.Incident.casetypedescription | String | Human-readable case type description. |
-| iZOOlabs.Incident.success | Boolean | Whether the incident was successfully created. |
+| iZOOlabs.Incident.reportedIncidentId | String | Unique identifier for the created incident case. |
+| iZOOlabs.Incident.statusCode | Number | Numeric status code \(1 = under review\). |
+| iZOOlabs.Incident.statusDescription | String | Human-readable status description. |
+| iZOOlabs.Incident.caseType | Number | Case type code \(9 = reported incident\). |
+| iZOOlabs.Incident.caseTypeDescription | String | Human-readable case type description. |
 
 #### Command example
 
-```!izoolabs-incident-create incident_url="https://malicious-site.example.com" incident_type="phishing" brand_code="BRAND001"```
+```!izoolabs-incident-create incident_url="https://test-malicious-site.example.com" incident_type="phishing" brand_code="QnjggfvwlW"```
 
 #### Human Readable Output
 
 >### iZOOlogic - New Incident Created
 >
->|reportedincidentid|statuscode|statusdescription|casetype|casetypedescription|success|
->|---|---|---|---|---|---|
->| RPT-12345 | 1 | Under Review | 6 | Incident | true |
+>|reportedIncidentId|statusCode|statusDescription|caseType|caseTypeDescription|
+>|---|---|---|---|---|
+>| ycB2E7gPQ | 1 | Under Review | 9 | Reported Incident |
 
 ### izoolabs-incident-fetch
 

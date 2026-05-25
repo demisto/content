@@ -203,24 +203,21 @@ script:
     - name: client_code
       description: Client identifier for validation and access control.
     outputs:
-    - contextPath: iZOOlabs.Incident.reportedincidentid
+    - contextPath: iZOOlabs.Incident.reportedIncidentId
       description: Unique identifier for the created incident case.
       type: String
-    - contextPath: iZOOlabs.Incident.statuscode
+    - contextPath: iZOOlabs.Incident.statusCode
       description: Numeric status code (1 = under review).
       type: Number
-    - contextPath: iZOOlabs.Incident.statusdescription
+    - contextPath: iZOOlabs.Incident.statusDescription
       description: Human-readable status description.
       type: String
-    - contextPath: iZOOlabs.Incident.casetype
-      description: Case type code (6 = incident).
+    - contextPath: iZOOlabs.Incident.caseType
+      description: Case type code (9 = reported incident).
       type: Number
-    - contextPath: iZOOlabs.Incident.casetypedescription
+    - contextPath: iZOOlabs.Incident.caseTypeDescription
       description: Human-readable case type description.
       type: String
-    - contextPath: iZOOlabs.Incident.success
-      description: Whether the incident was successfully created.
-      type: Boolean
   - name: izoolabs-incident-fetch
     description: Fetches incidents from iZOOlogic based on specified filters including date range, brand, incident type, and other criteria.
     arguments:

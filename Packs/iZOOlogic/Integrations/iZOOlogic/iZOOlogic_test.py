@@ -1263,10 +1263,9 @@ class TestCreateIncidentCommand:
 
         assert isinstance(result, CommandResults)
         assert result.outputs_prefix == "iZOOlabs.Incident"
-        assert result.outputs_key_field == "reportedincidentid"
-        assert result.outputs["reportedincidentid"] == "RPT-12345"
-        assert result.outputs["statuscode"] == 1
-        assert result.outputs["success"] is True
+        assert result.outputs_key_field == "reportedIncidentId"
+        assert result.outputs["reportedIncidentId"] == "ycB2E7gPQ"
+        assert result.outputs["statusCode"] == 1
 
     def test_api_error_raises(self, mocker: MockerFixture, mock_client: Client):
         error_response = {
@@ -1302,7 +1301,7 @@ class TestCreateIncidentCommand:
         result = create_incident_command(mock_client, args)
 
         assert isinstance(result, CommandResults)
-        assert result.outputs["reportedincidentid"] == "RPT-12345"
+        assert result.outputs["reportedIncidentId"] == "ycB2E7gPQ"
 
     def test_readable_output(self, mocker: MockerFixture, mock_client: Client):
         api_response = load_test_data("create_incident_response.json")
@@ -1316,7 +1315,7 @@ class TestCreateIncidentCommand:
         result = create_incident_command(mock_client, args)
 
         assert "New Incident Created" in result.readable_output
-        assert "RPT-12345" in result.readable_output
+        assert "ycB2E7gPQ" in result.readable_output
 
 
 # endregion
@@ -1407,6 +1406,8 @@ class TestIncidentFetchCommand:
         assert "executive_name" not in call_kwargs
         assert "client_ref_id" not in call_kwargs
         assert "client_code" not in call_kwargs
+
+
 # region Window Splitting Tests
 
 

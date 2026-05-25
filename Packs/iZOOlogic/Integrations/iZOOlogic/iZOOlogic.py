@@ -44,13 +44,13 @@ class Config:
     # Max date range for API (31 days)
     MAX_DATE_RANGE_DAYS = 31
 
-
-class ApiCodes:
-    """Centralized API code mappings used across multiple commands."""
-    
     # Lock for thread-safe access to demisto.getLastRun/setLastRun
     # during multi-window fetches where concurrent threads may update last_run.
     _last_run_lock = threading.Lock()
+
+
+class ApiCodes:
+    """Centralized API code mappings used across multiple commands."""
 
     # API error codes
     NO_DATA_FOUND = "iZOO2011"
@@ -89,7 +89,7 @@ class ApiCodes:
         "mobile app monitoring": 3,
         "executive monitoring": 5,
     }
-    
+
 
 def date_to_unix_timestamp(date_input: str) -> str:
     """Parse a date string and return a Unix timestamp string for the iZOOlogic API.
@@ -1006,7 +1006,7 @@ def _fetch_for_type(
                 f"persisting {len(cortex_incidents)} incidents and updating state"
             )
             demisto.incidents(cortex_incidents)
-            with _last_run_lock:
+            with Config._last_run_lock:
                 last_run = demisto.getLastRun()
                 last_run[type_key] = current_state
                 demisto.setLastRun(last_run)
@@ -1195,13 +1195,20 @@ def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} - New Incident Created",
         result,
+        headers=[
+            "reportedIncidentId",
+            "statusCode",
+            "statusDescription",
+            "caseType",
+            "caseTypeDescription",
+        ],
         removeNull=True,
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="iZOOlabs.Incident",
-        outputs_key_field="reportedincidentid",
+        outputs_key_field="reportedIncidentId",
         outputs=result,
     )
 
