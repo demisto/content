@@ -894,9 +894,8 @@ def _get_process_memory_mb() -> str:
         traced_mb = traced_current / (1024 * 1024)
         traced_peak_mb = traced_peak / (1024 * 1024)
 
-    return (
-        f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
-        + (f", py_traced={traced_mb:.1f} MB, py_peak={traced_peak_mb:.1f} MB" if traced_mb > 0 else "")
+    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB" + (
+        f", py_traced={traced_mb:.1f} MB, py_peak={traced_peak_mb:.1f} MB" if traced_mb > 0 else ""
     )
 
 
@@ -5058,6 +5057,7 @@ async def fetch_spotlight_assets():
 
     # Start tracemalloc to track Python allocations vs OS RSS (quantifies arena fragmentation)
     import tracemalloc
+
     if not tracemalloc.is_tracing():
         tracemalloc.start()
         log_falcon_assets("tracemalloc started for memory diagnostics")
