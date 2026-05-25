@@ -166,10 +166,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -242,10 +244,12 @@ script:
         required: true
       - description: The AWS account ID.
         name: account_id
-        required: true
+        required: false
+        required:platform: true
       - description: The AWS region.
         name: region
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -291,10 +295,12 @@ script:
         required: true
       - description: The AWS account ID.
         name: account_id
-        required: true
+        required: false
+        required:platform: true
       - description: The AWS region.
         name: region
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -371,10 +377,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -462,10 +470,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -553,10 +563,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -644,10 +656,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -728,10 +742,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -805,10 +821,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -894,10 +912,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -956,10 +976,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -1012,7 +1034,8 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
       required: false
@@ -1089,7 +1112,8 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The minimum number of characters allowed in an IAM user password.
       name: minimum_password_length
     - auto: PREDEFINED
@@ -1138,10 +1162,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1192,10 +1218,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1239,10 +1267,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1292,10 +1322,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1342,10 +1374,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1399,10 +1433,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1517,14 +1553,16 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: cluster_name
       description: The name of the cluster to describe.
       required: true
     - name: region
       description: 'The AWS Region.'
       auto: PREDEFINED
-      required: true
+      required: false
+      required:platform: true
       predefined:
       - us-east-1
       - us-east-2
@@ -1678,7 +1716,8 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: cluster_name
       description: The name of the cluster for which to create an access entry.
       required: true
@@ -1701,7 +1740,8 @@ script:
     - auto: PREDEFINED
       description: The AWS Region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       predefined:
       - us-east-1
       - us-east-2
@@ -1765,10 +1805,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1854,10 +1896,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1955,10 +1999,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -2018,10 +2064,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -2111,10 +2159,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -2238,10 +2288,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -2588,10 +2640,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -3082,10 +3136,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -3143,10 +3199,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -3330,10 +3388,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -3810,10 +3870,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -3878,10 +3940,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -3946,10 +4010,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4015,10 +4081,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4080,10 +4148,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4152,10 +4222,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4257,10 +4329,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4367,10 +4441,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4427,7 +4503,8 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - description: The ID of the EBS volume.
       name: volume_id
       required: true
@@ -4437,7 +4514,8 @@ script:
       name: tags
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4529,7 +4607,8 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - description: The ID of the EBS snapshot.
       name: snapshot_id
       required: true
@@ -4552,7 +4631,8 @@ script:
       - 'False'
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4631,7 +4711,8 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the cluster.
       name: cluster_name
       required: true
@@ -4645,7 +4726,8 @@ script:
       - 'enhanced'
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -4689,10 +4771,12 @@ script:
     arguments:
       - description: The AWS account ID.
         name: account_id
-        required: true
+        required: false
+        required:platform: true
       - description: The AWS region.
         name: region
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -4760,10 +4844,12 @@ script:
       name: vpc_ids
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -4862,10 +4948,12 @@ script:
       name: subnet_ids
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -4968,10 +5056,12 @@ script:
       name: address_region
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -5038,10 +5128,12 @@ script:
       name: address_region
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -5099,10 +5191,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -5317,10 +5411,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -5394,11 +5490,13 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
       required:xsoar: false
     - name: region
       description: The AWS region to query instances from. Must be a valid AWS region identifier.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -5740,10 +5838,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region where target instances are located.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -5791,10 +5891,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region where target instances are located. Must be a valid AWS region identifier.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -5857,10 +5959,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region where target instances are located. Must be a valid AWS region identifier.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -5908,10 +6012,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region where instances will be created. Must be a valid AWS region identifier.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -6346,10 +6452,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region where instances will be created. Must be a valid AWS region identifier.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -6524,10 +6632,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -6635,10 +6745,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -6715,10 +6827,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -6776,10 +6890,12 @@ script:
       defaultValue: 'true'
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -6868,10 +6984,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -6917,10 +7035,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -6984,10 +7104,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -7190,10 +7312,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -7272,10 +7396,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -7322,10 +7448,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -7409,10 +7537,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -7478,10 +7608,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -7601,10 +7733,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -7650,10 +7784,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -7729,10 +7865,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -7792,10 +7930,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -7848,10 +7988,12 @@ script:
     arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -7922,11 +8064,13 @@ script:
   - name: aws-lambda-function-configuration-get
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8136,11 +8280,13 @@ script:
   - name: aws-lambda-function-url-config-get
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8224,11 +8370,13 @@ script:
   - name: aws-lambda-policy-get
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8308,11 +8456,13 @@ script:
   - name: aws-lambda-invoke
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8396,11 +8546,13 @@ script:
   - name: aws-lambda-function-url-config-update
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8516,11 +8668,13 @@ script:
   - name: aws-lambda-function-get
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8628,11 +8782,13 @@ script:
   - name: aws-lambda-functions-list
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8763,11 +8919,13 @@ script:
   - name: aws-lambda-aliases-list
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8840,11 +8998,13 @@ script:
   - name: aws-lambda-account-settings-get
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -8914,11 +9074,13 @@ script:
   - name: aws-lambda-function-versions-list
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9059,11 +9221,13 @@ script:
   - name: aws-lambda-function-url-config-delete
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9113,11 +9277,13 @@ script:
     execution: true
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9273,11 +9439,13 @@ script:
     description: Lists the versions of an Lambda layer.
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9356,11 +9524,13 @@ script:
     description: Deletes a Lambda function.
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9407,11 +9577,13 @@ script:
     description: Deletes a version of a Lambda layer.
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9459,11 +9631,13 @@ script:
     description: Creates a Lambda layer from a ZIP archive.
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9549,11 +9723,13 @@ script:
     description: Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission.
     arguments:
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - description: The AWS region.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9811,7 +9987,8 @@ script:
   - arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: Entry ID of the file to upload.
       name: entryID
       required: true
@@ -9823,7 +10000,8 @@ script:
       required: true
     - description: AWS region where the S3 bucket is located.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9866,7 +10044,8 @@ script:
   - arguments:
     - description: The AWS account ID.
       name: account_id
-      required: true
+      required: false
+      required:platform: true
     - description: Name of the target S3 bucket. Must follow S3 naming conventions.
       name: bucket
       required: true
@@ -9875,7 +10054,8 @@ script:
       required: true
     - description: AWS region where the S3 bucket is located.
       name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -9950,10 +10130,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account on which to run the command.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -10100,10 +10282,12 @@ script:
     arguments:
     - name: account_id
       description: AWS account to run the command on.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -10224,10 +10408,12 @@ script:
     arguments:
     - name: account_id
       description: AWS account to run the command on.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -10347,10 +10533,12 @@ script:
     arguments:
     - name: account_id
       description: AWS account to run the command on.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -10431,7 +10619,8 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
       required: false
@@ -10484,10 +10673,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -10699,10 +10890,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -10755,10 +10948,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -10882,10 +11077,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -10949,10 +11146,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -11070,10 +11269,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -11188,10 +11389,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -11269,10 +11472,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -11452,10 +11657,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11507,10 +11714,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11556,10 +11765,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11652,10 +11863,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11756,10 +11969,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11843,10 +12058,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11916,10 +12133,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -11966,10 +12185,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12019,10 +12240,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12077,10 +12300,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12135,10 +12360,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12185,10 +12412,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12242,10 +12471,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12306,10 +12537,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12363,10 +12596,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12420,10 +12655,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12496,10 +12733,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12558,10 +12797,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -12685,10 +12926,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -12816,10 +13059,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -12941,10 +13186,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13111,10 +13358,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13195,10 +13444,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13286,10 +13537,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13336,10 +13589,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13428,10 +13683,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS Region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13701,10 +13958,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -13781,10 +14040,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -14075,10 +14336,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -14148,10 +14411,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -14298,10 +14563,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -14376,10 +14643,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -14547,10 +14816,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -14633,10 +14904,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -14733,10 +15006,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -14791,10 +15066,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -14896,10 +15173,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -14945,10 +15224,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15184,10 +15465,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15266,10 +15549,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15319,10 +15604,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15369,10 +15656,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15418,10 +15707,12 @@ script:
     arguments:
     - name: account_id
       description: The AWS account ID.
-      required: true
+      required: false
+      required:platform: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15512,7 +15803,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15551,7 +15843,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -15578,7 +15871,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15617,7 +15911,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -15631,7 +15926,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15670,7 +15966,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -15681,7 +15978,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15720,7 +16018,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -15733,7 +16032,8 @@ script:
     description: "Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream. Required IAM permission: logs:FilterLogEvents."
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15772,7 +16072,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -15824,7 +16125,8 @@ script:
     description: "Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name. Required IAM permission: logs:DescribeLogGroups."
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15863,7 +16165,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name_prefix
       description: The prefix used to filter results. Cannot be used together with log_group_name_pattern.
@@ -15920,7 +16223,8 @@ script:
     description: "Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered. Required IAM Permission: logs:DescribeLogStreams."
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -15959,7 +16263,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       description: The name of the log group. Must include either log_group_name or log_group_identifier, but not both.
@@ -16020,7 +16325,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -16059,7 +16365,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -16092,7 +16399,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -16131,7 +16439,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -16142,7 +16451,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -16181,7 +16491,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -16212,7 +16523,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -16251,7 +16563,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -16323,7 +16636,8 @@ script:
     execution: true
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -16362,7 +16676,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       required: true
@@ -16375,7 +16690,8 @@ script:
     description: "Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace. Required IAM permission: logs:DescribeMetricFilters."
     arguments:
     - name: region
-      required: true
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -16414,7 +16730,8 @@ script:
       - us-gov-west-1
       description: The AWS region.
     - name: account_id
-      required: true
+      required: false
+      required:platform: true
       description: The AWS account ID.
     - name: log_group_name
       description: The name of the log group.
@@ -16462,10 +16779,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -16590,10 +16909,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -16751,10 +17072,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -16858,10 +17181,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -16974,10 +17299,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17040,10 +17367,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17113,10 +17442,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17226,10 +17557,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17396,10 +17729,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17553,10 +17888,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17773,10 +18110,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -17918,10 +18257,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -18066,10 +18407,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -18135,10 +18478,12 @@ script:
     arguments:
       - name: account_id
         description: The AWS account ID.
-        required: true
+        required: false
+        required:platform: true
       - name: region
         description: The AWS region.
-        required: true
+        required: false
+        required:platform: true
         auto: PREDEFINED
         predefined:
           - us-east-1
