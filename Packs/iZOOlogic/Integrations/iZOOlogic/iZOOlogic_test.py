@@ -818,16 +818,18 @@ class TestFetchForType:
         assert state["last_created_on"] == "200"
         assert set(state["last_ids"]) == {"a", "b"}
 
-    def test_date_range_validation_skips(self, mocker: MockerFixture, mock_client: Client):
-        """When date range is invalid (>31 days), type is skipped and state preserved."""
+    def test_large_date_range_splits_into_windows(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        """When date range exceeds 31 days, it is split into multiple windows."""
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1703000000")
+        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
 
-        # last_created_on is >31 days before to_date
+        # last_created_on is >31 days before to_date → should split into 2 windows
         type_state = {"last_created_on": "1700000000", "last_ids": ["old"]}
         type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
 
         assert cortex_incidents == []
-        assert state == type_state  # State preserved on validation error
+        # State should be advanced to to_date (cursor moved forward through empty windows)
+        assert state["last_created_on"] == "1703000000"
 
 
 # endregion
@@ -861,6 +863,19 @@ class TestGetIncidentsCommand:
                     "limit": "10",
                     "start_time": "2024-01-15T00:00:00Z",
                     "end_time": "2024-01-10T00:00:00Z",
+                },
+                [2],
+            )
+
+    def test_date_range_exceeds_31_days_raises(self, mocker: MockerFixture, mock_client: Client):
+        """get_incidents_command should reject date ranges exceeding 31 days."""
+        with pytest.raises(DemistoException, match="exceeds the maximum"):
+            get_incidents_command(
+                mock_client,
+                {
+                    "limit": "10",
+                    "start_time": "2024-01-01T00:00:00Z",
+                    "end_time": "2024-03-01T00:00:00Z",
                 },
                 [2],
             )
