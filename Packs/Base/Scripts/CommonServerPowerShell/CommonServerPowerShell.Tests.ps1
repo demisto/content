@@ -466,6 +466,7 @@ Describe 'UCP-Helpers' {
     }
 
     It 'Test-UcpEnabled returns False when metadata is null' {
+        # Given - a DemistoObject whose UnifiedConnectorMetadata returns $null (UCP not configured).
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -475,10 +476,13 @@ Describe 'UCP-Helpers' {
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
         $script:UcpTestMetadata = $null
+        # When - Test-UcpEnabled is called.
+        # Then - it reports UCP as disabled.
         Test-UcpEnabled | Should -BeFalse
     }
 
     It 'Test-UcpEnabled returns False when connectionProfiles is empty' {
+        # Given - a DemistoObject whose UnifiedConnectorMetadata returns a descriptor with an empty profile list.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -488,10 +492,13 @@ Describe 'UCP-Helpers' {
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
         $script:UcpTestMetadata = @{ connectionProfiles = @() }
+        # When - Test-UcpEnabled is called.
+        # Then - it reports UCP as disabled because no auth profiles are present.
         Test-UcpEnabled | Should -BeFalse
     }
 
     It 'Test-UcpEnabled returns True when connectionProfiles is non-empty' {
+        # Given - a DemistoObject whose UnifiedConnectorMetadata returns at least one connection profile.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -503,10 +510,13 @@ Describe 'UCP-Helpers' {
         $script:UcpTestMetadata = @{
             connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
         }
+        # When - Test-UcpEnabled is called.
+        # Then - it reports UCP as enabled.
         Test-UcpEnabled | Should -BeTrue
     }
 
     It 'Test-ShouldUseUcpAuth honors the UCP_AUTH_PARAMS_INJECTED flag' {
+        # Given - UCP is enabled and the injected-params flag starts off ($false).
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -518,12 +528,15 @@ Describe 'UCP-Helpers' {
         $script:UcpTestMetadata = @{
             connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
         }
+        # When - Test-ShouldUseUcpAuth is called with the flag off, then on.
+        # Then - it returns $true initially, $false once the flag is set.
         Test-ShouldUseUcpAuth | Should -BeTrue
         $script:UCP_AUTH_PARAMS_INJECTED = $true
         Test-ShouldUseUcpAuth | Should -BeFalse
     }
 
     It 'Resolve-UcpCapability maps known commands and falls back to default' {
+        # Given - a DemistoObject whose GetCommand reflects the currently-executing command.
         class DemistoObject {
             DemistoObject () {}
             [string] GetCommand () { return $script:UcpTestCurrentCmd }
@@ -532,16 +545,23 @@ Describe 'UCP-Helpers' {
             [void]   Error ([object]$m) {}
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
-        Resolve-UcpCapability -Command 'fetch-incidents' | Should -Be 'collection-and-ingestion'
-        Resolve-UcpCapability -Command 'fetch-assets'    | Should -Be 'collection-and-ingestion'
-        Resolve-UcpCapability -Command 'some-other-cmd'  | Should -Be 'automation-and-remediation'
+        # When - Resolve-UcpCapability is called with known and unknown command names.
+        # Then - the four known collection-and-ingestion commands map to 'collection-and-ingestion'
+        #        and any unknown command falls back to the default 'automation-and-remediation'.
+        Resolve-UcpCapability -Command 'fetch-incidents'  | Should -Be 'collection-and-ingestion'
+        Resolve-UcpCapability -Command 'fetch-assets'     | Should -Be 'collection-and-ingestion'
+        Resolve-UcpCapability -Command 'fetch-indicators' | Should -Be 'collection-and-ingestion'
+        Resolve-UcpCapability -Command 'fetch-samples'    | Should -Be 'collection-and-ingestion'
+        Resolve-UcpCapability -Command 'some-other-cmd'   | Should -Be 'automation-and-remediation'
 
-        # Falls back to $demisto.GetCommand() when not given
+        # When no explicit command is provided, Resolve-UcpCapability uses $demisto.GetCommand().
+        # Then - the result reflects whatever the server reports as the current command.
         $script:UcpTestCurrentCmd = 'fetch-incidents'
         Resolve-UcpCapability | Should -Be 'collection-and-ingestion'
     }
 
     It 'Get-UcpMethodUniqueId matches by sub_capability first' {
+        # Given - two profiles share the same capability but only one matches the requested sub_capability.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -556,10 +576,13 @@ Describe 'UCP-Helpers' {
                 @{ method_unique_id = 'm2'; capability = 'automation-and-remediation'; sub_capabilities = @('salesforce-iam') }
             )
         }
+        # When - Get-UcpMethodUniqueId is called with a SubCapability argument.
+        # Then - the sub_capability match wins, even though both profiles share the capability.
         Get-UcpMethodUniqueId -SubCapability 'salesforce-iam' | Should -Be 'm2'
     }
 
     It 'Get-UcpMethodUniqueId matches by capability when sub_capability not given' {
+        # Given - two profiles with different capabilities and no sub_capability hint.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -575,10 +598,13 @@ Describe 'UCP-Helpers' {
                 @{ method_unique_id = 'm2'; capability = 'automation-and-remediation' }
             )
         }
+        # When - Get-UcpMethodUniqueId is called with only a Capability argument.
+        # Then - the profile whose capability matches is returned.
         Get-UcpMethodUniqueId -Capability 'automation-and-remediation' | Should -Be 'm2'
     }
 
     It 'Get-UcpMethodUniqueId falls back to the first profile when nothing matches' {
+        # Given - no profile matches either the requested capability or sub_capability.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -594,10 +620,13 @@ Describe 'UCP-Helpers' {
                 @{ method_unique_id = 'm2'; capability = 'other-2' }
             )
         }
+        # When - Get-UcpMethodUniqueId is called with a capability nothing matches.
+        # Then - it falls back to the first profile's method_unique_id.
         Get-UcpMethodUniqueId -Capability 'no-such-capability' | Should -Be 'm1'
     }
 
     It 'Get-UcpCredentials returns $null when UCP is not enabled' {
+        # Given - a DemistoObject reporting no UCP metadata.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -609,10 +638,13 @@ Describe 'UCP-Helpers' {
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
         $script:UcpTestMetadata = $null
+        # When - Get-UcpCredentials is called outside of UCP mode.
+        # Then - it short-circuits and returns $null without making a credentials request.
         Get-UcpCredentials | Should -BeNullOrEmpty
     }
 
     It 'Get-UcpCredentials flattens oauth2 credentials and caches them' {
+        # Given - UCP returns a nested oauth2 credential dict with a far-future expiry.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -642,19 +674,21 @@ Describe 'UCP-Helpers' {
             }
         }
 
+        # When - Get-UcpCredentials is called twice in a row.
+        # Then - the first call returns flat oauth2 fields and the second call is served from cache.
         $first = Get-UcpCredentials
         $first.type         | Should -Be 'oauth2'
         $first.access_token | Should -Be 'tok-1'
         $first.token_type   | Should -Be 'Bearer'
         $script:UcpTestCalls | Should -Be 1
 
-        # Second call - should hit the cache, no extra GetUCPCredentials request.
         $second = Get-UcpCredentials
         $second.access_token | Should -Be 'tok-1'
         $script:UcpTestCalls | Should -Be 1
     }
 
     It 'Get-UcpCredentials throws on empty oauth2 access_token' {
+        # Given - UCP returns an oauth2 dict with an empty access_token (mis-configured profile).
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -674,10 +708,13 @@ Describe 'UCP-Helpers' {
         $script:UcpTestCredentials = @{
             'm1' = @{ type = 'oauth2'; oauth2 = @{ access_token = ''; token_type = 'Bearer' } }
         }
+        # When - Get-UcpCredentials is called.
+        # Then - it fail-fasts with a [UCP] authentication-failed error rather than returning an empty token.
         { Get-UcpCredentials } | Should -Throw -ExpectedMessage '*UCP*'
     }
 
     It 'Get-UcpCredentials flattens api_key credentials' {
+        # Given - UCP returns a nested api_key credential dict.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -697,12 +734,15 @@ Describe 'UCP-Helpers' {
         $script:UcpTestCredentials = @{
             'm1' = @{ type = 'api_key'; api_key = @{ key = 'k-1' } }
         }
+        # When - Get-UcpCredentials is called.
+        # Then - the nested api_key.key is flattened to a top-level `key` field.
         $creds = Get-UcpCredentials
         $creds.type | Should -Be 'api_key'
         $creds.key  | Should -Be 'k-1'
     }
 
     It 'Get-UcpCredentials flattens plain credentials' {
+        # Given - UCP returns a nested plain (username/password) credential dict.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -722,6 +762,8 @@ Describe 'UCP-Helpers' {
         $script:UcpTestCredentials = @{
             'm1' = @{ type = 'plain'; plain = @{ username = 'u1'; password = 'p1' } }
         }
+        # When - Get-UcpCredentials is called.
+        # Then - the nested plain.username and plain.password are flattened to top-level fields.
         $creds = Get-UcpCredentials
         $creds.type     | Should -Be 'plain'
         $creds.username | Should -Be 'u1'
@@ -729,6 +771,7 @@ Describe 'UCP-Helpers' {
     }
 
     It 'Invalidate-UcpCredentialsCache forces a re-fetch on the next call' {
+        # Given - one credentials fetch has already populated the client-side TTL cache.
         class DemistoObject {
             DemistoObject () {}
             [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
@@ -753,8 +796,107 @@ Describe 'UCP-Helpers' {
         Get-UcpCredentials | Out-Null
         $script:UcpTestCalls | Should -Be 1
 
+        # When - Invalidate-UcpCredentialsCache is called and Get-UcpCredentials runs again.
+        # Then - the second call hits the server again (call counter increments to 2).
         Invalidate-UcpCredentialsCache -methodUniqueId 'm1'
         Get-UcpCredentials | Out-Null
         $script:UcpTestCalls | Should -Be 2
+    }
+}
+
+# Direct unit tests for DemistoObject.UnifiedConnectorMetadata - exercising the
+# normalization branches: array unwrap, hashtable passthrough, IDictionary copy,
+# PSCustomObject conversion, $null and unrecognized-type fallback.
+#
+# We test the production method by reaching into the real [DemistoObject]
+# instance ($demisto, created when CommonServerPowerShell.ps1 is dot-sourced)
+# and overriding only its ServerRequest method per test via Add-Member -Force.
+# This lets the production UnifiedConnectorMetadata() run unchanged against
+# stubbed transport responses, which is exactly what the AI reviewer asked for.
+Describe 'UCP-DemistoObject-UnifiedConnectorMetadata' {
+    BeforeEach {
+        # Override ServerRequest on the real $demisto instance. Each It sets
+        # $script:UcpDoNextResponse to whatever it wants ServerRequest to return.
+        $script:UcpDoNextResponse = $null
+        Add-Member -InputObject $demisto -MemberType ScriptMethod -Name 'ServerRequest' `
+            -Force -Value { param($Cmd) return $script:UcpDoNextResponse }
+    }
+
+    It 'returns @{} when ServerRequest returns $null' {
+        # Given - ServerRequest yields $null (no UCP metadata on the server).
+        $script:UcpDoNextResponse = $null
+        # When - UnifiedConnectorMetadata is called.
+        # Then - it returns an empty hashtable rather than $null, so callers can index safely.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.Count | Should -Be 0
+    }
+
+    It 'passes a hashtable response through unchanged' {
+        # Given - ServerRequest already returns a hashtable.
+        $script:UcpDoNextResponse = @{ connectionProfiles = @(@{ method_unique_id = 'm1' }); connectorId = 'c-1' }
+        # When - UnifiedConnectorMetadata is called.
+        # Then - the hashtable is returned intact and is still a hashtable.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.connectorId       | Should -Be 'c-1'
+        $result.connectionProfiles[0].method_unique_id | Should -Be 'm1'
+    }
+
+    It 'converts an ordered IDictionary to a hashtable' {
+        # Given - ServerRequest returns an ordered dictionary (a real IDictionary that is not a hashtable).
+        $script:UcpDoNextResponse = [ordered]@{ connectorId = 'c-2'; connectionProfiles = @(@{ method_unique_id = 'm2' }) }
+        # When - UnifiedConnectorMetadata is called.
+        # Then - the result is normalized to a hashtable, preserving all keys/values.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.connectorId       | Should -Be 'c-2'
+        $result.connectionProfiles[0].method_unique_id | Should -Be 'm2'
+    }
+
+    It 'converts a PSCustomObject (typical JSON-parse result) to a hashtable' {
+        # Given - ServerRequest returns a PSCustomObject (what ConvertFrom-Json produces by default).
+        $script:UcpDoNextResponse = [PSCustomObject]@{
+            connectorId        = 'c-3'
+            connectionProfiles = @([PSCustomObject]@{ method_unique_id = 'm3' })
+        }
+        # When - UnifiedConnectorMetadata is called.
+        # Then - all PSObject properties are copied into a hashtable.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.connectorId       | Should -Be 'c-3'
+        $result.connectionProfiles[0].method_unique_id | Should -Be 'm3'
+    }
+
+    It 'unwraps a 1-element array wrapping a hashtable' {
+        # Given - ServerRequest returns the metadata wrapped in a 1-element array (PowerShell can do this when
+        # only one element is returned through the pipeline).
+        $script:UcpDoNextResponse = @(, @{ connectorId = 'c-4' })
+        # When - UnifiedConnectorMetadata is called.
+        # Then - the array is unwrapped before the type-checks run, so the inner hashtable is returned.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.connectorId | Should -Be 'c-4'
+    }
+
+    It 'unwraps a 1-element array wrapping a PSCustomObject' {
+        # Given - ServerRequest returns the metadata as a PSCustomObject wrapped in a 1-element array.
+        $script:UcpDoNextResponse = @(, [PSCustomObject]@{ connectorId = 'c-5' })
+        # When - UnifiedConnectorMetadata is called.
+        # Then - the array is unwrapped first, then the PSCustomObject is normalized to a hashtable.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.connectorId | Should -Be 'c-5'
+    }
+
+    It 'returns @{} for an unrecognized response type' {
+        # Given - ServerRequest returns a scalar integer the normalizer doesn't recognize (not array, hashtable,
+        # IDictionary, or PSCustomObject).
+        $script:UcpDoNextResponse = 42
+        # When - UnifiedConnectorMetadata is called.
+        # Then - the normalizer falls back to an empty hashtable rather than throwing or returning the scalar.
+        $result = $demisto.UnifiedConnectorMetadata()
+        $result | Should -BeOfType ([hashtable])
+        $result.Count | Should -Be 0
     }
 }

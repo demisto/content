@@ -445,6 +445,11 @@ class DemistoObject {
     #>
     [hashtable] UnifiedConnectorMetadata () {
         $res = $this.ServerRequest(@{type = "unifiedConnectorMetadata" })
+        # ServerRequest may wrap a single object in a 1-element array; unwrap before
+        # we type-check, so downstream code always sees a single object.
+        if ($res -is [System.Array] -and $res.Count -eq 1) {
+            $res = $res[0]
+        }
         if ($null -eq $res) {
             return @{}
         }
@@ -482,7 +487,13 @@ class DemistoObject {
     Hashtable representing the credentials, or $null when not available.
     #>
     [object] GetUCPCredentials ([string]$method_unique_id, [bool]$from_cache) {
-        return $this.ServerRequest(@{type = "getUCPCredentials"; args = @{method_unique_id = $method_unique_id; from_cache = $from_cache } })
+        $res = $this.ServerRequest(@{type = "getUCPCredentials"; args = @{method_unique_id = $method_unique_id; from_cache = $from_cache } })
+        # ServerRequest may wrap a single credentials object in a 1-element array;
+        # unwrap so downstream credential-flattening sees a single object.
+        if ($res -is [System.Array] -and $res.Count -eq 1) {
+            $res = $res[0]
+        }
+        return $res
     }
 
     [object] GetUCPCredentials ([string]$method_unique_id) {
@@ -1008,8 +1019,10 @@ $script:UCP_AUTH_PARAMS_INJECTED = $false
 $script:UCP_REFRESH_THRESHOLD_SECONDS = 30
 $script:UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
 $script:UCP_COMMAND_CAPABILITIES = @{
-    'fetch-incidents' = 'collection-and-ingestion'
-    'fetch-assets'    = 'collection-and-ingestion'
+    'fetch-incidents'  = 'collection-and-ingestion'
+    'fetch-assets'     = 'collection-and-ingestion'
+    'fetch-indicators' = 'collection-and-ingestion'
+    'fetch-samples'    = 'collection-and-ingestion'
 }
 
 # Client-side TTL cache (mirrors JS `_ucpCredentialsCache`).
