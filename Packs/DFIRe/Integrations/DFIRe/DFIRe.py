@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # register_module_line("DFIRe", "start", __line__())
-CONSTANT_PACK_VERSION = "1.1.4"
-demisto.debug("pack id = DFIRe, pack version = 1.1.4")
+CONSTANT_PACK_VERSION = "1.1.5"
+demisto.debug("pack id = DFIRe, pack version = 1.1.5")
 """DFIRe Integration for Cortex XSOAR / XSIAM
 
 Integrates with DFIRe (Digital Forensics and Incident Response) platform
