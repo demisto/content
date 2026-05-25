@@ -11,7 +11,9 @@
     "tags": [],
     "useCases": [],
     "description": "CVE feed from the National Vulnerability Database",
-    "keywords": [],
+    "keywords": [
+        "NVD"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
