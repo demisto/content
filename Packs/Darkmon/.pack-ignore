@@ -1,0 +1,11 @@
+[file:Darkmon.yml]
+ignore=BA126
+
+[file:sync_yaml.py]
+ignore=BA101
+
+[file:conftest.py]
+ignore=BA101
+
+[file:Darkmon_test.py]
+ignore=BA101

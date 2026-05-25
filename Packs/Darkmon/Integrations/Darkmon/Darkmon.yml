@@ -21,6 +21,7 @@ configuration:
   type: 8
   required: false
 - display: ""
+  displaypassword: API key
   name: X-API-KEY
   type: 9
   required: true
@@ -337,7 +338,7 @@ script:
       type: String
   - name: file
     arguments:
-    - name: hash
+    - name: file
       required: true
       default: true
       isArray: true
@@ -687,7 +688,7 @@ script:
     - contextPath: Darkmon.BoardLeak.Page
       description: Pagination metadata.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.9059085
   feed: true
   runonce: false
   subtype: python3

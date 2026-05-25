@@ -121,7 +121,35 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      '#default#':
+        - "4"
+      approval-required:
+        - "5"
+      auto-disable:
+        - "6"
     separatecontext: false
+    conditions:
+    - label: approval-required
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${params.employee_disable_mode}
+            iscontext: true
+          right:
+            value:
+              simple: approval-required
+    - label: auto-disable
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${params.employee_disable_mode}
+            iscontext: true
+          right:
+            value:
+              simple: auto-disable
     continueonerrortype: ""
     view: |-
       {"position": {"x": 50, "y": 545}}
@@ -276,7 +304,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-# Manual wiring of the condition branches in task "3":
 view: |-
   {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1085, "width": 800, "x": -300, "y": 50}}}
 inputs: []

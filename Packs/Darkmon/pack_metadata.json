@@ -12,18 +12,17 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "TIP",
+        "TIM",
         "Threat Intelligence",
-        "Compromised Credentials",
-        "Ransomware",
-        "Brand Protection",
-        "Vulnerability"
+        "Threat Intelligence Management",
+        "Dark Web",
+        "Malware",
+        "Feed"
     ],
     "useCases": [
-        "Threat Intelligence Platform",
+        "Threat Intelligence Management",
         "Phishing",
         "Ransomware",
-        "Account Takeover",
         "Vulnerability Management"
     ],
     "keywords": [

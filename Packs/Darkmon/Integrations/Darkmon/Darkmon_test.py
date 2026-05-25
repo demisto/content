@@ -532,7 +532,7 @@ def test_dmontip_global_search_empty(monkeypatch):
         (src.dmontip_search_url_command, "url", "URL"),
         (src.dmontip_search_domain_command, "domain", "Domain"),
         (src.dmontip_search_email_command, "email", "Email"),
-        (src.dmontip_search_file_command, "hash", "Hash"),
+        (src.dmontip_search_file_command, "file", "Hash"),
     ],
 )
 def test_search_shortcut_commands_route_to_global_search(monkeypatch, cmd, arg_key, type_label):
@@ -1417,7 +1417,7 @@ def test_yaml_compromised_advertises_sort_arg_without_default(yml):
         (src.dmontip_search_url_command, "url", "URL"),
         (src.dmontip_search_domain_command, "domain", "Domain"),
         (src.dmontip_search_email_command, "email", "Email"),
-        (src.dmontip_search_file_command, "hash", "Hash"),
+        (src.dmontip_search_file_command, "file", "Hash"),
     ],
 )
 def test_reputation_shortcut_returns_list_for_single_value(monkeypatch, cmd, arg_key, type_label):
@@ -1434,7 +1434,7 @@ def test_reputation_shortcut_returns_list_for_single_value(monkeypatch, cmd, arg
         (src.dmontip_search_url_command, "url", "URL"),
         (src.dmontip_search_domain_command, "domain", "Domain"),
         (src.dmontip_search_email_command, "email", "Email"),
-        (src.dmontip_search_file_command, "hash", "Hash"),
+        (src.dmontip_search_file_command, "file", "Hash"),
     ],
 )
 def test_reputation_shortcut_handles_csv_string(monkeypatch, cmd, arg_key, type_label):
@@ -1458,7 +1458,7 @@ def test_reputation_shortcut_handles_csv_string(monkeypatch, cmd, arg_key, type_
         (src.dmontip_search_url_command, "url", "URL"),
         (src.dmontip_search_domain_command, "domain", "Domain"),
         (src.dmontip_search_email_command, "email", "Email"),
-        (src.dmontip_search_file_command, "hash", "Hash"),
+        (src.dmontip_search_file_command, "file", "Hash"),
     ],
 )
 def test_reputation_shortcut_handles_python_list(monkeypatch, cmd, arg_key, type_label):
@@ -1569,7 +1569,7 @@ def test_yaml_boardemails_requires_email_and_type(yml):
 
 
 def test_yaml_reputation_args_have_default_and_isarray(yml):
-    rep_commands = {"ip": "ip", "url": "url", "domain": "domain", "email": "email", "file": "hash"}
+    rep_commands = {"ip": "ip", "url": "url", "domain": "domain", "email": "email", "file": "file"}
     for cmd_name, arg_name in rep_commands.items():
         cmd = next(c for c in yml["script"]["commands"] if c["name"] == cmd_name)
         arg = next(a for a in cmd["arguments"] if a["name"] == arg_name)
@@ -1717,7 +1717,7 @@ def test_file_reputation_detects_hash_type(monkeypatch, hash_value, expected_fie
     monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, {"content": [], "page": {}})
 
-    out = src.dmontip_search_file_command(make_client(), {"hash": hash_value})
+    out = src.dmontip_search_file_command(make_client(), {"file": hash_value})
     o = out[0].outputs
     common = next(o[k] for k in o if k.startswith("Common.File"))
     assert common[expected_field] == hash_value

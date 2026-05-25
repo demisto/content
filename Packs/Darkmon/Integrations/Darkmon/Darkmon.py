@@ -1528,7 +1528,7 @@ def dmontip_search_email_command(client: Client, args: dict) -> list[CommandResu
 
 
 def dmontip_search_file_command(client: Client, args: dict) -> list[CommandResults]:
-    return _search_each(client, args, "hash", "Hash", "File hash parameter is required")
+    return _search_each(client, args, "file", "Hash", "File hash parameter is required")
 
 
 FEED_INDICATOR_TYPE_MAP: dict[str, Any] = {

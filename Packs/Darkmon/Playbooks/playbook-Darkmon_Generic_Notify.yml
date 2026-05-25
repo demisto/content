@@ -270,7 +270,7 @@ tasks:
     taskid: d5a56ee0-004f-4a05-8aee-684819ccafbd
     type: regular
     task:
-      id: cf3ba0ec-3a59-47d4-9038-f833e0f900a4
+      id: d5a56ee0-004f-4a05-8aee-684819ccafbd
       version: -1
       name: 'Fallback: log to War Room'
       description: No notification provider configured. The Subject and Body are
