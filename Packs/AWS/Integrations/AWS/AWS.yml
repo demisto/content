@@ -18338,6 +18338,64 @@ script:
       description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
       type: String
 
+  - name: aws-network-firewall-firewall-policies-list
+    description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: limit
+      description: The maximum number of objects that you want Network Firewall to return for this request.
+    - name: next_token
+      description: The nextToken value returned from a previous paginated request.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Name
+      description: The descriptive name of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Arn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPoliciesNextToken
+      description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      type: String
+
   - name: aws-network-firewall-firewall-create
     description: "Creates an AWS Network Firewall firewall for your VPC. Required permissions: network-firewall:CreateFirewall, network-firewall:TagResource, ec2:DescribeSubnets, ec2:DescribeVpcs, network-firewall:DescribeFirewallPolicy."
     arguments:
