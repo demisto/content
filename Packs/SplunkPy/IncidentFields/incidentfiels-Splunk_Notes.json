@@ -2,8 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Splunk Notable Generic",
-        "Splunk Finding",
-        "Splunk Investigation"
+        "Splunk Finding"
     ],
     "caseInsensitive": true,
     "cliName": "splunknotes",
