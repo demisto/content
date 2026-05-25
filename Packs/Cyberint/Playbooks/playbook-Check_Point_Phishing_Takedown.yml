@@ -1,6 +1,6 @@
-id: Cyberint - Phishing Takedown
+id: Check Point - Phishing Takedown
 version: -1
-name: Cyberint - Phishing Takedown
+name: Check Point - Phishing Takedown
 description: |-
   Automates or semi-automates the takedown of high-confidence phishing websites detected by Cyberint.
 

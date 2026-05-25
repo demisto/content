@@ -19,10 +19,10 @@ Check Point Exposure Management and XSOAR integration is here to simplify and st
 
 The pack ships with ready-to-use automation playbooks that operationalize Check Point Exposure Management threat intelligence directly into SOC workflows:
 
-- **Cyberint - IOC Enrichment and Triage** - Enriches IP, domain, URL and file-hash indicators with Cyberint threat intelligence and applies triage decision logic.
-- **Cyberint - Credential Leak Validation and Response** - Validates and responds to leaked employee or customer credentials, with automated or semi-automated remediation.
-- **Cyberint - Vulnerability Exploitation Monitoring** - Enriches CVEs with Cyberint vulnerability intelligence and prioritizes them based on real-world exploitation.
-- **Cyberint - Phishing Takedown** - Automates or semi-automates the takedown of high-confidence phishing websites, including takedown submission and status polling.
+- **Check Point - IOC Enrichment and Triage** - Enriches IP, domain, URL and file-hash indicators with Check Point Exposure Management threat intelligence and applies triage decision logic.
+- **Check Point - Credential Leak Validation and Response** - Validates and responds to leaked employee or customer credentials, with automated or semi-automated remediation.
+- **Check Point - Vulnerability Exploitation Monitoring** - Enriches CVEs with Check Point Exposure Management vulnerability intelligence and prioritizes them based on real-world exploitation.
+- **Check Point - Phishing Takedown** - Automates or semi-automates the takedown of high-confidence phishing websites, including takedown submission and status polling.
 
 ### Additional useful links
 

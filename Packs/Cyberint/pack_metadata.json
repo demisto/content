@@ -20,7 +20,8 @@
     ],
     "itemPrefix": [
         "Cyberint",
-        "CyberInt"
+        "CyberInt",
+        "Check Point"
     ],
     "supportedModules": [
         "agentix",

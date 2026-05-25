@@ -1,6 +1,6 @@
-id: Cyberint - IOC Enrichment and Triage
+id: Check Point - IOC Enrichment and Triage
 version: -1
-name: Cyberint - IOC Enrichment and Triage
+name: Check Point - IOC Enrichment and Triage
 description: |-
   Enriches IOC entities (IP, domain, URL, file hash) found in an incident with Cyberint threat intelligence, then applies triage decision logic.
 
