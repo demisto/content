@@ -1040,16 +1040,16 @@ script:
     - contextPath: additional_info
       description: Additional info about feed.
       type: String
-    - contextPath: GIBTI.search.local.id
+    - contextPath: GIBTIA.search.local.id
       description: Id of a feed that matches a query.
       type: String
-    - contextPath: GIBTI.search.local.additional_info
+    - contextPath: GIBTIA.search.local.additional_info
       description: Additional info about feed.
       type: String
-    - contextPath: GIBTI.search.local.seqUpdate
+    - contextPath: GIBTIA.search.local.seqUpdate
       description: seqUpdate value of the page/portion that returned the feed.
       type: Number
-    - contextPath: GIBTI.search.local.raw_feed
+    - contextPath: GIBTIA.search.local.raw_feed
       description: One-line JSON string of the full feed for War Room rendering (only when include_raw_feed=true).
       type: String
   - description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
