@@ -2922,7 +2922,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: Maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages.
+    - description: The maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages.
       defaultValue: '50'
       type: String
       name: limit
