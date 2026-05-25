@@ -112,7 +112,7 @@ class Client(BaseClient):
                     demisto.debug("A DemistoException was raised but no status code was caught.")
                     raise
             else:
-                demisto.debug("A DemistoException was raised but there is no status code.")
+                demisto.debug("A DemistoException was raised but there is no status code. ")
                 raise
         except requests.exceptions.ReadTimeout as e:
             demisto.debug("A ReadTimeout error was raised.")
