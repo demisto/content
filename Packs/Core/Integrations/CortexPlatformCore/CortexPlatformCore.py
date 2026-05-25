@@ -3559,7 +3559,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                 # Auto-coerce plain string → single-element list for multiSelect fields
                 if not isinstance(field_value, list):
                     demisto.debug(
-                        f"Field '{field_name}' is of type multiSelect but received a string value {field_value!r}. "
+                        f"Field '{field_name}' is of type multiSelect but received a non-list value {field_value!r}. "
                         f"Auto-converting to list: [{field_value!r}]"
                     )
                     field_value = [field_value]
