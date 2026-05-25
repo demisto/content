@@ -1529,16 +1529,28 @@ def test_yaml_has_no_embedded_image_or_detaileddescription(yml):
 
 
 def test_integration_logo_meets_spec():
-    """Darkmon_image.png: PNG, 120x50, <=10KB, transparent background."""
-    from PIL import Image
+    """Darkmon_image.png: PNG, 120x50, <=10KB, with transparency.
+
+    Parsed with the standard library only (no Pillow) so the check runs in the
+    bare integration Docker image.
+    """
+    import struct
 
     logo_path = os.path.join(os.path.dirname(__file__), "Darkmon_image.png")
     assert os.path.getsize(logo_path) <= 10 * 1024, "Logo must be <= 10KB"
-    with Image.open(logo_path) as im:
-        assert im.format == "PNG"
-        assert im.size == (120, 50)
-        rgba = im.convert("RGBA")
-        assert any(px[3] == 0 for px in rgba.getdata()), "Logo must have a transparent background"
+
+    with open(logo_path, "rb") as fh:
+        data = fh.read()
+
+    assert data[:8] == b"\x89PNG\r\n\x1a\n", "Logo must be a PNG"
+    # IHDR starts at byte 8: [len(4)][type(4)='IHDR'][width(4)][height(4)][bit-depth(1)][color-type(1)]
+    assert data[12:16] == b"IHDR"
+    width, height = struct.unpack(">II", data[16:24])
+    assert (width, height) == (120, 50), f"Logo must be 120x50, got {width}x{height}"
+    color_type = data[25]
+    # Transparent if the image carries an alpha channel (color types 4/6) or a tRNS chunk.
+    has_alpha = color_type in (4, 6) or b"tRNS" in data
+    assert has_alpha, "Logo must have a transparent background"
 
 
 def test_description_file_present_and_nonempty():
