@@ -2926,7 +2926,7 @@ script:
       defaultValue: '50'
       type: String
       name: limit
-    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds from previous request."
+    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds."
       name: next_token
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability

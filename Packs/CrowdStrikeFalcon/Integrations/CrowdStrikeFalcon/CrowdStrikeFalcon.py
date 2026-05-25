@@ -8198,14 +8198,23 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[Command
 
     results: list[CommandResults] = [
         CommandResults(
-            outputs={
-                "CrowdStrike.Vulnerability": vulnerability_response.get("resources"),
-                "CrowdStrike.VulnerabilityNextToken": raw_after,
-                },
+            outputs_prefix="CrowdStrike.Vulnerability",
+            outputs_key_field="id",
+            outputs=vulnerability_response.get("resources"),
             readable_output=human_readable,
             raw_response=vulnerability_response,
         )
     ]
+    
+    if raw_after:
+        results.append(
+            CommandResults(
+                outputs_prefix="CrowdStrike.VulnerabilityNextToken",
+                outputs=raw_after,
+                readable_output="Token for next page was generated and can be found under CrowdStrike.VulnerabilityNextToken",
+                replace_existing=True
+            )
+        )
 
     return results
 
