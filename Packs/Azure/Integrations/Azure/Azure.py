@@ -2832,8 +2832,8 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    delete_retention_policy_enabled = args.get("delete_rentention_policy_enabled") or args.get("delete_retention_policy_enabled")
-    delete_retention_policy_days = args.get("delete_rentention_policy_days") or args.get("delete_retention_policy_days")
+    delete_retention_policy_enabled = args.get("delete_retention_policy_enabled", args.get("delete_rentention_policy_enabled"))
+    delete_retention_policy_days = args.get("delete_retention_policy_days", args.get("delete_rentention_policy_days"))
     account_name = args.get("account_name", "")
 
     response = client.storage_blob_service_properties_set_request(
@@ -2844,7 +2844,7 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
         "Name": response.get("name"),
         "ID": response.get("id"),
         "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy")
-        if delete_retention_policy_enabled or delete_retention_policy_days
+        if delete_retention_policy_enabled is not None or delete_retention_policy_days is not None
         else None,
     }
 
