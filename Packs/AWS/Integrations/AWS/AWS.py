@@ -812,15 +812,16 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def validate_network_firewall_identifier(kwargs: dict):
+def validate_network_firewall_identifier(kwargs: dict, object: str):
     """
     Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
     a DemistoException otherwise.
 
     Args:
         kwargs (dict): The arguments dictionary containing the firewall identifiers.
+        object (str): The identifier object (firewall, firewall policy, etc.).
     """
-    if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
+    if f"{object}Name" not in kwargs and f"{object}Arn" not in kwargs:
         raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
 
 
@@ -9749,7 +9750,7 @@ class NetworkFirewall:
         """
         kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(kwargs, "Firewall")
         print_debug_logs(client, f"Describing firewall with parameters: {kwargs}")
         response = client.describe_firewall(**kwargs)
 
@@ -9902,7 +9903,7 @@ class NetworkFirewall:
             "FirewallArn": args.get("firewall_arn"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(kwargs, "Firewall")
         print_debug_logs(client, f"Deleting firewall with parameters: {kwargs}")
         response = client.delete_firewall(**kwargs)
 
@@ -9939,7 +9940,7 @@ class NetworkFirewall:
             "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(kwargs, "Firewall")
 
         print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs}")
         response = client.update_firewall_delete_protection(**kwargs)
@@ -9977,7 +9978,7 @@ class NetworkFirewall:
             "Description": args.get("description"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(kwargs, "Firewall")
 
         print_debug_logs(client, f"Updating firewall description with parameters: {kwargs}")
         response = client.update_firewall_description(**kwargs)
@@ -10033,6 +10034,45 @@ class NetworkFirewall:
                 "AWS Network Firewall Policies",
                 firewall_policies,
                 headers=["Name", "Arn"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns the data objects for the specified firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_policy_name or firewall_policy_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        kwargs = {"FirewallPolicyName": args.get("firewall_policy_name"), "FirewallPolicyArn": args.get("firewall_policy_arn")}
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+        print_debug_logs(client, f"Describing firewall policy with parameters: {kwargs}")
+        response = client.describe_firewall_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
+        firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
+        firewall_policy_response["FirewallPolicy"] = response.get("FirewallPolicy", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
+            outputs_key_field="FirewallPolicyArn",
+            outputs=firewall_policy_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Policy",
+                firewall_policy_response,
+                headers=["FirewallPolicyName", "FirewallPolicyArn", "Description", "FirewallPolicyStatus"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -10249,6 +10289,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-logs-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
     "aws-network-firewall-firewall-describe": NetworkFirewall.describe_firewall_command,
     "aws-network-firewall-firewalls-list": NetworkFirewall.list_firewalls_command,
+    "aws-network-firewall-firewall-policy-describe": NetworkFirewall.describe_firewall_policy_command,
     "aws-network-firewall-firewall-create": NetworkFirewall.create_firewall_command,
     "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
     "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
@@ -10433,6 +10474,7 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:TagResource",
     "network-firewall:DescribeFirewall",
     "network-firewall:ListFirewalls",
+    "network-firewall:DescribeFirewallPolicy",
     "network-firewall:CreateFirewall",
     "network-firewall:DeleteFirewall",
     "network-firewall:UpdateFirewallDeleteProtection",

@@ -18338,64 +18338,6 @@ script:
       description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
       type: String
 
-  - name: aws-network-firewall-firewall-policies-list
-    description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - af-south-1
-        - ap-east-1
-        - ap-south-2
-        - ap-southeast-3
-        - ap-southeast-5
-        - ap-southeast-4
-        - ap-south-1
-        - ap-northeast-3
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-northeast-1
-        - ca-central-1
-        - ca-west-1
-        - eu-central-1
-        - eu-west-1
-        - eu-west-2
-        - eu-south-1
-        - eu-west-3
-        - eu-south-2
-        - eu-north-1
-        - eu-central-2
-        - il-central-1
-        - me-south-1
-        - me-central-1
-        - sa-east-1
-        - us-gov-east-1
-        - us-gov-west-1
-    - name: limit
-      description: The maximum number of objects that you want Network Firewall to return for this request.
-    - name: next_token
-      description: The nextToken value returned from a previous paginated request.
-    outputs:
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Name
-      description: The descriptive name of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Arn
-      description: The Amazon Resource Name (ARN) of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPoliciesNextToken
-      description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
-      type: String
-
   - name: aws-network-firewall-firewall-create
     description: "Creates an AWS Network Firewall firewall for your VPC. Required permissions: network-firewall:CreateFirewall, network-firewall:TagResource, ec2:DescribeSubnets, ec2:DescribeVpcs, network-firewall:DescribeFirewallPolicy."
     arguments:
@@ -18838,6 +18780,173 @@ script:
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
       description: An optional token that you can use for optimistic locking.
       type: String
+
+  - name: aws-network-firewall-firewall-policies-list
+    description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: limit
+      description: The maximum number of objects that you want Network Firewall to return for this request.
+    - name: next_token
+      description: The nextToken value returned from a previous paginated request.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Name
+      description: The descriptive name of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Arn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPoliciesNextToken
+      description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      type: String
+
+  - name: aws-network-firewall-firewall-policy-describe
+    description: "Returns the data objects for the specified firewall policy. Required permissions: network-firewall:DescribeFirewallPolicy."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_policy_name
+      description: The descriptive name of the firewall policy. You can't change the name of a firewall policy after you create it. You must specify the ARN or the name, and you can specify both.
+    - name: firewall_policy_arn
+      description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.UpdateToken
+      description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyName
+      description: The descriptive name of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyArn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyId
+      description: The unique identifier for the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Description
+      description: A description of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyStatus
+      description: The current status of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Tags
+      description: The key:value pairs to associate with the resource.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedCapacity
+      description: The number of capacity units currently consumed by the policy's stateful rules.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.NumberOfAssociations
+      description: The number of firewalls that are associated with this firewall policy.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.EncryptionConfiguration
+      description: A complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.LastModifiedTime
+      description: The last time that the firewall policy was changed.
+      type: Date
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessRuleGroupReferences
+      description: References to the stateless rule groups that are used in the policy.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessDefaultActions
+      description: The actions to take on a packet if it doesn't match any of the stateless rules in the policy.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessFragmentDefaultActions
+      description: The actions to take on a fragmented UDP packet if it doesn't match any of the stateless rules in the policy.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessCustomActions
+      description: The custom action definitions that are available for use in the firewall policy's stateless default actions setting.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatefulRuleGroupReferences
+      description: References to the stateful rule groups that are used in the policy.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatefulDefaultActions
+      description: The default actions to take on a packet that doesn't match any stateful rules.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatefulEngineOptions
+      description: Additional options governing how Network Firewall handles stateful rules.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.TLSInspectionConfigurationArn
+      description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.PolicyVariables
+      description: Contains variables that you can use to override default IP addresses and ports in stateful rule groups.
+      type: Unknown
 
   isfetch: false
   runonce: false
