@@ -90,7 +90,7 @@ def _submit_store_samples(incident: dict, req_id: str) -> None:
             demisto.debug(f"sns.sample_writer.done req_id={req_id} " f"queue_wait_ms={wait_ms:.1f} took_ms={took_ms:.1f}")
         except Exception as e:
             # Defensive: a raise here would kill the single writer thread.
-            demisto.error(f"sns.sample_writer.error req_id={req_id} err={e}\n{format_exc()}")
+            demisto.error(f"sns.sample_writer.error req_id={req_id} err={e}\n{traceback.format_exc()}")
         finally:
             with _sample_pending_lock:
                 _sample_pending -= 1
