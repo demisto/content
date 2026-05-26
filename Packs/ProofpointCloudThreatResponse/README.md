@@ -4,7 +4,7 @@ Proofpoint Cloud Threat Response (CTR) is the cloud-based alternative to Proofpo
 
 ## What does this pack do?
 
-- Fetches Proofpoint Cloud Threat Response incidents into Cortex XSOAR for case management.
+- Fetches Proofpoint Cloud Threat Response incidents into Cortex for case management.
 - Lists and filters incidents by source, verdict, disposition, confidence, state, time range, or specific IDs.
 - Retrieves detailed metadata (activities, summary, dispositions) for a specific incident.
 
