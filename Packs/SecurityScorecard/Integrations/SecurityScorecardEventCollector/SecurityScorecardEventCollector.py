@@ -75,10 +75,7 @@ class Client(BaseClient):
         """
         params = assign_params(date_from=date_from, date_to=date_to)
 
-        demisto.debug(
-            f"[API] Fetching history events for '{self.scorecard_identifier}' "
-            f"from {date_from} to {date_to}"
-        )
+        demisto.debug(f"[API] Fetching history events for '{self.scorecard_identifier}' " f"from {date_from} to {date_to}")
 
         response = self._http_request(
             method="GET",
@@ -154,13 +151,12 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
         if event_time:
             event["_time"] = event_time
         else:
-            demisto.debug(
-                f"[Event Time] WARNING: Event missing 'date' field: {event.get('id', 'unknown')}"
-            )
+            demisto.debug(f"[Event Time] WARNING: Event missing 'date' field: {event.get('id', 'unknown')}")
 
 
 def deduplicate_events(
-    events: list[dict[str, Any]], last_fetched_ids: list[int],
+    events: list[dict[str, Any]],
+    last_fetched_ids: list[int],
 ) -> list[dict[str, Any]]:
     """Remove already-processed events based on previously fetched IDs.
 
@@ -179,19 +175,14 @@ def deduplicate_events(
         demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs).")
         return events
 
-    demisto.debug(
-        f"[Dedup] Checking {len(events)} events against "
-        f"{len(last_fetched_ids)} previously fetched IDs."
-    )
+    demisto.debug(f"[Dedup] Checking {len(events)} events against " f"{len(last_fetched_ids)} previously fetched IDs.")
 
     fetched_ids_set = set(last_fetched_ids)
     new_events = [event for event in events if event.get("id") not in fetched_ids_set]
 
     skipped_count = len(events) - len(new_events)
     if skipped_count > 0:
-        demisto.debug(
-            f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain."
-        )
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
     else:
         demisto.debug("[Dedup] No duplicates found.")
 
@@ -199,7 +190,8 @@ def deduplicate_events(
 
 
 def enrich_events_with_details(
-    client: Client, events: list[dict[str, Any]],
+    client: Client,
+    events: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """Enrich each event with the response from its detail_url.
 
@@ -221,9 +213,7 @@ def enrich_events_with_details(
     for event in events:
         detail_url = event.get("detail_url")
         if not detail_url:
-            demisto.debug(
-                f"[Enrich] Event {event.get('id')} has no detail_url. Skipping enrichment."
-            )
+            demisto.debug(f"[Enrich] Event {event.get('id')} has no detail_url. Skipping enrichment.")
             enriched_events.append(event)
             continue
 
@@ -236,7 +226,7 @@ def enrich_events_with_details(
                 f"[Enrich] Rate limit hit while enriching event {event.get('id')}. "
                 f"Returning {len(enriched_events)} enriched events so far."
             )
-            raise RateLimitError()
+            raise RateLimitError
 
     demisto.debug(f"[Enrich] Successfully enriched {len(enriched_events)} events.")
     return enriched_events
@@ -263,15 +253,9 @@ def calculate_last_run(
     last_date = last_event.get("date", "")
 
     # Collect all IDs that share the same date as the last event
-    ids_at_last_date = [
-        event.get("id")
-        for event in events
-        if event.get("date") == last_date and event.get("id") is not None
-    ]
+    ids_at_last_date = [event.get("id") for event in events if event.get("date") == last_date and event.get("id") is not None]
 
-    demisto.debug(
-        f"[LastRun] New high-water mark: {last_date} with {len(ids_at_last_date)} IDs."
-    )
+    demisto.debug(f"[LastRun] New high-water mark: {last_date} with {len(ids_at_last_date)} IDs.")
 
     return {
         "last_fetch": last_date,
@@ -348,7 +332,8 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(
-    client: Client, args: dict[str, Any],
+    client: Client,
+    args: dict[str, Any],
 ) -> CommandResults | str:
     """Manual command to get events for debugging/development.
 
@@ -380,10 +365,7 @@ def get_events_command(
     else:
         date_to = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
 
-    demisto.debug(
-        f"[Command] Params - from: {date_from}, to: {date_to}, "
-        f"limit: {limit}, push: {should_push_events}"
-    )
+    demisto.debug(f"[Command] Params - from: {date_from}, to: {date_to}, " f"limit: {limit}, push: {should_push_events}")
 
     events = client.get_history_events(date_from=date_from, date_to=date_to)
 
@@ -493,14 +475,12 @@ def fetch_events_command(client: Client) -> None:
         demisto.debug("[Fetch] No enriched events to send.")
 
     if rate_limit_on_detail:
-        demisto.debug(
-            "[Fetch] Rate limit was hit during enrichment. "
-            "Remaining events will be fetched in the next cycle."
-        )
+        demisto.debug("[Fetch] Rate limit was hit during enrichment. " "Remaining events will be fetched in the next cycle.")
 
 
 def _safe_enrich_events(
-    client: Client, events: list[dict[str, Any]],
+    client: Client,
+    events: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], bool]:
     """Enrich events with detail URLs, stopping gracefully on rate limit.
 
@@ -530,8 +510,7 @@ def _safe_enrich_events(
             enriched_events.append(event)
         except RateLimitError:
             demisto.debug(
-                f"[SafeEnrich] Rate limit hit at event {event.get('id')}. "
-                f"Returning {len(enriched_events)} enriched events."
+                f"[SafeEnrich] Rate limit hit at event {event.get('id')}. " f"Returning {len(enriched_events)} enriched events."
             )
             rate_limited = True
             break
@@ -598,4 +577,3 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

@@ -1,12 +1,8 @@
 # pylint: disable=E9010, E9011
-import json
-import os
-from datetime import datetime, timezone  # noqa: UP017
 
 import pytest
 from CommonServerPython import *
 
-import SecurityScorecardEventCollector  # noqa: E402
 from SecurityScorecardEventCollector import (  # noqa: E402
     Client,
     RateLimitError,
@@ -19,10 +15,6 @@ from SecurityScorecardEventCollector import (  # noqa: E402
     get_fetch_start_time,
     test_module,
     _safe_enrich_events,
-    DATE_FORMAT,
-    DEFAULT_MAX_FETCH,
-    VENDOR,
-    PRODUCT,
 )
 
 # ========================================
@@ -351,6 +343,7 @@ class TestEnrichEvents:
             requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
 
         import copy
+
         events = copy.deepcopy(MOCK_EVENTS)
         result = enrich_events_with_details(client, events)
 
@@ -365,6 +358,7 @@ class TestEnrichEvents:
         requests_mock.get(MOCK_EVENTS[1]["detail_url"], status_code=429, headers={"Retry-After": "60"})
 
         import copy
+
         events = copy.deepcopy(MOCK_EVENTS)
 
         with pytest.raises(RateLimitError):
@@ -376,6 +370,7 @@ class TestEnrichEvents:
         requests_mock.get(MOCK_EVENTS[1]["detail_url"], status_code=429, headers={"Retry-After": "60"})
 
         import copy
+
         events = copy.deepcopy(MOCK_EVENTS)
         result, rate_limited = _safe_enrich_events(client, events)
 
@@ -390,6 +385,7 @@ class TestEnrichEvents:
             requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
 
         import copy
+
         events = copy.deepcopy(MOCK_EVENTS)
         result, rate_limited = _safe_enrich_events(client, events)
 
@@ -515,10 +511,14 @@ class TestFetchEventsCommand:
         for event in MOCK_EVENTS:
             requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1000",
-            "first_fetch": "3 days",
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1000",
+                "first_fetch": "3 days",
+            },
+        )
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
@@ -544,14 +544,22 @@ class TestFetchEventsCommand:
         # Only the second event should be fetched (first is deduplicated)
         requests_mock.get(MOCK_EVENTS[1]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1000",
-            "first_fetch": "3 days",
-        })
-        mocker.patch.object(demisto, "getLastRun", return_value={
-            "last_fetch": "2026-03-18T15:06:17.467Z",
-            "last_fetched_ids": [23751008],
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1000",
+                "first_fetch": "3 days",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch": "2026-03-18T15:06:17.467Z",
+                "last_fetched_ids": [23751008],
+            },
+        )
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
@@ -570,14 +578,22 @@ class TestFetchEventsCommand:
             status_code=200,
         )
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1000",
-            "first_fetch": "3 days",
-        })
-        mocker.patch.object(demisto, "getLastRun", return_value={
-            "last_fetch": "2026-03-18T15:06:17.467Z",
-            "last_fetched_ids": [23751008, 37991923],
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1000",
+                "first_fetch": "3 days",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch": "2026-03-18T15:06:17.467Z",
+                "last_fetched_ids": [23751008, 37991923],
+            },
+        )
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
@@ -594,10 +610,14 @@ class TestFetchEventsCommand:
             headers={"Retry-After": "120"},
         )
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1000",
-            "first_fetch": "3 days",
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1000",
+                "first_fetch": "3 days",
+            },
+        )
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
@@ -616,10 +636,14 @@ class TestFetchEventsCommand:
         requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
         requests_mock.get(MOCK_EVENTS[1]["detail_url"], status_code=429, headers={"Retry-After": "60"})
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1000",
-            "first_fetch": "3 days",
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1000",
+                "first_fetch": "3 days",
+            },
+        )
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
@@ -646,10 +670,14 @@ class TestFetchEventsCommand:
             status_code=200,
         )
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1000",
-            "first_fetch": "3 days",
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1000",
+                "first_fetch": "3 days",
+            },
+        )
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
@@ -667,10 +695,14 @@ class TestFetchEventsCommand:
         # Only first event should be enriched due to max_fetch=1
         requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
 
-        mocker.patch.object(demisto, "params", return_value={
-            "max_fetch": "1",
-            "first_fetch": "3 days",
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "1",
+                "first_fetch": "3 days",
+            },
+        )
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")

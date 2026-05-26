@@ -143,6 +143,7 @@ Gets history events from SecurityScorecard. This command is used for developing/
 #### Human Readable Output
 
 >### SecurityScorecard Event Collector Events
+>
 >|id|date|event_type|factor|severity|issue_type|group_status|
 >|---|---|---|---|---|---|---|
 >| 23751008 | 2026-03-18T15:06:17.467Z | issues | endpoint_security | high | outdated_browser | resolved |
