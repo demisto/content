@@ -4,6 +4,7 @@ from typing import Any
 
 import demistomock as demisto  # noqa: F401
 import urllib3
+from ContentClientApiModule import *
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -33,12 +34,14 @@ RATE_LIMIT_STATUS_CODE = 429
 # =================================
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """SecurityScorecard API client for fetching history events.
+
+    Extends ContentClient for built-in retry logic, rate-limit handling,
+    structured logging, and authentication via APIKeyAuthHandler.
 
     Attributes:
         scorecard_identifier: The domain identifier for the scorecard (e.g., google.com).
-        api_token: The API token for authentication.
     """
 
     def __init__(
@@ -49,11 +52,19 @@ class Client(BaseClient):
         verify: bool,
         proxy: bool,
     ):
-        headers = {
-            "Authorization": f"Token {api_token}",
-            "Accept": "application/json",
-        }
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        auth_handler = APIKeyAuthHandler(
+            key=f"Token {api_token}",
+            header_name="Authorization",
+        )
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            auth_handler=auth_handler,
+            headers={"Accept": "application/json"},
+            client_name="SecurityScorecardEventCollector",
+            ok_codes=(200, 429),
+        )
         self.scorecard_identifier = scorecard_identifier
 
     def get_history_events(
@@ -323,6 +334,10 @@ def test_module(client: Client) -> str:
         demisto.debug("[Test Module] Rate limit hit but connection is working.")
         return "ok"
 
+    except ContentClientAuthenticationError as error:
+        demisto.debug(f"[Test Module] Auth failed: {error}")
+        return "Authorization Error: Verify your API Token."
+
     except Exception as error:
         error_msg = str(error)
         demisto.debug(f"[Test Module] Failed: {error_msg}")
@@ -561,8 +576,8 @@ def main() -> None:
             fetch_events_command(client)
 
         elif command == "securityscorecard-get-events":
-            result = get_events_command(client, demisto.args())
-            return_results(result)
+            command_result = get_events_command(client, demisto.args())
+            return_results(command_result)
 
         else:
             raise DemistoException(f"Command '{command}' is not implemented.")

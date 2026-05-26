@@ -1,5 +1,7 @@
 # pylint: disable=E9010, E9011
 
+from unittest.mock import MagicMock
+
 import pytest
 from CommonServerPython import *
 
@@ -13,7 +15,7 @@ from SecurityScorecardEventCollector import (  # noqa: E402
     fetch_events_command,
     get_events_command,
     get_fetch_start_time,
-    test_module,
+    test_module as _test_module,
     _safe_enrich_events,
 )
 
@@ -90,14 +92,25 @@ MOCK_DETAIL_RESPONSE = {
 }
 
 
+def _make_mock_response(json_data: dict | None = None, status_code: int = 200, headers: dict | None = None):
+    """Create a mock httpx-like response object."""
+    mock_resp = MagicMock()
+    mock_resp.status_code = status_code
+    mock_resp.headers = headers or {}
+    mock_resp.json.return_value = json_data or {}
+    mock_resp.content = b"mock" if json_data else b""
+    return mock_resp
+
+
 # ========================================
 # Fixtures
 # ========================================
 
 
 @pytest.fixture()
-def client():
+def client(mocker):
     """Returns a Client instance for testing."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
     return Client(
         base_url=SERVER_URL,
         api_token=MOCK_API_TOKEN,
@@ -261,13 +274,13 @@ class TestRateLimitError:
 class TestClient:
     """Tests for the Client class."""
 
-    def test_get_history_events_success(self, client, requests_mock):
+    def test_get_history_events_success(self, client, mocker):
         """Test successful history events fetch."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
+        mock_response = _make_mock_response(
+            json_data={"entries": MOCK_EVENTS},
             status_code=200,
         )
+        mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         result = client.get_history_events(
             date_from="2026-03-17T00:00:00.000Z",
@@ -277,13 +290,13 @@ class TestClient:
         assert len(result) == 2
         assert result[0]["id"] == 23751008
 
-    def test_get_history_events_rate_limit(self, client, requests_mock):
+    def test_get_history_events_rate_limit(self, client, mocker):
         """Test rate limit handling on history events."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
+        mock_response = _make_mock_response(
             status_code=429,
             headers={"Retry-After": "120"},
         )
+        mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         with pytest.raises(RateLimitError) as exc_info:
             client.get_history_events(
@@ -293,13 +306,13 @@ class TestClient:
 
         assert exc_info.value.retry_after == "120"
 
-    def test_get_history_events_empty(self, client, requests_mock):
+    def test_get_history_events_empty(self, client, mocker):
         """Test empty response from history events."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": []},
+        mock_response = _make_mock_response(
+            json_data={"entries": []},
             status_code=200,
         )
+        mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         result = client.get_history_events(
             date_from="2026-03-17T00:00:00.000Z",
@@ -308,23 +321,27 @@ class TestClient:
 
         assert result == []
 
-    def test_get_detail_url_response_success(self, client, requests_mock):
+    def test_get_detail_url_response_success(self, client, mocker):
         """Test successful detail URL fetch."""
-        detail_url = "https://api.securityscorecard.io/companies/example.com/history/events/2026-03-18/issues/outdated_browser?group_status=resolved"
-        requests_mock.get(detail_url, json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mock_response = _make_mock_response(
+            json_data=MOCK_DETAIL_RESPONSE,
+            status_code=200,
+        )
+        mocker.patch.object(client, "_http_request", return_value=mock_response)
 
+        detail_url = "https://api.securityscorecard.io/companies/example.com/history/events/2026-03-18/issues/outdated_browser?group_status=resolved"
         result = client.get_detail_url_response(detail_url)
         assert result == MOCK_DETAIL_RESPONSE
 
-    def test_get_detail_url_response_rate_limit(self, client, requests_mock):
+    def test_get_detail_url_response_rate_limit(self, client, mocker):
         """Test rate limit handling on detail URL."""
-        detail_url = "https://api.securityscorecard.io/companies/example.com/history/events/2026-03-18/issues/outdated_browser?group_status=resolved"
-        requests_mock.get(
-            detail_url,
+        mock_response = _make_mock_response(
             status_code=429,
             headers={"Retry-After": "60"},
         )
+        mocker.patch.object(client, "_http_request", return_value=mock_response)
 
+        detail_url = "https://api.securityscorecard.io/companies/example.com/history/events/2026-03-18/issues/outdated_browser?group_status=resolved"
         with pytest.raises(RateLimitError):
             client.get_detail_url_response(detail_url)
 
@@ -337,10 +354,9 @@ class TestClient:
 class TestEnrichEvents:
     """Tests for event enrichment functions."""
 
-    def test_enrich_events_success(self, client, requests_mock):
+    def test_enrich_events_success(self, client, mocker):
         """Test successful enrichment of all events."""
-        for event in MOCK_EVENTS:
-            requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         import copy
 
@@ -351,11 +367,14 @@ class TestEnrichEvents:
         assert result[0]["detail_url_response"] == MOCK_DETAIL_RESPONSE
         assert result[1]["detail_url_response"] == MOCK_DETAIL_RESPONSE
 
-    def test_enrich_events_rate_limit(self, client, requests_mock):
+    def test_enrich_events_rate_limit(self, client, mocker):
         """Test enrichment stops on rate limit and raises."""
         # First event succeeds, second hits rate limit
-        requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
-        requests_mock.get(MOCK_EVENTS[1]["detail_url"], status_code=429, headers={"Retry-After": "60"})
+        mocker.patch.object(
+            client,
+            "get_detail_url_response",
+            side_effect=[MOCK_DETAIL_RESPONSE, RateLimitError(retry_after="60")],
+        )
 
         import copy
 
@@ -364,10 +383,13 @@ class TestEnrichEvents:
         with pytest.raises(RateLimitError):
             enrich_events_with_details(client, events)
 
-    def test_safe_enrich_events_rate_limit(self, client, requests_mock):
+    def test_safe_enrich_events_rate_limit(self, client, mocker):
         """Test safe enrichment returns partial results on rate limit."""
-        requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
-        requests_mock.get(MOCK_EVENTS[1]["detail_url"], status_code=429, headers={"Retry-After": "60"})
+        mocker.patch.object(
+            client,
+            "get_detail_url_response",
+            side_effect=[MOCK_DETAIL_RESPONSE, RateLimitError(retry_after="60")],
+        )
 
         import copy
 
@@ -379,10 +401,9 @@ class TestEnrichEvents:
         assert result[0]["detail_url_response"] == MOCK_DETAIL_RESPONSE
         assert rate_limited is True
 
-    def test_safe_enrich_events_no_rate_limit(self, client, requests_mock):
+    def test_safe_enrich_events_no_rate_limit(self, client, mocker):
         """Test safe enrichment returns all events when no rate limit."""
-        for event in MOCK_EVENTS:
-            requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         import copy
 
@@ -409,52 +430,43 @@ class TestEnrichEvents:
 class TestTestModule:
     """Tests for the test_module command."""
 
-    def test_success(self, client, requests_mock):
+    def test_success(self, client, mocker):
         """Test successful test module."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": []},
-            status_code=200,
-        )
+        mocker.patch.object(client, "get_history_events", return_value=[])
 
-        result = test_module(client)
+        result = _test_module(client)
         assert result == "ok"
 
-    def test_rate_limit_still_ok(self, client, requests_mock):
+    def test_rate_limit_still_ok(self, client, mocker):
         """Test that rate limit during test still returns ok."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            status_code=429,
-            headers={"Retry-After": "60"},
+        mocker.patch.object(
+            client,
+            "get_history_events",
+            side_effect=RateLimitError(retry_after="60"),
         )
 
-        result = test_module(client)
+        result = _test_module(client)
         assert result == "ok"
 
-    def test_auth_error(self, client, requests_mock):
+    def test_auth_error(self, client, mocker):
         """Test authentication error handling."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            status_code=401,
-            json={"error": "Unauthorized"},
+        mocker.patch.object(
+            client,
+            "get_history_events",
+            side_effect=Exception("Error in API call [401] - Unauthorized"),
         )
 
-        with pytest.raises(Exception):
-            test_module(client)
+        result = _test_module(client)
+        assert result == "Authorization Error: Verify your API Token."
 
 
 class TestGetEventsCommand:
     """Tests for the get_events_command."""
 
-    def test_get_events_returns_results(self, client, requests_mock):
+    def test_get_events_returns_results(self, client, mocker):
         """Test get events returns CommandResults."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
-        for event in MOCK_EVENTS:
-            requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         args = {"date_from": "3 days ago", "limit": "10", "should_push_events": "false"}
         result = get_events_command(client, args)
@@ -463,16 +475,10 @@ class TestGetEventsCommand:
         assert result.outputs is not None
         assert len(result.outputs) == 2
 
-    def test_get_events_push_to_xsiam(self, client, mocker, requests_mock):
+    def test_get_events_push_to_xsiam(self, client, mocker):
         """Test get events with push to XSIAM."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
-        for event in MOCK_EVENTS:
-            requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
-
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
         args = {"date_from": "3 days ago", "limit": "10", "should_push_events": "true"}
@@ -482,14 +488,10 @@ class TestGetEventsCommand:
         assert "2" in result
         mock_send.assert_called_once()
 
-    def test_get_events_with_limit(self, client, requests_mock):
+    def test_get_events_with_limit(self, client, mocker):
         """Test get events respects limit."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
-        requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         args = {"date_from": "3 days ago", "limit": "1", "should_push_events": "false"}
         result = get_events_command(client, args)
@@ -501,15 +503,10 @@ class TestGetEventsCommand:
 class TestFetchEventsCommand:
     """Tests for the fetch_events_command."""
 
-    def test_fetch_first_run(self, client, mocker, requests_mock):
+    def test_fetch_first_run(self, client, mocker):
         """Test first fetch run."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
-        for event in MOCK_EVENTS:
-            requests_mock.get(event["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         mocker.patch.object(
             demisto,
@@ -534,15 +531,10 @@ class TestFetchEventsCommand:
         assert last_run_arg["last_fetch"] == "2026-03-18T15:06:17.467Z"
         assert set(last_run_arg["last_fetched_ids"]) == {23751008, 37991923}
 
-    def test_fetch_with_deduplication(self, client, mocker, requests_mock):
+    def test_fetch_with_deduplication(self, client, mocker):
         """Test fetch deduplicates against previous run."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
-        # Only the second event should be fetched (first is deduplicated)
-        requests_mock.get(MOCK_EVENTS[1]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         mocker.patch.object(
             demisto,
@@ -560,7 +552,7 @@ class TestFetchEventsCommand:
                 "last_fetched_ids": [23751008],
             },
         )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
         fetch_events_command(client)
@@ -570,13 +562,9 @@ class TestFetchEventsCommand:
         assert len(sent_events) == 1
         assert sent_events[0]["id"] == 37991923
 
-    def test_fetch_all_duplicates(self, client, mocker, requests_mock):
+    def test_fetch_all_duplicates(self, client, mocker):
         """Test fetch when all events are duplicates."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
 
         mocker.patch.object(
             demisto,
@@ -602,12 +590,12 @@ class TestFetchEventsCommand:
         mock_send.assert_not_called()
         mock_set_last_run.assert_not_called()
 
-    def test_fetch_rate_limit_on_history(self, client, mocker, requests_mock):
+    def test_fetch_rate_limit_on_history(self, client, mocker):
         """Test fetch handles rate limit on history events API."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            status_code=429,
-            headers={"Retry-After": "120"},
+        mocker.patch.object(
+            client,
+            "get_history_events",
+            side_effect=RateLimitError(retry_after="120"),
         )
 
         mocker.patch.object(
@@ -625,16 +613,15 @@ class TestFetchEventsCommand:
 
         mock_send.assert_not_called()
 
-    def test_fetch_rate_limit_on_detail_url(self, client, mocker, requests_mock):
+    def test_fetch_rate_limit_on_detail_url(self, client, mocker):
         """Test fetch handles rate limit on detail URL - sends partial results."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
         # First detail URL succeeds, second hits rate limit
-        requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
-        requests_mock.get(MOCK_EVENTS[1]["detail_url"], status_code=429, headers={"Retry-After": "60"})
+        mocker.patch.object(
+            client,
+            "get_detail_url_response",
+            side_effect=[MOCK_DETAIL_RESPONSE, RateLimitError(retry_after="60")],
+        )
 
         mocker.patch.object(
             demisto,
@@ -662,13 +649,9 @@ class TestFetchEventsCommand:
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert last_run_arg["last_fetch"] == "2026-03-18T15:06:17.467Z"
 
-    def test_fetch_no_events(self, client, mocker, requests_mock):
+    def test_fetch_no_events(self, client, mocker):
         """Test fetch with no events returned."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": []},
-            status_code=200,
-        )
+        mocker.patch.object(client, "get_history_events", return_value=[])
 
         mocker.patch.object(
             demisto,
@@ -685,15 +668,10 @@ class TestFetchEventsCommand:
 
         mock_send.assert_not_called()
 
-    def test_fetch_respects_max_fetch(self, client, mocker, requests_mock):
+    def test_fetch_respects_max_fetch(self, client, mocker):
         """Test fetch respects max_fetch limit."""
-        requests_mock.get(
-            f"{SERVER_URL}/companies/{MOCK_SCORECARD_ID}/history/events",
-            json={"entries": MOCK_EVENTS},
-            status_code=200,
-        )
-        # Only first event should be enriched due to max_fetch=1
-        requests_mock.get(MOCK_EVENTS[0]["detail_url"], json=MOCK_DETAIL_RESPONSE, status_code=200)
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
         mocker.patch.object(
             demisto,
@@ -704,7 +682,7 @@ class TestFetchEventsCommand:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
         fetch_events_command(client)
