@@ -10226,7 +10226,7 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
     event_system.register_last("before-send.*.*", _add_proxydome_header)
 
 
-def _assume_role_credentials(
+def assume_role_credentials(
     params: dict,
     access_key_id: str,
     secret_access_key: str,
@@ -10320,7 +10320,7 @@ def get_service_client(
             )
 
         if params.get("role_arn"):
-            tmp_creds = _assume_role_credentials(
+            tmp_creds = assume_role_credentials(
                 params=params,
                 access_key_id=access_key_id,
                 secret_access_key=secret_access_key,
