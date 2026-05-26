@@ -1619,4 +1619,3 @@ To set up the mirroring:
     | Both | Synchronizes status changes bidirectionally between Cortex XSOAR and GravityZone incidents. |
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-

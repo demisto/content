@@ -1891,7 +1891,6 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
             outputs_prefix="GravityZone.Endpoint",
             outputs_key_field="ID",
             entry_type=EntryType.NOTE,
-            replace_existing=True,
         )
 
     return CommandResults(
@@ -1913,7 +1912,6 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
         outputs_prefix="GravityZone.Endpoint",
         outputs_key_field="ID",
         entry_type=EntryType.NOTE,
-        replace_existing=True,
     )
 
 

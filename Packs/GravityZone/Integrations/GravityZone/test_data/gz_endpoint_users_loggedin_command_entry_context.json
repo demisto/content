@@ -1,27 +1,25 @@
 {
-    "GravityZone(true)": {
-        "Endpoint": {
-            "ID": "ENDPOINT_ID",
-            "Hostname": "ENDPOINT_NAME",
-            "ActiveSessions": [
-                {
-                    "Username": "TESTDOMAIN\\\\full.user",
-                    "ConnectionType": "local",
-                    "StartTime": "2021-05-19T10:37:56Z",
-                    "UserSID": "S-1-2-25-33",
-                    "DomainSID": "S-1-23-131231",
-                    "OrganizationalUnitDN": "OU=office,OU=Developers,OU=Users,DC=microsoft,DC=com",
-                    "MemberOfSIDs": [
-                        "S-1-5-32-450",
-                        "S-1-5-32-462"
-                    ]
-                },
-                {
-                    "Username": "basic.user",
-                    "ConnectionType": "remote",
-                    "StartTime": "2021-05-19T11:00:00Z"
-                }
-            ]
-        }
+    "GravityZone.Endpoint(val.ID && val.ID == obj.ID)": {
+        "ID": "ENDPOINT_ID",
+        "Hostname": "ENDPOINT_NAME",
+        "ActiveSessions": [
+            {
+                "Username": "TESTDOMAIN\\\\full.user",
+                "ConnectionType": "local",
+                "StartTime": "2021-05-19T10:37:56Z",
+                "UserSID": "S-1-2-25-33",
+                "DomainSID": "S-1-23-131231",
+                "OrganizationalUnitDN": "OU=office,OU=Developers,OU=Users,DC=microsoft,DC=com",
+                "MemberOfSIDs": [
+                    "S-1-5-32-450",
+                    "S-1-5-32-462"
+                ]
+            },
+            {
+                "Username": "basic.user",
+                "ConnectionType": "remote",
+                "StartTime": "2021-05-19T11:00:00Z"
+            }
+        ]
     }
 }
