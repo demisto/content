@@ -861,7 +861,7 @@ def normalize_es_value(value):
     if isinstance(value, list):
         value = value[0] if len(value) == 1 else value
 
-    if isinstance(value, (dict, list)):
+    if isinstance(value, dict | list):
         return json.dumps(value)
 
     return str(value)
@@ -1352,7 +1352,7 @@ def index_document(args, proxies):
     demisto.debug(f"Indexing document in index {index} with ID {doc_id}")
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         if doc_id:
-            response = es.index(index=index, id=doc_id, document=doc)
+            response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120,E1125
         else:
             response = es.index(index=index, document=doc)  # pylint: disable=E1123,E1120,E1125
 
