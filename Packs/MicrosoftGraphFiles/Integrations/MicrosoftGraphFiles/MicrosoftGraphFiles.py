@@ -318,6 +318,131 @@ class MsGraphClient:
         demisto.debug(f'response of "upload_file_with_upload_session": {response_file_upload}')
         return response_file_upload
 
+    @staticmethod
+    def _driveitem_uri(object_type: str, object_type_id: str, item_id: str, suffix: str = "") -> str:
+        """Build a /v1.0 relative URL for a driveItem sub-resource.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the target driveItem.
+            suffix: Optional path suffix appended after items/{item_id} (no leading slash).
+
+        Returns:
+            Relative URL suitable for ms_client.http_request(url_suffix=...).
+        """
+        base = (
+            f"{object_type}/{object_type_id}/items/{item_id}"
+            if object_type == "drives"
+            else f"{object_type}/{object_type_id}/drive/items/{item_id}"
+        )
+        return f"{base}/{suffix}" if suffix else base
+
+    def update_driveitem(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        body: dict,
+    ) -> dict:
+        """Apply a PATCH on a driveItem (move / rename / metadata update).
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem to update.
+            body: JSON body to send. Only keys the caller provided are included.
+
+        Returns:
+            The updated driveItem object returned by Microsoft Graph.
+        """
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id)
+        return self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body)
+
+    def list_driveitem_permissions(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        limit: str | None = None,
+        next_page_url: str | None = None,
+    ) -> dict:
+        """List permissions (sharing entries) on a driveItem.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem.
+            limit: Optional $top page size.
+            next_page_url: Optional full URL from a previous @odata.nextLink to fetch the next page.
+
+        Returns:
+            The raw response from Microsoft Graph (with value[] and optional @odata.nextLink).
+        """
+        params = {"$top": limit} if limit else {}
+        if next_page_url:
+            url = url_validation(next_page_url)
+            return self.ms_client.http_request(method="GET", full_url=url, params=params)
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix="permissions")
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    def delete_driveitem_permission(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        permission_id: str,
+    ) -> requests.Response:
+        """Delete (revoke) a single sharing permission on a driveItem.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem.
+            permission_id: ID of the permission to delete (obtain via list_driveitem_permissions).
+
+        Returns:
+            The raw requests.Response from Microsoft Graph (status 204 with no body).
+        """
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix=f"permissions/{permission_id}")
+        return self.ms_client.http_request(
+            method="DELETE",
+            url_suffix=url_suffix,
+            resp_type="text",
+        )
+
+    def copy_driveitem(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        body: dict,
+        params: dict,
+    ) -> requests.Response:
+        """Initiate a driveItem copy operation. Returns the raw response so the Location header can be read.
+
+        Microsoft Graph responds 202 Accepted with a Location header pointing to a monitor URL
+        that the caller polls until the copy reaches a terminal status.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the source driveItem.
+            body: JSON body to send. Only keys the caller provided are included.
+            params: Query parameters to send. Only keys the caller provided are included.
+
+        Returns:
+            The raw requests.Response from Microsoft Graph (status 202 with a Location header).
+        """
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix="copy")
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=body,
+            params=params,
+            resp_type="response",
+        )
+
     def delete_file(self, object_type: str, object_type_id: str, item_id: str) -> str:
         """
         Delete a DriveItem by using its ID
@@ -1055,6 +1180,256 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
     return CommandResults(readable_output="Site permission was deleted.")
 
 
+def update_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Apply a PATCH on a driveItem (move within or across drives, rename, or update metadata).
+
+    Maps to Microsoft Graph: PATCH /v1.0/{drive-prefix}/items/{item-id}.
+    All body fields are optional per the Graph contract; only the keys whose argument
+    the caller provided are sent. Sending at least one update field is required.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with the updated driveItem under MsGraphFiles.UpdatedItem.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+
+    new_parent_id = args.get("new_parent_id", "")
+    new_parent_drive_id = args.get("new_parent_drive_id", "")
+    new_name = args.get("new_name", "")
+    description = args.get("description", "")
+    conflict_behavior = args.get("conflict_behavior", "")
+
+    body: dict = {}
+    parent_reference: dict = {}
+    if new_parent_id:
+        parent_reference["id"] = new_parent_id
+    if new_parent_drive_id:
+        parent_reference["driveId"] = new_parent_drive_id
+    if parent_reference:
+        body["parentReference"] = parent_reference
+    if new_name:
+        body["name"] = new_name
+    if description:
+        body["description"] = description
+    if conflict_behavior:
+        body["@microsoft.graph.conflictBehavior"] = conflict_behavior
+
+    if not body:
+        raise DemistoException(
+            "Provide at least one update field " "(new_parent_id, new_parent_drive_id, new_name, description, conflict_behavior)."
+        )
+
+    raw_response = client.update_driveitem(object_type, object_type_id, item_id, body)
+    context_entry = parse_key_to_context(raw_response)
+
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "LastModifiedDateTime": context_entry.get("LastModifiedDateTime"),
+        "ParentReferenceID": context_entry.get("ParentReference", {}).get("ID"),
+        "ParentReferenceDriveId": context_entry.get("ParentReference", {}).get("DriveId"),
+        "Size": context_entry.get("Size"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
+    remove_nulls_from_dictionary(human_readable_content)
+    readable_output = tableToMarkdown(
+        "Updated driveItem",
+        human_readable_content,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.UpdatedItem",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+def copy_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Initiate an asynchronous driveItem copy and return the monitor URL.
+
+    Maps to Microsoft Graph: POST /v1.0/{drive-prefix}/items/{item-id}/copy.
+    Microsoft Graph performs the copy asynchronously and responds 202 Accepted with a Location
+    header pointing to a monitor URL. The caller is expected to poll the monitor URL against
+    Microsoft Graph until the copy reaches a terminal status.
+
+    All body fields and the conflict_behavior query parameter are optional per the Graph contract;
+    only keys whose argument the caller provided are sent.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.CopyOperation context including MonitorUrl.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+
+    destination_parent_id = args.get("destination_parent_id", "")
+    destination_drive_id = args.get("destination_drive_id", "")
+    new_name = args.get("new_name", "")
+    conflict_behavior = args.get("conflict_behavior", "")
+    children_only_raw = args.get("children_only", "")
+
+    body: dict = {}
+    parent_reference: dict = {}
+    if destination_parent_id:
+        parent_reference["id"] = destination_parent_id
+    if destination_drive_id:
+        parent_reference["driveId"] = destination_drive_id
+    if parent_reference:
+        body["parentReference"] = parent_reference
+    if new_name:
+        body["name"] = new_name
+    if children_only_raw:
+        body["childrenOnly"] = argToBoolean(children_only_raw)
+
+    params: dict = {}
+    if conflict_behavior:
+        params["@microsoft.graph.conflictBehavior"] = conflict_behavior
+
+    response = client.copy_driveitem(object_type, object_type_id, item_id, body, params)
+    monitor_url = response.headers.get("Location", "")
+
+    outputs = {
+        "MonitorUrl": monitor_url,
+        "ItemId": item_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+    }
+    readable_output = tableToMarkdown(
+        "Copy operation accepted",
+        {"MonitorUrl": monitor_url},
+        removeNull=True,
+    )
+    readable_output += (
+        "\nPoll the MonitorUrl directly against Microsoft Graph "
+        "(using the same access token) until status is `completed` or `failed`."
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.CopyOperation",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
+def list_driveitem_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """List permissions (sharing entries) on a driveItem.
+
+    Maps to Microsoft Graph: GET /v1.0/{drive-prefix}/items/{item-id}/permissions.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.ItemPermission context.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+    limit = args.get("limit") or None
+    next_page_url = args.get("next_page_url") or None
+
+    raw_response = client.list_driveitem_permissions(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        limit=limit,
+        next_page_url=next_page_url,
+    )
+
+    parsed_permissions = [parse_key_to_context(p) for p in raw_response.get("value", [])]
+
+    outputs = {
+        "Value": parsed_permissions,
+        "ItemId": item_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+        "OdataContext": raw_response.get("@odata.context"),
+        "NextToken": raw_response.get("@odata.nextLink"),
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_rows = [
+        {
+            "ID": perm.get("ID"),
+            "Roles": perm.get("Roles"),
+            "LinkScope": (perm.get("Link") or {}).get("Scope"),
+            "LinkType": (perm.get("Link") or {}).get("Type"),
+            "GrantedToUserEmail": ((perm.get("GrantedToV2") or {}).get("User") or {}).get("Email"),
+            "InheritedFrom": "yes" if perm.get("InheritedFrom") else None,
+        }
+        for perm in parsed_permissions
+    ]
+    readable_output = tableToMarkdown(
+        "DriveItem permissions",
+        readable_rows,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.ItemPermission",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Delete (revoke) a single sharing permission on a driveItem.
+
+    Maps to Microsoft Graph: DELETE /v1.0/{drive-prefix}/items/{item-id}/permissions/{perm-id}.
+    Microsoft Graph returns 204 No Content. Errors (including 404 itemNotFound) are surfaced
+    verbatim. For bulk-delete loops where intermittent 404s are acceptable, set "Continue on
+    error" on the calling task.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.RemovedItemPermission echo context.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+    permission_id = args["permission_id"]
+
+    client.delete_driveitem_permission(object_type, object_type_id, item_id, permission_id)
+
+    outputs = {
+        "ItemId": item_id,
+        "PermissionId": permission_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+    }
+    readable_output = tableToMarkdown(
+        "Permission removed",
+        {"ItemId": item_id, "PermissionId": permission_id},
+    )
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.RemovedItemPermission",
+        outputs_key_field="PermissionId",
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
 def main():
     params: dict = demisto.params()
     args = demisto.args()
@@ -1066,7 +1441,7 @@ def main():
     enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
-    ok_codes: tuple = (200, 204, 201)
+    ok_codes: tuple = (200, 201, 202, 204)
     certificate_thumbprint = params.get("credentials_certificate_thumbprint", {}).get("password") or params.get(
         "certificate_thumbprint"
     )
@@ -1132,6 +1507,14 @@ def main():
             return_results(update_site_permissions_command(client, args))
         elif command == "msgraph-delete-site-permissions":
             return_results(delete_site_permission_command(client, args))
+        elif command == "msgraph-driveitem-update":
+            return_results(update_driveitem_command(client, args))
+        elif command == "msgraph-driveitem-copy":
+            return_results(copy_driveitem_command(client, args))
+        elif command == "msgraph-driveitem-permissions-list":
+            return_results(list_driveitem_permissions_command(client, args))
+        elif command == "msgraph-driveitem-permission-delete":
+            return_results(delete_driveitem_permission_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
