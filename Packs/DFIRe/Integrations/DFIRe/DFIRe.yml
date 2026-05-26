@@ -20,10 +20,12 @@ configuration:
   display: Trust any certificate (not secure)
   type: 8
   required: false
+  advanced: true
 - name: proxy
   display: Use system proxy settings
   type: 8
   required: false
+  advanced: true
 script:
   script: '-'
   type: python
