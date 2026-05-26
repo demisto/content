@@ -67,16 +67,13 @@ configuration:
   display: Incident Mirror Direction
   defaultvalue: None
   type: 15
-  additionalinfo: Cortex XSOAR only parameter.
+  additionalinfo:
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
   required: false
-  hidden:
-  - marketplacev2
-  - platform
 - name: work_notes_tag
   display: Tag used for work note mirroring
   defaultvalue: work_notes

@@ -80,13 +80,9 @@ configuration:
 - defaultvalue: User Profile - PrismaCloud (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: false
+  required: true
   type: 0
   section: Connect
-  hidden:
-  - marketplacev2
-  - platform
-  additionalinfo: Cortex XSOAR only parameter.
 description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.'
 display: PrismaCloud IAM
 name: PrismaCloud IAM

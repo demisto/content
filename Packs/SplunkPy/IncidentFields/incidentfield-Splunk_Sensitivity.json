@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Splunk Finding",
-        "Splunk Investigation"
+        "Splunk Finding"
     ],
     "caseInsensitive": true,
     "cliName": "splunksensitivity",

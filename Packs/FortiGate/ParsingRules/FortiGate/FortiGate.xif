@@ -7,5 +7,4 @@ filter to_string(FTNTFGTeventtime) ~= "\d{9}$"
     tmp_substract_diff = subtract(tmp_remove_milli_secs, tmp_check_duration)
 | alter
     _time = to_timestamp(tmp_substract_diff)
-| fields -tmp_remove_milli_secs, tmp_check_duration, tmp_substract_diff
-| fields FTNTFG*, act, app, c6a2, c6a3, cat, cefDeviceEventClassId, cefDeviceProduct, cefDeviceVendor, cefDeviceVersion, cefName, cefSeverity, cefVersion, cnt, destinationTranslatedAddress, destinationTranslatedPort, deviceDirection, deviceExternalId, deviceInboundInterface, deviceOutboundInterface, dhost, dpt, dst, duser, dvchost, externalID, externalId, fname, fsize, `in`, msg, out, outcome, proto, reason, request, requestClientApplication, requestContext, requestCookies, shost, sourceServiceName, sourceTranslatedAddress, sourceTranslatedPort, sproc, spt, src, suser;
+| fields -tmp_remove_milli_secs, tmp_check_duration, tmp_substract_diff;

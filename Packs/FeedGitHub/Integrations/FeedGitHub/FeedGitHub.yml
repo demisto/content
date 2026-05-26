@@ -25,11 +25,11 @@ configuration:
   required: false
 - display: Incremental Feed
   defaultvalue: 'true'
+  hidden: true
   name: feedIncremental
-  section: Collect
+  section: Connect
   type: 8
   required: false
-  additionalinfo: When enabled (default), only new/modified files since the last fetch are reported (legacy behavior). Disable to fetch the full current set on every cycle so the "When removed from the feed" (suddenDeath) expiration policy can expire indicators removed from the source.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -136,23 +136,20 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: ""
+- display: ''
   name: feedExpirationPolicy
   type: 17
   required: false
-  additionalinfo: Controls when indicators expire. Choose "suddenDeath" together with disabling the *Incremental Feed* option to expire indicators that were removed from the source repository.
   options:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   section: Collect
   advanced: true
-- display: Feed Expiration Interval
+- display: ''
   name: feedExpirationInterval
   type: 1
   required: false
-  additionalinfo: Only used when *Feed Expiration Policy* is set to "interval". Ignored for the "suddenDeath", "never" and "indicatorType" policies.
   section: Collect
   advanced: true
 - display: Tags
@@ -196,7 +193,7 @@ script:
       name: limit
     description: Retrieves indicators from the feed within a specified date range and up to a maximum limit.
     name: github-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.9117276
+  dockerimage: demisto/taxii2:1.0.0.5113063
   feed: true
   isfetch: false
   longRunning: false

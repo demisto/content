@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -812
+          "y": -782
         }
       }
     note: false
@@ -176,7 +176,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": -484
+          "y": -454
         }
       }
     note: false
@@ -403,13 +403,12 @@ tasks:
     nexttasks:
       '#default#':
       - "10"
-      Endpoint ID:
-      - "13"
-      Endpoint Name:
+      "yes":
       - "24"
+      - "13"
     separatecontext: false
     conditions:
-    - label: Endpoint ID
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -417,21 +416,18 @@ tasks:
               complex:
                 root: inputs.EndpointID
             iscontext: true
-          right:
-            value: {}
-    - label: Endpoint Name
-      condition:
-      - - operator: isNotEmpty
+        - operator: isNotEmpty
           left:
             value:
-              simple: inputs.EndpointHostName
+              complex:
+                root: inputs.EndpointHostName
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 490,
-          "y": -683
+          "y": -653
         }
       }
     note: false
@@ -474,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -484
+          "y": -454
         }
       }
     note: false
@@ -540,10 +536,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1316,
-        "width": 840,
+        "height": 1286,
+        "width": 841,
         "x": 30,
-        "y": -812
+        "y": -782
       }
     }
   }
