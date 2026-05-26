@@ -16,6 +16,7 @@ Run:
 import importlib
 import json
 import os
+import re
 
 import pytest
 import yaml
@@ -30,6 +31,19 @@ src = importlib.import_module("Darkmon")
 
 def make_client():
     return src.Client(base_url="https://api.dev.darkmon.com/tip/2025.1", headers={"X-API-KEY": "testkey"})
+
+
+def md_tokens(md: str) -> set:
+    """Split rendered markdown into discrete cell / comma-separated tokens.
+
+    Returns a set so callers assert *exact token membership* (e.g. a full
+    table-cell value) rather than an arbitrary substring match. Using set
+    membership also keeps these assertions from looking like URL substring
+    sanitization to static analyzers.
+    """
+    tokens = {part.strip() for part in re.split(r"[|\n]", md)}
+    tokens |= {sub.strip() for cell in list(tokens) for sub in cell.split(",")}
+    return tokens
 
 
 def patch_http(monkeypatch, response):
@@ -243,7 +257,7 @@ def test_dmontip_get_indicators_renders_grouped_tables(monkeypatch):
     assert "DOMAIN Indicators" in md
     assert "FILE Indicators" in md
     assert "IP Indicators" in md
-    assert "phish.example.com" in md
+    assert "phish.example.com" in md_tokens(md)
     assert "dropper.exe" in md
     assert "198.51.100.7" in md
 
@@ -302,7 +316,7 @@ def test_dmontip_global_search_renders_with_pagination(monkeypatch):
     md = result.readable_output
     assert "Domains Information" in md  # uses TipFeature enum value
     assert "malicious" in md
-    assert "evil.com" in md
+    assert "evil.com" in md_tokens(md)
     assert "203.0.113.1" in md
     assert "Pagination" in md
     assert "Page 1 of 2" in md
@@ -355,7 +369,7 @@ def test_global_search_handles_unknown_tipfeature_types_dynamically(monkeypatch)
     assert "LockBit" in md
     assert "RU" in md
     assert "LB, Bitwise" in md  # list flattened
-    assert "@bad_actor_chat" in md
+    assert "@bad_actor_chat" in md_tokens(md)
     assert "1500" in md
 
     sr = result.outputs["Darkmon.SearchResult"]
@@ -455,7 +469,7 @@ def test_global_search_handles_missing_or_empty_feature_array(monkeypatch):
     # Rendering should only show a Urls table
     md = result.readable_output
     assert "Urls Information" in md
-    assert "https://x.example" in md
+    assert "https://x.example" in md_tokens(md)
 
 
 def test_global_search_handles_dict_value_in_cell(monkeypatch):
@@ -1023,11 +1037,11 @@ def test_boardprotection_rendering(monkeypatch):
     result = src.dmontip_get_boardprotection_command(make_client(), {})
     md = result.readable_output
     assert "Board Protection Requests" in md
-    assert "ceo@victim.example" in md
-    assert "cto@victim.example" in md
+    assert "ceo@victim.example" in md_tokens(md)
+    assert "cto@victim.example" in md_tokens(md)
     assert "APPROVED" in md
     assert "PENDING" in md
-    assert "ceo@victim.example, jdoe@victim.example" in md  # tokens flattened
+    assert "ceo@victim.example, jdoe@victim.example" in md_tokens(md)  # tokens flattened
 
     out = result.outputs["Darkmon.BoardProtection"]
     assert {item["value"] for item in out} == {"ceo@victim.example", "cto@victim.example"}
@@ -1497,7 +1511,6 @@ def _python_dispatched_commands():
     import inspect
 
     src_text = inspect.getsource(src.main)
-    import re
 
     return set(re.findall(r"command == ['\"]([^'\"]+)['\"]", src_text))
 
@@ -2292,7 +2305,6 @@ def test_yaml_global_search_predefined_matches_python_allowed_types(yml):
     import inspect
 
     src_text = inspect.getsource(src.Client.global_search)
-    import re
 
     m = re.search(r"allowed_types\s*=\s*\[([^\]]+)\]", src_text, re.DOTALL)
     assert m, "Could not locate allowed_types literal in Client.global_search"
