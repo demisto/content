@@ -12,17 +12,64 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+MOCK_SERVICE_ACCOUNT_JSON = json.dumps(
+    {
+        "type": "service_account",
+        "project_id": "test-project",
+        "private_key_id": "key123",
+        "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIIBogIBAAJBALRiM\n-----END RSA PRIVATE KEY-----\n",
+        "client_email": "test@test-project.iam.gserviceaccount.com",
+        "client_id": "123456789",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+    }
+)
+
+
 @pytest.fixture
 def client_fixture(mocker):
     """
-    Fixture for the Client object.
+    Fixture for the Client object (AI Studio auth).
     Mocks the BaseClient._http_request method.
     """
     client = GoogleGemini.Client(
         base_url="https://generativelanguage.googleapis.com",
         verify=True,
         proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_api_key",
+        model="gemini-2.0-flash",
+        max_tokens=1024,
+        temperature=0.7,
+        top_p=None,
+        top_k=None,
+    )
+    mocker.patch.object(client, "_http_request")
+    return client
+
+
+@pytest.fixture
+def vertex_client_fixture(mocker):
+    """
+    Fixture for the Client object (Vertex AI auth).
+    Mocks the google-auth credentials.
+    """
+    mock_credentials = mocker.MagicMock()
+    mock_credentials.valid = True
+    mock_credentials.token = "mock_access_token"
+    mocker.patch(
+        "GoogleGemini.service_account.Credentials.from_service_account_info",
+        return_value=mock_credentials,
+    )
+
+    client = GoogleGemini.Client(
+        base_url="https://aiplatform.googleapis.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_VERTEX_AI,
+        service_account_json=MOCK_SERVICE_ACCOUNT_JSON,
+        project_id="test-project",
+        location="global",
         model="gemini-2.0-flash",
         max_tokens=1024,
         temperature=0.7,
@@ -46,13 +93,14 @@ MOCK_NO_TEXT_RESPONSE = {"candidates": [{"content": {"parts": []}}]}
 
 
 def test_client_init():
-    """Test Client initialization with all parameters"""
+    """Test Client initialization with all parameters (AI Studio)"""
     client = GoogleGemini.Client(
         base_url="https://test.com",
         verify=False,
         proxy=True,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=2048,
         temperature=0.8,
         top_p=0.9,
@@ -60,11 +108,12 @@ def test_client_init():
     )
 
     assert client.api_key == "test_key"
-    assert client.model == "gemini-1.5-pro"
+    assert client.model == "gemini-2.5-pro"
     assert client.max_tokens == 2048
     assert client.temperature == 0.8
     assert client.top_p == 0.9
     assert client.top_k == 40
+    assert client.auth_type == GoogleGemini.AUTH_TYPE_AI_STUDIO
     assert client._headers["x-goog-api-key"] == "test_key"
     assert client._headers["Content-Type"] == "application/json"
     assert client._headers["Accept"] == "application/json"
@@ -72,13 +121,48 @@ def test_client_init():
 
 def test_client_init_default_model():
     """Test Client initialization with default model and parameters"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
-    assert client.model == "gemini-2.5-flash-preview-05-20"
+    assert client.model == "gemini-2.5-flash"
     assert client.max_tokens == 1024
     assert client.temperature is None
     assert client.top_p is None
     assert client.top_k is None
+
+
+def test_client_init_vertex_ai(mocker):
+    """Test Client initialization with Vertex AI authentication"""
+    mock_credentials = mocker.MagicMock()
+    mocker.patch(
+        "GoogleGemini.service_account.Credentials.from_service_account_info",
+        return_value=mock_credentials,
+    )
+
+    client = GoogleGemini.Client(
+        base_url="https://aiplatform.googleapis.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_VERTEX_AI,
+        service_account_json=MOCK_SERVICE_ACCOUNT_JSON,
+        project_id="test-project",
+        location="us-central1",
+        model="gemini-2.0-flash",
+        max_tokens=2048,
+    )
+
+    assert client.auth_type == GoogleGemini.AUTH_TYPE_VERTEX_AI
+    assert client.project_id == "test-project"
+    assert client.location == "us-central1"
+    assert client.service_account_info["client_email"] == "test@test-project.iam.gserviceaccount.com"
+    assert client._credentials == mock_credentials
+    assert "x-goog-api-key" not in client._headers
+    assert client._headers["Content-Type"] == "application/json"
 
 
 def test_send_chat_message_success(client_fixture):
@@ -95,6 +179,7 @@ def test_send_chat_message_success(client_fixture):
             "contents": [{"role": "user", "parts": [{"text": "Hello, how are you?"}]}],
             "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.7},
         },
+        headers=None,
     )
 
 
@@ -427,6 +512,7 @@ def demisto_mocker_fixture(mocker):
         demisto,
         "params",
         return_value={
+            "auth_type": GoogleGemini.AUTH_TYPE_AI_STUDIO,
             "url": "https://generativelanguage.googleapis.com",
             "api_key": {"password": "test_api_key"},  # Fixed: API key as dict with password
             "model": ["gemini-2.0-flash"],
@@ -488,6 +574,7 @@ def test_main_missing_api_key(mocker):
         demisto,
         "params",
         return_value={
+            "auth_type": GoogleGemini.AUTH_TYPE_AI_STUDIO,
             "url": "https://generativelanguage.googleapis.com",
             "model": "gemini-2.0-flash",
             "model-freetext": "",
@@ -530,10 +617,11 @@ def test_main_model_freetext_override(mocker):
         demisto,
         "params",
         return_value={
+            "auth_type": GoogleGemini.AUTH_TYPE_AI_STUDIO,
             "url": "https://generativelanguage.googleapis.com",
             "api_key": {"password": "test_api_key"},
             "model": ["gemini-2.0-flash", "test"],
-            "model-freetext": "gemini-1.5-pro",
+            "model-freetext": "gemini-2.5-pro",
             "max_tokens": "2048",
             "temperature": "0.8",
             "top_p": "0.9",
@@ -550,13 +638,14 @@ def test_main_model_freetext_override(mocker):
 
 def test_supported_models_list():
     """Test that SUPPORTED_MODELS contains expected models"""
+    assert "gemini-2.5-pro" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-2.5-flash" in GoogleGemini.SUPPORTED_MODELS
     assert "gemini-2.0-flash" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-1.5-pro" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-1.5-flash" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-2.5-pro-preview-06-05" in GoogleGemini.SUPPORTED_MODELS
-    assert "text-embedding-004" in GoogleGemini.SUPPORTED_MODELS
-    assert "models/embedding-001" in GoogleGemini.SUPPORTED_MODELS
-    assert len(GoogleGemini.SUPPORTED_MODELS) == 11
+    assert "gemini-2.0-flash-lite" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.1-pro-preview" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.1-flash-preview" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.1-flash-lite" in GoogleGemini.SUPPORTED_MODELS
+    assert len(GoogleGemini.SUPPORTED_MODELS) == 7
 
 
 def test_send_chat_message_with_instance_parameters():
@@ -565,8 +654,9 @@ def test_send_chat_message_with_instance_parameters():
         base_url="https://test.com",
         verify=True,
         proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=2048,
         temperature=0.8,
         top_p=0.9,
@@ -596,8 +686,9 @@ def test_send_chat_message_with_optional_parameters_none():
         base_url="https://test.com",
         verify=True,
         proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=1024,
         temperature=None,
         top_p=None,
@@ -623,7 +714,13 @@ def test_send_chat_message_with_optional_parameters_none():
 
 def test_malformed_response_no_candidates():
     """Test handling of malformed API response with no candidates key"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
     malformed_response = {"usage": {"promptTokens": 5, "totalTokens": 10}}
 
@@ -638,7 +735,13 @@ def test_malformed_response_no_candidates():
 
 def test_malformed_response_candidates_not_list():
     """Test handling of malformed API response where candidates is not a list"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
     malformed_response = {"candidates": "not a list"}
 
@@ -653,7 +756,13 @@ def test_malformed_response_candidates_not_list():
 
 def test_malformed_response_missing_content():
     """Test handling of malformed API response with missing content"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
     malformed_response = {"candidates": [{"finishReason": "STOP"}]}
 
@@ -668,7 +777,13 @@ def test_malformed_response_missing_content():
 
 def test_malformed_response_missing_parts():
     """Test handling of malformed API response with missing parts"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
     malformed_response = {"candidates": [{"content": {"role": "model"}}]}
 
@@ -683,7 +798,13 @@ def test_malformed_response_missing_parts():
 
 def test_malformed_response_parts_not_list():
     """Test handling of malformed API response where parts is not a list"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
     malformed_response = {"candidates": [{"content": {"parts": "not a list"}}]}
 
@@ -698,7 +819,13 @@ def test_malformed_response_parts_not_list():
 
 def test_malformed_response_missing_text():
     """Test handling of malformed API response with missing text in parts"""
-    client = GoogleGemini.Client(base_url="https://test.com", verify=True, proxy=False, api_key="test_key")
+    client = GoogleGemini.Client(
+        base_url="https://test.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
 
     malformed_response = {"candidates": [{"content": {"parts": [{"image": "base64data"}]}}]}
 
@@ -709,3 +836,228 @@ def test_malformed_response_missing_text():
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
         assert result.outputs["Response"] == "No response generated."
+
+
+# --- Vertex AI Tests ---
+
+
+def test_vertex_ai_url_suffix(mocker):
+    """Test that Vertex AI URL suffix is constructed correctly"""
+    mocker.patch(
+        "GoogleGemini.service_account.Credentials.from_service_account_info",
+        return_value=mocker.MagicMock(),
+    )
+    client = GoogleGemini.Client(
+        base_url="https://aiplatform.googleapis.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_VERTEX_AI,
+        service_account_json=MOCK_SERVICE_ACCOUNT_JSON,
+        project_id="my-project",
+        location="us-central1",
+    )
+
+    url_suffix = client._get_url_suffix("gemini-2.0-flash")
+    assert url_suffix == (
+        "/v1/projects/my-project/locations/us-central1" "/publishers/google/models/gemini-2.0-flash:generateContent"
+    )
+
+
+def test_ai_studio_url_suffix():
+    """Test that AI Studio URL suffix is constructed correctly"""
+    client = GoogleGemini.Client(
+        base_url="https://generativelanguage.googleapis.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
+        api_key="test_key",
+    )
+
+    url_suffix = client._get_url_suffix("gemini-2.0-flash")
+    assert url_suffix == "/v1beta/models/gemini-2.0-flash:generateContent"
+
+
+def test_vertex_ai_request_headers(vertex_client_fixture):
+    """Test that Vertex AI uses Bearer token headers"""
+    headers = vertex_client_fixture._get_request_headers()
+
+    assert headers is not None
+    assert headers["Authorization"] == "Bearer mock_access_token"
+    assert headers["Content-Type"] == "application/json"
+
+
+def test_ai_studio_request_headers(client_fixture):
+    """Test that AI Studio returns None headers (uses default self._headers)"""
+    headers = client_fixture._get_request_headers()
+    assert headers is None
+
+
+def test_vertex_ai_send_message(vertex_client_fixture):
+    """Test send_chat_message with Vertex AI auth"""
+    vertex_client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
+
+    result = vertex_client_fixture.send_chat_message(prompt="Hello", model="gemini-2.0-flash")
+
+    assert result == MOCK_SUCCESSFUL_CHAT_RESPONSE
+    vertex_client_fixture._http_request.assert_called_once()
+    call_kwargs = vertex_client_fixture._http_request.call_args[1]
+    assert (
+        "/v1/projects/test-project/locations/global" "/publishers/google/models/gemini-2.0-flash:generateContent"
+    ) in call_kwargs["url_suffix"]
+    assert call_kwargs["headers"]["Authorization"] == "Bearer mock_access_token"
+
+
+def test_vertex_ai_send_message_command(vertex_client_fixture):
+    """Test google_gemini_send_message_command with Vertex AI client"""
+    vertex_client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
+    args = {"prompt": "What is AI?", "model": "gemini-2.0-flash"}
+
+    result = GoogleGemini.google_gemini_send_message_command(vertex_client_fixture, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "GoogleGemini.Chat"
+    assert result.outputs is not None
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["Prompt"] == "What is AI?"
+    assert result.outputs["Response"] == "Hello! This is a test response from Gemini."
+
+
+def test_get_access_token_valid(mocker):
+    """Test that valid cached credentials return token without refresh"""
+    mock_credentials = mocker.MagicMock()
+    mock_credentials.valid = True
+    mock_credentials.token = "valid_token"
+    mocker.patch(
+        "GoogleGemini.service_account.Credentials.from_service_account_info",
+        return_value=mock_credentials,
+    )
+
+    client = GoogleGemini.Client(
+        base_url="https://aiplatform.googleapis.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_VERTEX_AI,
+        service_account_json=MOCK_SERVICE_ACCOUNT_JSON,
+        project_id="test-project",
+        location="global",
+    )
+
+    token = client._get_access_token()
+    assert token == "valid_token"
+    mock_credentials.refresh.assert_not_called()
+
+
+def test_get_access_token_expired(mocker):
+    """Test that expired credentials trigger a refresh"""
+    mock_credentials = mocker.MagicMock()
+    mock_credentials.valid = False
+    mock_credentials.token = "refreshed_token"
+    mocker.patch(
+        "GoogleGemini.service_account.Credentials.from_service_account_info",
+        return_value=mock_credentials,
+    )
+
+    client = GoogleGemini.Client(
+        base_url="https://aiplatform.googleapis.com",
+        verify=True,
+        proxy=False,
+        auth_type=GoogleGemini.AUTH_TYPE_VERTEX_AI,
+        service_account_json=MOCK_SERVICE_ACCOUNT_JSON,
+        project_id="test-project",
+        location="global",
+    )
+
+    token = client._get_access_token()
+    assert token == "refreshed_token"
+    mock_credentials.refresh.assert_called_once()
+
+
+def test_main_vertex_ai_missing_service_account(mocker):
+    """Test main function when service account key is missing for Vertex AI"""
+    mocker.patch.object(GoogleGemini, "demisto", demisto)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "auth_type": GoogleGemini.AUTH_TYPE_VERTEX_AI,
+            "url": "https://aiplatform.googleapis.com",
+            "model": ["gemini-2.0-flash"],
+            "max_tokens": "1024",
+            "temperature": "",
+            "top_p": "",
+            "top_k": "",
+            "service_account_key": {"password": ""},
+            "project_id": "test-project",
+            "location": "global",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_return_error = mocker.patch.object(GoogleGemini, "return_error")
+
+    GoogleGemini.main()
+
+    mock_return_error.assert_called_once_with("Service Account Key JSON is required for Vertex AI authentication.")
+
+
+def test_main_vertex_ai_missing_project_id(mocker):
+    """Test main function when project ID is missing for Vertex AI"""
+    mocker.patch.object(GoogleGemini, "demisto", demisto)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "auth_type": GoogleGemini.AUTH_TYPE_VERTEX_AI,
+            "url": "https://aiplatform.googleapis.com",
+            "model": ["gemini-2.0-flash"],
+            "max_tokens": "1024",
+            "temperature": "",
+            "top_p": "",
+            "top_k": "",
+            "service_account_key": {"password": MOCK_SERVICE_ACCOUNT_JSON},
+            "project_id": "",
+            "location": "global",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_return_error = mocker.patch.object(GoogleGemini, "return_error")
+
+    GoogleGemini.main()
+
+    mock_return_error.assert_called_once_with("Project ID is required for Vertex AI authentication.")
+
+
+def test_main_vertex_ai_auto_switch_url(mocker):
+    """Test that Server URL auto-switches from AI Studio default to Vertex AI"""
+    mocker.patch.object(GoogleGemini, "demisto", demisto)
+    mocker.patch(
+        "GoogleGemini.service_account.Credentials.from_service_account_info",
+        return_value=mocker.MagicMock(),
+    )
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "auth_type": GoogleGemini.AUTH_TYPE_VERTEX_AI,
+            "url": "https://generativelanguage.googleapis.com",  # AI Studio default
+            "model": ["gemini-2.0-flash"],
+            "max_tokens": "1024",
+            "temperature": "",
+            "top_p": "",
+            "top_k": "",
+            "service_account_key": {"password": MOCK_SERVICE_ACCOUNT_JSON},
+            "project_id": "test-project",
+            "location": "global",
+            "insecure": False,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    mock_test_module = mocker.patch.object(GoogleGemini, "test_module", return_value="ok")
+    mocker.patch.object(GoogleGemini, "return_results")
+
+    GoogleGemini.main()
+
+    mock_test_module.assert_called_once()
+    client = mock_test_module.call_args[0][0]
+    assert client._base_url == "https://aiplatform.googleapis.com"
