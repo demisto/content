@@ -1,0 +1,96 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/network",
+      "method": "createMemoryDumpTask",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "createMemoryDumpTask",
+        "params": {
+          "endpointId": "ENDPOINT_ID",
+          "path": "C:\\dumps\\",
+          "password": "ComplexPass123!"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": "TASK_ID"
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "TASK_ID",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Create memory dump 2026-05-25",
+        "startDate": "2026-05-25T10:00:00",
+        "status": 1,
+        "type": 91,
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "status": 1
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "TASK_ID",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Create memory dump 2026-05-25",
+        "startDate": "2026-05-25T10:00:00",
+        "status": 3,
+        "type": 91,
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "status": 3,
+            "downloadURL": "https://example.com/memory-dump.zip"
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,7 @@
+{
+    "GravityZone.EndpointMemoryDump(val.ID && val.ID == obj.ID)": {
+        "ID": "ENDPOINT_ID",
+        "Hostname": "ENDPOINT_NAME",
+        "memoryDumpDownloadURL": "https://example.com/memory-dump.zip"
+    }
+}

@@ -32,6 +32,7 @@ COMMAND_ISOLATE = "Isolate"
 COMMAND_RESTORE_FROM_ISOLATION = "Deisolate"
 COMMAND_UPLOAD_FILE = "UploadFile"
 COMMAND_GET_ACTIVE_SESSIONS = "GetActiveSessions"
+COMMAND_CREATE_MEMORY_DUMP = "CreateMemoryDump"
 
 ACTIVITY_STATUS_SUCCESS = "success"
 ACTIVITY_STATUS_PENDING = "pending"
@@ -64,12 +65,14 @@ TASK_TYPE_RESTORE_ENDPOINT_PARENT = 17
 TASK_TYPE_KILL_PROCESS_PARENT = 21
 TASK_TYPE_REMOTE_ACCESS_DOWNLOAD_PARENT = 24
 TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT = 26
+TASK_TYPE_CREATE_MEMORY_DUMP_PARENT = 27
 TASK_NUMERIC_TO_COMMAND_NAME = {
     TASK_TYPE_KILL_PROCESS_PARENT: COMMAND_KILL_PROCESS,
     TASK_TYPE_ISOLATE_ENDPOINT_PARENT: COMMAND_ISOLATE,
     TASK_TYPE_RESTORE_ENDPOINT_PARENT: COMMAND_RESTORE_FROM_ISOLATION,
     TASK_TYPE_REMOTE_ACCESS_DOWNLOAD_PARENT: COMMAND_UPLOAD_FILE,
     TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT: COMMAND_GET_ACTIVE_SESSIONS,
+    TASK_TYPE_CREATE_MEMORY_DUMP_PARENT: COMMAND_CREATE_MEMORY_DUMP,
 }
 TASK_STATUS_PENDING = 1
 TASK_STATUS_PROCESSING = 2
@@ -471,6 +474,23 @@ class Client(BaseClient):
             "/v1.0/jsonrpc/network",
             "createGetActiveSessionsTask",
             {"endpointId": endpoint_id},
+        )
+
+    @logger
+    def start_create_memory_dump_on_endpoint(self, endpoint_id: str, path: str, password: str) -> Any:
+        """
+        Start memory dump creation on one endpoint.
+        Args:
+            endpoint_id (str): The ID of the target endpoint.
+            path (str): The folder path on endpoint where the dump archive is generated.
+            password (str): Password used to protect the resulting dump archive.
+        Returns:
+            Any: The response containing the memory dump task ID.
+        """
+        return self.call(
+            "/v1.0/jsonrpc/network",
+            "createMemoryDumpTask",
+            {"endpointId": endpoint_id, "path": path, "password": password},
         )
 
     @logger
@@ -1917,6 +1937,64 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
     )
 
 
+def _extract_memory_dump_download_url(task_output: dict[str, Any], endpoint_id: str) -> str:
+    for subtask in task_output.get("subtasks", []):
+        subtask_endpoint_id = subtask.get("endpointId") or ""
+        if endpoint_id and subtask_endpoint_id != endpoint_id:
+            continue
+
+        if subtask.get("status") != TASK_STATUS_PROCESSED:
+            continue
+
+        download_url = subtask.get("downloadURL") or ""
+        if download_url:
+            return download_url
+
+    return ""
+
+
+def _build_memory_dump_results(task_output: dict[str, Any], endpoint_id: str) -> CommandResults:
+    """Build endpoint-scoped command results for memory dump status polling."""
+    endpoint_id, endpoint_hostname = _extract_endpoint_summary_from_task(task_output, endpoint_id)
+    download_url = _extract_memory_dump_download_url(task_output, endpoint_id)
+
+    endpoint_output: dict[str, Any] = {
+        "ID": endpoint_id,
+        "Hostname": endpoint_hostname,
+    }
+
+    if download_url:
+        endpoint_output["memoryDumpDownloadURL"] = download_url
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=tableToMarkdown(
+                f"Memory dump for endpoint {endpoint_id}",
+                [endpoint_output],
+                headers=["ID", "Hostname", "memoryDumpDownloadURL"],
+            ),
+            outputs=endpoint_output,
+            outputs_prefix="GravityZone.EndpointMemoryDump",
+            outputs_key_field="ID",
+            entry_type=EntryType.NOTE,
+        )
+
+    return CommandResults(
+        raw_response=task_output,
+        readable_output=f"Memory dump task finished for endpoint {endpoint_id}, but no download URL is available.",
+        outputs=endpoint_output,
+        outputs_prefix="GravityZone.EndpointMemoryDump",
+        outputs_key_field="ID",
+        entry_type=EntryType.NOTE,
+    )
+
+
+def _extract_memory_dump_task_id(task_data: Any) -> str:
+    if not isinstance(task_data, str) or not task_data:
+        raise DemistoException("createMemoryDumpTask response is missing task ID.")
+
+    return task_data
+
+
 def fetch_incidents(client: Client, start_fetch_time, end_fetch_time, fetch_limit=FETCH_LIMIT) -> list[dict]:
     """
     Fetches incidents from GravityZone within the specified time range.
@@ -2776,6 +2854,55 @@ def gz_endpoint_users_loggedin_command(client: Client, args: dict[str, Any]) -> 
     return check_endpoint_users_loggedin_status({"task_id": task_id, "endpoint_id": endpoint_id}, client)
 
 
+@polling_function(
+    name="gz-poll-endpoint-memory-dump-status",
+    timeout=POLL_TIMEOUT,
+    interval=POLL_INTERVAL,
+    requires_polling_arg=False,
+)
+def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> PollResult:
+    task_id = args.get("task_id", "")
+    endpoint_id = args.get("endpoint_id", "")
+    if not task_id:
+        return PollResult(
+            CommandResults(
+                readable_output="`task_id` must be provided.",
+                entry_type=EntryType.ERROR,
+            )
+        )
+
+    task_output = client.get_task_status(task_id)
+    current_status = task_output.get("status")
+
+    if current_status == TASK_STATUS_PROCESSED:
+        return PollResult(_build_memory_dump_results(task_output, endpoint_id))
+
+    return PollResult(
+        continue_to_poll=True,
+        response=CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' still pending.",
+            entry_type=EntryType.NOTE,
+        ),
+    )
+
+
+def gz_poll_endpoint_memory_dump_status_command(args: dict[str, Any], client: Client) -> PollResult:
+    return check_endpoint_memory_dump_status(args, client)
+
+
+@logger
+def gz_endpoint_create_memory_dump_command(client: Client, args: dict[str, Any]) -> PollResult:
+    endpoint_id = args.get("id", "")
+    path = args.get("path", "")
+    password = args.get("password", "")
+
+    task_response = client.start_create_memory_dump_on_endpoint(endpoint_id, path, password)
+    task_id = _extract_memory_dump_task_id(task_response)
+
+    return check_endpoint_memory_dump_status({"task_id": task_id, "endpoint_id": endpoint_id}, client)
+
+
 def main():
     command: str = demisto.command()
 
@@ -2803,10 +2930,12 @@ def main():
             "gz-poll-investigation-activity-status": gz_poll_investigation_activity_status_command,
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
             "gz-poll-endpoint-users-loggedin-status": gz_poll_endpoint_users_loggedin_status_command,
+            "gz-poll-endpoint-memory-dump-status": gz_poll_endpoint_memory_dump_status_command,
             ### GravityZone Endpoint Commands ###
             "gz-endpoint-list": gz_endpoint_list_command,
             "gz-endpoint-get": gz_endpoint_get_command,
             "gz-endpoint-users-loggedin": gz_endpoint_users_loggedin_command,
+            "gz-endpoint-create-memory-dump": gz_endpoint_create_memory_dump_command,
             "gz-endpoint-download-investigation-package": gz_endpoint_download_investigation_package_command,
             "gz-endpoint-download-file": gz_endpoint_download_file_command,
             "gz-endpoint-isolate": gz_endpoint_isolate_command,
@@ -2834,6 +2963,7 @@ def main():
             "gz-poll-investigation-activity-status",
             "gz-poll-live-search-status",
             "gz-poll-endpoint-users-loggedin-status",
+            "gz-poll-endpoint-memory-dump-status",
         ]
 
         if command in command_function_map:

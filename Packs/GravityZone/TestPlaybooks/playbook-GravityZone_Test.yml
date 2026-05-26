@@ -895,7 +895,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -921,6 +921,92 @@ tasks:
         "position": {
           "x": 1180,
           "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6e6c37f7-0a8b-47f0-9f8b-f4d53790c3a8
+    type: regular
+    task:
+      id: 6e6c37f7-0a8b-47f0-9f8b-f4d53790c3a8
+      version: -1
+      name: gz-endpoint-create-memory-dump
+      script: GravityZone|||gz-endpoint-create-memory-dump
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      path:
+        simple: C:\\dumps\\
+      password:
+        simple: StrongPass123!
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 8b237871-4f2f-47f9-bff7-d17d7e4b7acd
+    type: condition
+    task:
+      id: 8b237871-4f2f-47f9-bff7-d17d7e4b7acd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.memoryDumpDownloadURL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1270
         }
       }
     note: false
@@ -1786,7 +1872,8 @@ view: |-
     "linkLabelsPosition": {
       "10_11_yes": 0.9,
       "33_5_yes": 0.83,
-      "35_17_yes": 0.5,
+      "35_36_yes": 0.5,
+      "37_17_yes": 0.5,
       "6_7_yes": 0.48,
       "8_9_yes": 0.87
     },

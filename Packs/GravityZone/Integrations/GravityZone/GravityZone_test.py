@@ -332,6 +332,40 @@ def test_gz_endpoint_users_loggedin_command(mock_demisto, requests_mock):
     )
 
 
+@patch("GravityZone.demisto")
+def test_gz_endpoint_create_memory_dump_command(mock_demisto, requests_mock):
+    """
+    Given
+            All relevant arguments for the command that is executed
+    When
+            Calling gz-endpoint-create-memory-dump command
+    Then
+            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_create_memory_dump_command, gz_poll_endpoint_memory_dump_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-create-memory-dump"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-create-memory-dump")
+    client = get_client()
+
+    # Execute command
+    command_response = gz_endpoint_create_memory_dump_command(
+        client=client,
+        args={"id": "ENDPOINT_ID", "path": "C:\\dumps\\", "password": "ComplexPass123!"},
+    )
+
+    # Assert command response
+    assert_command_mocked_data(
+        "gz-endpoint-create-memory-dump",
+        command_response,
+        polling_func=gz_poll_endpoint_memory_dump_status_command,
+        client=client,
+    )
+
+
 def test_extract_active_sessions_from_task_handles_missing_optional_fields():
     from GravityZone import _extract_active_sessions_from_task
 
@@ -415,6 +449,125 @@ def test_build_users_loggedin_results_outputs_endpoint_scoped_context():
         "Hostname": "host-1-updated",
         "ActiveSessions": [],
     }
+
+
+def test_extract_memory_dump_download_url_uses_matching_endpoint_subtask():
+    from GravityZone import _extract_memory_dump_download_url
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-other",
+                "status": 3,
+                "downloadURL": "https://example.com/other",
+            },
+            {
+                "endpointId": "endpoint-1",
+                "status": 3,
+                "downloadURL": "https://example.com/memory-dump",
+            },
+        ]
+    }
+
+    assert _extract_memory_dump_download_url(task_output, "endpoint-1") == "https://example.com/memory-dump"
+
+
+def test_extract_memory_dump_download_url_ignores_non_processed_subtask():
+    from GravityZone import _extract_memory_dump_download_url
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "status": 2,
+                "downloadURL": "https://example.com/should-not-be-used",
+            }
+        ]
+    }
+
+    assert _extract_memory_dump_download_url(task_output, "endpoint-1") == ""
+
+
+def test_extract_memory_dump_task_id_from_string_result():
+    from GravityZone import _extract_memory_dump_task_id
+
+    assert _extract_memory_dump_task_id("TASK_ID") == "TASK_ID"
+
+
+def test_extract_memory_dump_task_id_raises_on_invalid_result():
+    from GravityZone import _extract_memory_dump_task_id
+
+    with pytest.raises(Exception, match="createMemoryDumpTask response is missing task ID"):
+        _extract_memory_dump_task_id({"taskId": "TASK_ID"})
+
+
+def test_build_memory_dump_results_outputs_download_url_on_success():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 3,
+                "downloadURL": "https://example.com/memory-dump",
+            }
+        ],
+    }
+
+    result = _build_memory_dump_results(task_output, "endpoint-1")
+
+    assert result.outputs_prefix == "GravityZone.EndpointMemoryDump"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs == {
+        "ID": "endpoint-1",
+        "Hostname": "host-1",
+        "memoryDumpDownloadURL": "https://example.com/memory-dump",
+    }
+
+
+def test_build_memory_dump_results_omits_download_url_when_unavailable():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 4,
+            }
+        ],
+    }
+
+    result = _build_memory_dump_results(task_output, "endpoint-1")
+
+    assert result.outputs == {
+        "ID": "endpoint-1",
+        "Hostname": "host-1",
+    }
+    assert "memoryDumpDownloadURL" not in result.outputs
+
+
+def test_generate_processed_task_command_result_maps_memory_dump_task_type():
+    from GravityZone import generate_processed_task_command_result
+
+    task_output = {
+        "type": 27,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "startDate": "2026-05-26T10:00:00",
+                "endDate": "2026-05-26T10:01:00",
+            }
+        ],
+    }
+
+    result = generate_processed_task_command_result("parent-task-id", task_output, {})
+
+    assert result.outputs_prefix == "GravityZone.Command.CreateMemoryDump"
 
 
 @patch("GravityZone.demisto")
