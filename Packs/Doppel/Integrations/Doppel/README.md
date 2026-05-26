@@ -19,7 +19,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | Fetch incidents |  | False |
 | Incidents Fetch Interval | The interval specifies the cadence with which the Doppel alerts be fetched. | True |
 | Incident type |  | False |
-| Mirror Direction | Choose the direction to mirror the incident: None \(No mirroring\), Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). | False |
+| Mirror Direction | Choose the direction to mirror the incident: None \(No mirroring\), Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). Cortex XSOAR only parameter. | False |
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
