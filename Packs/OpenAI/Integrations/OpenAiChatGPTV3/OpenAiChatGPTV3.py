@@ -1131,9 +1131,7 @@ def enrich_compliance_event(event: dict[str, Any], api_event_type: str, workspac
     if api_event_type in COMPLIANCE_EVENT_TYPE_TO_SOURCE_LOG_TYPE:
         event["source_log_type"] = COMPLIANCE_EVENT_TYPE_TO_SOURCE_LOG_TYPE[api_event_type]
     else:
-        demisto.debug(
-            f"[Enrich Compliance] Unknown event_type='{api_event_type}' - falling back to lowercase as source_log_type."
-        )
+        demisto.info(f"[Enrich Compliance] Unknown event_type='{api_event_type}' - using lowercase as source_log_type.")
         event["source_log_type"] = api_event_type.lower()
     event["_event_type"] = api_event_type
     event["workspace_id"] = workspace_id

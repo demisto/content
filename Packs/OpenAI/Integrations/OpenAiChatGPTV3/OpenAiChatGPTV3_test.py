@@ -261,6 +261,21 @@ def test_enrich_compliance_event(event, api_event_type, expect_time, expect_sour
         assert event["_time"] == expect_time
 
 
+def test_enrich_compliance_event_unknown_event_type_logs_info_and_falls_back(mocker):
+    """Unknown api_event_type passes through lowercased AND logs at info so maintainers can spot
+    new OpenAI compliance event types without DEBUG-level scraping."""
+    info_mock = mocker.patch.object(demisto, "info")
+    event: dict[str, Any] = {"id": "FAKE_FUTURE_001", "timestamp": "2099-01-01T00:00:00Z"}
+
+    enrich_compliance_event(event, api_event_type="FUTURE_NEW_TYPE", workspace_id="FAKE_WORKSPACE_UUID")
+
+    assert event["source_log_type"] == "future_new_type"
+    assert event["_event_type"] == "FUTURE_NEW_TYPE"
+    assert event["workspace_id"] == "FAKE_WORKSPACE_UUID"
+    assert info_mock.called, "Unknown api_event_type must log at info level."
+    assert any("FUTURE_NEW_TYPE" in (c.args[0] if c.args else "") for c in info_mock.call_args_list)
+
+
 @pytest.mark.parametrize(
     "first_fetch_input, days_offset",
     [
