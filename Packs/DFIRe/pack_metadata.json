@@ -19,6 +19,7 @@
         "IOC"
     ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2",
         "platform"
     ]

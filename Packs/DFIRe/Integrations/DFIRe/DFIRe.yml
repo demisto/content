@@ -13,10 +13,8 @@ configuration:
   defaultvalue: https://your-dfire-instance.example.com
 - name: apikey
   display: API Key
-  type: 9
+  type: 4
   required: true
-  displaypassword: API Key
-  hiddenusername: true
   additionalinfo: Bearer API key (dfire_ak_...). Create under Settings > API Keys.
 - name: insecure
   display: Trust any certificate (not secure)
@@ -1542,7 +1540,7 @@ script:
     - name: todo_id
       description: The todo ID.
       required: true
-    - name: assignee_id
+    - name: user_id
       description: User ID of the assignee.
     outputs:
     - contextPath: DFIRe.CaseTodo.id

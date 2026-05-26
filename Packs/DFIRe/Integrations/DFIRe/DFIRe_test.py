@@ -677,10 +677,10 @@ def test_case_todo_get_raises_when_missing(client):
 
 def test_case_todo_assign(client):
     client._http_request.return_value = {"status": "success"}
-    DFIRe.case_todo_assign_command(client, {"case_id": "1", "todo_id": "u1", "assignee_id": "3"})
+    DFIRe.case_todo_assign_command(client, {"case_id": "1", "todo_id": "u1", "user_id": "3"})
     args, kwargs = client._http_request.call_args
     assert args == ("POST", "/cases/1/todo/u1/assign/")
-    assert kwargs["json_data"] == {"assignee_id": 3}
+    assert kwargs["json_data"] == {"user_id": 3}
 
 
 def test_case_todo_note_set_uses_put(client):

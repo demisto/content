@@ -1413,9 +1413,9 @@ def case_todo_assign_command(client: Client, args: dict[str, Any]) -> CommandRes
     assert case_id is not None
     todo_id = str(args["todo_id"])
     body: dict[str, Any] = {}
-    assignee = arg_to_number(args.get("assignee_id"))
-    if assignee is not None:
-        body["assignee_id"] = assignee
+    user_id = arg_to_number(args.get("user_id"))
+    if user_id is not None:
+        body["user_id"] = user_id
     result = client.case_todo_assign(case_id, todo_id, body)
     return CommandResults(
         outputs_prefix="DFIRe.CaseTodo",
@@ -1679,10 +1679,7 @@ COMMANDS: dict[str, Any] = {
 def main():
     params = demisto.params()
     base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
-    credentials = params.get("apikey") or {}
-    api_key = credentials.get("password", "")
-    if not api_key:
-        return_error("API Key is required. Configure it in the integration instance.")
+    api_key = params.get("apikey", "")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
