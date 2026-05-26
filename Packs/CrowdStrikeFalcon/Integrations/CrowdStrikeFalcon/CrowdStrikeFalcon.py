@@ -91,6 +91,9 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+# Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
+MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
+MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
