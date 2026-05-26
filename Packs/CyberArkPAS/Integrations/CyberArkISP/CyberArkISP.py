@@ -1192,20 +1192,32 @@ def _build_next_run(
 ) -> dict[str, Any]:
     """Build the dict to persist via ``demisto.setAssetsLastRun``.
 
-    When ``has_pending_work`` is True we include ``nextTrigger`` so the
-    platform re-invokes us within the same fetch cycle. When False we omit
-    it so the next invocation happens at the regular schedule and we drop
-    the in-flight cycle state.
+    Two distinct shapes:
+
+    * ``has_pending_work=True`` (mid-cycle continuation): persist the full
+      orchestration state (``snapshot_id``, per-source page indices, per-source
+      totals, pending list) and include ``nextTrigger`` so the platform
+      re-invokes us within the same fetch cycle to drain the remaining work.
+
+    * ``has_pending_work=False`` (cycle complete): persist an EMPTY payload.
+      This is critical for snapshot correctness — if we leave ``snapshot_id``
+      in last-run after sealing, the next scheduled fetch (which may arrive
+      in seconds on tenants with short ``assetsFetchInterval``) would reuse
+      that same id and the platform would treat cycle N+1 as more chunks of
+      cycle N's snapshot, causing replace-storms and items_count drift
+      (observed live on engine-qa2 during CIAC-16176 development). Returning
+      an empty dict guarantees the next ``fetch_assets_command`` invocation
+      generates a fresh ``snapshot_id`` at the top of the orchestrator.
     """
-    payload: dict[str, Any] = {
+    if not has_pending_work:
+        return {}
+    return {
         ASSETS_LAST_RUN_SNAPSHOT_ID: snapshot_id,
         ASSETS_LAST_RUN_PAGE_INDEX_BY_SOURCE: page_index_by_source,
         ASSETS_LAST_RUN_TOTAL_BY_SOURCE: total_by_source,
         ASSETS_LAST_RUN_PENDING_SOURCES: pending_sources_raw,
+        "nextTrigger": NEXT_TRIGGER_VALUE,
     }
-    if has_pending_work:
-        payload["nextTrigger"] = NEXT_TRIGGER_VALUE
-    return payload
 
 
 def _save_assets_state(

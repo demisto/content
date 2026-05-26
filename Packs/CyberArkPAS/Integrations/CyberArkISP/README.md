@@ -69,7 +69,6 @@ Before configuring the integration, you must complete the following prerequisite
 
 ## Integration Parameters
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Audit Server URL | The Audit API base URL from the SIEM integration \(e.g., https://example-domain.audit.cyberark.cloud\). | True |
@@ -84,7 +83,6 @@ Before configuring the integration, you must complete the following prerequisite
 | Fetch Assets | When enabled, the integration periodically fetches CyberArk Cloud Directory snapshots \(Users, Groups, Roles, Applications\) selected in 'Directory Data Collection' below. | False |
 | Directory Data Collection | Select which CyberArk Cloud Directory data sources to fetch as snapshots. Each selected source produces its own dataset \(cyberark_users_raw, cyberark_groups_raw, cyberark_roles_raw, cyberark_applications_raw\). Has no effect unless 'Fetch Assets' is enabled. | False |
 | Maximum number of records per Redrock page | Maximum number of records to request per page from the Redrock API \(default 10000\). Snapshots are paginated automatically across multiple invocations within a fetch cycle when needed. | False |
-
 
 ## Commands
 
@@ -155,6 +153,7 @@ For more information about CyberArk Identity Security Platform integration, refe
 - [Integrate Audit with third-party SIEM applications](https://docs.cyberark.com/identity/latest/en/Content/Integrations/SIEM/SIEM-intro.htm)
 - [SIEM Integration API](https://docs.cyberark.com/identity/latest/en/Content/Developer/SIEM-API.htm)
 - [Integrate the CyberArk Identity client credentials flow](https://docs.cyberark.com/identity/latest/en/Content/Developer/OAuth-client-creds.htm)
+
 ### cyberark-isp-get-roles
 
 ***
@@ -168,16 +167,16 @@ Manually fetches CyberArk Cloud Directory role snapshots via the Redrock Query A
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of role records to retrieve. Default is 50. | Optional | 
-| should_push_assets | Set to true to push the retrieved roles to XSIAM as a snapshot in the cyberark_roles_raw dataset. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximum number of role records to retrieve. Default is 50. | Optional |
+| should_push_assets | Set to true to push the retrieved roles to XSIAM as a snapshot in the cyberark_roles_raw dataset. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkISP.Role.ID | String | Unique identifier of the role. | 
-| CyberArkISP.Role.Name | String | Name of the role. | 
-| CyberArkISP.Role.Description | String | Description of the role. | 
+| CyberArkISP.Role.ID | String | Unique identifier of the role. |
+| CyberArkISP.Role.Name | String | Name of the role. |
+| CyberArkISP.Role.Description | String | Description of the role. |
 
 ### cyberark-isp-get-applications
 
@@ -192,16 +191,16 @@ Manually fetches CyberArk Cloud Directory application snapshots via the Redrock 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of application records to retrieve. Default is 50. | Optional | 
-| should_push_assets | Set to true to push the retrieved applications to XSIAM as a snapshot in the cyberark_applications_raw dataset. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximum number of application records to retrieve. Default is 50. | Optional |
+| should_push_assets | Set to true to push the retrieved applications to XSIAM as a snapshot in the cyberark_applications_raw dataset. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkISP.Application.ID | String | Unique identifier of the application. | 
-| CyberArkISP.Application.Name | String | Name of the application. | 
-| CyberArkISP.Application.AppType | String | Type of the application. | 
+| CyberArkISP.Application.ID | String | Unique identifier of the application. |
+| CyberArkISP.Application.Name | String | Name of the application. |
+| CyberArkISP.Application.AppType | String | Type of the application. |
 
 ### cyberark-isp-get-groups
 
@@ -216,13 +215,12 @@ Manually fetches CyberArk Cloud Directory group snapshots via the Redrock Query 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of group records to retrieve. Default is 50. | Optional | 
-| should_push_assets | Set to true to push the retrieved groups to XSIAM as a snapshot in the cyberark_groups_raw dataset. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximum number of group records to retrieve. Default is 50. | Optional |
+| should_push_assets | Set to true to push the retrieved groups to XSIAM as a snapshot in the cyberark_groups_raw dataset. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkISP.Group.ID | String | Unique identifier of the group. | 
-| CyberArkISP.Group.Name | String | Name of the group. | 
-
+| CyberArkISP.Group.ID | String | Unique identifier of the group. |
+| CyberArkISP.Group.Name | String | Name of the group. |

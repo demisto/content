@@ -1588,7 +1588,13 @@ def test_fetch_assets_continuation_uses_same_snapshot_id(mocker, redrock_client)
 
 
 def test_fetch_assets_completes_cycle_clears_state(mocker, redrock_client):
-    """When all selected sources are sealed, last-run is cleared (no nextTrigger)."""
+    """When all selected sources are sealed, last-run is FULLY cleared (empty
+    dict) so the next cycle starts fresh with a new snapshot_id.
+
+    This is the fix for the bug observed live on engine-qa2 where the cycle-end
+    payload still contained ``snapshot_id``, causing the next fetch cycle to
+    reuse it and produce snapshot-replace storms.
+    """
     # Last sealed page returning single row, FullCount equals page Count → has_more=False
     mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u6"}], full_count=1))
     last_run_in = {
@@ -1604,11 +1610,62 @@ def test_fetch_assets_completes_cycle_clears_state(mocker, redrock_client):
     config = _build_fetch_assets_config([DirectorySource.USERS])
     fetch_assets_command(redrock_client, config)
 
-    # Final seal: items_count = cumulative total = 5+1 = 6.
+    # Final seal: items_count = cumulative total = 5+1 = 6, using the cycle's snapshot_id.
     assert send_mock.call_args.kwargs["items_count"] == 6
+    assert send_mock.call_args.kwargs["snapshot_id"] == "snap-final-1"
+    # Persisted last-run is COMPLETELY EMPTY so the next invocation starts fresh.
     payload = set_last_run_mock.call_args[0][0]
-    assert payload["pending_sources"] == []
-    assert "nextTrigger" not in payload
+    assert payload == {}, f"Cycle-end payload must be empty to prevent snapshot_id reuse next cycle; got {payload}"
+
+
+def test_fetch_assets_seals_with_fresh_snapshot_id_on_next_cycle(mocker, redrock_client):
+    """REGRESSION test for the CIAC-16176 snapshot_id-reuse bug observed on
+    engine-qa2 (2026-05-24).
+
+    Scenario reproduced from production logs:
+    1. Cycle 1: a single source completes, seals with snapshot_id S1.
+    2. The platform's assets-fetch scheduler fires again very quickly (short
+       assetsFetchInterval on the tenant, OR an explicit operator-triggered
+       fetch).
+    3. Cycle 2 MUST generate a fresh snapshot_id S2 (S2 != S1), otherwise the
+       platform treats cycle 2's data as additional chunks of cycle 1's
+       snapshot and the items_count drifts / replace-storms occur.
+    """
+    # Two consecutive single-row sealed pages — represents cycle 1 then cycle 2.
+    mocker.patch.object(
+        redrock_client,
+        "query",
+        side_effect=[
+            _redrock_response([{"ID": "u1"}], full_count=1),
+            _redrock_response([{"ID": "u1"}], full_count=1),
+        ],
+    )
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    # --- Cycle 1 ---
+    # Simulate platform's empty last-run on first ever invocation.
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+    cycle1_snapshot_id = send_mock.call_args.kwargs["snapshot_id"]
+    cycle1_persisted = set_last_run_mock.call_args[0][0]
+    # Sanity: cycle 1 sealed cleanly with empty persisted state.
+    assert cycle1_persisted == {}, f"Cycle 1 must persist empty last-run after sealing; got {cycle1_persisted}"
+
+    # --- Cycle 2 ---
+    # Platform's get-last-run now returns the empty dict cycle 1 persisted.
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value=cycle1_persisted)
+
+    fetch_assets_command(redrock_client, config)
+    cycle2_snapshot_id = send_mock.call_args.kwargs["snapshot_id"]
+
+    assert cycle2_snapshot_id != cycle1_snapshot_id, (
+        f"Cycle 2 must generate a FRESH snapshot_id, but got the same value as cycle 1: "
+        f"cycle1={cycle1_snapshot_id} cycle2={cycle2_snapshot_id}. "
+        "This is the bug observed on engine-qa2 on 2026-05-24."
+    )
 
 
 def test_fetch_assets_processes_one_source_per_invocation(mocker, redrock_client):
