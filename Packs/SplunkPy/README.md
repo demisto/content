@@ -10,7 +10,7 @@ The primary integration for Splunk ES versions up to 8.1, which automatically fe
 
 ### SplunkPy v2
 
-Designed for Splunk ES version 8.2 and higher, supporting the new Splunk Finding Events architecture.
+Designed for Splunk ES version 8.2 and higher, supporting the new Splunk Enterprise Security architecture (Findings and Investigations).
 
 Using the commands in these integrations, you can leverage the Splunk API capabilities, such as:
 

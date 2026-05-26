@@ -11,17 +11,18 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
 | Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
 | Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Mobile Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOM filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOA filter query | In the query parameter format: 'cloud_provider=aws&amp;amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html\#keyword-arguments-13 | False |
-| Detections from On-Demand Scans filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| OFP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Third Party Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM automated leads fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM cases fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM incidents fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| IDP Detections filter query | Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Mobile Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOM filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOA filter query | Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| Detections from On-Demand Scans filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| OFP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Third Party Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM automated leads fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM cases fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM incidents fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Recon filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | Fetch incidents |  | False |
 | Fetch events |  | False |
 | Incident type |  | False |
@@ -131,25 +132,7 @@ For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
 ### Indicator of Attack (IOA) Fetch Query
 
-The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
-
-Using multiple values for the same parameter is not supported.
-
-Available parameters:
-
-- `cloud_provider` (required by every query)
-- `account_id`
-- `aws_account_id`
-- `azure_subscription_id`
-- `azure_tenant_id`
-- `severity`
-- `region`
-- `service`
-- `state`
-
-For example: `cloud_provider=aws&region=eu-west-2`
-
-For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).
 
 ## Fetch Assets
 
@@ -6280,7 +6263,9 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
 | display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
 | display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional |
-| limit | Maximum number of items to return (1-5000). Default is 50. | Optional |
+| limit | Maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional |
+| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit &lt;= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`. | Optional |
+| omit_next_token | When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
@@ -6333,6 +6318,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. |
 | CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. |
 | CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. |
+| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with \`limit &lt;= 2500\`, this cursor is suppressed by default. To always receive it, set \`omit_next_token=false\`. |
 
 #### Command Example
 
@@ -6388,7 +6374,9 @@ Retrieve vulnerability details according to the selected filter. Each request re
                 "vector": "vendor"
             }
         }
-    ]
+    ],
+    "VulnerabilityNextToken": "next_token"
+    
 }
 ```
 
