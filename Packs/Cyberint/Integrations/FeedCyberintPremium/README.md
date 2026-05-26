@@ -1,7 +1,7 @@
-Use the Cyberint Premium Feed integration to get IOC indicators from the premium feed.
-This integration was integrated and tested with version xx of Cyberint Premium Feed.
+Use the Check Point EM IoC Intelligence Feed integration to ingest high-fidelity IOC indicators from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs and to enrich a single indicator on demand.
+This integration was integrated and tested with version xx of the Cyberint Premium IOC APIs.
 
-## Configure Check Point EM Premium Feed in Cortex
+## Configure Check Point EM IoC Intelligence Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

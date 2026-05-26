@@ -1,6 +1,6 @@
-## Cyberint Premium Feed
+## Check Point EM IoC Intelligence Feed
 
-Use the **Check Point EM Premium Feed** integration to ingest high-fidelity Indicators-of-Compromise from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs into Cortex XSOAR Threat Intel Management, and to enrich a single IOC on demand from the war room or a playbook task.
+Use the **Check Point EM IoC Intelligence Feed** integration to ingest high-fidelity Indicators-of-Compromise from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs into Cortex XSOAR Threat Intel Management, and to enrich a single IOC on demand from the war room or a playbook task.
 
 ### Get your Cyberint API access token
 
@@ -10,7 +10,7 @@ Use the **Check Point EM Premium Feed** integration to ingest high-fidelity Indi
 
 ### Configure an integration instance
 
-1. In Cortex XSOAR, navigate to **Settings → Integrations → Servers & Services**, search for **Check Point EM Premium Feed** and click **Add instance**.
+1. In Cortex XSOAR, navigate to **Settings → Integrations → Servers & Services**, search for **Check Point EM IoC Intelligence Feed** and click **Add instance**.
 2. Fill in the **Connect** section:
    - **Cyberint API URL** — your Argos base URL, e.g. `https://your-company.cyberint.io`.
    - **Company Name** — the customer/tenant name registered with Cyberint (sent as a telemetry header).
