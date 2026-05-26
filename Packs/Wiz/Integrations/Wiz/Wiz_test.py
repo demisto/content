@@ -3132,3 +3132,31 @@ def test_known_phantom_exemptions_are_actually_referenced():
 
     stale = [name for name in _KNOWN_PHANTOM_SOURCES if name not in referenced]
     assert not stale, f"Phantom exemption(s) no longer referenced anywhere — remove from " f"_KNOWN_PHANTOM_SOURCES: {stale}"
+
+
+def test_check_api_errors_wraps_request_timeout(mocker):
+    """REGRESSION: heavy queries (e.g. TOXIC_COMBINATION issue_type) used to block
+    indefinitely until the 5-min Docker hard-kill because requests.post had no
+    timeout. checkAPIerrors must now bound the call with API_REQUEST_TIMEOUT and
+    raise an actionable error on timeout."""
+    import requests as _requests
+    import Wiz as _wiz
+
+    mocker.patch.object(_wiz, "TOKEN", "fake-token")
+    mocker.patch.object(_wiz.requests, "post", side_effect=_requests.Timeout("simulated"))
+
+    with pytest.raises(Exception, match=r"Wiz API request timed out after \d+s"):
+        _wiz.checkAPIerrors(query="query {}", variables={})
+
+
+def test_get_token_wraps_request_timeout(mocker):
+    """Auth POST must also be bounded by API_REQUEST_TIMEOUT and surface a
+    clear actionable error rather than hanging."""
+    import requests as _requests
+    import Wiz as _wiz
+
+    mocker.patch.object(_wiz, "AUTH_E", "https://auth.app.wiz.io/oauth/token")
+    mocker.patch.object(_wiz.requests, "post", side_effect=_requests.Timeout("simulated"))
+
+    with pytest.raises(Exception, match=r"Wiz authentication request timed out after \d+s"):
+        _wiz.get_token()
