@@ -10,4 +10,4 @@ Proofpoint Cloud Threat Response (CTR) is the cloud-based alternative to Proofpo
 
 ## Use Cases
 
-- **Case management**: Fetch CTR incidents in order to work them inside Cortex XSOAR. Closure of incidents is performed in the CTR UI (the CTR API does not currently expose a close-incident endpoint).
+- **Case management**: Fetch CTR incidents to work inside Cortex. Closure of incidents is performed in the CTR UI (the CTR API does not currently expose a close-incident endpoint).
