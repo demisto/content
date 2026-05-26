@@ -23,7 +23,7 @@ ignore=RN116
 ignore=RN114,RN107,RN115
 
 [file:README.md]
-ignore=RM110
+ignore=RM110,RM102
 
 [file:incidentfield-GIB_Nation-State_Cybercriminals_Threat_Actor_Country.json]
 ignore=IF115
