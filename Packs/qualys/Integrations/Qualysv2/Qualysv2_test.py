@@ -1162,6 +1162,27 @@ class TestClientClass:
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
 
+    @pytest.mark.parametrize(
+        "exception",
+        [
+            pytest.param(requests.exceptions.ReadTimeout, id="ReadTimeout"),
+            pytest.param(requests.exceptions.ChunkedEncodingError, id="ChunkedEncodingError"),
+        ],
+    )
+    def test_get_vulnerabilities_timeout(self, mocker: MockerFixture, exception: type) -> None:
+        """
+        Given:
+            - A ReadTimeout or ChunkedEncodingError raised by the HTTP request.
+        When:
+            - Calling client.get_vulnerabilities.
+        Assert:
+            - The exception is re-raised after logging.
+        """
+        mocker.patch.object(self.client, "_http_request", side_effect=exception())
+        mocker.patch("Qualysv2.demisto.error")
+        with pytest.raises(exception):
+            self.client.get_vulnerabilities(since_datetime="2024-12-12")
+
 
 class TestInputValidations:
     DEPENDANT_ARGS = {
@@ -1697,6 +1718,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     Assert:
         - Ensure correct sending to XSIAM and correctly set next assets run.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 100
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
@@ -1770,6 +1795,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
         - Ensure no data is sent to XSIAM and module health is not updated.
         - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 10
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
@@ -1810,6 +1839,10 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
         - Ensure correct sending of assets and vulnerabilities to XSIAM.
         - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 100
     last_total_vulns = 66
     last_run = {"total_assets": last_total_assets, "total_vulnerabilities": last_total_vulns, "snapshot_id": SNAPSHOT_ID}

@@ -11,21 +11,21 @@ You'll need an access key in order to complete the instance setup. Instructions 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Sumo Logic API Endpoint | https://api.&amp;lt;deployment&amp;gt;.sumologic.com/api/ | True |
-| Sumo Logic Instance Endpoint | For the incident field sumoURL link to work, e.g: https://&amp;lt;yoursubdomain&amp;gt;.&amp;lt;deployment&amp;gt;.sumologic.com | False |
+| Sumo Logic API Endpoint | https://api.&lt;deployment&gt;.sumologic.com/api | True |
+| Sumo Logic Instance Endpoint | https://&lt;yoursubdomain&gt;.&lt;deployment&gt;.sumologic.com | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Access ID |  | True |
 | Access Key |  | True |
 | Incidents Fetch Interval |  | False |
-| Fetch Limit | Fetch limit of Sumo Logic insights | False |
+| Fetch Limit | Fetch limit must not be greater than 200 | False |
 | Override default fetch query | Default fetch query is status:in\("new", "inprogress"\) | False |
 | First fetch time |  | False |
-| Pull associated Sumo Logic signals | Whether to pull the Sumo Logic Signals associated with the Insights as Cortex XSOAR incidents | False |
-| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Sumo Logic SIEM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Sumo Logic SIEM\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sumo Logic SIEM\). | False |
-| Close Mirrored Cortex XSOAR Incident (Incoming Mirroring) | When selected, closing the Sumo Logic Insight with a "Closed" status will close the Cortex XSOAR incident. | False |
-| Close Mirrored Sumo Logic Insight (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident will close the Sumo Logic Insight in SIEM. | False |
-| Override Record Summary Fields | Record Summary Fields included when fetching Insights (override default) | False |
+| Pull associated Sumo Logic Signals as Incidents | Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Sumo Logic SIEM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Sumo Logic SIEM\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sumo Logic SIEM\). Cortex XSOAR only parameter. | False |
+| Close Mirrored XSOAR Incident | When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR. Cortex XSOAR only parameter. | False |
+| Close Mirrored Sumo Logic Insight | When selected, closing the Cortex XSOAR incident is mirrored in Sumo Logic SIEM. | False |
+| Override Record Summary Fields | Record Summary Fields included when fetching Insights | False |
 
 ## API documentation and query examples
 
