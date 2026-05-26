@@ -1513,7 +1513,10 @@ def _build_fetch_assets_config(sources, page_size: int = 10000) -> dict:
 
 
 def test_fetch_assets_first_run_single_source_single_page_seals_snapshot(mocker, redrock_client):
-    """Happy path: one source, one page, one cycle → one sealed snapshot push."""
+    """Happy path: one source, one page, one cycle → one sealed snapshot push,
+    cycle-complete last-run is EMPTY so next cycle generates a fresh
+    snapshot_id (see test_fetch_assets_seals_with_fresh_snapshot_id_on_next_cycle).
+    """
     mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}, {"ID": "u2"}], full_count=2))
     mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
     set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
@@ -1530,10 +1533,11 @@ def test_fetch_assets_first_run_single_source_single_page_seals_snapshot(mocker,
     assert call_kwargs["data_type"] == "assets"
     assert call_kwargs["items_count"] == 2
     assert len(call_kwargs["data"]) == 2
-    # Snapshot id is set, no nextTrigger because cycle is complete (no pending).
+    # Cycle complete → last-run payload is EMPTY (so next cycle re-initialises
+    # snapshot_id afresh). No nextTrigger means the next invocation will
+    # happen on the regular schedule, not in 30s.
     last_run_payload = set_last_run_mock.call_args[0][0]
-    assert last_run_payload["pending_sources"] == []
-    assert "nextTrigger" not in last_run_payload
+    assert last_run_payload == {}, f"Cycle-end payload must be empty; got {last_run_payload}"
 
 
 def test_fetch_assets_pagination_emits_nextTrigger(mocker, redrock_client):
@@ -1736,7 +1740,7 @@ def test_fetch_assets_no_sources_selected_is_noop(mocker, redrock_client):
 
 def test_fetch_assets_empty_source_still_seals_snapshot(mocker, redrock_client):
     """If an enabled source returns 0 rows, we send an empty snapshot to seal
-    the dataset (Q3 default behaviour: matches Tenable_io)."""
+    the dataset (matches Tenable_io behaviour). Cycle-end last-run is empty."""
     mocker.patch.object(redrock_client, "query", return_value=_redrock_response([], full_count=0))
     mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
     set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
@@ -1749,8 +1753,9 @@ def test_fetch_assets_empty_source_still_seals_snapshot(mocker, redrock_client):
     assert send_mock.call_count == 1
     assert send_mock.call_args.kwargs["data"] == []
     assert send_mock.call_args.kwargs["items_count"] == 0
+    # Cycle complete (the single source's only page was its last) → empty last-run.
     payload = set_last_run_mock.call_args[0][0]
-    assert payload["pending_sources"] == []
+    assert payload == {}, f"Cycle-end payload must be empty; got {payload}"
 
 
 # -----------------------------------------------------------------
