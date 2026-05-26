@@ -10169,12 +10169,13 @@ def test_module(params):
     No additional API call is needed — client construction already validates auth.
     """
 
-    get_service_client(
+    sts_client, _ = get_service_client(
         params=params,
-        service_name=AWSServices.IAM,
+        service_name="sts",
         config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
     )
-    demisto.info("[AWS Automation Test Module] Credentials validated successfully")
+    sts_client.get_caller_identity()
+    demisto.info("[AWS Automation Test Module] sts.GetCallerIdentity succeeded")
     return "ok"
 
 
