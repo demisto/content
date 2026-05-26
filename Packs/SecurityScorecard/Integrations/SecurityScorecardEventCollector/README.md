@@ -59,7 +59,7 @@ The integration handles rate limits gracefully in two scenarios:
 1. **Rate limit on history events API**: If the rate limit is hit when fetching the list of events, the integration skips the current fetch cycle and waits for the next one.
 
 2. **Rate limit on detail URL enrichment**: Each event includes a `detail_url` that provides additional information. If the rate limit is hit while fetching these details, the integration:
-   - Sends all events that were successfully enriched to XSIAM.
+   - Sends all events that were successfully enriched to Cortex XSIAM.
    - Updates the last run checkpoint based on the last enriched event.
    - Defers remaining events to the next fetch cycle.
 
@@ -81,7 +81,7 @@ Each collected event contains the following fields:
 | `detail_url` | URL for detailed event information. |
 | `detail_url_response` | Enriched response from the detail URL API call. |
 
-### XSIAM Mapping
+### Cortex XSIAM Mapping
 
 - **`_time`** field is mapped from the event's `date` field.
 - **Vendor**: `SecurityScorecard`
@@ -115,8 +115,8 @@ Gets history events from SecurityScorecard. This command is used for developing/
 | --- | --- | --- |
 | date_from | The start time to fetch events from. Supports relative time (e.g., "3 days ago", "1 week") or specific absolute dates (ISO 8601 format). | Optional |
 | date_to | The end time to fetch events until. Supports relative time (e.g., "now", "1 hour ago") or specific absolute dates (ISO 8601 format). | Optional |
-| limit | Maximum number of events to retrieve. Default is 1000. | Optional |
-| should_push_events | Set to true to push events to Cortex XSIAM. Use with caution to avoid duplicates. Possible values are: `true`, `false`. Default is `false`. | Optional |
+| limit | Maximum number of events to retrieve. Default is `1000`. | Optional |
+| should_push_events | Set to true to push events to XSIAM. Use with caution to avoid duplicates. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 

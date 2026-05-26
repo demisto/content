@@ -1,11 +1,11 @@
+name: SecurityScorecardEventCollector
+display: SecurityScorecard Event Collector
 commonfields:
   id: SecurityScorecardEventCollector
   version: -1
-name: SecurityScorecardEventCollector
-display: SecurityScorecard Event Collector
 category: Data Enrichment & Threat Intelligence
 provider: SecurityScorecard
-description: Collects history events from SecurityScorecard for XSIAM.
+description: Collects history events from SecurityScorecard for Cortex XSIAM.
 sectionorder:
 - Connect
 - Collect
@@ -18,7 +18,6 @@ configuration:
   section: Connect
   additionalinfo: The SecurityScorecard API base URL.
 - name: api_token
-  display: API Token
   required: true
   type: 9
   section: Connect
@@ -32,7 +31,7 @@ configuration:
   section: Connect
   additionalinfo: 'The domain identifier for the scorecard (e.g., google.com).'
 - name: isFetchEvents
-  display: Fetch events
+  display: Fetch Events
   type: 8
   required: false
   section: Collect
@@ -42,14 +41,14 @@ configuration:
   type: 0
   section: Collect
   defaultvalue: '1000'
-  additionalinfo: Maximum number of events to fetch per cycle (default 1000).
+  additionalinfo: The maximum number of events to fetch per cycle.
 - name: first_fetch
   display: First fetch time
   required: false
   type: 0
   section: Collect
   defaultvalue: 3 days
-  additionalinfo: 'How far back to fetch events on the first run (e.g., 3 days, 7 days, 1 day).'
+  additionalinfo: 'The time to fetch events from on the first run (e.g., 3 days, 7 days, 1 day).'
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -68,22 +67,26 @@ script:
   commands:
   - name: securityscorecard-get-events
     description: |-
-      Gets history events from SecurityScorecard. This command is used for developing/debugging and should be used with caution, as it can create duplicate events and exceed API rate limits.
+      Gets history events from SecurityScorecard. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     deprecated: false
     arguments:
-    - name: date_from
+    - name: start_time
       description: >-
         The start time to fetch events from.
         Supports relative time (e.g., "3 days ago", "1 week")
         or specific absolute dates (ISO 8601 format, e.g., "2024-12-01T00:00:00.000Z").
       defaultValue: '3 days ago'
-    - name: date_to
+    - name: end_time
       description: >-
         The end time to fetch events until.
         Supports relative time (e.g., "now", "1 hour ago")
         or specific absolute dates (ISO 8601 format, e.g., "2024-12-01T00:00:00.000Z").
+    - name: event_type
+      description: >-
+        The event types to be fetched. (e.g., "issues").
+        If not specified, all event types are returned.
     - name: limit
-      description: Maximum number of events to retrieve.
+      description: The maximum number of events to retrieve.
       defaultValue: '1000'
     - name: should_push_events
       description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
@@ -94,31 +97,31 @@ script:
       - 'false'
     outputs:
     - contextPath: SecurityScorecard.Event.id
-      description: Unique identifier of the event.
+      description: The unique identifier of the event.
       type: Number
     - contextPath: SecurityScorecard.Event.date
-      description: Timestamp of the event.
+      description: The timestamp of the event.
       type: Date
     - contextPath: SecurityScorecard.Event.event_type
-      description: Type of the event.
+      description: The type of the event.
       type: String
     - contextPath: SecurityScorecard.Event.factor
       description: The security factor associated with the event.
       type: String
     - contextPath: SecurityScorecard.Event.severity
-      description: Severity level of the event.
+      description: The severity level of the event.
       type: String
     - contextPath: SecurityScorecard.Event.issue_type
       description: The type of issue.
       type: String
     - contextPath: SecurityScorecard.Event.group_status
-      description: Status of the issue group (active/resolved).
+      description: The status of the issue group (active/resolved).
       type: String
     - contextPath: SecurityScorecard.Event.issue_count
-      description: Number of issues in the event.
+      description: The number of issues in the event.
       type: Number
     - contextPath: SecurityScorecard.Event.total_score_impact
-      description: Total score impact of the event.
+      description: The total score impact of the event.
       type: Number
     - contextPath: SecurityScorecard.Event.detail_url
       description: URL for detailed event information.
@@ -140,3 +143,4 @@ supportedModules:
 - xsiam
 tests:
 - No tests (auto formatted)
+supportlevelheader: xsoar

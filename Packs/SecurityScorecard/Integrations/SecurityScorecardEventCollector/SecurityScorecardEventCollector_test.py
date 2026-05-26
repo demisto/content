@@ -11,7 +11,6 @@ from SecurityScorecardEventCollector import (  # noqa: E402
     add_time_to_events,
     calculate_last_run,
     deduplicate_events,
-    enrich_events_with_details,
     fetch_events_command,
     get_events_command,
     get_fetch_start_time,
@@ -214,6 +213,54 @@ class TestCalculateLastRun:
         result = calculate_last_run([])
         assert result == {}
 
+    def test_merges_ids_when_date_matches_previous_run(self):
+        """Test that IDs are merged when the last date matches the previous fetch date.
+
+        Scenario: Previous run fetched events [100] at date X. Current batch has event [200]
+        at the same date X. The result should contain both [100, 200] to prevent duplicates.
+        """
+        previous_last_run = {
+            "last_fetch": "2026-03-18T15:06:17.467Z",
+            "last_fetched_ids": [23751008],
+        }
+        # Current batch has event 37991923 at the same date
+        events = [{"id": 37991923, "date": "2026-03-18T15:06:17.467Z"}]
+
+        result = calculate_last_run(events, previous_last_run)
+
+        assert result["last_fetch"] == "2026-03-18T15:06:17.467Z"
+        assert set(result["last_fetched_ids"]) == {23751008, 37991923}
+
+    def test_does_not_merge_ids_when_date_differs(self):
+        """Test that IDs are NOT merged when the date has advanced past the previous run."""
+        previous_last_run = {
+            "last_fetch": "2026-03-17T10:00:00.000Z",
+            "last_fetched_ids": [100],
+        }
+        events = [{"id": 200, "date": "2026-03-18T15:06:17.467Z"}]
+
+        result = calculate_last_run(events, previous_last_run)
+
+        assert result["last_fetch"] == "2026-03-18T15:06:17.467Z"
+        assert result["last_fetched_ids"] == [200]
+
+    def test_merges_ids_no_duplicates(self):
+        """Test that merged IDs are deduplicated (no duplicate IDs in the result)."""
+        previous_last_run = {
+            "last_fetch": "2026-03-18T15:06:17.467Z",
+            "last_fetched_ids": [23751008, 37991923],
+        }
+        # Current batch re-fetches event 37991923 and adds 99999
+        events = [
+            {"id": 37991923, "date": "2026-03-18T15:06:17.467Z"},
+            {"id": 99999, "date": "2026-03-18T15:06:17.467Z"},
+        ]
+
+        result = calculate_last_run(events, previous_last_run)
+
+        assert result["last_fetch"] == "2026-03-18T15:06:17.467Z"
+        assert set(result["last_fetched_ids"]) == {23751008, 37991923, 99999}
+
 
 class TestGetFetchStartTime:
     """Tests for the get_fetch_start_time function."""
@@ -354,35 +401,6 @@ class TestClient:
 class TestEnrichEvents:
     """Tests for event enrichment functions."""
 
-    def test_enrich_events_success(self, client, mocker):
-        """Test successful enrichment of all events."""
-        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
-
-        import copy
-
-        events = copy.deepcopy(MOCK_EVENTS)
-        result = enrich_events_with_details(client, events)
-
-        assert len(result) == 2
-        assert result[0]["detail_url_response"] == MOCK_DETAIL_RESPONSE
-        assert result[1]["detail_url_response"] == MOCK_DETAIL_RESPONSE
-
-    def test_enrich_events_rate_limit(self, client, mocker):
-        """Test enrichment stops on rate limit and raises."""
-        # First event succeeds, second hits rate limit
-        mocker.patch.object(
-            client,
-            "get_detail_url_response",
-            side_effect=[MOCK_DETAIL_RESPONSE, RateLimitError(retry_after="60")],
-        )
-
-        import copy
-
-        events = copy.deepcopy(MOCK_EVENTS)
-
-        with pytest.raises(RateLimitError):
-            enrich_events_with_details(client, events)
-
     def test_safe_enrich_events_rate_limit(self, client, mocker):
         """Test safe enrichment returns partial results on rate limit."""
         mocker.patch.object(
@@ -412,14 +430,6 @@ class TestEnrichEvents:
 
         assert len(result) == 2
         assert rate_limited is False
-
-    def test_enrich_events_no_detail_url(self, client):
-        """Test enrichment skips events without detail_url."""
-        events = [{"id": 1, "date": "2026-03-18T15:06:17.467Z"}]
-        result = enrich_events_with_details(client, events)
-
-        assert len(result) == 1
-        assert "detail_url_response" not in result[0]
 
 
 # ========================================
@@ -464,16 +474,19 @@ class TestGetEventsCommand:
     """Tests for the get_events_command."""
 
     def test_get_events_returns_results(self, client, mocker):
-        """Test get events returns CommandResults."""
+        """Test get events returns CommandResults with _time field."""
         mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
         mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
-        args = {"date_from": "3 days ago", "limit": "10", "should_push_events": "false"}
+        args = {"start_time": "3 days ago", "limit": "10", "should_push_events": "false"}
         result = get_events_command(client, args)
 
         assert isinstance(result, CommandResults)
         assert result.outputs is not None
         assert len(result.outputs) == 2
+        # Verify _time field is present in outputs (standardized event field)
+        for event in result.outputs:
+            assert "_time" in event, "Event output must include the standardized _time field"
 
     def test_get_events_push_to_xsiam(self, client, mocker):
         """Test get events with push to XSIAM."""
@@ -481,7 +494,7 @@ class TestGetEventsCommand:
         mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        args = {"date_from": "3 days ago", "limit": "10", "should_push_events": "true"}
+        args = {"start_time": "3 days ago", "limit": "10", "should_push_events": "true"}
         result = get_events_command(client, args)
 
         assert isinstance(result, str)
@@ -493,11 +506,45 @@ class TestGetEventsCommand:
         mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
         mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
-        args = {"date_from": "3 days ago", "limit": "1", "should_push_events": "false"}
+        args = {"start_time": "3 days ago", "limit": "1", "should_push_events": "false"}
         result = get_events_command(client, args)
 
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
+
+    def test_get_events_with_event_type_filter(self, client, mocker):
+        """Test get events filters by event_type."""
+        import copy
+
+        events_mixed = copy.deepcopy(MOCK_EVENTS_DIFFERENT_DATES)
+        events_mixed[0]["event_type"] = "score_change"
+        events_mixed[1]["event_type"] = "issues"
+
+        mocker.patch.object(client, "get_history_events", return_value=events_mixed)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
+
+        args = {"start_time": "3 days ago", "event_type": "issues", "should_push_events": "false"}
+        result = get_events_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs is not None
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["event_type"] == "issues"
+
+    def test_get_events_with_end_time(self, client, mocker):
+        """Test get events accepts end_time argument."""
+        mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
+        mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
+
+        args = {
+            "start_time": "3 days ago",
+            "end_time": "2026-03-19T00:00:00.000Z",
+            "should_push_events": "false",
+        }
+        result = get_events_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs is not None
 
 
 class TestFetchEventsCommand:
@@ -508,19 +555,12 @@ class TestFetchEventsCommand:
         mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
         mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1000",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]
@@ -536,14 +576,7 @@ class TestFetchEventsCommand:
         mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
         mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1000",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(
             demisto,
             "getLastRun",
@@ -555,7 +588,7 @@ class TestFetchEventsCommand:
         mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]
@@ -566,14 +599,7 @@ class TestFetchEventsCommand:
         """Test fetch when all events are duplicates."""
         mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1000",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(
             demisto,
             "getLastRun",
@@ -585,7 +611,7 @@ class TestFetchEventsCommand:
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         mock_send.assert_not_called()
         mock_set_last_run.assert_not_called()
@@ -598,18 +624,11 @@ class TestFetchEventsCommand:
             side_effect=RateLimitError(retry_after="120"),
         )
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1000",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         mock_send.assert_not_called()
 
@@ -623,19 +642,12 @@ class TestFetchEventsCommand:
             side_effect=[MOCK_DETAIL_RESPONSE, RateLimitError(retry_after="60")],
         )
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1000",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         # Should send only the first event (enriched before rate limit)
         mock_send.assert_called_once()
@@ -653,18 +665,11 @@ class TestFetchEventsCommand:
         """Test fetch with no events returned."""
         mocker.patch.object(client, "get_history_events", return_value=[])
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1000",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         mock_send.assert_not_called()
 
@@ -673,19 +678,12 @@ class TestFetchEventsCommand:
         mocker.patch.object(client, "get_history_events", return_value=MOCK_EVENTS)
         mocker.patch.object(client, "get_detail_url_response", return_value=MOCK_DETAIL_RESPONSE)
 
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "1",
-                "first_fetch": "3 days",
-            },
-        )
+        params = {"max_fetch": "1", "first_fetch": "3 days"}
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
-        fetch_events_command(client)
+        fetch_events_command(client, params)
 
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]

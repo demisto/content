@@ -3,12 +3,8 @@ from datetime import datetime, timezone  # noqa: UP017
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-import urllib3
 from ContentClientApiModule import *
 from CommonServerPython import *  # noqa: F401
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 # region Constants
 # =================================
@@ -200,59 +196,20 @@ def deduplicate_events(
     return new_events
 
 
-def enrich_events_with_details(
-    client: Client,
-    events: list[dict[str, Any]],
-) -> list[dict[str, Any]]:
-    """Enrich each event with the response from its detail_url.
-
-    If a rate limit is hit during detail URL fetching, returns only the events
-    that were successfully enriched (up to but not including the one that failed).
-
-    Args:
-        client: The SecurityScorecard API client.
-        events: List of events to enrich.
-
-    Returns:
-        List of enriched events. May be shorter than input if rate limit was hit.
-
-    Raises:
-        RateLimitError: Re-raised after marking which events were enriched.
-    """
-    enriched_events: list[dict[str, Any]] = []
-
-    for event in events:
-        detail_url = event.get("detail_url")
-        if not detail_url:
-            demisto.debug(f"[Enrich] Event {event.get('id')} has no detail_url. Skipping enrichment.")
-            enriched_events.append(event)
-            continue
-
-        try:
-            detail_response = client.get_detail_url_response(detail_url)
-            event["detail_url_response"] = detail_response
-            enriched_events.append(event)
-        except RateLimitError:
-            demisto.debug(
-                f"[Enrich] Rate limit hit while enriching event {event.get('id')}. "
-                f"Returning {len(enriched_events)} enriched events so far."
-            )
-            raise RateLimitError
-
-    demisto.debug(f"[Enrich] Successfully enriched {len(enriched_events)} events.")
-    return enriched_events
-
-
 def calculate_last_run(
     events: list[dict[str, Any]],
+    last_run: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Calculate the last run state from the given events.
 
     Saves the most recent date and the IDs of events that share that date
-    for deduplication on the next run.
+    for deduplication on the next run. If the most recent date matches the
+    previous fetch date from last_run, the IDs are merged to prevent
+    duplicate ingestion across fetch cycles.
 
     Args:
         events: List of events (sorted by date ascending).
+        last_run: Previous last run state dictionary (optional).
 
     Returns:
         Dictionary with 'last_fetch' (date string) and 'last_fetched_ids' (list of ints).
@@ -265,6 +222,16 @@ def calculate_last_run(
 
     # Collect all IDs that share the same date as the last event
     ids_at_last_date = [event.get("id") for event in events if event.get("date") == last_date and event.get("id") is not None]
+
+    # Merge with previous IDs if the date hasn't changed
+    if last_run and last_run.get("last_fetch") == last_date:
+        previous_ids: list[int] = last_run.get("last_fetched_ids", [])
+        merged_ids = list(set(previous_ids) | set(ids_at_last_date))
+        demisto.debug(
+            f"[LastRun] Same date {last_date} as previous run. "
+            f"Merged {len(previous_ids)} previous + {len(ids_at_last_date)} new IDs = {len(merged_ids)} total."
+        )
+        ids_at_last_date = merged_ids
 
     demisto.debug(f"[LastRun] New high-water mark: {last_date} with {len(ids_at_last_date)} IDs.")
 
@@ -354,7 +321,12 @@ def get_events_command(
 
     Args:
         client: The SecurityScorecard API client.
-        args: Command arguments.
+        args: Command arguments including:
+            - start_time: Start time for fetching events (required).
+            - end_time: End time for fetching events (optional, defaults to now).
+            - event_type: Filter events by type (optional).
+            - limit: Maximum number of events to retrieve (optional, default 1000).
+            - should_push_events: Whether to push events to XSIAM (optional, default false).
 
     Returns:
         CommandResults with the events or a string message if pushed to XSIAM.
@@ -363,29 +335,38 @@ def get_events_command(
 
     limit = arg_to_number(args.get("limit", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     should_push_events = argToBoolean(args.get("should_push_events", False))
+    event_type_filter = args.get("event_type")
 
-    date_from_input = args.get("date_from", "3 days ago")
-    date_to_input = args.get("date_to")
+    start_time_input = args.get("start_time", "3 days ago")
+    end_time_input = args.get("end_time")
 
-    date_from_dt = arg_to_datetime(arg=date_from_input, arg_name="date_from", required=True)
-    if date_from_dt is None:
-        raise DemistoException(f"Failed to parse date_from: {date_from_input}")
-    date_from = date_from_dt.strftime(DATE_FORMAT)
+    start_time_dt = arg_to_datetime(arg=start_time_input, arg_name="start_time", required=True)
+    if start_time_dt is None:
+        raise DemistoException(f"Failed to parse start_time: {start_time_input}")
+    date_from = start_time_dt.strftime(DATE_FORMAT)
 
-    if date_to_input:
-        date_to_dt = arg_to_datetime(arg=date_to_input, arg_name="date_to")
-        if date_to_dt is None:
-            raise DemistoException(f"Failed to parse date_to: {date_to_input}")
-        date_to = date_to_dt.strftime(DATE_FORMAT)
+    if end_time_input:
+        end_time_dt = arg_to_datetime(arg=end_time_input, arg_name="end_time")
+        if end_time_dt is None:
+            raise DemistoException(f"Failed to parse end_time: {end_time_input}")
+        date_to = end_time_dt.strftime(DATE_FORMAT)
     else:
         date_to = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
 
-    demisto.debug(f"[Command] Params - from: {date_from}, to: {date_to}, " f"limit: {limit}, push: {should_push_events}")
+    demisto.debug(
+        f"[Command] Params - from: {date_from}, to: {date_to}, "
+        f"limit: {limit}, event_type: {event_type_filter}, push: {should_push_events}"
+    )
 
     events = client.get_history_events(date_from=date_from, date_to=date_to)
 
     # Sort by date ascending
     events.sort(key=lambda x: x.get("date", ""))
+
+    # Filter by event_type if specified
+    if event_type_filter:
+        events = [event for event in events if event.get("event_type") == event_type_filter]
+        demisto.debug(f"[Command] Filtered to {len(events)} events with event_type='{event_type_filter}'.")
 
     # Apply limit
     if len(events) > limit:
@@ -396,8 +377,10 @@ def get_events_command(
     if rate_limited:
         demisto.debug("[Command] Rate limit hit during enrichment. Returning partial results.")
 
+    # Always add _time field for standardized event output
+    add_time_to_events(events)
+
     if should_push_events and events:
-        add_time_to_events(events)
         send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM.")
         return f"Successfully retrieved and pushed {len(events)} events to XSIAM."
@@ -417,7 +400,7 @@ def get_events_command(
     )
 
 
-def fetch_events_command(client: Client) -> None:
+def fetch_events_command(client: Client, params: dict[str, Any]) -> None:
     """Scheduled command to fetch events and send them to XSIAM.
 
     Handles rate limiting gracefully by sending whatever events were collected
@@ -426,8 +409,8 @@ def fetch_events_command(client: Client) -> None:
 
     Args:
         client: The SecurityScorecard API client.
+        params: Integration parameters from demisto.params().
     """
-    params = demisto.params()
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
 
     last_run = demisto.getLastRun()
@@ -482,7 +465,7 @@ def fetch_events_command(client: Client) -> None:
         demisto.debug(f"[Fetch] Pushed {len(enriched_events)} events to XSIAM.")
 
         # Step 7: Update last run based on what was actually sent
-        new_last_run = calculate_last_run(enriched_events)
+        new_last_run = calculate_last_run(enriched_events, last_run)
         if new_last_run:
             demisto.setLastRun(new_last_run)
             demisto.debug(f"[Fetch] Last run updated: {new_last_run.get('last_fetch')}")
@@ -498,9 +481,6 @@ def _safe_enrich_events(
     events: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], bool]:
     """Enrich events with detail URLs, stopping gracefully on rate limit.
-
-    Unlike enrich_events_with_details, this function catches the RateLimitError
-    and returns whatever was enriched before the error.
 
     Args:
         client: The SecurityScorecard API client.
@@ -573,7 +553,7 @@ def main() -> None:
             return_results(result)
 
         elif command == "fetch-events":
-            fetch_events_command(client)
+            fetch_events_command(client, params)
 
         elif command == "securityscorecard-get-events":
             command_result = get_events_command(client, demisto.args())
