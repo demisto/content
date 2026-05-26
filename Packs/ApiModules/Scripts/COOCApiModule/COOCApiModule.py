@@ -423,6 +423,42 @@ def is_gov_account(connector_id: str, account_id: str = "") -> bool:
         demisto.debug(f"[COOC API] There are no {account_id=} or {accounts_info=} for the {connector_id=}.")
         return False
 
+
+def get_timeout(timeout) -> tuple[int, int]:
+    """
+    Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.
+
+    Accepts either ``"<read>"`` (connect defaults to 10 s) or ``"<read>,<connect>"``.
+    Mirrors ``AWSClient.get_timeout`` from ``AWSApiModule`` for behavioural parity with
+    the legacy AWS-* packs. Intended for use by COOC integrations that support the
+    XSOAR / XSIAM marketplace path.
+
+    Args:
+        timeout: The raw value from ``params.get("timeout")``. May be ``None``, an
+            int, or a string.
+
+    Returns:
+        tuple[int, int]: ``(read_timeout, connect_timeout)`` in seconds.
+
+    Raises:
+        DemistoException: If the value is malformed.
+    """
+    if not timeout:
+        timeout = "60,10"
+    try:
+        if isinstance(timeout, int):
+            return timeout, 10
+        timeout_vals = str(timeout).split(",")
+        read_timeout = int(timeout_vals[0])
+        connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
+        return read_timeout, connect_timeout
+    except ValueError:
+        raise DemistoException(
+            "You can specify just the read timeout (for example 60) or also the connect "
+            "timeout followed after a comma (for example 60,10). If a connect timeout is "
+            "not specified, a default of 10 seconds will be used."
+        )
+
     if account_cloud_partition := relevant_account.get("cloud_partition", ""):
         demisto.debug(f"[COOC API] The found {account_cloud_partition=}")
         return account_cloud_partition.upper() == "GOV"

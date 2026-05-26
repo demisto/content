@@ -20,12 +20,6 @@ configuration:
   section: Connect
   required: false
   additionalinfo: "Full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration on XSOAR or XSIAM marketplaces (not required when running through a Cortex Cloud connector)."
-- display: Default AWS Account ID
-  name: test_account_id
-  type: 0
-  section: Connect
-  additionalinfo: AWS Account ID used for running integration test
-  required: false
 - display: Role Session Name
   name: role_session_name
   type: 0

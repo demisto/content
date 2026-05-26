@@ -49,41 +49,6 @@ TERMINAL_COMMAND_STATUSES = {  # the status for run command command
 }
 
 
-def get_timeout(timeout) -> tuple[int, int]:
-    """
-    Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.
-
-    Mirrors ``AWSClient.get_timeout`` from ``AWSApiModule`` for behavioural parity with
-    the legacy AWS-* packs. Accepts either ``"<read>"`` (connect defaults to 10) or
-    ``"<read>,<connect>"``.
-
-    Args:
-        timeout: The raw value from ``params.get("timeout")``. May be ``None``, an
-            int, or a string.
-
-    Returns:
-        tuple[int, int]: ``(read_timeout, connect_timeout)`` in seconds.
-
-    Raises:
-        DemistoException: If the value is malformed.
-    """
-    if not timeout:
-        timeout = "60,10"  # default values
-    try:
-        if isinstance(timeout, int):
-            return timeout, 10
-        timeout_vals = str(timeout).split(",")
-        read_timeout = int(timeout_vals[0])
-        connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
-        return read_timeout, connect_timeout
-    except ValueError:
-        raise DemistoException(
-            "You can specify just the read timeout (for example 60) or also the connect "
-            "timeout followed after a comma (for example 60,10). If a connect timeout is "
-            "not specified, a default of 10 seconds will be used."
-        )
-
-
 def handle_port_range(args: dict) -> tuple:
     """
     Parse and extract port range information from command arguments.
@@ -10399,18 +10364,12 @@ def get_service_client(
     verify_ssl: bool = not argToBoolean(params.get("insecure", False)) if params else True
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
-    client = aws_session.client(
-        service,
-        verify=verify_ssl,
-        config=client_config,
-        endpoint_url=endpoint_url,
-    )
+    client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)
 
     if is_platform_path:
         register_proxydome_header(client)
 
     return client, session
-
 
 
 def execute_aws_command(
@@ -10468,6 +10427,7 @@ def execute_aws_command(
     account_id: str = args.get("account_id", "")
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
     service_client, _ = get_service_client(credentials, params, args, command)
+    # If it is a polling command, the args must be the first argument
     if args.get("polling_timeout") is not None:
         demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
         return COMMANDS_MAPPING[command](args, service_client)
