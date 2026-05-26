@@ -581,7 +581,7 @@ script:
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.cors
       description: The CORS rules for the Blob service.
-      type: String
+      type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: String
@@ -8082,7 +8082,7 @@ script:
       type: String
     - contextPath: Azure.Storage.BlobServices.properties.cors
       description: The CORS rules for the Blob service.
-      type: String
+      type: Unknown
     - contextPath: Azure.Storage.BlobServices.properties.defaultServiceVersion
       description: The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date

@@ -2946,7 +2946,7 @@ Sets properties for the blob service in a specific account storage. Required per
 | Azure.Storage.BlobServices.id | String | The resource ID. |
 | Azure.Storage.BlobServices.name | String | The name of the resource. |
 | Azure.Storage.BlobServices.type | String | The type of the resource. |
-| Azure.Storage.BlobServices.properties.cors | String | The CORS rules for the Blob service. |
+| Azure.Storage.BlobServices.properties.cors | Unknown | The CORS rules for the Blob service. |
 | Azure.Storage.BlobServices.properties.defaultServiceVersion | String | The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
 | Azure.Storage.BlobServices.properties.deleteRetentionPolicy | Unknown | The service properties for soft delete. |
 | Azure.Storage.BlobServices.properties.isVersioningEnabled | Boolean | Whether versioning is enabled. |
