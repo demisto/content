@@ -1,5 +1,5 @@
 args:
-- description: A comma-separated list of IPs to enrich.
+- description: A comma-separated list of IPv4 addresses to enrich.
   name: ip_list
   required: true
   isArray: true
@@ -48,7 +48,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IP and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
+comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IPv4 (IPv6 is not supported) and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
 commonfields:
   id: ip-enrichment
   version: -1

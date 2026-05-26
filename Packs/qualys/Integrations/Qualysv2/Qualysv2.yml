@@ -44,6 +44,8 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - xsiam
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -55,6 +57,8 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - xsiam
 - defaultvalue: 10000
   section: Collect
   display: Event Fetch Limit
@@ -66,6 +70,8 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - xsiam
 - defaultvalue: 1
   display: Events Fetch Interval
   name: eventFetchInterval
@@ -76,6 +82,8 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - xsiam
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
@@ -87,6 +95,8 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - xsiam
 description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
@@ -2886,5 +2896,3 @@ script:
 fromversion: 5.5.0
 tests:
 - QualysVulnerabilityManagement-Test
-supportedModules:
-- xsiam

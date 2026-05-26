@@ -3,6 +3,7 @@ import json
 import random
 
 import pytest
+from typing import Any
 from unittest.mock import patch, MagicMock
 import demistomock as demisto
 
@@ -12,6 +13,12 @@ from Packs.Wiz.Integrations.Wiz.Wiz import (
     WizStatus,
     WizSeverity,
     WizIssueType,
+    WizMirrorDirection,
+    WizMirrorParam,
+    WizMirrorField,
+    XSOAR_MIRROR_MARKER,
+    WIZ_MIRRORED_FIELDS,
+    DEFAULT_RESOLUTION_REASON,
     get_fetch_issues_variables,
     PULL_ISSUES_DEFAULT_VARIABLES,
     DEFAULT_FETCH_ISSUE_STATUS,
@@ -190,8 +197,34 @@ def test_get_resources(checkAPIerrors):
         entity_type="ACCESS_ROLE",
         subscription_external_ids="123456789",
         provider_unique_ids="12345678-2222-3333-1111-ff5fa2ff7f78",
+        project_ids=None,
+        native_types=None,
+        updated_at_before=None,
+        updated_at_after=None,
     )
     assert res == test_get_resources_response
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_get_resources_response)
+def test_get_resources_with_new_filters(checkAPIerrors):
+    from Wiz import get_resources
+
+    res = get_resources(
+        search=None,
+        entity_type=None,
+        subscription_external_ids=None,
+        provider_unique_ids=None,
+        project_ids="proj-1, proj-2",
+        native_types="aws_ec2_instance, aws_s3_bucket",
+        updated_at_before=None,
+        updated_at_after="2024-01-01T00:00:00Z",
+    )
+    assert res == test_get_resources_response
+    call_args = checkAPIerrors.call_args
+    variables = call_args[0][1]
+    assert variables["filterBy"]["projectId"] == ["proj-1", "proj-2"]
+    assert variables["filterBy"]["nativeType"] == ["aws_ec2_instance", "aws_s3_bucket"]
+    assert variables["filterBy"]["updatedAt"] == {"after": "2024-01-01T00:00:00Z"}
 
 
 def test_get_resources_wrong_input(capfd):
@@ -267,6 +300,45 @@ def test_resolve_issue(checkAPIerrors, capfd):
 
     res = resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "WONT_FIX", "blah_note")
     assert res == test_reject_issue_response
+
+
+_resolve_issue_non_threat_response = {
+    "data": {
+        "issues": {
+            "nodes": [{"id": "12345678-2222-3333-1111-ff5fa2ff7f78", "type": "TOXIC_COMBINATION"}],
+            "pageInfo": {"hasNextPage": False, "endCursor": ""},
+        }
+    }
+}
+
+
+@patch("Wiz.checkAPIerrors", return_value=_resolve_issue_non_threat_response)
+def test_resolve_issue_non_threat_returns_friendly_error(checkAPIerrors, capfd):
+    from Wiz import resolve_issue
+
+    with capfd.disabled():
+        res = resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "blah_note")
+
+    assert "Only a Threat Detection Issue can be resolved" in res
+    assert "TOXIC_COMBINATION" in res
+    assert "wiz-reject-issue" in res
+    # The integration must short-circuit before the update mutation, so checkAPIerrors
+    # is called exactly once (the _get_issue lookup) and never for reject_or_resolve_issue.
+    assert checkAPIerrors.call_count == 1
+
+
+_resolve_issue_unknown_id_response = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": ""}}}}
+
+
+@patch("Wiz.checkAPIerrors", return_value=_resolve_issue_unknown_id_response)
+def test_resolve_issue_unknown_id_returns_not_found(checkAPIerrors):
+    from Wiz import resolve_issue
+
+    res = resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "blah_note")
+
+    assert res == "Issue not found: 12345678-2222-3333-1111-ff5fa2ff7f78"
+    # Same short-circuit guarantee as above — no update mutation should be sent.
+    assert checkAPIerrors.call_count == 1
 
 
 @patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
@@ -549,6 +621,7 @@ def test_has_next_page(mocker, capfd):
         valid_json_paging["data"]["issues"]["pageInfo"]["endCursor"] = "test"
         mocker.patch("Wiz.checkAPIerrors", side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
         mocker.patch("CommonServerPython.tableToMarkdown", return_value=[])
+        mocker.patch.object(demisto, "getLastRun", return_value={"time": "2025-01-01T00:00:00Z"})
         fetch_issues(450)
 
 
@@ -662,6 +735,39 @@ def test_set_issue_note(checkAPIerrors):
 
     res = set_issue_comment("12345678-2222-3333-1111-ff5fa2ff7f78", "blah_note")
     assert res == test_set_issue_note_response
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_set_issue_note_response)
+def test_set_issue_note_truncates_long_note(checkAPIerrors):
+    from Wiz import set_issue_comment, MAX_NOTE_LENGTH
+
+    long_note = "a" * (MAX_NOTE_LENGTH + 1)
+    set_issue_comment("12345678-2222-3333-1111-ff5fa2ff7f78", long_note)
+
+    call_args = checkAPIerrors.call_args
+    sent_text = call_args[0][1]["input"]["text"]
+    assert len(sent_text) <= MAX_NOTE_LENGTH
+    assert sent_text.endswith("... [truncated]")
+
+
+def test_truncate_note():
+    from Wiz import truncate_note, MAX_NOTE_LENGTH
+
+    # Short notes are unchanged
+    assert truncate_note("short note") == "short note"
+    assert truncate_note("") == ""
+    assert truncate_note(None) is None
+
+    # Exactly at limit is unchanged
+    exact = "a" * MAX_NOTE_LENGTH
+    assert truncate_note(exact) == exact
+
+    # Over limit gets truncated
+    long_text = "a" * (MAX_NOTE_LENGTH + 1)
+    result = truncate_note(long_text)
+    assert len(result) <= MAX_NOTE_LENGTH
+    assert result.endswith("... [truncated]")
+    assert len(result) == MAX_NOTE_LENGTH
 
 
 test_set_issue_note_fail_response = {
@@ -1593,3 +1699,1436 @@ def test_validation_response_to_dict():
     assert result["error_message"] is None
     assert result["value"] == ["test"]
     assert result["severity_list"] == ["CRITICAL"]
+
+
+# ===== MIRROR TESTS =====
+
+
+@pytest.fixture
+def mock_mirror_params():
+    """Common demisto mock setup for mirror tests requiring direction + instance."""
+    with (
+        patch.object(
+            demisto,
+            "params",
+            return_value={WizMirrorParam.DIRECTION: "Incoming", WizMirrorParam.COMMENT_TAG: "comments"},
+        ),
+        patch.object(demisto, "integrationInstance", return_value="Wiz_instance_1"),
+    ):
+        yield
+
+
+def test_get_mapping_fields_command():
+    """Test get_mapping_fields_command returns scheme with expected fields"""
+    from Wiz import get_mapping_fields_command
+
+    result = get_mapping_fields_command()
+    # GetMappingFieldsResponse has scheme_types_mappings attribute
+    assert result is not None
+    schemes = result.scheme_types_mappings
+    assert len(schemes) == 1
+    assert schemes[0].type_name == "Wiz Issue"
+    for field in WIZ_MIRRORED_FIELDS:
+        assert field in schemes[0].fields
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_command(mock_check_api, _mock_get_ctx, _mock_set_ctx):
+    """Test get_modified_remote_data_command extracts IDs correctly"""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [
+                    {"id": "11111111-1111-1111-1111-111111111111", "statusChangedAt": "2025-01-02T00:00:00Z"},
+                    {"id": "22222222-2222-2222-2222-222222222222", "statusChangedAt": "2025-01-03T00:00:00Z"},
+                ],
+                "pageInfo": {"hasNextPage": False},
+            }
+        }
+    }
+
+    args = {"lastUpdate": "2025-01-01T00:00:00Z"}
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        result = get_modified_remote_data_command(args)
+
+    assert result.modified_incident_ids == [
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+    ]
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command(mock_get_issue, mock_mirror_params):
+    """Test get_remote_data_command returns issue with mirror metadata and note entries"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [
+        {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "status": "OPEN",
+            "severity": "HIGH",
+            "notes": [
+                {
+                    "text": "New finding from team",
+                    "createdAt": "2025-06-01T10:00:00Z",
+                    "updatedAt": "2025-06-01T10:00:00Z",
+                    "user": {"name": "Alice"},
+                    "serviceAccount": None,
+                }
+            ],
+        }
+    ]
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert result.mirrored_object["id"] == "11111111-1111-1111-1111-111111111111"
+    assert result.mirrored_object[WizMirrorField.DIRECTION] == "In"
+    assert result.mirrored_object[WizMirrorField.INSTANCE] == "Wiz_instance_1"
+    assert len(result.entries) == 1
+    assert "Alice" in result.entries[0]["Contents"]
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command_issue_not_found(mock_get_issue):
+    """Test get_remote_data_command with empty response"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = {}
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert result.mirrored_object == {}
+    assert result.entries == []
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_skips_xsoar_mirrored_notes(mock_get_issue, mock_mirror_params):
+    """Test that notes containing XSOAR_MIRROR_MARKER are skipped"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [
+        {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "status": "OPEN",
+            "notes": [
+                {
+                    "text": f"(analyst): some note\n\n{XSOAR_MIRROR_MARKER}",
+                    "createdAt": "2025-06-01T10:00:00Z",
+                    "updatedAt": "2025-06-01T10:00:00Z",
+                    "user": {"name": "Bot"},
+                    "serviceAccount": None,
+                },
+                {
+                    "text": "Genuine Wiz note",
+                    "createdAt": "2025-06-01T11:00:00Z",
+                    "updatedAt": "2025-06-01T11:00:00Z",
+                    "user": {"name": "Bob"},
+                    "serviceAccount": None,
+                },
+            ],
+        }
+    ]
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert len(result.entries) == 1
+    assert "Bob" in result.entries[0]["Contents"]
+
+
+@pytest.mark.parametrize(
+    "limit_input,expected_first",
+    [
+        ("0", 1),
+        ("1000", 500),
+        ("invalid", 50),
+    ],
+)
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_mirror_limit_validation(mock_check_api, _mock_get_ctx, _mock_set_ctx, limit_input, expected_first):
+    """Test that mirror_limit is clamped to 1-500 range and handles invalid input"""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    args = {"lastUpdate": "2025-01-01T00:00:00Z"}
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: limit_input}):
+        get_modified_remote_data_command(args)
+    call_variables = mock_check_api.call_args[0][1]
+    assert call_variables["first"] == expected_first
+
+
+@patch("Wiz.reject_or_resolve_issue")
+def test_handle_field_changes_status_resolved(mock_resolve):
+    """Test _handle_field_changes with resolved status"""
+    from Wiz import _handle_field_changes
+
+    mock_resolve.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"status": "resolved", "resolutionReason": "ISSUE_FIXED"})
+
+    mock_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111", "ISSUE_FIXED", "Status mirrored from Cortex XSOAR", "RESOLVED"
+    )
+
+
+@patch("Wiz.reopen_issue")
+def test_handle_field_changes_status_reopen(mock_reopen):
+    """Test _handle_field_changes with open status"""
+    from Wiz import _handle_field_changes
+
+    mock_reopen.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"status": "open"})
+
+    mock_reopen.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", reopen_note="")
+
+
+@patch("Wiz.set_issue_comment")
+def test_handle_outgoing_entries(mock_set_comment, mock_mirror_params):
+    """Test _handle_outgoing_entries pushes notes with marker"""
+    from Wiz import _handle_outgoing_entries
+
+    mock_set_comment.return_value = {}
+    entries = [{"contents": "Investigation complete", "user": "analyst@corp.com", "tags": ["comments"]}]
+
+    _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
+
+    mock_set_comment.assert_called_once()
+    call_args = mock_set_comment.call_args
+    assert XSOAR_MIRROR_MARKER in call_args[1]["comment"]
+    assert "analyst@corp.com" in call_args[1]["comment"]
+
+
+@patch("Wiz.set_issue_comment")
+def test_handle_outgoing_entries_skips_untagged(mock_set_comment, mock_mirror_params):
+    """Defense-in-depth: entries WITHOUT the configured comment_tag must NOT be pushed
+    to Wiz, even though XSOAR's mirror engine should already filter them upstream.
+    Protects against tag-config drift and future XSOAR behavior changes."""
+    from Wiz import _handle_outgoing_entries
+
+    entries = [
+        {"contents": "internal triage note", "user": "analyst", "tags": ["internal", "private"]},
+        {"contents": "playbook step output", "user": "playbook", "tags": []},
+        {"contents": "no tags at all", "user": "system"},  # tags key missing
+    ]
+
+    _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
+
+    mock_set_comment.assert_not_called()
+
+
+@patch("Wiz.set_issue_comment")
+def test_handle_outgoing_entries_respects_custom_comment_tag(mock_set_comment):
+    """If a customer customizes `comment_tag`, only entries matching the CUSTOM tag
+    should be pushed. An entry with the default 'comments' tag must be skipped if
+    the customer has set comment_tag='wiz-mirror'."""
+    from Wiz import _handle_outgoing_entries
+
+    entries = [
+        {"contents": "should push", "user": "analyst", "tags": ["wiz-mirror"]},
+        {"contents": "should skip - default tag", "user": "analyst", "tags": ["comments"]},
+    ]
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.COMMENT_TAG: "wiz-mirror"}):
+        _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
+
+    assert mock_set_comment.call_count == 1
+    assert "should push" in mock_set_comment.call_args[1]["comment"]
+
+
+@patch("Wiz.set_issue_due_date")
+def test_handle_field_changes_due_date(mock_set_due):
+    """Test _handle_field_changes with due date change"""
+    from Wiz import _handle_field_changes
+
+    mock_set_due.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"dueAt": "2025-12-31"})
+
+    mock_set_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", due_at="2025-12-31")
+
+
+@patch("Wiz.clear_issue_due_date")
+def test_handle_field_changes_clear_due_date(mock_clear_due):
+    """Test _handle_field_changes clears due date when dueAt is empty string"""
+    from Wiz import _handle_field_changes
+
+    mock_clear_due.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"dueAt": ""})
+
+    mock_clear_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111")
+
+
+@patch("Wiz.reject_or_resolve_issue")
+def test_handle_incident_closed(mock_resolve):
+    """Test _handle_incident_closed resolves issue in Wiz"""
+    from Wiz import _handle_incident_closed
+
+    mock_resolve.return_value = {}
+    _handle_incident_closed("11111111-1111-1111-1111-111111111111")
+
+    mock_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111",
+        DEFAULT_RESOLUTION_REASON,
+        "Resolved from Cortex XSOAR",
+        "RESOLVED",
+    )
+
+
+def test_update_remote_system_no_remote_id():
+    """Test update_remote_system_command returns early with no remote_id"""
+    from Wiz import update_remote_system_command
+
+    result = update_remote_system_command({"remoteId": "", "data": {}, "entries": [], "incidentChanged": False})
+
+    assert result == ""
+
+
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_build_incidents_with_mirror_metadata(mock_demisto):
+    """Test build_incidents adds mirror metadata when mirroring enabled"""
+    mock_demisto.params.return_value = {
+        WizMirrorParam.DIRECTION: "Incoming And Outgoing",
+        WizMirrorParam.COMMENT_TAG: "comments",
+    }
+    mock_demisto.integrationInstance.return_value = "Wiz_instance_1"
+    mock_demisto.get = demisto.get
+
+    issue = {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "severity": "HIGH",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "sourceRule": {"name": "Test Rule"},
+    }
+
+    result = build_incidents(issue)
+
+    raw = json.loads(result["rawJSON"])
+    assert raw[WizMirrorField.DIRECTION] == "Both"
+    assert raw[WizMirrorField.INSTANCE] == "Wiz_instance_1"
+    assert raw[WizMirrorField.ID] == "11111111-1111-1111-1111-111111111111"
+    assert raw[WizMirrorField.TAGS] == ["comments"]
+
+
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_build_incidents_without_mirror_metadata(mock_demisto):
+    """Test build_incidents does NOT add mirror metadata when direction is None"""
+    mock_demisto.params.return_value = {WizMirrorParam.DIRECTION: "None"}
+    mock_demisto.integrationInstance.return_value = "Wiz_instance_1"
+    mock_demisto.get = demisto.get
+
+    issue = {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "severity": "HIGH",
+        "createdAt": "2025-01-01T00:00:00Z",
+        "sourceRule": {"name": "Test Rule"},
+    }
+
+    result = build_incidents(issue)
+
+    raw = json.loads(result["rawJSON"])
+    assert WizMirrorField.DIRECTION not in raw
+    assert WizMirrorField.INSTANCE not in raw
+    assert WizMirrorField.ID not in raw
+
+
+# ===== GAP #1: _fetch_all_issue_nodes multi-page pagination =====
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_multi_page(mock_check_api):
+    """Test that _fetch_all_issue_nodes concatenates nodes from multiple pages and propagates cursor"""
+    from Wiz import _fetch_all_issue_nodes
+
+    page1_response = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "issue-1"}, {"id": "issue-2"}],
+                "pageInfo": {"hasNextPage": True, "endCursor": "cursor-abc"},
+            }
+        }
+    }
+    page2_response = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "issue-3"}],
+                "pageInfo": {"hasNextPage": False, "endCursor": None},
+            }
+        }
+    }
+    mock_check_api.side_effect = [page1_response, page2_response]
+
+    result = _fetch_all_issue_nodes("some_query", {"first": 10})
+
+    assert len(result) == 3
+    assert [n["id"] for n in result] == ["issue-1", "issue-2", "issue-3"]
+    # Verify cursor was propagated in the second call
+    second_call_vars = mock_check_api.call_args_list[1][0][1]
+    assert second_call_vars["after"] == "cursor-abc"
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_single_page(mock_check_api):
+    """Test that _fetch_all_issue_nodes works with a single page (no pagination)"""
+    from Wiz import _fetch_all_issue_nodes
+
+    single_page = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "only-issue"}],
+                "pageInfo": {"hasNextPage": False, "endCursor": None},
+            }
+        }
+    }
+    mock_check_api.return_value = single_page
+
+    result = _fetch_all_issue_nodes("some_query", {"first": 10})
+
+    assert len(result) == 1
+    assert result[0]["id"] == "only-issue"
+    mock_check_api.assert_called_once()
+
+
+# ===== GAP #2: _mirror_status_to_wiz for in_progress and rejected =====
+
+
+@patch("Wiz.issue_in_progress")
+def test_mirror_status_to_wiz_in_progress(mock_in_progress):
+    """Test _mirror_status_to_wiz dispatches in_progress status"""
+    from Wiz import _mirror_status_to_wiz
+
+    mock_in_progress.return_value = {}
+    _mirror_status_to_wiz("11111111-1111-1111-1111-111111111111", "in_progress", {})
+
+    mock_in_progress.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111")
+
+
+@patch("Wiz.reject_or_resolve_issue")
+def test_mirror_status_to_wiz_rejected(mock_resolve):
+    """Test _mirror_status_to_wiz dispatches rejected status"""
+    from Wiz import _mirror_status_to_wiz
+
+    mock_resolve.return_value = {}
+    _mirror_status_to_wiz(
+        "11111111-1111-1111-1111-111111111111",
+        "rejected",
+        {"resolutionReason": "FALSE_POSITIVE"},
+    )
+
+    mock_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111", "FALSE_POSITIVE", "Status mirrored from Cortex XSOAR", "REJECTED"
+    )
+
+
+@patch("Wiz.reject_or_resolve_issue")
+def test_mirror_status_to_wiz_rejected_default_reason(mock_resolve):
+    """Test _mirror_status_to_wiz uses default reason when none provided"""
+    from Wiz import _mirror_status_to_wiz
+
+    mock_resolve.return_value = {}
+    _mirror_status_to_wiz("11111111-1111-1111-1111-111111111111", "rejected", {})
+
+    mock_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111", DEFAULT_RESOLUTION_REASON, "Status mirrored from Cortex XSOAR", "REJECTED"
+    )
+
+
+# ===== GAP #3: _handle_field_changes with wizissueduedate key =====
+
+
+@patch("Wiz.set_issue_due_date")
+def test_handle_field_changes_wizissueduedate_fallback(mock_set_due):
+    """Test _handle_field_changes picks up wizissueduedate when dueAt is absent"""
+    from Wiz import _handle_field_changes
+
+    mock_set_due.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"wizissueduedate": "2025-12-31"})
+
+    mock_set_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", due_at="2025-12-31")
+
+
+@patch("Wiz.clear_issue_due_date")
+def test_handle_field_changes_wizissueduedate_clear(mock_clear_due):
+    """Test _handle_field_changes clears due date via wizissueduedate fallback key"""
+    from Wiz import _handle_field_changes
+
+    mock_clear_due.return_value = {}
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"wizissueduedate": ""})
+
+    mock_clear_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111")
+
+
+# ===== GAP #4: _handle_field_changes with skip_status=True =====
+
+
+@patch("Wiz._mirror_status_to_wiz")
+def test_handle_field_changes_skip_status(mock_mirror):
+    """Test _handle_field_changes does NOT call _mirror_status_to_wiz when skip_status=True"""
+    from Wiz import _handle_field_changes
+
+    _handle_field_changes("11111111-1111-1111-1111-111111111111", {"status": "resolved"}, skip_status=True)
+
+    mock_mirror.assert_not_called()
+
+
+@patch("Wiz._mirror_status_to_wiz")
+@patch("Wiz.set_issue_due_date")
+def test_handle_field_changes_skip_status_still_handles_due_date(mock_set_due, mock_mirror):
+    """Test _handle_field_changes skips status but still processes due date"""
+    from Wiz import _handle_field_changes
+
+    mock_set_due.return_value = {}
+    _handle_field_changes(
+        "11111111-1111-1111-1111-111111111111",
+        {"status": "resolved", "dueAt": "2025-12-31"},
+        skip_status=True,
+    )
+
+    mock_mirror.assert_not_called()
+    mock_set_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111", due_at="2025-12-31")
+
+
+# ===== GAP #5: update_remote_system_command full flow =====
+
+
+@patch("Wiz._handle_outgoing_entries")
+@patch("Wiz._handle_incident_closed")
+@patch("Wiz._handle_field_changes")
+def test_update_remote_system_full_flow(mock_field_changes, mock_closed, mock_entries):
+    """Test update_remote_system_command with incident_changed + delta + close + entries"""
+    from Wiz import update_remote_system_command
+
+    args = {
+        "remoteId": "11111111-1111-1111-1111-111111111111",
+        "data": {},
+        "entries": [{"contents": "Investigation note", "user": "analyst@corp.com"}],
+        "incidentChanged": True,
+        "delta": {"status": "resolved", "dueAt": "2025-12-31", "resolutionReason": "ISSUE_FIXED"},
+        "status": 2,  # IncidentStatus.DONE
+    }
+
+    result = update_remote_system_command(args)
+
+    assert result == "11111111-1111-1111-1111-111111111111"
+    mock_field_changes.assert_called_once()
+    # skip_status should be True because incident is closed
+    assert mock_field_changes.call_args[1]["skip_status"] is True
+    mock_closed.assert_called_once_with("11111111-1111-1111-1111-111111111111", resolution_reason="ISSUE_FIXED")
+    mock_entries.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111",
+        [{"contents": "Investigation note", "user": "analyst@corp.com"}],
+    )
+
+
+@patch("Wiz._handle_outgoing_entries")
+@patch("Wiz._handle_incident_closed")
+@patch("Wiz._handle_field_changes")
+def test_update_remote_system_open_incident_with_delta(mock_field_changes, mock_closed, mock_entries):
+    """Test update_remote_system_command with delta but NOT closed"""
+    from Wiz import update_remote_system_command
+
+    args = {
+        "remoteId": "11111111-1111-1111-1111-111111111111",
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "delta": {"status": "in_progress"},
+        "status": 1,  # IncidentStatus.ACTIVE
+    }
+
+    result = update_remote_system_command(args)
+
+    assert result == "11111111-1111-1111-1111-111111111111"
+    mock_field_changes.assert_called_once()
+    assert mock_field_changes.call_args[1]["skip_status"] is False
+    mock_closed.assert_not_called()
+
+
+# ===== closeReason fallback (round-3 mapper gap) =====
+# The outgoing mapper declares `resolutionReason <- resolutionReason` but no XSOAR
+# incident field by that name exists, so the mapper alone never carries the analyst's
+# chosen close reason. _resolve_wiz_reason translates `closeReason` (built-in, always
+# populated on close) so the user intent reaches Wiz instead of defaulting to WONT_FIX.
+
+
+def test_resolve_wiz_reason_explicit_resolution_reason_wins():
+    """Explicit delta.resolutionReason wins over data.closeReason (forward-compat)."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({"resolutionReason": "EXCEPTION"}, {"closeReason": "Resolved"}) == "EXCEPTION"
+
+
+def test_resolve_wiz_reason_translates_xsoar_close_reasons():
+    """closeReason on `data` translates via XSOAR_CLOSE_REASON_TO_WIZ when delta lacks resolutionReason."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({}, {"closeReason": "Resolved"}) == "ISSUE_FIXED"
+    assert _resolve_wiz_reason({}, {"closeReason": "False Positive"}) == "FALSE_POSITIVE"
+    assert _resolve_wiz_reason({}, {"closeReason": "Duplicate"}) == "WONT_FIX"
+    assert _resolve_wiz_reason({}, {"closeReason": "Other"}) == "WONT_FIX"
+
+
+def test_resolve_wiz_reason_unknown_close_reason_returns_none():
+    """Unknown closeReason returns None so caller applies DEFAULT_RESOLUTION_REASON."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({}, {"closeReason": "SomeCustomReason"}) is None
+    assert _resolve_wiz_reason(None, None) is None
+    assert _resolve_wiz_reason({}, {}) is None
+
+
+def test_resolve_wiz_reason_falls_back_to_delta_close_reason():
+    """If data is missing but delta carries closeReason (mapper-supplied), still translate."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({"closeReason": "Resolved"}, None) == "ISSUE_FIXED"
+
+
+@patch("Wiz._handle_outgoing_entries")
+@patch("Wiz._handle_incident_closed")
+@patch("Wiz._handle_field_changes")
+def test_update_remote_system_close_reason_fallback_to_issue_fixed(mock_field_changes, mock_closed, mock_entries):
+    """REGRESSION: closing an XSOAR incident with closeReason='Resolved' but no
+    resolutionReason in delta must still send ISSUE_FIXED to Wiz, not the WONT_FIX default."""
+    from Wiz import update_remote_system_command
+
+    args = {
+        "remoteId": "11111111-1111-1111-1111-111111111111",
+        "data": {"closeReason": "Resolved", "closeNotes": "All cleaned up"},
+        "entries": [],
+        "incidentChanged": True,
+        "delta": {"closingUserId": "admin"},  # mapper put nothing useful in delta
+        "status": 2,  # IncidentStatus.DONE
+    }
+
+    update_remote_system_command(args)
+
+    mock_closed.assert_called_once_with("11111111-1111-1111-1111-111111111111", resolution_reason="ISSUE_FIXED")
+
+
+@patch("Wiz._handle_outgoing_entries")
+@patch("Wiz._handle_incident_closed")
+@patch("Wiz._handle_field_changes")
+def test_update_remote_system_close_explicit_reason_overrides_close_reason(mock_field_changes, mock_closed, mock_entries):
+    """Explicit resolutionReason in delta wins over closeReason in data."""
+    from Wiz import update_remote_system_command
+
+    args = {
+        "remoteId": "11111111-1111-1111-1111-111111111111",
+        "data": {"closeReason": "False Positive"},
+        "entries": [],
+        "incidentChanged": True,
+        "delta": {"resolutionReason": "EXCEPTION"},
+        "status": 2,
+    }
+
+    update_remote_system_command(args)
+
+    mock_closed.assert_called_once_with("11111111-1111-1111-1111-111111111111", resolution_reason="EXCEPTION")
+
+
+@patch("Wiz.reject_or_resolve_issue")
+def test_mirror_status_to_wiz_resolved_uses_close_reason_fallback(mock_reject_resolve):
+    """_mirror_status_to_wiz on 'resolved' status path also respects the closeReason fallback."""
+    from Wiz import _mirror_status_to_wiz
+
+    _mirror_status_to_wiz(
+        "11111111-1111-1111-1111-111111111111",
+        "resolved",
+        delta={"status": "resolved"},
+        data={"closeReason": "False Positive"},
+    )
+
+    mock_reject_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111",
+        "FALSE_POSITIVE",
+        "Status mirrored from Cortex XSOAR",
+        "RESOLVED",
+    )
+
+
+# ===== GAP #6: get_remote_data_command with service account notes =====
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command_service_account_notes(mock_get_issue, mock_mirror_params):
+    """Test get_remote_data_command formats SA notes with [SA] prefix"""
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [
+        {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "status": "OPEN",
+            "notes": [
+                {
+                    "text": "Automated scan completed",
+                    "createdAt": "2025-06-01T10:00:00Z",
+                    "updatedAt": "2025-06-01T10:00:00Z",
+                    "user": None,
+                    "serviceAccount": {"name": "WizScanner"},
+                }
+            ],
+        }
+    ]
+
+    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    result = get_remote_data_command(args)
+
+    assert len(result.entries) == 1
+    assert "[SA] WizScanner" in result.entries[0]["Contents"]
+
+
+# ===== GAP #7: WizMirrorDirection.from_params() Outgoing + invalid =====
+
+
+def test_mirror_direction_from_params_outgoing():
+    """Test WizMirrorDirection.from_params() returns 'Out' for Outgoing"""
+    with patch.object(demisto, "params", return_value={WizMirrorParam.DIRECTION: "Outgoing"}):
+        result = WizMirrorDirection.from_params()
+    assert result == "Out"
+
+
+def test_mirror_direction_from_params_invalid():
+    """Test WizMirrorDirection.from_params() returns None for invalid value"""
+    with patch.object(demisto, "params", return_value={WizMirrorParam.DIRECTION: "InvalidValue"}):
+        result = WizMirrorDirection.from_params()
+    assert result is None
+
+
+# ===== GAP #8: get_resources with updated_at_before =====
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_get_resources_response)
+def test_get_resources_with_updated_at_before(checkAPIerrors):
+    """Test get_resources sends 'before' in updatedAt filter"""
+    from Wiz import get_resources
+
+    get_resources(
+        search=None,
+        entity_type=None,
+        subscription_external_ids=None,
+        provider_unique_ids=None,
+        project_ids=None,
+        native_types=None,
+        updated_at_before="2024-06-01T00:00:00Z",
+        updated_at_after=None,
+    )
+
+    variables = checkAPIerrors.call_args[0][1]
+    assert variables["filterBy"]["updatedAt"] == {"before": "2024-06-01T00:00:00Z"}
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_get_resources_response)
+def test_get_resources_with_both_updated_at(checkAPIerrors):
+    """Test get_resources sends both 'before' and 'after' in updatedAt filter"""
+    from Wiz import get_resources
+
+    get_resources(
+        search=None,
+        entity_type=None,
+        subscription_external_ids=None,
+        provider_unique_ids=None,
+        project_ids=None,
+        native_types=None,
+        updated_at_before="2024-06-01T00:00:00Z",
+        updated_at_after="2024-01-01T00:00:00Z",
+    )
+
+    variables = checkAPIerrors.call_args[0][1]
+    assert variables["filterBy"]["updatedAt"] == {
+        "before": "2024-06-01T00:00:00Z",
+        "after": "2024-01-01T00:00:00Z",
+    }
+
+
+# ===== GAP #9: get_resources error mentions new param names =====
+
+
+def test_get_resources_error_mentions_new_params(capfd):
+    """Test that the no-filter error message includes all 8 parameter names"""
+    from Wiz import get_resources
+
+    with capfd.disabled():
+        res = get_resources(search=None, entity_type=None, subscription_external_ids=None, provider_unique_ids=None)
+        assert "project_ids" in res
+        assert "native_types" in res
+        assert "updated_at_before" in res
+        assert "updated_at_after" in res
+
+
+# ===== GAP #10: reject_or_resolve_issue truncation =====
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
+def test_reject_or_resolve_issue_truncates_long_comment(mock_check_api):
+    """Test that reject_or_resolve_issue truncates comments exceeding MAX_NOTE_LENGTH"""
+    from Wiz import reject_or_resolve_issue, MAX_NOTE_LENGTH
+
+    long_comment = "x" * (MAX_NOTE_LENGTH + 100)
+    reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "WONT_FIX", long_comment, "RESOLVED")
+
+    sent_note = mock_check_api.call_args[0][1]["patch"]["note"]
+    assert len(sent_note) <= MAX_NOTE_LENGTH
+    assert sent_note.endswith("... [truncated]")
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
+def test_reject_issue_sends_rejected_status_and_reason(mock_check_api):
+    """Reject path must send status=REJECTED with resolutionReason and the note text."""
+    from Wiz import reject_issue
+
+    reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e")
+
+    variables = mock_check_api.call_args[0][1]
+    assert variables["issueId"] == "12345678-2222-3333-1111-ff5fa2ff7f78"
+    assert variables["patch"]["status"] == "REJECTED"
+    assert variables["patch"]["resolutionReason"] == "FALSE_POSITIVE"
+    assert variables["patch"]["note"] == "rejecting_for_e2e"
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
+def test_resolve_issue_sends_resolved_status_and_reason(mock_check_api):
+    """Resolve path must send status=RESOLVED with resolutionReason and the note text."""
+    # resolve_issue requires the issue type to be THREAT_DETECTION; mock _get_issue accordingly
+    from unittest.mock import patch as _patch
+
+    threat_issue = {"data": {"issues": {"nodes": [{"type": "THREAT_DETECTION"}]}}}
+    with _patch("Wiz._get_issue", return_value=threat_issue):
+        from Wiz import resolve_issue
+
+        resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "resolving_for_e2e")
+
+    variables = mock_check_api.call_args[0][1]
+    assert variables["issueId"] == "12345678-2222-3333-1111-ff5fa2ff7f78"
+    assert variables["patch"]["status"] == "RESOLVED"
+    assert variables["patch"]["resolutionReason"] == "ISSUE_FIXED"
+    assert variables["patch"]["note"] == "resolving_for_e2e"
+
+
+# ===== _build_new_note_entries tests =====
+
+
+LAST_UPDATE = "2025-01-01T00:00:00Z"
+
+
+def format_as_note(text: str, time: str, author: str) -> dict[str, Any]:
+    return {
+        "text": text,
+        "createdAt": time,
+        "updatedAt": time,
+        "user": {"name": author},
+        "serviceAccount": None,
+    }
+
+
+@pytest.mark.parametrize(
+    "issue,last_update,expected_count,expected_content",
+    [
+        pytest.param({"notes": None}, LAST_UPDATE, 0, None, id="notes_null"),
+        pytest.param({"notes": []}, LAST_UPDATE, 0, None, id="notes_empty"),
+        pytest.param({}, LAST_UPDATE, 0, None, id="notes_key_missing"),
+        pytest.param({"notes": [format_as_note("x", "2025-06-01T10:00:00Z", "A")]}, None, 0, None, id="no_last_update"),
+        pytest.param(
+            {
+                "notes": [
+                    format_as_note("old", "2024-01-01T00:00:00Z", "Alice"),
+                    format_as_note("new", "2025-06-01T10:00:00Z", "Bob"),
+                ]
+            },
+            LAST_UPDATE,
+            1,
+            "Bob",
+            id="filters_old_keeps_new",
+        ),
+    ],
+)
+def test_build_new_note_entries(issue, last_update, expected_count, expected_content):
+    from Wiz import _build_new_note_entries
+
+    result = _build_new_note_entries(issue, last_update)
+    assert len(result) == expected_count
+    if expected_content:
+        assert expected_content in result[0]["Contents"]
+
+
+def test_build_new_note_entries_microsecond_vs_second_precision():
+    """Regression: Wiz returns microsecond-precision timestamps; XSOAR's lastUpdate
+    is second-precision. Lex compare flips the order — `.` (0x2E) < `Z` (0x5A) —
+    so `"2025-06-01T10:00:00.500000Z" < "2025-06-01T10:00:00Z"` lexicographically.
+    A note created 0.5s AFTER lastUpdate would be silently dropped from the war room.
+    The fix parses both with `datetime.fromisoformat` before comparing."""
+    from Wiz import _build_new_note_entries
+
+    last_update = "2025-06-01T10:00:00Z"  # second-precision (XSOAR style)
+    issue = {
+        "notes": [
+            # Note created 0.5s AFTER lastUpdate, but with microsecond precision (Wiz style)
+            format_as_note("new_microsecond", "2025-06-01T10:00:00.500000Z", "Alice"),
+            # Note created 1s before lastUpdate — should still be filtered out
+            format_as_note("old", "2025-06-01T09:59:59Z", "Bob"),
+        ]
+    }
+    result = _build_new_note_entries(issue, last_update)
+
+    # Pre-fix: lex compare would treat the microsecond note as OLDER and drop it (0 entries).
+    # Post-fix: parsed datetime compare correctly identifies it as newer.
+    assert len(result) == 1
+    assert "Alice" in result[0]["Contents"]
+    assert "new_microsecond" in result[0]["Contents"]
+
+
+def test_build_new_note_entries_iso_with_offset():
+    """ISO timestamps with explicit offset (`+00:00`) must be parsed correctly,
+    even when the other side uses the `Z` shorthand. Both denote UTC."""
+    from Wiz import _build_new_note_entries
+
+    issue = {
+        "notes": [
+            format_as_note("newer", "2025-06-01T10:00:01+00:00", "Alice"),
+            format_as_note("equal", "2025-06-01T10:00:00+00:00", "Bob"),
+        ]
+    }
+    result = _build_new_note_entries(issue, "2025-06-01T10:00:00Z")
+
+    assert len(result) == 1
+    assert "newer" in result[0]["Contents"]
+
+
+def test_parse_iso_timestamp_handles_bad_input():
+    """Helper must return None for empty/invalid input rather than raising."""
+    from Wiz import _parse_iso_timestamp
+
+    assert _parse_iso_timestamp("") is None
+    assert _parse_iso_timestamp(None) is None
+    assert _parse_iso_timestamp("not-a-date") is None
+    assert _parse_iso_timestamp("2025-06-01T10:00:00Z") is not None
+
+
+# ===== _attach_mirror_metadata tests =====
+
+
+def test_attach_mirror_metadata_incoming(mock_mirror_params):
+    from Wiz import _attach_mirror_metadata
+
+    issue = {"id": "test-issue-id"}
+    _attach_mirror_metadata(issue)
+
+    assert issue[WizMirrorField.DIRECTION] == "In"
+    assert issue[WizMirrorField.INSTANCE] == "Wiz_instance_1"
+    assert issue[WizMirrorField.ID] == "test-issue-id"
+    assert issue[WizMirrorField.TAGS] == ["comments"]
+
+
+def test_attach_mirror_metadata_no_direction():
+    from Wiz import _attach_mirror_metadata
+
+    with patch.object(demisto, "params", return_value={}):
+        issue = {"id": "test-issue-id"}
+        _attach_mirror_metadata(issue)
+
+    assert WizMirrorField.DIRECTION not in issue
+
+
+# ===== Null-safety for notes in mirroring and commands =====
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command_notes_none(mock_get_issue, mock_mirror_params):
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [{"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN", "notes": None}]
+
+    result = get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
+
+    assert result.mirrored_object["id"] == "11111111-1111-1111-1111-111111111111"
+    assert result.entries == []
+
+
+@patch("Wiz._get_issue")
+def test_clear_issue_note_notes_none(mock_get_issue):
+    from Wiz import clear_issue_note
+
+    mock_get_issue.return_value = {"data": {"issues": {"nodes": [{"notes": None}]}}}
+    result = clear_issue_note("12345678-1111-2222-3333-444444444444")
+    assert result is None  # no notes to delete, returns None
+
+
+def test_outgoing_mapper_includes_resolution_reason():
+    """Verify the outgoing mapper JSON maps resolutionReason so close reason propagates to Wiz"""
+    import json
+    import os
+
+    mapper_path = os.path.join(os.path.dirname(__file__), "..", "..", "Classifiers", "classifier-mapper-outgoing-Wiz.json")
+    with open(mapper_path) as f:
+        mapper = json.load(f)
+
+    fields = mapper["mapping"]["Wiz Issue"]["internalMapping"]
+    assert "resolutionReason" in fields, "outgoing mapper must map resolutionReason"
+    assert "status" in fields
+    assert "dueAt" in fields
+
+
+# ===== Mirror cursor + slim query tests (5-min Docker timeout fix) =====
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_uses_slim_query(mock_check_api, _get_ctx, _set_ctx):
+    """Mirror MUST use MODIFIED_ISSUE_IDS_QUERY (id + statusChangedAt only), not the
+    heavy PULL_ISSUES_QUERY. Pulling sourceRule/projects/entitySnapshot/notes for
+    every modified issue when we only consume `id` is what made the function time
+    out at the 5-min Docker limit on backlogs."""
+    from Wiz import get_modified_remote_data_command, MODIFIED_ISSUE_IDS_QUERY, PULL_ISSUES_QUERY
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-01-01T00:00:00Z"})
+
+    query_used = mock_check_api.call_args[0][0]
+    assert query_used == MODIFIED_ISSUE_IDS_QUERY
+    assert query_used != PULL_ISSUES_QUERY
+    # Slim query should NOT request expensive nested fields.
+    for heavy_field in ("sourceRule", "entitySnapshot", "projects", "notes", "serviceTickets"):
+        assert heavy_field not in query_used, f"slim query must not request {heavy_field}"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_single_page_only(mock_check_api, _get_ctx, _set_ctx):
+    """Mirror must do exactly ONE GraphQL call per cycle, even when hasNextPage=True.
+    The unbounded pagination loop in _fetch_all_issue_nodes is what blew the timeout —
+    single-page-per-call ensures bounded latency. Backlog drains across cycles."""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": f"issue-{i}", "statusChangedAt": f"2025-01-02T00:00:0{i}Z"} for i in range(3)],
+                "pageInfo": {"hasNextPage": True, "endCursor": "wiz-cursor-1"},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "500"}):
+        result = get_modified_remote_data_command({"lastUpdate": "2025-01-01T00:00:00Z"})
+
+    # Exactly one call, no pagination follow-up
+    assert mock_check_api.call_count == 1
+    assert result.modified_incident_ids == ["issue-0", "issue-1", "issue-2"]
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_first_call_uses_last_update(mock_check_api, _get_ctx, set_ctx_mock):
+    """First call (no saved cursor) uses XSOAR's lastUpdate as the filter."""
+    from Wiz import get_modified_remote_data_command, MIRROR_CURSOR_KEY
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "issue-1", "statusChangedAt": "2025-01-02T12:00:00Z"}],
+                "pageInfo": {"hasNextPage": False},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-01-01T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-01-01T00:00:00Z"
+    assert call_vars["orderBy"] == {"field": "STATUS_CHANGED_AT", "direction": "ASC"}
+    # Cursor advanced to the page max
+    saved_ctx = set_ctx_mock.call_args[0][0]
+    assert saved_ctx[MIRROR_CURSOR_KEY] == "2025-01-02T12:00:00Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext")
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_cursor_wins_over_stale_last_update(mock_check_api, get_ctx_mock, _set_ctx):
+    """When XSOAR's lastUpdate has raced ahead (because we returned a partial page in
+    the previous cycle), the saved cursor — which points to the actual data we've
+    drained — must take precedence. Otherwise we'd skip undrained issues."""
+    from Wiz import get_modified_remote_data_command
+
+    # XSOAR thinks we're caught up; our cursor knows we're not.
+    get_ctx_mock.return_value = {"mirror_cursor": "2025-01-15T00:00:00Z"}
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {"nodes": [], "pageInfo": {"hasNextPage": False}},
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    # Should pick the LATER of the two — XSOAR's lastUpdate, since it's newer.
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-04-01T00:00:00Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext")
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_saved_cursor_used_when_lastupdate_older(mock_check_api, get_ctx_mock, _set_ctx):
+    """The classic backlog-drain case: previous cycle returned a partial page covering
+    up to T1. XSOAR's lastUpdate is still T0 (older). Cursor T1 wins, so we resume
+    from T1 instead of re-fetching the chunk we already drained."""
+    from Wiz import get_modified_remote_data_command
+
+    get_ctx_mock.return_value = {"mirror_cursor": "2025-04-01T12:00:00Z"}
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-04-01T12:00:00Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext")
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_mixed_precision_cursor_wins(mock_check_api, get_ctx_mock, _set_ctx):
+    """Mixed-precision cursor compare: saved_cursor is microsecond (Wiz), lastUpdate
+    is bare-Z second-precision (XSOAR). Lex `max` would pick `:00Z` over `:00.500000Z`
+    because `Z` (0x5A) > `.` (0x2E), rewinding the cursor by up to 999ms and triggering
+    re-fetch of the half-second window. Datetime compare must keep the microsecond cursor."""
+    from Wiz import get_modified_remote_data_command
+
+    get_ctx_mock.return_value = {"mirror_cursor": "2025-04-01T10:00:00.500000Z"}
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-01T10:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-04-01T10:00:00.500000Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_cursor_advances_to_page_max(mock_check_api, _get_ctx, set_ctx_mock):
+    """After a successful page fetch, cursor must advance to max(statusChangedAt) of
+    returned nodes, not to wall-clock or any other value. Drains the backlog
+    deterministically across cycles."""
+    from Wiz import get_modified_remote_data_command, MIRROR_CURSOR_KEY
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [
+                    {"id": "i1", "statusChangedAt": "2025-04-23T09:00:00.000000Z"},
+                    {"id": "i2", "statusChangedAt": "2025-04-23T09:30:00.000000Z"},
+                    {"id": "i3", "statusChangedAt": "2025-04-23T11:30:00.123456Z"},
+                ],
+                "pageInfo": {"hasNextPage": True, "endCursor": "wiz-c1"},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "500"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
+
+    saved_ctx = set_ctx_mock.call_args[0][0]
+    assert saved_ctx[MIRROR_CURSOR_KEY] == "2025-04-23T11:30:00.123456Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={"mirror_cursor": "2025-04-22T00:00:00Z"})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_empty_page_preserves_cursor(mock_check_api, _get_ctx, set_ctx_mock):
+    """Empty result page must NOT touch the cursor (no setIntegrationContext call).
+    Otherwise an upstream blip that returns no data could rewind state."""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        result = get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
+
+    assert result.modified_incident_ids == []
+    set_ctx_mock.assert_not_called()
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={"mirror_cursor": "2025-04-23T12:00:00Z"})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_does_not_rewind_cursor(mock_check_api, _get_ctx, set_ctx_mock):
+    """If the page max is OLDER than the saved cursor (shouldn't happen in practice
+    given ASC ordering, but defend anyway), cursor must NOT rewind."""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "i-old", "statusChangedAt": "2025-04-23T10:00:00Z"}],
+                "pageInfo": {"hasNextPage": False},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-23T11:00:00Z"})
+
+    set_ctx_mock.assert_not_called()
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_microsecond_tie_known_loss(mock_check_api, _get_ctx, set_ctx_mock):
+    """KNOWN LIMITATION (documented, not fixed): if the LAST node in page N and the
+    FIRST node of page N+1 share the same microsecond statusChangedAt, the page N+1
+    issue is silently skipped — the `statusChangedAt.after` filter is exclusive.
+
+    To upgrade to lossless: persist Wiz's GraphQL pageInfo.endCursor token across
+    calls (also pin filterBy.statusChangedAt.after to the original value). Deferred
+    pending evidence customers actually hit this in the wild.
+
+    This test pins the current behavior so a future change is forced to revisit."""
+    from Wiz import get_modified_remote_data_command, MIRROR_CURSOR_KEY
+
+    # Cycle 1: page returns 2 issues, both at the SAME microsecond timestamp.
+    tied_ts = "2025-04-23T11:30:00.123456Z"
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [
+                    {"id": "tied-A", "statusChangedAt": tied_ts},
+                    {"id": "tied-B", "statusChangedAt": tied_ts},
+                ],
+                "pageInfo": {"hasNextPage": True, "endCursor": "wiz-c1"},
+            }
+        }
+    }
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "2"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
+
+    saved = set_ctx_mock.call_args[0][0]
+    assert saved[MIRROR_CURSOR_KEY] == tied_ts
+
+    # Cycle 2: a 3rd issue ALSO has tied_ts. Wiz's `status_changed_at > tied_ts`
+    # would EXCLUDE it. We document this by asserting the filter sent.
+    set_ctx_mock.reset_mock()
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+    with (
+        patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "2"}),
+        patch("Wiz.demisto.getIntegrationContext", return_value={MIRROR_CURSOR_KEY: tied_ts}),
+    ):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    # The filter sends the tied timestamp; the exclusive filter will skip any 3rd tied issue.
+    # If this assertion ever changes, the cursor approach has been upgraded — re-check
+    # whether the documented loss case is still real.
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == tied_ts
+
+
+# ===== Time-budget tests for _fetch_all_issue_nodes (protects fetch_incidents + get_issues) =====
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_respects_deadline(mock_check_api):
+    """When the wall-clock budget is exhausted, the helper must stop paginating and
+    return the partial result. This prevents Docker from killing the script at 5min
+    with 'Command did not run' and losing all accumulated work."""
+    from Wiz import _fetch_all_issue_nodes
+
+    page_with_more = lambda i: {  # noqa: E731
+        "data": {
+            "issues": {
+                "nodes": [{"id": f"issue-{i}"}],
+                "pageInfo": {"hasNextPage": True, "endCursor": f"c-{i}"},
+            }
+        }
+    }
+    # 5 pages all claiming hasNextPage; with deadline_seconds=0 the loop should bail
+    # immediately after the first page.
+    mock_check_api.side_effect = [page_with_more(i) for i in range(5)]
+
+    result = _fetch_all_issue_nodes("q", {"first": 1}, deadline_seconds=0)
+
+    assert len(result) == 1
+    assert result[0]["id"] == "issue-0"
+    # Only the first call was made; the budget breaker fired before the second.
+    assert mock_check_api.call_count == 1
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_completes_within_budget(mock_check_api):
+    """Sanity: when budget is generous, all pages are fetched as before."""
+    from Wiz import _fetch_all_issue_nodes
+
+    pages = [
+        {"data": {"issues": {"nodes": [{"id": "a"}], "pageInfo": {"hasNextPage": True, "endCursor": "c1"}}}},
+        {"data": {"issues": {"nodes": [{"id": "b"}], "pageInfo": {"hasNextPage": False}}}},
+    ]
+    mock_check_api.side_effect = pages
+
+    result = _fetch_all_issue_nodes("q", {"first": 1}, deadline_seconds=300)
+
+    assert [n["id"] for n in result] == ["a", "b"]
+    assert mock_check_api.call_count == 2
+
+
+# ===== Schema-consistency: mirror fields ↔ outgoing mapper ↔ pack IncidentFields =====
+# These tests catch the bug class behind the close-reason mirror fix: declaring a mirror source field
+# (in WIZ_MIRRORED_FIELDS or in the outgoing mapper's `simple:` source) that does not
+# exist as either an XSOAR system field or a pack-defined custom field. When that
+# happens, XSOAR populates nothing in the mirror delta and the field silently
+# defaults at the destination. Unit tests that hand-build delta dicts cannot catch
+# this because they assume the field arrives.
+
+import pathlib  # noqa: E402
+
+_PACK_ROOT = pathlib.Path(__file__).resolve().parents[2]
+_INCIDENT_FIELDS_DIR = _PACK_ROOT / "IncidentFields"
+_OUTGOING_MAPPER = _PACK_ROOT / "Classifiers" / "classifier-mapper-outgoing-Wiz.json"
+
+# XSOAR system fields that are always present on incidents and can be referenced as
+# `simple:` sources without a pack-level IncidentField definition. Keep this list
+# tight — adding to it has the same effect as the bug we're guarding against.
+# Reference: Cortex XSOAR built-in incident fields.
+_XSOAR_SYSTEM_INCIDENT_FIELDS = {
+    "status",
+    "closeReason",
+    "closeNotes",
+    "closingUserId",
+    "owner",
+    "severity",
+    "name",
+    "type",
+    "dueDate",
+    "details",
+    "occurred",
+    "modified",
+    "labels",
+}
+
+# Sources that are intentional mapper destinations rather than XSOAR field reads —
+# e.g. `resolutionReason` is the Wiz-side enum name. The runtime backstops it via
+# `closeReason` translation in `_resolve_wiz_reason`. Document each exemption with
+# the reason and the runtime guard, so a future audit can prune the list.
+_KNOWN_PHANTOM_SOURCES = {
+    # name: (where_referenced, why_exempt)
+    "resolutionReason": (
+        "outgoing mapper + WIZ_MIRRORED_FIELDS",
+        "Wiz API enum, no matching XSOAR field. Runtime backstop: _resolve_wiz_reason "
+        "translates `closeReason` (built-in) via XSOAR_CLOSE_REASON_TO_WIZ. Remove "
+        "this exemption only after either (a) a `wizresolutionreason` IncidentField "
+        "is added and the mapper is updated to use it, or (b) the mapper line and "
+        "WIZ_MIRRORED_FIELDS entry are removed entirely.",
+    ),
+    # `notes` is mirrored as war-room entries (parsed_args.entries), not via delta.
+    # It appears in WIZ_MIRRORED_FIELDS only to advertise the capability via
+    # get_mapping_fields_command. No mapper source references it.
+    "notes": (
+        "WIZ_MIRRORED_FIELDS only",
+        "Not delta-driven; pushed via outgoing entries (see _handle_outgoing_entries). "
+        "Listed in WIZ_MIRRORED_FIELDS for capability advertisement only.",
+    ),
+    # `dueAt` is the Wiz API name. The outgoing mapper rewrites the XSOAR custom
+    # field `wizissueduedate` into this key, so it is a legitimate destination
+    # name even though no XSOAR field shares it.
+    "dueAt": (
+        "WIZ_MIRRORED_FIELDS + outgoing mapper destination",
+        "Wiz API name, populated by the outgoing mapper from `wizissueduedate`. "
+        "Runtime checks both keys: `delta.get('dueAt')` then `delta.get('wizissueduedate')`.",
+    ),
+}
+
+
+def _load_pack_custom_field_cli_names():
+    """Collect every cliName declared by `Packs/Wiz/IncidentFields/incidentfield-*.json`."""
+    cli_names = set()
+    for field_file in _INCIDENT_FIELDS_DIR.glob("incidentfield-*.json"):
+        with open(field_file) as f:
+            data = json.load(f)
+        cli_name = data.get("cliName")
+        if cli_name:
+            cli_names.add(cli_name)
+    assert cli_names, f"No incident fields loaded from {_INCIDENT_FIELDS_DIR}; test setup is broken."
+    return cli_names
+
+
+def _iter_outgoing_mapper_sources():
+    """Yield (destination, simple_source) for every leaf mapping in the outgoing mapper.
+
+    Skips entries whose `simple` is empty (those use `complex` transformers, which
+    aren't a flat field-name reference and aren't in scope for this guard).
+    """
+    with open(_OUTGOING_MAPPER) as f:
+        mapper = json.load(f)
+    for incident_type, scheme in mapper.get("mapping", {}).items():
+        for destination, mapping in scheme.get("internalMapping", {}).items():
+            simple = mapping.get("simple")
+            if simple:
+                yield incident_type, destination, simple
+
+
+def test_outgoing_mapper_sources_resolve_to_real_fields():
+    """REGRESSION: every `simple:` source in the outgoing mapper must be either
+    an XSOAR system field, a pack-defined custom field cliName, or a documented
+    phantom backstopped at runtime. The original bug declared
+    `resolutionReason <- resolutionReason` against a non-existent source field;
+    XSOAR delivered nothing in the delta and Wiz received the WONT_FIX default."""
+    pack_cli_names = _load_pack_custom_field_cli_names()
+    valid_sources = pack_cli_names | _XSOAR_SYSTEM_INCIDENT_FIELDS
+
+    unresolved = []
+    for incident_type, destination, simple in _iter_outgoing_mapper_sources():
+        if simple in valid_sources:
+            continue
+        if simple in _KNOWN_PHANTOM_SOURCES:
+            continue
+        unresolved.append(f"{incident_type}.{destination} <- {simple!r}")
+
+    assert not unresolved, (
+        "Outgoing mapper references field name(s) that do not exist as XSOAR system "
+        "fields, pack-defined IncidentFields, or known-exempt phantoms:\n  " + "\n  ".join(unresolved) + "\n\nFix options:\n"
+        "  1. Add an `incidentfield-*.json` defining the cliName, OR\n"
+        "  2. Change the mapper `simple:` to an existing field, OR\n"
+        "  3. Add a documented entry to `_KNOWN_PHANTOM_SOURCES` if a runtime fallback exists."
+    )
+
+
+def test_wiz_mirrored_fields_resolve_to_real_fields():
+    """REGRESSION: every name in WIZ_MIRRORED_FIELDS (advertised to XSOAR via
+    get_mapping_fields_command) must be either an XSOAR system field, a pack-defined
+    custom field cliName, or a documented phantom. Listing a phantom name here
+    misleads admins who try to map it in the UI."""
+    pack_cli_names = _load_pack_custom_field_cli_names()
+    valid_sources = pack_cli_names | _XSOAR_SYSTEM_INCIDENT_FIELDS
+
+    unresolved = [field for field in WIZ_MIRRORED_FIELDS if field not in valid_sources and field not in _KNOWN_PHANTOM_SOURCES]
+
+    assert not unresolved, (
+        f"WIZ_MIRRORED_FIELDS contains name(s) with no matching XSOAR or pack field "
+        f"definition: {unresolved}. Either add the field, remove the entry, or "
+        f"document an exemption in `_KNOWN_PHANTOM_SOURCES`."
+    )
+
+
+def test_known_phantom_exemptions_are_actually_referenced():
+    """Hygiene check: every entry in `_KNOWN_PHANTOM_SOURCES` must still be referenced
+    somewhere (mapper or WIZ_MIRRORED_FIELDS). If an exemption stops being needed,
+    the entry should be removed so the allow-list doesn't decay into a junk drawer."""
+    referenced = set(WIZ_MIRRORED_FIELDS)
+    for _, _, simple in _iter_outgoing_mapper_sources():
+        referenced.add(simple)
+
+    stale = [name for name in _KNOWN_PHANTOM_SOURCES if name not in referenced]
+    assert not stale, f"Phantom exemption(s) no longer referenced anywhere — remove from " f"_KNOWN_PHANTOM_SOURCES: {stale}"
