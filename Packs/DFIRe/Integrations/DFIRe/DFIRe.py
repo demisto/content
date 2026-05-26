@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # register_module_line("DFIRe", "start", __line__())
-CONSTANT_PACK_VERSION = "1.1.5"
-demisto.debug("pack id = DFIRe, pack version = 1.1.5")
+CONSTANT_PACK_VERSION = "1.0.0"
+demisto.debug("pack id = DFIRe, pack version = 1.0.0")
 """DFIRe Integration for Cortex XSOAR / XSIAM
 
 Integrates with DFIRe (Digital Forensics and Incident Response) platform
@@ -14,13 +14,8 @@ Auth: Bearer API key (Authorization: Bearer dfire_ak_...)
 """
 
 import os
+from datetime import datetime, UTC
 from typing import Any
-
-
-import urllib3
-
-
-urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -913,7 +908,7 @@ def timeline_create_command(client: Client, args: dict[str, Any]) -> CommandResu
     assert case_id is not None
     # The DFIRe API requires event_datetime; default to "now" if not supplied so
     # playbook authors don't have to compute a timestamp for the common case.
-    event_datetime = args.get("event_datetime") or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    event_datetime = args.get("event_datetime") or datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     body: dict[str, Any] = {
         "subject": args["subject"],
         "event_datetime": event_datetime,
