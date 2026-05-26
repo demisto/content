@@ -5,11 +5,10 @@ An API key from your ANY.RUN account is required.
 ## Generate your API key 
 
 Please contact your ANY.RUN account manager to get your API key.  
-> **Warning**
-> 
-> Prefixed API keys and Basic Authentication for TI Feeds will not be supported in future releases.
+Warning:
+Prefixed API keys and Basic Authentication for TI Feeds will not be supported in future releases.
 
-## Add instance
+#### Add instance
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ANY.RUN.
 3. Click **Add instance** to create and configure a new integration instance.
