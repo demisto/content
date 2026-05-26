@@ -6,7 +6,7 @@ import demistomock as demisto
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
+API_REQUEST_TIMEOUT = 115  # seconds; keep under the upstream gateway timeout to avoid hangs
 WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
@@ -1745,7 +1745,12 @@ def get_token():
     auth_payload = parse.urlencode(
         {"grant_type": "client_credentials", "audience": audience, "client_id": said, "client_secret": sasecret}
     )
-    response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
+    try:
+        response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload, timeout=API_REQUEST_TIMEOUT)
+    except requests.Timeout:
+        raise Exception(
+            f"Wiz authentication request timed out after {API_REQUEST_TIMEOUT}s. Check Wiz API availability and retry."
+        )
 
     if response.status_code != requests.codes.ok:
         raise Exception(f"Error authenticating to Wiz [{response.status_code}] - {response.text}")
@@ -1772,7 +1777,13 @@ def checkAPIerrors(query, variables):
 
     demisto.info(f"Invoking the API with {json.dumps(data)}")
 
-    response = requests.post(url=URL, json=data, headers=HEADERS)
+    try:
+        response = requests.post(url=URL, json=data, headers=HEADERS, timeout=API_REQUEST_TIMEOUT)
+    except requests.Timeout:
+        raise Exception(
+            f"Wiz API request timed out after {API_REQUEST_TIMEOUT}s. "
+            "Heavy queries (e.g., TOXIC_COMBINATION issue_type) may need a narrower filter."
+        )
     response_json = response.json()
 
     demisto.info(f"Wiz API response status code is {response.status_code}")
