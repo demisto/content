@@ -1,0 +1,9 @@
+{
+  "Vectra.Detection.Tags(val.tag_id && val.tag_id == obj.tag_id && val.detection_id && val.detection_id == obj.detection_id)": {
+    "tag_id": "1",
+    "tags": [
+      "tag1"
+    ],
+    "detection_id": 1
+  }
+}

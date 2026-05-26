@@ -1261,6 +1261,11 @@ script:
     - name: notes
       description: Additional notes to include in submission.
       type: textArea
+    - name: request_takedown
+      description: Whether to request a takedown of the submitted threat.
+      type: boolean
+      required: false
+      defaultValue: false
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
       description: The type of an alert.
@@ -1533,7 +1538,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   longRunning: false
   longRunningPort: false
   runonce: false

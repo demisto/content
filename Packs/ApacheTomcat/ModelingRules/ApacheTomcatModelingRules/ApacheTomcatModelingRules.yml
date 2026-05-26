@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: Apache Tomcat
 toversion: 6.9.9
+supportedModules:
+- xsiam

@@ -69,6 +69,9 @@ ignore=MR108
 [file:Microsoft365DefenderEventCollector.yml]
 ignore=MR108
 
+[file:MicrosoftAtpEndpoint.yml]
+ignore=GR109
+
 # Temporary ignore GR-107 until CIAC-12403 is resolved
 [file:playbook-MDE_-_Search_And_Block_Software.yml]
 ignore=GR107
