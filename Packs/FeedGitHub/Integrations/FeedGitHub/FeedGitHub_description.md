@@ -21,5 +21,5 @@ To generate your personal access token, visit:[GitHub](https://github.com/settin
 
 #### Owner, Repo sources example
 
-![exa photo](https://user-images.githubusercontent.com/221550/110506678-51906280-80cd-11eb-803a-c41984bd9312.png)
+![](https://user-imageas.githubusercontent.com/221550/110506678-51906280-80cd-11eb-803a-c41984bd9312.png)
 

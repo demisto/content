@@ -1,8 +1,22 @@
 The integration uses the Panorama XML API.
 To obtain an API key, run the following CURL command and copy the key:
-```shell
+shell:
 curl -H "Content-Type: application/x-www-form-urlencoded" -X POST https://[PanoramaIP]/api/\?type\=keygen -d 'user=[user]&password=[password]'
-```
+
+
+This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
+This integration was integrated and tested with versions 8.xx, 9.xx, 10.xx and 11.xx of Palo Alto Firewall and Palo Alto Panorama.
+
+## Use Cases
+
+* Create custom security rules in Palo Alto Networks PAN-OS.
+* Create and update address objects, address-groups, custom URL categories, and URL filtering objects.
+* Use the URL Filtering category information from Palo Alto Networks to enrich URLs by checking the *use_url_filtering* parameter. A valid license for the Firewall is required.
+* Get URL Filtering category information from Palo Alto. Request Change is a known Palo Alto limitation.
+* Add URL filtering objects including overrides to Palo Alto Panorama and Firewall.
+* Commit a configuration to Palo Alto Firewall and to Panorama, and push a configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
+* Block IP addresses using registered IP tags from PAN-OS without committing the PAN-OS instance. First you have to create a registered IP tag, DAG, and security rule, and commit the instance. You can then register additional IP addresses to the tag without committing the instance.
+
 
 ***Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.***
 
@@ -40,16 +54,14 @@ The max incidents per fetch parameter specifies the maximum number of incidents 
 
 ##### Log Type Query Examples
 
-| Log Type            | Query Example                                                                                                                                           |
- |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
- | Traffic             | (addr.src in 'source') and (addr.dst in 'destination') and (action eq 'action')                                                                         |
-| Threat              | (severity geq 'high')                                                                                                                                     |
-| URL                 | ((action eq 'block-override') or (action eq 'block-url')) and (severity geq 'high')                                                                           |
-| Data                | ((action eq 'alert') or (action eq 'wildfire-upload-success') or (action eq 'forward')) and (severity geq 'high')                                               |
-| Correlation         | (hostid eq 'host_id') and (match_time in 'last_x_time') and (objectname eq 'object_name') and (severity geq 'severity') and (src in 'source_address') |
- | System              | (subtype eq 'sub_type') and (severity geq 'severity')                                                                                                   |
-| Wildfire Submission | ((action eq 'wildfire-upload-fail') or (action eq 'wildfire-upload-skip') or (action eq 'sinkhole'))                                                          |
-| Decryption          | (app eq 'application') and (policy_name geq 'policy_name') and ((src in 'source') or (dst in 'destination'))                                            |
+- **Traffic**: `(addr.src in 'source') and (addr.dst in 'destination') and (action eq 'action')`
+- **Threat**: `(severity geq 'high')`
+- **URL**: `((action eq 'block-override') or (action eq 'block-url')) and (severity geq 'high')`
+- **Data**: `((action eq 'alert') or (action eq 'wildfire-upload-success') or (action eq 'forward')) and (severity geq 'high')`
+- **Correlation**: `(hostid eq 'host_id') and (match_time in 'last_x_time') and (objectname eq 'object_name') and (severity geq 'severity') and (src in 'source_address')`
+- **System**: `(subtype eq 'sub_type') and (severity geq 'severity')`
+- **Wildfire Submission**: `((action eq 'wildfire-upload-fail') or (action eq 'wildfire-upload-skip') or (action eq 'sinkhole'))`
+- **Decryption**: `(app eq 'application') and (policy_name geq 'policy_name') and ((src in 'source') or (dst in 'destination'))`
 
 ##### Classifiers and Mappers
 
