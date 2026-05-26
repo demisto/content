@@ -116,7 +116,7 @@ Gets history events from SecurityScorecard. This command is used for developing/
 | date_from | The start time to fetch events from. Supports relative time (e.g., "3 days ago", "1 week") or specific absolute dates (ISO 8601 format). | Optional |
 | date_to | The end time to fetch events until. Supports relative time (e.g., "now", "1 hour ago") or specific absolute dates (ISO 8601 format). | Optional |
 | limit | Maximum number of events to retrieve. Default is 1000. | Optional |
-| should_push_events | Set to true to push events to XSIAM. Use with caution to avoid duplicates. Possible values are: true, false. Default is false. | Optional |
+| should_push_events | Set to true to push events to Cortex XSIAM. Use with caution to avoid duplicates. Possible values are: `true`, `false`. Default is `false`. | Optional |
 
 #### Context Output
 
