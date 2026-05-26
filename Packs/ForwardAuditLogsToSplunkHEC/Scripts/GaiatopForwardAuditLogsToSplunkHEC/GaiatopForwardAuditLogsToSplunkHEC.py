@@ -36,6 +36,7 @@ def main():
         "using": instance_name
     }), "Contents.response.reply.data")
 
+    total_logs = 0
     if all_audit_logs:
         # Get number of logs pulled
         total_logs = len(all_audit_logs)
