@@ -1,4 +1,5 @@
 import json
+import pickle as _pickle
 
 import dill as pickle
 import pytest
@@ -7,6 +8,7 @@ from DBotTrainClustering import (
     MESSAGE_INCORRECT_FIELD,
     MESSAGE_INVALID_FIELD,
     MESSAGE_NO_FIELD_NAME_OR_CLUSTERING,
+    UnsafePickleError,
     base64,
     check_list_of_dict,
     datetime,
@@ -14,6 +16,8 @@ from DBotTrainClustering import (
     get_model_if_not_expired,
     main,
     preprocess_incidents_field,
+    safe_pickle_loads,
+    validate_pickle_opcodes,
 )
 from freezegun import freeze_time
 
@@ -510,3 +514,44 @@ def test_get_model_if_not_expired(mocker, force_retrain, model_expiration, model
     result = get_model_if_not_expired(force_retrain, model_expiration, "name")
 
     assert isinstance(result, expected_result_obj)
+
+def test_safe_pickle_loads_legitimate_data():
+    """Verify that a legitimate pickle payload with allowed types loads successfully."""
+    legitimate_data = {"key": "value", "numbers": [1, 2, 3], "nested": {"a": True}}
+    payload = _pickle.dumps(legitimate_data)
+    result = safe_pickle_loads(payload)
+    assert result == legitimate_data
+
+
+def test_safe_pickle_loads_blocks_malicious_payload():
+    """Verify that a payload trying to execute os.system is blocked."""
+    # Malicious pickle that would call os.system('echo pwned')
+    malicious_pickle = (
+        b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00"
+        b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
+    )
+    with pytest.raises(_pickle.UnpicklingError, match="Blocked unauthorized class"):
+        safe_pickle_loads(malicious_pickle)
+
+
+def test_validate_pickle_opcodes_blocks_inst():
+    """Verify INST opcode is blocked."""
+    # INST opcode is 'i' (0x69) — protocol 0 class instantiation
+    # Format: i<module>\n<name>\n
+    inst_payload = b"(ios\nsystem\nS'echo pwned'\n."
+    with pytest.raises(UnsafePickleError, match="INST"):
+        validate_pickle_opcodes(inst_payload)
+
+
+def test_validate_pickle_opcodes_allows_legitimate_opcodes():
+    """Verify that a normal pickle payload passes opcode validation without error."""
+    legitimate_data = {"key": "value", "list": [1, 2, 3]}
+    payload = _pickle.dumps(legitimate_data)
+    # Should not raise
+    validate_pickle_opcodes(payload)
+
+
+def test_validate_pickle_opcodes_blocks_malformed_payload():
+    """Verify that a malformed pickle payload is rejected."""
+    with pytest.raises(UnsafePickleError, match="Invalid or malformed"):
+        validate_pickle_opcodes(b"\xff\xfe\xfd\xfc")

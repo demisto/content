@@ -375,3 +375,48 @@ def test_output_url_match_requested_url(mocker, input_url):
     # Check indicator matches requested url
     entry_context = return_results_mock.mock_calls[1].args[0]["EntryContext"]
     assert entry_context[KEY_CONTENT_DBOT_SCORE]["Indicator"] == input_url
+
+def test_safe_pickle_loads_legitimate_data():
+    """Verify that a legitimate pickle payload with allowed types loads successfully."""
+    import pickle as _pickle
+    from DBotPredictURLPhishing import safe_pickle_loads
+
+    legitimate_data = {"key": "value", "numbers": [1, 2, 3], "nested": {"a": True}}
+    payload = _pickle.dumps(legitimate_data)
+    result = safe_pickle_loads(payload)
+    assert result == legitimate_data
+
+
+def test_safe_pickle_loads_blocks_malicious_payload():
+    """Verify that a payload trying to execute os.system is blocked."""
+    import pickle as _pickle
+    from DBotPredictURLPhishing import safe_pickle_loads
+
+    # Malicious pickle that would call os.system('echo pwned')
+    malicious_pickle = (
+        b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00"
+        b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
+    )
+    with pytest.raises(_pickle.UnpicklingError, match="Blocked unauthorized class"):
+        safe_pickle_loads(malicious_pickle)
+
+
+def test_validate_pickle_opcodes_blocks_inst():
+    """Verify INST opcode is blocked."""
+    from DBotPredictURLPhishing import UnsafePickleError, validate_pickle_opcodes
+
+    # INST opcode is 'i' (0x69) — protocol 0 class instantiation
+    inst_payload = b"(ios\nsystem\nS'echo pwned'\n."
+    with pytest.raises(UnsafePickleError, match="INST"):
+        validate_pickle_opcodes(inst_payload)
+
+
+def test_validate_pickle_opcodes_allows_legitimate_opcodes():
+    """Verify that a normal pickle payload passes opcode validation without error."""
+    import pickle as _pickle
+    from DBotPredictURLPhishing import validate_pickle_opcodes
+
+    legitimate_data = {"key": "value", "list": [1, 2, 3]}
+    payload = _pickle.dumps(legitimate_data)
+    # Should not raise
+    validate_pickle_opcodes(payload)
