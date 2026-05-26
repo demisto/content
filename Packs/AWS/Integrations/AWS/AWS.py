@@ -10161,21 +10161,21 @@ def print_debug_logs(client: BotoClient, message: str):
     demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
 
-def test_module(params):
+def test_module(params: dict) -> str:
     """
-    Validate that the integration is configured correctly.
-    Attempts to build a service client using the configured credentials. If credentials
-    are missing or invalid, ``get_service_client()`` raises and XSOAR surfaces the error.
-    No additional API call is needed — client construction already validates auth.
-    """
+    Validate marketplace credentials via ``sts:GetCallerIdentity``.
 
+    boto3 client construction is a local-only operation — no network call is made and
+    invalid credentials pass silently. ``GetCallerIdentity`` requires zero IAM permissions
+    and validates the full auth chain including assumed-role sessions.
+    """
     sts_client, _ = get_service_client(
         params=params,
         service_name="sts",
         config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
     )
     sts_client.get_caller_identity()
-    demisto.info("[AWS Automation Test Module] sts.GetCallerIdentity succeeded")
+    demisto.info("[AWS Automation] test-module: sts.GetCallerIdentity succeeded")
     return "ok"
 
 
@@ -10265,27 +10265,13 @@ def _assume_role_credentials(
     access_key_id: str,
     secret_access_key: str,
     region: str,
-    client_config: Config,
 ) -> dict:
     """
     Call AWS STS ``AssumeRole`` using the marketplace-supplied access keys and
     return temporary credentials suitable for constructing a boto3 ``Session``.
 
-    Args:
-        params (dict): Integration configuration parameters.
-        access_key_id (str): Long-lived AWS access key ID.
-        secret_access_key (str): Long-lived AWS secret access key.
-        region (str): Region for the service client (used as the STS region when
-            ``sts_region`` is not explicitly configured).
-        client_config (Config): botocore client configuration to apply to the STS
-            client.
-
     Returns:
-        dict: ``{"AccessKeyId", "SecretAccessKey", "SessionToken"}`` from the STS
-        response.
-
-    Raises:
-        DemistoException: If ``role_arn`` is configured without a session name.
+        dict: ``{"AccessKeyId", "SecretAccessKey", "SessionToken"}`` from the STS response.
     """
     if regional := params.get("sts_regional_endpoint"):
         demisto.debug(f"Setting AWS_STS_REGIONAL_ENDPOINTS={regional}")
@@ -10303,7 +10289,7 @@ def _assume_role_credentials(
         aws_access_key_id=access_key_id,
         aws_secret_access_key=secret_access_key,
         endpoint_url=sts_endpoint_url,
-        config=client_config,
+        config=Config(connect_timeout=10, read_timeout=10, retries={"max_attempts": 1}),
         verify=not argToBoolean(params.get("insecure", False)),
     )
     assume_kwargs: dict = {"RoleArn": role_arn, "RoleSessionName": role_session_name}
@@ -10311,8 +10297,7 @@ def _assume_role_credentials(
         assume_kwargs["DurationSeconds"] = session_duration
 
     demisto.debug(f"[AWS Automation] Calling sts.AssumeRole with {assume_kwargs=}")
-    response = sts_client.assume_role(**assume_kwargs)
-    return response["Credentials"]
+    return sts_client.assume_role(**assume_kwargs)["Credentials"]
 
 
 def get_service_client(
@@ -10327,38 +10312,31 @@ def get_service_client(
     """
     Create and configure a boto3 client for the specified AWS service.
 
-    The function supports two distinct authentication flows:
+    Supports two authentication paths:
 
-    1. **Cortex Cloud platform** - ``credentials`` is populated by
-       ``get_cloud_credentials()`` with short-lived CTS tokens. The resulting client
-       is wired through ProxyDome so requests are tagged with the connector identity.
-
-    2. **XSOAR / XSIAM marketplace** - ``credentials`` is empty. AWS access keys are
-       read from the integration parameters' paired ``credentials`` field. When
-       ``role_arn`` is also configured, STS ``AssumeRole`` is invoked to obtain
-       temporary credentials. ProxyDome is not used in this path because the
-       integration is not running inside the platform egress environment.
+    - **Cortex Cloud platform**: ``credentials`` is populated by ``get_cloud_credentials()``
+      with short-lived CTS tokens. Requests are routed through ProxyDome.
+    - **XSOAR / XSIAM marketplace**: ``credentials`` is empty. Access keys are read from
+      the paired ``credentials`` integration parameter. When ``role_arn`` is set, STS
+      ``AssumeRole`` is called to obtain temporary credentials. ProxyDome is not used.
 
     Args:
-        credentials (dict): Platform-supplied CTS credentials. Empty on the
-            marketplace path.
+        credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
         params (dict): Integration configuration parameters.
-        args (dict): Command arguments containing region information.
-        command (str): AWS command name used to determine the service type.
+        args (dict): Command arguments (used for ``region`` override).
+        command (str): AWS command name; used to resolve the service name when ``service_name``
+            is not provided.
         session (Session | None): Optional pre-built boto3 session to reuse.
-        service_name (str): Explicit AWS service name; inferred from ``command``
-            when not provided.
-        config (Config | None): Additional botocore configuration to merge.
+        service_name (str): Explicit AWS service name; inferred from ``command`` when omitted.
+        config (Config | None): Additional botocore configuration to merge on top of the base.
 
     Returns:
-        tuple[BotoClient, Session | None]: Configured boto3 client and the session
-        used to create it.
+        tuple[BotoClient, Session | None]: Configured boto3 client and the session used.
     """
     region: str = args.get("region") or params.get("region", "") or DEFAULT_REGION
     is_platform_path: bool = bool(credentials) or bool(get_connector_id())
 
     if is_platform_path:
-        # Cortex Cloud platform path: credentials come from CTS via get_cloud_credentials().
         aws_session: Session = session or Session(
             aws_access_key_id=credentials.get("key"),
             aws_secret_access_key=credentials.get("access_token"),
@@ -10366,17 +10344,14 @@ def get_service_client(
             region_name=region,
         )
     else:
-        # Marketplace path: resolve access keys from params and optionally assume a role.
-        access_key_id, secret_access_key = params.get("credentials").get("identifier"), params.get("credentials").get("password")
+        creds_param = params.get("credentials") or {}
+        access_key_id: str = creds_param.get("identifier", "")
+        secret_access_key: str = creds_param.get("password", "")
         if not (access_key_id and secret_access_key):
             raise DemistoException(
                 "AWS credentials are not configured. Provide an Access Key and Secret Key "
                 "on the integration instance, or run the integration through a Cortex Cloud connector."
             )
-
-        sts_assume_config = Config(retries={"max_attempts": 1})
-        if config:
-            sts_assume_config = sts_assume_config.merge(config)
 
         if params.get("role_arn"):
             tmp_creds = _assume_role_credentials(
@@ -10384,7 +10359,6 @@ def get_service_client(
                 access_key_id=access_key_id,
                 secret_access_key=secret_access_key,
                 region=region,
-                client_config=sts_assume_config,
             )
             aws_session = session or Session(
                 aws_access_key_id=tmp_creds["AccessKeyId"],
@@ -10399,12 +10373,13 @@ def get_service_client(
                 region_name=region,
             )
 
-    # Resolve service name
+    # Resolve service name from command if not explicitly provided.
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
     service_name = service_name or command.split("-")[1]
+    service = AWSServices(service_name)
 
-    # Build the base config from user-supplied timeout/retries (AWSApiModule pattern).
+    # Build base config from user-supplied timeout/retries.
     read_timeout, connect_timeout = get_timeout(params.get("timeout") if params else None)
     retries = min(int((params or {}).get("retries") or DEFAULT_MAX_RETRIES), 10)
     base_config = Config(
@@ -10412,26 +10387,21 @@ def get_service_client(
         read_timeout=read_timeout,
         retries={"max_attempts": retries},
     )
-
-    # ProxyDome is only relevant on the platform path.
     if is_platform_path:
-        client_config = base_config.merge(
+        base_config = base_config.merge(
             Config(
                 proxies={"https": DEFAULT_PROXYDOME},
                 proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH},
             )
         )
-    else:
-        client_config = base_config
-    if config:
-        client_config = client_config.merge(config)
+    client_config = base_config.merge(config) if config else base_config
 
-    verify_certificate = not argToBoolean(params.get("insecure", False)) if params else False
-    endpoint_url: str | None = params.get("endpoint_url") or None if params else None
+    verify_ssl: bool = not argToBoolean(params.get("insecure", False)) if params else True
+    endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(
-        service_name,
-        verify=verify_certificate,
+        service,
+        verify=verify_ssl,
         config=client_config,
         endpoint_url=endpoint_url,
     )
@@ -10443,124 +10413,65 @@ def get_service_client(
 
 
 def _dispatch_command(command: str, args: dict, service_client: BotoClient) -> CommandResults | None:
-    """
-    Invoke the command handler registered in ``COMMANDS_MAPPING`` with the correct
-    argument order. Polling commands use ``(args, client)``; non-polling commands use
-    ``(client, args)``.
-    """
+    """Invoke the correct handler: polling commands take ``(args, client)``, others ``(client, args)``."""
     if args.get("polling_timeout") is not None:
         demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
         return COMMANDS_MAPPING[command](args, service_client)
     return COMMANDS_MAPPING[command](service_client, args)
 
 
-def _execute_aws_command_single(command: str, args: dict, params: dict) -> CommandResults | None:
-    """
-    Execute an AWS command for a single account.
-
-    On the platform, the account ID comes from ``args["account_id"]`` and short-lived
-    credentials are fetched from CTS. On the marketplace path the credentials come from
-    the integration parameters and ``account_id`` is not required.
-    """
-    account_id: str = args.get("account_id", "")
-    credentials: dict = {}
-    if get_connector_id():
-        credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
-
-    service_client, _ = get_service_client(credentials, params, args, command)
-    return _dispatch_command(command, args, service_client)
-
-
-def _execute_aws_command_multi_account(
-    command: str,
-    args: dict,
-    params: dict,
-    accounts: list[str],
-    role_name: str,
-    max_workers: int,
-) -> list[CommandResults]:
-    """
-    Execute the command in parallel across every AWS account listed in
-    ``accounts_to_access``. Mirrors ``run_on_all_accounts`` from the legacy
-    AWS-EC2 integration: for each account, override ``role_arn`` to
-    ``arn:aws:iam::<account_id>:role/<role_name>``, run the command, tag the
-    result with the account ID, and aggregate.
-
-    Per-account errors do not abort the batch - they are returned as error
-    ``CommandResults`` entries so the caller still receives the successful
-    outputs from the other accounts.
-    """
-
-    def _run_for_account(account_id: str) -> CommandResults:
-        per_account_args = args | {"account_id": account_id}
-        per_account_params = params | {
-            "role_arn": f"arn:aws:iam::{account_id}:role/{role_name}",
-        }
-        try:
-            result = _execute_aws_command_single(command, per_account_args, per_account_params)
-            if result is None:
-                return CommandResults(readable_output=f"#### Result for account `{account_id}`:\nNo result returned.")
-            result.readable_output = f"#### Result for account `{account_id}`:\n{result.readable_output or ''}"
-            if isinstance(result.outputs, list):
-                for obj in result.outputs:
-                    if isinstance(obj, dict):
-                        obj.setdefault("AccountId", account_id)
-            elif isinstance(result.outputs, dict):
-                result.outputs.setdefault("AccountId", account_id)
-            return result
-        except Exception as e:
-            demisto.error(f"[AWS Automation] Error in command call for account {account_id}: {e}")
-            return CommandResults(
-                readable_output=f"#### Error in command call for account `{account_id}`\n{e}",
-                entry_type=EntryType.ERROR,
-                content_format=EntryFormat.MARKDOWN,
-            )
-
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        return list(executor.map(_run_for_account, accounts))
-
-
 def execute_aws_command(
     command: str, args: dict, params: dict
 ) -> CommandResults | list[CommandResults] | None:
     """
-    Execute an AWS command by retrieving credentials, creating a service client,
-    and routing to the appropriate service handler.
+    Execute an AWS command, routing to the appropriate service handler.
 
-    When ``access_role_name`` and ``accounts_to_access`` are configured on the
-    integration instance, the command is fanned out across every listed account in
-    parallel using ``max_workers``. Otherwise it runs once against the single
-    account derived from ``args["account_id"]`` (platform) or the configured
-    credentials (marketplace).
-
-    Args:
-        command (str): The AWS command to execute (e.g., ``"aws-s3-public-access-block-put"``).
-        args (dict): Command arguments including account_id, region, and service-specific
-            parameters.
-        params (dict): Integration configuration parameters.
-
-    Returns:
-        CommandResults | list[CommandResults] | None: A single result for the single-
-        account path, or a list (one entry per account) for the multi-account fan-out.
+    When ``access_role_name`` and ``accounts_to_access`` are both configured, the command
+    is fanned out in parallel across every listed account using ``ThreadPoolExecutor``.
+    Per-account errors are isolated and returned as error entries without aborting the batch.
+    Otherwise the command runs once against the single account from ``args["account_id"]``
+    (platform) or the configured credentials (marketplace).
     """
     role_name = params.get("access_role_name", "").removeprefix("role/")
     accounts = argToList(params.get("accounts_to_access"))
 
     if role_name and accounts:
         max_workers = arg_to_number(params.get("max_workers")) or 5
-        demisto.debug(
-            f"[AWS Automation] Multi-account fan-out: {command=}, {len(accounts)=}, {max_workers=}"
-        )
-        return _execute_aws_command_multi_account(
-            command=command,
-            args=args,
-            params=params,
-            accounts=accounts,
-            role_name=role_name,
-            max_workers=max_workers,
-        )
+        demisto.debug(f"[AWS Automation] Multi-account fan-out: {command=}, {len(accounts)=}, {max_workers=}")
 
-    return _execute_aws_command_single(command, args, params)
+        def _run_for_account(account_id: str) -> CommandResults:
+            per_account_params = params | {"role_arn": f"arn:aws:iam::{account_id}:role/{role_name}"}
+            per_account_args = args | {"account_id": account_id}
+            try:
+                creds = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
+                svc_client, _ = get_service_client(creds, per_account_params, per_account_args, command)
+                result = _dispatch_command(command, per_account_args, svc_client)
+                if result is None:
+                    return CommandResults(readable_output=f"#### Result for account `{account_id}`:\nNo result returned.")
+                result.readable_output = f"#### Result for account `{account_id}`:\n{result.readable_output or ''}"
+                if isinstance(result.outputs, list):
+                    for obj in result.outputs:
+                        if isinstance(obj, dict):
+                            obj.setdefault("AccountId", account_id)
+                elif isinstance(result.outputs, dict):
+                    result.outputs.setdefault("AccountId", account_id)
+                return result
+            except Exception as e:
+                demisto.error(f"[AWS Automation] Error for account {account_id}: {e}")
+                return CommandResults(
+                    readable_output=f"#### Error for account `{account_id}`\n{e}",
+                    entry_type=EntryType.ERROR,
+                    content_format=EntryFormat.MARKDOWN,
+                )
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            return list(executor.map(_run_for_account, accounts))
+
+    # Single-account path.
+    account_id: str = args.get("account_id", "")
+    credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
+    service_client, _ = get_service_client(credentials, params, args, command)
+    return _dispatch_command(command, args, service_client)
 
 
 def main():  # pragma: no cover
