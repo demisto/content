@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -480,7 +479,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -508,7 +506,8 @@ tasks:
       id: edd14b8c-3278-4d1a-879f-3ca7ec9bc4bd
       version: -1
       name: Create New Folder In MS Graph
-      description: Creates a new folder in a drive with the specified parent item or path.
+      description: Creates a new folder in a drive with the specified parent item
+        or path.
       script: '|||msgraph-create-new-folder'
       type: regular
       iscommand: true
@@ -655,7 +654,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -808,7 +806,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -932,7 +929,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -960,7 +956,8 @@ tasks:
       id: 847cd45d-11b1-459c-8af4-cacb7cba2e6c
       version: -1
       name: List Drives In Site
-      description: Returns the list of document libraries (drives) available for a target site.
+      description: Returns the list of document libraries (drives) available for a
+        target site.
       script: '|||msgraph-list-drives-in-site'
       type: regular
       iscommand: true
@@ -1061,7 +1058,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -1185,7 +1181,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -1691,7 +1686,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -1757,7 +1751,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
