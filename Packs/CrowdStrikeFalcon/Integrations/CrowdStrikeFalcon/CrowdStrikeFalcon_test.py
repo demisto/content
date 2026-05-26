@@ -4584,7 +4584,7 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
     assert "after=PREV_CURSOR" in url_suffix  # (a)
     token_cr = _find_token_cr(results)
     assert token_cr is not None  # (b)
-    assert token_cr.outputs == {"VulnerabilityNextToken": "CURSOR_VALUE"}  # (b)
+    assert token_cr.outputs == "CURSOR_VALUE"  # (b)
 
     # ---- (c): empty server cursor -> cursor entry omitted ----
     mocker.resetall()
@@ -4640,7 +4640,8 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
     assert len(results) == 2
     assert _find_token_cr(results) is not None  # (f)
 
-    # ---- (g): cursor entry has empty readable_output; data entry has the table ----
+    # ---- (g): cursor entry advertises the token via its readable_output;
+    # data entry carries the markdown table with the vulnerability rows. ----
     mocker.resetall()
     mocker.patch(
         "CrowdStrikeFalcon.http_request",
@@ -4653,10 +4654,11 @@ def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
     assert len(results) == 2
     token_cr = _find_token_cr(results)
     assert token_cr is not None
-    assert not token_cr.readable_output  # (g) empty/falsy
+    assert token_cr.readable_output
+    assert "VulnerabilityNextToken" in token_cr.readable_output
     data_cr = next(cr for cr in results if cr is not token_cr)
-    assert data_cr.readable_output  # data entry has markdown
-    assert "CVE-2024-0001" in data_cr.readable_output  # markdown contains the row
+    assert data_cr.readable_output
+    assert "CVE-2024-0001" in data_cr.readable_output
 
     # ---- (i): next_token with URL-special chars is correctly percent-encoded ----
     mocker.resetall()
