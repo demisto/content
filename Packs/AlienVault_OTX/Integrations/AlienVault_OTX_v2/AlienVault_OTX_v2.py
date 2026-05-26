@@ -73,13 +73,13 @@ class Client(BaseClient):
             Response JSON
         """
         # The service endpoint to request from
-        demisto.debug(f"in query with section: {section}, sub section: {sub_section}, params: {params}")
         if section == "pulses":
             suffix = f"{section}/{argument}"
         elif argument and sub_section:
             suffix = f"indicators/{section}/{argument}/{sub_section}"
         else:
             suffix = f"{section}/{sub_section}"
+        demisto.debug(f"The url is {suffix=}")
         # Send a request using our http_request wrapper
         try:
             if sub_section == "passive_dns":
@@ -115,10 +115,10 @@ class Client(BaseClient):
                 demisto.debug("A DemistoException was raised but there is no status code.")
                 raise
         except requests.exceptions.ReadTimeout as e:
-            demisto.debug(f"A ReadTimeout error was raised with suffix {suffix}. Error: {str(e)}.")
-            if sub_section == "passive_dns":
-                return {}
-            return_warning(f"A ReadTimeout error was raised with suffix {suffix}.", exit=True)
+            demisto.debug("A ReadTimeout error was raised.")
+            if self.should_error:
+                raise e
+            return_warning(f"A ReadTimeout was raised {str(e)}", exit=True)
         return result
 
 
@@ -249,6 +249,7 @@ def relationships_manager(
         "display_name",
         FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),
     )
+
     if client.max_indicator_relationships > 0:
         limit = str(client.max_indicator_relationships)
         _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, limit)
@@ -474,6 +475,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
 
     for domain in domains_list:
         raw_response = client.query(section="domain", argument=domain)
+
         if raw_response and raw_response != 404:
             relationships = relationships_manager(
                 client,

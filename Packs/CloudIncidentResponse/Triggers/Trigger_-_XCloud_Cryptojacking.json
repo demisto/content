@@ -14,9 +14,6 @@
         }
       ]
     }
-  },
-  "supportedModules": [
-    "xsiam"
-  ]
+  }
 }
 

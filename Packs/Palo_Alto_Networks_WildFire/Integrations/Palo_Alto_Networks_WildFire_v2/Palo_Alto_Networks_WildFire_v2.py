@@ -24,6 +24,7 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get("suppress_file_type_error")
 RELIABILITY = PARAMS.get("integrationReliability", DBotScoreReliability.B) or DBotScoreReliability.B
 CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get("create_relationships", "true"))
 DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
+MULTIPART_HEADERS = {"Content-Type": "multipart/form-data; boundary=upload_boundry"}
 WILDFIRE_REPORT_DT_FILE = (
     "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
 )
@@ -446,13 +447,38 @@ def wildfire_upload_file_command(args) -> list:
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
 
-    # The WildFire /submit/url endpoint requires multipart/form-data. Passing form
-    # fields as (None, value) tuples via `files=` makes `requests` build a compliant
-    # multipart body (auto-generated boundary, CRLF separators).
-    multipart_fields: dict = {key: (None, value) for key, value in BODY_DICT.items()}
-    multipart_fields["url"] = (None, upload)
+    body = f"""--upload_boundry
+Content-Disposition: form-data; name="apikey"
 
-    result = http_request(upload_file_url_uri, "POST", files=multipart_fields)
+{TOKEN}
+--upload_boundry
+Content-Disposition: form-data; name="url"
+
+{upload}
+--upload_boundry--"""
+
+    body2 = f"""--upload_boundry
+Content-Disposition: form-data; name="apikey"
+
+{TOKEN}
+--upload_boundry
+Content-Disposition: form-data; name="url"
+
+{upload}
+--upload_boundry
+Content-Disposition: form-data; name="agent"
+
+{AGENT_VALUE}
+--upload_boundry--"""
+
+    # check upload value
+    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
+
+    if AGENT_VALUE != "":
+        # we need to attach another form element of agent for this APIKEY
+        body = body2
+
+    result = http_request(upload_file_url_uri, "POST", headers=MULTIPART_HEADERS, body=body)
 
     upload_file_url_data = result["wildfire"]["upload-file-info"]
 
@@ -487,13 +513,37 @@ def wildfire_upload_file_url_command(args) -> list:
 def wildfire_upload_url(upload):
     upload_url_uri = URL + URL_DICT["upload_url"]
 
-    # The WildFire /submit/link endpoint requires multipart/form-data. Passing form
-    # fields as (None, value) tuples via `files=` makes `requests` build a compliant
-    # multipart body (auto-generated boundary, CRLF separators).
-    multipart_fields: dict = {key: (None, value) for key, value in BODY_DICT.items()}
-    multipart_fields["link"] = (None, upload)
+    body = f"""--upload_boundry
+Content-Disposition: form-data; name="apikey"
 
-    result = http_request(upload_url_uri, "POST", files=multipart_fields)
+{TOKEN}
+--upload_boundry
+Content-Disposition: form-data; name="link"
+
+{upload}
+--upload_boundry--"""
+
+    body2 = f"""--upload_boundry
+Content-Disposition: form-data; name="apikey"
+
+{TOKEN}
+--upload_boundry
+Content-Disposition: form-data; name="link"
+
+{upload}
+--upload_boundry
+Content-Disposition: form-data; name="agent"
+
+{AGENT_VALUE}
+--upload_boundry--"""
+
+    # koby test
+    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
+
+    if AGENT_VALUE != "":
+        body = body2
+
+    result = http_request(upload_url_uri, "POST", headers=MULTIPART_HEADERS, body=body)
 
     upload_url_data = result["wildfire"]["submit-link-info"]
 

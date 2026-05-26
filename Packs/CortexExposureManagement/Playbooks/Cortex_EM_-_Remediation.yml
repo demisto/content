@@ -1,4 +1,4 @@
-description: Deprecated. Use Cortex EM - AWS VM Exposure Remediation instead.
+description: This playbook handles exposure issue remediation.
 id: Cortex EM - Remediation
 inputSections:
 - description: Generic group for inputs
@@ -349,6 +349,5 @@ view: |-
     }
   }
 tests:
-- No tests (deprecated)
+- No tests (auto formatted)
 fromversion: 6.10.0
-deprecated: true

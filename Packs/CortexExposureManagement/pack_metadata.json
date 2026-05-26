@@ -2,7 +2,7 @@
     "name": "Cortex Exposure Management",
     "description": "Content for working with Cortex Exposure Management (CEM).",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -22,28 +22,31 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core - Investigation and Response"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "Core": {
+        "FiltersAndTransformers": {
             "mandatory": true,
-            "display_name": "Core"
+            "display_name": "Filters And Transformers"
         },
-        "ServiceNow": {
-            "mandatory": true,
-            "display_name": "ServiceNow"
-        },
-        "CloudSecurityPolicyManagement": {
-            "mandatory": true,
-            "display_name": "Cloud Security Policy Management"
+        "AWS-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "AWS Enrichment and Remediation"
         }
     },
     "marketplaces": [
         "platform"
     ],
     "displayedImages": [
-        "CommonScripts",
         "Core",
         "ServiceNow"
     ],

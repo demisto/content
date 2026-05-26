@@ -79,13 +79,9 @@ configuration:
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: false
+  required: true
   type: 0
   section: Connect
-  hidden:
-  - marketplacev2
-  - platform
-  additionalinfo: Cortex XSOAR only parameter.
 description: Integrate with GitHub services to perform Identity Lifecycle Management operations.
 display: GitHub IAM
 name: GitHub IAM
@@ -248,7 +244,7 @@ script:
     - User Hard Remediation
   - description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.8.3296088
   ismappable: true
   isremotesyncout: true
   script: '-'

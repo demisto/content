@@ -1,7 +1,7 @@
 {
     "name": "NVD Feed 2.0",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,9 +11,7 @@
     "tags": [],
     "useCases": [],
     "description": "CVE feed from the National Vulnerability Database",
-    "keywords": [
-        "NVD"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

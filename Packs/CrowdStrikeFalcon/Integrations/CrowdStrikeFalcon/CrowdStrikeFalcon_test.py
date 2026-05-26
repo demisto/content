@@ -6020,259 +6020,346 @@ class TestCSFalconResolveIdentityDetectionCommand:
 
 
 class TestIOAFetch:
-    """Tests for IOA fetching via the new /alerts/queries/alerts/v2 + /alerts/entities/alerts/v2 flow."""
+    # Since this integration fetches multiple incidents, the last run object contains a list of
+    # last run objects for each incident type, for IOA, that is the 6th position
+    @pytest.mark.parametrize(
+        "fetch_query, error_message",
+        [
+            ("account_id=1", "A cloud provider is required as part of the IOA fetch query"),
+            ("cloud_provider!='aws'", "An unsupported parameter has been entered"),
+            ("cloud_provider='aws'&weird_param=val", "An unsupported parameter has been entered"),
+            ("cloud_provider='aws'&state=", "cannot be an empty string"),
+            ("cloud_provider='aws'&state:val", "does not match the parameter=value format"),
+            ("cloud_provider='aws'&state==val", "does not match the parameter=value format"),
+        ],
+    )
+    def test_validate_ioa_fetch_query_error(self, fetch_query, error_message):
+        """
+        Given:
+            - An incorrect IOA fetch query to validate.
+        When
+            - Validating the query supplied by the user.
+        Then
+            - Validate that the correct error message is returned for the incorrect fetch query.
+        """
+        from CrowdStrikeFalcon import validate_ioa_fetch_query
 
-    IOA_SAMPLE_ALERT = {
-        "composite_id": "20879a8064904ecfbb62c118a6a19411:fcs:ioa-211:d4724ce3-669d-43e7-9a08-5da491879e97",
-        "created_timestamp": "2026-04-20T22:49:16.583865066Z",
-        "updated_timestamp": "2026-04-20T22:49:16.583865066Z",
-        "id": "fcs:ioa-211:d4724ce3-669d-43e7-9a08-5da491879e97",
-        "product": "fcs",
-        "type": "cloud-ioa",
-        "severity": 70,
-        "severity_name": "High",
-        "name": "EC2 security group modified with new ingress rule allowing traffic from the public internet",
-        "display_name": "EC2 security group modified with new ingress rule allowing traffic from the public internet",
-        "cloud_provider": "aws",
-        "cloud_account_id": "537409938058",
-        "status": "new",
-    }
+        with pytest.raises(DemistoException) as e:
+            validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
+        assert error_message in str(e)
 
-    @staticmethod
-    def _build_query_response(composite_ids):
-        return {
-            "meta": {"pagination": {"offset": 0, "limit": 100, "total": len(composite_ids)}},
-            "resources": composite_ids,
-        }
+    def test_fetch_query_with_paginating(self, mocker: MockerFixture):
+        """
+        Given:
+            - The query of the last fetch, and the next token.
+        When
+            - Performing pagination and receiving the next token from the previous run.
+        Then
+            - Validate that the last fetch query is used in the current run, and the next token is added to the API call.
+        """
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-    @staticmethod
-    def _patch_xsoar_params(mocker, ioa_fetch_query: str = ""):
+        fetch_query = "cloud_provider=aws"
+        last_fetch_query = f"{fetch_query}&date_time_since=some_time"
+        ioa_next_token = "dummy_token"
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={
+                "ioa_next_token": ioa_next_token,
+                "last_fetch_query": last_fetch_query,
+                "last_date_time_since": "2023-01-01T00:00:00Z",
+            },
+        )
         mocker.patch.object(
             demisto,
             "params",
-            return_value={
-                "fetch_incidents_or_detections": ["Indicator of Attack"],
-                "ioa_fetch_query": ioa_fetch_query,
-                "incidents_per_fetch": 15,
-                "fetch_time": "3 days",
-            },
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": fetch_query},
         )
-
-    @staticmethod
-    def _last_run_with_ioa(last_run_size: int, ioa_data: dict | None = None):
-        last_run = create_empty_last_run(last_run_size)
-        if ioa_data is not None:
-            from CrowdStrikeFalcon import LastRunIndex, set_last_run_per_type
-
-            set_last_run_per_type(last_run, index=LastRunIndex.IOA, data=ioa_data)
-        return last_run
-
-    def test_fetch_items_ioa_happy_path(self, mocker: MockerFixture):
-        """
-        Given:
-            - The IOA fetch type is selected and the query+entities endpoints return one alert.
-        When:
-            - Calling fetch_items.
-        Then:
-            - Validate the alerts/v2 query endpoint is hit with the compound product:'fcs'+type:'cloud-ioa' filter.
-            - Validate the alerts/v2 entities endpoint is hit with the composite id payload.
-            - Validate the resulting incident has the expected name/occurred/severity.
-        """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
-
-        self._patch_xsoar_params(mocker)
-        mocker.patch.object(demisto, "getLastRun", return_value=self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR))
-
-        composite_id = self.IOA_SAMPLE_ALERT["composite_id"]
-        query_response = self._build_query_response([composite_id])
-        entities_response = {"resources": [dict(self.IOA_SAMPLE_ALERT)]}
-
-        http_request_mocker = mocker.patch(
-            "CrowdStrikeFalcon.http_request",
-            side_effect=[query_response, entities_response],
-        )
-        mocker.patch.object(demisto, "setLastRun")
-
-        _, fetched_incidents = fetch_items()
-
-        # Assert at least one HTTP request was issued and the first one targets the queries endpoint.
-        assert http_request_mocker.call_count >= 2
-        query_call = http_request_mocker.call_args_list[0]
-        query_url = query_call[0][1]
-        assert query_url.startswith("/alerts/queries/alerts/v2?filter=")
-        # The URL-encoded compound product+type filter must appear in the URL.
-        assert "product%3A%27fcs%27%2Btype%3A%27cloud-ioa%27" in query_url
-
-        # The second call should be the entities POST with the composite_ids payload.
-        entities_call = http_request_mocker.call_args_list[1]
-        assert entities_call[0][0] == "POST"
-        assert entities_call[0][1] == "/alerts/entities/alerts/v2"
-        entities_payload = json.loads(entities_call[1]["data"])
-        assert entities_payload == {"composite_ids": [composite_id]}
-
-        assert len(fetched_incidents) == 1
-        incident = fetched_incidents[0]
-        assert incident["name"] == f"Indicator of Attack ID: {composite_id}"
-        assert incident["occurred"] == self.IOA_SAMPLE_ALERT["created_timestamp"][:26] + "Z"
-        # severity_name="High" -> severity_string_to_int returns 3.
-        assert incident["severity"] == 3
-        raw = json.loads(incident["rawJSON"])
-        assert raw["composite_id"] == composite_id
-        assert raw["incident_type"] == "ioa_detection"
-
-    def test_fetch_items_ioa_empty_response(self, mocker: MockerFixture):
-        """
-        Given:
-            - The IOA fetch type is selected and the queries endpoint returns zero composite ids.
-        When:
-            - Calling fetch_items.
-        Then:
-            - Validate that only the queries endpoint is hit (the entities endpoint is skipped).
-            - Validate that no incidents are produced.
-            - Validate that setLastRun is still invoked so the cursor advances normally.
-        """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
-
-        self._patch_xsoar_params(mocker)
-        mocker.patch.object(demisto, "getLastRun", return_value=self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR))
-
-        # Queries endpoint returns an empty `resources` list -> entities endpoint must not be called.
-        query_response = self._build_query_response([])
-        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request", return_value=query_response)
-        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
-
-        _, fetched_incidents = fetch_items()
-
-        # Exactly one HTTP call: the queries endpoint. No entities POST when there are no ids.
-        assert http_request_mocker.call_count == 1
-        assert http_request_mocker.call_args_list[0][0][1].startswith("/alerts/queries/alerts/v2?filter=")
-        # No incidents from an empty response.
-        assert fetched_incidents == []
-        # last_run is still persisted so the time window advances.
-        assert set_last_run_mocker.call_count == 1
-
-    def test_fetch_items_ioa_api_error_propagates(self, mocker: MockerFixture):
-        """
-        Given:
-            - The IOA fetch type is selected and the queries endpoint raises a DemistoException
-              (e.g. the alerts/v2 endpoint returned a non-200 response).
-        When:
-            - Calling fetch_items.
-        Then:
-            - The DemistoException propagates out of fetch_items (no silent swallow).
-            - The entities endpoint is never called and no last_run is persisted for this run.
-        """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
-
-        self._patch_xsoar_params(mocker)
-        mocker.patch.object(demisto, "getLastRun", return_value=self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR))
-
-        api_error = DemistoException("Error in API call to CrowdStrike Falcon: code: 500 - reason: Internal Server Error")
-        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request", side_effect=api_error)
-        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
-
-        with pytest.raises(DemistoException) as exc_info:
-            fetch_items()
-
-        assert "Internal Server Error" in str(exc_info.value)
-        # Only the queries call was attempted; the entities POST never happened.
-        assert http_request_mocker.call_count == 1
-        # Last run must not advance when the fetch failed.
-        set_last_run_mocker.assert_not_called()
-
-    def test_fetch_items_ioa_user_fetch_query_is_anded(self, mocker: MockerFixture):
-        """
-        Given:
-            - A user-provided ioa_fetch_query value.
-        When:
-            - Calling fetch_items.
-        Then:
-            - Validate the filter URL is wrapped as `(<base>)+(<fetch_query>)`, URL-encoded.
-        """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
-
-        user_fetch_query = "cloud_provider:'aws'"
-        self._patch_xsoar_params(mocker, ioa_fetch_query=user_fetch_query)
-        mocker.patch.object(demisto, "getLastRun", return_value=self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR))
-
-        query_response = self._build_query_response([])
-        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request", return_value=query_response)
-        mocker.patch.object(demisto, "setLastRun")
-
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
         fetch_items()
+        assert last_fetch_query in http_request_mocker.call_args_list[0][1].get("url_suffix")
+        assert f"next_token={ioa_next_token}" in http_request_mocker.call_args_list[0][1].get("url_suffix")
 
-        query_url = http_request_mocker.call_args_list[0][0][1]
-        # The encoded base filter should appear wrapped in parentheses, followed by the encoded user query.
-        assert unquote(query_url).startswith("/alerts/queries/alerts/v2?filter=")
-        decoded_filter = unquote(query_url).split("?filter=", 1)[1]
-        assert decoded_filter.startswith("(product:'fcs'+type:'cloud-ioa'+created_timestamp:>'")
-        assert decoded_filter.endswith(f")+({user_fetch_query})")
-
-    def test_fetch_items_ioa_dedup_on_second_run(self, mocker: MockerFixture):
+    def test_fetch_query_with_paginating_empty_last_filter_error(self, mocker: MockerFixture):
         """
         Given:
-            - A first fetch that consumes one IOA alert.
-        When:
-            - Running fetch_items a second time with the produced last_run and the same alert returned by the API.
-        Then:
-            - The second fetch must not produce duplicate incidents.
+            - An empty query as the last fetch query, and the next token.
+        When
+            - Performing pagination and receiving the next token from the previous run.
+        Then
+            - Validate that an error is thrown if the last fetch filter is an empty string.
         """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        self._patch_xsoar_params(mocker)
-
-        composite_id = self.IOA_SAMPLE_ALERT["composite_id"]
-        query_response = self._build_query_response([composite_id])
-        entities_response = {"resources": [dict(self.IOA_SAMPLE_ALERT)]}
-
-        # First fetch starts with an empty last_run and returns the alert.
-        # Second fetch reuses the produced last_run and is presented with the same alert again,
-        # which should be filtered out by the dedup machinery (latest_ids in update_last_run_object).
-        last_run_first = self._last_run_with_ioa(TOTAL_FETCH_TYPE_XSOAR)
-        last_run_for_fetch: list = [last_run_first]
-        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run_for_fetch[-1])
-
-        # Two fetch_items calls -> 4 http_request calls in total
-        # (1 query + 1 entities per call), all returning the same alert.
-        mocker.patch(
-            "CrowdStrikeFalcon.http_request",
-            side_effect=[query_response, entities_response, query_response, entities_response],
+        last_run_object = [{} for _ in range(TOTAL_FETCH_TYPE_XSOAR)]
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={"ioa_next_token": "dummy_token", "last_fetch_query": "", "last_date_time_since": "2023-01-01T00:00:00Z"},
         )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": "cloud_provider=aws"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch("CrowdStrikeFalcon.http_request")
+        with pytest.raises(DemistoException) as e:
+            fetch_items()
+        assert "Last fetch query must not be empty when doing pagination" in str(e)
 
-        captured_last_runs: list = []
-        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: captured_last_runs.append(lr))
+    def test_fetch_query_without_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - The date_time_since date from the previous fetch, and the fetch query.
+        When
+            - Performing fetch without pagination.
+        Then
+            - Validate that the passed date_date_since date is appended to the supplied fetch query.
+        """
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        _, first_incidents = fetch_items()
-        assert len(first_incidents) == 1
-        assert captured_last_runs, "Expected setLastRun to be invoked after the first fetch"
-
-        # Hand the produced last_run back to the next fetch via the side_effect closure.
-        last_run_for_fetch.append(captured_last_runs[-1])
-        _, second_incidents = fetch_items()
-        assert second_incidents == []
+        last_date_time_since = "2023-01-01T00:00:00Z"
+        fetch_query = "cloud_provider=aws"
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOA, data={"last_date_time_since": last_date_time_since})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": fetch_query},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+        fetch_items()
+        assert fetch_query in http_request_mocker.call_args_list[0][1].get("url_suffix")
+        assert f"date_time_since={last_date_time_since}" in http_request_mocker.call_args_list[0][1].get("url_suffix")
 
     @pytest.mark.parametrize(
-        "severity_name, expected_xsoar_severity",
-        [
-            ("Critical", 3),
-            ("High", 3),
-            ("Medium", 2),
-            ("Low", 2),
-            ("Informational", 0),
-        ],
+        "next_toke_object, expected_next_token", [({"next_token": "dummy_token"}, "dummy_token"), ({}, None)]
     )
-    def test_ioa_severity_name_to_xsoar_severity(self, severity_name, expected_xsoar_severity):
+    def test_return_values_get_ioa_events(self, mocker: MockerFixture, next_toke_object, expected_next_token):
         """
         Given:
-            - A severity_name string from an IOA alert payload.
-        When:
-            - Mapping it to an XSOAR severity via the shared severity_string_to_int helper.
-        Then:
-            - The expected XSOAR severity bucket is returned.
+            - The response of the API when a pagination object is returned or not.
+        When
+            - Doing an API call to retrieve the IOA events.
+        Then
+            - Validate that we extract the events and next token from the raw response, if they exist.
         """
-        from CrowdStrikeFalcon import severity_string_to_int
+        from CrowdStrikeFalcon import get_ioa_events
 
-        assert severity_string_to_int(severity_name) == expected_xsoar_severity
+        exepcted_events = ["event_1", "event_2"]
+        raw_response = {"meta": {"pagination": next_toke_object}, "resources": {"events": exepcted_events}}
+        mocker.patch("CrowdStrikeFalcon.http_request", return_value=raw_response)
+        events, next_token = get_ioa_events(ioa_fetch_query="some_query", ioa_next_token="not_important")
+        assert exepcted_events == events
+        assert expected_next_token == next_token
+
+    def test_ioa_events_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - 2 responses from the API that includes a pagination object.
+        When
+            - Fetching incidents, and the fetch limit is greater than the API limit of a single call (If the fetch limit is 4,
+            and the API limit is 2, that means in each fetch, we should do 2 API calls, using pagination, to acquire 4 results, or
+            until no more results are found).
+        Then
+            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be
+            used in the next fetch round.
+        """
+        # We saved two responses, where both of them return a next token. We have that the api_limit=2,
+        # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
+        # we would make it while having a limit of 1. We will check the arguments of the method get_ioa_events,
+        # and the return values of ioa_events_pagination.
+        from CrowdStrikeFalcon import get_ioa_events, ioa_events_pagination
+
+        page_1_raw_response = load_json("test_data/ioa_fetch_incidents.json/ioa_events_page_1_raw_response.json")
+        page_2_raw_response = load_json("test_data/ioa_fetch_incidents.json/ioa_events_page_2_raw_response.json")
+        mocker.patch("CrowdStrikeFalcon.http_request", side_effect=[page_1_raw_response, page_2_raw_response])
+        get_events_for_fetch_mocker = mocker.patch("CrowdStrikeFalcon.get_ioa_events", side_effect=get_ioa_events)
+        events, next_token = ioa_events_pagination(
+            ioa_fetch_query="dummy_fetch_query", ioa_next_token="dummy_token", fetch_limit=3, api_limit=2
+        )
+        # We retrieved 3 events from the pagination phase, therefore, we assert that we acquire them
+        assert events == [{"event_id": "event_1"}, {"event_id": "event_2"}, {"event_id": "event_3"}]
+        # The first time we do pagination, we won't have any fetched incidents, and since the fetch limit is 3,
+        # and api limit is 2, that means we do an API request to retrieve the first 2 events
+        assert get_events_for_fetch_mocker.call_args_list[0][1].get("limit") == 2
+        # After the first API request, the second one should use the token that was retrieved from the previous request
+        assert get_events_for_fetch_mocker.call_args_list[1][1].get("ioa_next_token") == "next_token_1"
+        # After the first pagination, we would have fetched two incidents, and only 1 incident is left, therefore, we
+        # do an API request with a limit of 1 in order to get the last incident of the current round
+        assert get_events_for_fetch_mocker.call_args_list[1][1].get("limit") == 1
+        # Since there are more results to be returned from the API, we assert that we get the next token so we can
+        # use it in the next fetching round
+        assert next_token == "next_token_2"
+
+    def test_no_ioa_events_added_if_found_in_last_run(self, mocker: MockerFixture):
+        """
+        Given:
+            - The event ids of the last fetch run.
+        When
+            - Converting the fetched events to incidents.
+        Then
+            - Validate that we do not create incidents of events that have been fetched in the previous round.
+        """
+        # Make last_event_ids have the values ['1', '2'], and return the values ['2', '3'] when fetching,
+        # and once we enter the for loop to go over the fetched events, '2' will not get picked up, since it
+        # was already fetched, therfore, we check that in the returned incidents object, only the event with id '3'
+        # was added as an incident
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOA, data={"last_event_ids": ["1", "2"]})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": "cloud_provider=aws"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        # The function ioa_events_pagination returns the fetched events, and the next token (for the sake of testing, it is None)
+        mocker.patch(
+            "CrowdStrikeFalcon.ioa_events_pagination",
+            return_value=(
+                [
+                    {"event_id": "2", "event_created": "2023-01-01T00:00:00Z"},
+                    {"event_id": "3", "event_created": "2023-01-01T00:00:00Z"},
+                ],
+                None,
+            ),
+        )
+        mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
+        _, fetched_incidents = fetch_items()
+        assert len(fetched_incidents) == 1
+        rawJSON = json.loads(fetched_incidents[0].get("rawJSON"))
+        assert rawJSON.get("incident_type") == "ioa_events"
+        assert rawJSON.get("event_id") == "3"
+
+    def test_save_fetched_events_when_paginating(self, mocker: MockerFixture):
+        """
+        Given:
+            - The event ids of the last fetch run.
+        When
+            - Saving the fetched event ids.
+        Then
+            - Validate that we add the newly fetched event ids to the previous ones, and not override them, when we are
+            doing pagination.
+        """
+        # Make sure that we save all the events that have been fetched throught the whole pagination process,
+        # which can span on many fetches. We will have ids in last_event_ids (['1']), and configure that we are
+        # doing pagination, and that we fetched event '2', and in the new returned last run, the key last_event_ids
+        # has a value of ['1', '2']
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOA, data={"last_event_ids": ["1"]})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": "cloud_provider=aws"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch(
+            "CrowdStrikeFalcon.ioa_events_pagination",
+            return_value=([{"event_id": "2", "event_created": "2023-01-01T00:00:00Z"}], "next_token"),
+        )
+        mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
+        fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOA].get("last_event_ids") == ["2", "1"]
+
+    def test_save_fetched_events_when_starting_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - The event ids of the last fetch run.
+        When
+            - Saving the fetched event ids.
+        Then
+            - Validate that we add the newly fetched event ids to the previous ones, and not override them, when we are
+            going to start pagination in the next fetch run.
+        """
+        # Make sure that we save all the events that have been fetched before when starting the pagination process.
+        # We will have ids in last_event_ids (['1']), and configure that we are, doing pagination, and that we fetched event '2',
+        # and in the new returned last run, the key last_event_ids has a value of ['1', '2']
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={"last_event_ids": ["1"], "ioa_next_token": "next_token", "last_fetch_query": "cloud_provider=aws"},
+        )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": "cloud_provider=aws"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch(
+            "CrowdStrikeFalcon.ioa_events_pagination",
+            return_value=([{"event_id": "2", "event_created": "2023-01-01T00:00:00Z"}], None),
+        )
+        mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
+        fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOA].get("last_event_ids") == ["2", "1"]
+
+    def test_fetch_ioa_events(self, mocker: MockerFixture):
+        """
+        Given:
+            - A last run object.
+        When
+            - Fetching IOA events.
+        Then
+            - Validate that we construct the correct last run object for the next run by:
+                1. The next token is saved.
+                2. The largest date_time_since date between the dates of all fetched events is saved.
+                3. The fetch query that was used in the API call is saved.
+                4. The fetched event ids are saved.
+        """
+        # A successful fetch of incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={
+                "last_event_ids": ["1"],
+                "ioa_next_token": "next_token",
+                "last_fetch_query": "last_dummy_query",
+                "last_date_time_since": "2022-01-01T00:00:00Z",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_incidents_or_detections": "Indicator of Attack", "ioa_fetch_query": "cloud_provider=aws"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch(
+            "CrowdStrikeFalcon.ioa_events_pagination",
+            return_value=(
+                [
+                    {"event_id": "3", "event_created": "2024-01-01T00:00:00Z"},
+                    {"event_id": "2", "event_created": "2023-01-01T00:00:00Z"},
+                ],
+                "new_next_token",
+            ),
+        )
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
+        _, fetched_incidents = fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOA] == {
+            "ioa_next_token": "new_next_token",
+            "last_date_time_since": "2024-01-01T00:00:00Z",
+            "last_fetch_query": "last_dummy_query",
+            "last_event_ids": ["3", "2", "1"],
+        }
+        assert len(fetched_incidents) == 2
 
 
 class TestIOMFetch:
@@ -9296,118 +9383,6 @@ class TestSpotlightSeverityBasedFetch:
         # Verify handler received empty set
         mock_handler.receive_new_aids.assert_awaited_once_with(set())
 
-    @pytest.mark.asyncio
-    async def test_fetch_vulnerabilities_by_severity_401_error(self, mocker):
-        """
-        Tests that HTTP 401 authentication errors fail fast without retrying.
-
-        Given:
-            - API returns HTTP 401 Unauthorized error.
-        When:
-            - fetch_vulnerabilities_by_severity is called.
-        Then:
-            - ContentClientError is raised immediately with clear authentication error message.
-            - Error message indicates authentication failure.
-            - No retry attempts are made.
-        """
-        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
-        from ContentClientApiModule import ContentClientError
-
-        # Setup
-        mock_client = mocker.AsyncMock()
-        mock_handler = mocker.Mock()
-        mock_handler.receive_new_aids = mocker.AsyncMock()
-
-        # Create a mock response with 401 status code
-        mock_response = mocker.Mock()
-        mock_response.status_code = 401
-        mock_response.text = "Unauthorized"
-
-        # Create ContentClientError with 401 response
-        error_401 = ContentClientError("Unauthorized", response=mock_response)
-
-        # Mock fetch_spotlight_vulnerabilities_page to raise 401 error
-        mocker.patch(
-            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
-            side_effect=error_401,
-        )
-
-        # Mock logging
-        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
-
-        # Execute and verify exception is raised
-        with pytest.raises(ContentClientError) as exc_info:
-            await fetch_vulnerabilities_by_severity(
-                client=mock_client,
-                severity="CRITICAL",
-                context_store=mocker.Mock(),
-                spotlight_state=mocker.Mock(),
-                snapshot_id="snap123",
-                asset_handler=mock_handler,
-            )
-
-        # Verify error message contains authentication failure details
-        error_message = str(exc_info.value)
-        assert "Authentication failed" in error_message
-        assert "HTTP 401" in error_message
-        assert "CRITICAL" in error_message
-        assert "Invalid or expired credentials" in error_message
-
-        # Verify error was logged
-        assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
-
-    @pytest.mark.asyncio
-    async def test_fetch_vulnerabilities_by_severity_401_error_string_match(self, mocker):
-        """
-        Tests that 401 errors are detected via string matching when response object is not available.
-
-        Given:
-            - ContentClientError with "Unauthorized" or "401" in error message.
-        When:
-            - fetch_vulnerabilities_by_severity is called.
-        Then:
-            - ContentClientError is raised with clear authentication error message.
-        """
-        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
-        from ContentClientApiModule import ContentClientError
-
-        # Setup
-        mock_client = mocker.AsyncMock()
-        mock_handler = mocker.Mock()
-        mock_handler.receive_new_aids = mocker.AsyncMock()
-
-        # Create ContentClientError with "Unauthorized" in message but no response object
-        error_unauthorized = ContentClientError("Request failed: Unauthorized access")
-
-        # Mock fetch_spotlight_vulnerabilities_page to raise error
-        mocker.patch(
-            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
-            side_effect=error_unauthorized,
-        )
-
-        # Mock logging
-        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
-
-        # Execute and verify exception is raised
-        with pytest.raises(ContentClientError) as exc_info:
-            await fetch_vulnerabilities_by_severity(
-                client=mock_client,
-                severity="HIGH",
-                context_store=mocker.Mock(),
-                spotlight_state=mocker.Mock(),
-                snapshot_id="snap123",
-                asset_handler=mock_handler,
-            )
-
-        # Verify error message contains authentication failure details
-        error_message = str(exc_info.value)
-        assert "Authentication failed" in error_message
-        assert "HIGH" in error_message
-        assert "Invalid or expired credentials" in error_message
-
-        # Verify error was logged
-        assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
-
 
 class TestAssetsDeviceHandler:
     @pytest.mark.asyncio
@@ -9973,140 +9948,3 @@ def test_list_workflow_executions_command_filter_priority(mocker):
     call_args = http_mock.call_args
     params = call_args.kwargs.get("params") or call_args[1].get("params") or call_args[0][2] if len(call_args[0]) > 2 else None
     assert "ShouldBeIgnored" not in str(params)
-
-
-class TestSynchronousCompression:
-    """Tests for synchronous compression in send_data_to_xsiam_async (CIAC-16811 memory optimization)."""
-
-    @pytest.mark.asyncio
-    async def test_send_data_to_xsiam_async_compresses_synchronously(self, mocker):
-        """
-        Tests that send_data_to_xsiam_async compresses data synchronously before creating async tasks.
-
-        Given:
-            - A list of vulnerability dicts to send to XSIAM.
-        When:
-            - send_data_to_xsiam_async is called.
-        Then:
-            - Data is compressed synchronously (gzip.compress called during function execution, not in async task).
-            - Async tasks receive pre-compressed bytes, not raw data.
-            - The returned tasks are valid asyncio tasks.
-        """
-        import gzip
-        import json
-
-        from CrowdStrikeFalcon import send_data_to_xsiam_async
-
-        # Setup - mock XSIAM credentials and params
-        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
-        mocker.patch(
-            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
-        )
-        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
-
-        # Track gzip.compress calls to verify synchronous compression
-        original_compress = gzip.compress
-        compress_calls: list[bytes] = []
-
-        def tracking_compress(data, *args, **kwargs):
-            result = original_compress(data, *args, **kwargs)
-            compress_calls.append(result)
-            return result
-
-        mocker.patch("CrowdStrikeFalcon.gzip.compress", side_effect=tracking_compress)
-
-        # Mock xsiam_api_call_async to avoid actual HTTP calls
-        mock_api_call = mocker.AsyncMock()
-        mocker.patch("CrowdStrikeFalcon.xsiam_api_call_async", mock_api_call)
-
-        # Test data - 3 vulnerability dicts
-        test_data = [
-            {"id": "vuln1", "aid": "aid1", "status": "open", "cve": {"id": "CVE-2024-0001", "severity": "HIGH"}},
-            {"id": "vuln2", "aid": "aid2", "status": "open", "cve": {"id": "CVE-2024-0002", "severity": "MEDIUM"}},
-            {"id": "vuln3", "aid": "aid3", "status": "open", "cve": {"id": "CVE-2024-0003", "severity": "LOW"}},
-        ]
-
-        # Execute
-        tasks = send_data_to_xsiam_async(
-            data=test_data,
-            vendor="CrowdStrike",
-            product="Falcon_Spotlight",
-            data_type="assets",
-            snapshot_id="snap123",
-        )
-
-        # Verify compression happened synchronously (before tasks are awaited)
-        assert len(compress_calls) > 0, "gzip.compress should have been called synchronously"
-
-        # Verify compressed data is valid gzip that decompresses to the original data
-        for compressed in compress_calls:
-            decompressed = gzip.decompress(compressed).decode("utf-8")
-            # Each line should be a valid JSON object from our test data
-            for line in decompressed.strip().split("\n"):
-                parsed = json.loads(line)
-                assert "id" in parsed
-                assert "aid" in parsed
-
-        # Verify tasks were created
-        assert len(tasks) > 0, "Should have created at least one async task"
-
-    @pytest.mark.asyncio
-    async def test_send_data_to_xsiam_async_empty_data_assets(self, mocker):
-        """
-        Tests that send_data_to_xsiam_async handles empty data for asset seal correctly.
-
-        Given:
-            - Empty data list with data_type="assets" (seal batch).
-        When:
-            - send_data_to_xsiam_async is called.
-        Then:
-            - A task is still created (for the seal).
-            - No crash occurs.
-        """
-        from CrowdStrikeFalcon import send_data_to_xsiam_async
-
-        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
-        mocker.patch(
-            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
-        )
-        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
-        mocker.patch("CrowdStrikeFalcon.xsiam_api_call_async", mocker.AsyncMock())
-
-        tasks = send_data_to_xsiam_async(
-            data=[],
-            vendor="CrowdStrike",
-            product="Falcon_Spotlight",
-            data_type="assets",
-            snapshot_id="snap123",
-        )
-
-        # Seal batch should still create a task
-        assert len(tasks) == 1, "Empty assets data should create one seal task"
-
-    def test_send_data_to_xsiam_async_empty_data_non_assets(self, mocker):
-        """
-        Tests that send_data_to_xsiam_async returns empty list for non-asset empty data.
-
-        Given:
-            - Empty data list with data_type="events".
-        When:
-            - send_data_to_xsiam_async is called.
-        Then:
-            - Returns empty list (no tasks created).
-        """
-        from CrowdStrikeFalcon import send_data_to_xsiam_async
-
-        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
-        mocker.patch(
-            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
-        )
-        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
-
-        tasks = send_data_to_xsiam_async(
-            data=[],
-            vendor="CrowdStrike",
-            product="Falcon_Spotlight",
-            data_type="events",
-        )
-
-        assert tasks == [], "Empty non-asset data should return no tasks"
