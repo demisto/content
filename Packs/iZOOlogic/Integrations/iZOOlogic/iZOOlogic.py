@@ -600,7 +600,8 @@ class Client(ContentClient):
             clientcode=client_code,
         )
 
-        demisto.debug(f"[API ReportNewIncident] Creating incident | Params: {body}")
+        log_body = {**body, "executivename": "***"} if "executivename" in body else body
+        demisto.debug(f"[API ReportNewIncident] Creating incident | Params: {log_body}")
 
         response = self._http_request(
             method="POST",
@@ -667,7 +668,7 @@ def _fetch_all_pages(
     in the time window.
 
     Used by all commands: test_module, get_incidents_command, fetch_incidents_command,
-    and izoolabs_incident_fetch_command.
+    and search_incidents_command.
 
     Args:
         client: The iZOOlogic client.
@@ -1100,7 +1101,7 @@ def _resolve_code_by_name(raw_value: str, code_map: dict[str, int], field_name: 
 
 
 def _validate_incident_creation_args(args: dict[str, Any]) -> dict[str, Any]:
-    """Validate and parse arguments for the izoolabs-incident-create command.
+    """Validate and parse arguments for the izoologic-incident-create command.
 
     Args:
         args: Raw command arguments from demisto.args().
@@ -1170,7 +1171,7 @@ def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     Returns:
         CommandResults with the API response.
     """
-    demisto.debug("[Command] izoolabs-incident-create triggered")
+    demisto.debug("[Command] izoologic-incident-create triggered")
 
     validated_args = _validate_incident_creation_args(args)
 
@@ -1207,13 +1208,14 @@ def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="iZOOlabs.Incident",
+        outputs_prefix="iZOOlogic.Incident",
         outputs_key_field="reportedIncidentId",
         outputs=result,
+        raw_response=response,
     )
 
 
-def incident_fetch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch incidents from iZOOlogic with advanced filtering.
 
     Retrieves incidents based on specified filters including date range, brand,
@@ -1227,7 +1229,7 @@ def incident_fetch_command(client: Client, args: dict[str, Any]) -> CommandResul
     Returns:
         CommandResults with the retrieved incidents.
     """
-    demisto.debug("[Command] izoolabs-incident-fetch triggered")
+    demisto.debug("[Command] izoologic-incident-fetch triggered")
 
     # Date range — default: 1 day ago to now
     from_date_input = args.get("from_date", Config.DEFAULT_FETCH_COMMAND_FROM_TIME)
@@ -1304,9 +1306,10 @@ def incident_fetch_command(client: Client, args: dict[str, Any]) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="iZOOlabs.Incident",
+        outputs_prefix="iZOOlogic.Incident",
         outputs_key_field="incidentID",
         outputs=all_incidents,
+        raw_response=all_incidents,
     )
 
 
@@ -1321,8 +1324,8 @@ COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
     "izoologic-get-incidents": get_incidents_command,
     "fetch-incidents": fetch_incidents_command,
-    "izoolabs-incident-create": create_incident_command,
-    "izoolabs-incident-fetch": incident_fetch_command,
+    "izoologic-incident-create": create_incident_command,
+    "izoologic-incident-fetch": search_incidents_command,
 }
 
 
@@ -1357,7 +1360,7 @@ def main() -> None:
         elif command == "izoologic-get-incidents":
             result = command_func(client, args, config["incident_type_codes"])
             return_results(result)
-        elif command in ("izoolabs-incident-create", "izoolabs-incident-fetch"):
+        elif command in ("izoologic-incident-create", "izoologic-incident-fetch"):
             result = command_func(client, args)
             return_results(result)
 
