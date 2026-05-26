@@ -23,9 +23,9 @@ args:
   isArray: true
   auto: PREDEFINED
   predefined:
-    - "Cortex XDR - IR"
-    - "Cortex Core - IR"
-    - "Microsoft Defender Advanced Threat Protection"
+  - "Cortex XDR - IR"
+  - "Cortex Core - IR"
+  - "Microsoft Defender Advanced Threat Protection"
 - name: verbose
   description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result.
   auto: PREDEFINED
@@ -71,8 +71,8 @@ timeout: '0'
 type: python
 subtype: python3
 compliantpolicies:
-  - Quarantine File
-dockerimage: demisto/python3:3.12.13.8294662
+- Quarantine File
+dockerimage: demisto/python3:3.12.13.9059085
 fromversion: 6.10.0
 polling: true
 tests:
