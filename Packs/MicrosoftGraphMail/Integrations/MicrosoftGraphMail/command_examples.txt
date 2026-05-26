@@ -18,3 +18,7 @@ reply-mail to=dev@demistodev.onmicrosoft.com body=This is the body subject=This 
 msgraph-mail-list-rules user_id="dev@demistodev.onmicrosoft.com"
 msgraph-mail-get-rule rule_id="AQAABrnJmxg=" user_id="dev@demistodev.onmicrosoft.com"
 msgraph-mail-delete-rule rule_id="AQAABrnJmxg=" user_id="dev@demistodev.onmicrosoft.com"
+msgraph-mail-create-rule user_id="dev@demistodev.onmicrosoft.com" display_name="XSOAR test rule" sequence=10 is_enabled=false actions=`{"markAsRead":true,"stopProcessingRules":true}` conditions=`{"subjectContains":["xsoar-test"]}`
+msgraph-mail-update-rule user_id="dev@demistodev.onmicrosoft.com" rule_id="AQAABrnJmxg=" display_name="XSOAR test rule renamed" is_enabled=true
+msgraph-mail-get-settings user_id="dev@demistodev.onmicrosoft.com"
+msgraph-mail-get-mailtips email_address="dev@demistodev.onmicrosoft.com"
