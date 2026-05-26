@@ -41,6 +41,12 @@ ignore=SC105
 [file:CoreUnisolateEndpoint.yml]
 ignore=SC105
 
+[file:playbook-T1059_-_Command_and_Scripting_Interpreter.yml]
+ignore=GR109
+
+[file:playbook-T1036_-_Masquerading.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule
