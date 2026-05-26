@@ -523,29 +523,29 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.id
       description: The resource ID.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.name
+    - contextPath: Azure.StorageAccountBlobServiceProperties.name
       description: The name of the resource.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.type
+    - contextPath: Azure.StorageAccountBlobServiceProperties.type
       description: The type of the resource.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.cors
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.cors
       description: Specifies CORS rules for the Blob service.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.defaultServiceVersion
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion
       description: The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.deleteRetentionPolicy
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.isVersioningEnabled
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled
       description: If set to true, enables versioning.
       type: Boolean
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.changeFeed
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.changeFeed
       description: The blob service properties for change feed events.
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.sku.name
+    - contextPath: Azure.StorageAccountBlobServiceProperties.sku.name
       description: The SKU name.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.sku.tier
+    - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
   - name: azure-storage-blob-service-property-set
@@ -623,9 +623,18 @@ script:
       - contextPath: Azure.StorageBlobServiceProperties.type
         description: The resource type.
         type: String
-      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy
-        description: The blob service property to configure last access time based tracking policy.
-        type: Unknown
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
+        description: When set to true, last access time–based tracking is enabled.
+        type: Boolean
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
+        description: Name of the policy. The valid value is AccessTimeTracking.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
+        description: Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked.
+        type: Number
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
+        description: An array of predefined, supported blob types. The only supported value is BlockBlob.
+        type: String
     arguments:
       - description: The subscription ID.
         name: subscription_id
@@ -7991,32 +8000,32 @@ script:
     quickaction: true
     deprecated: true
     outputs:
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.id
+    - contextPath: Azure.StorageAccountBlobServiceProperties.id
       description: The resource ID.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.name
+    - contextPath: Azure.StorageAccountBlobServiceProperties.name
       description: The name of the resource.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.type
+    - contextPath: Azure.StorageAccountBlobServiceProperties.type
       description: The type of the resource.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.cors
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.cors
       description: Specifies CORS rules for the Blob service.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.defaultServiceVersion
-      description: The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions.  
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion
+      description: The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions.
       type: Date
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.deleteRetentionPolicy
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.isVersioningEnabled
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled
       description: If set to true, enables versioning.
       type: Boolean
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.properties.changeFeed
+    - contextPath: Azure.StorageAccountBlobServiceProperties.properties.changeFeed
       description: The blob service properties for change feed events.
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.sku.name
+    - contextPath: Azure.StorageAccountBlobServiceProperties.sku.name
       description: The SKU name.
       type: String
-    - contextPath: Azure.StorageAccountsBlobServiceProperties.sku.tier
+    - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
 

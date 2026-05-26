@@ -149,8 +149,8 @@ Sets properties for the blob service in a specific account storage. The command 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
 | account_name | The name of the storage account. | Required |
 | delete_rentention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
 | delete_rentention_policy_days | The number of days the deleted item should be retained. | Optional |
