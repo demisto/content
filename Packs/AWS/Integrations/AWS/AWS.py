@@ -10412,13 +10412,6 @@ def get_service_client(
     return client, session
 
 
-def _dispatch_command(command: str, args: dict, service_client: BotoClient) -> CommandResults | None:
-    """Invoke the correct handler: polling commands take ``(args, client)``, others ``(client, args)``."""
-    if args.get("polling_timeout") is not None:
-        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
-        return COMMANDS_MAPPING[command](args, service_client)
-    return COMMANDS_MAPPING[command](service_client, args)
-
 
 def execute_aws_command(
     command: str, args: dict, params: dict
@@ -10445,7 +10438,11 @@ def execute_aws_command(
             try:
                 creds = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
                 svc_client, _ = get_service_client(creds, per_account_params, per_account_args, command)
-                result = _dispatch_command(command, per_account_args, svc_client)
+                if per_account_args.get("polling_timeout") is not None:
+                    demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
+                    result = COMMANDS_MAPPING[command](per_account_args, svc_client)
+                else:
+                    result = COMMANDS_MAPPING[command](svc_client, per_account_args)
                 if result is None:
                     return CommandResults(readable_output=f"#### Result for account `{account_id}`:\nNo result returned.")
                 result.readable_output = f"#### Result for account `{account_id}`:\n{result.readable_output or ''}"
@@ -10471,7 +10468,10 @@ def execute_aws_command(
     account_id: str = args.get("account_id", "")
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
     service_client, _ = get_service_client(credentials, params, args, command)
-    return _dispatch_command(command, args, service_client)
+    if args.get("polling_timeout") is not None:
+        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
+        return COMMANDS_MAPPING[command](args, service_client)
+    return COMMANDS_MAPPING[command](service_client, args)
 
 
 def main():  # pragma: no cover
