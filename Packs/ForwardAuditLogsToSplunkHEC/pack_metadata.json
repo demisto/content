@@ -1,0 +1,24 @@
+{
+    "name": "ForwardAuditLogsToSplunkHEC",
+    "description": "This pack allows you to setup a job to forward audit logs from XSOAR to Splunk HEC. This requires a Core REST API instance and Splunk Py instance.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Prasoon Agnihotri",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "firstCreated": "2026-04-17T12:16:16Z",
+    "devEmail": [
+        "prasu.agnihotri51@gmail.com"
+    ],
+    "githubUser": []
+}
