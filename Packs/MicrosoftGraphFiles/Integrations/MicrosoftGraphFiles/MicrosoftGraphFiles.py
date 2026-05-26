@@ -1155,11 +1155,14 @@ def get_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -
     outputs: dict = {"itemId": item_id}
     outputs.update(label)
 
-    readable_output = tableToMarkdown(
-        "Sensitivity Label",
-        outputs,
-        headerTransform=pascalToSpace,
-    )
+    if label:
+        readable_output = tableToMarkdown(
+            "Sensitivity Label",
+            outputs,
+            headerTransform=pascalToSpace,
+        )
+    else:
+        readable_output = f"No sensitivity label is assigned to drive item `{item_id}`."
 
     return CommandResults(
         outputs_prefix="MsGraphFiles.SensitivityLabel",

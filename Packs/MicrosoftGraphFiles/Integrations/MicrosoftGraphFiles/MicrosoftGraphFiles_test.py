@@ -1112,6 +1112,20 @@ def test_get_sensitivity_label_uri_branching(mocker: MockerFixture, object_type:
     assert call_kwargs["params"] == {"$select": "sensitivityLabel"}
 
 
+def test_get_sensitivity_label_invalid_object_type() -> None:
+    """
+    Given:
+        - An invalid object_type value that is not one of drives, groups, sites, users.
+    When:
+        - Running the get_sensitivity_label_command.
+    Then:
+        - A DemistoException is raised with a message indicating the invalid object_type.
+    """
+    args = {"object_type": "invalid", "object_type_id": "id-1", "item_id": "item-1"}
+    with pytest.raises(DemistoException, match="Invalid object_type 'invalid'"):
+        get_sensitivity_label_command(CLIENT_MOCKER, args)
+
+
 # Real Graph v1.0 response for GET driveItem?$select=sensitivityLabel, captured
 # from live testing against a file with a classification-only label.
 GET_LABEL_REAL_RESPONSE = {
@@ -1167,6 +1181,7 @@ def test_get_sensitivity_label_command_empty_label(mocker: MockerFixture, graph_
     Then:
         - The command does NOT raise an error.
         - The outputs contain only itemId (no label fields since the label is empty).
+        - The readable output contains a descriptive "no label assigned" message.
     """
     mocker.patch.object(
         CLIENT_MOCKER.ms_client,
@@ -1179,6 +1194,7 @@ def test_get_sensitivity_label_command_empty_label(mocker: MockerFixture, graph_
     assert result.outputs == {
         "itemId": "i1",
     }
+    assert "No sensitivity label is assigned" in result.readable_output
 
 
 def test_get_sensitivity_label_command_protected_label(mocker: MockerFixture) -> None:
