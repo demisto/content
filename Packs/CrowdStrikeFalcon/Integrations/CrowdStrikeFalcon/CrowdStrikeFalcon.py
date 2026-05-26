@@ -42,6 +42,7 @@ NGSIEM_INCIDENT = "ngsiem_incident"
 NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
 NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
+IOA_DETECTION = "ioa_detection"
 RECON_NOTIFICATION = "Recon notifications"
 
 # Fetch type names as they appear in the .yml instance configurations
@@ -90,6 +91,7 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -350,6 +352,8 @@ MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Inc
 
 HOST_STATUS_DICT = {"online": "Online", "offline": "Offline", "unknown": "Unknown"}
 
+NO_QUARANTINED_FILES_MSG = "The arguments/filters you provided did not match any files."
+
 QUARANTINE_FILES_OUTPUT_HEADERS = [
     "id",
     "aid",
@@ -425,7 +429,7 @@ class IncidentType(Enum):
     LEGACY_ENDPOINT_DETECTION = "ldt"
     ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ":ind:"  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = "iom_configurations"
-    IOA_EVENTS = "ioa_events"
+    IOA_TYPE_TAG = "cloud-ioa"
     ON_DEMAND = "ods"
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
@@ -728,23 +732,52 @@ def create_publications(cve: dict) -> list:
 
 
 def build_query_params(query_params: dict) -> str:
-    """
-    Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
-    For example: {'name': 'test', 'os_name': 'WINDOWS'} => '?name=test+os_name=WINDOWS'
+    r"""
+    Gets a dict of {property: value} and returns a string to use as an FQL ``q`` parameter.
+
+    For example::
+
+        {}                                     => ""
+        {'name': 'test', 'os_name': 'WINDOWS'} => "name:'test'+os_name:'WINDOWS'"
+        {'filename': ['a.txt']}                => "filename:'a.txt'"
+        {'filename': ['a.txt', 'b.txt']}       => "filename:['a.txt','b.txt']"
+        {'filename': []}                       => ""        # empty list is skipped
+
+    List values are unwrapped (single element) or rendered in FQL multi-value bracket
+    notation (multiple elements). Without this, a list value would be interpolated as a
+    Python ``repr`` (e.g. ``filename:'['a.txt']'``), which CrowdStrike's FQL parser does
+    not match against. Single quotes inside values are escaped with a backslash so values
+    like ``O'Brien.txt`` do not break the FQL syntax.
 
     Args:
-        query_params: dict of exclusion property: value.
+        query_params: dict of property: value (value may be scalar or list).
+            ``None`` values and empty lists are ignored.
     Returns:
-        String to use as a query param in the requests of exclusion.
+        String to use as the FQL ``q`` query param (``""`` if no usable values).
     """
-    query = ""
+
+    def _fql_quote(v: Any) -> str:
+        # Escape single quotes inside the value so they don't terminate the FQL string.
+        return "'" + str(v).replace("'", "\\'") + "'"
+
+    parts: list[str] = []
 
     for key, value in query_params.items():
-        if query:
-            query += "+"
-        query += f"{key}:'{value}'"
+        if value is None:
+            continue
+        if isinstance(value, list):
+            if not value:
+                # Empty list: nothing to filter on for this key.
+                continue
+            if len(value) == 1:
+                parts.append(f"{key}:{_fql_quote(value[0])}")
+            else:
+                joined = ",".join(_fql_quote(v) for v in value)
+                parts.append(f"{key}:[{joined}]")
+        else:
+            parts.append(f"{key}:{_fql_quote(value)}")
 
-    return query
+    return "+".join(parts)
 
 
 def modify_detection_summaries_outputs(detection: dict):
@@ -813,6 +846,57 @@ def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
         demisto.info(full_log_line)
     else:
         demisto.error(full_log_line)
+
+
+def _get_process_memory_mb() -> str:
+    """Get current process RSS memory usage and Python's tracked allocations.
+
+    Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
+    which reflects actual physical memory usage at this moment.
+    Also reports tracemalloc's tracked Python allocations to quantify arena fragmentation
+    (difference between OS RSS and Python's tracked memory = fragmentation overhead).
+
+    Returns:
+        Formatted string with current RSS, peak RSS, and Python tracked memory in MB.
+    """
+    # Import locally to avoid shadowing the `resource` loop variable used in other functions
+    import resource as resource_mod  # noqa: F811
+    import sys
+    import tracemalloc
+
+    # Current RSS: read from /proc/self/status (Linux only)
+    # VmRSS shows the actual physical memory currently used by the process
+    current_rss_mb = 0.0
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    # VmRSS is reported in KB in /proc/self/status
+                    current_rss_mb = int(line.split()[1]) / 1024
+                    break
+    except (FileNotFoundError, ValueError):
+        pass  # Not on Linux or parse error — current RSS will show 0
+
+    # Peak RSS: the maximum RSS ever reached during the process lifetime
+    # On Linux ru_maxrss is in KB, on macOS it's in bytes
+    rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
+    if sys.platform == "darwin":
+        peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
+    else:
+        peak_rss_mb = rusage.ru_maxrss / 1024
+
+    # Python tracked allocations via tracemalloc
+    # The gap between RSS and traced = arena fragmentation + non-Python allocations
+    traced_mb = 0.0
+    traced_peak_mb = 0.0
+    if tracemalloc.is_tracing():
+        traced_current, traced_peak = tracemalloc.get_traced_memory()
+        traced_mb = traced_current / (1024 * 1024)
+        traced_peak_mb = traced_peak / (1024 * 1024)
+
+    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB" + (
+        f", py_traced={traced_mb:.1f} MB, py_peak={traced_peak_mb:.1f} MB" if traced_mb > 0 else ""
+    )
 
 
 def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
@@ -971,6 +1055,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
         NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+        IOA_FETCH_TYPE,
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -982,6 +1067,9 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
+    elif detection_type == IOA_FETCH_TYPE:
+        incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
+        incident_context["severity"] = severity_string_to_int(detection.get("severity_name"))
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
@@ -1127,6 +1215,109 @@ def create_json_iocs_list(
         )
 
     return iocs_list
+
+
+def list_workflow_definitions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow definitions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., name.desc).
+
+    Returns:
+        Response JSON containing workflow definitions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_definitions: calling API with {params=}")
+    return http_request("GET", "/workflows/combined/definitions/v1", params=params)
+
+
+def execute_workflow(
+    definition_id: list[str] | None = None,
+    name: str | None = None,
+    execution_cid: list[str] | None = None,
+    key: str | None = None,
+    source_event_url: str | None = None,
+    body: str = "{}",
+) -> dict:
+    """
+    Execute an on-demand workflow.
+
+    Args:
+        definition_id: Workflow definition ID(s).
+        name: Workflow name.
+        execution_cid: CID(s) to execute the workflow on.
+        key: Deduplication key.
+        source_event_url: URL reference to the source that triggered the workflow.
+        body: JSON body to pass to the workflow execution.
+
+    Returns:
+        Response JSON from the workflow execution.
+    """
+    params = assign_params(
+        definition_id=definition_id,
+        name=name,
+        execution_cid=execution_cid,
+        key=key,
+        source_event_url=source_event_url,
+    )
+    try:
+        json_body = json.loads(body)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON in 'body' argument: {e}")
+    demisto.debug(f"[Workflow] execute_workflow: calling API with {params=}, body_keys={list(json_body.keys())}")
+    return http_request("POST", "/workflows/entities/execute/v1", params=params, json=json_body)
+
+
+def list_workflow_executions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow executions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., created_at.desc).
+
+    Returns:
+        Response JSON containing workflow executions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_executions: calling API with {params=}")
+    return http_request("GET", "/workflows/combined/executions/v1", params=params)
+
+
+def get_workflow_execution_results(ids: list[str]) -> dict:
+    """
+    Get detailed results for specific workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+
+    Returns:
+        Response JSON containing execution results.
+    """
+    params = {"ids": ids}
+    return http_request("GET", "/workflows/entities/execution-results/v1", params=params, status_code=404)
+
+
+def perform_workflow_execution_action(ids: list[str], action_name: str) -> dict:
+    """
+    Perform an action (cancel or resume) on workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+        action_name: The action to perform ('cancel' or 'resume').
+
+    Returns:
+        Response JSON from the action.
+    """
+    params = {"action_name": action_name}
+    body = {"ids": ids}
+    return http_request("POST", "/workflows/entities/execution-actions/v1", params=params, json=body, status_code=404)
 
 
 """ COMMAND SPECIFIC FUNCTIONS """
@@ -3299,53 +3490,6 @@ def fetch_iom_incidents(iom_last_run):
     return iom_incidents, iom_last_run
 
 
-def fetch_ioa_incidents(ioa_last_run):
-    demisto.debug("Fetching Indicator of Attack incidents")
-    demisto.debug(f"{ioa_last_run=}")
-    fetch_query = demisto.params().get("ioa_fetch_query", "")
-    validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-
-    last_fetch_event_ids, ioa_next_token, last_date_time_since, _ = get_current_fetch_data(
-        last_run_object=ioa_last_run,
-        date_format=DATE_FORMAT,
-        last_date_key="last_date_time_since",
-        next_token_key="ioa_next_token",
-        last_fetched_ids_key="last_event_ids",
-    )
-    ioa_fetch_query = create_ioa_query(
-        is_paginating=bool(ioa_next_token),
-        configured_fetch_query=fetch_query,
-        last_fetch_query=ioa_last_run.get("last_fetch_query", ""),
-        last_date_time_since=last_date_time_since,
-    )
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    ioa_events, ioa_new_next_token = ioa_events_pagination(
-        ioa_fetch_query=ioa_fetch_query, ioa_next_token=ioa_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=1000
-    )
-    demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
-
-    ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
-        fetched_data=ioa_events,
-        last_date=last_date_time_since,
-        last_fetched_ids=last_fetch_event_ids,
-        date_key="event_created",
-        id_key="event_id",
-        date_format=DATE_FORMAT,
-        is_paginating=bool(ioa_new_next_token or ioa_next_token),
-        to_incident_context=ioa_event_to_incident,
-        incident_type="ioa_events",
-    )
-
-    ioa_last_run = {
-        "ioa_next_token": ioa_new_next_token,
-        "last_date_time_since": new_date_time_since,
-        "last_fetch_query": ioa_fetch_query,
-        "last_event_ids": ioa_event_ids or last_fetch_event_ids,
-    }
-
-    return ioa_incidents, ioa_last_run
-
-
 def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fetch_events=False) -> None:
     """
     Safely set the specific sub last_run dictionary in the main last_run list.
@@ -3583,7 +3727,16 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
         demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
 
-        fetched_ioa_incidents, ioa_last_run = fetch_ioa_incidents(ioa_last_run)
+        fetched_ioa_incidents, ioa_last_run = fetch_detections_by_product_type(
+            ioa_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ioa_fetch_query", ""),
+            detections_type=IOA_DETECTION,
+            product_type=IncidentType.IOA_TYPE_TAG.value,
+            detection_name_prefix=IOA_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False,
+        )
         items.extend(fetched_ioa_incidents)
 
     if not is_fetch_events and NGSIEM_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3754,7 +3907,8 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
+    spotlight_data = integration_context.get("spotlight_assets", {})
+    log_falcon_assets(f"Saved Spotlight state: metadata={spotlight_data.get('metadata', {})}")
 
 
 class AssetsDeviceHandler:
@@ -3865,7 +4019,7 @@ class AssetsDeviceHandler:
 
             # 2. Update state and send it to XSIAM after finish
             self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
             # 3. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
@@ -4113,16 +4267,41 @@ def send_data_to_xsiam_async(
     else:
         data_chunks = list(split_data_to_chunks(data_str, chunk_size))
 
-    async def send_events_async(data_chunk) -> int:
-        chunk_size_val = len(data_chunk)
-        data_chunk = "\n".join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
+    # Free the intermediate JSON string — chunks now hold the only references
+    del data_str
+
+    # Compress chunks synchronously to free raw string data before creating async tasks.
+    # This reduces memory fragmentation by allowing Python to reuse arenas for the next batch.
+    compressed_chunks: list[tuple[bytes, int]] = []
+    total_raw_bytes = 0
+    total_compressed_bytes = 0
+    for chunk in data_chunks:
+        chunk_size_val = len(chunk) if isinstance(chunk, list) else 1
+        chunk_str = "\n".join(chunk) if isinstance(chunk, list) else chunk
+        raw_bytes = chunk_str.encode("utf-8")
+        total_raw_bytes += len(raw_bytes)
+        zipped_data = gzip.compress(raw_bytes)
+        total_compressed_bytes += len(zipped_data)
+        del raw_bytes  # Free the encoded string immediately
+        compressed_chunks.append((zipped_data, chunk_size_val))
+
+    # Free the uncompressed chunks — only compressed bytes remain
+    del data_chunks
+
+    if total_raw_bytes > 0:
+        ratio = total_compressed_bytes / total_raw_bytes * 100
+        log_falcon_assets(
+            f"Compressed {len(compressed_chunks)} chunks: "
+            f"{total_raw_bytes / 1024:.1f} KB → {total_compressed_bytes / 1024:.1f} KB ({ratio:.1f}%)"
+        )
+
+    async def send_compressed_async(zipped_data: bytes, chunk_size_val: int) -> int:
         await xsiam_api_call_async(
             xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
         )
         return chunk_size_val
 
-    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    tasks = [asyncio.create_task(send_compressed_async(zipped, size)) for zipped, size in compressed_chunks]
     return tasks
 
 
@@ -4167,7 +4346,7 @@ async def send_batch_to_xsiam_and_save_context(
     log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
 
     try:
-        # 1. Send to XSIAM (returns list of async tasks)
+        # 1. Send to XSIAM (compresses data synchronously, returns async tasks for HTTP only)
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4180,6 +4359,8 @@ async def send_batch_to_xsiam_and_save_context(
             snapshot_id=snapshot_id,
             items_count=items_count,
         )
+        # Release raw data — compression already done synchronously, async tasks hold only compressed bytes
+        del data
 
         # 2. Wait for all chunks to complete
         await asyncio.gather(*tasks)
@@ -4233,7 +4414,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    # items_count = items_count if batch
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
             data=data,
@@ -4318,18 +4498,22 @@ def load_spotlight_state(
     # Extract state variables
     snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
-    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+    # AIDs are no longer stored in context (only counts) to reduce memory/serialization overhead.
+    # Backward compat: read old "unique_aids"/"processed_aids" lists if present, otherwise use counts.
+    unique_aids_count = spotlight_state.metadata.get("unique_aids_count", len(spotlight_state.metadata.get("unique_aids", [])))
+    processed_aids_count = spotlight_state.metadata.get(
+        "processed_aids_count", len(spotlight_state.metadata.get("processed_aids", []))
+    )
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"{unique_aids_count=}, {processed_aids_count=}, "
         f"completed_severities={completed_severities}, "
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities
+    return spotlight_state, snapshot_id, total_fetched, unique_aids_count, processed_aids_count, completed_severities
 
 
 def update_spotlight_state_and_metadata(
@@ -4365,8 +4549,8 @@ def update_spotlight_state_and_metadata(
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
-        "unique_aids": list(unique_aids),
-        "processed_aids": list(processed_aids),
+        "unique_aids_count": len(unique_aids),
+        "processed_aids_count": len(processed_aids),
         "completed_severities": completed_severities,
     }
 
@@ -4467,6 +4651,27 @@ async def fetch_vulnerabilities_by_severity(
 
     try:
         while True:
+            # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
+            # This prevents unbounded memory growth from fire-and-forget vulnerability batches.
+            while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
+                log_falcon_assets(
+                    f"[{severity}] Backpressure: {len(pending_tasks)} pending tasks >= limit {MAX_PENDING_TASKS_PER_SEVERITY}, "
+                    f"waiting for at least one to complete (RSS: {_get_process_memory_mb()})"
+                )
+                done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
+                pending_tasks = pending_tasks_updated
+                # Process completed tasks to update last_saved_batch_number
+                for completed_task in done:
+                    try:
+                        result = completed_task.result()
+                        if isinstance(result, int) and result > last_saved_batch_number:
+                            last_saved_batch_number = result
+                    except Exception as e:
+                        log_falcon_assets(f"[{severity}] Background send task failed: {e}", "error")
+                log_falcon_assets(
+                    f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
+                )
+
             # Build filter query with severity
             filter_query = f"status:['open','reopen']+cve.severity:['{severity}']"
 
@@ -4517,23 +4722,36 @@ async def fetch_vulnerabilities_by_severity(
             )
 
             # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future):
+            def update_last_saved(future, _pending=pending_tasks):
                 nonlocal last_saved_batch_number
                 try:
                     last_saved_batch_number = future.result()
                 except Exception as e:
                     log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
                 finally:
-                    pending_tasks.discard(future)
+                    _pending.discard(future)
 
             pending_tasks.add(task)
             task.add_done_callback(update_last_saved)
-            log_falcon_assets(f"[{severity}] Created background task for batch {batch_counter}")
+            log_falcon_assets(
+                f"[{severity}] Created send task for batch {batch_counter} "
+                f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
+            )
+
+            # Log memory stats every 10 batches
+            if batch_counter % 10 == 0:
+                log_falcon_assets(
+                    f"[{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
+                    f"unique_aids={len(unique_aids)}, pending_tasks={len(pending_tasks)}, "
+                    f"RSS: {_get_process_memory_mb()}",
+                    "info",
+                )
 
             # Check if more pages exist
             if is_last_batch:
                 log_falcon_assets(
-                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}",
+                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}, "
+                    f"pending_tasks: {len(pending_tasks)}, RSS: {_get_process_memory_mb()}",
                     "info",
                 )
                 break
@@ -4543,8 +4761,29 @@ async def fetch_vulnerabilities_by_severity(
             after_token = new_after_token
 
     except ContentClientError as e:
-        # Check if this is an expired cursor error
+        # Check if this is an authentication error (HTTP 401)
+        # Authentication errors are not transient and should fail immediately
+        if e.response and e.response.status_code == 401:
+            error_msg = (
+                f"Authentication failed (HTTP 401) while fetching {severity} severity vulnerabilities. "
+                f"Invalid or expired credentials. Please verify the API credentials and try again. "
+                f"Error: {e}"
+            )
+            log_falcon_assets(f"[{severity}] {error_msg}", "error")
+            raise ContentClientError(error_msg) from e
+
+        # Check for "Unauthorized" in error message as fallback
         error_str = str(e)
+        if "Unauthorized" in error_str or "401" in error_str:
+            error_msg = (
+                f"Authentication failed while fetching {severity} severity vulnerabilities. "
+                f"Invalid or expired credentials. Please verify the API credentials and try again. "
+                f"Error: {e}"
+            )
+            log_falcon_assets(f"[{severity}] {error_msg}", "error")
+            raise ContentClientError(error_msg) from e
+
+        # Check if this is an expired cursor error
         if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
             log_falcon_assets(
                 f"[{severity}] Pagination cursor expired. This should not happen with continuous fetching. "
@@ -4814,6 +5053,14 @@ async def fetch_spotlight_assets():
     Total time = max(all queries) = ~2.3 hours. No cursor expiration, no duplication.
     """
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
+    fetch_start_time = time.monotonic()
+
+    # Start tracemalloc to track Python allocations vs OS RSS (quantifies arena fragmentation)
+    import tracemalloc
+
+    if not tracemalloc.is_tracing():
+        tracemalloc.start()
+        log_falcon_assets("tracemalloc started for memory diagnostics")
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
@@ -4847,9 +5094,13 @@ async def fetch_spotlight_assets():
         )
         save_spotlight_state(context_store, spotlight_state)
 
+        fetch_elapsed = time.monotonic() - fetch_start_time
+        fetch_minutes = fetch_elapsed / 60
         log_falcon_assets(
-            f"Finished Spotlight assets fetch. Total vulnerabilities: {total_vulnerabilities}, "
-            f"Total unique hosts: {len(all_unique_aids)}",
+            f"Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
+            f"Total vulnerabilities: {total_vulnerabilities}, "
+            f"Total unique hosts: {len(all_unique_aids)}, "
+            f"RSS: {_get_process_memory_mb()}",
             "info",
         )
 
@@ -4938,9 +5189,23 @@ def fetch_detections_by_product_type(
 
     fetch_limit = current_fetch_info.get("limit") or fetch_limit
 
-    filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
-        filter = filter.replace("product:", "type:")
+    # Build the base product/type filter clauses.
+    # Most product types (e.g. idp, mobile, ngsiem, xdr, automated-lead, thirdparty) map to a single
+    # `product:'<value>'` clause. ON_DEMAND ('ods') and OFP ('ofp') need `type:'<value>'` instead.
+    # IOA needs a compound `product:'fcs'+type:'cloud-ioa'` selector.
+    product_type_to_clauses: dict[str, tuple[str | None, str | None]] = {
+        IncidentType.ON_DEMAND.value: (None, IncidentType.ON_DEMAND.value),
+        IncidentType.OFP.value: (None, IncidentType.OFP.value),
+        IncidentType.IOA_TYPE_TAG.value: ("fcs", IncidentType.IOA_TYPE_TAG.value),
+    }
+    product_clause_value, type_clause_value = product_type_to_clauses.get(product_type, (product_type, None))
+    filter_clauses: list[str] = []
+    if product_clause_value:
+        filter_clauses.append(f"product:'{product_clause_value}'")
+    if type_clause_value:
+        filter_clauses.append(f"type:'{type_clause_value}'")
+    filter_clauses.append(f"created_timestamp:>'{start_fetch_time}'")
+    filter = "+".join(filter_clauses)
 
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
@@ -5465,187 +5730,6 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     """
     added_datetime = safe_strptime(date, date_format) + timedelta(seconds=seconds_to_add)
     return added_datetime.strftime(date_format)
-
-
-def create_ioa_query(is_paginating: bool, last_fetch_query: str, configured_fetch_query: str, last_date_time_since: str) -> str:
-    """Retrieve the IOA query that will be used in the current fetch round.
-
-    Args:
-        is_paginating (bool): Whether we are doing pagination or not.
-        last_fetch_query (str): The last fetch query that was used in the previous round.
-        configured_fetch_query (str): The fetched query configured by the user.
-        last_date_time_since (str): The last date time since.
-
-    Raises:
-        DemistoException: If paginating and last fetch query is an empty string.
-
-    Returns:
-        str: The IOA query that will be used in the current fetch.
-    """
-    fetch_query = configured_fetch_query
-    if is_paginating:
-        # If entered here, that means we are currently doing pagination, and we need to use the
-        # same fetch query as the previous round
-        fetch_query = last_fetch_query
-        if not fetch_query:
-            raise DemistoException("Last fetch query must not be empty when doing pagination")
-        demisto.debug(f"Doing pagination, using the same query as the previous round. Query is {fetch_query}")
-    else:
-        # If entered here, that means we aren't doing pagination, and we need to use the latest
-        # date_time_since time
-        fetch_query = f"{fetch_query}&date_time_since={last_date_time_since}"
-        demisto.debug(f"Not doing pagination. Query is {fetch_query}")
-    return fetch_query
-
-
-def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict[str, Any]:
-    """Create an incident from an IOA event.
-
-    Args:
-        ioa_event (dict[str, Any]): An IOA event.
-        incident_type (str): The incident type.
-
-    Returns:
-        dict[str, Any]: An incident from an IOA event.
-    """
-    resource = demisto.get(ioa_event, "aggregate.resource", {})
-    id = resource.get("id", [])
-    uuid = resource.get("uuid", [])
-    incident_metadata = assign_params(
-        mirror_direction=MIRROR_DIRECTION,
-        mirror_instance=INTEGRATION_INSTANCE,
-        extracted_account_id=demisto.get(ioa_event, "cloud_account_id.aws_account_id")
-        or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
-        extracted_uuid=uuid[0] if uuid else None,
-        extracted_resource_id=id[0] if id else None,
-        incident_type=incident_type,
-    )
-    incident_context = {
-        "name": f'IOA Event ID: {ioa_event.get("event_id")}',
-        "rawJSON": json.dumps(ioa_event | incident_metadata),
-    }
-    return incident_context
-
-
-def ioa_events_pagination(
-    ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None, fetch_limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
-    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found
-    by the API.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        api_limit (int): The API limit
-        ioa_next_token (str | None): The IOA next token to start the pagination from.
-        fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next
-        token that will be used in the next fetch run.
-    """
-    total_incidents_count = 0
-    ioa_new_next_token = ioa_next_token
-    fetched_ioa_events: list[dict[str, Any]] = []
-    continue_pagination = True
-    while continue_pagination:
-        demisto.debug(
-            f"Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},{fetch_limit=}"
-        )
-        ioa_events, ioa_new_next_token = get_ioa_events(
-            ioa_fetch_query=ioa_fetch_query,
-            ioa_next_token=ioa_new_next_token,
-            limit=min(api_limit, fetch_limit - total_incidents_count),
-        )
-        fetched_ioa_events.extend(ioa_events)
-        total_incidents_count += len(ioa_events)
-        demisto.debug(f"Results of IOA pagination: {total_incidents_count=}, {ioa_new_next_token=}")
-        if (ioa_new_next_token is None) or (total_incidents_count >= fetch_limit):
-            demisto.debug("Number of incidents reached the fetching limit, or there are no more results, stopping pagination")
-            # If the number of fetched incidents reaches the fetching limit, or there are no more results to be fetched
-            # (by checking the next token variable), then we should stop the pagination process
-            continue_pagination = False
-    return fetched_ioa_events, ioa_new_next_token
-
-
-def get_ioa_events(
-    ioa_fetch_query: str, ioa_next_token: str | None, limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """Do a single API call to receive IOA events.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        ioa_next_token (int | None): The next token to be used as part of the pagination process.
-        limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the
-        next token that will be used in the next API call.
-    """
-    # The API does not support a `query` parameter, rather a set of query params
-    if ioa_next_token:
-        ioa_fetch_query = f"{ioa_fetch_query}&next_token={ioa_next_token}"
-    ioa_fetch_query = f"{ioa_fetch_query}&limit={limit}"
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    raw_response = http_request(method="GET", url_suffix=f"/detects/entities/ioa/v1?{ioa_fetch_query}")
-    events = demisto.get(raw_response, "resources.events", [])
-    pagination_obj = demisto.get(raw_response, "meta.pagination", {})
-    demisto.debug(f"{pagination_obj=}")
-    next_token = pagination_obj.get("next_token")
-    if next_token:
-        # If next_token has a value, that means more pagination is needed, and the next run should use it
-        demisto.debug("next_token has a value, more pagination is needed for the next run")
-        return events, next_token
-    else:
-        demisto.debug("next_token is None, no pagination is needed for the next run")
-        # If it is None, that means no more pagination is required, therefore,
-        # the next token for the next run should be None
-        return events, None
-
-
-def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
-    """Validate the IOA fetch query.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-
-    Raises:
-        DemistoException: If the param cloud_provider is not part of the query.
-        DemistoException: If an unsupported parameter has been entered.
-        DemistoException: If the value of a parameter is an empty string.
-        DemistoException: If a query section has a wrong format
-    """
-    demisto.debug(f"Validating IOA {ioa_fetch_query=}")
-    if "cloud_provider" not in ioa_fetch_query:
-        raise DemistoException("A cloud provider is required as part of the IOA fetch query. Options are: aws, azure")
-    # The following parameters are also supported by the API: 'date_time_since', 'next_token', 'limit', but we don't
-    # allow them to be as part of the original fetch query, since they are used by the fetching mechanism, internally
-    supported_params = (
-        "cloud_provider",
-        "account_id",
-        "aws_account_id",
-        "azure_subscription_id",
-        "azure_tenant_id",
-        "severity",
-        "region",
-        "service",
-        "state",
-    )
-    # The query has a format of 'param1=val1&param2=val2'
-    for section in ioa_fetch_query.split("&"):
-        param_and_value = section.split("=")
-        # Since each section should have a format of 'param1=val1', then when splitting by '=', we should get
-        # a list of length 2, where the first element holds the parameter that we want to validate
-        if param_and_value and len(param_and_value) == 2:
-            if param_and_value[0] not in supported_params:
-                raise DemistoException(
-                    f"An unsupported parameter has been entered, {param_and_value[0]}."
-                    f"Use the following parameters: {supported_params}"
-                )
-            if param_and_value[1] == "":
-                raise DemistoException(f"The value of the parameter {param_and_value[0]} cannot be an empty string")
-        else:
-            raise DemistoException(f'Query section "{section}" does not match the parameter=value format')
 
 
 def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | None = None) -> str:
@@ -8599,7 +8683,7 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
         ids = list_quarantined_files_id(args.get("filter"), search_args, pagination_args).get("resources")
 
     if not ids:
-        return CommandResults(readable_output="The arguments/filters you provided did not match any files.")
+        return CommandResults(readable_output=NO_QUARANTINED_FILES_MSG)
 
     files = list_quarantined_files(ids).get("resources")
     if isinstance(files, list):
@@ -8651,6 +8735,12 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
             )
 
         ids = list_quarantined_files_id(args.get("filter"), search_args, pagination_args).get("resources")
+
+    if not ids:
+        # No matching quarantined files were found for the given search arguments/filter.
+        # Returning a friendly message instead of letting the PATCH go out without ids,
+        # which CrowdStrike rejects with HTTP 400 Validation error.
+        return CommandResults(readable_output=NO_QUARANTINED_FILES_MSG)
 
     update_args = assign_params(
         ids=ids,
@@ -9662,6 +9752,304 @@ def get_ioarules_command(args: dict) -> CommandResults:
     )
 
 
+def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow definitions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    if raw_filter := args.get("filter"):
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"id:'{definition_id}'")
+        if activity_id := args.get("activity_id"):
+            filter_parts.append(f"activity_id:'{activity_id}'")
+        if name := args.get("name"):
+            filter_parts.append(f"name:~'{name}'")
+        if description := args.get("description"):
+            filter_parts.append(f"description:~'{description}'")
+        filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: built {filter_query=}")
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_definitions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    definitions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: found {len(definitions)} definitions")
+
+    # Build human-readable table
+    hr_data = []
+    for definition in definitions:
+        trigger = definition.get("trigger", {})
+        hr_data.append(
+            {
+                "Definition ID": definition.get("id"),
+                "Name": definition.get("name"),
+                "Description": definition.get("description"),
+                "Trigger Event": trigger.get("event"),
+                "Trigger Name": trigger.get("name"),
+                "Trigger Schedule": trigger.get("schedule"),
+                "Trigger Type": trigger.get("type"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        name="Workflow Definitions",
+        t=hr_data,
+        headers=["Definition ID", "Name", "Description", "Trigger Event", "Trigger Name", "Trigger Schedule", "Trigger Type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.WorkflowDefinition",
+        outputs_key_field="id",
+        outputs=definitions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Executes an on-demand workflow in CrowdStrike Falcon.
+    Either definition_id or name must be provided.
+    """
+    definition_id = argToList(args.get("definition_id"))
+    name = args.get("name")
+
+    if not definition_id and not name:
+        raise DemistoException("Either 'definition_id' or 'name' must be provided.")
+
+    execution_cid = argToList(args.get("execution_cid"))
+    key = args.get("key")
+    source_event_url = args.get("source_event_url")
+    # body is mendatory in the http request - if not provided, we set to empty dict
+    body = args.get("body", "{}")
+
+    response = execute_workflow(
+        definition_id=definition_id or None,
+        name=name,
+        execution_cid=execution_cid or None,
+        key=key,
+        source_event_url=source_event_url,
+        body=body,
+    )
+
+    resources = response.get("resources", [])
+    demisto.debug(f"[Workflow] workflow_execute_command: got {len(resources)} resources")
+
+    # Build human-readable output
+    # The API returns resources as a list of execution ID strings, not dicts.
+    hr_data = [{"Execution ID": resource} for resource in resources]
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution",
+        t=hr_data,
+        headers=["Execution ID"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflow",
+        outputs=resources,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow executions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    if raw_filter := args.get("filter"):
+        # If explicit filter is provided, use it exclusively (ignore convenience args)
+        filter_query = raw_filter
+    else:
+        # Build FQL filter from convenience arguments
+        filter_parts: list[str] = []
+        if definition_id := args.get("definition_id"):
+            filter_parts.append(f"definition_id:'{definition_id}'")
+        if definition_name := args.get("definition_name"):
+            filter_parts.append(f"definition_name:~'{definition_name}'")
+        if execution_id := args.get("execution_id"):
+            filter_parts.append(f"id:'{execution_id}'")
+        filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_executions_command: built {filter_query=}")
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_executions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    executions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_executions_command: found {len(executions)} executions")
+
+    # Build human-readable table from activities
+    hr_data = []
+    for execution in executions:
+        execution_id_val = execution.get("execution_id", execution.get("id"))
+        activities = execution.get("activities", [])
+        if activities:
+            for activity in activities:
+                hr_data.append(
+                    {
+                        "Execution ID": execution_id_val,
+                        "Activity Node ID": activity.get("node_id"),
+                        "Activity Start Timestamp": activity.get("start_timestamp"),
+                        "Activity End Timestamp": activity.get("end_timestamp"),
+                        "Activity Status": activity.get("status"),
+                        "Activity Name": activity.get("name"),
+                        "Activity Type": activity.get("type"),
+                    }
+                )
+        else:
+            hr_data.append({"Execution ID": execution_id_val})
+
+    readable_output = tableToMarkdown(
+        name="Workflow Executions",
+        t=hr_data,
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity Name",
+            "Activity Type",
+        ],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.Execution",
+        outputs_key_field="execution_id",
+        outputs=executions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Gets detailed results for specific workflow executions.
+    """
+    ids = argToList(args.get("ids"))
+
+    response = get_workflow_execution_results(ids=ids)
+    results = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_execution_results_command: got {len(results)} results")
+
+    # Build human-readable table from nested activities
+    hr_data = []
+    for result in results:
+        execution_id = result.get("execution_id")
+        activities = result.get("activities", [])
+        for activity in activities:
+            hr_data.append(
+                {
+                    "Execution ID": execution_id,
+                    "Activity Node ID": activity.get("node_id"),
+                    "Activity Start Timestamp": activity.get("start_timestamp"),
+                    "Activity End Timestamp": activity.get("end_timestamp"),
+                    "Activity Status": activity.get("status"),
+                    "Activity ID": activity.get("id"),
+                    "Activity Name": activity.get("name"),
+                    "Activity Type": activity.get("type"),
+                }
+            )
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution Results",
+        t=hr_data,
+        headers=[
+            "Execution ID",
+            "Activity Node ID",
+            "Activity Start Timestamp",
+            "Activity End Timestamp",
+            "Activity Status",
+            "Activity ID",
+            "Activity Name",
+            "Activity Type",
+        ],
+        removeNull=True,
+    )
+
+    # Append errors if any (e.g., some IDs not found)
+    errors = response.get("errors", [])
+    if errors:
+        error_lines = ["\n**Errors:**"]
+        for error in errors:
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            error_lines.append(f"- Code: {error_code}, Message: {error_message}")
+        readable_output += "\n".join(error_lines)
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.ExecutionResult",
+        outputs_key_field="execution_id",
+        outputs=results,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Performs an action (cancel or resume) on one or more workflow executions.
+    Handles partial success where some IDs are affected and others return errors.
+    """
+    ids = argToList(args.get("ids"))
+    action_name = args.get("action_name", "")
+
+    if action_name not in ("cancel", "resume"):
+        raise DemistoException(f"Invalid action_name '{action_name}'. Must be 'cancel' or 'resume'.")
+
+    response = perform_workflow_execution_action(ids=ids, action_name=action_name)
+
+    action_past_tense = "cancelled" if action_name == "cancel" else "resumed"
+
+    # Extract resources_affected from meta.writes
+    resources_affected = response.get("meta", {}).get("writes", {}).get("resources_affected", 0)
+
+    # Extract errors if any
+    errors = response.get("errors", [])
+
+    # Calculate succeeded IDs
+    error_ids = {error.get("id") for error in errors if error.get("id")}
+    succeeded_ids = [id_ for id_ in ids if id_ not in error_ids]
+
+    # Build readable output
+    hr_parts: list[str] = []
+    if succeeded_ids:
+        hr_parts.append(f"{len(succeeded_ids)} workflow execution(s) {action_past_tense}: {', '.join(succeeded_ids)}")
+    else:
+        hr_parts.append(f"0 workflow execution(s) {action_past_tense}.")
+
+    if errors:
+        hr_parts.append("\n**Errors:**")
+        for error in errors:
+            error_id = error.get("id", "Unknown")
+            error_code = error.get("code", "Unknown")
+            error_message = error.get("message", "Unknown error")
+            hr_parts.append(f"- ID: {error_id} — Code: {error_code}, Message: {error_message}")
+
+    readable_output = "\n".join(hr_parts)
+
+    demisto.debug(
+        f"[Workflow] workflow_execution_action_command: {action_name} completed, "
+        f"{resources_affected} affected, {len(errors)} errors for {len(ids)} ids"
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
@@ -9910,6 +10298,16 @@ def main():  # pragma: no cover
             return_results(resolve_case_command(args))
         elif command == "cs-falcon-search-ngsiem-events":
             return_results(cs_falcon_search_ngsiem_events_command(args))
+        elif command == "cs-falcon-list-workflow-definitions":
+            return_results(list_workflow_definitions_command(args))
+        elif command == "cs-falcon-workflow-execute":
+            return_results(workflow_execute_command(args))
+        elif command == "cs-falcon-list-workflow-executions":
+            return_results(list_workflow_executions_command(args))
+        elif command == "cs-falcon-list-workflow-execution-results":
+            return_results(list_workflow_execution_results_command(args))
+        elif command == "cs-falcon-workflow-execution-action":
+            return_results(workflow_execution_action_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
