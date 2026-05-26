@@ -1,7 +1,7 @@
 commonfields:
-  id: Gaiatop_ForwardAuditLogsToSplunkHEC
+  id: GaiatopForwardAuditLogsToSplunkHEC
   version: -1
-name: Gaiatop_ForwardAuditLogsToSplunkHEC
+name: GaiatopForwardAuditLogsToSplunkHEC
 type: python
 tags: []
 comment: This automation fetches the Management Audit Logs and forwards it to be Splunk
