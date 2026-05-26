@@ -10,17 +10,14 @@ custom :class:`AuthHandler` that handles token retrieval, caching (via
 """
 
 from collections.abc import Iterable
+from datetime import timezone
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
 import httpx
-import urllib3
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 from ContentClientApiModule import *  # noqa: F401,F403
-
-# Disable insecure warnings - users can opt-in via the insecure parameter.
-urllib3.disable_warnings()
 
 # ----------------------------------------------------------------------------- #
 # Constants
@@ -349,7 +346,7 @@ def run_test_module(client: Client, params: dict[str, Any]) -> str:
                 "Please choose only one of them."
             )
 
-    end = datetime.utcnow()  # noqa: F405
+    end = datetime.now(tz=timezone.utc)  # noqa: F405
     start = end - timedelta(minutes=1)  # noqa: F405
     body = build_filters_body(start_time=start, end_time=end, start_row=0, end_row=1)
     client.list_incidents(body)
@@ -361,7 +358,7 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
     start_dt = parse_ctr_date(args.get("start_time"))
     end_dt = parse_ctr_date(args.get("end_time"))
     if start_dt and not end_dt:
-        end_dt = datetime.utcnow()  # noqa: F405
+        end_dt = datetime.now(tz=timezone.utc)  # noqa: F405
 
     limit = _coerce_int_arg(args.get("limit"), DEFAULT_FETCH_LIMIT, "limit")
     if limit < 1:
@@ -522,7 +519,7 @@ def fetch_incidents(
             "with specific states' returns an empty result from the Proofpoint API."
         )
 
-    now = datetime.utcnow()  # noqa: F405
+    now = datetime.now(tz=timezone.utc)  # noqa: F405
     last_fetch_iso = last_run.get("last_fetch")
     if last_fetch_iso:
         start = parse_ctr_date(last_fetch_iso) or now

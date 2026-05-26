@@ -1,3 +1,6 @@
+name: Proofpoint Cloud Threat Response
+display: Proofpoint Cloud Threat Response
+description: Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR for case management, and exposes commands to list and retrieve incident details.
 category: Case Management
 sectionorder:
 - Connect
@@ -73,9 +76,6 @@ configuration:
   - closed_incidents
   additionalinfo: Must be set when fetch is enabled. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API.
   section: Collect
-description: Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR for case management, and exposes commands to list and retrieve incident details.
-display: Proofpoint Cloud Threat Response
-name: Proofpoint Cloud Threat Response
 script:
   commands:
   - name: proofpoint-ctr-incidents-list
@@ -174,16 +174,16 @@ script:
       type: String
     - contextPath: ProofPointCloud.Incident.sourceTypes
       description: The list of source types that produced the incident.
-      type: Unknown
+      type: Array
     - contextPath: ProofPointCloud.Incident.dispositions
       description: The list of dispositions assigned to the incident.
-      type: Unknown
+      type: Array
     - contextPath: ProofPointCloud.Incident.clearConfidences
       description: The list of confidence values for the incident.
-      type: Unknown
+      type: Array
     - contextPath: ProofPointCloud.Incident.sourcesData
       description: The raw sources data array for the incident.
-      type: Unknown
+      type: Array
   - name: proofpoint-ctr-incident-get
     description: Returns full details for a specific Proofpoint Cloud Threat Response incident.
     arguments:
@@ -224,7 +224,7 @@ script:
       type: String
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
-      type: Unknown
+      type: Array
   dockerimage: demisto/fastapi:0.125.0.7178097
   isfetch: true
   runonce: false

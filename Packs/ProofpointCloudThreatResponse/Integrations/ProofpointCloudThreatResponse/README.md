@@ -1,5 +1,5 @@
 Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR for case management, and exposes commands to list and retrieve incident details.
-This integration was integrated and tested with version xx of Proofpoint Cloud Threat Response.
+This integration was integrated and tested with version 1.0 of Proofpoint Cloud Threat Response.
 
 ## Configure Proofpoint Cloud Threat Response in Cortex
 
@@ -43,7 +43,7 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 | verdict_filters | Filter incidents by verdict. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional |
 | disposition | Filter incidents by disposition. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional |
 | confidence_filters | Filter incidents by confidence level. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional |
-| limit | The maximum number of incidents to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of incidents to return. Default is 50. | Optional |
 
 #### Context Output
 
@@ -57,10 +57,24 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 | ProofPointCloud.Incident.updatedAt | Date | The last update timestamp of the incident. |
 | ProofPointCloud.Incident.messageCount | Number | The number of messages associated with the incident. |
 | ProofPointCloud.Incident.assignedTeamName | String | The name of the team the incident is assigned to. |
-| ProofPointCloud.Incident.sourceTypes | Unknown | The list of source types that produced the incident. |
-| ProofPointCloud.Incident.dispositions | Unknown | The list of dispositions assigned to the incident. |
-| ProofPointCloud.Incident.clearConfidences | Unknown | The list of confidence values for the incident. |
-| ProofPointCloud.Incident.sourcesData | Unknown | The raw sources data array for the incident. |
+| ProofPointCloud.Incident.sourceTypes | Array | The list of source types that produced the incident. |
+| ProofPointCloud.Incident.dispositions | Array | The list of dispositions assigned to the incident. |
+| ProofPointCloud.Incident.clearConfidences | Array | The list of confidence values for the incident. |
+| ProofPointCloud.Incident.sourcesData | Array | The raw sources data array for the incident. |
+
+#### Command Example
+
+```!proofpoint-ctr-incidents-list```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>No incidents found.
 
 ### proofpoint-ctr-incident-get
 
@@ -91,4 +105,18 @@ Returns full details for a specific Proofpoint Cloud Threat Response incident.
 | ProofPointCloud.Incident.summary.messageCount | Number | The number of messages associated with the incident. |
 | ProofPointCloud.Incident.summary.assignedTeamName | String | The name of the team the incident is assigned to. |
 | ProofPointCloud.Incident.summary.assignedApplicationUserName | String | The user the incident is assigned to. |
-| ProofPointCloud.Incident.activities | Unknown | The activities associated with the incident. |
+| ProofPointCloud.Incident.activities | Array | The activities associated with the incident. |
+
+#### Command Example
+
+```!proofpoint-ctr-incident-get incident_id=440def43-c322-42ba-a6d6-a2306128ea3b```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>No incident found.

@@ -1,4 +1,4 @@
-## Proofpoint Cloud Threat Response Help
+## Proofpoint Cloud Threat Response
 
 Use this integration to fetch incidents from Proofpoint Cloud Threat Response (CTR) into Cortex XSOAR and to retrieve incident details on-demand.
 
