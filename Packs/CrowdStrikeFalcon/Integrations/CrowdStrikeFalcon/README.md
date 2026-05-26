@@ -6263,7 +6263,9 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
 | display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
 | display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional |
-| limit | Maximum number of items to return (1-5000). Default is 50. | Optional |
+| limit | Maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional |
+| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Pass it to fetch the next page. A non-empty cursor in the output means more pages are available; an empty/null cursor means no further pages. Note - for ad-hoc commands with `limit &lt;= 2500`, this cursor is suppressed by default. To always receive it, set `omit_next_token=false`. | Optional |
+| omit_next_token | When `true` (default), the `CrowdStrike.VulnerabilityNextToken` context output is omitted when the requested `limit` is less than or equal to 2500. Set to `false` to always emit the cursor. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
@@ -6316,6 +6318,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. |
 | CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. |
 | CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. |
+| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor for the next page of results. A non-empty value indicates more records exist on the server beyond what was returned in this call; an empty/null value indicates the server has no further pages. If you have already fetched everything your playbook needs, simply stop calling. Note - for ad-hoc commands with \`limit &lt;= 2500\`, this cursor is suppressed by default. To always receive it, set \`omit_next_token=false\`. |
 
 #### Command Example
 
@@ -6371,7 +6374,9 @@ Retrieve vulnerability details according to the selected filter. Each request re
                 "vector": "vendor"
             }
         }
-    ]
+    ],
+    "VulnerabilityNextToken": "next_token"
+    
 }
 ```
 
