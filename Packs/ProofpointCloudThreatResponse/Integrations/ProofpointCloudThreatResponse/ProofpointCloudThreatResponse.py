@@ -9,6 +9,7 @@ custom :class:`AuthHandler` that handles token retrieval, caching (via
 :class:`ContentClientContextStore`), and automatic refresh on ``401`` responses.
 """
 
+import traceback
 from collections.abc import Iterable
 from datetime import timezone
 from typing import Any
@@ -121,12 +122,12 @@ class ProofpointCTRAuthHandler(AuthHandler):  # type: ignore[misc]  # noqa: F405
         return int(time.time()) < (self._expires_at - TOKEN_EXPIRY_BUFFER_SEC)  # noqa: F405
 
     # ------------------------------------------------------------ AuthHandler
-    async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:  # noqa: F821
+    def on_request(self, client: "ContentClient", request: httpx.Request) -> None:  # noqa: F821
         if not self._token_is_valid():
-            await self._fetch_token(client)
+            self._fetch_token(client)
         request.headers["Authorization"] = f"Bearer {self._access_token}"
 
-    async def on_auth_failure(
+    def on_auth_failure(
         self,
         client: "ContentClient",  # noqa: F821
         response: httpx.Response,
@@ -136,17 +137,17 @@ class ProofpointCTRAuthHandler(AuthHandler):  # type: ignore[misc]  # noqa: F405
         self._access_token = None
         self._expires_at = 0
         try:
-            await self._fetch_token(client)
+            self._fetch_token(client)
         except ContentClientAuthenticationError:  # noqa: F405
             return False
         return True
 
-    async def _fetch_token(self, client: "ContentClient") -> None:  # noqa: F821
+    def _fetch_token(self, client: "ContentClient") -> None:  # noqa: F821
         """Call the Proofpoint auth endpoint and cache the resulting token."""
         demisto.debug("Proofpoint CTR: requesting a new access token")
         try:
-            async with httpx.AsyncClient(verify=client._verify) as http_client:
-                response = await http_client.post(
+            with httpx.Client(verify=client._verify) as http_client:
+                response = http_client.post(
                     self._auth_url,
                     data={
                         "grant_type": "client_credentials",
@@ -243,7 +244,7 @@ class Client(ContentClient):  # type: ignore[misc]  # noqa: F405
 def format_ctr_date(value: datetime) -> str:  # noqa: F405
     """Format a datetime as ``YYYY-MM-DD HH:MM:SS`` (UTC, no timezone suffix)."""
     if value.tzinfo is not None:
-        value = value.astimezone(tz=None).replace(tzinfo=None)
+        value = value.astimezone(timezone.utc).replace(tzinfo=None)
     return value.strftime(DATE_FORMAT_API)
 
 
@@ -564,33 +565,23 @@ def fetch_incidents(
         inc_id = inc.get("id")
         if not inc_id:
             continue
-        try:
-            enriched = client.get_incident(inc_id)
-        except Exception as exc:  # noqa: BLE001
-            demisto.error(f"Proofpoint CTR: failed to enrich incident {inc_id}: {exc}")
-            enriched = {}
-        xsoar_incidents.append(_build_incident(enriched, inc))
+        xsoar_incidents.append(_build_incident({}, inc))
         processed_ids.append(inc_id)
         created_at = parse_ctr_date(inc.get("createdAt"))
         if created_at and (latest_created_at is None or created_at > latest_created_at):
             latest_created_at = created_at
 
-    if latest_created_at is None:
-        latest_created_at = parse_ctr_date(last_fetch_iso) or start
+    # Always advance last_fetch to the end of the current window (now) to prevent
+    # the fetch loop from getting stuck when fetch_delta is applied on the next run.
+    next_last_fetch = format_ctr_date(now)
 
-    # Persist only IDs that share the latest second to keep the dedupe set small.
-    cutoff_iso = format_ctr_date(latest_created_at)
-    next_last_fetched_ids: list[str] = []
-    for inc in raw_incidents:
-        inc_id = inc.get("id")
-        created_at_str = inc.get("createdAt") or ""
-        if inc_id and created_at_str.startswith(cutoff_iso):
-            next_last_fetched_ids.append(str(inc_id))
+    # Persist all fetched IDs to ensure correct deduplication across the fetch_delta overlap window.
+    next_last_fetched_ids: list[str] = list({str(inc_id) for inc in raw_incidents if (inc_id := inc.get("id"))})
     if not next_last_fetched_ids:
         next_last_fetched_ids = list(processed_ids[-MAX_PAGE_SIZE:])
 
     next_last_run = {
-        "last_fetch": format_ctr_date(latest_created_at),
+        "last_fetch": next_last_fetch,
         "last_fetched_ids": next_last_fetched_ids,
     }
     return next_last_run, xsoar_incidents
@@ -639,6 +630,7 @@ def main() -> None:  # pragma: no cover - exercised indirectly by tests
         else:
             raise NotImplementedError(f"Command {command!r} is not implemented.")
     except Exception as exc:  # noqa: BLE001
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command!r}. Error: {exc}")  # noqa: F405
 
 
