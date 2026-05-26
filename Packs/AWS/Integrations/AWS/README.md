@@ -3758,12 +3758,13 @@ Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of
 | include_deprecated | Specifies whether to include deprecated AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional |
 | include_disabled | Specifies whether to include disabled AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional |
 | limit | Maximum number of AMIs to be returned in response. | Optional |
-| next_token | The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header. | Optional |
+| next_token | The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextToken if available; otherwise, use the token from the output file header. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| AWS.EC2.ImagesNextToken | string | The token returned from a previous paginated request. |
 | AWS.EC2.Images.Architecture | string | The architecture of the image. |
 | AWS.EC2.Images.CreationDate | date | The date and time the image was created. |
 | AWS.EC2.Images.ImageId | string | The ID of the AMI. |
@@ -3962,7 +3963,7 @@ Describes the EBS snapshots available to you or all snapshots accessible in your
 | AWS.EC2.Snapshots.StorageTier | string | The storage tier in which the snapshot is stored. |
 | AWS.EC2.Snapshots.RestoreExpiryTime | date | Only for archived snapshots that are temporarily restored. Indicates the date and time when a temporarily restored snapshot will be automatically re-archived. |
 | AWS.EC2.Snapshots.SseType | string | Reserved for future use. |
-| AWS.EC2.SnapshotsNextPageToken | string | Next page token for pagination. |
+| AWS.EC2.SnapshotsNextToken | string | Next page token for pagination. |
 
 ### aws-ec2-snapshot-delete
 
@@ -4355,7 +4356,7 @@ Lists the versions of an Lambda layer. Required IAM Permission: lambda:ListLayer
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.LayerVersions.VersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
+| AWS.Lambda.LayerVersions.LayerVersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. |
 | AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. |
 | AWS.Lambda.LayerVersions.Version | number | The version number. |
 | AWS.Lambda.LayerVersions.Description | string | The description of the version. |
@@ -4907,7 +4908,7 @@ Allocates Dedicated Hosts to your account. Requires the instance type or family,
 | host_maintenance | Whether to enable or disable host maintenance for the Dedicated Host. Possible values are: on, off. | Optional |
 | outpost_arn | The Amazon Resource Name (ARN) of the Amazon Web Services Outpost on which to allocate the Dedicated Host. | Optional |
 | asset_ids | A comma-separated list of IDs of the Outpost hardware assets on which to allocate the Dedicated Hosts. | Optional |
-| tags | The tags to apply to the Dedicated Host during creation. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Required |
+| tags | The tags to apply to the Dedicated Host during creation. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
 | client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
 
 #### Context Output
@@ -5327,8 +5328,8 @@ Updates the configuration for a Lambda function. Required IAM Permission: lambda
 | role | The Amazon Resource Name (ARN) of the function's execution role. | Optional |
 | handler | The name of the method within your code that Lambda calls to execute your function. | Optional |
 | description | A description of the function. | Optional |
-| timeout | The amount of time that Lambda allows a function to run before stopping it. Default is 3. | Optional |
-| memory_size | The amount of memory, in MB, that your function has access to. Default is 128. | Optional |
+| timeout | The amount of time that Lambda allows a function to run before stopping it. | Optional |
+| memory_size | The amount of memory, in MB, that your function has access to. | Optional |
 | subnet_ids | A comma-separated list of VPC subnet IDs. | Optional |
 | security_group_ids | A comma-separated list of VPC security group IDs. | Optional |
 | ipv6_allowed_for_dualstack | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Possible values are: true, false. | Optional |

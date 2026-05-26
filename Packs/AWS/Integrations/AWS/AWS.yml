@@ -185,6 +185,7 @@ script:
 
   - name: aws-s3-bucket-delete
     description: "Delete AWS S3 bucket, the bucket must be empty from files. Required IAM Permission: s3:DeleteBucket."
+    execution: true
     arguments:
       - description: The name of S3 bucket.
         name: bucket
@@ -3360,7 +3361,6 @@ script:
       - description: Whether major version upgrades will be applied automatically to the cluster during the maintenance window.
         name: allow_version_upgrade
         auto: PREDEFINED
-        defaultValue: false
         predefined:
           - 'true'
           - 'false'
@@ -3419,7 +3419,6 @@ script:
       - description: Whether to allocate additional compute resources for running automatic optimization operations.
         name: extra_compute_for_automatic_optimization
         auto: PREDEFINED
-        defaultValue: false
         predefined:
           - 'true'
           - 'false'
@@ -7005,9 +7004,12 @@ script:
         description: Maximum number of AMIs to be returned in response.
         required: false
       - name: next_token
-        description: The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header.
+        description: The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextToken if available; otherwise, use the token from the output file header.
         required: false
     outputs:
+      - contextPath: AWS.EC2.ImagesNextToken
+        description: The token returned from a previous paginated request.
+        type: string
       - contextPath: AWS.EC2.Images.Architecture
         description: The architecture of the image.
         type: string
@@ -7539,7 +7541,7 @@ script:
     - contextPath: AWS.EC2.Snapshots.SseType
       description: Reserved for future use.
       type: string
-    - contextPath: AWS.EC2.SnapshotsNextPageToken
+    - contextPath: AWS.EC2.SnapshotsNextToken
       description: Next page token for pagination.
       type: string
 
@@ -9275,7 +9277,7 @@ script:
     - name: compatible_architecture
       description: The compatible instruction set architecture.
     outputs:
-    - contextPath: AWS.Lambda.LayerVersions.VersionsNextToken
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionsNextToken
       description: A pagination token returned when the response doesn't contain all versions.
       type: string
     - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
@@ -9302,6 +9304,7 @@ script:
 
   - name: aws-lambda-function-delete
     description: "Deletes a Lambda function. Required IAM Permission: lambda:DeleteFunction."
+    execution: true
     arguments:
     - name: account_id
       required: true
@@ -9353,6 +9356,7 @@ script:
 
   - name: aws-lambda-layer-version-delete
     description: "Deletes a version of a Lambda layer. Required IAM Permission: lambda:DeleteLayerVersion."
+    execution: true
     arguments:
     - name: account_id
       required: true
@@ -9549,10 +9553,8 @@ script:
       description: A description of the function.
     - name: timeout
       description: The amount of time that Lambda allows a function to run before stopping it.
-      defaultValue: 3
     - name: memory_size
       description: The amount of memory, in MB, that your function has access to.
-      defaultValue: 128
     - name: subnet_ids
       description: A comma-separated list of VPC subnet IDs.
     - name: security_group_ids
@@ -14666,7 +14668,6 @@ script:
         isArray: true
       - name: tags
         description: "The tags to apply to the Dedicated Host during creation. Format: key=<key>,value=<value>;key=<key>,value=<value>."
-        required: true
       - name: client_token
         description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
         required: false

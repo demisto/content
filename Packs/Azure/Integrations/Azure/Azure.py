@@ -289,9 +289,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/virtualNetworks/subnets/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/publicIPAddresses/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
-    "Microsoft.Network/loadBalancers/backendAddressPools/join/action": [
-        "Microsoft.Network/loadBalancers/backendAddressPools/join/action"
-    ],
+    "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-property-get",
@@ -4914,25 +4912,24 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     demisto.debug(f"[Azure] Get the current state of the network interface {network_interface_name}")
 
     # Get the current network interface configuration
-    current_nic = client.get_network_interface_request(subscription_id, resource_group_name, network_interface_name)
-    demisto.debug(f"[Azure] Current network interface: {current_nic}")
+    nic = client.get_network_interface_request(subscription_id, resource_group_name, network_interface_name)
+    demisto.debug(f"[Azure] Current network interface: {nic}")
 
     # Update properties based on user arguments
-    properties = current_nic.get("properties", {})
+    properties = nic.get("properties", {})
     update_nic_properties(args, params, properties)
 
-    updated_nic = current_nic
-    updated_nic["properties"] = remove_empty_elements(properties)
-    updated_nic["location"] = location or updated_nic["location"]
+    nic["properties"] = remove_empty_elements(properties)
+    nic["location"] = location or nic["location"]
 
-    demisto.debug(f"[Azure] Updating the network interface {network_interface_name}: {updated_nic}")
+    demisto.debug(f"[Azure] Updating the network interface {network_interface_name}: {nic}")
 
     # Send the updated network interface
     response = client.update_network_interface_request(
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
         interface_name=network_interface_name,
-        network_interface_data=updated_nic,
+        network_interface_data=nic,
     )
 
     # Clean up etag format

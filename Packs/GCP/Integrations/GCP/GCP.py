@@ -242,7 +242,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     ),
-    "gcp-bq-dataset-patch": (
+    "gcp-bq-dataset-policy-remove": (
         GCPServices.BIGQUERY,
         ["bigquery.datasets.update", "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.datasets.setIamPolicy"],
     ),
@@ -2260,8 +2260,6 @@ def bq_dataset_policy_remove_command(creds: Credentials, args: dict[str, Any]) -
     """
     project_id = args.get("project_id")
     dataset_id = args.get("dataset_id")
-    # user_email = args.get("user_email", "")
-    # group_email = args.get("group_email", "")
     email = args.get("email", "")
     body: dict[str, Any] = {}
 
