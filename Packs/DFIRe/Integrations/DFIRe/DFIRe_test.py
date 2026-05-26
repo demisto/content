@@ -262,6 +262,14 @@ def test_indicator_list_passes_all_filters(client):
     assert p["ordering"] == "-created_at"
 
 
+def test_indicator_get(client):
+    client._http_request.return_value = {"id": 42, "value": "8.8.8.8", "stix_type": "ipv4-addr"}
+    result = DFIRe.indicator_get_command(client, {"indicator_id": "42"})
+    assert client._http_request.call_args.args == ("GET", "/indicators/42/")
+    assert result.outputs["id"] == 42
+    assert result.outputs["value"] == "8.8.8.8"
+
+
 def test_indicator_create(client):
     client._http_request.return_value = {"id": 1, "is_existing": False}
     DFIRe.indicator_create_command(client, {"value": "1.2.3.4", "stix_type": "ipv4-addr", "tags": "a,b"})
