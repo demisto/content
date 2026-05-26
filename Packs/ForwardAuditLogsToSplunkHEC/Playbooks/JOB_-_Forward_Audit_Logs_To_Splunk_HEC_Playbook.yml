@@ -1,6 +1,6 @@
-id: JOB - Forward Audit Logs To Splunk HEC Playbook
+id: JOB - Forward Audit Logs To Splunk HEC
 version: -1
-name: JOB - Forward Audit Logs To Splunk HEC Playbook
+name: JOB - Forward Audit Logs To Splunk HEC
 description: This playbook it to run as a job to forward audit logs to Splunk HEC.
 fromversion: 5.0.0
 starttaskid: "0"
@@ -45,7 +45,7 @@ tasks:
       name: Forward Audit Logs To Splunk HEC
       description: This automation fetches the Management Audit Logs and forwards
         it to be Splunk HEC.
-      scriptName: Gaiatop_ForwardAuditLogsToSplunkHEC
+      scriptName: GaiatopForwardAuditLogsToSplunkHEC
       type: regular
       iscommand: false
       brand: ""

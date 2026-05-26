@@ -21,5 +21,13 @@
     "devEmail": [
         "prasu.agnihotri51@gmail.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": [
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
+    ]
 }

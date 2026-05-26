@@ -20,9 +20,9 @@ args:
   description: The name of the Splunk Py instance configured in the tenant.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.13.9059085
 fromversion: "5.0.0"
 runas: DBotWeakRole
-signature: ""
+tests:
+- No tests (auto formatted)
