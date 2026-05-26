@@ -270,8 +270,14 @@ def test_enrich_compliance_event(event, api_event_type, expect_time, expect_sour
         pytest.param("not-a-real-time", 1, id="bad-unparseable-falls-back-1-day"),
     ],
 )
-def test_parse_first_fetch_to_unix_seconds(first_fetch_input, days_offset):
-    """`parse_first_fetch_to_unix_seconds` returns a Unix-second integer, with a `1 day` fallback on bad input."""
+def test_parse_first_fetch_to_unix_seconds(mocker, first_fetch_input, days_offset):
+    """`parse_first_fetch_to_unix_seconds` returns a Unix-second integer, with a `1 day` fallback on bad input.
+
+    Unparseable input must also emit a `demisto.error` so operators see the misconfiguration
+    in standard log queries. Mocking `demisto.error` suppresses stdout under pytest and locks
+    the "fail-loud" contract.
+    """
+    error_mock = mocker.patch.object(demisto, "error")
 
     result = parse_first_fetch_to_unix_seconds(first_fetch_input)
     assert isinstance(result, int)
@@ -279,6 +285,9 @@ def test_parse_first_fetch_to_unix_seconds(first_fetch_input, days_offset):
     expected = int((datetime.now(UTC) - timedelta(days=days_offset)).timestamp())
     # Allow a small clock-drift window (test runtime + arg_to_datetime parse latency).
     assert abs(result - expected) < 30
+
+    if first_fetch_input == "not-a-real-time":
+        assert error_mock.called, "Unparseable first_fetch must log at error level."
 
 
 @pytest.mark.parametrize(
@@ -289,8 +298,14 @@ def test_parse_first_fetch_to_unix_seconds(first_fetch_input, days_offset):
         pytest.param("definitely-not-a-time", 1, id="bad-unparseable-falls-back-1-day"),
     ],
 )
-def test_parse_first_fetch_to_iso(first_fetch_input, days_offset):
-    """`parse_first_fetch_to_iso` returns a clean ISO 8601 timestamp (no microseconds)."""
+def test_parse_first_fetch_to_iso(mocker, first_fetch_input, days_offset):
+    """`parse_first_fetch_to_iso` returns a clean ISO 8601 timestamp (no microseconds).
+
+    Unparseable input must also emit a `demisto.error` so operators see the misconfiguration
+    in standard log queries. Mocking `demisto.error` suppresses stdout under pytest and locks
+    the "fail-loud" contract.
+    """
+    error_mock = mocker.patch.object(demisto, "error")
 
     result = parse_first_fetch_to_iso(first_fetch_input)
     assert isinstance(result, str)
@@ -299,6 +314,9 @@ def test_parse_first_fetch_to_iso(first_fetch_input, days_offset):
     parsed = datetime.strptime(result, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
     expected = datetime.now(UTC) - timedelta(days=days_offset)
     assert abs((parsed - expected).total_seconds()) < 30
+
+    if first_fetch_input == "definitely-not-a-time":
+        assert error_mock.called, "Unparseable first_fetch must log at error level."
 
 
 def test_selected_audit_enabled_and_compliance_event_types():
@@ -772,14 +790,65 @@ def test_fetch_audit_logs_resumes_from_stored_cursor(mocker):
     assert "effective_at[gt]" not in request_params
 
 
-def test_fetch_audit_logs_empty_first_fetch_returns_no_events_and_no_updates(mocker):
-    """Bad path: first-ever fetch returns an empty page - no events, no cursor persisted."""
+def test_fetch_audit_logs_empty_first_fetch_persists_seed(mocker):
+    """Bad path: first-ever fetch returns empty - no events, but the time-seed is persisted so
+    the next cycle replays the same lookback window instead of sliding it with `now()`."""
 
     client = _make_client()
     mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
-    events, updates = fetch_audit_logs(client=client, last_run={}, max_fetch=10, first_fetch="1 day")
+    mocker.patch("OpenAiChatGPTV3.parse_first_fetch_to_unix_seconds", return_value=1700000000)
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    events, updates = fetch_audit_logs(client=client, last_run={}, max_fetch=10, first_fetch="1 minute ago")
+
     assert events == []
+    # The seed MUST be persisted; the cursor key MUST NOT appear.
+    assert updates == {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
+    assert LastRunKey.AUDIT_AFTER not in updates
+    # Operators must see a clear log line so first-empty-fetch is discoverable in standard log queries.
+    assert any("persisting seed=1700000000" in (c.args[0] if c.args else "") for c in debug_mock.call_args_list)
+
+
+def test_fetch_audit_logs_replays_stored_seed_without_recomputing(mocker):
+    """The stored seed is replayed verbatim across empty cycles; `parse_first_fetch_*` is not called again."""
+
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
+    parse_mock = mocker.patch("OpenAiChatGPTV3.parse_first_fetch_to_unix_seconds")
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    last_run = {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
+    events, updates = fetch_audit_logs(client=client, last_run=last_run, max_fetch=10, first_fetch="1 minute ago")
+
+    assert events == []
+    # Seed already present - do NOT recompute, do NOT re-persist (keeps last_run idempotent).
+    parse_mock.assert_not_called()
     assert updates == {}
+    # The same seed was forwarded as `effective_at[gt]` on the wire.
+    request_params = http_mock.call_args.kwargs.get("params", {})
+    assert request_params.get("effective_at[gt]") == 1700000000
+    # A "replaying ... seed" debug line must be emitted so operators can correlate sustained empty fetches.
+    assert any("Replaying persisted first-fetch seed" in (c.args[0] if c.args else "") for c in debug_mock.call_args_list)
+
+
+def test_fetch_audit_logs_real_cursor_clears_stored_seed(mocker):
+    """Once a real `last_id` arrives, the seed is cleared so it never reappears in future runs."""
+
+    client = _make_client()
+    response = {
+        "data": [{"id": "FAKE_AUDIT_EVENT_001", "effective_at": 1700000001}],
+        "has_more": False,
+        "last_id": "FAKE_AUDIT_CURSOR_AAAA",
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=response)
+
+    last_run = {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
+    events, updates = fetch_audit_logs(client=client, last_run=last_run, max_fetch=10, first_fetch="1 minute ago")
+
+    assert [e["id"] for e in events] == ["FAKE_AUDIT_EVENT_001"]
+    assert updates[LastRunKey.AUDIT_AFTER] == "FAKE_AUDIT_CURSOR_AAAA"
+    # Seed must be explicitly cleared (None) so it is dropped from `last_run` on merge.
+    assert updates[LastRunKey.AUDIT_FIRST_FETCH_SEED] is None
 
 
 # endregion

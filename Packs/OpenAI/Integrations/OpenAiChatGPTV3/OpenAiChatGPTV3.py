@@ -170,6 +170,7 @@ class LastRunKey:
 
     # --- Audit stream (cursor-based pagination via the `after` query param) ---
     AUDIT_AFTER = "audit_after"  # opaque cursor (last_id from API), passed verbatim as `after=` next run.
+    AUDIT_FIRST_FETCH_SEED = "audit_first_fetch_seed"  # Unix-seconds seed kept across empty first-fetches.
 
     # --- Compliance stream (time-based pagination via the `after` query param + per-id dedup) ---
     COMPLIANCE_LAST_END_TIME = "compliance_last_end_time"  # ISO timestamp echoed by the listing response.
@@ -1031,7 +1032,11 @@ def parse_first_fetch_to_unix_seconds(first_fetch: str) -> int:
     try:
         parsed = arg_to_datetime(first_fetch, is_utc=True)
     except ValueError:
-        demisto.debug(f"[First Fetch] arg_to_datetime raised on '{first_fetch}' - using '1 day ago' fallback.")
+        demisto.error(
+            f"[First Fetch] Failed to parse first_fetch='{first_fetch}' as a datetime "
+            f"or relative time expression - falling back to '1 day ago'. "
+            f"Please correct the integration parameter."
+        )
     if not parsed:
         parsed = datetime.now(UTC) - timedelta(days=1)
     unix_seconds = int(parsed.timestamp())
@@ -1049,7 +1054,11 @@ def parse_first_fetch_to_iso(first_fetch: str) -> str:
     try:
         parsed = arg_to_datetime(first_fetch, is_utc=True)
     except ValueError:
-        demisto.debug(f"[First Fetch] arg_to_datetime raised on '{first_fetch}' - using '1 day ago' fallback.")
+        demisto.error(
+            f"[First Fetch] Failed to parse first_fetch='{first_fetch}' as a datetime "
+            f"or relative time expression - falling back to '1 day ago'. "
+            f"Please correct the integration parameter."
+        )
     if not parsed:
         parsed = datetime.now(UTC) - timedelta(days=1)
     # Drop microseconds for a clean wire format that round-trips with the Compliance API.
@@ -1297,9 +1306,14 @@ def fetch_audit_logs(
     demisto.debug(f"[Audit Fetch] Starting | max_fetch={max_fetch} | first_fetch='{first_fetch}'")
 
     stored_cursor: str | None = last_run.get(LastRunKey.AUDIT_AFTER)
+    stored_seed: int | None = last_run.get(LastRunKey.AUDIT_FIRST_FETCH_SEED)
     initial_effective_at_gt: int | None = None
     if stored_cursor:
         demisto.debug("[Audit Fetch] Resuming from stored cursor.")
+    elif stored_seed is not None:
+        # Replay seed persisted by a previous empty first-fetch (keeps the window anchored).
+        initial_effective_at_gt = stored_seed
+        demisto.debug(f"[Audit Fetch] Replaying persisted first-fetch seed effective_at>{initial_effective_at_gt}.")
     else:
         initial_effective_at_gt = parse_first_fetch_to_unix_seconds(first_fetch)
         demisto.debug(f"[Audit Fetch] No cursor in last_run - first fetch using effective_at>{initial_effective_at_gt}.")
@@ -1348,10 +1362,16 @@ def fetch_audit_logs(
         enrich_audit_event(event)
 
     # Persist the latest cursor so the next run picks up exactly after this batch.
+    # On an empty first-ever fetch (no cursor + no stored seed), persist the resolved seed so
+    # the next cycle replays the same lookback rather than sliding it forward with `now()`.
     last_run_updates: dict[str, Any] = {}
     if last_cursor:
         last_run_updates[LastRunKey.AUDIT_AFTER] = last_cursor
+        last_run_updates[LastRunKey.AUDIT_FIRST_FETCH_SEED] = None  # cursor wins; drop stale seed.
         demisto.debug("[Audit Fetch] Persisting new cursor for next run.")
+    elif initial_effective_at_gt is not None and stored_seed is None:
+        last_run_updates[LastRunKey.AUDIT_FIRST_FETCH_SEED] = initial_effective_at_gt
+        demisto.debug(f"[Audit Fetch] First fetch empty - persisting seed={initial_effective_at_gt}.")
 
     demisto.debug(
         f"[Audit Fetch] Done | new_events={len(collected)} | pages_fetched={pages} | " f"updates={list(last_run_updates.keys())}"
@@ -1427,7 +1447,9 @@ def fetch_compliance_logs(
             content = client.get_compliance_log_content(workspace_id=workspace_id, log_id=log_id)
         except Exception as exc:
             failed_content_fetches += 1
-            demisto.debug(f"[Compliance Fetch] Failed to fetch content for one log entry: {exc}")
+            demisto.error(
+                f"[Compliance Fetch] Failed to fetch content for log_id={log_id} " f"(api_event_type={api_event_type}): {exc}"
+            )
             continue
 
         # The content endpoint returns a list of records (parsed from a concatenated-JSON / JSONL body).
