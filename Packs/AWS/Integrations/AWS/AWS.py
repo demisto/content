@@ -986,6 +986,7 @@ class AWSServices(str, Enum):
     SSM = "ssm"
     Redshift = "redshift"
     CloudWatchLogs = "logs"
+    STS = "sts"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -10341,7 +10342,8 @@ def get_service_client(
     # Resolve service name from command if not explicitly provided.
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
-    service_name = service_name or command.split("-")[1]
+    elif not service_name and command:
+        service_name = command.split("-")[1]
     service = AWSServices(service_name)
 
     # Build base config from user-supplied timeout/retries.
