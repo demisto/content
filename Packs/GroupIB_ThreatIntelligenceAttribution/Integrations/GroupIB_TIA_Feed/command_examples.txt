@@ -1,1 +1,1 @@
-!gibtia-get-indicators collection=ioc/common
+!gibti-get-indicators collection=ioc/common
