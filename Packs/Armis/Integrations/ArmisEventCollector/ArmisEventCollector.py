@@ -1,8 +1,10 @@
 import copy
+import gc
 import itertools
 import threading
 import time
 import traceback
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, as_completed
 from typing import Any
 
@@ -244,6 +246,7 @@ class Client(BaseClient):
             return False
         try:
             token_generated_at = datetime.fromisoformat(token_generated_at_str)
+            # TODO can be removed before release
             # Handle timestamps saved by older code versions that used datetime.utcnow()
             # (timezone-naive). Make them aware so subtraction with datetime.now(timezone.utc) works.
             if token_generated_at.tzinfo is None:
@@ -444,8 +447,18 @@ class Client(BaseClient):
         from_param: None | int = None,
         before: datetime | None = None,
         event_type: str = "",
+        on_page: Callable[[list[dict]], None] | None = None,
     ):
         """Fetches events using AQL query.
+
+        Memory mode:
+        - When ``on_page`` is None (default), all pages are accumulated into a single list
+          and returned (legacy behaviour — used for Alerts and bulk-enrichment fetches).
+        - When ``on_page`` is provided, each fetched page is handed to the callback and
+          then dropped from the local reference so the GC can reclaim it. The returned
+          list is empty in this mode. This is the "stream-and-flush" path used by
+          Activities/Devices to keep peak memory bounded by a single page (not the full
+          ``max_fetch`` worth of events).
 
         Args:
             aql_query (str): AQL query request parameter for the API call.
@@ -454,8 +467,12 @@ class Client(BaseClient):
             order_by (str): Order by parameter for the API call. Defaults to 'time'.
             from_param (None | int): The next incident to start the fetch from. Defaults to None.
             before (datetime): The time to fetch until.
+            event_type (str): Event type name (for logging only).
+            on_page (Callable[[list[dict]], None] | None): Optional per-page callback. When
+                provided, pages are streamed via the callback instead of accumulated.
         Returns:
             (list[dict], int): A tuple with the List of events objects represented as dictionaries and the next event pointer.
+            In streaming mode the list is always empty (events were dispatched via ``on_page``).
         """
         aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"  # noqa: E231
         if before:
@@ -467,21 +484,42 @@ class Client(BaseClient):
         if from_param:
             params["from"] = from_param
         raw_response = self.perform_fetch(params)
-        results = raw_response.get("data", {}).get("results", [])
+        first_page = raw_response.get("data", {}).get("results", [])
         next = raw_response.get("data", {}).get("next") or 0
-        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
+
+        streaming = on_page is not None
+        results: list[dict] = []
+        total_fetched = 0
+        if streaming:
+            on_page(first_page)  # type: ignore[misc]
+            total_fetched = len(first_page)
+            # Drop the local reference so the page can be GC'd before the next request.
+            first_page = []
+        else:
+            results = first_page
+            total_fetched = len(results)
+
+        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list
+        # (or stream them out, when on_page is provided).
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
         start_time = time.monotonic()
         try:
-            while next and (len(results) < max_fetch):
-                params["length"] = min(max_fetch - len(results), MAX_PAGE_SIZE)
+            while next and (total_fetched < max_fetch):
+                params["length"] = min(max_fetch - total_fetched, MAX_PAGE_SIZE)
                 params["from"] = next
                 raw_response = self.perform_fetch(params)
                 next = raw_response.get("data", {}).get("next") or 0
                 current_results = raw_response.get("data", {}).get("results", [])
-                results.extend(current_results)
-                demisto.info(f"fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+                page_size_fetched = len(current_results)
+                if streaming:
+                    on_page(current_results)  # type: ignore[misc]
+                    # Drop reference so this page can be reclaimed before we request the next one.
+                    current_results = []
+                else:
+                    results.extend(current_results)
+                total_fetched += page_size_fetched
+                demisto.info(f"fetched {page_size_fetched} results, total is {total_fetched}, and {next=}.")
 
                 total_seconds = time.monotonic() - start_time
                 demisto.debug(f"total {total_seconds} seconds so far")
@@ -703,6 +741,75 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return new_events, new_ids
 
 
+def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callable[[list[dict]], None]:
+    """Build a per-page callback that dedups, ships to XSIAM, and frees the page.
+
+    The callback mutates ``running_state`` in place across pages so the caller can
+    observe the latest cursor IDs and the last-seen event timestamp after fetch
+    completes. This is the "stream-and-flush" path used by Activities/Devices: each
+    page is dispatched to XSIAM immediately, so peak memory stays bounded by a single
+    page rather than ``max_fetch`` worth of events.
+
+    Args:
+        event_type (EVENT_TYPE): Event type configuration (drives dedup, _time, product).
+        running_state (dict): Mutable container with at minimum:
+            - ``last_fetch_ids`` (list[str]): seed IDs from last cycle's dedup set,
+              updated in place after each page.
+            - ``last_event_time`` (str | None): time of the most recent event seen so far.
+            - ``total_shipped`` (int): cumulative count for logging.
+            - ``page_count`` (int): number of pages handed to the callback.
+
+    Returns:
+        Callable[[list[dict]], None]: The on-page callback to pass to ``fetch_by_aql_query``.
+    """
+    tname = threading.current_thread().name
+    dataset = event_type.dataset_name
+
+    def on_page(page: list[dict]) -> None:
+        running_state["page_count"] += 1
+        page_idx = running_state["page_count"]
+        page_len = len(page)
+        if not page:
+            safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} empty — skipping")
+            return
+
+        dedup_start = time.monotonic()
+        new_events, updated_ids = dedup_events(
+            page, running_state["last_fetch_ids"], event_type.unique_id_key, event_type.order_by
+        )
+        dedup_secs = time.monotonic() - dedup_start
+        # Mutate the shared ID list in place so the next page sees the cumulative set.
+        running_state["last_fetch_ids"] = updated_ids
+        deduped_count = page_len - len(new_events)
+        if not new_events:
+            safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} all {page_len} events deduped (no ship)")
+            return
+
+        # Track the latest event timestamp so the caller can advance last_fetch_time
+        # after pagination completes (mirrors the non-streaming path).
+        latest_time = new_events[-1].get(event_type.order_by)
+        if latest_time:
+            running_state["last_event_time"] = latest_time
+
+        add_time_to_events(new_events, dataset)
+        product = f"{PRODUCT}_{event_type.type}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
+
+        send_start = time.monotonic()
+        send_events_to_xsiam(new_events, vendor=VENDOR, product=product)
+        send_secs = time.monotonic() - send_start
+
+        running_state["total_shipped"] += len(new_events)
+        running_state["total_send_secs"] += send_secs
+        safe_debug(
+            f"[{tname}] [stream:{dataset}] page #{page_idx}: "
+            f"page_size={page_len}, deduped={deduped_count}, shipped={len(new_events)}, "
+            f"dedup={dedup_secs:.3f}s, send={send_secs:.3f}s, "
+            f"cycle_total_shipped={running_state['total_shipped']}, latest_time={latest_time}"
+        )
+
+    return on_page
+
+
 def fetch_by_event_type(
     client: Client,
     event_type: EVENT_TYPE,
@@ -712,6 +819,7 @@ def fetch_by_event_type(
     next_run: dict,
     fetch_start_time: datetime | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
+    stream: bool = False,
 ):
     """Fetch events by specific event type.
 
@@ -724,40 +832,92 @@ def fetch_by_event_type(
         next_run (dict): Last run dictionary for next fetch cycle.
         fetch_start_time (datetime | None): Fetch start time.
         fetch_delay (int): The number of minutes to delay in the search.
+        stream (bool): When True, pages are streamed directly to XSIAM via
+            ``send_events_to_xsiam`` and NOT added to the ``events`` dict — peak memory
+            stays bounded by one page. Used for Activities/Devices (high-volume,
+            no enrichment dependency). Alerts always use the non-streaming path because
+            they must be collected first to feed bulk enrichment.
     """
     last_fetch_ids = f"{event_type.type}_last_fetch_ids"
     last_fetch_time_field = f"{event_type.type}_last_fetch_time"
     last_fetch_next_field = f"{event_type.type}_last_fetch_next_field"
 
-    demisto.debug(f"handling event-type: {event_type.type}")
+    demisto.debug(f"handling event-type: {event_type.type} (stream={stream})")
     if last_fetch_time := last_run.get(last_fetch_time_field):
         demisto.debug(f"last run of type: {event_type.type} time is: {last_fetch_time}")
     last_fetch_next = last_run.get(last_fetch_next_field, 0)
     demisto.debug(f"last run of type: {event_type.type} next is: {last_fetch_next}")
     event_type_fetch_start_time, before_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time, fetch_delay)
-    response, next = client.fetch_by_aql_query(
-        aql_query=event_type.aql_query,
-        max_fetch=max_fetch,
-        after=event_type_fetch_start_time,
-        order_by=event_type.order_by,
-        from_param=last_fetch_next,
-        before=before_time,
-        event_type=event_type.type,
-    )
-    new_events: list[dict] = []
-    demisto.debug(f"fetched {len(response)} {event_type.type} from API")
-    if response:
-        new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
-        )
-        events.setdefault(event_type.dataset_name, []).extend(new_events)
-        demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
-        last_event_str = str(new_events[-1])[:500] if new_events else "{}"
-        demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
 
-    if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-        event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
-        #  can empty the list.
+    if stream:
+        # Streaming path: dispatch each page to XSIAM via callback, never accumulate.
+        stream_start = time.monotonic()
+        running_state: dict = {
+            "last_fetch_ids": list(last_run.get(last_fetch_ids, [])),  # copy so we mutate locally
+            "last_event_time": None,
+            "total_shipped": 0,
+            "total_send_secs": 0.0,
+            "page_count": 0,
+        }
+        on_page = _stream_page_to_xsiam(event_type, running_state)
+        _, next = client.fetch_by_aql_query(
+            aql_query=event_type.aql_query,
+            max_fetch=max_fetch,
+            after=event_type_fetch_start_time,
+            order_by=event_type.order_by,
+            from_param=last_fetch_next,
+            before=before_time,
+            event_type=event_type.type,
+            on_page=on_page,
+        )
+        next_run[last_fetch_ids] = running_state["last_fetch_ids"]
+        total_secs = time.monotonic() - stream_start
+        send_share = (running_state["total_send_secs"] / total_secs * 100) if total_secs > 0 else 0
+        demisto.info(
+            f"[stream:{event_type.dataset_name}] cycle summary: "
+            f"shipped={running_state['total_shipped']} events in {running_state['page_count']} page(s), "
+            f"total={total_secs:.2f}s, send={running_state['total_send_secs']:.2f}s ({send_share:.0f}%), "
+            f"cursor_next={next}, fully_drained={not next}"
+        )
+        # Advance last_fetch_time only when pagination is fully drained (next == 0),
+        # mirroring the non-streaming path. While next > 0 we keep the same window so
+        # the cursor (`from_param`) is meaningful on the next cycle.
+        if not next:
+            event_type_fetch_start_time = running_state["last_event_time"] or last_fetch_time
+            demisto.debug(
+                f"[stream:{event_type.dataset_name}] cursor drained — advancing last_fetch_time "
+                f"to {event_type_fetch_start_time}"
+            )
+        else:
+            demisto.debug(
+                f"[stream:{event_type.dataset_name}] cursor NOT drained (next={next}) — "
+                f"keeping last_fetch_time at {last_fetch_time} for next cycle resume"
+            )
+    else:
+        response, next = client.fetch_by_aql_query(
+            aql_query=event_type.aql_query,
+            max_fetch=max_fetch,
+            after=event_type_fetch_start_time,
+            order_by=event_type.order_by,
+            from_param=last_fetch_next,
+            before=before_time,
+            event_type=event_type.type,
+        )
+        new_events: list[dict] = []
+        demisto.debug(f"fetched {len(response)} {event_type.type} from API")
+        if response:
+            new_events, next_run[last_fetch_ids] = dedup_events(
+                response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
+            )
+            events.setdefault(event_type.dataset_name, []).extend(new_events)
+            demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
+            last_event_str = str(new_events[-1])[:500] if new_events else "{}"
+            demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
+
+        if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
+            event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
+            #  can empty the list.
+
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
@@ -853,21 +1013,21 @@ def _attach_enrichment(
     activities_by_uuid: dict[str, dict],
     devices_by_id: dict[str, dict],
 ) -> None:
-    """Map fetched entities back onto each alert, with deepcopy to keep alerts independent.
+    """Map fetched entities back onto each alert by reference (no deepcopy).
 
-    The deepcopy mirrors the previous per-alert behaviour where each alert owned a
-    separate copy of its activities/devices (no shared references between alerts).
+    Memory note: we intentionally share the same activity/device dict across all alerts
+    that reference it. Alerts are write-once after this attach (they are serialized to
+    XSIAM and then released), so shared references are safe and save substantial memory
+    when an activity/device is referenced by multiple alerts.
     """
     for alert in alerts:
         alert["activitiesData"] = [
-            copy.deepcopy(activities_by_uuid[str(u)])
+            activities_by_uuid[str(u)]
             for u in (alert.get("activityUUIDs") or [])
             if u is not None and str(u) in activities_by_uuid
         ]
         alert["devicesData"] = [
-            copy.deepcopy(devices_by_id[str(d)])
-            for d in (alert.get("deviceIds") or [])
-            if d is not None and str(d) in devices_by_id
+            devices_by_id[str(d)] for d in (alert.get("deviceIds") or []) if d is not None and str(d) in devices_by_id
         ]
 
 
@@ -912,12 +1072,32 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
         order_by=EVENT_TYPES["Devices"].order_by,
     )
 
+    attach_start = time.monotonic()
     _attach_enrichment(alerts, activities_by_uuid, devices_by_id)
+    attach_secs = time.monotonic() - attach_start
 
-    demisto.debug(
+    matched_activities = len(activities_by_uuid)
+    matched_devices = len(devices_by_id)
+    # "Surplus" = entities the API returned whose keys aren't in any alert's requested IDs.
+    # These payloads become unreachable after the `del` + gc.collect() below (alerts
+    # never hold references to them).
+    surplus_activities = sum(1 for k in activities_by_uuid if k not in uuids)
+    surplus_devices = sum(1 for k in devices_by_id if k not in device_ids)
+    # Free the lookup dicts now that mapping is done. Alerts retain references to the
+    # *matched* entity dicts via `activitiesData`/`devicesData`, so those payloads stay
+    # alive — but the outer dict structure plus any *unmatched* entries (entities the API
+    # returned but no alert pointed at) become unreachable and can be reclaimed.
+    gc_start = time.monotonic()
+    del activities_by_uuid
+    del devices_by_id
+    gc.collect()
+    gc_secs = time.monotonic() - gc_start
+
+    demisto.info(
         f"[{tname}] bulk_enrich: DONE in {time.monotonic() - start:.2f}s — "
-        f"matched {len(activities_by_uuid)}/{len(uuids)} activities, "
-        f"{len(devices_by_id)}/{len(device_ids)} devices"
+        f"matched {matched_activities}/{len(uuids)} activities ({surplus_activities} surplus freed), "
+        f"{matched_devices}/{len(device_ids)} devices ({surplus_devices} surplus freed), "
+        f"attach={attach_secs:.3f}s, gc.collect={gc_secs:.3f}s"
     )
 
 
@@ -960,6 +1140,7 @@ def fetch_event_type_worker(
     fetch_start_time: datetime | None,
     fetch_delay: int,
     context_manager: IntegrationContextManager,
+    stream: bool = False,
 ) -> tuple[str, dict, dict]:
     """Worker function to fetch events for a specific event type in a thread.
 
@@ -972,30 +1153,47 @@ def fetch_event_type_worker(
         fetch_start_time (datetime | None): Start time for fetching.
         fetch_delay (int): Delay in minutes for fetching.
         context_manager (IntegrationContextManager): Thread-safe context manager.
+        stream (bool): When True, pages are shipped to XSIAM inside the fetch and the
+            returned ``events`` dict stays empty for this event type. See
+            ``fetch_by_event_type``.
 
     Returns:
-        tuple[str, dict, dict]: Event type name, fetched events dict, and next_run state.
+        tuple[str, dict, dict]: Event type name, fetched events dict (empty in stream
+        mode), and next_run state.
     """
     thread_id = threading.current_thread().name
-    safe_debug(f"[{thread_id}] Starting fetch for {event_type_name}")
+    safe_debug(f"[{thread_id}] Starting fetch for {event_type_name} (stream={stream})")
 
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str | None] = {}
 
     try:
-        fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
+        fetch_by_event_type(
+            client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay, stream=stream
+        )
 
         # Update context for this event type atomically
         context_manager.update_event_type_state(next_run)
 
         event_count = len(events.get(event_type.dataset_name, []))
-        safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
+        if stream:
+            safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: streamed directly to XSIAM")
+        else:
+            safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
 
         return event_type_name, events, next_run
 
     except Exception as e:
         safe_debug(f"[{thread_id}] Error fetching {event_type_name}: {_safe_error_str(e)}")
         raise
+
+
+# Event types that stream-and-flush directly to XSIAM (one page at a time) instead of
+# being collected into the in-memory `events` dict. Streaming keeps peak memory bounded
+# by a single page (~10K events) rather than the full `max_fetch` (~40K+ events).
+# Alerts are intentionally excluded because they must be collected first to feed bulk
+# enrichment.
+STREAMING_EVENT_TYPES = {"Activities", "Devices"}
 
 
 def fetch_events(
@@ -1009,6 +1207,7 @@ def fetch_events(
     fetch_delay: int = DEFAULT_FETCH_DELAY,
     use_multithreading: bool = True,
     context_manager: IntegrationContextManager | None = None,
+    enable_streaming: bool = True,
 ):
     """Fetch events from Armis API with optional multithreading support.
 
@@ -1025,8 +1224,14 @@ def fetch_events(
             is always on for the periodic ``fetch-events`` command and disabled for the manual
             ``armis-get-events`` command (which only fetches a single event type at a time).
         context_manager (Optional[IntegrationContextManager]): Thread-safe context manager.
+        enable_streaming (bool): When True (default for ``fetch-events``), Activities and
+            Devices are streamed page-by-page directly to XSIAM. When False (used by the
+            manual ``armis-get-events`` command, which needs to display the events in
+            CommandResults), all event types are collected into the returned ``events`` dict.
     Returns:
-        (list[dict], dict) : List of fetched events and next run dictionary.
+        (list[dict], dict) : List of fetched events and next run dictionary. When streaming
+        is enabled, Activities/Devices have already been shipped to XSIAM and the
+        corresponding entries in ``events`` will be empty.
     """
     fetch_start = time.monotonic()
     safe_debug(f"=== Starting fetch_events cycle at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
@@ -1083,8 +1288,9 @@ def fetch_events(
         safe_debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
         for event_type in event_types_to_fetch:
             event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
+            stream_this = enable_streaming and event_type in STREAMING_EVENT_TYPES
             type_start = time.monotonic()
-            safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch})")
+            safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch}, stream={stream_this})")
 
             fetch_by_event_type(
                 client,
@@ -1095,11 +1301,15 @@ def fetch_events(
                 next_run,
                 fetch_start_time,
                 fetch_delay=fetch_delay,
+                stream=stream_this,
             )
 
             type_duration = time.monotonic() - type_start
             type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))
-            safe_debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
+            safe_debug(
+                f"Completed {event_type} fetch in {type_duration:.2f}s "
+                f"({'streamed to XSIAM' if stream_this else f'{type_count} events collected'})"
+            )
     else:
         # Parallel processing with ThreadPoolExecutor
         max_workers = min(len(event_types_to_fetch), len(EVENT_TYPES))
@@ -1114,7 +1324,10 @@ def fetch_events(
             for event_type_name in event_types_to_fetch:
                 worker_num += 1
                 event_max_fetch = max_fetch if event_type_name != "Devices" else devices_max_fetch
-                safe_debug(f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch})")
+                stream_this = enable_streaming and event_type_name in STREAMING_EVENT_TYPES
+                safe_debug(
+                    f"[Worker-{worker_num}:{event_type_name}] Submitting task " f"(max: {event_max_fetch}, stream={stream_this})"
+                )
 
                 task = executor.submit(
                     fetch_event_type_worker,
@@ -1126,6 +1339,7 @@ def fetch_events(
                     fetch_start_time,
                     fetch_delay,
                     context_manager,
+                    stream_this,
                 )
                 submitted_tasks[task] = event_type_name
 
@@ -1208,25 +1422,28 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
 
 def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dict[str, str | list | None]):
     """Handle fetched events.
-    - Send the fetched events to XSIAM.
+    - Send the fetched events to XSIAM (skipping any datasets that were already streamed
+      page-by-page from inside the fetch loop — those arrive here with an empty list).
     - Set last run values for next fetch cycle.
 
     Args:
         events (list[dict[str, Any]]): Fetched events.
         next_run (dict[str, str | list]): Next run dictionary.
     """
-    if events:
-        for event_type, events_list in events.items():
-            if not events_list:
-                demisto.debug(f"No events of type: {event_type} fetched from API.")
-            else:
-                add_time_to_events(events_list, event_type)
-                demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
+    types_with_events = [t for t, lst in (events or {}).items() if lst]
+    if types_with_events:
+        for event_type in types_with_events:
+            events_list = events[event_type]
+            add_time_to_events(events_list, event_type)
+            demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
             product = f"{PRODUCT}_{event_type}" if event_type != EVENT_TYPE_ALERTS else PRODUCT
             send_events_to_xsiam(events_list, vendor=VENDOR, product=product)
-            demisto.debug(f"{len(events)} events were sent to XSIAM.")
+            demisto.debug(f"{len(events_list)} events of type: {event_type} were sent to XSIAM.")
     else:
-        demisto.debug("No new events fetched. Sending 0 to XSIAM.")
+        # Either no events were fetched, or all event types were streamed inside the
+        # fetch loop (Activities/Devices). Send an empty heartbeat so XSIAM knows the
+        # collector is alive.
+        demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
         send_events_to_xsiam(events=[], vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f"setting {next_run=}")
@@ -1357,6 +1574,10 @@ def main():  # pragma: no cover
                 fetch_delay=fetch_delay,
                 use_multithreading=command == "fetch-events",
                 context_manager=context_manager,
+                # Stream Activities/Devices only for the periodic ``fetch-events`` command.
+                # ``armis-get-events`` needs the events in the returned dict to render
+                # CommandResults to the analyst.
+                enable_streaming=command == "fetch-events",
             )
             for key, value in events.items():
                 demisto.debug(f"{len(value)} events of type: {key} fetched from armis api")

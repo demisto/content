@@ -14,11 +14,14 @@ from ArmisEventCollector import (
     _attach_enrichment,
     _bulk_fetch_entities_by_id,
     _collect_unique_enrichment_ids,
+    _stream_page_to_xsiam,
     _wait_for_enrichment,
     arg_to_datetime,
     bulk_enrich_alerts,
     datetime,
+    fetch_by_event_type,
     fetch_events,
+    handle_fetched_events,
     timedelta,
     timezone,
 )
@@ -927,6 +930,7 @@ class TestMultithreading:
             device_fetch_interval=None,
             use_multithreading=False,
             context_manager=None,
+            enable_streaming=False,  # legacy path: collect into events dict
         )
 
         assert "activities" in events
@@ -975,6 +979,7 @@ class TestMultithreading:
             device_fetch_interval=timedelta(hours=1),
             use_multithreading=True,
             context_manager=context_manager,
+            enable_streaming=False,  # legacy path: collect into events dict
         )
 
         # Both event types should be fetched
@@ -1264,27 +1269,30 @@ class TestAttachEnrichment:
         assert len(alerts[0]["activitiesData"]) == 2
         assert len(alerts[0]["devicesData"]) == 2
 
-    def test_deepcopy_shared_references(self):
+    def test_shared_references_across_alerts(self):
         """
         Given:
             - Two alerts sharing the same activityUUID.
         When:
             - Attaching enrichment.
         Then:
-            - Each alert gets its own copy (deepcopy) — modifying one doesn't affect the other.
+            - Both alerts see the *same* underlying entity object (no deepcopy).
+            - This is the memory-saving invariant: alerts are write-once after attach
+              and serialized to XSIAM as-is, so shared references are safe.
         """
         alerts = [
             {"alertId": "1", "activityUUIDs": ["shared"], "deviceIds": [], "activitiesData": [], "devicesData": []},
             {"alertId": "2", "activityUUIDs": ["shared"], "deviceIds": [], "activitiesData": [], "devicesData": []},
         ]
-        activities = {"shared": {"activityUUID": "shared", "data": "original"}}
+        shared_entity = {"activityUUID": "shared", "data": "original"}
+        activities = {"shared": shared_entity}
 
         _attach_enrichment(alerts, activities, {})
 
-        # Modify one alert's enrichment data
-        alerts[0]["activitiesData"][0]["data"] = "modified"
-        # The other alert should be unaffected
-        assert alerts[1]["activitiesData"][0]["data"] == "original"
+        # Both alerts should reference the *exact same* dict instance (no deepcopy).
+        assert alerts[0]["activitiesData"][0] is shared_entity
+        assert alerts[1]["activitiesData"][0] is shared_entity
+        assert alerts[0]["activitiesData"][0] is alerts[1]["activitiesData"][0]
 
     def test_str_coercion_mapping(self):
         """
@@ -1392,10 +1400,12 @@ class TestBulkEnrichAlerts:
         # Alert 2 should have uuid-2, uuid-3 activities and devices 200, 300
         assert len(alerts[1]["activitiesData"]) == 2
         assert len(alerts[1]["devicesData"]) == 2
-        # Verify deepcopy: shared uuid-2 should be independent copies
-        alerts[0]["activitiesData"][1]["info"] = "modified"
+        # Memory optimization (v1.3.0): alerts now share the SAME entity dict for the
+        # same UUID — deepcopy was removed to save memory. Verify the shared-reference
+        # invariant by asserting object identity.
+        uuid2_in_alert1 = [a for a in alerts[0]["activitiesData"] if a["activityUUID"] == "uuid-2"][0]
         uuid2_in_alert2 = [a for a in alerts[1]["activitiesData"] if a["activityUUID"] == "uuid-2"][0]
-        assert uuid2_in_alert2["info"] == "a2"  # unmodified
+        assert uuid2_in_alert1 is uuid2_in_alert2
 
 
 class TestWaitForEnrichment:
@@ -1540,3 +1550,358 @@ class TestIsTokenStillFresh:
         result = _real_is_token_still_fresh(MagicMock())
 
         assert result is False
+
+
+# ============================================================================
+# Memory-optimization tests (Idea 1: stream-and-flush, Idea 3: no deepcopy,
+# Idea 7: free enrichment dicts). See v1.3.0 changelog.
+# ============================================================================
+
+
+class TestStreamPageToXsiam:
+    """Tests for the _stream_page_to_xsiam callback factory.
+
+    The factory returns a per-page callback that dedupes, ships to XSIAM, and
+    mutates a shared running_state across pages. This is the heart of the
+    stream-and-flush memory optimization for Activities/Devices.
+    """
+
+    def _running_state(self, last_fetch_ids: list[str] | None = None) -> dict:
+        # Mirror the schema initialised inside fetch_by_event_type() — all keys the
+        # streaming callback may read or mutate must be present.
+        return {
+            "last_fetch_ids": list(last_fetch_ids or []),
+            "last_event_time": None,
+            "total_shipped": 0,
+            "total_send_secs": 0.0,
+            "page_count": 0,
+        }
+
+    def test_empty_page_no_send(self, mocker):
+        """
+        Given: An empty page.
+        When: Callback is invoked.
+        Then: send_events_to_xsiam is NOT called and running_state is unchanged.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([])
+
+        mock_send.assert_not_called()
+        assert state["total_shipped"] == 0
+        assert state["last_event_time"] is None
+
+    def test_single_page_shipped(self, mocker):
+        """
+        Given: A page with two new (un-deduped) events.
+        When: Callback is invoked.
+        Then: send_events_to_xsiam is called once with the deduped events,
+              total_shipped is incremented, last_event_time is the latest event's time.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        page = [
+            {"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"},
+            {"activityUUID": "b", "time": "2023-01-01T01:00:20.000000+00:00"},
+        ]
+        on_page(page)
+
+        mock_send.assert_called_once()
+        # send_events_to_xsiam(events, vendor=..., product=...) — positional events list.
+        sent_events = mock_send.call_args[0]
+        assert len(sent_events[0]) == 2
+        assert state["total_shipped"] == 2
+        assert state["last_event_time"] == "2023-01-01T01:00:20.000000+00:00"
+
+    def test_dedup_propagation_across_pages(self, mocker):
+        """
+        Given: Two pages, the second page contains a duplicate from the first
+               (same ID, same timestamp → dedup-case-2 keeps IDs growing).
+        When: Callback is invoked twice (simulating pagination).
+        Then: The duplicate is dropped on page 2 and running_state.last_fetch_ids
+              carries IDs forward so a third page would also dedup correctly.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        # Start with a seed ID already in last_fetch_ids — simulates dedup case 2 carry-over.
+        state = self._running_state(last_fetch_ids=["seed-id"])
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        # Page 1: all same timestamp → dedup case 2 appends new IDs to last_fetch_ids.
+        on_page(
+            [
+                {"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"},
+                {"activityUUID": "b", "time": "2023-01-01T01:00:10.000000+00:00"},
+            ]
+        )
+        assert state["total_shipped"] == 2
+        assert "a" in state["last_fetch_ids"]
+        assert "b" in state["last_fetch_ids"]
+        assert "seed-id" in state["last_fetch_ids"]  # carried over
+
+        # Page 2: contains a (duplicate) and c (new), same timestamp again.
+        on_page(
+            [
+                {"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"},
+                {"activityUUID": "c", "time": "2023-01-01T01:00:10.000000+00:00"},
+            ]
+        )
+        # Only "c" is new on page 2.
+        assert state["total_shipped"] == 3
+        assert "c" in state["last_fetch_ids"]
+
+    def test_alerts_product_routing(self, mocker):
+        """
+        Given: The Alerts event type (whose product is PRODUCT, not PRODUCT_alerts).
+        When: Callback ships a page.
+        Then: send_events_to_xsiam is called with product == PRODUCT.
+        """
+        from ArmisEventCollector import PRODUCT
+
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Alerts"], state)
+
+        on_page([{"alertId": "1", "time": "2023-01-01T01:00:10.000000+00:00"}])
+
+        assert mock_send.call_args.kwargs["product"] == PRODUCT
+
+    def test_devices_product_routing(self, mocker):
+        """
+        Given: The Devices event type (whose product is PRODUCT_devices).
+        When: Callback ships a page.
+        Then: send_events_to_xsiam is called with product == "<PRODUCT>_devices".
+        """
+        from ArmisEventCollector import PRODUCT
+
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Devices"], state)
+
+        on_page([{"id": "1", "lastSeen": "2023-01-01T01:00:10.000000+00:00"}])
+
+        assert mock_send.call_args.kwargs["product"] == f"{PRODUCT}_devices"
+
+
+class TestFetchByAqlQueryWithCallback:
+    """Tests for fetch_by_aql_query in streaming mode (on_page provided)."""
+
+    def test_streaming_returns_empty_results(self, mocker, dummy_client):
+        """
+        Given: A single-page API response and an on_page callback.
+        When: fetch_by_aql_query is called with on_page.
+        Then: The returned results list is empty (events streamed via callback,
+              not accumulated). The cursor is still returned correctly.
+        """
+        page = [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]
+        mocker.patch.object(Client, "_http_request", return_value={"data": {"results": page, "next": 0}})
+        captured: list[list[dict]] = []
+
+        def on_page(p):
+            captured.append(p)
+
+        results, next_cursor = dummy_client.fetch_by_aql_query(
+            aql_query="in:activity",
+            max_fetch=100,
+            after=arg_to_datetime("2023-01-01T01:00:00"),
+            on_page=on_page,
+        )
+
+        assert results == []  # streaming mode never accumulates
+        assert next_cursor == 0
+        assert len(captured) == 1
+        assert captured[0] == page
+
+    def test_streaming_paginates_and_invokes_callback_per_page(self, mocker, dummy_client):
+        """
+        Given: A multi-page API response (3 pages) and an on_page callback.
+        When: fetch_by_aql_query is called with on_page.
+        Then: The callback is invoked exactly 3 times (once per page) and the
+              returned results list is empty.
+        """
+        page1 = [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]
+        page2 = [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}]
+        page3 = [{"unique_id": "3", "time": "2023-01-01T01:00:30.123456+00:00"}]
+        mocker.patch.object(
+            Client,
+            "_http_request",
+            side_effect=[
+                {"data": {"results": page1, "next": 1}},
+                {"data": {"results": page2, "next": 2}},
+                {"data": {"results": page3, "next": 0}},
+            ],
+        )
+        captured: list[list[dict]] = []
+
+        results, next_cursor = dummy_client.fetch_by_aql_query(
+            aql_query="in:activity",
+            max_fetch=100,
+            after=arg_to_datetime("2023-01-01T01:00:00"),
+            on_page=lambda p: captured.append(p),
+        )
+
+        assert results == []
+        assert next_cursor == 0
+        assert len(captured) == 3
+        assert captured[0] == page1
+        assert captured[1] == page2
+        assert captured[2] == page3
+
+    def test_legacy_mode_unaffected(self, mocker, dummy_client):
+        """
+        Given: A single-page API response and NO on_page callback (legacy mode).
+        When: fetch_by_aql_query is called without on_page.
+        Then: Results are accumulated and returned (back-compat with Alerts and
+              bulk-enrichment fetches).
+        """
+        page = [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]
+        mocker.patch.object(Client, "_http_request", return_value={"data": {"results": page, "next": 0}})
+
+        results, next_cursor = dummy_client.fetch_by_aql_query(
+            aql_query="in:activity",
+            max_fetch=100,
+            after=arg_to_datetime("2023-01-01T01:00:00"),
+        )
+
+        assert results == page
+        assert next_cursor == 0
+
+
+class TestFetchByEventTypeStreamMode:
+    """Tests for fetch_by_event_type with stream=True."""
+
+    def test_stream_mode_does_not_populate_events_dict(self, mocker, dummy_client):
+        """
+        Given: A response with two events and stream=True.
+        When: fetch_by_event_type is called.
+        Then: send_events_to_xsiam is invoked (events streamed), and the
+              ``events`` dict is NOT populated for this dataset.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        response = [
+            {"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"},
+            {"activityUUID": "b", "time": "2023-01-01T01:00:20.000000+00:00"},
+        ]
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_streaming_fetch_stub(response))
+
+        events: dict = {}
+        next_run: dict = {}
+        fetch_by_event_type(
+            client=dummy_client,
+            event_type=EVENT_TYPES["Activities"],
+            events=events,
+            max_fetch=100,
+            last_run={},
+            next_run=next_run,
+            fetch_start_time=arg_to_datetime("2023-01-01T01:00:00"),
+            stream=True,
+        )
+
+        mock_send.assert_called_once()
+        # The events dict for the streamed dataset must remain empty.
+        assert events.get("activities", []) == []
+
+    def test_stream_mode_updates_next_run(self, mocker, dummy_client):
+        """
+        Given: A streaming fetch with two events and a fully-drained cursor (next=0).
+        When: fetch_by_event_type is called with stream=True.
+        Then: next_run captures last_fetch_ids and advances last_fetch_time to the
+              latest seen event timestamp (matches the non-streaming path's behaviour).
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        response = [
+            {"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"},
+            {"activityUUID": "b", "time": "2023-01-01T01:00:20.000000+00:00"},
+        ]
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_streaming_fetch_stub(response))
+
+        events: dict = {}
+        next_run: dict = {}
+        fetch_by_event_type(
+            client=dummy_client,
+            event_type=EVENT_TYPES["Activities"],
+            events=events,
+            max_fetch=100,
+            last_run={},
+            next_run=next_run,
+            fetch_start_time=arg_to_datetime("2023-01-01T01:00:00"),
+            stream=True,
+        )
+
+        # next == 0 because the stub returns a fully drained cursor.
+        assert next_run["activity_last_fetch_next_field"] == 0
+        # last_fetch_time should advance to the latest streamed event's timestamp.
+        assert next_run["activity_last_fetch_time"] == "2023-01-01T01:00:20.000000+00:00"
+
+
+def _streaming_fetch_stub(response: list[dict], next_cursor: int = 0):
+    """Helper: build a fetch_by_aql_query side_effect that honours the on_page kwarg.
+
+    When ``on_page`` is provided, invoke it with the response and return ([], next_cursor)
+    to simulate streaming mode. Otherwise return (response, next_cursor).
+    """
+
+    def _stub(*args, **kwargs):
+        on_page = kwargs.get("on_page")
+        if on_page is not None:
+            on_page(response)
+            return [], next_cursor
+        return response, next_cursor
+
+    return _stub
+
+
+class TestHandleFetchedEventsAfterStreaming:
+    """Tests for handle_fetched_events when Activities/Devices were already streamed."""
+
+    def test_alerts_only_after_streaming(self, mocker):
+        """
+        Given: An events dict containing only Alerts (Activities/Devices already streamed
+               and therefore absent from the dict).
+        When: handle_fetched_events is called.
+        Then: Only Alerts are shipped via send_events_to_xsiam; no spurious empty calls
+              for missing event types.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        events = {"alerts": [{"alertId": "1", "time": "2023-01-01T01:00:10.000000+00:00"}]}
+        handle_fetched_events(events, {})
+
+        assert mock_send.call_count == 1
+        assert mock_send.call_args.kwargs["product"] == "security"  # PRODUCT for alerts
+
+    def test_empty_events_dict_sends_heartbeat(self, mocker):
+        """
+        Given: An empty events dict (e.g., all event types streamed, no Alerts in cycle).
+        When: handle_fetched_events is called.
+        Then: A single empty heartbeat is sent so XSIAM knows the collector is alive.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        handle_fetched_events({}, {})
+
+        mock_send.assert_called_once_with(events=[], vendor="armis", product="security")
+
+    def test_skips_empty_event_lists(self, mocker):
+        """
+        Given: An events dict with one populated type and one empty type
+               (the empty type represents a streamed dataset that didn't accumulate).
+        When: handle_fetched_events is called.
+        Then: Only the populated type is shipped (the empty list is skipped).
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        events = {
+            "alerts": [{"alertId": "1", "time": "2023-01-01T01:00:10.000000+00:00"}],
+            "activities": [],  # streamed; empty placeholder
+        }
+        handle_fetched_events(events, {})
+
+        assert mock_send.call_count == 1
+        assert mock_send.call_args.kwargs["product"] == "security"
