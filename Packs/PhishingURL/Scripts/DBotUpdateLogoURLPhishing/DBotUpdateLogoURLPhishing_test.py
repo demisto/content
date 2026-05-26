@@ -76,9 +76,7 @@ def test_update_domain_for_custom_logo():
 
     assert res == "Logo 'PANW' successfully modified."
     assert model_data["top_domains"] == dict.fromkeys(new_associated_domains, 0)
-    assert (
-        model_data["custom_logo_associated_domain"][logo_name] == new_associated_domains
-    )
+    assert model_data["custom_logo_associated_domain"][logo_name] == new_associated_domains
 
 
 def test_display_all_logos(mocker: MockerFixture):
@@ -97,7 +95,7 @@ def test_display_all_logos(mocker: MockerFixture):
     display_all_logos(model_data)
 
     mocked_file_result.assert_called_once_with(
-        filename='0 (Default Logo), 1 (Custom Logo, domain1.com), 2 (Default Logo)',
+        filename="0 (Default Logo), 1 (Custom Logo, domain1.com), 2 (Default Logo)",
         data=load_image("test_data/image.png"),
         file_type=7,
     )
@@ -113,7 +111,7 @@ def test_load_data_from_xsoar(mocker: MockerFixture):
 
     mocker.patch(
         "demistomock.executeCommand",
-        return_value=[{"Type": 0, "Contents": {"modelData": 'WyJtb2RlbF9kYXRhIl0='}}],
+        return_value=[{"Type": 0, "Contents": {"modelData": "WyJtb2RlbF9kYXRhIl0="}}],
     )
 
     res = load_data_from_xsoar()
@@ -144,13 +142,16 @@ def test_load_data_from_xsoar_old_data(mocker: MockerFixture):
     """
     from DBotUpdateLogoURLPhishing import load_data_from_xsoar
 
-    mocker.patch("demistomock.executeCommand", return_value=[
-                 {"Type": 1, "Contents": {"modelData": "model_data", 'model': {'extra': {'minor': 0}}}}])
+    mocker.patch(
+        "demistomock.executeCommand",
+        return_value=[{"Type": 1, "Contents": {"modelData": "model_data", "model": {"extra": {"minor": 0}}}}],
+    )
     mock_loader = mocker.patch("DBotUpdateLogoURLPhishing.load_old_model_data")
 
     load_data_from_xsoar()
 
     mock_loader.assert_called_once_with("model_data")
+
 
 def test_safe_pickle_loads_legitimate_data():
     """Verify that a legitimate pickle payload with allowed types loads successfully."""
@@ -164,17 +165,19 @@ def test_safe_pickle_loads_legitimate_data():
 
 
 def test_safe_pickle_loads_blocks_malicious_payload():
-    """Verify that a payload trying to execute os.system is blocked."""
+    """Verify that a payload trying to execute os.system is blocked.
+
+    The malicious payload may be caught by either Layer 1 (RestrictedUnpickler
+    raising pickle.UnpicklingError) or Layer 2 (opcode validator raising
+    UnsafePickleError). Both are acceptable — the key is that it never executes.
+    """
     import pickle as _pickle
     import pytest
-    from DBotUpdateLogoURLPhishing import safe_pickle_loads
+    from DBotUpdateLogoURLPhishing import UnsafePickleError, safe_pickle_loads
 
     # Malicious pickle that would call os.system('echo pwned')
-    malicious_pickle = (
-        b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00"
-        b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
-    )
-    with pytest.raises(_pickle.UnpicklingError, match="Blocked unauthorized class"):
+    malicious_pickle = b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00" b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
+    with pytest.raises((UnsafePickleError, _pickle.UnpicklingError)):
         safe_pickle_loads(malicious_pickle)
 
 

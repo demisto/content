@@ -12,6 +12,7 @@ from collections.abc import Iterable
 import numpy as np
 import cv2 as cv
 
+
 class UnsafePickleError(Exception):
     """
     Raised when a pickle payload contains unsafe opcodes or classes.
@@ -23,9 +24,14 @@ class UnsafePickleError(Exception):
 
 # Legacy/rare opcodes that legitimate ML models never use.
 _BLOCKED_OPCODES = {
-    "INST", "OBJ", "NEWOBJ_EX",
-    "EXT1", "EXT2", "EXT4",
-    "PERSID", "BINPERSID",
+    "INST",
+    "OBJ",
+    "NEWOBJ_EX",
+    "EXT1",
+    "EXT2",
+    "EXT4",
+    "PERSID",
+    "BINPERSID",
 }
 
 
@@ -35,11 +41,9 @@ def validate_pickle_opcodes(payload: bytes) -> None:
     legacy/rare opcodes that legitimate ML models never use.
     """
     try:
-        for opcode, arg, pos in pickletools.genops(payload):
+        for opcode, _arg, pos in pickletools.genops(payload):
             if opcode.name in _BLOCKED_OPCODES:
-                raise UnsafePickleError(
-                    f"Blocked unsafe pickle opcode {opcode.name!r} at byte {pos}"
-                )
+                raise UnsafePickleError(f"Blocked unsafe pickle opcode {opcode.name!r} at byte {pos}")
     except UnsafePickleError:
         raise
     except Exception:
@@ -50,7 +54,6 @@ def validate_pickle_opcodes(payload: bytes) -> None:
 ALLOWED_CLASSES: set[tuple[str, str]] = {
     # The Model class (defined in this script)
     ("__main__", "Model"),
-
     # Scikit-learn pipeline and estimators
     ("sklearn.pipeline", "Pipeline"),
     ("sklearn.linear_model._logistic", "LogisticRegression"),
@@ -62,19 +65,16 @@ ALLOWED_CLASSES: set[tuple[str, str]] = {
     ("sklearn.base", "BaseEstimator"),
     ("sklearn.base", "TransformerMixin"),
     ("sklearn.utils.deprecation", "DeprecationDict"),
-
     # Numpy
     ("numpy.core.multiarray", "_reconstruct"),
     ("numpy", "ndarray"),
     ("numpy", "dtype"),
     ("numpy.core.multiarray", "scalar"),
-
     # Pandas
     ("pandas.core.frame", "DataFrame"),
     ("pandas.core.series", "Series"),
     ("pandas.core.indexes.base", "Index"),
     ("pandas.core.indexes.range", "RangeIndex"),
-
     # Python builtins
     ("builtins", "dict"),
     ("builtins", "list"),
@@ -90,12 +90,10 @@ ALLOWED_CLASSES: set[tuple[str, str]] = {
     ("builtins", "complex"),
     ("builtins", "slice"),
     ("builtins", "range"),
-
     # Python internals
     ("_codecs", "encode"),
     ("copyreg", "_reconstructor"),
     ("collections", "OrderedDict"),
-
     # Dill internals (for legacy dill-serialized models)
     ("dill._dill", "_create_function"),
     ("dill._dill", "_create_code"),
@@ -122,9 +120,7 @@ class RestrictedUnpickler(_pickle.Unpickler):
         if top_module in _SAFE_MODULE_PREFIXES:
             return super().find_class(module, name)
         # Block everything else
-        raise _pickle.UnpicklingError(
-            f"Blocked unauthorized class: '{module}.{name}'"
-        )
+        raise _pickle.UnpicklingError(f"Blocked unauthorized class: '{module}.{name}'")
 
 
 def safe_pickle_loads(data: bytes) -> object:
@@ -136,8 +132,8 @@ def safe_pickle_loads(data: bytes) -> object:
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 MSG_EMPTY_NAME_OR_URL = "Empty logo name or/and logo image ID"
 MSG_EMPTY_LOGO_NAME = "Empty logo name argument"
-OOB_VERSION_INFO_KEY = 'oob_version'
-OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
+OOB_VERSION_INFO_KEY = "oob_version"
+OUT_OF_THE_BOX_MODEL_PATH = "/model/model_docker.pkl"
 MALICIOUS_VERDICT = "malicious"
 BENIGN_VERDICT = "benign"
 SUSPICIOUS_VERDICT = "suspicious"
@@ -147,14 +143,14 @@ MSG_TRANSFER_LOGO = "Transfer logo from demisto model into new docker model"
 MSG_ERROR_READING_MODEL = "Error reading model %s from Demisto"
 MSG_NEED_TO_KNOW_WHICH_ACTION = "Need to choose one of the action: Add logo/ Remove logo/ Modify logo/ Display logos"
 
-KEY_ADD_LOGO = 'AddLogo'
-KEY_REMOVE_LOGO = 'RemoveLogo'
-KEY_DISPLAY_LOGOS = 'DisplayAllLogos'
-KEY_MODIFY_LOGO = 'ModifiedDomainForLogo'
+KEY_ADD_LOGO = "AddLogo"
+KEY_REMOVE_LOGO = "RemoveLogo"
+KEY_DISPLAY_LOGOS = "DisplayAllLogos"
+KEY_MODIFY_LOGO = "ModifiedDomainForLogo"
 
 
 class Model:
-    '''Abstract class that represents the class of the built-in phishing model.'''
+    """Abstract class that represents the class of the built-in phishing model."""
 
     clf: Any  # sklearn.pipeline.Pipeline
     df_voc: dict
@@ -163,8 +159,8 @@ class Model:
     custom_logo_associated_domain: dict
 
 
-class ModelData(dict[Literal['top_domains', 'logos_dict', 'custom_logo_associated_domain'], dict]):
-    '''Abstract class that represents the format of the data stored in the server.'''
+class ModelData(dict[Literal["top_domains", "logos_dict", "custom_logo_associated_domain"], dict]):
+    """Abstract class that represents the format of the data stored in the server."""
 
 
 def b64encode_string(string: str) -> str:
@@ -176,14 +172,15 @@ def b64decode_string(string: str) -> str:
 
 
 def delete_model():
-    res = demisto.executeCommand('deleteMLModel', {'modelName': URL_PHISHING_MODEL_NAME})
-    demisto.debug(f'Deleted model. server response: {res}')
+    res = demisto.executeCommand("deleteMLModel", {"modelName": URL_PHISHING_MODEL_NAME})
+    demisto.debug(f"Deleted model. server response: {res}")
 
 
 def load_old_model_data(encoded_model: str) -> ModelData:  # pragma: no cover
-    '''Update the model to the new version'''
+    """Update the model to the new version"""
     import warnings
-    warnings.filterwarnings("ignore", module='sklearn')
+
+    warnings.filterwarnings("ignore", module="sklearn")
 
     try:
         raw_bytes = base64.b64decode(encoded_model.encode())
@@ -195,7 +192,7 @@ def load_old_model_data(encoded_model: str) -> ModelData:  # pragma: no cover
         demisto.debug(f"Unable to load model data: {e}")
         raise DemistoException(f"Unable to load model data: {e}")
 
-    if demisto.getArg('action') != KEY_DISPLAY_LOGOS:
+    if demisto.getArg("action") != KEY_DISPLAY_LOGOS:
         delete_model()
 
     return model_to_data(model)
@@ -208,27 +205,30 @@ def save_model_data(model_data: ModelData):
     :return: msg
     """
     res = demisto.executeCommand(
-        'createMLModel',
+        "createMLModel",
         {
-            'modelData': b64encode_string(json.dumps(model_data)),
-            'modelName': URL_PHISHING_MODEL_NAME,
-            'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
-            'modelOverride': 'true',
-            'modelHidden': True,
-            'modelType': 'url_phishing'
-        }
+            "modelData": b64encode_string(json.dumps(model_data)),
+            "modelName": URL_PHISHING_MODEL_NAME,
+            "modelLabels": [MALICIOUS_VERDICT, BENIGN_VERDICT],
+            "modelOverride": "true",
+            "modelHidden": True,
+            "modelType": "url_phishing",
+        },
     )
     if is_error(res):
         raise DemistoException(get_error(res))
-    demisto.debug(f'Saved data: {res}')
+    demisto.debug(f"Saved data: {res}")
 
 
 def model_to_data(model: Model) -> ModelData:
-    return cast(ModelData, {
-        'top_domains': model.top_domains,
-        'logos_dict': model.logos_dict,
-        'custom_logo_associated_domain': model.custom_logo_associated_domain
-    })
+    return cast(
+        ModelData,
+        {
+            "top_domains": model.top_domains,
+            "logos_dict": model.logos_dict,
+            "custom_logo_associated_domain": model.custom_logo_associated_domain,
+        },
+    )
 
 
 def load_data_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH) -> ModelData:
@@ -237,20 +237,20 @@ def load_data_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH) -> ModelData:
     :param path: path of the model in the docker
     :return: URL Phishing model
     """
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         return model_to_data(cast(Model, dill.load(f)))  # guardrails-disable-line
 
 
 def load_data_from_xsoar() -> Optional[ModelData]:
     res = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
     if is_error(res):
-        demisto.debug(f'Model not found: {get_error(res)}')
+        demisto.debug(f"Model not found: {get_error(res)}")
         return None
-    extra_data = dict_safe_get(res, ('Contents', 'model', 'extra'))
-    model_data = dict_safe_get(res, ('Contents', 'modelData'))
+    extra_data = dict_safe_get(res, ("Contents", "model", "extra"))
+    model_data = dict_safe_get(res, ("Contents", "modelData"))
 
-    if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
-        demisto.debug(f'Old model found. {extra_data=}')
+    if isinstance(extra_data, dict) and "minor" in extra_data:  # this means the old model exists as a pickled object
+        demisto.debug(f"Old model found. {extra_data=}")
         return load_old_model_data(model_data)
     return cast(ModelData, json.loads(b64decode_string(model_data)))
 
@@ -272,7 +272,7 @@ def get_concat_logo_single_image(logo_list: Iterable[str]):
     total_number_of_images = len(images)
     total_width = number_of_image_per_row * width_new
     max_height = (total_number_of_images // number_of_image_per_row + 1) * height_new
-    new_im = Image.new('RGB', (total_width, max_height))
+    new_im = Image.new("RGB", (total_width, max_height))
     number_image_x = 0
     x_offset = 0
     y_offset = 0
@@ -287,7 +287,7 @@ def get_concat_logo_single_image(logo_list: Iterable[str]):
         x_offset += width_new
         number_image_x += 1
     buf = io.BytesIO()
-    new_im.save(buf, format='JPEG')
+    new_im.save(buf, format="JPEG")
     return buf.getvalue()
 
 
@@ -313,52 +313,52 @@ def update_top_domain(top_domains: dict, remove_list, add_list):
 def add_new_logo(model_data: ModelData, logo_name, logo_image_id, associated_domains):
     try:
         res = demisto.getFilePath(logo_image_id)
-        with open(res['path'], 'rb') as file:
+        with open(res["path"], "rb") as file:
             logo_content = file.read()
-        if logo_name in model_data['logos_dict']:
+        if logo_name in model_data["logos_dict"]:
             return_error(f"The logo name {logo_name!r} is already in use. Please use another logo name.")
         encoded_image = base64.b64encode(logo_content).decode()
         imm_arr = decode_image(encoded_image)
         if imm_arr is None:
             raise DemistoException("The file is not a valid image.")
-        model_data['logos_dict'][logo_name] = encoded_image
-        model_data['custom_logo_associated_domain'][logo_name] = associated_domains
-        update_top_domain(model_data['top_domains'], [], associated_domains)
+        model_data["logos_dict"][logo_name] = encoded_image
+        model_data["custom_logo_associated_domain"][logo_name] = associated_domains
+        update_top_domain(model_data["top_domains"], [], associated_domains)
         return f"Logo {logo_name!r} successfully added."
     except (ValueError, KeyError):
         return_error(f"File not found: {logo_image_id}")
     except Exception as e:
-        return_error(f'Unable to use image. Error: {e}')
+        return_error(f"Unable to use image. Error: {e}")
 
 
 def remove_logo(model_data: ModelData, logo_name):
-    if logo_name not in model_data['logos_dict'] or logo_name not in model_data['custom_logo_associated_domain']:
+    if logo_name not in model_data["logos_dict"] or logo_name not in model_data["custom_logo_associated_domain"]:
         return_error(f"Logo name {logo_name!r} not found.")
-    update_top_domain(model_data['top_domains'], model_data['custom_logo_associated_domain'][logo_name], [])
-    model_data['logos_dict'].pop(logo_name)
-    model_data['custom_logo_associated_domain'].pop(logo_name)
+    update_top_domain(model_data["top_domains"], model_data["custom_logo_associated_domain"][logo_name], [])
+    model_data["logos_dict"].pop(logo_name)
+    model_data["custom_logo_associated_domain"].pop(logo_name)
     return f"Logo {logo_name!r} successfully removed."
 
 
 def update_domain_for_custom_logo(model_data: ModelData, logo_name, associated_domains):
-    if logo_name not in model_data['logos_dict'] or logo_name not in model_data['custom_logo_associated_domain']:
+    if logo_name not in model_data["logos_dict"] or logo_name not in model_data["custom_logo_associated_domain"]:
         return_error(f"Logo name {logo_name!r} not found.")
-    update_top_domain(model_data['top_domains'], model_data['custom_logo_associated_domain'][logo_name], associated_domains)
-    model_data['custom_logo_associated_domain'][logo_name] = associated_domains
+    update_top_domain(model_data["top_domains"], model_data["custom_logo_associated_domain"][logo_name], associated_domains)
+    model_data["custom_logo_associated_domain"][logo_name] = associated_domains
     return f"Logo {logo_name!r} successfully modified."
 
 
 def display_all_logos(model_data: ModelData):
     description = []
-    for name in model_data['logos_dict']:
-        custom_associated_logo = model_data['custom_logo_associated_domain'].get(name, '')
+    for name in model_data["logos_dict"]:
+        custom_associated_logo = model_data["custom_logo_associated_domain"].get(name, "")
         description.append(
-            "{} ({}, {})".format(name, 'Custom Logo', ','.join(custom_associated_logo))
-            if name in model_data['custom_logo_associated_domain']
-            else "{} ({})".format(name, 'Default Logo')
+            "{} ({}, {})".format(name, "Custom Logo", ",".join(custom_associated_logo))
+            if name in model_data["custom_logo_associated_domain"]
+            else "{} ({})".format(name, "Default Logo")
         )
-    merged_logos = get_concat_logo_single_image(model_data['logos_dict'].values())
-    return fileResult(filename=', '.join(description), data=merged_logos, file_type=entryTypes['image'])
+    merged_logos = get_concat_logo_single_image(model_data["logos_dict"].values())
+    return fileResult(filename=", ".join(description), data=merged_logos, file_type=entryTypes["image"])
 
 
 def execute_action(model_data: ModelData, action, logo_name, logo_image_id, associated_domains):
@@ -383,10 +383,10 @@ def verify_args(action, logo_image_id, logo_name):
 def main():  # pragma: no cover
     try:
         args = demisto.args()
-        logo_image_id = args.get('logoImageId', '')
-        logo_name = args.get('logoName', '')
-        associated_domains = argToList(args.get('associatedDomains', ''))
-        action = args.get('action')
+        logo_image_id = args.get("logoImageId", "")
+        logo_name = args.get("logoName", "")
+        associated_domains = argToList(args.get("associatedDomains", ""))
+        action = args.get("action")
 
         verify_args(action, logo_image_id, logo_name)
 
@@ -401,8 +401,8 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
+        return_error(f"Failed to execute URL Phishing script. Error: {str(ex)}")
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

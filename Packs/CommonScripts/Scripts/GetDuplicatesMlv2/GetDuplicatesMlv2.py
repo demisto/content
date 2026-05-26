@@ -41,7 +41,7 @@ def validate_pickle_opcodes(payload):
     legacy/rare opcodes that legitimate ML models never use.
     """
     try:
-        for opcode, arg, pos in pickletools.genops(payload):
+        for opcode, _arg, pos in pickletools.genops(payload):
             if opcode.name in _BLOCKED_OPCODES:
                 raise UnsafePickleError(
                     "Blocked unsafe pickle opcode %r at byte %d" % (opcode.name, pos)

@@ -21,6 +21,7 @@ from sklearn.pipeline import Pipeline
 
 from CommonServerUserPython import *
 
+
 class UnsafePickleError(Exception):
     """
     Raised when a pickle payload contains unsafe opcodes or classes.
@@ -32,9 +33,14 @@ class UnsafePickleError(Exception):
 
 # Legacy/rare opcodes that legitimate ML models never use.
 _BLOCKED_OPCODES = {
-    "INST", "OBJ", "NEWOBJ_EX",
-    "EXT1", "EXT2", "EXT4",
-    "PERSID", "BINPERSID",
+    "INST",
+    "OBJ",
+    "NEWOBJ_EX",
+    "EXT1",
+    "EXT2",
+    "EXT4",
+    "PERSID",
+    "BINPERSID",
 }
 
 
@@ -44,11 +50,9 @@ def validate_pickle_opcodes(payload: bytes) -> None:
     legacy/rare opcodes that legitimate ML models never use.
     """
     try:
-        for opcode, arg, pos in pickletools.genops(payload):
+        for opcode, _arg, pos in pickletools.genops(payload):
             if opcode.name in _BLOCKED_OPCODES:
-                raise UnsafePickleError(
-                    f"Blocked unsafe pickle opcode {opcode.name!r} at byte {pos}"
-                )
+                raise UnsafePickleError(f"Blocked unsafe pickle opcode {opcode.name!r} at byte {pos}")
     except UnsafePickleError:
         raise
     except Exception:
@@ -60,26 +64,21 @@ ALLOWED_CLASSES: set[tuple[str, str]] = {
     # Custom schema classes (defined in this script)
     ("__main__", "PostProcessing"),
     ("__main__", "Clustering"),
-
     # HDBSCAN
     ("hdbscan.hdbscan_", "HDBSCAN"),
-
     # Scikit-learn
     ("sklearn.cluster._dbscan", "DBSCAN"),
     ("sklearn.cluster._kmeans", "KMeans"),
-
     # Pandas
     ("pandas.core.frame", "DataFrame"),
     ("pandas.core.series", "Series"),
     ("pandas.core.indexes.base", "Index"),
     ("pandas.core.indexes.range", "RangeIndex"),
-
     # Numpy
     ("numpy.core.multiarray", "_reconstruct"),
     ("numpy", "ndarray"),
     ("numpy", "dtype"),
     ("numpy.core.multiarray", "scalar"),
-
     # Python builtins
     ("builtins", "dict"),
     ("builtins", "list"),
@@ -95,7 +94,6 @@ ALLOWED_CLASSES: set[tuple[str, str]] = {
     ("builtins", "complex"),
     ("builtins", "slice"),
     ("builtins", "range"),
-
     # Python internals used by pickle protocol
     ("collections", "OrderedDict"),
     ("datetime", "datetime"),
@@ -123,15 +121,14 @@ class RestrictedUnpickler(_pickle.Unpickler):
         if top_module in _SAFE_MODULE_PREFIXES:
             return super().find_class(module, name)
         # Block everything else
-        raise _pickle.UnpicklingError(
-            f"Blocked unauthorized class: '{module}.{name}'"
-        )
+        raise _pickle.UnpicklingError(f"Blocked unauthorized class: '{module}.{name}'")
 
 
 def safe_pickle_loads(data: bytes) -> object:
     """Drop-in replacement for pickle.loads() with two-layer security."""
     validate_pickle_opcodes(data)
     return RestrictedUnpickler(_io.BytesIO(data)).load()
+
 
 GENERAL_MESSAGE_RESULTS = "\n".join(
     (
