@@ -132,6 +132,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - display: Incident type
   name: incidentType
   type: 13
@@ -144,6 +147,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Freshservice.
   defaultvalue: 'false'
   display: Close Mirrored Freshservice Ticket
@@ -151,6 +157,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: Fetch tasks for each ticket type and consider them in the mirroring (requires an additional API request per ticket).
   defaultvalue: 'false'
   display: Fetch tickets tasks
