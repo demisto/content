@@ -8,6 +8,8 @@ import pytest
 from CommonServerPython import CommandResults, DemistoException
 from MicrosoftGraphFiles import (
     MsGraphClient,
+    _decode_sharepoint_login_name,
+    _summarize_permission_grantees,
     copy_driveitem_command,
     create_new_folder_command,
     create_site_permissions_command,
@@ -1468,3 +1470,123 @@ def test_delete_driveitem_permission_404_surfaced(requests_mock: MockerCore) -> 
                 "permission_id": "bogus",
             },
         )
+
+
+def test_decode_sharepoint_login_name_guest_user() -> None:
+    """
+    Given:
+        - A SharePoint claims-encoded loginName for an external guest user
+    When:
+        - _decode_sharepoint_login_name is called
+    Then:
+        - The original external email is recovered (underscore replaced back with '@')
+    """
+    encoded = "i:0#.f|membership|ymishra_paloaltonetworks.com#ext#@aperturesync.onmicrosoft.com"
+    assert _decode_sharepoint_login_name(encoded) == "ymishra@paloaltonetworks.com"
+
+
+def test_decode_sharepoint_login_name_internal_user() -> None:
+    """
+    Given:
+        - A SharePoint claims-encoded loginName for an internal tenant user (no #ext# marker)
+    When:
+        - _decode_sharepoint_login_name is called
+    Then:
+        - The UPN portion after the last "|" is returned unchanged
+    """
+    encoded = "i:0#.f|membership|user@tenant.onmicrosoft.com"
+    assert _decode_sharepoint_login_name(encoded) == "user@tenant.onmicrosoft.com"
+
+
+def test_decode_sharepoint_login_name_passthrough() -> None:
+    """
+    Given:
+        - A non-claims-encoded string or empty input
+    When:
+        - _decode_sharepoint_login_name is called
+    Then:
+        - The input is returned as-is
+    """
+    assert _decode_sharepoint_login_name("plain@example.com") == "plain@example.com"
+    assert _decode_sharepoint_login_name("") == ""
+
+
+def test_summarize_permission_grantees_external_user_via_siteuser() -> None:
+    """
+    Given:
+        - A permission entry where the external guest user shows up under
+          GrantedToV2.SiteUser with both Email and a claims-encoded LoginName
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - The external user's email is returned (proving SiteUser.Email is now surfaced)
+    """
+    perm = {
+        "ID": "perm-ext",
+        "Roles": ["write"],
+        "GrantedTo": {"User": {"DisplayName": "ymishra", "Email": "ymishra@paloaltonetworks.com"}},
+        "GrantedToV2": {
+            "SiteUser": {
+                "DisplayName": "ymishra",
+                "Email": "ymishra@paloaltonetworks.com",
+                "LoginName": "i:0#.f|membership|ymishra_paloaltonetworks.com#ext#@aperturesync.onmicrosoft.com",
+            },
+        },
+    }
+    assert _summarize_permission_grantees(perm) == "ymishra@paloaltonetworks.com"
+
+
+def test_summarize_permission_grantees_siteuser_loginname_only() -> None:
+    """
+    Given:
+        - A permission entry whose only identifier is a claims-encoded SiteUser.LoginName
+          (no Email field populated)
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - The decoded guest email is surfaced
+    """
+    perm = {
+        "ID": "perm-ext",
+        "Roles": ["write"],
+        "GrantedToV2": {
+            "SiteUser": {
+                "LoginName": "i:0#.f|membership|ymishra_paloaltonetworks.com#ext#@aperturesync.onmicrosoft.com",
+            },
+        },
+    }
+    assert _summarize_permission_grantees(perm) == "ymishra@paloaltonetworks.com"
+
+
+def test_summarize_permission_grantees_multiple_identities() -> None:
+    """
+    Given:
+        - A permission entry with grantedToIdentitiesV2 carrying multiple users
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - All distinct emails are joined with ", " preserving discovery order
+    """
+    perm = {
+        "ID": "perm-link",
+        "Roles": ["read"],
+        "GrantedToIdentitiesV2": [
+            {"User": {"Email": "alice@example.com"}},
+            {"User": {"Email": "bob@example.com"}},
+            {"User": {"Email": "alice@example.com"}},  # duplicate — should be deduped
+        ],
+    }
+    assert _summarize_permission_grantees(perm) == "alice@example.com, bob@example.com"
+
+
+def test_summarize_permission_grantees_empty() -> None:
+    """
+    Given:
+        - A permission entry with no grantedTo* fields (e.g. anonymous link only)
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - An empty string is returned
+    """
+    perm = {"ID": "perm-link", "Roles": ["read"], "Link": {"Scope": "anonymous", "Type": "view"}}
+    assert _summarize_permission_grantees(perm) == ""

@@ -1325,6 +1325,86 @@ def copy_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> Comma
     )
 
 
+def _decode_sharepoint_login_name(login_name: str) -> str:
+    """Extract a human-readable identifier from a SharePoint claims-encoded loginName.
+
+    Microsoft Graph encodes external/guest users using the SharePoint claims format
+    "i:0#.f|membership|<encoded-upn>". For guest users the encoded UPN looks like
+    "<email-with-underscore>#ext#@<tenant>.onmicrosoft.com", where the original "@" in the
+    guest's email is replaced with "_". This helper returns the decoded email when the input
+    matches that pattern, otherwise returns the input unchanged so callers can still surface
+    something meaningful.
+
+    Args:
+        login_name: The raw SharePoint claims-encoded loginName string.
+
+    Returns:
+        The decoded email (best effort) or the original loginName.
+    """
+    if not login_name or "|" not in login_name:
+        return login_name
+    encoded_upn = login_name.rsplit("|", 1)[-1]
+    if "#ext#" in encoded_upn:
+        # Guest user: "<email-with-underscore>#ext#@<tenant>.onmicrosoft.com"
+        guest_part = encoded_upn.split("#ext#", 1)[0]
+        # The original "@" was replaced with the LAST "_" in the email.
+        if "_" in guest_part:
+            local, _, domain = guest_part.rpartition("_")
+            return f"{local}@{domain}"
+        return guest_part
+    return encoded_upn
+
+
+def _identity_label(identity: dict) -> str:
+    """Return the best human-readable label for an IdentitySet identity (user/siteUser/group/application/device).
+
+    Prefers an email, then a loginName (decoded if SharePoint claims-encoded), then a
+    displayName, then an ID. Returns an empty string when nothing useful is present.
+    """
+    if not isinstance(identity, dict):
+        return ""
+    email = identity.get("Email") or identity.get("email")
+    if email:
+        return email
+    login_name = identity.get("LoginName") or identity.get("loginName")
+    if login_name:
+        return _decode_sharepoint_login_name(login_name)
+    display_name = identity.get("DisplayName") or identity.get("displayName")
+    if display_name:
+        return display_name
+    identity_id = identity.get("ID") or identity.get("id")
+    return identity_id or ""
+
+
+def _summarize_permission_grantees(perm: dict) -> str:
+    """Build a comma-separated label of all grantees on a single permission entry.
+
+    Walks every identity source Microsoft Graph may populate on a driveItem permission:
+    grantedToV2 / grantedTo (single IdentitySet), grantedToIdentitiesV2 / grantedToIdentities
+    (list of IdentitySets). Inside each IdentitySet it considers user, siteUser, group,
+    application and device. Duplicates are removed while preserving order.
+    """
+    identity_sets: list[dict] = []
+    for single_key in ("GrantedToV2", "GrantedTo"):
+        single = perm.get(single_key)
+        if isinstance(single, dict):
+            identity_sets.append(single)
+    for list_key in ("GrantedToIdentitiesV2", "GrantedToIdentities"):
+        listed = perm.get(list_key)
+        if isinstance(listed, list):
+            identity_sets.extend([item for item in listed if isinstance(item, dict)])
+
+    labels: list[str] = []
+    seen: set[str] = set()
+    for identity_set in identity_sets:
+        for identity_key in ("User", "SiteUser", "Group", "Application", "Device"):
+            label = _identity_label(identity_set.get(identity_key) or {})
+            if label and label not in seen:
+                labels.append(label)
+                seen.add(label)
+    return ", ".join(labels)
+
+
 def list_driveitem_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """List permissions (sharing entries) on a driveItem.
 
@@ -1369,7 +1449,7 @@ def list_driveitem_permissions_command(client: MsGraphClient, args: dict[str, st
             "Roles": perm.get("Roles"),
             "LinkScope": (perm.get("Link") or {}).get("Scope"),
             "LinkType": (perm.get("Link") or {}).get("Type"),
-            "GrantedToUserEmail": ((perm.get("GrantedToV2") or {}).get("User") or {}).get("Email"),
+            "GrantedTo": _summarize_permission_grantees(perm),
             "InheritedFrom": "yes" if perm.get("InheritedFrom") else None,
         }
         for perm in parsed_permissions
