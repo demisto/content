@@ -11,6 +11,7 @@ Auth: Bearer API key (Authorization: Bearer dfire_ak_...)
 """
 
 import os
+import traceback
 from datetime import datetime, UTC
 from typing import Any
 
@@ -1705,7 +1706,7 @@ def main():
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}\n\n{traceback.format_exc()}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
