@@ -18321,7 +18321,7 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: limit
-      description: The maximum number of objects that you want Network Firewall to return for this request.
+      description: The maximum number of objects that you want Network Firewall to return for this request. Default is 50.
     - name: next_token
       description: The NextToken value returned from a previous paginated ListFirewalls request.
     - name: vpc_ids
