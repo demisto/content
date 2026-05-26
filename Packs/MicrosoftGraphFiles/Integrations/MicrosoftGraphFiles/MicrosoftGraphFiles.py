@@ -545,7 +545,7 @@ class MsGraphClient:
             return f"{object_type}/{object_type_id}/drive/items/{item_id}"
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
 
-    def extract_sensitivity_label(self, object_type: str, object_type_id: str, item_id: str) -> dict:
+    def get_sensitivity_label(self, object_type: str, object_type_id: str, item_id: str) -> dict:
         """Retrieve the sensitivity label currently assigned to a drive item.
 
         Args:
@@ -1127,7 +1127,7 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
     return CommandResults(readable_output="Site permission was deleted.")
 
 
-def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+def get_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """Retrieve the sensitivity label currently assigned to a drive item.
 
     A missing or null `sensitivityLabel` field in the Graph response is the documented
@@ -1142,31 +1142,27 @@ def extract_sensitivity_label_command(client: MsGraphClient, args: dict[str, str
             item_id (Required): The drive item ID.
 
     Returns:
-        CommandResults with the drive item ID and the label id, display name, and
-        protection state as returned by Microsoft Graph.
+        CommandResults with the drive item ID and all sensitivity label fields
+        as returned by Microsoft Graph.
     """
     object_type = args.get("object_type", "")
     object_type_id = args.get("object_type_id", "")
     item_id = args.get("item_id", "")
 
-    raw_response = client.extract_sensitivity_label(object_type, object_type_id, item_id)
+    raw_response = client.get_sensitivity_label(object_type, object_type_id, item_id)
     label = raw_response.get("sensitivityLabel") or {}
 
-    outputs = {
-        "itemId": item_id,
-        "id": label.get("id", ""),
-        "displayName": label.get("displayName", ""),
-        "protectionEnabled": label.get("protectionEnabled", False),
-    }
+    outputs: dict = {"itemId": item_id}
+    outputs.update(label)
 
     readable_output = tableToMarkdown(
-        "Extracted Sensitivity Label",
+        "Sensitivity Label",
         outputs,
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="MsGraphFiles.ExtractedSensitivityLabel",
+        outputs_prefix="MsGraphFiles.SensitivityLabel",
         outputs_key_field="itemId",
         outputs=outputs,
         readable_output=readable_output,
@@ -1316,8 +1312,8 @@ def main():
             return_results(update_site_permissions_command(client, args))
         elif command == "msgraph-delete-site-permissions":
             return_results(delete_site_permission_command(client, args))
-        elif command == "msgraph-extract-sensitivity-label":
-            return_results(extract_sensitivity_label_command(client, args))
+        elif command == "msgraph-get-sensitivity-label":
+            return_results(get_sensitivity_label_command(client, args))
         elif command == "msgraph-assign-sensitivity-label":
             return_results(assign_sensitivity_label_command(client, args))
         else:

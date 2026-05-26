@@ -14,7 +14,7 @@ from MicrosoftGraphFiles import (
     delete_file_command,
     delete_site_permission_command,
     download_file_command,
-    extract_sensitivity_label_command,
+    get_sensitivity_label_command,
     get_site_id_from_site_name,
     list_drive_content_command,
     list_drives_in_site_command,
@@ -1075,12 +1075,12 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
         ("groups", "groups/group-1/drive/items/item-1"),
     ],
 )
-def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_type: str, expected_uri_part: str) -> None:
+def test_get_sensitivity_label_uri_branching(mocker: MockerFixture, object_type: str, expected_uri_part: str) -> None:
     """
     Given:
-        - A request to extract a sensitivity label for each supported object_type.
+        - A request to get a sensitivity label for each supported object_type.
     When:
-        - Running the extract_sensitivity_label_command.
+        - Running the get_sensitivity_label_command.
     Then:
         - The Graph URL is constructed using the correct drive-prefix branching:
           'drives/{id}/items/...' for drives and '{type}/{id}/drive/items/...' for users/sites/groups.
@@ -1103,7 +1103,7 @@ def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_t
         "object_type_id": object_type_id_map[object_type],
         "item_id": "item-1",
     }
-    extract_sensitivity_label_command(CLIENT_MOCKER, args)
+    get_sensitivity_label_command(CLIENT_MOCKER, args)
 
     call_kwargs = http_mock.call_args.kwargs
     assert call_kwargs["method"] == "GET"
@@ -1114,7 +1114,7 @@ def test_extract_sensitivity_label_uri_branching(mocker: MockerFixture, object_t
 
 # Real Graph v1.0 response for GET driveItem?$select=sensitivityLabel, captured
 # from live testing against a file with a classification-only label.
-EXTRACT_LABEL_REAL_RESPONSE = {
+GET_LABEL_REAL_RESPONSE = {
     "@odata.etag": '"{45E2324B-C375-4B70-92E7-177F0C2B52BF},14"',
     "sensitivityLabel": {
         "displayName": "This label is created to test the MRB Activity",
@@ -1124,27 +1124,27 @@ EXTRACT_LABEL_REAL_RESPONSE = {
 }
 
 
-def test_extract_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
+def test_get_sensitivity_label_command_happy_path(mocker: MockerFixture) -> None:
     """
     Given:
         - A real Graph v1.0 response containing a classification-only sensitivity
           label (protectionEnabled=false) returned by
           `GET driveItem?$select=sensitivityLabel`.
     When:
-        - Running the extract_sensitivity_label_command.
+        - Running the get_sensitivity_label_command.
     Then:
-        - The outputs contain itemId plus the label id, displayName, and
-          protectionEnabled flag, matching the values in the response.
+        - The outputs contain itemId plus all label fields returned by
+          Microsoft Graph, matching the values in the response.
     """
-    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=EXTRACT_LABEL_REAL_RESPONSE)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=GET_LABEL_REAL_RESPONSE)
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
-    result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
+    result = get_sensitivity_label_command(CLIENT_MOCKER, args)
 
-    assert result.outputs_prefix == "MsGraphFiles.ExtractedSensitivityLabel"
+    assert result.outputs_prefix == "MsGraphFiles.SensitivityLabel"
     assert result.outputs == {
         "itemId": "i1",
-        "id": "08973045-2fd6-4014-9177-9f2a3e55c29e",
         "displayName": "This label is created to test the MRB Activity",
+        "id": "08973045-2fd6-4014-9177-9f2a3e55c29e",
         "protectionEnabled": False,
     }
 
@@ -1156,18 +1156,17 @@ def test_extract_sensitivity_label_command_happy_path(mocker: MockerFixture) -> 
         {},
     ],
 )
-def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture, graph_response: dict) -> None:
+def test_get_sensitivity_label_command_empty_label(mocker: MockerFixture, graph_response: dict) -> None:
     """
     Given:
         - A Graph response where the drive item has no sensitivity label assigned.
           This is represented either as `sensitivityLabel: null` or by omitting the
           field entirely from the response.
     When:
-        - Running the extract_sensitivity_label_command.
+        - Running the get_sensitivity_label_command.
     Then:
         - The command does NOT raise an error.
-        - The outputs contain itemId, empty id, empty displayName, and
-          protectionEnabled=False.
+        - The outputs contain only itemId (no label fields since the label is empty).
     """
     mocker.patch.object(
         CLIENT_MOCKER.ms_client,
@@ -1175,23 +1174,20 @@ def test_extract_sensitivity_label_command_empty_label(mocker: MockerFixture, gr
         return_value=graph_response,
     )
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
-    result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
+    result = get_sensitivity_label_command(CLIENT_MOCKER, args)
 
     assert result.outputs == {
         "itemId": "i1",
-        "id": "",
-        "displayName": "",
-        "protectionEnabled": False,
     }
 
 
-def test_extract_sensitivity_label_command_protected_label(mocker: MockerFixture) -> None:
+def test_get_sensitivity_label_command_protected_label(mocker: MockerFixture) -> None:
     """
     Given:
         - A Graph response containing a sensitivity label whose
           `protectionEnabled` flag is true (encrypted/protected label).
     When:
-        - Running the extract_sensitivity_label_command.
+        - Running the get_sensitivity_label_command.
     Then:
         - The boolean is preserved in the outputs as True.
     """
@@ -1204,7 +1200,7 @@ def test_extract_sensitivity_label_command_protected_label(mocker: MockerFixture
     }
     mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
     args = {"object_type": "drives", "object_type_id": "d1", "item_id": "i1"}
-    result = extract_sensitivity_label_command(CLIENT_MOCKER, args)
+    result = get_sensitivity_label_command(CLIENT_MOCKER, args)
 
     assert result.outputs == {
         "itemId": "i1",
@@ -1212,6 +1208,7 @@ def test_extract_sensitivity_label_command_protected_label(mocker: MockerFixture
         "displayName": "Confidential",
         "protectionEnabled": True,
     }
+    assert result.outputs["protectionEnabled"] is True
 
 
 @pytest.mark.parametrize(

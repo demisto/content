@@ -802,18 +802,18 @@ script:
       name: item_id
       required: true
     description: Retrieves the sensitivity label currently assigned to a drive item. Returns the label ID, display name, and protection state regardless of whether the label has encryption enabled.
-    name: msgraph-extract-sensitivity-label
+    name: msgraph-get-sensitivity-label
     outputs:
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.itemId
-      description: The ID of the drive item the label was extracted from.
+    - contextPath: MsGraphFiles.SensitivityLabel.itemId
+      description: The ID of the drive item the label was retrieved from.
       type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.id
+    - contextPath: MsGraphFiles.SensitivityLabel.id
       description: The GUID of the sensitivity label assigned to the drive item, or empty string when no label is assigned.
       type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.displayName
+    - contextPath: MsGraphFiles.SensitivityLabel.displayName
       description: The human-readable display name of the assigned sensitivity label, or empty string when no label is assigned.
       type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabel.protectionEnabled
+    - contextPath: MsGraphFiles.SensitivityLabel.protectionEnabled
       description: True if the assigned label has encryption/protection settings; false for classification-only labels. Defaults to false when no label is assigned.
       type: Boolean
   - arguments:
@@ -839,7 +839,7 @@ script:
       required: true
     - description: The GUID of the sensitivity label to assign. Pass an empty string to remove the existing sensitivity label from the drive item. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet.
       name: sensitivity_label_id
-      required: false
+      required: true
     - auto: PREDEFINED
       description: |-
         Assignment method recorded on Microsoft Graph.
