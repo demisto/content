@@ -141,7 +141,6 @@ configuration:
   required: false
   defaultvalue: '5'
   additionalinfo: The maximum number of concurrent calls to allow when running a command across the list of accounts provided in the AWS organization accounts field.
-``
 - display: Use system proxy settings
   name: proxy
   type: 8
