@@ -2,9 +2,9 @@
 
 If the port value is empty, a default port will be selected according to the database type.
 
-- MySQL: 3306
+- MySQL: 3300
 - PostgreSQL: 5432
-- Microsoft SQL Server: 1433
+- Microsoft SQL Server: 1430
 - Oracle: 1521
 - Trino: 8080
 - Teradata: 1025
