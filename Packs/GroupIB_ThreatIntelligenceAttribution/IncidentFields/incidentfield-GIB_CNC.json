@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Attacks DDOS"
+        "GIB Attacks DDOS",
+        "GIB Compromised Masked Card"
     ],
     "caseInsensitive": true,
     "cliName": "gibcnc",
@@ -25,7 +26,8 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "GIB Attacks DDOS"
+        "GIB Attacks DDOS",
+        "GIB Compromised Masked Card"
     ],
     "threshold": 72,
     "type": "shortText",
