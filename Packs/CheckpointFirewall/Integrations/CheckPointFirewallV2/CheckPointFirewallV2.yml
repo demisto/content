@@ -4417,6 +4417,8 @@ script:
       - red
       - sienna
       - yellow
+    - description: The time (in seconds) before the session times out.
+      name: session_timeout
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
@@ -4510,6 +4512,8 @@ script:
       - red
       - sienna
       - yellow
+    - description: The time (in seconds) before the session times out.
+      name: session_timeout
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags

@@ -962,6 +962,7 @@ class Client(BaseClient):
         port: Optional[str] = None,
         comments: Optional[str] = None,
         color: Optional[str] = None,
+        session_timeout: Optional[int] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier}
@@ -973,6 +974,8 @@ class Client(BaseClient):
             body["comments"] = comments
         if color:
             body["color"] = color
+        if session_timeout is not None:
+            body["session-timeout"] = session_timeout
         if tags:
             body["tags"] = tags
         demisto.debug(f"set-service-tcp request body: {body}")
@@ -985,6 +988,7 @@ class Client(BaseClient):
         port: Optional[str] = None,
         comments: Optional[str] = None,
         color: Optional[str] = None,
+        session_timeout: Optional[int] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier}
@@ -996,6 +1000,8 @@ class Client(BaseClient):
             body["comments"] = comments
         if color:
             body["color"] = color
+        if session_timeout is not None:
+            body["session-timeout"] = session_timeout
         if tags:
             body["tags"] = tags
         demisto.debug(f"set-service-udp request body: {body}")
@@ -4318,6 +4324,7 @@ def checkpoint_tcp_service_update_command(
     port: str = None,
     comments: str = None,
     color: str = None,
+    session_timeout: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4330,6 +4337,7 @@ def checkpoint_tcp_service_update_command(
         port (str): The number of the port used to provide this service.
         comments (str): Comments string.
         color (str): Color of the object.
+        session_timeout (str): Time (in seconds) before the session times out.
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-tcp-service-update command called with args: {demisto.args()}")
@@ -4341,6 +4349,7 @@ def checkpoint_tcp_service_update_command(
         port=port,
         comments=comments,
         color=color,
+        session_timeout=arg_to_number(session_timeout),
         tags=tags or None,
     )
 
@@ -4379,6 +4388,7 @@ def checkpoint_udp_service_update_command(
     port: str = None,
     comments: str = None,
     color: str = None,
+    session_timeout: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4391,6 +4401,7 @@ def checkpoint_udp_service_update_command(
         port (str): The number of the port used to provide this service.
         comments (str): Comments string.
         color (str): Color of the object.
+        session_timeout (str): Time (in seconds) before the session times out.
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-udp-service-update command called with args: {demisto.args()}")
@@ -4402,6 +4413,7 @@ def checkpoint_udp_service_update_command(
         port=port,
         comments=comments,
         color=color,
+        session_timeout=arg_to_number(session_timeout),
         tags=tags or None,
     )
 
