@@ -635,7 +635,7 @@ script:
     - description: The ID of the request from which to retrieve notes.
       name: request_id
       required: true
-    - description: The note description.
+    - description: The request note description.
       name: description
       required: false
     - description: whether to mark first response or not.
