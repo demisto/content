@@ -18948,6 +18948,142 @@ script:
       description: Contains variables that you can use to override default IP addresses and ports in stateful rule groups.
       type: Unknown
 
+  - name: aws-network-firewall-firewall-policy-create
+    description: "Creates the firewall policy for the firewall according to the specifications. Required permissions: network-firewall:CreateFirewallPolicy."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_policy_name
+      description: The descriptive name of the firewall policy. You can't change the name of a firewall policy after you create it.
+      required: true
+    - name: stateless_rule_group_references
+      description: The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2.
+    - name: stateless_default_actions
+      description: A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy.
+    - name: stateless_fragment_default_actions
+      description: A comma-separated list of the ctions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
+    - name: stateless_custom_actions
+      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: [{\"ActionName\": \"string\", \"ActionDefinition\": {\"PublishMetricAction\": {\"Dimensions\":[{\"Value\": \"string\"}]}}}].'
+    - name: stateful_rule_group_references
+      description: 'A JSON string specifying the stateful rule groups that are used in the policy. For example: [{\"ResourceArn\": \"string\", \"Priority\": 123, \"Override\": {\"Action\": \"DROP_TO_ALERT\"}, \"DeepThreatInspection\": \"True\"}].'
+    - name: stateful_default_actions
+      description: A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules.
+    - name: stateful_engine_options_rule_order
+      description: Indicates how to manage the order of stateful rule evaluation for the policy.
+      auto: PREDEFINED
+      predefined:
+        - DEFAULT_ACTION_ORDER
+        - STRICT_ORDER
+    - name: stateful_engine_options_stream_exception_policy
+      description: Configures how Network Firewall processes traffic when a network connection breaks midstream.
+      auto: PREDEFINED
+      predefined:
+        - DROP
+        - CONTINUE
+        - REJECT
+    - name: stateful_engine_options_tcp_idle_timeout
+      description: The number of seconds that can pass without any TCP traffic sent through the firewall before the firewall determines that the connection is idle.
+    - name: tls_inspection_configuration_arn
+      description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
+    - name: policy_rule_variables
+      description: 'A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: {\"string\": {\"Definition\": [\"string\",]}}.'
+    - name: description
+      description: A description of the firewall policy.
+    - name: tags
+      description: The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2.
+    - name: enable_tls_session_holding
+      description: When true, prevents TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules.
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    - name: encryption_configuration_key_id
+      description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+    - name: encryption_configuration_key_type
+      description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      auto: PREDEFINED
+      predefined:
+        - CUSTOMER_KMS
+        - AWS_OWNED_KMS_KEY
+    outputs:
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.UpdateToken
+      description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyName
+      description: The descriptive name of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyArn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyId
+      description: The unique identifier for the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Description
+      description: A description of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyStatus
+      description: The current status of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Tags
+      description: The key:value pairs to associate with the resource.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatelessRuleCapacity
+      description: The number of capacity units currently consumed by the policy's stateless rules.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulRuleCapacity
+      description: The number of capacity units currently consumed by the policy's stateful rules.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulDomainCapacity
+      description: The number of capacity units currently consumed for the policy's stateful domain list rules.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.NumberOfAssociations
+      description: The number of firewalls that are associated with this firewall policy.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.EncryptionConfiguration
+      description: A complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.LastModifiedTime
+      description: The last time that the firewall policy was changed.
+      type: Date
+
   isfetch: false
   runonce: false
   script: '-'

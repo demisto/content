@@ -424,6 +424,31 @@ def parse_tag_field(tags_string: str | None) -> list:
     return tags
 
 
+def parse_resource_arn_priority_field(refs_string: str | None) -> list:
+    """
+    Parses a list representation of stateless rule group references with the form of
+    'ResourceArn=<arn>,Priority=<priority>;ResourceArn=<arn>,Priority=<priority>'.
+
+    Args:
+        refs_string: The references list string.
+    Returns:
+        A list of dicts with the form {"ResourceArn": <arn>, "Priority": <priority>}.
+    """
+    references: list = []
+    list_refs = argToList(refs_string, separator=";")
+    regex = re.compile(r"^ResourceArn=(^arn:aws.*),Priority=(\d+)$", flags=re.UNICODE)
+    for ref in list_refs:
+        match_ref = regex.match(ref)
+        if match_ref is None:
+            raise ValueError(
+                f"Could not parse field: {ref}. Please make sure you provided like so: "
+                "ResourceArn=arn1,Priority=priority1;ResourceArn=arn2,Priority=priority2"
+            )
+        references.append({"ResourceArn": match_ref.group(1), "Priority": int(match_ref.group(2))})
+
+    return references
+
+
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings
@@ -812,16 +837,16 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def validate_network_firewall_identifier(kwargs: dict, object: str):
+def validate_network_firewall_identifier(kwargs: dict, obj: str):
     """
     Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
     a DemistoException otherwise.
 
     Args:
         kwargs (dict): The arguments dictionary containing the firewall identifiers.
-        object (str): The identifier object (firewall, firewall policy, etc.).
+        obj (str): The identifier object (firewall, firewall policy, etc.).
     """
-    if f"{object}Name" not in kwargs and f"{object}Arn" not in kwargs:
+    if f"{obj}Name" not in kwargs and f"{obj}Arn" not in kwargs:
         raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
 
 
@@ -10061,9 +10086,94 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = response.get("FirewallPolicyResponse", {})
+        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
         firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
         firewall_policy_response["FirewallPolicy"] = response.get("FirewallPolicy", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
+            outputs_key_field="FirewallPolicyArn",
+            outputs=firewall_policy_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Policy",
+                firewall_policy_response,
+                headers=["FirewallPolicyName", "FirewallPolicyArn", "Description", "FirewallPolicyStatus"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates the firewall policy for the firewall according to the specifications.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing the firewall policy name, the stateless and stateful
+                rule group references and default actions, the stateful engine options, the TLS inspection configuration
+                ARN, the policy rule variables, a description, tags, and the encryption configuration.
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        stateless_custom_actions_raw = args.get("stateless_custom_actions")
+        stateful_rule_group_references_raw = args.get("stateful_rule_group_references")
+        rule_variables_raw = args.get("policy_rule_variables")
+
+        stateless_custom_actions = parse_json_string(stateless_custom_actions_raw) if stateless_custom_actions_raw else None
+        stateful_rule_group_references = parse_json_string(stateful_rule_group_references_raw) if stateful_rule_group_references_raw else None
+        rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
+
+        firewall_policy = remove_empty_elements(
+            {
+                "StatelessRuleGroupReferences": parse_resource_arn_priority_field(
+                    args.get("stateless_rule_group_references")
+                ),
+                "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
+                "StatelessFragmentDefaultActions": argToList(args.get("stateless_fragment_default_actions")),
+                "StatelessCustomActions": stateless_custom_actions,
+                "StatefulRuleGroupReferences": stateful_rule_group_references,
+                "StatefulDefaultActions": argToList(args.get("stateful_default_actions")),
+                "StatefulEngineOptions": {
+                    "RuleOrder": args.get("stateful_engine_options_rule_order"),
+                    "StreamExceptionPolicy": args.get("stateful_engine_options_stream_exception_policy"),
+                    "FlowTimeouts": {
+                        "TcpIdleTimeoutSeconds": arg_to_number(args.get("stateful_engine_options_tcp_idle_timeout")),
+                    },
+                },
+                "TLSInspectionConfigurationArn": args.get("tls_inspection_configuration_arn"),
+                "PolicyVariables": {"RuleVariables": rule_variables},
+            }
+        )
+
+        encryption_configuration = remove_empty_elements(
+            {
+                "KeyId": args.get("encryption_configuration_key_id"),
+                "Type": args.get("encryption_configuration_key_type"),
+            }
+        )
+
+        kwargs = remove_empty_elements(
+            {
+                "FirewallPolicyName": args.get("firewall_policy_name"),
+                "FirewallPolicy": firewall_policy,
+                "Description": args.get("description"),
+                "Tags": parse_tag_field(args.get("tags", "")),
+                "EncryptionConfiguration": encryption_configuration,
+                "EnableTLSSessionHolding": arg_to_bool_or_none(args.get("enable_tls_session_holding")),
+            }
+        )
+
+        print_debug_logs(client, f"Creating firewall policy with parameters: {kwargs}")
+        response = client.create_firewall_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+        firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
@@ -10295,6 +10405,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
     "aws-network-firewall-firewall-description-update": NetworkFirewall.update_firewall_description_command,
     "aws-network-firewall-firewall-policies-list": NetworkFirewall.list_firewall_policies_command,
+    "aws-network-firewall-firewall-policy-create": NetworkFirewall.create_firewall_policy_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10481,6 +10592,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UpdateFirewallDescription",
     "network-firewall:TagResource",
     "network-firewall:ListFirewallPolicies",
+    "network-firewall:CreateFirewallPolicy",
 ]
 
 COMMAND_SERVICE_MAP = {
