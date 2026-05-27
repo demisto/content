@@ -202,6 +202,8 @@ def test_fetch_incidents_first_run(client: Client, mocker):
     assert incidents[0]["dbotMirrorId"] == "00000000-0000-0000-0000-000000000001"
     assert "last_fetch" in next_run
     assert "last_fetched_ids" in next_run
+    # last_fetch must be the createdAt of the latest incident (incident 1: 2024-01-01T10:00:00)
+    assert next_run["last_fetch"] == "2024-01-01 10:00:00"
 
 
 def test_fetch_incidents_dedupes_seen_ids(client: Client, mocker):
@@ -217,13 +219,14 @@ def test_fetch_incidents_dedupes_seen_ids(client: Client, mocker):
             "fetch_states": "open_incidents",
         },
         last_run={
-            "last_fetch": "2024-01-01 09:00:00",
+            "last_fetch": "2024-01-01 08:00:00",
             "last_fetched_ids": ["00000000-0000-0000-0000-000000000001"],
         },
     )
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "00000000-0000-0000-0000-000000000002"
-    assert next_run["last_fetch"] != "2024-01-01 09:00:00"
+    # last_fetch should advance to the createdAt of the latest new incident (incident 2)
+    assert next_run["last_fetch"] == "2024-01-01 09:00:00"
 
 
 def test_fetch_incidents_rejects_both_states(client: Client):
@@ -257,8 +260,8 @@ def test_fetch_incidents_caps_max_fetch(client: Client, mocker):
         },
         last_run={},
     )
-    # max_fetch is capped at MAX_PAGE_SIZE (200) -> endRow = 199
-    assert captured["endRow"] == 199
+    # max_fetch is capped at MAX_PAGE_SIZE (200) -> endRow = 200 (exclusive upper bound)
+    assert captured["endRow"] == 200
     assert captured["startRow"] == 0
     assert captured["sortParams"] == [{"sort": "asc", "colId": "createdAt"}]
     assert captured["filters"]["other_filters"] == ["open_incidents"]

@@ -352,7 +352,7 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
     limit = _coerce_int_arg(args.get("limit"), DEFAULT_FETCH_LIMIT, "limit")
     if limit < 1:
         raise DemistoException("Argument 'limit' must be a positive integer.")  # noqa: F405
-    end_row = max(0, limit - 1)
+    end_row = limit
 
     body = build_filters_body(
         start_time=start_dt,
@@ -536,7 +536,7 @@ def fetch_incidents(
         end_time=now,
         other_filters=fetch_states or None,
         start_row=0,
-        end_row=max(0, max_fetch - 1),
+        end_row=max_fetch,
         sort_dir="asc",
     )
     demisto.debug(f"Proofpoint CTR: request body for list_incidents: {json.dumps(body)}")
@@ -572,9 +572,14 @@ def fetch_incidents(
         if created_at and (latest_created_at is None or created_at > latest_created_at):
             latest_created_at = created_at
 
-    # Always advance last_fetch to the end of the current window (now) to prevent
-    # the fetch loop from getting stuck when fetch_delta is applied on the next run.
-    next_last_fetch = format_ctr_date(now)
+    if latest_created_at:
+        # Ensure timezone-aware for consistent formatting.
+        if not latest_created_at.tzinfo:
+            latest_created_at = latest_created_at.replace(tzinfo=timezone.utc)
+        next_last_fetch = format_ctr_date(latest_created_at)
+    else:
+        demisto.debug(f"Proofpoint CTR: no incidents fetched, using current time: {now} as next last_fetch")
+        next_last_fetch = format_ctr_date(now)
 
     # Persist all fetched IDs to ensure correct deduplication across the fetch_delta overlap window.
     next_last_fetched_ids: list[str] = list({str(inc_id) for inc in raw_incidents if (inc_id := inc.get("id"))})
@@ -607,19 +612,19 @@ def main() -> None:  # pragma: no cover - exercised indirectly by tests
     verify = not argToBoolean(params.get("insecure", False))  # noqa: F405
     proxy = argToBoolean(params.get("proxy", False))  # noqa: F405
 
-    if not client_id or not client_secret:
-        return_error("Client ID and Client Secret must be provided.")  # noqa: F405
-
-    client = Client(
-        base_url=base_url,
-        client_id=client_id,
-        client_secret=client_secret,
-        verify=verify,
-        proxy=proxy,
-    )
-
     demisto.debug(f"Proofpoint CTR: command={command}")
     try:
+        if not client_id or not client_secret:
+            raise ValueError("Client ID and Client Secret must be provided.")
+
+        client = Client(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            verify=verify,
+            proxy=proxy,
+        )
+
         if command == "test-module":
             return_results(run_test_module(client, params))  # noqa: F405
         elif command == "fetch-incidents":
