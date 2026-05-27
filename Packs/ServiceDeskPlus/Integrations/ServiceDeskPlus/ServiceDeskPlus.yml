@@ -709,7 +709,7 @@ script:
       description: 'Whether the request note creator is a technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_by.sms_mail
-      description: 'creator sms mail.'
+      description: 'The request note creator SMS mail.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.phone
       description: 'creator phone.'
