@@ -629,7 +629,7 @@ script:
       description: 'The request note creator photo URL.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
-      description: 'Whether creator is vip user or not.'
+      description: 'Whether the request note creator is a VIP user.'
       type: Boolean
   - arguments:
     - description: The ID of the request to retrieve it's notes.
