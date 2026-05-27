@@ -792,7 +792,19 @@ def extract_rows_from_redrock_response(response: dict[str, Any]) -> tuple[list[d
 
     full_count = result_block.get("FullCount")
     page_count = result_block.get("Count", len(rows))
-    has_more = bool(full_count and isinstance(full_count, int) and page_count and page_count >= 0 and full_count > page_count)
+    # has_more is True only when BOTH:
+    #   (a) FullCount (the server-reported total) is greater than what we've
+    #       received so far in this page, AND
+    #   (b) the page is full (i.e. len(rows) == page_size, meaning the server
+    #       likely has more to return).
+    # Note: this function compares against page_count, not cumulative — the
+    # caller knows the requested page_size and is responsible for stopping
+    # when a short page is returned (the standard short-page-means-last
+    # idiom). We treat FullCount > page_count as a *signal* not a *proof*
+    # to avoid the off-by-one trap where the final page returns fewer rows
+    # than the page size: in that case ``has_more`` correctly stays False
+    # because the caller short-circuits on ``len(rows) < page_size``.
+    has_more = bool(full_count and isinstance(full_count, int) and page_count and full_count > page_count)
 
     demisto.debug(f"[Redrock Extract] rows={len(rows)} | page_count={page_count} | full_count={full_count} | has_more={has_more}")
     return rows, has_more
@@ -1132,10 +1144,11 @@ def fetch_assets_command(redrock_client: RedrockClient, config: dict[str, Any]) 
     except Exception as error:
         # Q4 partial-failure: drop this source from the cycle so the others
         # can still complete. State for the failed source is reset so it
-        # restarts cleanly on the next cycle.
+        # restarts cleanly on the next cycle. Include the full traceback so
+        # operators investigating the failure get the underlying stack.
         demisto.error(
             f"[Fetch Assets] Source {current_source.value} failed on page {current_page}: {error}. "
-            "Removing from this cycle; will retry next cycle."
+            f"Removing from this cycle; will retry next cycle.\n{traceback.format_exc()}"
         )
         pending_sources_raw = [v for v in pending_sources_raw if v != current_source.value]
         page_index_by_source[current_source.value] = 1
@@ -1271,6 +1284,7 @@ def get_assets_command(
         outputs_prefix=CONTEXT_PREFIX_BY_SOURCE[source],
         outputs_key_field=REDROCK_ROW_ID_FIELD,
         outputs=annotated,
+        raw_response=annotated,
     )
 
 

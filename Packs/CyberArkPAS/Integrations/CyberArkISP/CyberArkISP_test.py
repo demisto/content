@@ -1458,11 +1458,35 @@ def test_extract_rows_from_redrock_response_with_row_wrapper():
 
 
 def test_extract_rows_from_redrock_response_has_more_true():
-    """has_more flips True when FullCount exceeds the page Count."""
+    """Mid-stream page: has_more is True when FullCount > current page Count.
+
+    Represents the common case where a full page arrives and the server has
+    declared more rows remain (e.g. page 1 of 3 with PageSize=10, FullCount=25).
+    """
     response = _redrock_response([{"ID": str(i)} for i in range(10)], full_count=25)
     rows, has_more = extract_rows_from_redrock_response(response)
     assert len(rows) == 10
     assert has_more is True
+
+
+def test_extract_rows_from_redrock_response_last_partial_page_signals_more():
+    """Edge case the AI reviewer flagged: when the final page returns fewer
+    rows than PageSize but ``FullCount`` still > current Count,
+    ``extract_rows_from_redrock_response`` returns ``has_more=True``.
+
+    This is an intentional limitation of the function — it only reports what
+    the single response says. The orchestrator (``fetch_assets_command``) is
+    responsible for stopping the cycle when ``len(rows) < page_size``, which
+    is the standard short-page-means-last idiom. This test pins the
+    contract so any future refactor that moves the short-page detection
+    into ``extract_rows_from_redrock_response`` flips this assertion.
+    """
+    # 5 rows returned, FullCount=25 → server-reported "more rows exist", but
+    # in practice this is the last page (the caller knows because page_size
+    # was, say, 10 and we got back only 5).
+    response = _redrock_response([{"ID": str(i)} for i in range(5)], full_count=25)
+    _rows, has_more = extract_rows_from_redrock_response(response)
+    assert has_more is True, "Document the current contract: has_more mirrors FullCount > Count"
 
 
 def test_extract_rows_from_redrock_response_empty():

@@ -77,8 +77,8 @@ Before configuring the integration, you must complete the following prerequisite
 | API Key | The API key from the SIEM integration created in the Administration space. | True |
 | Client ID | Service username without domain \(configured as OAuth confidential client\). | True |
 | Client Secret | Service user password for OAuth2 authentication. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
+| Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
 | Maximum number of audit events per fetch | Maximum number of events to fetch per cycle \(default 10000, based on API paging definition\). | False |
 | Fetch Assets | When enabled, the integration periodically fetches CyberArk Cloud Directory snapshots \(Users, Groups, Roles, Applications\) selected in 'Directory Data Collection' below. | False |
 | Directory Data Collection | Select which CyberArk Cloud Directory data sources to fetch as snapshots. Each selected source produces its own dataset \(cyberark_users_raw, cyberark_groups_raw, cyberark_roles_raw, cyberark_applications_raw\). Has no effect unless 'Fetch Assets' is enabled. | False |
@@ -178,6 +178,29 @@ Manually fetches CyberArk Cloud Directory role snapshots via the Redrock Query A
 | CyberArkISP.Role.Name | String | Name of the role. |
 | CyberArkISP.Role.Description | String | Description of the role. |
 
+### cyberark-isp-get-groups
+
+***
+Manually fetches CyberArk Cloud Directory group snapshots via the Redrock Query API. For developing/debugging only.
+
+#### Base Command
+
+`cyberark-isp-get-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of group records to retrieve. Default is 50. | Optional |
+| should_push_assets | Set to true to push the retrieved groups to XSIAM as a snapshot in the cyberark_groups_raw dataset. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkISP.Group.ID | String | Unique identifier of the group. |
+| CyberArkISP.Group.Name | String | Name of the group. |
+
 ### cyberark-isp-get-applications
 
 ***
@@ -201,26 +224,3 @@ Manually fetches CyberArk Cloud Directory application snapshots via the Redrock 
 | CyberArkISP.Application.ID | String | Unique identifier of the application. |
 | CyberArkISP.Application.Name | String | Name of the application. |
 | CyberArkISP.Application.AppType | String | Type of the application. |
-
-### cyberark-isp-get-groups
-
-***
-Manually fetches CyberArk Cloud Directory group snapshots via the Redrock Query API. For developing/debugging only.
-
-#### Base Command
-
-`cyberark-isp-get-groups`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | Maximum number of group records to retrieve. Default is 50. | Optional |
-| should_push_assets | Set to true to push the retrieved groups to XSIAM as a snapshot in the cyberark_groups_raw dataset. Possible values are: true, false. Default is false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CyberArkISP.Group.ID | String | Unique identifier of the group. |
-| CyberArkISP.Group.Name | String | Name of the group. |

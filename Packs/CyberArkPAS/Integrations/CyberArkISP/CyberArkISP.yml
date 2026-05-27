@@ -57,6 +57,7 @@ configuration:
   defaultvalue: "false"
   section: Connect
   advanced: true
+  additionalinfo: When selected, the integration will not verify SSL certificates.
 - name: proxy
   display: Use system proxy settings
   required: false
@@ -64,6 +65,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  additionalinfo: When selected, the integration will use the system proxy settings.
 - name: max_fetch
   display: Maximum number of audit events per fetch
   required: false
