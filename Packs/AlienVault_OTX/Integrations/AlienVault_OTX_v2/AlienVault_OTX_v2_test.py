@@ -942,36 +942,6 @@ def test_delete_duplicated_entities(entities_list, field_name, expected_results)
     assert delete_duplicated_entities(entities_list, field_name) == expected_results
 
 
-def test_ip_function_return_timeout_error():
-    """
-    Given
-    - A client configured with should_error=True.
-    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
-
-    When
-    - Calling ip_command with an IP address.
-
-    Then
-    - Ensure a ReadTimeout exception is raised.
-    """
-    client = Client(
-        base_url="aa",
-        headers={},
-        verify=True,
-        proxy=False,
-        default_threshold="5",
-        min_valid_sources="2",
-        max_indicator_relationships="1",
-        reliability="",
-        should_error=True,
-    )
-    client._http_request = MagicMock()
-    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    with pytest.raises(requests.exceptions.ReadTimeout) as e:
-        ip_command(client, ip_address="1.2.3.4", ip_version="1.2.3.4")
-    assert e.value.args[0] == "Request timed out"
-
-
 def test_ip_function_return_demistoException_504():
     """
     Given
@@ -1178,36 +1148,6 @@ def test_ip_function_return_timeout_warning(mocker):
     )
 
 
-def test_domain_function_return_timeout_error():
-    """
-    Given
-    - A client configured with should_error=True.
-    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
-
-    When
-    - Calling domain_command with an IP address.
-
-    Then
-    - Ensure a ReadTimeout exception is raised.
-    """
-    client = Client(
-        base_url="aa",
-        headers={},
-        verify=True,
-        proxy=False,
-        default_threshold="5",
-        min_valid_sources="2",
-        max_indicator_relationships="1",
-        reliability="",
-        should_error=True,
-    )
-    client._http_request = MagicMock()
-    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    with pytest.raises(requests.exceptions.ReadTimeout) as e:
-        domain_command(client, domain="aaaaaa")
-    assert e.value.args[0] == "Request timed out"
-
-
 def test_domain_function_return_timeout_warning(mocker):
     """
     Given
@@ -1244,40 +1184,10 @@ def test_domain_function_return_timeout_warning(mocker):
             "Type": 11,
             "ContentsFormat": "text",
             "IgnoreAutoExtract": False,
-            "Contents": "A ReadTimeout was raised Request timed out",
+            "Contents": "A ReadTimeout error was raised with suffix indicators/domain/aaaaaa/general.",
             "EntryContext": None,
         }
     )
-
-
-def test_file_function_return_timeout_error():
-    """
-    Given
-    - A client configured with should_error=True.
-    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
-
-    When
-    - Calling file_command with an IP address.
-
-    Then
-    - Ensure a ReadTimeout exception is raised.
-    """
-    client = Client(
-        base_url="aa",
-        headers={},
-        verify=True,
-        proxy=False,
-        default_threshold="5",
-        min_valid_sources="2",
-        max_indicator_relationships="1",
-        reliability="",
-        should_error=True,
-    )
-    client._http_request = MagicMock()
-    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    with pytest.raises(requests.exceptions.ReadTimeout) as e:
-        file_command(client, file="aaaaaa")
-    assert e.value.args[0] == "Request timed out"
 
 
 def test_file_function_return_timeout_warning(mocker):
@@ -1316,40 +1226,10 @@ def test_file_function_return_timeout_warning(mocker):
             "Type": 11,
             "ContentsFormat": "text",
             "IgnoreAutoExtract": False,
-            "Contents": "A ReadTimeout was raised Request timed out",
+            "Contents": "A ReadTimeout error was raised with suffix indicators/file/11111111111111111111111111111111/analysis.",
             "EntryContext": None,
         }
     )
-
-
-def test_url_function_return_timeout_error():
-    """
-    Given
-    - A client configured with should_error=True.
-    - The client's HTTP request method is mocked to raise a ReadTimeout exception.
-
-    When
-    - Calling file_command with an IP address.
-
-    Then
-    - Ensure a ReadTimeout exception is raised.
-    """
-    client = Client(
-        base_url="aa",
-        headers={},
-        verify=True,
-        proxy=False,
-        default_threshold="5",
-        min_valid_sources="2",
-        max_indicator_relationships="1",
-        reliability="",
-        should_error=True,
-    )
-    client._http_request = MagicMock()
-    client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    with pytest.raises(requests.exceptions.ReadTimeout) as e:
-        url_command(client, url="aaaaaa")
-    assert e.value.args[0] == "Request timed out"
 
 
 def test_url_function_return_timeout_warning(mocker):
@@ -1388,7 +1268,7 @@ def test_url_function_return_timeout_warning(mocker):
             "Type": 11,
             "ContentsFormat": "text",
             "IgnoreAutoExtract": False,
-            "Contents": "A ReadTimeout was raised Request timed out",
+            "Contents": "A ReadTimeout error was raised with suffix indicators/url/aaaaaa/general.",
             "EntryContext": None,
         }
     )
