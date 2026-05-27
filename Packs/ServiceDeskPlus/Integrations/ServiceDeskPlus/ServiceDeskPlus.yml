@@ -578,7 +578,7 @@ script:
       description: 'The request note created time display value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_time.value
-      description: 'Created time value.'
+      description: 'The request note created time value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.add_to_linked_requests
       description: 'Add to linked requests or not.'
