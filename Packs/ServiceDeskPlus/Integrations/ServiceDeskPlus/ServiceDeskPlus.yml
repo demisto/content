@@ -748,7 +748,7 @@ script:
     - description: The note description.
       name: description
       required: true
-    - description: whether to mark first response or not.
+    - description: Whether to mark the request note first response.
       name: mark_first_response
       auto: PREDEFINED
       defaultValue: "false"
