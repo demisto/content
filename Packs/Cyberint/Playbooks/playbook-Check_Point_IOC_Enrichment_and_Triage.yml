@@ -22,16 +22,115 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "3"
-      - "5"
-      - "7"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
           "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c10df9f0-5912-493e-82f3-00a48ca68d0a
+    type: regular
+    task:
+      id: c10df9f0-5912-493e-82f3-00a48ca68d0a
+      version: -1
+      name: Check Check Point EM Feed integration availability
+      description: Runs the IsIntegrationAvailable script against the Check Point EM Feed integration so the playbook can short-circuit gracefully if no instance is configured.
+      script: IsIntegrationAvailable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      brandname:
+        simple: Cyberint Feed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9775138a-cd10-44a6-b174-3ea5d76815ec
+    type: condition
+    task:
+      id: 9775138a-cd10-44a6-b174-3ea5d76815ec
+      version: -1
+      name: Is the Check Point EM Feed integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Routes to the main flow only when the Check Point EM Feed integration reports an enabled instance.
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "1"
+      - "3"
+      - "5"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: brandInstances
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5e02b423-e77b-4789-90c4-0657b0515a6f
+    type: title
+    task:
+      id: 5e02b423-e77b-4789-90c4-0657b0515a6f
+      version: -1
+      name: Check Point EM Feed Not Available
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 195
         }
       }
     note: false
