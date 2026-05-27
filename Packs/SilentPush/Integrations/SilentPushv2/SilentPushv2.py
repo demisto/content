@@ -1440,7 +1440,7 @@ class Client(BaseClient):
 
     def lookup(self, url_path: str, args: dict, both: bool = False) -> tuple[dict, str] | str:
         """
-        Command function to perform a IP diversity lookup on the SilentPush API.
+        Command function to perform a PADNS lookup on the SilentPush API.
 
         :param client (Client): SilentPush API client.
         :param args (dict): Command arguments containing 'qtype' and 'query', and optionally 'scope'.
@@ -1483,7 +1483,7 @@ class Client(BaseClient):
     def get_reputation(self, url_suffix: str, args: dict, request_field: str, response_field: str):
         reputation_query = args.get(request_field)
         if not reputation_query:
-            raise ValueError(f"{reputation_query.capitalize()} is required.")
+            raise ValueError("a query for reputation is required.")
         url_suffix = f"{url_suffix}/{reputation_query}"
         params = {"explain": args.get("explain"), "limit": args.get("limit")}
         remove_nulls_from_dictionary(params)
@@ -2082,7 +2082,7 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
         outputs={
             "qtype": args.get("qtype"),
             "query": args.get("query"),
-            "records": raw_response.get("records")
+            "records": raw_response.get("response", {}).get("records", [])
         },
         readable_output=readable_output,
         raw_response=raw_response,
@@ -2117,7 +2117,7 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
         outputs={
             "qtype": args.get("qtype"),
             "query": args.get("query"),
-            "records": raw_response.get("records")
+            "records": raw_response.get("response", {}).get("records", [])
         },
         readable_output=readable_output,
         raw_response=raw_response,
@@ -2154,7 +2154,7 @@ def multi_conditional_padns_lookup_command(client: Client, args: dict) -> Comman
         outputs={
             "qtype": args.get("qtype"),
             "query": args.get("query"),
-            "records": raw_response.get("records")
+            "records": raw_response.get("response", {}).get("records", [])
         },
         readable_output=readable_output,
         raw_response=raw_response,
@@ -2189,7 +2189,7 @@ def density_lookup_command(client: Client, args: dict) -> CommandResults:
         outputs={
             "qtype": args.get("qtype"),
             "query": args.get("query"),
-            "records": raw_response.get("records")
+            "records": raw_response.get("response", {}).get("records", [])
         },
         readable_output=readable_output,
         raw_response=raw_response,
@@ -2221,7 +2221,7 @@ def ip_diversity_lookup_command(client: Client, args: dict) -> CommandResults:
         outputs={
             "qtype": args.get("qtype"),
             "query": args.get("query"),
-            "records": raw_response.get("records")
+            "records": raw_response.get("response", {}).get("records", [])
         },
         readable_output=readable_output,
         raw_response=raw_response,
@@ -2271,7 +2271,7 @@ def ip_diversity_patterns_command(client: Client, args: dict) -> CommandResults:
     readable_output = tableToMarkdown("IP Diversity Patterns Results", records)
     return CommandResults(
         outputs_prefix="SilentPush.Domain",
-        outputs_key_field="domain",
+        outputs_key_field="host",
         outputs=records,
         readable_output=readable_output,
         raw_response=raw_response,
@@ -2448,7 +2448,7 @@ def list_ip6_information_command(client: Client, args: dict[str, Any]) -> Comman
     if type(response) is CommandResults:
         return response
     return CommandResults(
-        outputs_prefix="SilentPush.Domain",
+        outputs_prefix="SilentPush.IP6",
         outputs_key_field="ip",
         outputs=response,
         readable_output=markdown,
