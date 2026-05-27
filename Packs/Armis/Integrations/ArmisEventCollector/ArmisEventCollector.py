@@ -26,6 +26,7 @@ TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed 
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
 JSONDECODE_MAX_RETRIES = 3  # Retries on transient nginx malformed JSON (Armis-recommended)
+ALERT_ENRICHMENT_CHUNK_SIZE = 500  # Alerts per enrich+ship chunk; caps peak memory ~150MB
 # Max wait for background enrichment before shipping alerts unenriched (avoids 5-min Docker timeout).
 ENRICHMENT_WAIT_TIMEOUT_SECONDS = 180
 
@@ -1101,6 +1102,22 @@ def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
     )
 
 
+def _enrich_and_ship_in_chunks(client: Client, alerts: list[dict], chunk_size: int = ALERT_ENRICHMENT_CHUNK_SIZE) -> None:
+    """Enrich and ship alerts in fixed-size chunks; frees each chunk before the next."""
+    tname = threading.current_thread().name
+    total_chunks = (len(alerts) + chunk_size - 1) // chunk_size
+    demisto.info(f"[{tname}] enrich+ship: {len(alerts)} alerts in {total_chunks} chunk(s) of {chunk_size}")
+
+    for chunk_idx, offset in enumerate(range(0, len(alerts), chunk_size), start=1):
+        chunk = alerts[offset : offset + chunk_size]
+        bulk_enrich_alerts(client, chunk)
+        add_time_to_events(chunk, EVENT_TYPE_ALERTS)
+        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT)
+        safe_debug(f"[{tname}] enrich+ship: chunk {chunk_idx}/{total_chunks} shipped {len(chunk)}")
+        del chunk
+        gc.collect()
+
+
 def _wait_for_enrichment(future, executor, timeout_seconds: int = ENRICHMENT_WAIT_TIMEOUT_SECONDS) -> None:
     """Wait (bounded) for the background enrichment task and tear down its executor.
 
@@ -1249,27 +1266,31 @@ def fetch_events(
 
     safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 
-    # Handle Alerts: fetch them first (sequential), then run bulk enrichment IN PARALLEL with
-    # the standalone Activities/Devices fetches below.
+    # Fetch Alerts first, then enrich+ship them in a background thread (in parallel
+    # with the Activities/Devices fetches). For fetch-events we chunk to cap memory;
+    # for armis-get-events we keep them collected so they render in CommandResults.
     enrichment_future = None
     enrichment_executor = None
     if "Alerts" in event_types_to_fetch:
         main_tname = threading.current_thread().name
-        safe_debug(f"[{main_tname}] Fetching Alerts (then enrichment will run in parallel with other workers)")
+        safe_debug(f"[{main_tname}] Fetching Alerts (enrichment will run in parallel with other workers)")
         alerts_start = time.monotonic()
         fetch_by_event_type(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
-        alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
+        alerts_to_enrich = events.get(EVENT_TYPE_ALERTS, [])
+        alerts_count = len(alerts_to_enrich)
         safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {time.monotonic() - alerts_start:.2f}s")
 
-        if events and events.get(EVENT_TYPE_ALERTS):
-            safe_debug(
-                f"[{main_tname}] Submitting bulk-enrichment of {alerts_count} alerts to background "
-                f"thread (ArmisEnrich-*) — will run in parallel with Activities/Devices workers"
-            )
+        if alerts_to_enrich:
             enrichment_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ArmisEnrich")
-            enrichment_future = enrichment_executor.submit(bulk_enrich_alerts, client, events[EVENT_TYPE_ALERTS])
+            if enable_streaming:
+                enrichment_future = enrichment_executor.submit(_enrich_and_ship_in_chunks, client, alerts_to_enrich)
+                # The chunked task ships directly — remove alerts so handle_fetched_events
+                # doesn't re-ship them.
+                events.pop(EVENT_TYPE_ALERTS, None)
+            else:
+                enrichment_future = enrichment_executor.submit(bulk_enrich_alerts, client, alerts_to_enrich)
         event_types_to_fetch.remove("Alerts")
 
     # Process remaining event types

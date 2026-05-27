@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from ArmisEventCollector import (
+    ALERT_ENRICHMENT_CHUNK_SIZE,
     BULK_ENRICHMENT_BATCH_SIZE,
     EVENT_TYPE,
     EVENT_TYPES,
@@ -14,6 +15,7 @@ from ArmisEventCollector import (
     _attach_enrichment,
     _bulk_fetch_entities_by_id,
     _collect_unique_enrichment_ids,
+    _enrich_and_ship_in_chunks,
     _stream_page_to_xsiam,
     _wait_for_enrichment,
     arg_to_datetime,
@@ -776,7 +778,10 @@ class TestFetchFlow:
             Client, "_http_request", side_effect=[alerts_response, activities_bulk_response, devices_bulk_response]
         )
 
-        events, next_run = fetch_events(dummy_client, 1, 1, {}, fetch_start_time, ["Alerts"], None)
+        # enable_streaming=False keeps alerts in the events dict (legacy non-chunked path)
+        # so we can assert on the enriched result. The chunked-ship path is tested
+        # separately in TestBulkEnrichAlertsChunked.
+        events, next_run = fetch_events(dummy_client, 1, 1, {}, fetch_start_time, ["Alerts"], None, enable_streaming=False)
 
         # Verify the alert was enriched
         assert len(events["alerts"]) == 1
@@ -1905,3 +1910,82 @@ class TestHandleFetchedEventsAfterStreaming:
 
         assert mock_send.call_count == 1
         assert mock_send.call_args.kwargs["product"] == "security"
+
+
+# ============================================================================
+# v1.3.1 — Chunked alert enrichment tests.
+# _enrich_and_ship_in_chunks slices alerts into batches of ALERT_ENRICHMENT_CHUNK_SIZE,
+# enriches each batch via the existing bulk_enrich_alerts, ships it to XSIAM, then frees
+# the batch's memory before the next batch starts.
+# ============================================================================
+
+
+class TestEnrichAndShipInChunks:
+    """Tests for _enrich_and_ship_in_chunks (v1.3.1 memory-bound enrichment)."""
+
+    def test_single_chunk_when_below_chunk_size(self, mocker, dummy_client):
+        """
+        Given: An alert list smaller than the chunk size.
+        When: _enrich_and_ship_in_chunks is invoked.
+        Then: One enrichment + one ship call, all alerts shipped.
+        """
+        mock_enrich = mocker.patch("ArmisEventCollector.bulk_enrich_alerts")
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        alerts = [{"alertId": str(i), "time": "2023-01-01T01:00:10.000000+00:00"} for i in range(3)]
+
+        _enrich_and_ship_in_chunks(dummy_client, alerts, chunk_size=10)
+
+        assert mock_enrich.call_count == 1
+        assert mock_send.call_count == 1
+        assert len(mock_send.call_args[0][0]) == 3
+
+    def test_multiple_chunks_with_custom_size(self, mocker, dummy_client):
+        """
+        Given: 5 alerts with chunk_size=2.
+        When: _enrich_and_ship_in_chunks is invoked.
+        Then: 3 chunks of sizes [2, 2, 1] are enriched and shipped in order.
+        """
+        mock_enrich = mocker.patch("ArmisEventCollector.bulk_enrich_alerts")
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        alerts = [{"alertId": str(i), "time": "2023-01-01T01:00:10.000000+00:00"} for i in range(5)]
+
+        _enrich_and_ship_in_chunks(dummy_client, alerts, chunk_size=2)
+
+        assert mock_enrich.call_count == 3
+        assert mock_send.call_count == 3
+        assert [len(c.args[0]) for c in mock_send.call_args_list] == [2, 2, 1]
+
+    def test_alerts_shipped_with_time_field_and_correct_product(self, mocker, dummy_client):
+        """
+        Given: Raw alerts without _time field.
+        When: _enrich_and_ship_in_chunks ships them.
+        Then: _time is populated from `time`, and product=PRODUCT (no suffix for alerts).
+        """
+        from ArmisEventCollector import PRODUCT
+
+        mocker.patch("ArmisEventCollector.bulk_enrich_alerts")
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        alerts = [{"alertId": "1", "time": "2023-01-01T01:00:10.000000+00:00"}]
+
+        _enrich_and_ship_in_chunks(dummy_client, alerts, chunk_size=10)
+
+        shipped = mock_send.call_args[0][0]
+        assert shipped[0]["_time"] == "2023-01-01T01:00:10.000000+00:00"
+        assert mock_send.call_args.kwargs["product"] == PRODUCT
+        assert mock_send.call_args.kwargs["vendor"] == "armis"
+
+    def test_uses_default_chunk_size_when_omitted(self, mocker, dummy_client):
+        """
+        Given: Alerts list larger than ALERT_ENRICHMENT_CHUNK_SIZE, no chunk_size override.
+        When: _enrich_and_ship_in_chunks is invoked.
+        Then: The default constant is used to split the input.
+        """
+        mocker.patch("ArmisEventCollector.bulk_enrich_alerts")
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        total = ALERT_ENRICHMENT_CHUNK_SIZE + 5
+        alerts = [{"alertId": str(i), "time": "2023-01-01T01:00:10.000000+00:00"} for i in range(total)]
+
+        _enrich_and_ship_in_chunks(dummy_client, alerts)
+
+        assert mock_send.call_count == 2  # first full chunk + remainder
+        assert [len(c.args[0]) for c in mock_send.call_args_list] == [ALERT_ENRICHMENT_CHUNK_SIZE, 5]
