@@ -813,7 +813,7 @@ script:
       description: 'The request note ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
-      description: 'email id of the creator.'
+      description: 'The email ID of the request note creator.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_technician
       description: 'whether the creator is technician or not.'
