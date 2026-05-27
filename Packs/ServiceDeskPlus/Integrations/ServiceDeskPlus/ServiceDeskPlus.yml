@@ -584,7 +584,7 @@ script:
       description: 'Whether to add notes from a specific request to its linked requests.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.request.display_id
-      description: 'Request display id.'
+      description: 'The request display ID.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.subject
       description: 'Request subject.'
