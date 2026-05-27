@@ -23,7 +23,7 @@ When **Role name for cross-organization account access** and **AWS organization 
 
 1. Create an IAM user (or use an existing one) with the required permissions listed below.
 2. Generate an **Access Key ID** and **Secret Access Key** for that user.
-3. On the integration instance, enter the Access Key as the username and the Secret Key as the password in the **Access Key / Secret Key** field.
+3. In the integration instance settings, in the **Access Key / Secret Key** field enter the access key as the username and the secret key as the password.
 4. *(Optional)* If you want the integration to assume a role, enter the full role ARN in **Role ARN**. The IAM user must have `sts:AssumeRole` permission on that role.
 5. *(Optional)* For cross-account fan-out, enter a comma-separated list of account IDs in **AWS organization accounts** and the role name (that exists in each account) in **Role name for cross-organization account access**.
 
