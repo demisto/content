@@ -700,7 +700,7 @@ script:
       description: 'The request note description.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
-      description: 'note id.'
+      description: 'The request note ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
       description: 'The email ID of the request note creator.'
