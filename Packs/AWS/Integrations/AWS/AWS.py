@@ -10189,6 +10189,79 @@ class NetworkFirewall:
             raw_response=response,
         )
 
+    @staticmethod
+    def associate_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Associates a FirewallPolicy to a Firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, firewall_policy_arn,
+                and optionally update_token
+
+        Returns:
+            CommandResults: Formatted results with firewall policy association information
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "FirewallPolicyArn": args.get("firewall_policy_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs, "Firewall")
+
+        print_debug_logs(client, f"Associating firewall policy with parameters: {kwargs}")
+        response = client.associate_firewall_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output="The firewall policy was associated with the firewall successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified FirewallPolicy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_policy_name or firewall_policy_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        kwargs = {
+            "FirewallPolicyName": args.get("firewall_policy_name"),
+            "FirewallPolicyArn": args.get("firewall_policy_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+        print_debug_logs(client, f"Deleting firewall policy with parameters: {kwargs}")
+        response = client.delete_firewall_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
+            outputs_key_field="FirewallPolicyArn",
+            outputs=firewall_policy_response,
+            readable_output="The AWS Network Firewall policy was deleted successfully.",
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10406,6 +10479,8 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-description-update": NetworkFirewall.update_firewall_description_command,
     "aws-network-firewall-firewall-policies-list": NetworkFirewall.list_firewall_policies_command,
     "aws-network-firewall-firewall-policy-create": NetworkFirewall.create_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-associate": NetworkFirewall.associate_firewall_policy_command,
+"aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10593,6 +10668,8 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:TagResource",
     "network-firewall:ListFirewallPolicies",
     "network-firewall:CreateFirewallPolicy",
+    "network-firewall:DeleteFirewallPolicy",
+    "network-firewall:AssociateFirewallPolicy",
 ]
 
 COMMAND_SERVICE_MAP = {
