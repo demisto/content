@@ -1831,8 +1831,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: None
-      description: New name of the object.
+    - description: New name of the object.
       name: new_name
     - description: 'New position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the new_position_rule argument is required.'
       name: new_position
