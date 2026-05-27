@@ -1394,13 +1394,7 @@ def get_labels_command(client: "GSuiteClient", args: dict[str, str]) -> CommandR
 @logger
 def file_delete_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
     """
-    Delete a file in Google Drive.
-
-    By default this performs the existing permanent-delete behavior
-    (HTTP DELETE on ``/drive/v3/files/{id}``). When the optional
-    ``soft_delete`` argument is set to ``true``, the file is moved to
-    the user's Trash instead of being permanently deleted (reversible
-    via the Drive UI or API).
+    Delete a file in Google Drive
 
     :param client: Client object.
     :param args: Command arguments.
@@ -1412,33 +1406,10 @@ def file_delete_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     http_request_params = prepare_file_command_res["http_request_params"]
 
     url_suffix = URL_SUFFIX["DRIVE_FILES_ID"].format(args.get("file_id"))
-
-    soft_delete = argToBoolean(args.get("soft_delete", False))
-
-    if soft_delete:
-        # When soft_delete is true, move the file to Trash via PATCH /drive/v3/files/{id}
-        # with body {"trashed": true} instead of issuing a hard DELETE.
-        client.http_request(
-            url_suffix=url_suffix,
-            method="PATCH",
-            params=http_request_params,
-            body={"trashed": True},
-        )
-        outputs_context = {
-            "id": args.get("file_id"),
-            "trashed": True,
-        }
-        readable_title = HR_MESSAGES["DELETE_COMMAND_SUCCESS"].format("File(s) (moved to Trash)", 1)
-        readable_columns = ["id", "trashed"]
-    else:
-        # Default branch: preserves the existing permanent-delete behavior.
-        client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
-        outputs_context = {
-            "id": args.get("file_id"),
-        }
-        readable_title = HR_MESSAGES["DELETE_COMMAND_SUCCESS"].format("File(s)", 1)
-        readable_columns = ["id"]
-
+    client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
+    outputs_context = {
+        "id": args.get("file_id"),
+    }
     outputs: dict = {
         OUTPUT_PREFIX["GOOGLE_DRIVE_FILE_HEADER"]: {
             OUTPUT_PREFIX["FILE"]: outputs_context,
@@ -1446,9 +1417,9 @@ def file_delete_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     }
 
     table_hr_md = tableToMarkdown(
-        readable_title,
+        HR_MESSAGES["DELETE_COMMAND_SUCCESS"].format("File(s)", 1),
         outputs_context,
-        readable_columns,
+        ["id"],
         headerTransform=pascalToSpace,
         removeNull=False,
     )
@@ -1636,13 +1607,7 @@ def file_permission_list_command(client: "GSuiteClient", args: dict[str, str]) -
 @logger
 def file_permission_create_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
     """
-    Create file permissions.
-
-    When the optional ``transfer_ownership`` argument is set to
-    ``true``, ownership of the file is transferred to the new permission
-    holder by appending ``transferOwnership=true`` to the request URL.
-    The default value ``false`` does NOT add the query parameter,
-    preserving the existing request shape.
+    Create file permissions
 
     :param client: Client object.
     :param args: Command arguments.
@@ -1659,10 +1624,6 @@ def file_permission_create_command(client: "GSuiteClient", args: dict[str, str])
             sendNotificationEmail=args.get("send_notification_email"),
         )
     )
-
-    # Opt-in transferOwnership query parameter. Only added when explicitly requested.
-    if argToBoolean(args.get("transfer_ownership", False)):
-        http_request_params["transferOwnership"] = "true"
 
     body: dict[str, str] = assign_params(
         role=args.get("role"),
@@ -1704,13 +1665,7 @@ def file_permission_update_command(client: "GSuiteClient", args: dict[str, str])
 @logger
 def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
     """
-    Delete file permissions.
-
-    When the optional ``ignore_not_found`` argument is set to ``true``,
-    the command treats an HTTP 404 response from the Drive API
-    (the permission is already absent) as success — useful for
-    idempotent operations. The default value ``false`` re-raises the
-    404 as a ``DemistoException``, preserving the existing behavior.
+    Delete file permissions
 
     :param client: Client object.
     :param args: Command arguments.
@@ -1724,20 +1679,7 @@ def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str])
     http_request_params = prepare_file_permission_request_res["http_request_params"]
 
     url_suffix = URL_SUFFIX["FILE_PERMISSION_DELETE"].format(args.get("file_id"), args.get("permission_id"))
-
-    ignore_not_found = argToBoolean(args.get("ignore_not_found", False))
-
-    not_found_skipped = False
-    try:
-        client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
-    except DemistoException as exc:
-        # Only swallow 404s when explicitly opted in. The GSuiteApiModule
-        # raises a DemistoException whose message starts with "Not found." for
-        # HTTP 404 responses (see status_code_message_map in GSuiteApiModule).
-        if ignore_not_found and "Not found." in str(exc):
-            not_found_skipped = True
-        else:
-            raise
+    client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
 
     outputs_context: dict = {
         "fileId": args.get("file_id"),
@@ -1749,20 +1691,17 @@ def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str])
         }
     }
 
-    if not_found_skipped:
-        readable_output = "Permission not found (idempotent skip — `ignore_not_found=true`)."
-    else:
-        readable_output = tableToMarkdown(
-            HR_MESSAGES["LIST_COMMAND_SUCCESS"].format("Permission(s)", 1),
-            outputs_context,
-            ["fileId", "id"],
-            headerTransform=pascalToSpace,
-            removeNull=False,
-        )
+    table_hr_md = tableToMarkdown(
+        HR_MESSAGES["LIST_COMMAND_SUCCESS"].format("Permission(s)", 1),
+        outputs_context,
+        ["fileId", "id"],
+        headerTransform=pascalToSpace,
+        removeNull=False,
+    )
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_output,
+        readable_output=table_hr_md,
     )
 
 
