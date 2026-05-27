@@ -110,12 +110,12 @@ class ProofpointCTRAuthHandler(AuthHandler):  # type: ignore[misc]  # noqa: F405
         return int(time.time()) < (self._expires_at - TOKEN_EXPIRY_BUFFER_SEC)  # noqa: F405
 
     # ------------------------------------------------------------ AuthHandler
-    def on_request(self, client: "ContentClient", request: httpx.Request) -> None:  # noqa: F821
+    async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:  # noqa: F821
         if not self._token_is_valid():
             self._fetch_token(client)
         request.headers["Authorization"] = f"Bearer {self._access_token}"
 
-    def on_auth_failure(
+    async def on_auth_failure(
         self,
         client: "ContentClient",  # noqa: F821
         response: httpx.Response,
@@ -431,7 +431,7 @@ def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) ->
         )
 
     readable = tableToMarkdown(  # noqa: F405
-        f"{INTEGRATION_NAME} Incident: {summary.get("displayId")}",
+        f"{INTEGRATION_NAME} Incident: {summary.get('displayId')}",
         hr_rows,
         headers=[
             "ID",
@@ -511,7 +511,8 @@ def fetch_incidents(
     demisto.debug(f"Proofpoint CTR: {fetch_delta_minutes=} {max_fetch=} {fetch_states=} {last_fetch_iso=} ")
 
     if last_fetch_iso:
-        start = parse_ctr_date(last_fetch_iso) or now
+        parsed = parse_ctr_date(last_fetch_iso)
+        start = parsed.replace(tzinfo=timezone.utc) if parsed and parsed.tzinfo is None else (parsed or now)
     else:
         first_fetch_param = params.get("first_fetch") or "3 days"
         first_fetch = dateparser.parse(  # noqa: F405
@@ -522,7 +523,7 @@ def fetch_incidents(
             raise DemistoException(  # noqa: F405
                 f"Invalid 'First fetch timestamp' value: {first_fetch_param!r}"
             )
-        start = first_fetch
+        start = first_fetch.replace(tzinfo=timezone.utc)
 
     # Apply the configured delta buffer to mitigate clock drift.
     start = start - timedelta(minutes=fetch_delta_minutes)  # noqa: F405

@@ -127,12 +127,12 @@ def test_list_incidents_command_builds_output(client: Client, mocker):
 
     result = proofpoint_ctr_incidents_list_command(
         client,
-        {"limit": "10", "source_filters": "abuse_mailbox,tap"},
+        {"limit": "10", "source_filters": "abuse_mailbox"},
     )
     assert result.outputs_prefix == "ProofPointCloud.Incident"
     assert len(result.outputs) == 2
-    assert result.outputs[0]["id"] == "440def43-c322-42ba-a6d6-a2306128ea3b"
-    assert "Suspicious login attempt" in result.readable_output
+    assert result.outputs[0]["id"] == "00000000-0000-0000-0000-000000000001"
+    assert "Suspicious phishing attempt" in result.readable_output
 
 
 def test_list_incidents_rejects_invalid_filter(client: Client):
@@ -152,7 +152,7 @@ def test_get_incident_command_iterates_ids(client: Client, mocker):
     result = proofpoint_ctr_incident_get_command(client, {"incident_id": "aaa,bbb"})
     assert calls == ["aaa", "bbb"]
     assert len(result.outputs) == 2
-    assert result.outputs[0]["summary"]["displayId"] == 781
+    assert result.outputs[0]["summary"]["displayId"] == 12345
 
 
 def test_get_incident_requires_id(client: Client):
@@ -199,7 +199,7 @@ def test_fetch_incidents_first_run(client: Client, mocker):
         last_run={},
     )
     assert len(incidents) == 2
-    assert incidents[0]["dbotMirrorId"] == "440def43-c322-42ba-a6d6-a2306128ea3b"
+    assert incidents[0]["dbotMirrorId"] == "00000000-0000-0000-0000-000000000001"
     assert "last_fetch" in next_run
     assert "last_fetched_ids" in next_run
 
@@ -217,13 +217,13 @@ def test_fetch_incidents_dedupes_seen_ids(client: Client, mocker):
             "fetch_states": "open_incidents",
         },
         last_run={
-            "last_fetch": "2024-11-26 16:18:00",
-            "last_fetched_ids": ["440def43-c322-42ba-a6d6-a2306128ea3b"],
+            "last_fetch": "2024-01-01 09:00:00",
+            "last_fetched_ids": ["00000000-0000-0000-0000-000000000001"],
         },
     )
     assert len(incidents) == 1
-    assert incidents[0]["dbotMirrorId"] == "550def43-c322-42ba-a6d6-a2306128ea3c"
-    assert next_run["last_fetch"] != "2024-11-26 16:18:00"
+    assert incidents[0]["dbotMirrorId"] == "00000000-0000-0000-0000-000000000002"
+    assert next_run["last_fetch"] != "2024-01-01 09:00:00"
 
 
 def test_fetch_incidents_rejects_both_states(client: Client):

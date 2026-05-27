@@ -113,6 +113,7 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 #### Human Readable Output
 
 >### Proofpoint Cloud Threat Response Incidents
+>
 >| ID | Created At | Type | State | Message Count | Assigned Team Name | Title | Source Types |
 >|---|---|---|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000001 | 2024-01-01T10:00:00.000+00:00 | AbuseMailbox | open | 1 | SOC_Analyst | user[@]example[.]com reported a message "Suspicious phishing attempt" | abuse_mailbox |
@@ -222,6 +223,7 @@ Returns full details for a specific Proofpoint Cloud Threat Response incident.
 #### Human Readable Output
 
 >### Proofpoint Cloud Threat Response Incident: 12345
+>
 >| ID | Created At | State | Message Count | Assigned Team Name | Title |
 >|---|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000001 | 2024-01-01T10:00:00.000+00:00 | open | 1 | SOC_Analyst | user[@]example[.]com reported a message "Suspicious phishing attempt" |
