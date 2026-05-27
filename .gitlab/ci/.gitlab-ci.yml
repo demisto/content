@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: add_generate_list_content_item_to_autonomous
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: add_generate_list_content_item_to_autonomous
     project: "${CI_PROJECT_NAMESPACE}/infra"
