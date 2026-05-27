@@ -1834,8 +1834,10 @@ script:
     - defaultValue: None
       description: New name of the object.
       name: new_name
-    - description: New position in the rulebase. Value can be "int" to set a specific position, or str- 'top' or 'bottom'.
+    - description: 'New position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the new_position_rule argument is required.'
       name: new_position
+    - description: The name of the rule or section to use as a reference point. The rule is repositioned relative to this rule or section. Required when new_position is "above" or "below". Optional when new_position is "top" or "bottom".
+      name: new_position_rule
     - auto: PREDEFINED
       defaultValue: 'true'
       description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
@@ -4886,6 +4888,10 @@ script:
       - nat64
       - nat46
       - cgnat
+    - description: 'New position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the new_position_rule argument is required.'
+      name: new_position
+    - description: The name of the rule or section to use as a reference point. The rule is repositioned relative to this rule or section. Required when new_position is "above" or "below". Optional when new_position is "top" or "bottom".
+      name: new_position_rule
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags

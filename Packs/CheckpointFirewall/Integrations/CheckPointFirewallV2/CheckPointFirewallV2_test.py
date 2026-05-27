@@ -2265,6 +2265,91 @@ def test_checkpoint_nat_rule_update_command(mocker):
     assert result.outputs_prefix == "CheckPoint.NatRule"
 
 
+def test_nat_rule_update_with_new_position_rule_above(mocker):
+    """
+    Given
+        a client with new_position=above and new_position_rule
+    When
+        calling checkpoint_nat_rule_update_command
+    Then
+        validate new_position is constructed as a dict {new_position: new_position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_nat_rule.json")
+    mocked_client.update_nat_rule.return_value = mock_response
+
+    checkpoint_nat_rule_update_command(
+        mocked_client, identifier="rule1", package="Standard",
+        new_position="above", new_position_rule="rule-2"
+    )
+
+    call_kwargs = mocked_client.update_nat_rule.call_args
+    assert call_kwargs[1]["new_position"] == {"above": "rule-2"}
+
+
+def test_nat_rule_update_with_new_position_integer(mocker):
+    """
+    Given
+        a client with new_position as a numeric string
+    When
+        calling checkpoint_nat_rule_update_command
+    Then
+        validate new_position is converted to an integer
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_nat_rule.json")
+    mocked_client.update_nat_rule.return_value = mock_response
+
+    checkpoint_nat_rule_update_command(
+        mocked_client, identifier="rule1", package="Standard", new_position="3"
+    )
+
+    call_kwargs = mocked_client.update_nat_rule.call_args
+    assert call_kwargs[1]["new_position"] == 3
+
+
+def test_nat_rule_update_above_without_new_position_rule(mocker):
+    """
+    Given
+        a client with new_position=above but no new_position_rule
+    When
+        calling checkpoint_nat_rule_update_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_update_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'new_position_rule' argument is required"):
+        checkpoint_nat_rule_update_command(
+            mocked_client, identifier="rule1", package="Standard", new_position="above"
+        )
+
+
+def test_nat_rule_update_below_without_new_position_rule(mocker):
+    """
+    Given
+        a client with new_position=below but no new_position_rule
+    When
+        calling checkpoint_nat_rule_update_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_update_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'new_position_rule' argument is required"):
+        checkpoint_nat_rule_update_command(
+            mocked_client, identifier="rule1", package="Standard", new_position="below"
+        )
+
+
 def test_checkpoint_nat_rule_delete_command(mocker):
     """
     Given
@@ -3372,6 +3457,105 @@ def test_update_access_rule_without_new_args(mocker):
     assert call_kwargs[1]["source"] is None
     assert call_kwargs[1]["destination"] is None
     assert call_kwargs[1]["service"] is None
+
+
+def test_update_access_rule_with_new_position_rule_above(mocker):
+    """
+    Given
+        a client with new_position=above and new_position_rule
+    When
+        calling checkpoint_update_access_rule_command
+    Then
+        validate new_position is constructed as a dict {new_position: new_position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_update_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_access_rule.json")
+    mocked_client.update_rule.return_value = mock_response
+
+    checkpoint_update_access_rule_command(
+        mocked_client, "rule1", "Network", new_position="above", new_position_rule="rule-2"
+    )
+
+    call_kwargs = mocked_client.update_rule.call_args
+    assert call_kwargs[1]["new_position"] == {"above": "rule-2"}
+
+
+def test_update_access_rule_with_new_position_integer(mocker):
+    """
+    Given
+        a client with new_position as a numeric string
+    When
+        calling checkpoint_update_access_rule_command
+    Then
+        validate new_position is converted to an integer
+    """
+    from CheckPointFirewallV2 import checkpoint_update_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_access_rule.json")
+    mocked_client.update_rule.return_value = mock_response
+
+    checkpoint_update_access_rule_command(mocked_client, "rule1", "Network", new_position="5")
+
+    call_kwargs = mocked_client.update_rule.call_args
+    assert call_kwargs[1]["new_position"] == 5
+
+
+def test_update_access_rule_above_without_new_position_rule(mocker):
+    """
+    Given
+        a client with new_position=above but no new_position_rule
+    When
+        calling checkpoint_update_access_rule_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_update_access_rule_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'new_position_rule' argument is required"):
+        checkpoint_update_access_rule_command(mocked_client, "rule1", "Network", new_position="above")
+
+
+def test_update_access_rule_below_without_new_position_rule(mocker):
+    """
+    Given
+        a client with new_position=below but no new_position_rule
+    When
+        calling checkpoint_update_access_rule_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_update_access_rule_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'new_position_rule' argument is required"):
+        checkpoint_update_access_rule_command(mocked_client, "rule1", "Network", new_position="below")
+
+
+def test_update_access_rule_no_new_position(mocker):
+    """
+    Given
+        a client without new_position
+    When
+        calling checkpoint_update_access_rule_command
+    Then
+        validate new_position is None (not passed)
+    """
+    from CheckPointFirewallV2 import checkpoint_update_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_access_rule.json")
+    mocked_client.update_rule.return_value = mock_response
+
+    checkpoint_update_access_rule_command(mocked_client, "rule1", "Network", False, False)
+
+    call_kwargs = mocked_client.update_rule.call_args
+    assert call_kwargs[1]["new_position"] is None
 
 
 def test_list_access_rule_with_new_args(mocker):

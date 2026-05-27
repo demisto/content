@@ -1113,6 +1113,7 @@ class Client(BaseClient):
         enabled: Optional[bool] = None,
         method: Optional[str] = None,
         tags: Optional[list] = None,
+        new_position: str | int | dict | None = None,
     ):
         identifier_key = "rule-number" if str(identifier).isdigit() else "name"
         body: dict = {identifier_key: identifier, "package": package}
@@ -1136,6 +1137,8 @@ class Client(BaseClient):
             body["method"] = method
         if tags:
             body["tags"] = tags
+        if new_position is not None:
+            body["new-position"] = new_position
         demisto.debug(f"set-nat-rule request body: {body}")
         return self._http_request(method="POST", url_suffix="set-nat-rule", headers=self.headers, json_data=body)
 
@@ -2770,7 +2773,8 @@ def checkpoint_update_access_rule_command(
     enabled: str = None,
     action: str = None,
     new_name: str = None,
-    new_position=None,
+    new_position: str = None,
+    new_position_rule: str = None,
     comments: str = None,
     track_type: str = None,
     track_accounting: str = None,
@@ -2795,7 +2799,10 @@ def checkpoint_update_access_rule_command(
         enabled(str): Enable/Disable the rule.
         action (str): the action to set.
         new_name(str): New name of the object.
-        new_position: New position in the rulebase.
+        new_position(str): New position in the rulebase. Can be an integer, "top", "bottom", "above", or "below".
+        new_position_rule(str): The name of the rule or section to position relative to.
+            Required when new_position is "above" or "below".
+            Optional when new_position is "top" or "bottom" (used as a reference section name).
         comments (str): Comments string.
         track_type (str): Track settings (Log, Extended Log, Detailed Log, None).
         track_accounting (str): Turns accounting for track on and off.
@@ -2808,6 +2815,20 @@ def checkpoint_update_access_rule_command(
         destination_add (str or list): Adds to the collection of destination network objects.
         destination_remove (str or list): Removes from the collection of destination network objects.
     """
+    new_position_obj = None
+    if new_position is not None:
+        if new_position in ("above", "below") and not new_position_rule:
+            raise DemistoException(
+                f"The 'new_position_rule' argument is required when new_position is '{new_position}'. "
+                f"Provide the name of the rule or section to position relative to."
+            )
+        if new_position_rule:
+            new_position_obj: str | int | dict = {new_position: new_position_rule}
+        elif new_position.isdigit():
+            new_position_obj = int(new_position)
+        else:
+            new_position_obj = new_position
+
     ignore_warnings_bool = argToBoolean(ignore_warnings)
     ignore_errors_bool = argToBoolean(ignore_errors)
     enabled_bool = argToBoolean(enabled) if enabled is not None else None
@@ -2857,7 +2878,7 @@ def checkpoint_update_access_rule_command(
         enabled=enabled_bool,
         action=action,
         new_name=new_name,
-        new_position=new_position,
+        new_position=new_position_obj,
         comments=comments,
         track=track,
         install_on=install_on_list,
@@ -4681,6 +4702,8 @@ def checkpoint_nat_rule_update_command(
     comments: str = None,
     enabled: str = None,
     nat_method: str = None,
+    new_position: str = None,
+    new_position_rule: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4699,9 +4722,29 @@ def checkpoint_nat_rule_update_command(
         comments (str): Comments string.
         enabled (str): Enable/Disable the rule.
         nat_method (str): NAT translation method.
+        new_position (str): New position in the rulebase. Can be an integer, "top", "bottom", "above", or "below".
+        new_position_rule (str): The name of the rule or section to position relative to.
+            Required when new_position is "above" or "below".
+            Optional when new_position is "top" or "bottom" (used as a reference section name).
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-nat-rule-update command called with args: {demisto.args()}")
+
+    # Build new_position object
+    new_position_obj = None
+    if new_position is not None:
+        if new_position in ("above", "below") and not new_position_rule:
+            raise DemistoException(
+                f"The 'new_position_rule' argument is required when new_position is '{new_position}'. "
+                f"Provide the name of the rule or section to position relative to."
+            )
+        if new_position_rule:
+            new_position_obj: str | int | dict = {new_position: new_position_rule}
+        elif new_position.isdigit():
+            new_position_obj = int(new_position)
+        else:
+            new_position_obj = new_position
+
     tags = argToList(tags)
 
     result = client.update_nat_rule(
@@ -4717,6 +4760,7 @@ def checkpoint_nat_rule_update_command(
         enabled=argToBoolean(enabled) if enabled else None,
         method=nat_method,
         tags=tags or None,
+        new_position=new_position_obj,
     )
 
     readable_output = tableToMarkdown("CheckPoint data for updating a NAT rule:", result, removeNull=True)
