@@ -739,7 +739,7 @@ script:
     name: service-desk-plus-request-notes-delete
     description: Deletes a request note.
   - arguments:
-    - description: The ID of the note to retrieve it's data.
+    - description: The ID of the note from which to retrieve data.
       name: request_note_id
       required: true
     - description: The ID of the request to retrieve it's notes.
