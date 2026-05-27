@@ -15,6 +15,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
+SEARCH_ASSETS_MAX_LIMIT = 5000
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
@@ -2303,6 +2304,12 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
     page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    if page_size > SEARCH_ASSETS_MAX_LIMIT:
+        raise ValueError(f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}")
+
+    if page_size == 0: # 0 Maps to max in the API, we will maintain this behavior with our max value instead
+        page_size = SEARCH_ASSETS_MAX_LIMIT
+
     page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
     on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
