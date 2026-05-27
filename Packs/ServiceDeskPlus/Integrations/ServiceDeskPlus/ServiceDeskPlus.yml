@@ -777,7 +777,7 @@ script:
         - "true"
         - "false"
     name: service-desk-plus-request-notes-update
-    description: update a request note.
+    description: Updates a request note.
     outputs:
     - contextPath: ServiceDeskPlus.Request.Note.mark_first_response
       description: 'Mark first response or not.'
