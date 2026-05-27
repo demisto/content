@@ -5364,7 +5364,7 @@ def test_network_interface_update_command_success(mocker):
         "resource_group_name": "rg1",
         "network_interface_name": "test-nic",
         "enable_ip_forwarding": "true",
-        "accelerate_networking": "true",
+        "enable_accelerate_networking": "true",
         "internal_dns_name_label": "test-label",
         "dns_servers": "1.1.1.1",
     }
@@ -5396,7 +5396,7 @@ def test_network_interface_update_command_success(mocker):
             "location": "eastus",
             "properties": {
                 "enableIPForwarding": True,
-                "enableAcceleratedNetworking": False,
+                "enableAcceleratedNetworking": True,
                 "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
             },
         },

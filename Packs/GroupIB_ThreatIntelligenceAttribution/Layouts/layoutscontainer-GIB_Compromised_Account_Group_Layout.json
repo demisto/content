@@ -539,6 +539,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "f65d98a0-ed24-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -1641,7 +1650,6 @@
     "group": "incident",
     "id": "GIB Compromised Account Group Layout",
     "name": "GIB Compromised Account Group Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
 }

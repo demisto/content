@@ -76,7 +76,7 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -88,13 +88,19 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR.
+  hidden:
+  - marketplacev2
+  - platform
+- additionalinfo: When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR. Cortex XSOAR only parameter.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud.
   defaultvalue: 'false'
   display: Close Mirrored Prisma Cloud Alert
