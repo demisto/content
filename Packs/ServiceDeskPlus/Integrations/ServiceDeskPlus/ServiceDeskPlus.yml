@@ -652,7 +652,7 @@ script:
       predefined:
         - "true"
         - "false"
-    - description: whether to notify technician.
+    - description: Whether to notify the technician.
       name: notify_technician
       auto: PREDEFINED
       defaultValue: "false"
