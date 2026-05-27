@@ -742,7 +742,7 @@ script:
     - description: The ID of the note from which to retrieve data.
       name: request_note_id
       required: true
-    - description: The ID of the request to retrieve it's notes.
+    - description: The ID of the request from which to retrieve notes.
       name: request_id
       required: true
     - description: The note description.
