@@ -1120,12 +1120,15 @@ def test_is_gov_account_empty_accounts_list_no_account(mocker):
     assert expected_debug_log == debug_call_args
 
 
-@pytest.mark.parametrize("timeout,expected", [
-    (None, (60, 10)),
-    ("30", (30, 10)),
-    ("45,15", (45, 15)),
-    (120, (120, 10)),
-])
+@pytest.mark.parametrize(
+    "timeout,expected",
+    [
+        (None, (60, 10)),
+        ("30", (30, 10)),
+        ("45,15", (45, 15)),
+        (120, (120, 10)),
+    ],
+)
 def test_get_timeout_valid_inputs(timeout, expected):
     """
     Given: Various valid timeout values (None, read-only string, read+connect string, integer).

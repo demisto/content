@@ -17279,9 +17279,7 @@ def test_assume_role_credentials_with_session_duration(mocker):
     from AWS import _assume_role_credentials
 
     mock_sts = mocker.Mock()
-    mock_sts.assume_role.return_value = {
-        "Credentials": {"AccessKeyId": "A", "SecretAccessKey": "B", "SessionToken": "C"}
-    }
+    mock_sts.assume_role.return_value = {"Credentials": {"AccessKeyId": "A", "SecretAccessKey": "B", "SessionToken": "C"}}
     mocker.patch("boto3.client", return_value=mock_sts)
     mocker.patch.object(demisto, "debug")
 
