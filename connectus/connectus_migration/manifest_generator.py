@@ -648,6 +648,710 @@ def emit_field_for_param(
     return out
 
 
+# ============================================================
+# Synthetic-field helpers (cap-gated hidden toggles / etc.)
+#
+# These helpers materialize fields that are NOT 1:1 from an XSOAR yml
+# param. They synthesize a hidden, defaulted field that the platform
+# uses internally to gate a capability (e.g., the Fetch Secrets cap's
+# isFetchCredentials toggle). The pattern is expected to recur — every
+# new "platform-gate-toggle-per-capability" feature follows the same
+# shape: a hidden toggle with a fixed default, optionally renamed for
+# the sub-capability path, optionally bridged via a serializer entry.
+# ============================================================
+
+# Default human-readable title for the isFetchCredentials toggle when the
+# integration YAML doesn't supply a custom ``display`` string.
+_ISFETCHCREDENTIALS_DEFAULT_TITLE = "Fetch credentials"
+
+# The original XSOAR yml param name for the credentials-fetch checkbox.
+# Stripped from mapper results by ``add_secret_capability`` so we don't
+# emit it twice (once as the synthetic gated toggle below, once via the
+# generic param-mapping path).
+ISFETCHCREDENTIALS_PARAM_NAME = "isFetchCredentials"
+
+
+def build_synthetic_hidden_toggle(
+    *,
+    field_id: str,
+    title: str,
+    default_value: bool = False,
+    required: bool = False,
+) -> dict:
+    """Build a ``toggle`` field dict that is hidden in both create and
+    edit modes, with a fixed boolean default. Reusable across any
+    synthetic "platform-gate-toggle-per-capability" feature.
+
+    Shape matches :func:`_map_type_8` (XSOAR type 8 -> connectus toggle)
+    plus :func:`_apply_common_field_metadata`, but built directly from
+    parameters (no XSOAR yml param dict needed) so it can be used for
+    purely synthetic fields the integration YAML doesn't carry.
+
+    Args:
+      field_id: connector-side field id (already deduped / renamed by
+        the caller — this helper does not rename).
+      title: human-readable label shown in the UI when the field is
+        unhidden by a downstream trigger.
+      default_value: boolean default. Used by the platform for any
+        instance that doesn't override the value.
+      required: requiredness flag mirrored into both create_modifiers
+        and edit_modifiers. Defaults to False — a hidden toggle that's
+        also required would block instance creation.
+
+    Returns the connectus field dict (NOT wrapped in a FieldGroup —
+    callers fold it into whatever group structure they need).
+    """
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "toggle",
+        "options": {
+            "default_value": bool(default_value),
+            "create_modifiers": {"required": bool(required), "hidden": True},
+            "edit_modifiers": {"required": bool(required), "hidden": True},
+        },
+    }
+
+
+def register_renamed_field_serializer_entry(
+    handler_dir: Path,
+    original_id: str,
+    renamed_id: str,
+) -> None:
+    """Idempotently register a serializer field_mappings entry that
+    bridges ``renamed_id`` (the connector-side field id, after rename)
+    back to ``original_id`` (the XSOAR yml param name the integration
+    actually reads at runtime).
+
+    Thin wrapper around :func:`register_serializer_entry` so the intent
+    "this is a rename bridge" reads clearly at call sites — and so the
+    rename-bridge pattern lives in one named function instead of being
+    open-coded everywhere. The ``adjust_checkbox_trigger``,
+    ``dedup_field_id_and_register``, and ``add_secret_capability``
+    sub-cap paths all need this.
+    """
+    register_serializer_entry(
+        handler_dir, new_id=renamed_id, original_id=original_id
+    )
+
+
+def adjust_checkbox_trigger(capability_id: str, param_id: str) -> None:
+    """Hook for the triggers.yaml generator (not yet implemented).
+
+    Intended future behavior: emit a trigger of the form
+
+        - conditions:
+            type: capability_condition
+            id: <capability_id>
+            behavior: selected
+            operator: eq
+            value: true
+          effects:
+            - id: <param_id>
+              action:
+                hidden: false
+                required: true
+
+    so the (otherwise hidden) toggle ``param_id`` is revealed and
+    required when the user selects the capability ``capability_id``.
+    For now this is a no-op stub.
+    """
+    # TODO: wire to triggers.yaml emission once the triggers builder is
+    # implemented. Schema reference at
+    # ../../../unified-connectors-content/schema/triggers.schema.json
+    # (capability_condition leaf + EffectAction hidden/required).
+    pass
+
+
+def _resolve_title_from_yml(
+    yml_params_by_name: dict[str, dict] | None,
+    yml_param_name: str,
+    fallback: str,
+) -> str:
+    """Return the human-readable title for a synthetic field, preferring
+    the integration YAML's ``display`` value when present and non-blank.
+
+    Generic helper used by every ``add_<capability>_capability`` builder
+    that emits a synthetic / hybrid field: if the integration YAML
+    carries the source param, the connector should use its ``display``
+    string (so a vendor-curated label like "Enable credentials sync"
+    overrides our generic fallback). When the YAML doesn't carry the
+    param, OR carries it with no display, OR carries a whitespace-only
+    display, fall back to the caller-supplied constant.
+    """
+    if yml_params_by_name and (yml := yml_params_by_name.get(yml_param_name)):
+        display = yml.get("display") or ""
+        if display.strip():
+            return display
+    return fallback
+
+
+def add_secret_capability(
+    *,
+    capability_id: str,
+    is_sub_capability: bool,
+    mapped_params: dict[str, list[str]],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_dir: Path | None = None,
+) -> dict:
+    """Build the per-capability template dict for the ``Fetch Secrets``
+    capability, with a single synthetic ``isFetchCredentials`` toggle
+    field (hidden, optional, default ``False``).
+
+    Caller contract (D1 — caller decides the cap topology):
+      - If this Fetch Secrets capability is being added as a **top-level
+        capability**, pass ``is_sub_capability=False`` (typical:
+        ``capability_id="fetch-secrets"``) — the toggle keeps its plain
+        id ``"isFetchCredentials"``.
+      - If a top-level ``fetch-secrets`` already exists and this is being
+        added as a **sub-capability** under it, pass
+        ``is_sub_capability=True`` and a sub-cap id (e.g.
+        ``capability_id="fetch-secrets-xsoar-myhandler"``). The toggle id
+        becomes ``f"{capability_id}_isFetchCredentials"`` so it cannot
+        collide with the root-cap toggle.
+
+    Side effects:
+      1. Strips ``"isFetchCredentials"`` from every bucket of
+         ``mapped_params`` (mutates in place) so the standard
+         param-mapping pass doesn't re-emit it.
+      2. When ``is_sub_capability=True`` AND ``handler_dir`` is supplied,
+         registers a serializer ``field_mappings`` entry bridging the
+         renamed connector id back to the original yml name
+         ``isFetchCredentials`` (D2 — uses the generic
+         :func:`register_renamed_field_serializer_entry`).
+      3. Calls :func:`adjust_checkbox_trigger` with the chosen
+         ``capability_id`` and ``param_id`` — currently a no-op stub.
+
+    Title resolution (D3): if ``yml_params_by_name`` carries an entry
+    for ``isFetchCredentials`` and that entry has a non-empty
+    ``display``, use it. Otherwise fall back to the constant
+    ``"Fetch credentials"``.
+
+    Returns:
+      A dict shaped::
+
+          {
+              "capability_id": <capability_id>,
+              "fields": [<the_toggle_field>],
+          }
+
+      The caller folds this into the larger configurations.yaml
+      per-capability bucket and then adds the rest of the standard
+      mapper-produced params for the same capability.
+    """
+    # --- §1. Decide the connector-side field id (D1 rule) ---------------
+    if is_sub_capability:
+        field_id = f"{capability_id}_{ISFETCHCREDENTIALS_PARAM_NAME}"
+    else:
+        field_id = ISFETCHCREDENTIALS_PARAM_NAME
+
+    # --- §2. Resolve the human-readable title (D3 rule) -----------------
+    # Uses the generic _resolve_title_from_yml helper (third use case ->
+    # extracted in the log-collection follow-up).
+    title = _resolve_title_from_yml(
+        yml_params_by_name,
+        ISFETCHCREDENTIALS_PARAM_NAME,
+        fallback=_ISFETCHCREDENTIALS_DEFAULT_TITLE,
+    )
+
+    # --- §3. Build the field dict via the generic synthetic helper ------
+    field = build_synthetic_hidden_toggle(
+        field_id=field_id,
+        title=title,
+        default_value=False,
+        required=False,
+    )
+
+    # --- §4. Strip the original yml name from mapper results ------------
+    # Mapper results are keyed by yml-param-name (NOT by connector
+    # field-id), so we strip the literal "isFetchCredentials" regardless
+    # of whether the field was later renamed for the sub-cap path.
+    for cap_name in list(mapped_params.keys()):
+        names = mapped_params.get(cap_name) or []
+        mapped_params[cap_name] = [
+            n for n in names if n != ISFETCHCREDENTIALS_PARAM_NAME
+        ]
+
+    # --- §5. Sub-cap rename bridge (D2 rule) ----------------------------
+    if is_sub_capability and handler_dir is not None:
+        register_renamed_field_serializer_entry(
+            handler_dir,
+            original_id=ISFETCHCREDENTIALS_PARAM_NAME,
+            renamed_id=field_id,
+        )
+
+    # --- §6. Trigger hook (D1+D3 combined) ------------------------------
+    adjust_checkbox_trigger(capability_id=capability_id, param_id=field_id)
+
+    return {
+        "capability_id": capability_id,
+        "fields": [field],
+    }
+
+
+# ------------------------------------------------------------------ #
+# Log Collection capability builder
+# ------------------------------------------------------------------ #
+
+# Default human-readable titles + fallback default for the synthetic /
+# fallback emission paths in ``add_log_collection_capability``.
+_ISFETCHEVENTS_DEFAULT_TITLE = "Fetch events"
+_EVENTFETCHINTERVAL_DEFAULT_TITLE = "Events Fetch Interval"
+EVENTFETCHINTERVAL_FALLBACK_DEFAULT = "1"  # string per XSOAR convention (E1=a)
+
+# The original XSOAR yml param names for the two log-collection params.
+# Stripped from mapper results by ``add_log_collection_capability`` so we
+# don't emit them twice (once as the synthetic / hybrid field below,
+# once via the generic param-mapping path).
+ISFETCHEVENTS_PARAM_NAME = "isFetchEvents"
+EVENTFETCHINTERVAL_PARAM_NAME = "eventFetchInterval"
+
+
+def _build_isfetchevents_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``isFetchEvents`` toggle field.
+
+    Path A (no yml_param): pure synthetic via
+    :func:`build_synthetic_hidden_toggle` — default False, hidden in
+    both modifier blocks, required False.
+
+    Path B (yml_param present): delegate to :func:`_map_type_8` so the
+    shape matches what every other type-8 param produces (preserves
+    ``defaultvalue``, ``hidden``, ``required``). Then override the
+    ``id`` (since the caller may have renamed it for the sub-cap path)
+    and re-apply the resolved ``title``.
+    """
+    if yml_param is None:
+        return build_synthetic_hidden_toggle(
+            field_id=field_id,
+            title=title,
+            default_value=False,
+            required=False,
+        )
+    field = _map_type_8(yml_param)
+    field["id"] = field_id
+    field["title"] = title
+    return field
+
+
+def _build_numeric_fetch_interval_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+    fallback_default: str,
+) -> dict:
+    """Generic numeric "fetch interval"-style field builder.
+
+    Shape (matches :func:`_map_type_19`'s output for XSOAR type-19
+    numeric params): connectus ``input`` field with
+    ``options.is_number_input: true``. The connectus schema has no
+    dedicated ``number`` type — numeric inputs are ``input`` with the
+    ``is_number_input`` flag set (a known wart documented in
+    ``unified-connectors-content/plans/deferred-validation-gaps.md``).
+
+    Default-value handling (E1=a / E2=a):
+      - If ``yml_param`` is provided AND carries a non-None
+        ``defaultvalue``, use it verbatim (XSOAR convention is a
+        string like ``"1"`` or ``"720"``).
+      - Otherwise, inject ``fallback_default`` so the user always
+        sees a value, never blank.
+
+    Visibility / requiredness:
+      - If ``yml_param`` is provided, honor its ``hidden`` and
+        ``required`` keys via :func:`_apply_common_field_metadata`
+        (already invoked by ``_map_type_19``).
+      - If no yml_param, default to visible + optional.
+
+    Reused by :func:`_build_eventfetchinterval_field` (fallback ``"1"``)
+    and :func:`_build_assetsfetchinterval_field` (fallback ``"720"``).
+    """
+    if yml_param is None:
+        return {
+            "id": field_id,
+            "title": title,
+            "field_type": "input",
+            "options": {
+                "is_number_input": True,
+                "default_value": fallback_default,
+                "create_modifiers": {"required": False, "hidden": False},
+                "edit_modifiers": {"required": False, "hidden": False},
+            },
+        }
+    field = _map_type_19(yml_param)
+    field["id"] = field_id
+    field["title"] = title
+    # E2=a: inject fallback default when the yml carries the param but
+    # without an explicit defaultvalue.
+    options = field.setdefault("options", {})
+    if "default_value" not in options:
+        options["default_value"] = fallback_default
+    return field
+
+
+def _build_eventfetchinterval_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Thin wrapper over :func:`_build_numeric_fetch_interval_field`
+    bound to the log-collection capability's ``"1"`` fallback default.
+    """
+    return _build_numeric_fetch_interval_field(
+        yml_param=yml_param,
+        field_id=field_id,
+        title=title,
+        fallback_default=EVENTFETCHINTERVAL_FALLBACK_DEFAULT,
+    )
+
+
+def add_log_collection_capability(
+    *,
+    capability_id: str,
+    is_sub_capability: bool,
+    is_long_running_capability: bool,
+    mapped_params: dict[str, list[str]],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_dir: Path | None = None,
+) -> dict:
+    """Build the per-capability template dict for the ``Log Collection``
+    capability with up to two fields: ``isFetchEvents`` (toggle, hidden
+    by default unless the yml overrides) and ``eventFetchInterval``
+    (numeric input, visible by default, default ``"1"``).
+
+    Caller contract (mirrors :func:`add_secret_capability`):
+      - ``capability_id`` is the connector-side capability id. Pass
+        ``"log-collection"`` for the top-level case, or a sub-cap id
+        like ``"log-collection-xsoar-myhandler"`` for the sub-cap case.
+      - ``is_sub_capability`` flips the field-id naming: when ``True``,
+        each emitted field's id becomes
+        ``f"{capability_id}_{original_name}"`` so it cannot collide
+        with the root-cap version.
+      - ``is_long_running_capability`` is the master switch that
+        determines BOTH (a) whether the trigger hook fires for
+        ``isFetchEvents`` AND (b) the emission shape semantics. See
+        the scenario table below.
+
+    Scenarios (combination of ``is_long_running_capability`` x yml presence):
+
+      | LR    | yml has param  | isFetchEvents emission              | trigger? |
+      |-------|----------------|--------------------------------------|----------|
+      | False | (any)          | synthetic — default False, hidden    | YES      |
+      | True  | yes            | yml-driven via _map_type_8           | NO       |
+      | True  | no             | synthetic fallback (same as A shape) | NO       |
+
+      | LR    | yml has param  | eventFetchInterval emission                          |
+      |-------|----------------|------------------------------------------------------|
+      | False | (any)          | yml if present (default "1" injected if missing),    |
+      |       |                | else synthetic with default "1", VISIBLE             |
+      | True  | yes            | yml-driven via _map_type_19 (default "1" injected    |
+      |       |                | if yml has the param but no defaultvalue)            |
+      | True  | no             | synthetic fallback with default "1", VISIBLE         |
+
+      The trigger-suppression rule (point 3 in the spec): the trigger
+      hook for ``isFetchEvents`` fires ONLY when
+      ``is_long_running_capability=False``. In long-running scenarios
+      Rule 7's pinning already gates the capability, so a reveal-when-
+      selected trigger would be redundant.
+
+    Side effects:
+      1. Strips both ``isFetchEvents`` AND ``eventFetchInterval`` from
+         every bucket of ``mapped_params`` in place (E4: even if neither
+         was in the yml, the mapper may have placed them there via
+         test-module / get-events routing).
+      2. Sub-cap rename bridges (D2 — generic
+         :func:`register_renamed_field_serializer_entry`): when
+         ``is_sub_capability=True`` AND ``handler_dir`` is supplied,
+         writes a serializer field_mappings entry for EACH emitted
+         field that was renamed (0, 1, or 2 entries depending on
+         which fields the scenario emitted).
+      3. Calls :func:`adjust_checkbox_trigger` for ``isFetchEvents``
+         only when ``is_long_running_capability=False`` (trigger
+         suppression rule).
+
+    Returns:
+      A dict shaped::
+
+          {
+              "capability_id": <capability_id>,
+              "fields": [<emitted_fields>],
+          }
+
+      The fields list has 0, 1, or 2 entries depending on the scenario.
+      The caller folds this into the larger configurations.yaml
+      per-capability bucket and then adds the rest of the standard
+      mapper-produced params for the same capability.
+    """
+    # --- §1. Resolve the connector-side field ids (sub-cap rename) ------
+    ifc_field_id = (
+        f"{capability_id}_{ISFETCHEVENTS_PARAM_NAME}"
+        if is_sub_capability
+        else ISFETCHEVENTS_PARAM_NAME
+    )
+    efi_field_id = (
+        f"{capability_id}_{EVENTFETCHINTERVAL_PARAM_NAME}"
+        if is_sub_capability
+        else EVENTFETCHINTERVAL_PARAM_NAME
+    )
+
+    # --- §2. Resolve titles (E3 — generic helper) -----------------------
+    ifc_title = _resolve_title_from_yml(
+        yml_params_by_name,
+        ISFETCHEVENTS_PARAM_NAME,
+        fallback=_ISFETCHEVENTS_DEFAULT_TITLE,
+    )
+    efi_title = _resolve_title_from_yml(
+        yml_params_by_name,
+        EVENTFETCHINTERVAL_PARAM_NAME,
+        fallback=_EVENTFETCHINTERVAL_DEFAULT_TITLE,
+    )
+
+    # --- §3. Look up yml params (may be None) ---------------------------
+    ifc_yml = (
+        yml_params_by_name.get(ISFETCHEVENTS_PARAM_NAME)
+        if yml_params_by_name
+        else None
+    )
+    efi_yml = (
+        yml_params_by_name.get(EVENTFETCHINTERVAL_PARAM_NAME)
+        if yml_params_by_name
+        else None
+    )
+
+    # --- §4. Build the two fields per the scenario rules ----------------
+    fields: list[dict] = []
+
+    # isFetchEvents:
+    #   not long-running  -> synthetic (hidden False default) regardless
+    #                        of whether yml carries it (yml only used for title)
+    #   long-running      -> yml-driven if present, else synthetic fallback
+    if not is_long_running_capability:
+        # Scenario A: always synthetic shape. Title may have been
+        # vendor-overridden via yml.display through _resolve_title_from_yml.
+        ifc_field = _build_isfetchevents_field(
+            yml_param=None, field_id=ifc_field_id, title=ifc_title
+        )
+    else:
+        # Scenarios B/C: yml-driven; fall back to synthetic when missing (E4).
+        ifc_field = _build_isfetchevents_field(
+            yml_param=ifc_yml, field_id=ifc_field_id, title=ifc_title
+        )
+    fields.append(ifc_field)
+
+    # eventFetchInterval: always emitted (E4 — fall back to synthetic when missing).
+    efi_field = _build_eventfetchinterval_field(
+        yml_param=efi_yml, field_id=efi_field_id, title=efi_title
+    )
+    fields.append(efi_field)
+
+    # --- §5. Strip both yml names from mapper results -------------------
+    for cap_name in list(mapped_params.keys()):
+        names = mapped_params.get(cap_name) or []
+        mapped_params[cap_name] = [
+            n
+            for n in names
+            if n not in (ISFETCHEVENTS_PARAM_NAME, EVENTFETCHINTERVAL_PARAM_NAME)
+        ]
+
+    # --- §6. Sub-cap rename bridges (per emitted field) -----------------
+    if is_sub_capability and handler_dir is not None:
+        if ifc_field_id != ISFETCHEVENTS_PARAM_NAME:
+            register_renamed_field_serializer_entry(
+                handler_dir,
+                original_id=ISFETCHEVENTS_PARAM_NAME,
+                renamed_id=ifc_field_id,
+            )
+        if efi_field_id != EVENTFETCHINTERVAL_PARAM_NAME:
+            register_renamed_field_serializer_entry(
+                handler_dir,
+                original_id=EVENTFETCHINTERVAL_PARAM_NAME,
+                renamed_id=efi_field_id,
+            )
+
+    # --- §7. Trigger suppression rule (point 3 of the spec) -------------
+    # Trigger fires ONLY for the non-long-running case. In B/C the
+    # long-running Rule 7 pinning already gates the capability, so a
+    # reveal-when-selected trigger would be redundant.
+    if not is_long_running_capability:
+        adjust_checkbox_trigger(
+            capability_id=capability_id, param_id=ifc_field_id
+        )
+
+    return {
+        "capability_id": capability_id,
+        "fields": fields,
+    }
+
+
+# ------------------------------------------------------------------ #
+# Fetch Assets and Vulnerabilities capability builder
+# ------------------------------------------------------------------ #
+
+# Default human-readable titles + fallback default for the synthetic /
+# fallback emission paths in ``add_assets_capability``.
+_ISFETCHASSETS_DEFAULT_TITLE = "Fetch assets and vulnerabilities"
+_ASSETSFETCHINTERVAL_DEFAULT_TITLE = "Assets Fetch Interval"
+ASSETSFETCHINTERVAL_FALLBACK_DEFAULT = "720"  # string per XSOAR convention (E1=a)
+
+# The original XSOAR yml param names for the two assets capability params.
+# Stripped from mapper results by ``add_assets_capability`` so we don't
+# emit them twice.
+ISFETCHASSETS_PARAM_NAME = "isFetchAssets"
+ASSETSFETCHINTERVAL_PARAM_NAME = "assetsFetchInterval"
+
+
+def _build_assetsfetchinterval_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Thin wrapper over :func:`_build_numeric_fetch_interval_field`
+    bound to the fetch-assets capability's ``"720"`` fallback default.
+    """
+    return _build_numeric_fetch_interval_field(
+        yml_param=yml_param,
+        field_id=field_id,
+        title=title,
+        fallback_default=ASSETSFETCHINTERVAL_FALLBACK_DEFAULT,
+    )
+
+
+def add_assets_capability(
+    *,
+    capability_id: str,
+    is_sub_capability: bool,
+    mapped_params: dict[str, list[str]],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_dir: Path | None = None,
+) -> dict:
+    """Build the per-capability template dict for the ``Fetch Assets and
+    Vulnerabilities`` capability with two fields: ``isFetchAssets``
+    (always synthetic hidden toggle, default ``False``) and
+    ``assetsFetchInterval`` (numeric input, visible by default, fallback
+    ``"720"`` per E1=a).
+
+    Unlike :func:`add_log_collection_capability`, this builder does NOT
+    take an ``is_long_running_capability`` flag — per the spec there is
+    no long-running variant for the fetch-assets capability: both
+    fields are always emitted and the trigger hook ALWAYS fires for
+    ``isFetchAssets`` (no suppression rule).
+
+    Caller contract (mirrors the other ``add_<capability>_capability``
+    builders):
+      - ``capability_id``: connector-side capability id. Pass
+        ``"fetch-assets-and-vulnerabilities"`` for the top-level case
+        or a sub-cap id for the sub-cap case.
+      - ``is_sub_capability``: flips the field-id naming (each emitted
+        field's id becomes ``f"{capability_id}_{original_name}"``).
+
+    Field emission rules:
+
+      | field                | yml has param  | emission                                          |
+      |----------------------|----------------|---------------------------------------------------|
+      | isFetchAssets        | (irrelevant)   | always synthetic hidden toggle, default False;    |
+      |                      |                | title may use yml.display via _resolve_title_from_yml |
+      | assetsFetchInterval  | yes            | yml-driven via _map_type_19; fallback "720"       |
+      |                      |                | injected if yml carries the param but no          |
+      |                      |                | defaultvalue (E2=a)                               |
+      | assetsFetchInterval  | no             | pure synthetic visible numeric input, default "720" |
+
+    Side effects:
+      1. Strips both ``isFetchAssets`` AND ``assetsFetchInterval`` from
+         every bucket of ``mapped_params`` in place so the standard
+         param-mapping pass doesn't re-emit them.
+      2. Sub-cap rename bridges (per emitted field whose id was
+         renamed) via :func:`register_renamed_field_serializer_entry`.
+      3. ALWAYS calls :func:`adjust_checkbox_trigger` for the
+         ``isFetchAssets`` field — there is no trigger-suppression
+         rule for the fetch-assets capability.
+
+    Returns the template dict ``{"capability_id": ..., "fields": [...]}``
+    with exactly 2 entries in ``fields``.
+    """
+    # --- §1. Resolve the connector-side field ids (sub-cap rename) ------
+    ifa_field_id = (
+        f"{capability_id}_{ISFETCHASSETS_PARAM_NAME}"
+        if is_sub_capability
+        else ISFETCHASSETS_PARAM_NAME
+    )
+    afi_field_id = (
+        f"{capability_id}_{ASSETSFETCHINTERVAL_PARAM_NAME}"
+        if is_sub_capability
+        else ASSETSFETCHINTERVAL_PARAM_NAME
+    )
+
+    # --- §2. Resolve titles (E3 — generic helper) -----------------------
+    ifa_title = _resolve_title_from_yml(
+        yml_params_by_name,
+        ISFETCHASSETS_PARAM_NAME,
+        fallback=_ISFETCHASSETS_DEFAULT_TITLE,
+    )
+    afi_title = _resolve_title_from_yml(
+        yml_params_by_name,
+        ASSETSFETCHINTERVAL_PARAM_NAME,
+        fallback=_ASSETSFETCHINTERVAL_DEFAULT_TITLE,
+    )
+
+    # --- §3. Look up yml params (may be None) ---------------------------
+    afi_yml = (
+        yml_params_by_name.get(ASSETSFETCHINTERVAL_PARAM_NAME)
+        if yml_params_by_name
+        else None
+    )
+
+    # --- §4. Build the two fields ---------------------------------------
+    # isFetchAssets: ALWAYS synthetic hidden toggle (no yml-driven path).
+    ifa_field = build_synthetic_hidden_toggle(
+        field_id=ifa_field_id,
+        title=ifa_title,
+        default_value=False,
+        required=False,
+    )
+    # assetsFetchInterval: yml-driven if present, else synthetic fallback.
+    afi_field = _build_assetsfetchinterval_field(
+        yml_param=afi_yml, field_id=afi_field_id, title=afi_title
+    )
+
+    fields: list[dict] = [ifa_field, afi_field]
+
+    # --- §5. Strip both yml names from mapper results -------------------
+    for cap_name in list(mapped_params.keys()):
+        names = mapped_params.get(cap_name) or []
+        mapped_params[cap_name] = [
+            n
+            for n in names
+            if n not in (ISFETCHASSETS_PARAM_NAME, ASSETSFETCHINTERVAL_PARAM_NAME)
+        ]
+
+    # --- §6. Sub-cap rename bridges (per emitted field) -----------------
+    if is_sub_capability and handler_dir is not None:
+        if ifa_field_id != ISFETCHASSETS_PARAM_NAME:
+            register_renamed_field_serializer_entry(
+                handler_dir,
+                original_id=ISFETCHASSETS_PARAM_NAME,
+                renamed_id=ifa_field_id,
+            )
+        if afi_field_id != ASSETSFETCHINTERVAL_PARAM_NAME:
+            register_renamed_field_serializer_entry(
+                handler_dir,
+                original_id=ASSETSFETCHINTERVAL_PARAM_NAME,
+                renamed_id=afi_field_id,
+            )
+
+    # --- §7. Trigger hook (ALWAYS fires for isFetchAssets) --------------
+    # Per spec: no long-running suppression rule for fetch-assets.
+    adjust_checkbox_trigger(
+        capability_id=capability_id, param_id=ifa_field_id
+    )
+
+    return {
+        "capability_id": capability_id,
+        "fields": fields,
+    }
+
+
 CAPABILITIES_SCHEMA_DIRECTIVE = (
     "# yaml-language-server: $schema=../../schema/capabilities.schema.json\n"
 )
