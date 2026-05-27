@@ -1057,7 +1057,7 @@ class Client(BaseClient):
     def add_nat_rule(
         self,
         package: str,
-        position: str,
+        position: str | int | dict,
         name: Optional[str] = None,
         original_source: Optional[str] = None,
         original_destination: Optional[str] = None,
@@ -2658,7 +2658,8 @@ def checkpoint_list_access_rule_command(
 def checkpoint_add_access_rule_command(
     client: Client,
     layer: str,
-    position,
+    position: str,
+    position_rule: str = None,
     action: str = "Drop",
     name: str = None,
     vpn: str = None,
@@ -2678,7 +2679,10 @@ def checkpoint_add_access_rule_command(
     Args:
         client (Client): CheckPoint client.
         layer(str): Layer that the rule belongs to identified by the name or UID.
-        position(int or str): Position in the rulebase.
+        position(str): Position in the rulebase. Can be an integer, "top", "bottom", "above", or "below".
+        position_rule(str): The name of the rule or section to position relative to.
+            Required when position is "above" or "below".
+            Optional when position is "top" or "bottom" (used as a reference section name).
         name(str): rule name
         action(str): Action settings. valid values are: Accept, Drop, Apply Layer, Ask and Info
         vpn(str): Communities or Directional. Valid values: Any, All_GwToGw.
@@ -2692,6 +2696,24 @@ def checkpoint_add_access_rule_command(
         track_accounting (str): Turns accounting for track on and off.
         track_per_session (str): Determines whether to perform the log per session.
     """
+    """
+    According to API docs:
+    - "above"/"below" require position_rule (reference rule/section name)
+    - "top"/"bottom" can optionally use position_rule (reference section name)
+    - integer position is sent as-is (no position_rule needed)
+    """
+    if position in ("above", "below") and not position_rule:
+        raise DemistoException(
+            f"The 'position_rule' argument is required when position is '{position}'. "
+            f"Provide the name of the rule or section to position relative to."
+        )
+    if position_rule:
+        position_obj: str | int | dict = {position: position_rule}
+    elif position.isdigit():
+        position_obj = int(position)
+    else:
+        position_obj = position
+
     install_on_list = argToList(install_on) if install_on else None
     enabled_bool = argToBoolean(enabled) if enabled is not None else None
 
@@ -2710,7 +2732,7 @@ def checkpoint_add_access_rule_command(
 
     result = client.add_rule(
         layer,
-        position,
+        position_obj,
         action,
         name=name,
         vpn=vpn,
@@ -4555,6 +4577,7 @@ def checkpoint_nat_rule_add_command(
     client: Client,
     package: str,
     position: str,
+    position_rule: str = None,
     name: str = None,
     original_source: str = None,
     original_destination: str = None,
@@ -4574,7 +4597,10 @@ def checkpoint_nat_rule_add_command(
     Args:
         client (Client): CheckPoint client.
         package (str): Name of the package.
-        position (str): Position in the rulebase. Can be 'top'/'bottom'.
+        position (str): Position in the rulebase. Can be an integer, "top", "bottom", "above", or "below".
+        position_rule (str): The name of the rule or section to position relative to.
+            Required when position is "above" or "below".
+            Optional when position is "top" or "bottom" (used as a reference section name).
         name (str): Rule name.
         original_source (str): Original source.
         original_destination (str): Original destination.
@@ -4589,12 +4615,31 @@ def checkpoint_nat_rule_add_command(
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-nat-rule-add command called with args: {demisto.args()}")
+
+    """
+    According to API docs:
+    - "above"/"below" require position_rule (reference rule/section name)
+    - "top"/"bottom" can optionally use position_rule (reference section name)
+    - integer position is sent as-is (no position_rule needed)
+    """
+    if position in ("above", "below") and not position_rule:
+        raise DemistoException(
+            f"The 'position_rule' argument is required when position is '{position}'. "
+            f"Provide the name of the rule or section to position relative to."
+        )
+    if position_rule:
+        position_obj: str | int | dict = {position: position_rule}
+    elif position.isdigit():
+        position_obj = int(position)
+    else:
+        position_obj = position
+
     install_on = argToList(install_on)
     tags = argToList(tags)
 
     result = client.add_nat_rule(
         package=package,
-        position=position,
+        position=position_obj,
         name=name,
         original_source=original_source,
         original_destination=original_destination,
@@ -5815,3 +5860,4 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+

@@ -1704,9 +1704,11 @@ script:
     - description: Layer to which to assign the rule, identified by the name or UID.
       name: layer
       required: true
-    - description: Position in the rulebase.
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
       name: position
       required: true
+    - description: The name of the rule or section to use as a reference point. The new rule is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
+      name: position_rule
     - description: Rule name.
       name: name
     - auto: PREDEFINED
@@ -3379,16 +3381,10 @@ script:
     - description: The layer that the rule belongs to, identified by the name or UID.
       name: layer
       required: true
-    - description: The name of the rule to use as a reference point. The new rule is positioned relative to this rule or section.
+    - description: The name of the rule or section to use as a reference point. The new section is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
       name: position_rule
-    - auto: PREDEFINED
-      description: The position of the rule.
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
       name: position
-      predefined:
-      - top
-      - above
-      - below
-      - bottom
       required: true
     - auto: PREDEFINED
       defaultValue: standard
@@ -4755,13 +4751,11 @@ script:
     - description: The name of the package.
       name: package
       required: true
-    - description: The position in the rule base.
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
       name: position
       required: true
-      auto: PREDEFINED
-      predefined:
-      - 'top'
-      - 'bottom'
+    - description: The name of the rule or section to use as a reference point. The new rule is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
+      name: position_rule
     - description: The rule name.
       name: name
     - description: The original source object.

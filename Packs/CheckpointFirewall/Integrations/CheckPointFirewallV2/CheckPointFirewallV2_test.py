@@ -2119,6 +2119,126 @@ def test_checkpoint_nat_rule_add_command_args(mocker):
     )
 
 
+def test_nat_rule_add_with_position_rule_above(mocker):
+    """
+    Given
+        a client and NAT rule parameters with position=above and position_rule
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
+
+    checkpoint_nat_rule_add_command(
+        mocked_client, package="Standard", position="above", position_rule="rule-1"
+    )
+
+    call_kwargs = mocked_client.add_nat_rule.call_args
+    assert call_kwargs[1]["position"] == {"above": "rule-1"}
+
+
+def test_nat_rule_add_with_position_rule_below(mocker):
+    """
+    Given
+        a client and NAT rule parameters with position=below and position_rule
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
+
+    checkpoint_nat_rule_add_command(
+        mocked_client, package="Standard", position="below", position_rule="section-1"
+    )
+
+    call_kwargs = mocked_client.add_nat_rule.call_args
+    assert call_kwargs[1]["position"] == {"below": "section-1"}
+
+
+def test_nat_rule_add_with_integer_position(mocker):
+    """
+    Given
+        a client and NAT rule parameters with a numeric position string
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate position is converted to an integer
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
+
+    checkpoint_nat_rule_add_command(mocked_client, package="Standard", position="5")
+
+    call_kwargs = mocked_client.add_nat_rule.call_args
+    assert call_kwargs[1]["position"] == 5
+
+
+def test_nat_rule_add_above_without_position_rule(mocker):
+    """
+    Given
+        a client with position=above but no position_rule
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'position_rule' argument is required"):
+        checkpoint_nat_rule_add_command(mocked_client, package="Standard", position="above")
+
+
+def test_nat_rule_add_below_without_position_rule(mocker):
+    """
+    Given
+        a client with position=below but no position_rule
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'position_rule' argument is required"):
+        checkpoint_nat_rule_add_command(mocked_client, package="Standard", position="below")
+
+
+def test_nat_rule_add_top_with_position_rule(mocker):
+    """
+    Given
+        a client with position=top and position_rule (optional reference section)
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
+
+    checkpoint_nat_rule_add_command(
+        mocked_client, package="Standard", position="top", position_rule="section-1"
+    )
+
+    call_kwargs = mocked_client.add_nat_rule.call_args
+    assert call_kwargs[1]["position"] == {"top": "section-1"}
+
+
 def test_checkpoint_nat_rule_update_command(mocker):
     """
     Given
@@ -3050,6 +3170,130 @@ def test_add_access_rule_without_new_args(mocker):
     assert call_kwargs[1]["install_on"] is None
     assert call_kwargs[1]["enabled"] is None
     assert call_kwargs[1]["track"] is None
+
+
+def test_add_access_rule_with_position_rule(mocker):
+    """
+    Given
+        a client and access rule parameters with position=above and position_rule
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_rule.json")
+    mocked_client.add_rule.return_value = mock_response
+
+    checkpoint_add_access_rule_command(
+        mocked_client, "Network", "above", position_rule="rule-1"
+    )
+
+    call_args = mocked_client.add_rule.call_args
+    assert call_args[0][1] == {"above": "rule-1"}
+
+
+def test_add_access_rule_with_position_below_and_position_rule(mocker):
+    """
+    Given
+        a client and access rule parameters with position=below and position_rule
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_rule.json")
+    mocked_client.add_rule.return_value = mock_response
+
+    checkpoint_add_access_rule_command(
+        mocked_client, "Network", "below", position_rule="section-1"
+    )
+
+    call_args = mocked_client.add_rule.call_args
+    assert call_args[0][1] == {"below": "section-1"}
+
+
+def test_add_access_rule_with_integer_position(mocker):
+    """
+    Given
+        a client and access rule parameters with a numeric position string
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        validate position is converted to an integer
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_rule.json")
+    mocked_client.add_rule.return_value = mock_response
+
+    checkpoint_add_access_rule_command(mocked_client, "Network", "3")
+
+    call_args = mocked_client.add_rule.call_args
+    assert call_args[0][1] == 3
+
+
+def test_add_access_rule_above_without_position_rule(mocker):
+    """
+    Given
+        a client with position=above but no position_rule
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'position_rule' argument is required"):
+        checkpoint_add_access_rule_command(mocked_client, "Network", "above")
+
+
+def test_add_access_rule_below_without_position_rule(mocker):
+    """
+    Given
+        a client with position=below but no position_rule
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'position_rule' argument is required"):
+        checkpoint_add_access_rule_command(mocked_client, "Network", "below")
+
+
+def test_add_access_rule_top_with_position_rule(mocker):
+    """
+    Given
+        a client with position=top and position_rule (optional reference section)
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_rule.json")
+    mocked_client.add_rule.return_value = mock_response
+
+    checkpoint_add_access_rule_command(
+        mocked_client, "Network", "top", position_rule="section-1"
+    )
+
+    call_args = mocked_client.add_rule.call_args
+    assert call_args[0][1] == {"top": "section-1"}
 
 
 def test_update_access_rule_with_track_and_incremental(mocker):
