@@ -2,12 +2,14 @@ import json
 import pickle as _pickle
 
 import pytest
+from CommonServerPython import UnsafePickleError, safe_pickle_loads, validate_pickle_opcodes
 from DBotTrainClustering import (
     MESSAGE_CLUSTERING_NOT_VALID,
     MESSAGE_INCORRECT_FIELD,
     MESSAGE_INVALID_FIELD,
     MESSAGE_NO_FIELD_NAME_OR_CLUSTERING,
-    UnsafePickleError,
+    _ALLOWED_CLASSES,
+    _SAFE_MODULE_PREFIXES,
     base64,
     check_list_of_dict,
     datetime,
@@ -15,8 +17,6 @@ from DBotTrainClustering import (
     get_model_if_not_expired,
     main,
     preprocess_incidents_field,
-    safe_pickle_loads,
-    validate_pickle_opcodes,
 )
 from freezegun import freeze_time
 
@@ -270,7 +270,7 @@ def executeCommand(command, args):
         case "getMLModel":
             model = PostProcessing(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
             # Add test module class to allowlist so safe_pickle_loads can deserialize it
-            DBotTrainClustering.ALLOWED_CLASSES.add(("DBotTrainClustering_test", "PostProcessing"))
+            DBotTrainClustering._ALLOWED_CLASSES.add(("DBotTrainClustering_test", "PostProcessing"))
             model_data = base64.b64encode(_pickle.dumps(model)).decode("utf-8")  # guardrails-disable-line
             return [
                 {
@@ -523,7 +523,7 @@ def test_safe_pickle_loads_legitimate_data():
     """Verify that a legitimate pickle payload with allowed types loads successfully."""
     legitimate_data = {"key": "value", "numbers": [1, 2, 3], "nested": {"a": True}}
     payload = _pickle.dumps(legitimate_data)
-    result = safe_pickle_loads(payload)
+    result = safe_pickle_loads(payload, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
     assert result == legitimate_data
 
 
@@ -537,7 +537,7 @@ def test_safe_pickle_loads_blocks_malicious_payload():
     # Malicious pickle that would call os.system('echo pwned')
     malicious_pickle = b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00" b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
     with pytest.raises((UnsafePickleError, _pickle.UnpicklingError)):
-        safe_pickle_loads(malicious_pickle)
+        safe_pickle_loads(malicious_pickle, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
 
 
 def test_validate_pickle_opcodes_blocks_inst():

@@ -56,11 +56,12 @@ def test_extract_domain_from_url(mocker):
 def test_safe_pickle_loads_legitimate_data():
     """Verify that a legitimate pickle payload with allowed types loads successfully."""
     import pickle
-    from GetDuplicatesMlv2 import safe_pickle_loads
+    from CommonServerPython import safe_pickle_loads
+    from GetDuplicatesMlv2 import _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES
 
     legitimate_data = {"key": "value", "numbers": [1, 2, 3]}
     payload = pickle.dumps(legitimate_data)
-    result = safe_pickle_loads(payload)
+    result = safe_pickle_loads(payload, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
     assert result == legitimate_data
 
 
@@ -73,7 +74,8 @@ def test_safe_pickle_loads_blocks_malicious_payload():
     """
     import pickle
     import pytest
-    from GetDuplicatesMlv2 import UnsafePickleError, safe_pickle_loads
+    from CommonServerPython import UnsafePickleError, safe_pickle_loads
+    from GetDuplicatesMlv2 import _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES
 
     # Malicious pickle that would call os.system('echo pwned')
     malicious_pickle = (
@@ -81,13 +83,13 @@ def test_safe_pickle_loads_blocks_malicious_payload():
         b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
     )
     with pytest.raises((UnsafePickleError, pickle.UnpicklingError)):
-        safe_pickle_loads(malicious_pickle)
+        safe_pickle_loads(malicious_pickle, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
 
 
 def test_validate_pickle_opcodes_blocks_inst():
     """Verify INST opcode is blocked."""
     import pytest
-    from GetDuplicatesMlv2 import UnsafePickleError, validate_pickle_opcodes
+    from CommonServerPython import UnsafePickleError, validate_pickle_opcodes
 
     # INST opcode is 'i' (0x69) -- protocol 0 class instantiation
     inst_payload = b"(ios\nsystem\nS'echo pwned'\n."
@@ -98,7 +100,7 @@ def test_validate_pickle_opcodes_blocks_inst():
 def test_validate_pickle_opcodes_allows_legitimate_opcodes():
     """Verify that a normal pickle payload passes opcode validation without error."""
     import pickle
-    from GetDuplicatesMlv2 import validate_pickle_opcodes
+    from CommonServerPython import validate_pickle_opcodes
 
     legitimate_data = {"key": "value", "list": [1, 2, 3]}
     payload = pickle.dumps(legitimate_data)

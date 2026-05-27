@@ -3,11 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from sklearn import impute
 
 import collections
-import io as _io
 import re
 import dateutil.parser  # type: ignore[import]
 import pickle
-import pickletools
 import ipaddress
 import tldextract  # type: ignore
 import editdistance
@@ -18,42 +16,9 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime, timedelta
 
-class UnsafePickleError(Exception):
-    """Raised when a pickle payload contains unsafe opcodes or classes.
-    Two-layer defense against insecure deserialization (RCE via malicious models).
-    Layer 1: RestrictedUnpickler -- allowlist of safe (module, class) pairs.
-    Layer 2: Opcode validator -- blocks legacy/rare pickle opcodes.
-    """
-    pass
 
-
-# Legacy/rare opcodes that legitimate ML models never use.
-_BLOCKED_OPCODES = {
-    "INST", "OBJ", "NEWOBJ_EX",
-    "EXT1", "EXT2", "EXT4",
-    "PERSID", "BINPERSID",
-}
-
-
-def validate_pickle_opcodes(payload):
-    """
-    Layer 2 defense-in-depth: reject pickle payloads containing
-    legacy/rare opcodes that legitimate ML models never use.
-    """
-    try:
-        for opcode, _arg, pos in pickletools.genops(payload):
-            if opcode.name in _BLOCKED_OPCODES:
-                raise UnsafePickleError(
-                    "Blocked unsafe pickle opcode %r at byte %d" % (opcode.name, pos)
-                )
-    except UnsafePickleError:
-        raise
-    except Exception:
-        raise UnsafePickleError("Invalid or malformed pickle payload")
-
-
-# Site-specific allowlist -- only loads pd.DataFrame
-ALLOWED_CLASSES = {
+# Site-specific allowlist for safe pickle loading -- only loads pd.DataFrame
+_ALLOWED_CLASSES = {
     # Pandas
     ("pandas.core.frame", "DataFrame"),
     ("pandas.core.series", "Series"),
@@ -101,33 +66,6 @@ ALLOWED_CLASSES = {
 
 # Safe top-level modules whose internal submodules are all data-science code.
 _SAFE_MODULE_PREFIXES = {"numpy", "pandas"}
-
-
-class RestrictedUnpickler(pickle.Unpickler):
-    """
-    Layer 1 primary defense: strict whitelist-based unpickler.
-    Only allows classes explicitly listed in ALLOWED_CLASSES or
-    from safe data-science module prefixes.
-    """
-
-    def find_class(self, module, name):
-        # Allow exact matches first
-        if (module, name) in ALLOWED_CLASSES:
-            return pickle.Unpickler.find_class(self, module, name)
-        # Allow any submodule of safe data-science libraries
-        top_module = module.split(".")[0]
-        if top_module in _SAFE_MODULE_PREFIXES:
-            return pickle.Unpickler.find_class(self, module, name)
-        # Block everything else
-        raise pickle.UnpicklingError(
-            "Blocked unauthorized class: '%s.%s'" % (module, name)
-        )
-
-
-def safe_pickle_loads(data):
-    """Drop-in replacement for pickle.loads() with two-layer security."""
-    validate_pickle_opcodes(data)
-    return RestrictedUnpickler(_io.BytesIO(data)).load()
 
 # disable-secrets-detection-start
 FEATURES_OTHERS_STRING = (
@@ -760,8 +698,8 @@ def has_phishing_labels(incident):
 
 def load_compressed_features(features_str):
     try:
-        return safe_pickle_loads(zlib.decompress(features_str))
-    except (UnsafePickleError, pickle.UnpicklingError) as e:
+        return safe_pickle_loads(zlib.decompress(features_str), _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
+    except UnsafePickleError as e:
         return_error("Security: blocked unsafe pickle payload: %s" % str(e))
     except Exception as e:
         return_error("Unable to load feature data: %s" % str(e))

@@ -1,9 +1,6 @@
 import builtins
 import collections
-import io as _io
 import math
-import pickle as _pickle
-import pickletools
 from datetime import datetime
 
 import demistomock as demisto
@@ -22,45 +19,8 @@ from sklearn.pipeline import Pipeline
 from CommonServerUserPython import *
 
 
-class UnsafePickleError(Exception):
-    """
-    Raised when a pickle payload contains unsafe opcodes or classes.
-    Two-layer defense against insecure deserialization (RCE via malicious models).
-    Layer 1: RestrictedUnpickler — allowlist of safe (module, class) pairs.
-    Layer 2: Opcode validator — blocks legacy/rare pickle opcodes.
-    """
-
-
-# Legacy/rare opcodes that legitimate ML models never use.
-_BLOCKED_OPCODES = {
-    "INST",
-    "OBJ",
-    "NEWOBJ_EX",
-    "EXT1",
-    "EXT2",
-    "EXT4",
-    "PERSID",
-    "BINPERSID",
-}
-
-
-def validate_pickle_opcodes(payload: bytes) -> None:
-    """
-    Layer 2 defense-in-depth: reject pickle payloads containing
-    legacy/rare opcodes that legitimate ML models never use.
-    """
-    try:
-        for opcode, _arg, pos in pickletools.genops(payload):
-            if opcode.name in _BLOCKED_OPCODES:
-                raise UnsafePickleError(f"Blocked unsafe pickle opcode {opcode.name!r} at byte {pos}")
-    except UnsafePickleError:
-        raise
-    except Exception:
-        raise UnsafePickleError("Invalid or malformed pickle payload")
-
-
-# Site-specific allowlist — exact (module, class) pairs this site needs.
-ALLOWED_CLASSES: set[tuple[str, str]] = {
+# Site-specific allowlist for safe pickle loading — exact (module, class) pairs this site needs.
+_ALLOWED_CLASSES: set[tuple[str, str]] = {
     # Custom schema classes (defined in this script)
     ("__main__", "PostProcessing"),
     ("__main__", "Clustering"),
@@ -103,31 +63,6 @@ ALLOWED_CLASSES: set[tuple[str, str]] = {
 
 # Safe top-level modules whose internal submodules are all data-science code.
 _SAFE_MODULE_PREFIXES = {"sklearn", "numpy", "pandas", "hdbscan", "scipy"}
-
-
-class RestrictedUnpickler(_pickle.Unpickler):
-    """
-    Layer 1 primary defense: strict whitelist-based unpickler.
-    Only allows classes explicitly listed in ALLOWED_CLASSES or
-    from safe data-science module prefixes.
-    """
-
-    def find_class(self, module: str, name: str) -> type:
-        # Allow exact matches first
-        if (module, name) in ALLOWED_CLASSES:
-            return super().find_class(module, name)
-        # Allow any submodule of safe data-science libraries
-        top_module = module.split(".")[0]
-        if top_module in _SAFE_MODULE_PREFIXES:
-            return super().find_class(module, name)
-        # Block everything else
-        raise _pickle.UnpicklingError(f"Blocked unauthorized class: '{module}.{name}'")
-
-
-def safe_pickle_loads(data: bytes) -> object:
-    """Drop-in replacement for pickle.loads() with two-layer security."""
-    validate_pickle_opcodes(data)
-    return RestrictedUnpickler(_io.BytesIO(data)).load()
 
 
 GENERAL_MESSAGE_RESULTS = "\n".join(
@@ -894,8 +829,8 @@ def get_model(model_name: str) -> Optional[PostProcessing]:
     model_base64 = res_model["Contents"]["modelData"]
     try:
         raw_bytes = base64.b64decode(model_base64)
-        return cast(PostProcessing, safe_pickle_loads(raw_bytes))
-    except (UnsafePickleError, _pickle.UnpicklingError) as e:
+        return cast(PostProcessing, safe_pickle_loads(raw_bytes, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES))
+    except UnsafePickleError as e:
         demisto.error(f"Security: blocked unsafe model payload: {e}")
         return None
     except Exception as e:
