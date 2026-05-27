@@ -4459,6 +4459,34 @@
             ]
         },
         {
+            "playbookID": "Check Point - IOC Enrichment and Triage - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Feed"
+            ]
+        },
+        {
+            "playbookID": "Check Point - Credential Leak Validation and Response - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Feed"
+            ]
+        },
+        {
+            "playbookID": "Check Point - Vulnerability Exploitation Monitoring - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Feed"
+            ]
+        },
+        {
+            "playbookID": "Check Point - Phishing Takedown - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Takedowns"
+            ]
+        },
+        {
             "playbookID": "Druva-Test",
             "fromversion": "5.0.0",
             "integrations": [
