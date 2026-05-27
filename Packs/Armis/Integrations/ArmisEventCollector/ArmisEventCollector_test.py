@@ -1890,7 +1890,7 @@ class TestHandleFetchedEventsAfterStreaming:
 
         handle_fetched_events({}, {})
 
-        mock_send.assert_called_once_with(events=[], vendor="armis", product="security")
+        mock_send.assert_called_once_with([], vendor="armis", product="security")
 
     def test_skips_empty_event_lists(self, mocker):
         """
