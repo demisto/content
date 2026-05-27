@@ -10256,7 +10256,7 @@ def _assume_role_credentials(
         aws_secret_access_key=secret_access_key,
         endpoint_url=sts_endpoint_url,
         config=Config(connect_timeout=10, read_timeout=10, retries={"max_attempts": 1}),
-        verify=not argToBoolean(params.get("insecure", False)),
+        verify=not argToBoolean(params.get("insecure", True)),
     )
     assume_kwargs: dict = {"RoleArn": role_arn, "RoleSessionName": role_session_name}
     if session_duration:
@@ -10363,7 +10363,7 @@ def get_service_client(
         )
     client_config = base_config.merge(config) if config else base_config
 
-    verify_ssl: bool = not argToBoolean(params.get("insecure", False)) if params else True
+    verify_ssl: bool = not argToBoolean(params.get("insecure", True)) if params else False
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)

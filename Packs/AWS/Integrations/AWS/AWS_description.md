@@ -1,21 +1,45 @@
 # AWS Integration
 
-This integration enforces AWS security best practices by:
+This integration enforces AWS security best practices across your cloud environment by:
 - Securing RDS instances and clusters by modifying configurations and snapshot attributes.
 - Implementing S3 bucket security controls including ACLs, logging, versioning, and public access restrictions.
 - Managing EC2 security groups, instance attributes, and metadata options.
 - Configuring EKS cluster security settings and CloudTrail logging.
 - Managing IAM policies, login profiles, and access keys.
 
+## Supported Platforms
+
+| Platform | Authentication |
+| --- | --- |
+| **Cortex Cloud (platform)** | Automatic — credentials are provided by the Cortex Cloud connector (CTS). No access keys required. |
+| **Cortex XSOAR** | Manual — configure an AWS Access Key and Secret Key on the integration instance. Optionally assume a role via STS. |
+| **Cortex XSIAM** | Manual — configure an AWS Access Key and Secret Key on the integration instance. Optionally assume a role via STS. |
+
+## Multi-Account Support
+
+When **Role name for cross-organization account access** and **AWS organization accounts** are both configured, commands are executed in parallel across every listed account. Each account result is tagged with its `AccountId`. Per-account failures do not abort the batch. This feature was previously available only in the legacy **AWS-EC2** integration and is now available for all AWS services in this unified integration.
+
+## Configuration (XSOAR / XSIAM)
+
+1. Create an IAM user (or use an existing one) with the required permissions listed below.
+2. Generate an **Access Key ID** and **Secret Access Key** for that user.
+3. On the integration instance, enter the Access Key as the username and the Secret Key as the password in the **Access Key / Secret Key** field.
+4. *(Optional)* If you want the integration to assume a role, enter the full role ARN in **Role ARN**. The IAM user must have `sts:AssumeRole` permission on that role.
+5. *(Optional)* For cross-account fan-out, enter a comma-separated list of account IDs in **AWS organization accounts** and the role name (that exists in each account) in **Role name for cross-organization account access**.
+
+## Configuration (Cortex Cloud)
+
+Cloud integrations are installed from the **Data Sources** page. Go to **Settings > Data Sources**, click **Add Data Source**, select **AWS**, then in **Advanced Settings > Security Capabilities**, enable **Automation**. No access keys are required.
 
 ## Prerequisites
 
-A connect AWS account / AWS  has to be granted the permissions described in: 
+For Cortex Cloud, the connector account must be granted the permissions described in:
 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Premium-Documentation/Cloud-service-provider-permissions#:~:text=Microsoft%20Azure-,Amazon%20Web%20Services%20provider%20permissions,-ADS
 
+For XSOAR / XSIAM, the IAM user or assumed role must have the permissions listed below.
 
 | Command | Required Permissions |
-| ------------- | ------------- |
+| --- | --- |
 | aws-rds-db-cluster-modify | rds:ModifyDBCluster |
 | aws-rds-db-cluster-snapshot-attribute-modify | rds:ModifyDBClusterSnapshotAttribute |
 | aws-rds-db-instance-modify | rds:ModifyDBInstance |
