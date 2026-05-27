@@ -434,7 +434,7 @@ def is_gov_account(connector_id: str, account_id: str = "") -> bool:
         return False
 
 
-def get_timeout(timeout) -> tuple[int, int]:
+def get_timeout(timeout: int | str | None) -> tuple[int, int]:
     """
     Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.
 
@@ -444,7 +444,7 @@ def get_timeout(timeout) -> tuple[int, int]:
     XSOAR / XSIAM marketplace path.
 
     Args:
-        timeout: The raw value from ``params.get("timeout")``. May be ``None``, an
+        timeout (int | str | None): The raw value from ``params.get("timeout")``. May be ``None``, an
             int, or a string.
 
     Returns:
@@ -459,6 +459,8 @@ def get_timeout(timeout) -> tuple[int, int]:
         if isinstance(timeout, int):
             return timeout, 10
         timeout_vals = str(timeout).split(",")
+        if len(timeout_vals) > 2:
+            raise ValueError(f"Too many timeout values: expected 1 or 2, got {len(timeout_vals)}")
         read_timeout = int(timeout_vals[0])
         connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
         return read_timeout, connect_timeout

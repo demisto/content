@@ -10239,10 +10239,6 @@ def _assume_role_credentials(
     Returns:
         dict: ``{"AccessKeyId", "SecretAccessKey", "SessionToken"}`` from the STS response.
     """
-    if regional := params.get("sts_regional_endpoint"):
-        demisto.debug(f"Setting AWS_STS_REGIONAL_ENDPOINTS={regional}")
-        os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = regional.lower()
-
     role_arn: str = params.get("role_arn", "")
     role_session_name: str = params.get("role_session_name") or DEFAULT_SESSION_NAME
     session_duration = arg_to_number(params.get("session_duration"))
@@ -10256,7 +10252,7 @@ def _assume_role_credentials(
         aws_secret_access_key=secret_access_key,
         endpoint_url=sts_endpoint_url,
         config=Config(connect_timeout=10, read_timeout=10, retries={"max_attempts": 1}),
-        verify=not argToBoolean(params.get("insecure", True)),
+        verify=not argToBoolean(params.get("insecure", False)),
     )
     assume_kwargs: dict = {"RoleArn": role_arn, "RoleSessionName": role_session_name}
     if session_duration:
@@ -10363,7 +10359,7 @@ def get_service_client(
         )
     client_config = base_config.merge(config) if config else base_config
 
-    verify_ssl: bool = not argToBoolean(params.get("insecure", True)) if params else False
+    verify_ssl: bool = not argToBoolean(params.get("insecure", False)) if params else True
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)
@@ -10384,6 +10380,11 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     Otherwise the command runs once against the single account from ``args["account_id"]``
     (platform) or the configured credentials (marketplace).
     """
+    # Set STS regional endpoint mode once on the main thread before any parallel execution.
+    if not get_connector_id() and (regional := params.get("sts_regional_endpoint")):
+        demisto.debug(f"Setting AWS_STS_REGIONAL_ENDPOINTS={regional}")
+        os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = regional.lower()
+
     role_name = params.get("access_role_name", "").removeprefix("role/")
     accounts = argToList(params.get("accounts_to_access"))
 

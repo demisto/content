@@ -1137,9 +1137,10 @@ def test_get_timeout_valid_inputs(timeout, expected):
     assert get_timeout(timeout) == expected
 
 
-def test_get_timeout_invalid_raises():
+@pytest.mark.parametrize("bad_timeout", ["not-a-number", "60,10,5"])
+def test_get_timeout_invalid_raises(bad_timeout):
     """
-    Given: A malformed timeout string.
+    Given: A malformed timeout string or too many comma-separated values.
     When: get_timeout is called.
     Then: Raises DemistoException with a helpful message.
     """
@@ -1147,4 +1148,4 @@ def test_get_timeout_invalid_raises():
     from CommonServerPython import DemistoException
 
     with pytest.raises(DemistoException, match="read timeout"):
-        get_timeout("not-a-number")
+        get_timeout(bad_timeout)
