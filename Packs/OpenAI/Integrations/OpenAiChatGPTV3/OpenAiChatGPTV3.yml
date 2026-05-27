@@ -2,7 +2,6 @@ category: Messaging and Conferencing
 provider: OpenAI
 sectionorder:
 - Connect
-- Connect - Compliance
 - Collect
 name: OpenAi ChatGPT v3
 display: OpenAI GPT
@@ -17,6 +16,17 @@ configuration:
   defaultvalue: https://api.openai.com/
   section: Connect
   type: 0
+- display: ChatGPT Server URL
+  name: chatgpt_api_url
+  type: 0
+  required: false
+  defaultvalue: https://api.chatgpt.com
+  section: Connect
+  additionalinfo: 'The base URL for the ChatGPT Platform Compliance APIs.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - displaypassword: OpenAI API Key
   name: apikey
   type: 9
@@ -30,6 +40,26 @@ configuration:
   required: false
   section: Connect
   additionalinfo: 'The Admin API key for the OpenAI Platform. Required only when fetching the "OpenAI Audit logs" event type.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Compliance API Key
+  name: compliance_api_key
+  type: 14
+  required: false
+  section: Connect
+  additionalinfo: 'The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Workspace ID
+  name: workspace_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: 'The Compliance workspace UUID (for example, 4a4676f3-3d74-4723-b696-c93e6d01078a). Required when fetching Compliance event types.'
   hidden:
   - xsoar
   supportedModules:
@@ -100,37 +130,6 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: ChatGPT Server URL
-  name: chatgpt_api_url
-  type: 0
-  required: false
-  defaultvalue: https://api.chatgpt.com
-  section: Connect - Compliance
-  additionalinfo: 'The base URL for the ChatGPT Platform Compliance APIs.'
-  hidden:
-  - xsoar
-  supportedModules:
-  - xsiam
-- display: Compliance API Key
-  name: compliance_api_key
-  type: 14
-  required: false
-  section: Connect - Compliance
-  additionalinfo: 'The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types.'
-  hidden:
-  - xsoar
-  supportedModules:
-  - xsiam
-- display: Workspace ID
-  name: workspace_id
-  type: 0
-  required: false
-  section: Connect - Compliance
-  additionalinfo: 'The Compliance workspace UUID (for example, 4a4676f3-3d74-4723-b696-c93e6d01078a). Required when fetching Compliance event types.'
-  hidden:
-  - xsoar
-  supportedModules:
-  - xsiam
 - display: Fetch events
   name: isFetchEvents
   type: 8
