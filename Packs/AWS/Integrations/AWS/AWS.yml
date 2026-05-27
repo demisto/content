@@ -54,7 +54,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  defaultvalue: 5
+  defaultvalue: '5'
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0

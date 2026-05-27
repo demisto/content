@@ -423,6 +423,16 @@ def is_gov_account(connector_id: str, account_id: str = "") -> bool:
         demisto.debug(f"[COOC API] There are no {account_id=} or {accounts_info=} for the {connector_id=}.")
         return False
 
+    if account_cloud_partition := relevant_account.get("cloud_partition", ""):
+        demisto.debug(f"[COOC API] The found {account_cloud_partition=}")
+        return account_cloud_partition.upper() == "GOV"
+    else:
+        demisto.debug(f"[COOC API] The information found for account_id: {account_id}, {relevant_account=}.")
+        demisto.debug(
+            f"[COOC API] The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}"
+        )
+        return False
+
 
 def get_timeout(timeout) -> tuple[int, int]:
     """
@@ -458,13 +468,3 @@ def get_timeout(timeout) -> tuple[int, int]:
             "timeout followed after a comma (for example 60,10). If a connect timeout is "
             "not specified, a default of 10 seconds will be used."
         )
-
-    if account_cloud_partition := relevant_account.get("cloud_partition", ""):
-        demisto.debug(f"[COOC API] The found {account_cloud_partition=}")
-        return account_cloud_partition.upper() == "GOV"
-    else:
-        demisto.debug(f"[COOC API] The information found for account_id: {account_id}, {relevant_account=}.")
-        demisto.debug(
-            f"[COOC API] The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}"
-        )
-        return False
