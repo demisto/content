@@ -667,7 +667,7 @@ script:
         - "true"
         - "false"
     name: service-desk-plus-request-notes-add
-    description: add a request note.
+    description: Adds a request note.
     outputs:
     - contextPath: ServiceDeskPlus.Request.Note.mark_first_response
       description: 'mark first response or not.'
