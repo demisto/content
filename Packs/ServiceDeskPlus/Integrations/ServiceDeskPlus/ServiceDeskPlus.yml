@@ -590,7 +590,7 @@ script:
       description: 'The request subject.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.id
-      description: 'Request id.'
+      description: 'The request ID.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.notify_technician
       description: 'Notify technician or not.'
