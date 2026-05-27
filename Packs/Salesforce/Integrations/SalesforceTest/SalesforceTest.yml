@@ -2,10 +2,10 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: SalesforceV2
+  id: SalesforceTest
   version: -1
-name: SalesforceV2
-display: SalesforceV2
+name: SalesforceTest
+display: SalesforceTest
 category: Case Management
 provider: Salesforce
 description: CRM Services.
