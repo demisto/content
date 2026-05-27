@@ -694,7 +694,7 @@ script:
       description: 'notify technician or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.show_to_requester
-      description: 'show to requester or not.'
+      description: 'Whether to show request notes to the requester.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.description
       description: 'note description.'
