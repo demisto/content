@@ -355,7 +355,7 @@ def resolution_human_readable(output: dict) -> dict:
     return hr
 
 
-def note_human_readable(res: dict | list):
+def note_human_readable(res: dict | list) -> str:
     if isinstance(res, dict):
         prefix = f"Note of request {res.get('request', {}).get('id')}:"
         res = [res]
