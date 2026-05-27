@@ -2249,6 +2249,7 @@ def checkpoint_update_address_range_command(
     comments: str = None,
     groups=None,
     color: str = None,
+    nat_auto_rule: str = None,
     nat_method: str = None,
     nat_ip: str = None,
     nat_install_on: str = None,
@@ -2271,6 +2272,7 @@ def checkpoint_update_address_range_command(
         comments(str): Comments string.
         groups(str or list): Collection of group identifiers.
         color (str): Object color.
+        nat_auto_rule (str): Whether to enable automatic NAT rule generation.
         nat_method (str): NAT translation method (hide or static).
         nat_ip (str): NAT IPv4 or IPv6 address.
         nat_install_on (str): Gateway for NAT install-on setting.
@@ -2281,7 +2283,7 @@ def checkpoint_update_address_range_command(
     tags_list = argToList(tags) if tags else None
     ignore_warnings_bool = argToBoolean(ignore_warnings)
     ignore_errors_bool = argToBoolean(ignore_errors)
-    nat_settings = build_nat_settings(None, nat_method, nat_ip, nat_install_on, nat_hide_behind, require_auto_rule=False)
+    nat_settings = build_nat_settings(nat_auto_rule, nat_method, nat_ip, nat_install_on, nat_hide_behind)
 
     result = client.update_address_range(
         identifier,

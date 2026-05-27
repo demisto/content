@@ -2945,6 +2945,7 @@ def test_update_address_range_with_nat_and_color(mocker):
         "range1",
         color="red",
         tags="tagA",
+        nat_auto_rule="true",
         nat_method="static",
         nat_ip="10.10.10.10",
     )
@@ -2953,9 +2954,32 @@ def test_update_address_range_with_nat_and_color(mocker):
     assert call_kwargs[1]["color"] == "red"
     assert call_kwargs[1]["tags"] == ["tagA"]
     assert call_kwargs[1]["nat_settings"] == {
+        "auto-rule": True,
         "method": "static",
         "ipv4-address": "10.10.10.10",
     }
+
+
+def test_update_address_range_nat_auto_rule_required(mocker):
+    """
+    Given
+        a client with nat_method but no nat_auto_rule
+    When
+        calling checkpoint_update_address_range_command
+    Then
+        validate a ValueError is raised requiring nat_auto_rule
+    """
+    from CheckPointFirewallV2 import checkpoint_update_address_range_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(ValueError, match="'nat_auto_rule' argument is required"):
+        checkpoint_update_address_range_command(
+            mocked_client,
+            "range1",
+            nat_method="static",
+            nat_ip="10.10.10.10",
+        )
 
 
 def test_update_address_range_without_new_args(mocker):

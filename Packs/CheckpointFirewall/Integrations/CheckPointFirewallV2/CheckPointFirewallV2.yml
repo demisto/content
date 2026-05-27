@@ -1223,6 +1223,12 @@ script:
       - sienna
       - yellow
     - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
       description: Update NAT method.
       name: nat_method
       predefined:
