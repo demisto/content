@@ -244,6 +244,18 @@ script:
     - contextPath: GravityZone.EndpointMemoryDump.Hostname
       description: The endpoint hostname.
       type: String
+    - contextPath: GravityZone.EndpointMemoryDump.StartDate
+      description: The memory dump task start date for the endpoint.
+      type: Date
+    - contextPath: GravityZone.EndpointMemoryDump.EndDate
+      description: The memory dump task end date for the endpoint.
+      type: Date
+    - contextPath: GravityZone.EndpointMemoryDump.ErrorCode
+      description: The memory dump task error code, if available.
+      type: String
+    - contextPath: GravityZone.EndpointMemoryDump.ErrorMessage
+      description: The memory dump task error message, if available.
+      type: String
     - contextPath: GravityZone.EndpointMemoryDump.memoryDumpDownloadURL
       description: The memory dump download URL when task is completed successfully.
       type: String

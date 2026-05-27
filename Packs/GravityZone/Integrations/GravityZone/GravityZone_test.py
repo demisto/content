@@ -451,8 +451,8 @@ def test_build_users_loggedin_results_outputs_endpoint_scoped_context():
     }
 
 
-def test_extract_memory_dump_download_url_uses_matching_endpoint_subtask():
-    from GravityZone import _extract_memory_dump_download_url
+def test_extract_memory_dump_summary_uses_matching_endpoint_subtask_and_download_url():
+    from GravityZone import _extract_memory_dump_summary
 
     task_output = {
         "subtasks": [
@@ -469,11 +469,19 @@ def test_extract_memory_dump_download_url_uses_matching_endpoint_subtask():
         ]
     }
 
-    assert _extract_memory_dump_download_url(task_output, "endpoint-1") == "https://example.com/memory-dump"
+    endpoint_id, endpoint_hostname, subtask, download_url = _extract_memory_dump_summary(task_output, "endpoint-1")
+    assert endpoint_id == "endpoint-1"
+    assert endpoint_hostname == ""
+    assert subtask == {
+        "endpointId": "endpoint-1",
+        "status": 3,
+        "downloadURL": "https://example.com/memory-dump",
+    }
+    assert download_url == "https://example.com/memory-dump"
 
 
-def test_extract_memory_dump_download_url_ignores_non_processed_subtask():
-    from GravityZone import _extract_memory_dump_download_url
+def test_extract_memory_dump_summary_ignores_non_processed_subtask_for_download_url():
+    from GravityZone import _extract_memory_dump_summary
 
     task_output = {
         "subtasks": [
@@ -485,7 +493,15 @@ def test_extract_memory_dump_download_url_ignores_non_processed_subtask():
         ]
     }
 
-    assert _extract_memory_dump_download_url(task_output, "endpoint-1") == ""
+    endpoint_id, endpoint_hostname, subtask, download_url = _extract_memory_dump_summary(task_output, "endpoint-1")
+    assert endpoint_id == "endpoint-1"
+    assert endpoint_hostname == ""
+    assert subtask == {
+        "endpointId": "endpoint-1",
+        "status": 2,
+        "downloadURL": "https://example.com/should-not-be-used",
+    }
+    assert download_url == ""
 
 
 def test_extract_memory_dump_task_id_from_string_result():
@@ -511,6 +527,10 @@ def test_build_memory_dump_results_outputs_download_url_on_success():
                 "endpointId": "endpoint-1",
                 "endpointName": "host-1",
                 "status": 3,
+                "startDate": "2026-05-25T10:00:00",
+                "endDate": "2026-05-25T10:01:00",
+                "errorCode": "Success",
+                "errorMessage": "Success",
                 "downloadURL": "https://example.com/memory-dump",
             }
         ],
@@ -523,6 +543,10 @@ def test_build_memory_dump_results_outputs_download_url_on_success():
     assert result.outputs == {
         "ID": "endpoint-1",
         "Hostname": "host-1",
+        "StartDate": "2026-05-25T10:00:00",
+        "EndDate": "2026-05-25T10:01:00",
+        "ErrorCode": "Success",
+        "ErrorMessage": "Success",
         "memoryDumpDownloadURL": "https://example.com/memory-dump",
     }
 
@@ -537,6 +561,10 @@ def test_build_memory_dump_results_omits_download_url_when_unavailable():
                 "endpointId": "endpoint-1",
                 "endpointName": "host-1",
                 "status": 4,
+                "startDate": "2026-05-25T10:00:00",
+                "endDate": "2026-05-25T10:01:00",
+                "errorCode": "InvalidPath",
+                "errorMessage": "Destination path does not exist",
             }
         ],
     }
@@ -546,8 +574,12 @@ def test_build_memory_dump_results_omits_download_url_when_unavailable():
     assert result.outputs == {
         "ID": "endpoint-1",
         "Hostname": "host-1",
+        "StartDate": "2026-05-25T10:00:00",
+        "EndDate": "2026-05-25T10:01:00",
+        "ErrorCode": "InvalidPath",
+        "ErrorMessage": "Destination path does not exist",
+        "memoryDumpDownloadURL": "",
     }
-    assert "memoryDumpDownloadURL" not in result.outputs
 
 
 def test_generate_processed_task_command_result_maps_memory_dump_task_type():

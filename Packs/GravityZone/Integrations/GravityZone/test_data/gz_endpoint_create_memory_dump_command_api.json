@@ -49,7 +49,11 @@
           {
             "endpointId": "ENDPOINT_ID",
             "endpointName": "ENDPOINT_NAME",
-            "status": 1
+            "status": 1,
+            "startDate": "2026-05-25T10:00:00",
+            "endDate": "",
+            "errorCode": "",
+            "errorMessage": ""
           }
         ],
         "totalTargetsCount": 1
@@ -86,6 +90,10 @@
             "endpointId": "ENDPOINT_ID",
             "endpointName": "ENDPOINT_NAME",
             "status": 3,
+            "startDate": "2026-05-25T10:00:00",
+            "endDate": "2026-05-25T10:01:00",
+            "errorCode": "Success",
+            "errorMessage": "Success",
             "downloadURL": "https://example.com/memory-dump.zip"
           }
         ],

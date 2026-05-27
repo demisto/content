@@ -2,6 +2,10 @@
     "GravityZone.EndpointMemoryDump(val.ID && val.ID == obj.ID)": {
         "ID": "ENDPOINT_ID",
         "Hostname": "ENDPOINT_NAME",
+        "StartDate": "2026-05-25T10:00:00",
+        "EndDate": "2026-05-25T10:01:00",
+        "ErrorCode": "Success",
+        "ErrorMessage": "Success",
         "memoryDumpDownloadURL": "https://example.com/memory-dump.zip"
     }
 }

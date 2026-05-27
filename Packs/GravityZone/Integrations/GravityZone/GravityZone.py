@@ -1935,50 +1935,70 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
     )
 
 
-def _extract_memory_dump_download_url(task_output: dict[str, Any], endpoint_id: str) -> str:
+def _extract_memory_dump_summary(task_output: dict[str, Any], endpoint_id: str) -> tuple[str, str, dict[str, Any], str]:
+    resolved_endpoint_id = endpoint_id
+    resolved_hostname = ""
+    fallback_subtask: dict[str, Any] = {}
+    processed_subtask: dict[str, Any] = {}
+    download_url = ""
+
     for subtask in task_output.get("subtasks", []):
         subtask_endpoint_id = subtask.get("endpointId") or ""
+        subtask_hostname = subtask.get("endpointName") or ""
+
         if endpoint_id and subtask_endpoint_id != endpoint_id:
             continue
 
-        if subtask.get("status") != TASK_STATUS_PROCESSED:
-            continue
+        if not resolved_endpoint_id and subtask_endpoint_id:
+            resolved_endpoint_id = subtask_endpoint_id
 
-        download_url = subtask.get("downloadURL") or ""
-        if download_url:
-            return download_url
+        if not resolved_hostname and subtask_hostname:
+            resolved_hostname = subtask_hostname
 
-    return ""
+        if not fallback_subtask:
+            fallback_subtask = subtask
+
+        if subtask.get("status") == TASK_STATUS_PROCESSED:
+            if not processed_subtask:
+                processed_subtask = subtask
+            if not download_url:
+                download_url = subtask.get("downloadURL") or ""
+
+        if resolved_endpoint_id and subtask_endpoint_id == resolved_endpoint_id and subtask_hostname:
+            resolved_hostname = subtask_hostname
+
+    return resolved_endpoint_id, resolved_hostname, (processed_subtask or fallback_subtask), download_url
 
 
 def _build_memory_dump_results(task_output: dict[str, Any], endpoint_id: str) -> CommandResults:
     """Build endpoint-scoped command results for memory dump status polling."""
-    endpoint_id, endpoint_hostname = _extract_endpoint_summary_from_task(task_output, endpoint_id)
-    download_url = _extract_memory_dump_download_url(task_output, endpoint_id)
+    endpoint_id, endpoint_hostname, memory_dump_subtask, download_url = _extract_memory_dump_summary(task_output, endpoint_id)
 
     endpoint_output: dict[str, Any] = {
         "ID": endpoint_id,
         "Hostname": endpoint_hostname,
+        "StartDate": memory_dump_subtask.get("startDate") or "",
+        "EndDate": memory_dump_subtask.get("endDate") or "",
+        "ErrorCode": memory_dump_subtask.get("errorCode") or "",
+        "ErrorMessage": memory_dump_subtask.get("errorMessage") or "",
+        "memoryDumpDownloadURL": download_url,
     }
-
-    if download_url:
-        endpoint_output["memoryDumpDownloadURL"] = download_url
-        return CommandResults(
-            raw_response=task_output,
-            readable_output=tableToMarkdown(
-                f"Memory dump for endpoint {endpoint_id}",
-                [endpoint_output],
-                headers=["ID", "Hostname", "memoryDumpDownloadURL"],
-            ),
-            outputs=endpoint_output,
-            outputs_prefix="GravityZone.EndpointMemoryDump",
-            outputs_key_field="ID",
-            entry_type=EntryType.NOTE,
-        )
 
     return CommandResults(
         raw_response=task_output,
-        readable_output=f"Memory dump task finished for endpoint {endpoint_id}, but no download URL is available.",
+        readable_output=tableToMarkdown(
+            f"Memory dump for endpoint {endpoint_id}",
+            [endpoint_output],
+            headers=[
+                "ID",
+                "Hostname",
+                "StartDate",
+                "EndDate",
+                "ErrorCode",
+                "ErrorMessage",
+                "memoryDumpDownloadURL",
+            ],
+        ),
         outputs=endpoint_output,
         outputs_prefix="GravityZone.EndpointMemoryDump",
         outputs_key_field="ID",
