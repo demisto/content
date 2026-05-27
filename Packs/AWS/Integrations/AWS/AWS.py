@@ -10419,11 +10419,13 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
                 return results_list
             except Exception as e:
                 demisto.error(f"[AWS] Error for account {account_id}: {e}")
-                return [CommandResults(
-                    readable_output=f"#### Error for account `{account_id}`\n{e}",
-                    entry_type=EntryType.ERROR,
-                    content_format=EntryFormat.MARKDOWN,
-                )]
+                return [
+                    CommandResults(
+                        readable_output=f"#### Error for account `{account_id}`\n{e}",
+                        entry_type=EntryType.ERROR,
+                        content_format=EntryFormat.MARKDOWN,
+                    )
+                ]
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             results: list[CommandResults] = []
