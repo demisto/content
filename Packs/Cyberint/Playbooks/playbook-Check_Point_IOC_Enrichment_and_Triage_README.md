@@ -50,3 +50,10 @@ This playbook does not use any scripts.
 | Cyberint.domain | Cyberint domain IOC enrichment results, including maliciousness score, detected activities and benign verdict. | unknown |
 | Cyberint.url | Cyberint URL IOC enrichment results, including maliciousness score, detected activities and benign verdict. | unknown |
 | Cyberint.file_sha256 | Cyberint file hash IOC enrichment results, including maliciousness score, detected activities and benign verdict. | unknown |
+
+
+## Playbook Image
+
+---
+
+![Check Point - IOC Enrichment and Triage](../doc_files/Check_Point_-_IOC_Enrichment_and_Triage.png)

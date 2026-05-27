@@ -1697,6 +1697,25 @@ def test_pick_cvss_collection_falls_back_to_v3():
     assert vector_string == "CVSS:3.1/AV:N/.."
 
 
+def test_pick_cvss_collection_falls_back_to_v2():
+    """
+    Scenario: Fall back to CVSS v2 when v4 and v3 are absent.
+    Given:
+     - A CVSS object containing only a v2 collection.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the v2 base_score, version and vector_string are returned together.
+    """
+    cvss = {
+        "cvss_v2": {"base_score": 7.5, "version": "2.0", "vector_string": "AV:N/AC:L/Au:N/C:P/I:P/A:P"},
+    }
+    base_score, version, vector_string = FeedCyberint.pick_cvss_collection(cvss)
+    assert base_score == 7.5
+    assert version == "2.0"
+    assert vector_string == "AV:N/AC:L/Au:N/C:P/I:P/A:P"
+
+
 def test_pick_cvss_collection_no_data():
     """
     Scenario: No CVSS collection available.

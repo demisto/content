@@ -52,3 +52,10 @@ This playbook does not use any scripts.
 | --- | --- | --- |
 | Cyberint.takedowns_submit | The submitted Cyberint takedown request. | unknown |
 | Cyberint.takedowns_list | The polled Cyberint takedown request, including its current status. | unknown |
+
+
+## Playbook Image
+
+---
+
+![Check Point - Phishing Takedown](../doc_files/Check_Point_-_Phishing_Takedown.png)

@@ -43,3 +43,10 @@ This playbook does not use any scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Cyberint.LeakedCredential | The leaked credentials returned by the Cyberint lookup, split into employee and customer records, each with username, exposure entries and first/last-seen dates. | unknown |
+
+
+## Playbook Image
+
+---
+
+![Check Point - Credential Leak Validation and Response](../doc_files/Check_Point_-_Credential_Leak_Validation_and_Response.png)
