@@ -2,7 +2,7 @@ id: Office 365 Search and Delete
 version: -1
 name: Office 365 Search and Delete
 deprecated: true
-description: "Deprecated. Use the Microsoft Graph Security - Search And Delete Emails playbook instead. Run a ComplianceSearch on Office 365 and delete the results."
+description: "Deprecated. Use the Microsoft Graph Security - Search And Delete Emails playbook instead. This playbook runs a ComplianceSearch on Office 365 and delete the results."
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
