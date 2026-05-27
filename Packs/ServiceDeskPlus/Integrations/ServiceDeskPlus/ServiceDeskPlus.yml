@@ -831,7 +831,7 @@ script:
       description: 'The request note creator mobile number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.id
-      description: 'creator id.'
+      description: 'The request note creator ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.photo_url
       description: 'creator photo url.'
