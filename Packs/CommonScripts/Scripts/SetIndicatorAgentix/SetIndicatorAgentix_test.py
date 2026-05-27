@@ -102,9 +102,12 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            [  # core-get-issues response
-                {"issue_fields": {"internal_id": "123"}},
-                {"issue_fields": {"internal_id": "456"}},
+            [  # core-get-issues response: [[issues], [metadata]]
+                [
+                    {"internal_id": "123"},
+                    {"internal_id": "456"},
+                ],
+                {"filtered_count": 2, "returned_count": 2},
             ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
@@ -135,7 +138,10 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            [{"issue_fields": {"internal_id": "123"}}],  # core-get-issues response - only issue 123 exists
+            [  # core-get-issues response: [[issues], [metadata]] - only issue 123 exists
+                [{"internal_id": "123"}],
+                {"filtered_count": 1, "returned_count": 1},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
         ]
 
@@ -167,9 +173,12 @@ class TestSetIndicator:
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
             {},  # setIndicator response
-            [  # core-get-issues response
-                {"issue_fields": {"internal_id": "123"}},
-                {"issue_fields": {"internal_id": "456"}},
+            [  # core-get-issues response: [[issues], [metadata]]
+                [
+                    {"internal_id": "123"},
+                    {"internal_id": "456"},
+                ],
+                {"filtered_count": 2, "returned_count": 2},
             ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
@@ -195,9 +204,12 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
-            [  # core-get-issues response - only 123 and 456 exist
-                {"issue_fields": {"internal_id": "123"}},
-                {"issue_fields": {"internal_id": "456"}},
+            [  # core-get-issues response: [[issues], [metadata]] - only 123 and 456 exist
+                [
+                    {"internal_id": "123"},
+                    {"internal_id": "456"},
+                ],
+                {"filtered_count": 2, "returned_count": 2},
             ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
@@ -261,7 +273,10 @@ class TestSetIndicator:
 
             mock_execute.side_effect = [
                 {"data": [{"value": "example.com"}]},  # findIndicators response
-                [{"issue_fields": {"internal_id": "123"}}],  # core-get-issues response
+                [  # core-get-issues response: [[issues], [metadata]]
+                    [{"internal_id": "123"}],
+                    {"filtered_count": 1, "returned_count": 1},
+                ],
                 {},  # associateIndicatorsToAlert response
             ]
 
@@ -298,13 +313,13 @@ class TestSetIndicator:
     @patch("SetIndicatorAgentix.execute_command")
     @patch("SetIndicatorAgentix.argToList")
     def test_core_get_issues_returns_none_alerts(self, mock_arg_to_list, mock_execute):
-        """Test when core-get-issues returns structure without alerts key"""
+        """Test when core-get-issues returns an empty list"""
         args = {"value": "1.1.1.1", "related_issues": "123"}
         mock_arg_to_list.return_value = ["123"]
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            [],  # core-get-issues response - no issues found
+            [],  # core-get-issues response - empty list
         ]
 
         results = set_indicator_if_exist(args)
@@ -322,7 +337,10 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
-            [{"issue_fields": {}}],  # core-get-issues response with malformed issue (missing internal_id)
+            [  # core-get-issues response: [[issues], [metadata]] - issue missing internal_id
+                [{"some_other_field": "value"}],
+                {"filtered_count": 1, "returned_count": 1},
+            ],
         ]
 
         results = set_indicator_if_exist(args)

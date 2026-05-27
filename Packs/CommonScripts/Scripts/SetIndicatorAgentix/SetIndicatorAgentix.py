@@ -20,18 +20,14 @@ def set_indicator_if_exist(args: dict):
             "Value": indicator_value,
             "Result": "Please provide at least one argument to update: type, verdict, tags, or related_issues.",
         }
-        return CommandResults(
-            outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator"
-        )
+        return CommandResults(outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator")
 
     demisto.debug(f"Checking if {indicator_value} exists by running findIndicators.")
     exists = execute_command("findIndicators", {"value": indicator_value})
 
     if not exists:
         outputs = {"Value": indicator_value, "Result": "Indicator does not exist."}
-        return CommandResults(
-            outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator"
-        )
+        return CommandResults(outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator")
 
     success_results = ""
     error_result = ""
@@ -46,19 +42,17 @@ def set_indicator_if_exist(args: dict):
 
     # Associate the indicator to the provided related issues and alert if don't exist.
     if related_issues:
-        issues_found = (
-            execute_command("core-get-issues", {"issue_id": related_issues}) or []
-        )
-
-        if isinstance(issues_found, dict):
-            issues_found = issues_found.get("issues", [])
-
+        raw_issues_found = execute_command("core-get-issues", {"issue_id": related_issues})
+        if not isinstance(raw_issues_found, list) or not raw_issues_found:
+            issues_found: list[dict] = []
+        else:
+            # Structure: [[issue_dict1, issue_dict2, ...], {'filtered_count': int, 'returned_count': int}]
+            first = raw_issues_found[0]
+            issues_found = first if isinstance(first, list) else []
         existing_issues_ids = []
         for existing_issue in issues_found:
-            if not isinstance(existing_issue, dict):
-                continue
-
-            issue_id = existing_issue.get("issue_fields", {}).get("internal_id")
+            demisto.debug(f"Processing issue: {existing_issue}.")
+            issue_id = existing_issue.get("internal_id")
 
             if issue_id:
                 existing_issues_ids.append(issue_id)
@@ -67,18 +61,14 @@ def set_indicator_if_exist(args: dict):
         existing_set = set(existing_issues_ids)
         related_issues = set(related_issues)
         diff_issues = related_issues - existing_set
-        demisto.debug(
-            f"The following issues were provided as related issues but don't exist: {diff_issues}."
-        )
+        demisto.debug(f"The following issues were provided as related issues but don't exist: {diff_issues}.")
 
         if diff_issues:
             error_result = f"The following issues were provided as related issues but don't exist: {diff_issues}."
 
         issues_associated = []
         for issue in existing_issues_ids:
-            demisto.debug(
-                f"running associateIndicatorsToIssue command with issue id {issue}."
-            )
+            demisto.debug(f"running associateIndicatorsToIssue command with issue id {issue}.")
             execute_command(
                 "associateIndicatorsToAlert",
                 {"issueId": issue, "indicatorsValues": indicator_value},
