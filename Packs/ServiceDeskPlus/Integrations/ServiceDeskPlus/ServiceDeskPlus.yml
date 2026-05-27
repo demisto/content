@@ -599,7 +599,7 @@ script:
       description: 'Whether to show request notes to the requester.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.description
-      description: 'Note description.'
+      description: 'The request note description.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
       description: 'Note id.'
