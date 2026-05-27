@@ -270,11 +270,16 @@ def get_events_for_log_type(
             if enrich:
                 event_time_str = inner.get("event_time")
                 if event_time_str:
+                    # Fast path: datetime.fromisoformat() is ~1000x faster than arg_to_datetime
+                    # (which uses dateparser). Menlo returns naive ISO 8601, e.g.
+                    # "2026-05-26T17:20:28.090" — handled natively by fromisoformat.
                     try:
+                        dt = datetime.fromisoformat(event_time_str)
+                        inner["_time"] = dt.strftime(DATE_FORMAT)
+                    except (ValueError, TypeError):
+                        # Fallback for any unexpected format.
                         dt = arg_to_datetime(event_time_str)
                         inner["_time"] = dt.strftime(DATE_FORMAT) if dt else event_time_str
-                    except Exception:
-                        inner["_time"] = event_time_str
                 inner["source_log_type"] = source_log_type
             events.append(inner)
 
@@ -573,7 +578,7 @@ def main() -> None:
         or DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE
     )
     # TODO remove before release
-    demisto.info(f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE} ***")
+    demisto.info(f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, fast_time_parse=on ***")
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
