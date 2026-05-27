@@ -1,6 +1,5 @@
 from typing import Any, TypeAlias
 from collections.abc import Callable
-import urllib.parse
 import urllib3
 import copy
 import dateparser
@@ -1106,8 +1105,7 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    parsed_url = urllib.parse.urlparse(base_url)
-    source = parsed_url.hostname.split(".")[0] if parsed_url.hostname else ""
+    source = "PAN XSIAM" if is_xsiam() else "PAN XSOAR"
 
     processed_args = process_params_and_args(params, args, command)
 
