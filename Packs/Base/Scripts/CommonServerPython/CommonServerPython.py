@@ -13958,8 +13958,8 @@ def invalidate_ucp_credentials(method_unique_id):
 #   Safe Pickle Loading     #
 ###########################################
 # Two-layer defense against insecure deserialization (RCE via malicious pickle payloads).
-# Layer 1: RestrictedUnpickler — allowlist of safe (module, class) pairs + safe module prefixes.
-# Layer 2: Opcode validator — blocks legacy/rare pickle opcodes that legitimate models never use.
+# Layer 1 RestrictedUnpickler: allowlist of safe (module, class) pairs + safe module prefixes.
+# Layer 2 Opcode validator: blocks legacy/rare pickle opcodes that legitimate models never use.
 
 
 class UnsafePickleError(Exception):
@@ -13991,10 +13991,10 @@ def validate_pickle_opcodes(payload):
                 raise UnsafePickleError(
                     "Blocked unsafe pickle opcode {!r} at byte {}".format(opcode.name, pos)
                 )
-    except UnsafePickleError:
-        raise
-    except Exception:
-        raise UnsafePickleError("Invalid or malformed pickle payload")
+    except (UnsafePickleError, Exception) as e:
+        if isinstance(e, UnsafePickleError):
+            raise
+        raise UnsafePickleError("Invalid or malformed pickle payload: {}".format(e))
 
 
 def _make_restricted_unpickler(allowed_classes, safe_module_prefixes):
@@ -14035,10 +14035,10 @@ def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
     """
     Drop-in replacement for ``pickle.loads()`` / ``dill.loads()`` with two-layer security.
 
-    Layer 1 (primary): ``RestrictedUnpickler`` — only allows classes in *allowed_classes*
+    Layer 1 (primary): ``RestrictedUnpickler`` only allows classes in *allowed_classes*
     or from modules whose top-level name is in *safe_module_prefixes*.
 
-    Layer 2 (defense-in-depth): opcode validator — blocks legacy/rare pickle opcodes
+    Layer 2 (defense-in-depth): opcode validator blocks legacy/rare pickle opcodes
     that legitimate ML models never use.
 
     :type data: ``bytes``
