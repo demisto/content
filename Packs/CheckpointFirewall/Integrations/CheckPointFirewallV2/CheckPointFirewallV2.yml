@@ -4144,6 +4144,8 @@ script:
       - yellow
     - description: The time (in seconds) before the session times out.
       name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
@@ -4234,6 +4236,8 @@ script:
       - yellow
     - description: Time (in seconds) before the session times out.
       name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
@@ -4419,6 +4423,8 @@ script:
       - yellow
     - description: The time (in seconds) before the session times out.
       name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
@@ -4514,6 +4520,8 @@ script:
       - yellow
     - description: The time (in seconds) before the session times out.
       name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags

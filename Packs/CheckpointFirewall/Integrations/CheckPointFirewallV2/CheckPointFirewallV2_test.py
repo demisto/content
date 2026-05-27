@@ -1742,6 +1742,7 @@ def test_checkpoint_tcp_service_add_command(mocker):
         comments=None,
         color=None,
         session_timeout=None,
+        aggressive_aging=None,
         tags=None,
     )
 

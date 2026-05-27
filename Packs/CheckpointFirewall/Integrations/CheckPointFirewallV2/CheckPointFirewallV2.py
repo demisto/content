@@ -893,6 +893,7 @@ class Client(BaseClient):
         comments: Optional[str] = None,
         color: Optional[str] = None,
         session_timeout: Optional[int] = None,
+        aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier}
@@ -904,6 +905,8 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+        if aggressive_aging:
+            body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
         demisto.debug(f"add-service-tcp request body: {body}")
@@ -916,6 +919,7 @@ class Client(BaseClient):
         comments: Optional[str] = None,
         color: Optional[str] = None,
         session_timeout: Optional[int] = None,
+        aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier}
@@ -927,6 +931,8 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+        if aggressive_aging:
+            body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
         demisto.debug(f"add-service-udp request body: {body}")
@@ -963,6 +969,7 @@ class Client(BaseClient):
         comments: Optional[str] = None,
         color: Optional[str] = None,
         session_timeout: Optional[int] = None,
+        aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier}
@@ -976,6 +983,8 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+        if aggressive_aging:
+            body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
         demisto.debug(f"set-service-tcp request body: {body}")
@@ -989,6 +998,7 @@ class Client(BaseClient):
         comments: Optional[str] = None,
         color: Optional[str] = None,
         session_timeout: Optional[int] = None,
+        aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier}
@@ -1002,6 +1012,8 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+        if aggressive_aging:
+            body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
         demisto.debug(f"set-service-udp request body: {body}")
@@ -4141,6 +4153,7 @@ def checkpoint_tcp_service_add_command(
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
+    aggressive_aging: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4153,10 +4166,13 @@ def checkpoint_tcp_service_add_command(
         comments (str): Comments string.
         color (str): Color of the object.
         session_timeout (str): Time (in seconds) before the session times out.
+        aggressive_aging (str): JSON object for aggressive aging settings.
+            Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-tcp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
+    aggressive_aging_obj = json.loads(aggressive_aging) if aggressive_aging else None
 
     result = client.add_service_tcp(
         identifier=identifier,
@@ -4164,6 +4180,7 @@ def checkpoint_tcp_service_add_command(
         comments=comments,
         color=color,
         session_timeout=arg_to_number(session_timeout),
+        aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
     )
 
@@ -4202,6 +4219,7 @@ def checkpoint_udp_service_add_command(
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
+    aggressive_aging: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4214,10 +4232,13 @@ def checkpoint_udp_service_add_command(
         comments (str): Comments string.
         color (str): Color of the object.
         session_timeout (str): Time (in seconds) before the session times out.
+        aggressive_aging (str): JSON object for aggressive aging settings.
+            Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-udp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
+    aggressive_aging_obj = json.loads(aggressive_aging) if aggressive_aging else None
 
     result = client.add_service_udp(
         identifier=identifier,
@@ -4225,6 +4246,7 @@ def checkpoint_udp_service_add_command(
         comments=comments,
         color=color,
         session_timeout=arg_to_number(session_timeout),
+        aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
     )
 
@@ -4325,6 +4347,7 @@ def checkpoint_tcp_service_update_command(
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
+    aggressive_aging: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4338,10 +4361,13 @@ def checkpoint_tcp_service_update_command(
         comments (str): Comments string.
         color (str): Color of the object.
         session_timeout (str): Time (in seconds) before the session times out.
+        aggressive_aging (str): JSON object for aggressive aging settings.
+            Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-tcp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
+    aggressive_aging_obj = json.loads(aggressive_aging) if aggressive_aging else None
 
     result = client.update_service_tcp(
         identifier=identifier,
@@ -4350,6 +4376,7 @@ def checkpoint_tcp_service_update_command(
         comments=comments,
         color=color,
         session_timeout=arg_to_number(session_timeout),
+        aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
     )
 
@@ -4389,6 +4416,7 @@ def checkpoint_udp_service_update_command(
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
+    aggressive_aging: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -4402,10 +4430,13 @@ def checkpoint_udp_service_update_command(
         comments (str): Comments string.
         color (str): Color of the object.
         session_timeout (str): Time (in seconds) before the session times out.
+        aggressive_aging (str): JSON object for aggressive aging settings.
+            Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
     """
     demisto.debug(f"checkpoint-udp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
+    aggressive_aging_obj = json.loads(aggressive_aging) if aggressive_aging else None
 
     result = client.update_service_udp(
         identifier=identifier,
@@ -4414,6 +4445,7 @@ def checkpoint_udp_service_update_command(
         comments=comments,
         color=color,
         session_timeout=arg_to_number(session_timeout),
+        aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
     )
 
