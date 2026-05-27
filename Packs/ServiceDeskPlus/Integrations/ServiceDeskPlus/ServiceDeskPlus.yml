@@ -712,7 +712,7 @@ script:
       description: 'The request note creator SMS mail.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.phone
-      description: 'creator phone.'
+      description: 'The request note creator phone number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.name
       description: 'creator name.'
