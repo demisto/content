@@ -825,7 +825,7 @@ script:
       description: 'The request note creator phone number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.name
-      description: 'creator name.'
+      description: 'The request note creator name.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.mobile
       description: 'creator mobile.'
