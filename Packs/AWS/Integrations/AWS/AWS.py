@@ -10355,7 +10355,13 @@ def get_service_client(
         )
     client_config = base_config.merge(config) if config else base_config
 
-    verify_ssl: bool = not argToBoolean(params.get("insecure", False)) if params else True
+    # On the platform path, verify using the ProxyDome CA bundle (requests go through ProxyDome
+    # which presents a self-signed cert). On the marketplace path, respect the user's insecure param.
+    # Default matches all other AWS-* packs: insecure=True (SSL disabled) unless user unchecks the box.
+    if is_platform_path:
+        verify_ssl: str | bool = DEFAULT_PROXYDOME_CERTFICATE_PATH
+    else:
+        verify_ssl = not params.get("insecure", True) if params else False
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)
