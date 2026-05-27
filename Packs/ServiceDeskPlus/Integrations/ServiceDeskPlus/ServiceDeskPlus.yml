@@ -626,7 +626,7 @@ script:
       description: 'The request note creator ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.photo_url
-      description: 'Creator photo url.'
+      description: 'The request note creator photo URL.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
       description: 'Whether creator is vip user or not.'
