@@ -1118,3 +1118,33 @@ def test_is_gov_account_empty_accounts_list_no_account(mocker):
     debug_call_args = demisto.debug.call_args[0][0]
     expected_debug_log = "[COOC API] There are no account_id='' or accounts_info=[] for the connector_id='test-connector-id'."
     assert expected_debug_log == debug_call_args
+
+
+@pytest.mark.parametrize("timeout,expected", [
+    (None, (60, 10)),
+    ("30", (30, 10)),
+    ("45,15", (45, 15)),
+    (120, (120, 10)),
+])
+def test_get_timeout_valid_inputs(timeout, expected):
+    """
+    Given: Various valid timeout values (None, read-only string, read+connect string, integer).
+    When: get_timeout is called.
+    Then: Returns the correct (read_timeout, connect_timeout) tuple.
+    """
+    from COOCApiModule import get_timeout
+
+    assert get_timeout(timeout) == expected
+
+
+def test_get_timeout_invalid_raises():
+    """
+    Given: A malformed timeout string.
+    When: get_timeout is called.
+    Then: Raises DemistoException with a helpful message.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="read timeout"):
+        get_timeout("not-a-number")
