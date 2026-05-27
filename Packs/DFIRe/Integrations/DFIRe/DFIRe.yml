@@ -13,8 +13,10 @@ configuration:
   defaultvalue: https://your-dfire-instance.example.com
 - name: apikey
   display: API Key
-  type: 4
+  type: 9
   required: true
+  displaypassword: API Key
+  hiddenusername: true
   additionalinfo: Bearer API key (dfire_ak_...). Create under Settings > API Keys.
 - name: insecure
   display: Trust any certificate (not secure)

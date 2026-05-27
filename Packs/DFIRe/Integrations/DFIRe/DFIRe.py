@@ -1679,7 +1679,10 @@ COMMANDS: dict[str, Any] = {
 def main():
     params = demisto.params()
     base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
-    api_key = params.get("apikey", "")
+    credentials = params.get("apikey") or {}
+    api_key = credentials.get("password", "")
+    if not api_key:
+        return_error("API Key is required. Configure it in the integration instance.")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
