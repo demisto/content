@@ -780,7 +780,7 @@ script:
     description: update a request note.
     outputs:
     - contextPath: ServiceDeskPlus.Request.Note.mark_first_response
-      description: 'mark first response or not.'
+      description: 'Mark first response or not.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_time.display_value
       description: 'created time display value.'
