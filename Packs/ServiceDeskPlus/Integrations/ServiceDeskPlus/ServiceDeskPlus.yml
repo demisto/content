@@ -575,7 +575,7 @@ script:
       description: 'Whether to mark the request note first response.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_time.display_value
-      description: 'Created time display value.'
+      description: 'The request note created time display value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_time.value
       description: 'Created time value.'
