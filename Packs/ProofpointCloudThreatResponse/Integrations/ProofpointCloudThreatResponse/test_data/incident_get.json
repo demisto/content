@@ -1,38 +1,104 @@
 {
     "summary": {
-        "id": "440def43-c322-42ba-a6d6-a2306128ea3b",
-        "displayId": 781,
-        "title": "Suspicious login attempt",
-        "state": "open",
-        "createdAt": "2024-11-26 16:18:07",
-        "updatedAt": "2024-11-26 16:19:07",
+        "id": "00000000-0000-0000-0000-000000000001",
+        "createdAt": "2024-01-01T10:00:00.000+00:00",
+        "updatedAt": "2024-01-01T10:05:00.000+00:00",
+        "tenantId": "00000000-0000-0000-0000-000000000003",
+        "titlePII": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
+        "displayId": 12345,
         "priority": "high",
-        "messageCount": 3,
-        "assignedTeamName": "Tier 1",
-        "assignedApplicationUserName": "analyst@example.com"
+        "state": "open",
+        "title": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
+        "description": null,
+        "closedAt": null,
+        "openedAt": "2024-01-01T10:00:00.000+00:00",
+        "assignedTeamId": "00000000-0000-0000-0000-000000000004",
+        "assignedTeamName": "SOC_Analyst",
+        "assignedApplicationUserId": null,
+        "assignedApplicationUserName": null,
+        "falsePositiveCount": 0,
+        "messageCount": 1,
+        "messageSourceData": {
+            "hasTapAlert": false,
+            "hasAbuseAlert": true,
+            "hasSmartSearchImport": false,
+            "hasMessageCsvUpload": false,
+            "hasWorkbenchEvent": false,
+            "hasImdAlert": false,
+            "hasMailBombAlert": false
+        }
     },
+    "comments": [],
     "activities": [
         {
-            "type": "incident_creation",
-            "created_at": "2024-11-26 16:18:07",
-            "occurred_at": "2024-11-26 16:18:00",
-            "updated_at": "2024-11-26 16:18:07",
+            "id": "00000000-0000-0000-0000-000000000006",
+            "content": null,
+            "tenant_id": "00000000-0000-0000-0000-000000000003",
             "cause_type": "system",
-            "causing_user_name": null,
+            "comment_id": null,
+            "created_at": "2024-01-01T10:00:00.000",
+            "updated_at": "2024-01-01T10:00:01.000",
+            "incident_id": "00000000-0000-0000-0000-000000000001",
+            "occurred_at": "2024-01-01T10:00:00.000000",
+            "activity_type": "incident_creation",
+            "causing_api_key": null,
             "activity_details": {
-                "source_name": "abuse_mailbox",
-                "initial_priority": "high"
-            }
+                "source_name": "Proofpoint CLEAR",
+                "initial_title": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
+                "message_count": 1,
+                "initial_team_id": "00000000-0000-0000-0000-000000000004",
+                "initial_priority": null,
+                "initial_team_name": "SOC_Analyst",
+                "initial_assignee_id": null,
+                "initial_description": null,
+                "initial_assignee_name": null
+            },
+            "causing_user_name": null,
+            "causing_workflow_name": null
         },
         {
-            "type": "quarantine",
-            "created_at": "2024-11-26 16:18:30",
-            "updated_at": "2024-11-26 16:18:30",
+            "id": "00000000-0000-0000-0000-000000000007",
+            "content": null,
+            "tenant_id": "00000000-0000-0000-0000-000000000003",
+            "cause_type": "history",
+            "comment_id": null,
+            "created_at": "2024-01-01T10:00:05.000",
+            "updated_at": "2024-01-01T10:00:05.000",
+            "incident_id": "00000000-0000-0000-0000-000000000001",
+            "occurred_at": "2024-01-01T10:00:05.000000",
+            "activity_type": "priority_change",
+            "causing_api_key": null,
+            "activity_details": {
+                "new_priority": "high",
+                "old_priority": null
+            },
+            "causing_user_name": null,
+            "causing_workflow_name": "Official Manual Review"
+        },
+        {
+            "id": "00000000-0000-0000-0000-000000000008",
+            "content": null,
+            "tenant_id": "00000000-0000-0000-0000-000000000003",
+            "cause_type": "history",
+            "comment_id": null,
+            "created_at": "2024-01-01T10:00:10.000",
+            "updated_at": "2024-01-01T10:00:30.000",
+            "incident_id": "00000000-0000-0000-0000-000000000001",
+            "occurred_at": "2024-01-01T10:00:10.000",
+            "activity_type": "quarantine",
+            "causing_api_key": null,
             "activity_details": {
                 "quarantine_attempts": [
-                    {"disposition": "phish", "state": "succeeded"}
+                    {
+                        "id": "00000000-0000-0000-0000-000000000009",
+                        "state": "complete",
+                        "disposition": "message_moved",
+                        "destination_folder": null
+                    }
                 ]
-            }
+            },
+            "causing_user_name": null,
+            "causing_workflow_name": "Official Manual Review"
         }
     ]
 }

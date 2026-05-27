@@ -181,6 +181,18 @@ script:
     - contextPath: ProofPointCloud.Incident.clearConfidences
       description: The list of confidence values for the incident.
       type: Array
+    - contextPath: ProofPointCloud.Incident.priority
+      description: The priority of the incident.
+      type: String
+    - contextPath: ProofPointCloud.Incident.closedAt
+      description: The timestamp when the incident was closed, if applicable.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.assignedUserName
+      description: The username of the individual the incident is assigned to.
+      type: String
+    - contextPath: ProofPointCloud.Incident.clearVerdicts
+      description: The list of clear verdicts for the incident.
+      type: Array
     - contextPath: ProofPointCloud.Incident.sourcesData
       description: The raw sources data array for the incident.
       type: Array
@@ -222,6 +234,18 @@ script:
     - contextPath: ProofPointCloud.Incident.summary.assignedApplicationUserName
       description: The user the incident is assigned to.
       type: String
+    - contextPath: ProofPointCloud.Incident.summary.closedAt
+      description: The timestamp when the incident was closed, if applicable.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.summary.openedAt
+      description: The timestamp when the incident was opened.
+      type: Date
+    - contextPath: ProofPointCloud.Incident.summary.messageSourceData
+      description: Breakdown of message sources (TAP, abuse mailbox, smart search, etc.) for the incident.
+      type: Unknown
+    - contextPath: ProofPointCloud.Incident.comments
+      description: The comments associated with the incident.
+      type: Array
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
       type: Array

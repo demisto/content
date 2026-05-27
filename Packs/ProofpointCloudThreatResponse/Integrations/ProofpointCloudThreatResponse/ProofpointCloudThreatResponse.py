@@ -1,21 +1,10 @@
-"""Proofpoint Cloud Threat Response integration.
-
-Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR
-and exposes commands to list and retrieve incident details. Authentication is
-performed via OAuth2 client_credentials against ``https://auth.proofpoint.com/v1/token``.
-
-The integration is built on top of :mod:`ContentClientApiModule` and uses a
-custom :class:`AuthHandler` that handles token retrieval, caching (via
-:class:`ContentClientContextStore`), and automatic refresh on ``401`` responses.
-"""
-
-import traceback
 from collections.abc import Iterable
-from datetime import timezone
+from datetime import UTC
+import httpx
 from typing import Any
+import traceback
 
 import demistomock as demisto  # noqa: F401
-import httpx
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 from ContentClientApiModule import *  # noqa: F401,F403
@@ -23,6 +12,7 @@ from ContentClientApiModule import *  # noqa: F401,F403
 # ----------------------------------------------------------------------------- #
 # Constants
 # ----------------------------------------------------------------------------- #
+BASE_URL = "https://threatprotection-api.proofpoint.com"
 AUTH_URL = "https://auth.proofpoint.com/v1/token"
 CLIENT_NAME = "ProofpointCloudThreatResponse"
 INTEGRATION_NAME = "Proofpoint Cloud Threat Response"
@@ -75,8 +65,6 @@ class ProofpointCTRAuthHandler(AuthHandler):  # type: ignore[misc]  # noqa: F405
     :class:`ContentClientContextStore` so that subsequent invocations within
     the token TTL avoid re-authenticating.
     """
-
-    name = "proofpoint_ctr_client_credentials"
 
     def __init__(
         self,
@@ -244,7 +232,7 @@ class Client(ContentClient):  # type: ignore[misc]  # noqa: F405
 def format_ctr_date(value: datetime) -> str:  # noqa: F405
     """Format a datetime as ``YYYY-MM-DD HH:MM:SS`` (UTC, no timezone suffix)."""
     if value.tzinfo is not None:
-        value = value.astimezone(timezone.utc).replace(tzinfo=None)
+        value = value.astimezone(UTC).replace(tzinfo=None)
     return value.strftime(DATE_FORMAT_API)
 
 
@@ -347,7 +335,7 @@ def run_test_module(client: Client, params: dict[str, Any]) -> str:
                 "Please choose only one of them."
             )
 
-    end = datetime.now(tz=timezone.utc)  # noqa: F405
+    end = datetime.now(tz=UTC)  # noqa: F405
     start = end - timedelta(minutes=1)  # noqa: F405
     body = build_filters_body(start_time=start, end_time=end, start_row=0, end_row=1)
     client.list_incidents(body)
@@ -359,7 +347,7 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
     start_dt = parse_ctr_date(args.get("start_time"))
     end_dt = parse_ctr_date(args.get("end_time"))
     if start_dt and not end_dt:
-        end_dt = datetime.now(tz=timezone.utc)  # noqa: F405
+        end_dt = datetime.now(tz=UTC)  # noqa: F405
 
     limit = _coerce_int_arg(args.get("limit"), DEFAULT_FETCH_LIMIT, "limit")
     if limit < 1:
@@ -385,14 +373,13 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
     hr_rows = [
         {
             "ID": inc.get("id"),
-            "Display ID": inc.get("displayId"),
-            "Title": inc.get("title"),
-            "State": inc.get("state"),
             "Created At": inc.get("createdAt"),
+            "Type": (inc.get("sourcesData") or [{}])[0].get("type"),
+            "State": inc.get("state"),
             "Message Count": inc.get("messageCount"),
             "Assigned Team Name": inc.get("assignedTeamName"),
+            "Title": inc.get("title"),
             "Source Types": inc.get("sourceTypes"),
-            "Type": (inc.get("sourcesData") or [{}])[0].get("type"),
         }
         for inc in incidents
     ]
@@ -401,7 +388,6 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
         hr_rows,
         headers=[
             "ID",
-            "Display ID",
             "Created At",
             "Type",
             "State",
@@ -436,7 +422,6 @@ def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) ->
         hr_rows.append(
             {
                 "ID": summary.get("id") or inc_id,
-                "Display ID": summary.get("displayId"),
                 "Created At": summary.get("createdAt"),
                 "State": summary.get("state"),
                 "Message Count": summary.get("messageCount"),
@@ -446,11 +431,10 @@ def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) ->
         )
 
     readable = tableToMarkdown(  # noqa: F405
-        f"{INTEGRATION_NAME} Incident",
+        f"{INTEGRATION_NAME} Incident: {summary.get("displayId")}",
         hr_rows,
         headers=[
             "ID",
-            "Display ID",
             "Created At",
             "State",
             "Message Count",
@@ -512,6 +496,8 @@ def fetch_incidents(
     """
     fetch_delta_minutes = _coerce_int_arg(params.get("fetch_delta"), 1, "fetch_delta")
     max_fetch = _coerce_int_arg(params.get("max_fetch"), DEFAULT_FETCH_LIMIT, "max_fetch")
+    if max_fetch < 1:
+        raise DemistoException("Argument 'max_fetch' must be a positive integer.")  # noqa: F405
     max_fetch = min(max_fetch, MAX_PAGE_SIZE)
     fetch_states = argToList(params.get("fetch_states") or [])  # noqa: F405
     if "open_incidents" in fetch_states and "closed_incidents" in fetch_states:
@@ -520,8 +506,10 @@ def fetch_incidents(
             "with specific states' returns an empty result from the Proofpoint API."
         )
 
-    now = datetime.now(tz=timezone.utc)  # noqa: F405
+    now = datetime.now(tz=UTC)  # noqa: F405
     last_fetch_iso = last_run.get("last_fetch")
+    demisto.debug(f"Proofpoint CTR: {fetch_delta_minutes=} {max_fetch=} {fetch_states=} {last_fetch_iso=} ")
+
     if last_fetch_iso:
         start = parse_ctr_date(last_fetch_iso) or now
     else:
@@ -540,6 +528,7 @@ def fetch_incidents(
     start = start - timedelta(minutes=fetch_delta_minutes)  # noqa: F405
     if start >= now:
         start = now - timedelta(minutes=fetch_delta_minutes)  # noqa: F405
+    demisto.debug(f"Proofpoint CTR: fetching incidents from {start.isoformat()} to {now.isoformat()}")
 
     body = build_filters_body(
         start_time=start,
@@ -549,11 +538,16 @@ def fetch_incidents(
         end_row=max(0, max_fetch - 1),
         sort_dir="asc",
     )
+    demisto.debug(f"Proofpoint CTR: request body for list_incidents: {json.dumps(body)}")
+
     response = client.list_incidents(body)
     raw_incidents: list[dict[str, Any]] = response.get("incidents") or []
+    demisto.debug(f"Proofpoint CTR: fetched {len(raw_incidents)} incidents from API")
 
     last_fetched_ids = last_run.get("last_fetched_ids") or []
+    demisto.debug(f"Proofpoint CTR: last fetched incident IDs: {last_fetched_ids}")
     new_incidents = _filter_new_incidents(raw_incidents, last_fetched_ids)
+    demisto.debug(f"Proofpoint CTR: {len(new_incidents)} new incidents after filtering by ID")
 
     xsoar_incidents: list[dict[str, Any]] = []
     processed_ids: list[str] = list(last_fetched_ids)
@@ -565,7 +559,13 @@ def fetch_incidents(
         inc_id = inc.get("id")
         if not inc_id:
             continue
-        xsoar_incidents.append(_build_incident({}, inc))
+        try:
+            enriched = client.get_incident(inc_id)
+            demisto.debug(f"Proofpoint CTR: enriched incident {inc_id} via GET /api/v1/tric/incidents/{inc_id}")
+        except Exception as exc:  # noqa: BLE001
+            demisto.error(f"Proofpoint CTR: failed to enrich incident {inc_id}: {exc}")
+            enriched = {}
+        xsoar_incidents.append(_build_incident(enriched, inc))
         processed_ids.append(inc_id)
         created_at = parse_ctr_date(inc.get("createdAt"))
         if created_at and (latest_created_at is None or created_at > latest_created_at):
@@ -584,6 +584,8 @@ def fetch_incidents(
         "last_fetch": next_last_fetch,
         "last_fetched_ids": next_last_fetched_ids,
     }
+    demisto.debug(f"Proofpoint CTR: next last run: {next_last_run}")
+
     return next_last_run, xsoar_incidents
 
 
@@ -600,7 +602,7 @@ def main() -> None:  # pragma: no cover - exercised indirectly by tests
     credentials = params.get("credentials") or {}
     client_id = credentials.get("identifier") or ""
     client_secret = credentials.get("password") or ""
-    base_url = (params.get("url") or "").rstrip("/")
+    base_url = (params.get("url") or BASE_URL).rstrip("/")
     verify = not argToBoolean(params.get("insecure", False))  # noqa: F405
     proxy = argToBoolean(params.get("proxy", False))  # noqa: F405
 

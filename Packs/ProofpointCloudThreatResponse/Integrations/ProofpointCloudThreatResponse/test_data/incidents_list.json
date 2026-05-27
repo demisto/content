@@ -1,32 +1,87 @@
 {
+    "total": 12345,
+    "startRow": 0,
+    "endRow": 2,
     "incidents": [
         {
-            "id": "440def43-c322-42ba-a6d6-a2306128ea3b",
-            "displayId": 781,
-            "title": "Suspicious login attempt",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "createdAt": "2024-01-01T10:00:00.000+00:00",
+            "updatedAt": "2024-01-01T10:05:00.000+00:00",
+            "tenantId": "00000000-0000-0000-0000-000000000003",
+            "closedAt": null,
+            "titlePII": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
+            "displayId": 12345,
+            "priority": "high",
+            "title": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
             "state": "open",
-            "createdAt": "2024-11-26 16:18:07",
-            "updatedAt": "2024-11-26 16:19:07",
-            "messageCount": 3,
-            "assignedTeamName": "Tier 1",
-            "sourceTypes": ["abuse_mailbox"],
-            "sourcesData": [{"name": "abuse_mailbox", "type": "abuse_mailbox"}],
-            "dispositions": ["phish"],
-            "clearConfidences": ["confidence_high"]
+            "assignedTeamName": "SOC_Analyst",
+            "assignedUserName": null,
+            "assignedTeamId": "00000000-0000-0000-0000-000000000004",
+            "assignedUserId": null,
+            "messageCount": 1,
+            "vap": false,
+            "abuseSourceIds": [
+                "00000000-0000-0000-0000-000000000005"
+            ],
+            "sourceTypes": [
+                "abuse_mailbox"
+            ],
+            "sourcesData": [
+                {
+                    "type": "AbuseMailbox",
+                    "name": "Proofpoint CLEAR"
+                }
+            ],
+            "commentCount": 0,
+            "dispositions": [
+                "manual_review"
+            ],
+            "clearVerdicts": [
+                "manual_review"
+            ],
+            "clearConfidences": [
+                "low"
+            ]
         },
         {
-            "id": "550def43-c322-42ba-a6d6-a2306128ea3c",
-            "displayId": 782,
-            "title": "Manual review required",
+            "id": "00000000-0000-0000-0000-000000000002",
+            "createdAt": "2024-01-01T09:00:00.000+00:00",
+            "updatedAt": "2024-01-01T09:30:00.000+00:00",
+            "tenantId": "00000000-0000-0000-0000-000000000003",
+            "closedAt": "2024-01-01T09:30:00.000+00:00",
+            "titlePII": "other[@]example[.]com reported a message \"Low risk email review\"",
+            "displayId": 12344,
+            "priority": null,
+            "title": "other[@]example[.]com reported a message \"Low risk email review\"",
             "state": "closed",
-            "createdAt": "2024-11-26 16:18:08",
-            "updatedAt": "2024-11-26 16:20:07",
-            "messageCount": 1,
-            "assignedTeamName": "Tier 2",
-            "sourceTypes": ["tap"],
-            "sourcesData": [{"name": "tap", "type": "tap"}],
-            "dispositions": ["malware"],
-            "clearConfidences": ["confidence_medium"]
+            "assignedTeamName": "SOC_Analyst",
+            "assignedUserName": null,
+            "assignedTeamId": "00000000-0000-0000-0000-000000000004",
+            "assignedUserId": null,
+            "messageCount": 18,
+            "vap": false,
+            "abuseSourceIds": [
+                "00000000-0000-0000-0000-000000000005"
+            ],
+            "sourceTypes": [
+                "abuse_mailbox"
+            ],
+            "sourcesData": [
+                {
+                    "type": "AbuseMailbox",
+                    "name": "Proofpoint CLEAR"
+                }
+            ],
+            "commentCount": 0,
+            "dispositions": [
+                "low_risk"
+            ],
+            "clearVerdicts": [
+                "low_risk"
+            ],
+            "clearConfidences": [
+                "high"
+            ]
         }
     ]
 }
