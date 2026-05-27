@@ -516,6 +516,7 @@ Get details about a specified user.
 | Slack.User.Name        | String   | The actual name of the user.   |
 | Slack.User.DisplayName | String   | The display name of the user.  |
 | Slack.User.Email       | String   | The email address of the user. |
+| Slack.User.StatusText  | String   | The status text of the user.   |
 
 #### Command Example
 
@@ -529,7 +530,8 @@ Get details about a specified user.
         "User": {
             "ID": "U0XXXXXXXX",
             "Name": "cortex_xsoar",
-            "Username": "demisto_integration"
+            "Username": "demisto_integration",
+            "StatusText": "In a meeting"
         }
     }
 }
@@ -539,9 +541,9 @@ Get details about a specified user.
 
 > ### Details for Slack user: cortex_xsoar
 >
->|ID|Username|Name|
->|---|---|---|
->| U0XXXXXXXX | demisto_integration | cortex_xsoar |
+>|ID|Username|Name|Status Text|
+>|---|---|---|---|
+>| U0XXXXXXXX | demisto_integration | cortex_xsoar | In a meeting |
 
 ### slack-edit-message
 
