@@ -1022,11 +1022,17 @@ def validate_event_types_credentials_correlation(
 # =================================
 # Helpers for the audit + compliance event collector
 # =================================
-def parse_first_fetch_to_unix_seconds(first_fetch: str) -> int:
-    """Parse a first-fetch string (e.g., '1 day') into a Unix-seconds integer (UTC).
+def parse_first_fetch_to_datetime(first_fetch: str) -> datetime:
+    """Parse a first-fetch string (e.g., '1 minute ago', '2024-01-01T00:00:00Z') into a UTC datetime.
 
-    Falls back to "1 day ago" on any parse failure (`arg_to_datetime` raises `ValueError`
-    for unparseable input, so the fallback is wrapped in try/except).
+    On parse failure, falls back to `Config.DEFAULT_FIRST_FETCH` so a typo never silently
+    widens the lookback window beyond what the integration parameter advertises. If even
+    the configured default is unparseable, a final sentinel of `now() - 1 minute` is used
+    to guarantee the function returns a valid datetime.
+
+    Callers format the result themselves:
+      - Audit stream wants Unix seconds: `int(dt.timestamp())`
+      - Compliance stream wants ISO 8601: `dt.replace(microsecond=0).strftime(Config.DATE_FORMAT)`
     """
     parsed: datetime | None = None
     try:
@@ -1034,37 +1040,18 @@ def parse_first_fetch_to_unix_seconds(first_fetch: str) -> int:
     except ValueError:
         demisto.error(
             f"[First Fetch] Failed to parse first_fetch='{first_fetch}' as a datetime "
-            f"or relative time expression - falling back to '1 day ago'. "
+            f"or relative time expression - falling back to default='{Config.DEFAULT_FIRST_FETCH}'. "
             f"Please correct the integration parameter."
         )
     if not parsed:
-        parsed = datetime.now(UTC) - timedelta(days=1)
-    unix_seconds = int(parsed.timestamp())
-    demisto.debug(f"[First Fetch] Resolved '{first_fetch}' to unix_seconds={unix_seconds}.")
-    return unix_seconds
-
-
-def parse_first_fetch_to_iso(first_fetch: str) -> str:
-    """Parse a first-fetch string into an ISO 8601 timestamp (UTC, no microseconds).
-
-    Falls back to "1 day ago" on any parse failure (`arg_to_datetime` raises `ValueError`
-    for unparseable input, so the fallback is wrapped in try/except).
-    """
-    parsed: datetime | None = None
-    try:
-        parsed = arg_to_datetime(first_fetch, is_utc=True)
-    except ValueError:
-        demisto.error(
-            f"[First Fetch] Failed to parse first_fetch='{first_fetch}' as a datetime "
-            f"or relative time expression - falling back to '1 day ago'. "
-            f"Please correct the integration parameter."
-        )
-    if not parsed:
-        parsed = datetime.now(UTC) - timedelta(days=1)
-    # Drop microseconds for a clean wire format that round-trips with the Compliance API.
-    iso = parsed.replace(microsecond=0).strftime(Config.DATE_FORMAT)
-    demisto.debug(f"[First Fetch] Resolved '{first_fetch}' to ISO={iso}.")
-    return iso
+        # Honor the documented default rather than silently widening the lookback window.
+        parsed = arg_to_datetime(Config.DEFAULT_FIRST_FETCH, is_utc=True) or (datetime.now(UTC) - timedelta(minutes=1))
+    # `arg_to_datetime(is_utc=True)` returns a NAIVE datetime; force UTC so callers' `.timestamp()`
+    # does not silently interpret it in the system's local timezone (a latent portability bug).
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    demisto.debug(f"[First Fetch] Resolved '{first_fetch}' to {parsed.isoformat()}.")
+    return parsed
 
 
 def event_id(event: dict[str, Any]) -> str | None:
@@ -1313,7 +1300,7 @@ def fetch_audit_logs(
         initial_effective_at_gt = stored_seed
         demisto.debug(f"[Audit Fetch] Replaying persisted first-fetch seed effective_at>{initial_effective_at_gt}.")
     else:
-        initial_effective_at_gt = parse_first_fetch_to_unix_seconds(first_fetch)
+        initial_effective_at_gt = int(parse_first_fetch_to_datetime(first_fetch).timestamp())
         demisto.debug(f"[Audit Fetch] No cursor in last_run - first fetch using effective_at>{initial_effective_at_gt}.")
 
     collected: list[dict[str, Any]] = []
@@ -1402,7 +1389,9 @@ def fetch_compliance_logs(
         f"max_fetch={max_fetch} | first_fetch='{first_fetch}'"
     )
 
-    cursor: str = last_run.get(LastRunKey.COMPLIANCE_LAST_END_TIME) or parse_first_fetch_to_iso(first_fetch)
+    cursor: str = last_run.get(LastRunKey.COMPLIANCE_LAST_END_TIME) or (
+        parse_first_fetch_to_datetime(first_fetch).replace(microsecond=0).strftime(Config.DATE_FORMAT)
+    )
     previous_ids: list[str] = list(last_run.get(LastRunKey.COMPLIANCE_LAST_IDS) or [])
     demisto.debug(f"[Compliance Fetch] Resolved cursor | cursor_set={bool(cursor)} | prev_ids_count={len(previous_ids)}")
 

@@ -28,8 +28,7 @@ from OpenAiChatGPTV3 import (
     parse_collector_params,
     parse_concatenated_json,
     parse_event_types_to_fetch,
-    parse_first_fetch_to_iso,
-    parse_first_fetch_to_unix_seconds,
+    parse_first_fetch_to_datetime,
     parse_integration_params,
     selected_audit_enabled,
     selected_compliance_event_types,
@@ -277,61 +276,108 @@ def test_enrich_compliance_event_unknown_event_type_logs_info_and_falls_back(moc
 
 
 @pytest.mark.parametrize(
-    "first_fetch_input, days_offset",
+    "first_fetch_input, expected_delta",
     [
-        pytest.param("1 day", 1, id="happy-1-day"),
-        pytest.param("3 days", 3, id="happy-3-days"),
-        # An unparseable input falls back to "1 day ago" per the implementation.
-        pytest.param("not-a-real-time", 1, id="bad-unparseable-falls-back-1-day"),
+        pytest.param("1 day", timedelta(days=1), id="happy-1-day"),
+        pytest.param("3 days", timedelta(days=3), id="happy-3-days"),
+        pytest.param("1 minute", timedelta(minutes=1), id="happy-1-minute"),
+        pytest.param("1 minute ago", timedelta(minutes=1), id="happy-1-minute-ago-suffix"),
+        pytest.param("7 days", timedelta(days=7), id="happy-7-days"),
+        pytest.param("2 hours", timedelta(hours=2), id="happy-2-hours"),
+        pytest.param("30 minutes", timedelta(minutes=30), id="happy-30-minutes"),
     ],
 )
-def test_parse_first_fetch_to_unix_seconds(mocker, first_fetch_input, days_offset):
-    """`parse_first_fetch_to_unix_seconds` returns a Unix-second integer, with a `1 day` fallback on bad input.
+def test_parse_first_fetch_to_datetime_happy_path(mocker, first_fetch_input, expected_delta):
+    """`parse_first_fetch_to_datetime` returns a timezone-aware UTC datetime for valid inputs.
 
-    Unparseable input must also emit a `demisto.error` so operators see the misconfiguration
-    in standard log queries. Mocking `demisto.error` suppresses stdout under pytest and locks
-    the "fail-loud" contract.
+    Covers relative time expressions across a range of magnitudes (minutes -> days) and both
+    bare ("1 minute") and "-ago" suffix ("1 minute ago") forms.
     """
     error_mock = mocker.patch.object(demisto, "error")
 
-    result = parse_first_fetch_to_unix_seconds(first_fetch_input)
-    assert isinstance(result, int)
+    result = parse_first_fetch_to_datetime(first_fetch_input)
+    assert isinstance(result, datetime)
+    assert result.tzinfo is not None, "Returned datetime must be timezone-aware (UTC enforced)."
 
-    expected = int((datetime.now(UTC) - timedelta(days=days_offset)).timestamp())
+    expected = datetime.now(UTC) - expected_delta
     # Allow a small clock-drift window (test runtime + arg_to_datetime parse latency).
-    assert abs(result - expected) < 30
-
-    if first_fetch_input == "not-a-real-time":
-        assert error_mock.called, "Unparseable first_fetch must log at error level."
+    assert abs((result - expected).total_seconds()) < 30
+    assert not error_mock.called, "Valid first_fetch must NOT emit demisto.error."
 
 
 @pytest.mark.parametrize(
-    "first_fetch_input, days_offset",
+    "bad_input",
     [
-        pytest.param("1 day", 1, id="happy-1-day"),
-        pytest.param("7 days", 7, id="happy-7-days"),
-        pytest.param("definitely-not-a-time", 1, id="bad-unparseable-falls-back-1-day"),
+        pytest.param("not-a-real-time", id="garbage-string"),
+        pytest.param("definitely-not-a-time", id="another-garbage-string"),
+        pytest.param("", id="empty-string"),
+        pytest.param("   ", id="whitespace-only"),
+        pytest.param("1 banana", id="number-with-nonsense-unit"),
+        pytest.param("yesterday-ish", id="ambiguous-typo"),
     ],
 )
-def test_parse_first_fetch_to_iso(mocker, first_fetch_input, days_offset):
-    """`parse_first_fetch_to_iso` returns a clean ISO 8601 timestamp (no microseconds).
+def test_parse_first_fetch_to_datetime_bad_input_falls_back_to_default(mocker, bad_input):
+    """Unparseable input MUST fall back to `Config.DEFAULT_FIRST_FETCH`, never to a hardcoded window.
 
-    Unparseable input must also emit a `demisto.error` so operators see the misconfiguration
-    in standard log queries. Mocking `demisto.error` suppresses stdout under pytest and locks
-    the "fail-loud" contract.
+    This locks the regression where a typo silently widened the lookback 1440× from
+    "1 minute ago" to "1 day ago". Whitespace, empty strings, and made-up unit names
+    all must reach the fallback path.
     """
+    # Suppress the demisto.error stdout under pytest; the error-log contract is asserted by
+    # test_parse_first_fetch_to_datetime_emits_error_log_on_bad_input.
+    mocker.patch.object(demisto, "error")
+
+    result = parse_first_fetch_to_datetime(bad_input)
+    assert isinstance(result, datetime)
+    assert result.tzinfo is not None, "Fallback must also be timezone-aware."
+
+    # The fallback MUST equal Config.DEFAULT_FIRST_FETCH (currently "1 minute ago"),
+    # NOT a hardcoded 1-day window.
+    expected_fallback = arg_to_datetime(Config.DEFAULT_FIRST_FETCH, is_utc=True)
+    assert expected_fallback is not None
+    if expected_fallback.tzinfo is None:
+        expected_fallback = expected_fallback.replace(tzinfo=UTC)
+    drift = abs((result - expected_fallback).total_seconds())
+    assert drift < 30, (
+        f"Fallback drifted {drift:.1f}s from Config.DEFAULT_FIRST_FETCH. "
+        f"If this exceeds the 1-minute window, the bug regressed."
+    )
+
+
+def test_parse_first_fetch_to_datetime_emits_error_log_on_bad_input(mocker):
+    """Unparseable input MUST emit a `demisto.error` so operators see the misconfiguration
+    in standard log queries (separate concern from the fallback value itself)."""
     error_mock = mocker.patch.object(demisto, "error")
+    parse_first_fetch_to_datetime("1 banana")
+    assert error_mock.called, "Unparseable first_fetch must log at error level."
+    # The error message must reference the bad input and the documented fallback.
+    error_args = error_mock.call_args[0][0]
+    assert "1 banana" in error_args
+    assert Config.DEFAULT_FIRST_FETCH in error_args
 
-    result = parse_first_fetch_to_iso(first_fetch_input)
-    assert isinstance(result, str)
-    # Format check: YYYY-MM-DDTHH:MM:SSZ (no microseconds, ends with Z).
-    assert result.endswith("Z")
-    parsed = datetime.strptime(result, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
-    expected = datetime.now(UTC) - timedelta(days=days_offset)
+
+def test_parse_first_fetch_to_datetime_unix_seconds_format():
+    """Audit-stream call site: `int(dt.timestamp())` must produce a valid Unix-seconds integer."""
+    dt = parse_first_fetch_to_datetime("1 day")
+    unix_seconds = int(dt.timestamp())
+    assert isinstance(unix_seconds, int)
+    expected = int((datetime.now(UTC) - timedelta(days=1)).timestamp())
+    assert abs(unix_seconds - expected) < 30
+
+
+def test_parse_first_fetch_to_datetime_iso_format():
+    """Compliance-stream call site must produce a clean ISO 8601 string.
+
+    Verifies that `.replace(microsecond=0).strftime(Config.DATE_FORMAT)` yields a
+    valid wire-format timestamp ending in `Z`.
+    """
+    dt = parse_first_fetch_to_datetime("7 days")
+    iso = dt.replace(microsecond=0).strftime(Config.DATE_FORMAT)
+    assert isinstance(iso, str)
+    assert iso.endswith("Z")
+    parsed = datetime.strptime(iso, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
+    expected = datetime.now(UTC) - timedelta(days=7)
     assert abs((parsed - expected).total_seconds()) < 30
-
-    if first_fetch_input == "definitely-not-a-time":
-        assert error_mock.called, "Unparseable first_fetch must log at error level."
 
 
 def test_selected_audit_enabled_and_compliance_event_types():
@@ -811,7 +857,10 @@ def test_fetch_audit_logs_empty_first_fetch_persists_seed(mocker):
 
     client = _make_client()
     mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
-    mocker.patch("OpenAiChatGPTV3.parse_first_fetch_to_unix_seconds", return_value=1700000000)
+    mocker.patch(
+        "OpenAiChatGPTV3.parse_first_fetch_to_datetime",
+        return_value=datetime.fromtimestamp(1700000000, tz=UTC),
+    )
     debug_mock = mocker.patch.object(demisto, "debug")
 
     events, updates = fetch_audit_logs(client=client, last_run={}, max_fetch=10, first_fetch="1 minute ago")
@@ -829,7 +878,7 @@ def test_fetch_audit_logs_replays_stored_seed_without_recomputing(mocker):
 
     client = _make_client()
     http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
-    parse_mock = mocker.patch("OpenAiChatGPTV3.parse_first_fetch_to_unix_seconds")
+    parse_mock = mocker.patch("OpenAiChatGPTV3.parse_first_fetch_to_datetime")
     debug_mock = mocker.patch.object(demisto, "debug")
 
     last_run = {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
