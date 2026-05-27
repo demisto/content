@@ -19,7 +19,7 @@ import git
 import requests
 from CommonServerPython import *  # noqa: F401
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
-from demisto_sdk.commands.common.logger import DEFAULT_CONSOLE_THRESHOLD, logging_setup
+from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from importlib.metadata import version
@@ -384,7 +384,7 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
     initializer = Initializer(
         staged=False, committed_only=False, file_path=str(path_to_validate), execution_mode=ExecutionMode.SPECIFIC_FILES
     )
-    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False)
+    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False, ignore=["BA106"])
     demisto.debug(f"run_validate validate_manager initialized. Running validations: {validate_manager.validators=}")
     err_file = io.StringIO()
     with redirect_stderr(err_file):
@@ -780,7 +780,7 @@ def main():
             # Setup Demisto SDK's logging.
             logging_setup(
                 calling_function="ValidateContent",
-                console_threshold="DEBUG" if is_debug_mode() else DEFAULT_CONSOLE_THRESHOLD,
+                console_threshold="DEBUG" if is_debug_mode() else "ERROR",
                 propagate=True,
             )
             demisto.debug("Finished setting logger.")

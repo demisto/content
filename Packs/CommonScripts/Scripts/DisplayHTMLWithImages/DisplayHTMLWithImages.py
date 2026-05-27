@@ -5,6 +5,52 @@ from CommonServerPython import *  # noqa: F401
 
 IMG_FORMATS = ["jpeg", "gif", "bmp", "png", "jfif", "tiff", "eps", "indd", "jpg"]
 
+# Define allowed tags for email body rendering (preserve formatting, strip dangerous tags)
+ALLOWED_EMAIL_TAGS = {
+    "p",
+    "br",
+    "div",
+    "span",
+    "b",
+    "i",
+    "u",
+    "a",
+    "img",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "pre",
+    "code",
+    "blockquote",
+    "strong",
+    "em",
+    "hr",
+    "font",
+    "center",
+    "small",
+    "big",
+    "sub",
+    "sup",
+    "dl",
+    "dt",
+    "dd",
+    "caption",
+    "col",
+    "colgroup",
+}
+
 
 def is_image(file_name: str):
     return file_name and file_name.split(".")[-1] in IMG_FORMATS
@@ -17,10 +63,13 @@ def create_html_with_images(email_html="", entry_id_list=None):
     account_name = get_tenant_account_name()
     xsoar_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
     for file_name, attach_content_id, file_entry_id in entry_id_list:
+        # Escape user-controlled values before interpolating into regex patterns
+        safe_content_id = re.escape(attach_content_id)
+        safe_file_name = re.escape(file_name)
         # Handling inline attachments from Gmail mailboxes
-        if re.search(f'src="[^>]+{attach_content_id}"(?=[^>]+alt="{file_name}")', email_html):
+        if re.search(f'src="[^>]+{safe_content_id}"(?=[^>]+alt="{safe_file_name}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+{attach_content_id}"(?=[^>]+alt="{file_name}")',
+                f'src="[^>]+{safe_content_id}"(?=[^>]+alt="{safe_file_name}")',
                 f"src={account_name}{xsoar_prefix}/entry/download/{file_entry_id}",
                 email_html,
             )
@@ -28,7 +77,7 @@ def create_html_with_images(email_html="", entry_id_list=None):
         # Note: the format of an image src are like this src="cid:THE CONTENT ID"
         else:
             email_html = re.sub(
-                f'(src="cid(.*?{attach_content_id}.*?"))',
+                f'(src="cid(.*?{safe_content_id}.*?"))',
                 f"src={account_name}{xsoar_prefix}/entry/download/{file_entry_id}",
                 email_html,
                 count=1,
@@ -90,10 +139,48 @@ def get_entry_id_list_by_parsed_email_attachments(attachments, files):
     return img_data_list
 
 
+def _sanitize_html(html_body: str) -> str:
+    """Sanitize HTML body using an allowlist of safe tags.
+
+    When bleach is available, strips disallowed tags while preserving safe ones.
+    When bleach is not available, uses a basic tag-stripping fallback to remove
+    potentially dangerous tags while preserving content.
+    """
+    try:
+        import bleach  # type: ignore[import-untyped]
+
+        html_body = bleach.clean(
+            html_body,
+            tags=ALLOWED_EMAIL_TAGS,
+            strip=True,
+            attributes={
+                "a": ["href", "title"],
+                "img": ["src", "alt", "width", "height"],
+                "td": ["style", "colspan", "rowspan"],
+                "th": ["style", "colspan", "rowspan"],
+                "div": ["style"],
+                "span": ["style"],
+                "p": ["style"],
+                "font": ["color", "size", "face"],
+                "table": ["style", "border", "cellpadding", "cellspacing"],
+            },
+        )
+    except ImportError:
+        demisto.debug("bleach is not available; using basic tag-stripping fallback")
+        # Remove script/iframe/object/embed tags and their content as a basic fallback
+        # Use [^>]*> for end tags to handle whitespace/attributes like </script > or </script\t\nbar>
+        html_body = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*iframe[^>]*>.*?<\s*/\s*iframe[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*object[^>]*>.*?<\s*/\s*object[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*embed[^>]*>.*?<\s*/\s*embed[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        # Also remove self-closing variants
+        html_body = re.sub(r"<\s*(?:script|iframe|object|embed)[^>]*/\s*>", "", html_body, flags=re.IGNORECASE)
+    return html_body
+
+
 def main():
     incident = demisto.incident()
-    html_body = demisto.get(incident, "CustomFields.emailhtml") or demisto.get(incident, "CustomFields.emailbody")
-    html_body = f'<div style="background-color: white; color:black;"> {html_body} </div>\n'
+    html_body = demisto.get(incident, "CustomFields.emailhtml") or demisto.get(incident, "CustomFields.emailbody") or ""
 
     if 'src="cid' in html_body:
         context = demisto.context()
@@ -107,6 +194,10 @@ def main():
             entry_id_list = get_entry_id_list_by_incident_attachments(attachments, files)
 
         html_body = create_html_with_images(html_body, entry_id_list)
+
+    # Sanitize after image replacement so cid: references are resolved first
+    html_body = _sanitize_html(html_body)
+    html_body = f'<div style="background-color: white; color:black;"> {html_body} </div>\n'
 
     return_results(
         {

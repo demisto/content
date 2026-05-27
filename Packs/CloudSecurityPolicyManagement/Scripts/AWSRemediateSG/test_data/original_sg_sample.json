@@ -1,0 +1,54 @@
+[
+    {
+        "Type": 1,
+        "Contents": {
+            "SecurityGroups": [
+                {
+                    "Description": "sldkjdlskfjs",
+                    "GroupId": "sg-00000000000000001",
+                    "GroupName": "demo-sg",
+                    "IpPermissions": [
+                        {
+                            "FromPort": 0,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "ToPort": 65535,
+                            "UserIdGroupPairs": []
+                        },
+                        {
+                            "FromPort": 22,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "ToPort": 22,
+                            "UserIdGroupPairs": []
+                        }
+                    ],
+                    "IpPermissionsEgress": [
+                        {
+                            "FromPort": 0,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "ToPort": 65535,
+                            "UserIdGroupPairs": []
+                        }
+                    ],
+                    "OwnerId": "123456789012",
+                    "Region": "us-east-1",
+                    "VpcId": "vpc-0123456789abcdef0",
+                    "Tags": [
+                                {"Key": "Environment", "Value": "test"},
+                                {"Key": "Project", "Value": "demo"}
+                            ]
+                }
+            ]
+        },
+        "HumanReadable": "### AWS EC2 SecurityGroups\n|Description|GroupId|GroupName|OwnerId|Region|VpcId|\n|---|---|---|---|---|---|\n| sldkjdlskfjs | sg-00000000000000001 | demo-sg | 123456789012 | us-east-1 | vpc-0123456789abcdef0 |\n",
+        "ImportantEntryContext": "None"
+    }
+]
