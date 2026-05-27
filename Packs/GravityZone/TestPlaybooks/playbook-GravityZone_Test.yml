@@ -989,17 +989,37 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.Endpoint.ID
+              simple: GravityZone.EndpointMemoryDump.TaskID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.Endpoint.Hostname
+              simple: GravityZone.EndpointMemoryDump.Status
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.Endpoint.memoryDumpDownloadURL
+              simple: GravityZone.EndpointMemoryDump.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.EndpointMemoryDump.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.EndpointMemoryDump.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.EndpointMemoryDump.EndDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.EndpointMemoryDump.DownloadURL
             iscontext: true
     continueonerrortype: ""
     view: |-
