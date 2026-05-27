@@ -950,21 +950,28 @@ def is_x_minutes_ago_yesterday(minutes: int) -> bool:
     return x_minutes_ago.date() == yesterday.date()
 
 
-def cvss_base_score(cvss: dict[str, Any]) -> Optional[float]:
+def pick_cvss_collection(cvss: dict[str, Any]) -> tuple[Optional[float], Optional[str], Optional[str]]:
     """
-    Picks the most relevant CVSS base score from a Cyberint CVSS object (prefers v4, then v3, then v2).
+    Picks the most relevant CVSS base score and the matching version + vector string from a Cyberint CVSS object.
+    Preference order: v4, then v3, then v2.
 
     Args:
         cvss (dict): The CVSS object from a Cyberint VulnerabilityDetail response.
 
     Returns:
-        The CVSS base score, or None when no score is available.
+        A tuple of (base_score, version, vector_string) all from the same CVSS collection, or (None, None, None).
     """
     for version_key in ("cvss_v4", "cvss_v3", "cvss_v2"):
         collection = cvss.get(version_key) or {}
         if collection.get("base_score") is not None:
-            return collection.get("base_score")
-    return None
+            return collection.get("base_score"), collection.get("version"), collection.get("vector_string")
+    return None, None, None
+
+
+def cvss_base_score(cvss: dict[str, Any]) -> Optional[float]:
+    """Backwards-compatible helper: returns the CVSS base score picked by ``pick_cvss_collection``."""
+    base_score, _, _ = pick_cvss_collection(cvss)
+    return base_score
 
 
 def get_cve_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
@@ -991,8 +998,7 @@ def get_cve_command(client: Client, args: dict[str, Any]) -> list[CommandResults
         cve_data.setdefault("cve_id", cve_id)
 
         cvss = cve_data.get("cvss") or {}
-        base_score = cvss_base_score(cvss)
-        cvss_v3 = cvss.get("cvss_v3") or {}
+        base_score, cvss_version, cvss_vector = pick_cvss_collection(cvss)
         cwes = cve_data.get("cwes") or []
         cwe_ids = [item.get("cwe_id") if isinstance(item, dict) else item for item in cwes]
         exploited_by = cve_data.get("exploited_by") or []
@@ -1002,8 +1008,8 @@ def get_cve_command(client: Client, args: dict[str, Any]) -> list[CommandResults
             id=cve_data.get("cve_id", cve_id),
             cvss=base_score,
             cvss_score=base_score,
-            cvss_version=cvss_v3.get("version"),
-            cvss_vector=cvss_v3.get("vector_string"),
+            cvss_version=cvss_version,
+            cvss_vector=cvss_vector,
             published=cve_data.get("published"),
             modified=cve_data.get("last_updated"),
             description=cve_data.get("description"),

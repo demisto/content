@@ -823,7 +823,7 @@ Enriches one or more CVE identifiers with Cyberint vulnerability intelligence, i
 
 #### Command Example
 
-```!cyberint-cve-enrich cve_id="CVE-2024-1234"```
+`!cyberint-cve-enrich cve_id="CVE-2024-1234"`
 
 ### cyberint-credential-leak-lookup
 
@@ -862,4 +862,4 @@ Looks up leaked employee or customer credentials associated with a company domai
 
 #### Command Example
 
-```!cyberint-credential-leak-lookup domain="example.com"```
+`!cyberint-credential-leak-lookup domain="example.com"`
