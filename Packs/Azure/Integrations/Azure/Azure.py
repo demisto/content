@@ -94,6 +94,31 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": [
         "azure-storage-blob-containers-update",
         "azure-storage-blob-container-update",
+        "azure-storage-container-create",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action": ["azure-storage-container-public-access-block"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/read": ["azure-storage-container-property-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
+        "azure-storage-container-blob-create",
+        "azure-storage-blob-create",
+        "azure-storage-container-blob-property-set",
+        "azure-storage-blob-property-set",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
+        "azure-storage-container-blob-get",
+        "azure-storage-blob-get",
+        "azure-storage-container-blob-property-get",
+        "azure-storage-blob-property-get",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
+        "azure-storage-container-blob-tag-get",
+        "azure-storage-blob-tag-get",
+        "azure-storage-container-blob-tag-set",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
+        "azure-storage-container-blob-tag-set",
+        "azure-storage-blob-tag-set",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
@@ -221,7 +246,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-disable-public-n-private-access-vm-disk-quick-action",
         "azure-compute-disk-update-data-access-ad-quick-action",
     ],
-    "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get", "azure-compute-vm-get", "azure-compute-vm-list"],
+    "Microsoft.Compute/virtualMachines/read": [
+        "azure-vm-instance-details-get",
+        "azure-vm-instance-start",
+        "azure-vm-instance-power-off",
+        "azure-compute-vm-get",
+    ],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start", "azure-compute-vm-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off", "azure-compute-vm-power-off"],
     "Microsoft.ContainerRegistry/registries/read": [
@@ -291,26 +321,6 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
-        "azure-storage-container-blob-property-get",
-        "azure-storage-blob-property-get",
-        "azure-storage-container-blob-get",
-        "azure-storage-blob-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
-        "azure-storage-container-blob-tag-get",
-        "azure-storage-blob-tag-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
-        "azure-storage-container-blob-create",
-        "azure-storage-blob-create",
-        "azure-storage-container-blob-property-set",
-        "azure-storage-blob-property-set",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
-        "azure-storage-container-blob-tag-set",
-        "azure-storage-blob-tag-set",
-    ],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -355,11 +365,25 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Storage/storageAccounts/blobServices/read",
         "Microsoft.Storage/storageAccounts/blobServices/write",
     ],
+    "storage_container_create_blob_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
+    "get_storage_container_properties_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "create_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/write"],
+    "delete_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/delete"],
+    "storage_container_blob_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_tag_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read"],
+    "storage_container_blob_tags_set_request": [
+        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
+        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
+    ],
+    "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
+    "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
-    "start_vm_request": ["Microsoft.Compute/virtualMachines/start/action"],
-    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/poweroff/action"],
+    "start_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/start/action"],
+    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/poweroff/action"],
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
