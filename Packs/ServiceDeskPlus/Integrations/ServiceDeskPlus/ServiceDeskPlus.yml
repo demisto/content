@@ -659,7 +659,7 @@ script:
       predefined:
         - "true"
         - "false"
-    - description: whether to show to requester.
+    - description: Whether to show request notes to the requester.
       name: show_to_requester
       auto: PREDEFINED
       defaultValue: "false"
