@@ -593,7 +593,7 @@ script:
       description: 'The request ID.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.notify_technician
-      description: 'Notify technician or not.'
+      description: 'Whether to notify the technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.show_to_requester
       description: 'Show to requester or not.'
