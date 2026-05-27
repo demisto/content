@@ -16,6 +16,7 @@ import copy
 
 
 DEFAULT_MAX_RETRIES: int = 5
+DEFAULT_MAX_WORKERS: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
 DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
@@ -10226,12 +10227,7 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
     event_system.register_last("before-send.*.*", _add_proxydome_header)
 
 
-def _assume_role_credentials(
-    params: dict,
-    access_key_id: str,
-    secret_access_key: str,
-    region: str,
-) -> dict:
+def _assume_role_credentials(params: dict, access_key_id: str, secret_access_key: str, region: str) -> dict:
     """
     Call AWS STS ``AssumeRole`` using the marketplace-supplied access keys and
     return temporary credentials suitable for constructing a boto3 ``Session``.
@@ -10389,7 +10385,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     accounts = argToList(params.get("accounts_to_access"))
 
     if role_name and accounts:
-        max_workers = arg_to_number(params.get("max_workers")) or 5
+        max_workers = arg_to_number(params.get("max_workers")) or DEFAULT_MAX_WORKERS
         demisto.debug(f"[AWS] Multi-account fan-out: {command=}, {len(accounts)=}, {max_workers=}")
 
         def _run_for_account(account_id: str) -> CommandResults:
