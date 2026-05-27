@@ -3941,6 +3941,7 @@ def test_get_user(mocker):
             "Name": "Egon Spengler",
             "DisplayName": "spengler",
             "Email": "spengler@ghostbusters.example.com",
+            "StatusText": "Print is dead",
         }
     }
 
