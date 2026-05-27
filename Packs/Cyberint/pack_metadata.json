@@ -12,7 +12,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cyberint",
+        "Check Point"
+    ],
+    "githubUser": [
+        "klevitskiy"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

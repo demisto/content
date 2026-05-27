@@ -353,7 +353,9 @@ tasks:
             value:
               simple: inputs.MaliciousScoreThreshold
             iscontext: true
-        - operator: greaterThanOrEqual
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: Cyberint.domain.risk.malicious_score
@@ -362,7 +364,9 @@ tasks:
             value:
               simple: inputs.MaliciousScoreThreshold
             iscontext: true
-        - operator: greaterThanOrEqual
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: Cyberint.url.risk.malicious_score
@@ -371,7 +375,9 @@ tasks:
             value:
               simple: inputs.MaliciousScoreThreshold
             iscontext: true
-        - operator: greaterThanOrEqual
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: Cyberint.file_sha256.risk.malicious_score
@@ -380,7 +386,9 @@ tasks:
             value:
               simple: inputs.MaliciousScoreThreshold
             iscontext: true
-        - operator: isEqualString
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
           left:
             value:
               simple: Cyberint.ipv4.benign
@@ -388,7 +396,9 @@ tasks:
           right:
             value:
               simple: "false"
-        - operator: isEqualString
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
           left:
             value:
               simple: Cyberint.domain.benign
@@ -396,7 +406,9 @@ tasks:
           right:
             value:
               simple: "false"
-        - operator: isEqualString
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
           left:
             value:
               simple: Cyberint.url.benign
@@ -404,7 +416,9 @@ tasks:
           right:
             value:
               simple: "false"
-        - operator: isEqualString
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
           left:
             value:
               simple: Cyberint.file_sha256.benign
