@@ -10,7 +10,7 @@ configuration:
 - display: Access Key
   name: credentials
   displaypassword: Secret Key
-  additionalinfo: "AWS Access Key ID (username) and Secret Access Key (password) paired together. Used for authentication when configuring the integration on Cortex XSOAR or Cortex XSIAM marketplaces. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
+  additionalinfo: "The AWS Access Key ID (username) and Secret Access Key (password) paired together. Used for authentication when configuring the integration in Cortex XSOAR or Cortex XSIAM. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
   type: 9
   section: Connect
   required: false
@@ -19,7 +19,7 @@ configuration:
   type: 0
   section: Connect
   required: false
-  additionalinfo: "Full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration on Cortex XSOAR or Cortex XSIAM marketplaces (not required when running through a Cortex Cloud connector)."
+  additionalinfo: "The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration on Cortex XSOAR or Cortex XSIAM marketplaces (not required when running through a Cortex Cloud connector)."
 - display: Role Session Name
   name: role_session_name
   type: 0
@@ -132,7 +132,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  additionalinfo: A comma-separated list of AWS Organization accounts to use when running commands across multiple accounts. A role name for cross-organization account access must also be provided to use this feature.
+  additionalinfo: A comma-separated list of AWS organization accounts to use when running commands across multiple accounts. A role name for cross-organization account access must also be provided to use this feature.
 - display: Max concurrent command calls
   name: max_workers
   type: 0
@@ -140,7 +140,8 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '5'
-  additionalinfo: The maximum number of concurrent calls to allow when running a command across all accounts provided in "AWS organization accounts".
+  additionalinfo: The maximum number of concurrent calls to allow when running a command across the list of accounts provided in the AWS organization accounts field.
+``
 - display: Use system proxy settings
   name: proxy
   type: 8
