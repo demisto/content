@@ -88,8 +88,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: >
-        Set this argument to True to send the fetched events to Cortex XSIAM. 
-        If False, the command will only display them in the War Room.
+        Set this argument to True to send the fetched events to Cortex XSIAM.  If False, the command will only display them in the War Room.
       name: should_push_events
       predefined:
       - 'True'
@@ -97,13 +96,12 @@ script:
       required: true
 
     - description: >
-        Fetch events created after the specified time (e.g., "12 hours", "7 days"). 
-        If not provided, defaults to "3 months".
+        Fetch events created after the specified time (e.g., "12 hours", "7 days").  If not provided, defaults to "3 months".
       name: from_date
       required: false
       defaultValue: '3 months'
 
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   runonce: false
   script: '-'
