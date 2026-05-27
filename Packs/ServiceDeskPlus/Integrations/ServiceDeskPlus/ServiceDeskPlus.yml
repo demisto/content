@@ -602,7 +602,7 @@ script:
       description: 'The request note description.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
-      description: 'Note id.'
+      description: 'The request note ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
       description: 'Email id of the creator.'
