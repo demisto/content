@@ -968,12 +968,6 @@ def pick_cvss_collection(cvss: dict[str, Any]) -> tuple[Optional[float], Optiona
     return None, None, None
 
 
-def cvss_base_score(cvss: dict[str, Any]) -> Optional[float]:
-    """Backwards-compatible helper: returns the CVSS base score picked by ``pick_cvss_collection``."""
-    base_score, _, _ = pick_cvss_collection(cvss)
-    return base_score
-
-
 def get_cve_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
     Enriches one or more CVE identifiers with Cyberint vulnerability intelligence.

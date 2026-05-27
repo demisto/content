@@ -206,7 +206,7 @@ tasks:
       id: f055ad73-a342-4f56-bf76-e386d4c52feb
       version: -1
       name: Submit takedown request
-      description: Submits a takedown request to Cyberint for the phishing website URL.
+      description: Submits a takedown request to Cyberint for the phishing website URL. The task is skipped if the Check Point EM Takedowns integration is not enabled, allowing the playbook to continue gracefully.
       script: '|||cyberint-takedown-url'
       type: regular
       iscommand: true
@@ -580,7 +580,7 @@ outputs:
   description: The polled Cyberint takedown request, including its current status.
   type: unknown
 tests:
-- No tests
+- Check Point - Phishing Takedown - Test
 fromversion: 6.10.0
 marketplaces:
 - xsoar

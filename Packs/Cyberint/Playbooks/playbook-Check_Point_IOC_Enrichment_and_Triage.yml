@@ -85,7 +85,7 @@ tasks:
       id: 45a6f064-a95e-42ee-a768-dfa92ab63227
       version: -1
       name: Enrich IP addresses
-      description: Queries the Cyberint IOC enrichment endpoint for each IP address indicator.
+      description: Queries the Cyberint IOC enrichment endpoint for each IP address indicator. The task is skipped if the Check Point EM Feed integration is not enabled, allowing the playbook to continue gracefully.
       script: '|||cyberint-get-ipv4'
       type: regular
       iscommand: true
@@ -156,7 +156,7 @@ tasks:
       id: d3cb8fdb-160a-4c1e-90f8-d0a2e4dd165b
       version: -1
       name: Enrich domains
-      description: Queries the Cyberint IOC enrichment endpoint for each domain indicator.
+      description: Queries the Cyberint IOC enrichment endpoint for each domain indicator. The task is skipped if the Check Point EM Feed integration is not enabled, allowing the playbook to continue gracefully.
       script: '|||cyberint-get-domain'
       type: regular
       iscommand: true
@@ -227,7 +227,7 @@ tasks:
       id: 430e6eef-40a8-4c60-add0-39c1856fd177
       version: -1
       name: Enrich URLs
-      description: Queries the Cyberint IOC enrichment endpoint for each URL indicator.
+      description: Queries the Cyberint IOC enrichment endpoint for each URL indicator. The task is skipped if the Check Point EM Feed integration is not enabled, allowing the playbook to continue gracefully.
       script: '|||cyberint-get-url'
       type: regular
       iscommand: true
@@ -298,7 +298,7 @@ tasks:
       id: c64bd863-93bd-47bc-9b9a-417ade94d33d
       version: -1
       name: Enrich file hashes
-      description: Queries the Cyberint IOC enrichment endpoint for each SHA256 file hash indicator.
+      description: Queries the Cyberint IOC enrichment endpoint for each SHA256 file hash indicator. The task is skipped if the Check Point EM Feed integration is not enabled, allowing the playbook to continue gracefully.
       script: '|||cyberint-get-file-sha256'
       type: regular
       iscommand: true
@@ -594,7 +594,7 @@ outputs:
   description: Cyberint file hash IOC enrichment results, including maliciousness score, detected activities and benign verdict.
   type: unknown
 tests:
-- No tests
+- Check Point - IOC Enrichment and Triage - Test
 fromversion: 6.10.0
 marketplaces:
 - xsoar

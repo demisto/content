@@ -1,0 +1,149 @@
+id: Check Point - IOC Enrichment and Triage - Test
+version: -1
+name: Check Point - IOC Enrichment and Triage - Test
+description: Test playbook for "Check Point - IOC Enrichment and Triage". Seeds sample IP / domain / URL / SHA256 indicators, runs the playbook, and verifies that Cyberint IOC enrichment context is produced.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a5ea7ea4-ebb7-4b1f-9ccb-fe396e8752d6
+    type: start
+    task:
+      id: a5ea7ea4-ebb7-4b1f-9ccb-fe396e8752d6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d4a21f45-814d-43e3-8984-45e8d77c03fb
+    type: regular
+    task:
+      id: d4a21f45-814d-43e3-8984-45e8d77c03fb
+      version: -1
+      name: Reset context
+      description: Clears any leftover context before invoking the playbook under test.
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 69e9c2dc-ba7e-4d70-a851-8fa1ceb68196
+    type: playbook
+    task:
+      id: 69e9c2dc-ba7e-4d70-a851-8fa1ceb68196
+      version: -1
+      name: Run Check Point - IOC Enrichment and Triage
+      description: Runs the OOTB playbook with sample indicator inputs.
+      playbookName: Check Point - IOC Enrichment and Triage
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      IP:
+        simple: 1.1.1.1
+      Domain:
+        simple: example.com
+      URL:
+        simple: http://example.com
+      FileSHA256:
+        simple: 6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 382c096a-0747-45b0-a8b2-9980b82c596c
+    type: title
+    task:
+      id: 382c096a-0747-45b0-a8b2-9980b82c596c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform

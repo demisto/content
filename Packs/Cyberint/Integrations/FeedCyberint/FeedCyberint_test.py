@@ -1658,19 +1658,56 @@ def test_get_cve_command_no_cve(mock_client):
         FeedCyberint.get_cve_command(mock_client, {})
 
 
-def test_cvss_base_score():
+def test_pick_cvss_collection_prefers_v4():
     """
-    Scenario: Pick the most relevant CVSS base score.
+    Scenario: Pick the highest-priority CVSS collection (v4 over v3 over v2).
     Given:
-     - A CVSS object with v3 and v4 collections.
+     - A CVSS object containing v3 and v4 collections, each with a base_score.
     When:
-     - cvss_base_score is called.
+     - pick_cvss_collection is called.
     Then:
-     - Ensure the v4 score is preferred.
+     - Ensure the v4 base_score, version and vector_string are returned together.
     """
-    assert FeedCyberint.cvss_base_score({"cvss_v3": {"base_score": 9.8}, "cvss_v4": {"base_score": 9.3}}) == 9.3
-    assert FeedCyberint.cvss_base_score({"cvss_v3": {"base_score": 9.8}}) == 9.8
-    assert FeedCyberint.cvss_base_score({}) is None
+    cvss = {
+        "cvss_v3": {"base_score": 9.8, "version": "3.1", "vector_string": "CVSS:3.1/AV:N/.."},
+        "cvss_v4": {"base_score": 9.3, "version": "4.0", "vector_string": "CVSS:4.0/AV:N/.."},
+    }
+    base_score, version, vector_string = FeedCyberint.pick_cvss_collection(cvss)
+    assert base_score == 9.3
+    assert version == "4.0"
+    assert vector_string == "CVSS:4.0/AV:N/.."
+
+
+def test_pick_cvss_collection_falls_back_to_v3():
+    """
+    Scenario: Fall back to CVSS v3 when v4 is absent.
+    Given:
+     - A CVSS object containing only a v3 collection.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the v3 base_score, version and vector_string are returned together.
+    """
+    cvss = {
+        "cvss_v3": {"base_score": 9.8, "version": "3.1", "vector_string": "CVSS:3.1/AV:N/.."},
+    }
+    base_score, version, vector_string = FeedCyberint.pick_cvss_collection(cvss)
+    assert base_score == 9.8
+    assert version == "3.1"
+    assert vector_string == "CVSS:3.1/AV:N/.."
+
+
+def test_pick_cvss_collection_no_data():
+    """
+    Scenario: No CVSS collection available.
+    Given:
+     - An empty CVSS object.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the function returns a triple of Nones.
+    """
+    assert FeedCyberint.pick_cvss_collection({}) == (None, None, None)
 
 
 def test_get_leaked_credentials_by_domain_command(mock_client, requests_mock):
