@@ -10,7 +10,7 @@ configuration:
 - display: Access Key
   name: credentials
   displaypassword: Secret Key
-  additionalinfo: "AWS Access Key ID (username) and Secret Access Key (password) paired together. Used for authentication when configuring the integration on XSOAR or XSIAM marketplaces. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
+  additionalinfo: "AWS Access Key ID (username) and Secret Access Key (password) paired together. Used for authentication when configuring the integration on Cortex XSOAR or Cortex XSIAM marketplaces. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
   type: 9
   section: Connect
   required: false
@@ -19,7 +19,7 @@ configuration:
   type: 0
   section: Connect
   required: false
-  additionalinfo: "Full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration on XSOAR or XSIAM marketplaces (not required when running through a Cortex Cloud connector)."
+  additionalinfo: "Full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration on Cortex XSOAR or Cortex XSIAM marketplaces (not required when running through a Cortex Cloud connector)."
 - display: Role Session Name
   name: role_session_name
   type: 0
