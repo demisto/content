@@ -10123,14 +10123,14 @@ class NetworkFirewall:
         rule_variables_raw = args.get("policy_rule_variables")
 
         stateless_custom_actions = parse_json_string(stateless_custom_actions_raw) if stateless_custom_actions_raw else None
-        stateful_rule_group_references = parse_json_string(stateful_rule_group_references_raw) if stateful_rule_group_references_raw else None
+        stateful_rule_group_references = (
+            parse_json_string(stateful_rule_group_references_raw) if stateful_rule_group_references_raw else None
+        )
         rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
 
         firewall_policy = remove_empty_elements(
             {
-                "StatelessRuleGroupReferences": parse_resource_arn_priority_field(
-                    args.get("stateless_rule_group_references")
-                ),
+                "StatelessRuleGroupReferences": parse_resource_arn_priority_field(args.get("stateless_rule_group_references")),
                 "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
                 "StatelessFragmentDefaultActions": argToList(args.get("stateless_fragment_default_actions")),
                 "StatelessCustomActions": stateless_custom_actions,
@@ -10480,7 +10480,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-policies-list": NetworkFirewall.list_firewall_policies_command,
     "aws-network-firewall-firewall-policy-create": NetworkFirewall.create_firewall_policy_command,
     "aws-network-firewall-firewall-policy-associate": NetworkFirewall.associate_firewall_policy_command,
-"aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [

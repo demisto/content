@@ -17884,10 +17884,7 @@ def test_associate_firewall_policy_command_success_with_name(mocker):
     assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
     assert result.outputs_key_field == "FirewallArn"
     assert result.outputs["FirewallName"] == "test-firewall"
-    assert (
-        result.outputs["FirewallPolicyArn"]
-        == "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
-    )
+    assert result.outputs["FirewallPolicyArn"] == "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
     mock_client.associate_firewall_policy.assert_called_once_with(
         FirewallName="test-firewall",
         FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
