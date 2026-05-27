@@ -685,7 +685,7 @@ script:
       description: 'The request display ID.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.subject
-      description: 'request subject.'
+      description: 'The request subject.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.id
       description: 'request id.'
