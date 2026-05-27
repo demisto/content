@@ -1970,38 +1970,33 @@ def _extract_memory_dump_summary(task_output: dict[str, Any], endpoint_id: str) 
     return resolved_endpoint_id, resolved_hostname, (processed_subtask or fallback_subtask), download_url
 
 
-def _build_memory_dump_results(task_output: dict[str, Any], endpoint_id: str) -> CommandResults:
+def _build_memory_dump_results(task_output: dict[str, Any], task_id: str, endpoint_id: str) -> CommandResults:
     """Build endpoint-scoped command results for memory dump status polling."""
     endpoint_id, endpoint_hostname, memory_dump_subtask, download_url = _extract_memory_dump_summary(task_output, endpoint_id)
 
-    endpoint_output: dict[str, Any] = {
-        "ID": endpoint_id,
-        "Hostname": endpoint_hostname,
-        "StartDate": memory_dump_subtask.get("startDate") or "",
-        "EndDate": memory_dump_subtask.get("endDate") or "",
-        "ErrorCode": memory_dump_subtask.get("errorCode") or "",
-        "ErrorMessage": memory_dump_subtask.get("errorMessage") or "",
-        "memoryDumpDownloadURL": download_url,
-    }
+    endpoint_output = generate_task_output(
+        task_id=task_id,
+        task_type=COMMAND_CREATE_MEMORY_DUMP,
+        endpoint_id=endpoint_id,
+        status="Processed",
+        end_date=memory_dump_subtask.get("endDate"),
+        host_name=endpoint_hostname,
+        error_code=memory_dump_subtask.get("errorCode"),
+        error=memory_dump_subtask.get("errorMessage"),
+        start_date=memory_dump_subtask.get("startDate"),
+    )
+    endpoint_output["DownloadURL"] = download_url
 
     return CommandResults(
         raw_response=task_output,
         readable_output=tableToMarkdown(
             f"Memory dump for endpoint {endpoint_id}",
             [endpoint_output],
-            headers=[
-                "ID",
-                "Hostname",
-                "StartDate",
-                "EndDate",
-                "ErrorCode",
-                "ErrorMessage",
-                "memoryDumpDownloadURL",
-            ],
+            headers=TASK_OUTPUT_HEADERS + ["DownloadURL"],
         ),
         outputs=endpoint_output,
         outputs_prefix="GravityZone.EndpointMemoryDump",
-        outputs_key_field="ID",
+        outputs_key_field="EndpointID",
         entry_type=EntryType.NOTE,
     )
 
@@ -2893,7 +2888,7 @@ def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> P
     current_status = task_output.get("status")
 
     if current_status == TASK_STATUS_PROCESSED:
-        return PollResult(_build_memory_dump_results(task_output, endpoint_id))
+        return PollResult(_build_memory_dump_results(task_output, task_id, endpoint_id))
 
     return PollResult(
         continue_to_poll=True,

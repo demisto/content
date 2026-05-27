@@ -238,7 +238,16 @@ script:
       secret: true
       default: false
     outputs:
-    - contextPath: GravityZone.EndpointMemoryDump.ID
+    - contextPath: GravityZone.EndpointMemoryDump.TaskID
+      description: The task ID.
+      type: String
+    - contextPath: GravityZone.EndpointMemoryDump.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.EndpointMemoryDump.Status
+      description: The task status.
+      type: String
+    - contextPath: GravityZone.EndpointMemoryDump.EndpointID
       description: The endpoint ID.
       type: String
     - contextPath: GravityZone.EndpointMemoryDump.Hostname
@@ -253,10 +262,10 @@ script:
     - contextPath: GravityZone.EndpointMemoryDump.ErrorCode
       description: The memory dump task error code, if available.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.ErrorMessage
+    - contextPath: GravityZone.EndpointMemoryDump.Error
       description: The memory dump task error message, if available.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.memoryDumpDownloadURL
+    - contextPath: GravityZone.EndpointMemoryDump.DownloadURL
       description: The memory dump download URL when task is completed successfully.
       type: String
 
@@ -1039,7 +1048,7 @@ script:
     arguments:
     - name: task_id
       isArray: false
-      description: The parent task ID.
+      description: The task ID.
       required: true
       secret: false
       default: false

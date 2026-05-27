@@ -536,18 +536,21 @@ def test_build_memory_dump_results_outputs_download_url_on_success():
         ],
     }
 
-    result = _build_memory_dump_results(task_output, "endpoint-1")
+    result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-1")
 
     assert result.outputs_prefix == "GravityZone.EndpointMemoryDump"
-    assert result.outputs_key_field == "ID"
+    assert result.outputs_key_field == "EndpointID"
     assert result.outputs == {
-        "ID": "endpoint-1",
+        "TaskID": "TASK_ID",
+        "TaskType": "CreateMemoryDump",
+        "Status": "Processed",
+        "EndpointID": "endpoint-1",
         "Hostname": "host-1",
-        "StartDate": "2026-05-25T10:00:00",
-        "EndDate": "2026-05-25T10:01:00",
+        "StartDate": "2026-05-25T10:00:00Z",
+        "EndDate": "2026-05-25T10:01:00Z",
         "ErrorCode": "Success",
-        "ErrorMessage": "Success",
-        "memoryDumpDownloadURL": "https://example.com/memory-dump",
+        "Error": "Success",
+        "DownloadURL": "https://example.com/memory-dump",
     }
 
 
@@ -569,16 +572,19 @@ def test_build_memory_dump_results_omits_download_url_when_unavailable():
         ],
     }
 
-    result = _build_memory_dump_results(task_output, "endpoint-1")
+    result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-1")
 
     assert result.outputs == {
-        "ID": "endpoint-1",
+        "TaskID": "TASK_ID",
+        "TaskType": "CreateMemoryDump",
+        "Status": "Processed",
+        "EndpointID": "endpoint-1",
         "Hostname": "host-1",
-        "StartDate": "2026-05-25T10:00:00",
-        "EndDate": "2026-05-25T10:01:00",
+        "StartDate": "2026-05-25T10:00:00Z",
+        "EndDate": "2026-05-25T10:01:00Z",
         "ErrorCode": "InvalidPath",
-        "ErrorMessage": "Destination path does not exist",
-        "memoryDumpDownloadURL": "",
+        "Error": "Destination path does not exist",
+        "DownloadURL": "",
     }
 
 
