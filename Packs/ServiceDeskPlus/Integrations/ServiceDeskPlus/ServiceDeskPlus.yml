@@ -562,7 +562,7 @@ script:
     description: Closes the specified request.
     name: service-desk-plus-request-close
   - arguments:
-    - description: The ID of the request to retrieve its notes.
+    - description: The ID of the request from which to retrieve notes.
       name: request_id
       required: true
     - description: The ID of the note to retrieve it's data.
