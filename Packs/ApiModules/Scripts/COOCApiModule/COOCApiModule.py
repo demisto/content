@@ -453,14 +453,18 @@ def get_timeout(timeout: int | str | None) -> tuple[int, int]:
     Raises:
         DemistoException: If the value is malformed.
     """
-    if not timeout:
+    if timeout is None or timeout == "":
         timeout = "60,10"
     try:
         if isinstance(timeout, int):
             return timeout, 10
         timeout_vals = str(timeout).split(",")
         if len(timeout_vals) > 2:
-            raise ValueError(f"Too many timeout values: expected 1 or 2, got {len(timeout_vals)}")
+            raise DemistoException(
+                f"Too many timeout values: expected 1 or 2, got {len(timeout_vals)}. "
+                "You can specify just the read timeout (for example 60) or also the connect "
+                "timeout followed after a comma (for example 60,10)."
+            )
         read_timeout = int(timeout_vals[0])
         connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
         return read_timeout, connect_timeout

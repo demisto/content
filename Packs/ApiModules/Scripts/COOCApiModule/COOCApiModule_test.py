@@ -1124,14 +1124,17 @@ def test_is_gov_account_empty_accounts_list_no_account(mocker):
     "timeout,expected",
     [
         (None, (60, 10)),
+        ("", (60, 10)),
         ("30", (30, 10)),
         ("45,15", (45, 15)),
         (120, (120, 10)),
+        (0, (0, 10)),
+        ("0", (0, 10)),
     ],
 )
 def test_get_timeout_valid_inputs(timeout, expected):
     """
-    Given: Various valid timeout values (None, read-only string, read+connect string, integer).
+    Given: Various valid timeout values (None, empty string, read-only string, read+connect string, integer, zero).
     When: get_timeout is called.
     Then: Returns the correct (read_timeout, connect_timeout) tuple.
     """
@@ -1140,15 +1143,27 @@ def test_get_timeout_valid_inputs(timeout, expected):
     assert get_timeout(timeout) == expected
 
 
-@pytest.mark.parametrize("bad_timeout", ["not-a-number", "60,10,5"])
-def test_get_timeout_invalid_raises(bad_timeout):
+def test_get_timeout_malformed_raises():
     """
-    Given: A malformed timeout string or too many comma-separated values.
+    Given: A malformed (non-numeric) timeout string.
     When: get_timeout is called.
-    Then: Raises DemistoException with a helpful message.
+    Then: Raises DemistoException with a message about read timeout.
     """
     from COOCApiModule import get_timeout
     from CommonServerPython import DemistoException
 
     with pytest.raises(DemistoException, match="read timeout"):
-        get_timeout(bad_timeout)
+        get_timeout("not-a-number")
+
+
+def test_get_timeout_too_many_values_raises():
+    """
+    Given: A timeout string with more than 2 comma-separated values.
+    When: get_timeout is called.
+    Then: Raises DemistoException with a message about too many values.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="Too many timeout values"):
+        get_timeout("60,10,5")

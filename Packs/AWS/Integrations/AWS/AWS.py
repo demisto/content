@@ -10387,14 +10387,14 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         demisto.debug(f"Setting AWS_STS_REGIONAL_ENDPOINTS={regional}")
         os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = regional.lower()
 
-    role_name = params.get("access_role_name", "").removeprefix("role/")
+    role_name = (params.get("access_role_name") or "").removeprefix("role/")
     accounts = argToList(params.get("accounts_to_access"))
 
     if role_name and accounts:
         max_workers = arg_to_number(params.get("max_workers")) or DEFAULT_MAX_WORKERS
         demisto.debug(f"[AWS] Multi-account fan-out: {command=}, {len(accounts)=}, {max_workers=}")
 
-        def _run_for_account(account_id: str) -> CommandResults:
+        def _run_for_account(account_id: str) -> list[CommandResults]:
             per_account_params = params | {"role_arn": f"arn:aws:iam::{account_id}:role/{role_name}"}
             per_account_args = args | {"account_id": account_id}
             try:
@@ -10406,25 +10406,30 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
                 else:
                     result = COMMANDS_MAPPING[command](svc_client, per_account_args)
                 if result is None:
-                    return CommandResults(readable_output=f"#### Result for account `{account_id}`:\nNo result returned.")
-                result.readable_output = f"#### Result for account `{account_id}`:\n{result.readable_output or ''}"
-                if isinstance(result.outputs, list):
-                    for obj in result.outputs:
-                        if isinstance(obj, dict):
-                            obj.setdefault("AccountId", account_id)
-                elif isinstance(result.outputs, dict):
-                    result.outputs.setdefault("AccountId", account_id)
-                return result
+                    return [CommandResults(readable_output=f"#### Result for account `{account_id}`:\nNo result returned.")]
+                results_list = result if isinstance(result, list) else [result]
+                for r in results_list:
+                    r.readable_output = f"#### Result for account `{account_id}`:\n{r.readable_output or ''}"
+                    if isinstance(r.outputs, list):
+                        for obj in r.outputs:
+                            if isinstance(obj, dict):
+                                obj.setdefault("AccountId", account_id)
+                    elif isinstance(r.outputs, dict):
+                        r.outputs.setdefault("AccountId", account_id)
+                return results_list
             except Exception as e:
                 demisto.error(f"[AWS] Error for account {account_id}: {e}")
-                return CommandResults(
+                return [CommandResults(
                     readable_output=f"#### Error for account `{account_id}`\n{e}",
                     entry_type=EntryType.ERROR,
                     content_format=EntryFormat.MARKDOWN,
-                )
+                )]
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            return list(executor.map(_run_for_account, accounts))
+            results: list[CommandResults] = []
+            for res in executor.map(_run_for_account, accounts):
+                results.extend(res)
+            return results
 
     # Single-account path.
     account_id: str = args.get("account_id", "")
