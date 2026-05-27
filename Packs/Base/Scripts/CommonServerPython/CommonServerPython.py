@@ -13963,7 +13963,11 @@ def invalidate_ucp_credentials(method_unique_id):
 
 
 class UnsafePickleError(Exception):
-    """Raised when a pickle payload contains unsafe opcodes or classes."""
+    """Raised when a pickle payload contains unsafe opcodes or classes.
+
+    :return: None
+    :rtype: ``None``
+    """
 
 
 # Legacy/rare opcodes that legitimate ML models never use.
@@ -13984,6 +13988,9 @@ def validate_pickle_opcodes(payload):
     :param payload: Raw pickle byte stream to validate.
 
     :raises UnsafePickleError: If a blocked opcode is found or the payload is malformed.
+
+    :return: None
+    :rtype: ``None``
     """
     try:
         for opcode, _arg, pos in pickletools.genops(payload):
