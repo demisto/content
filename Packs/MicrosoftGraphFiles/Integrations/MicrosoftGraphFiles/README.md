@@ -1048,6 +1048,7 @@ Retrieves the sensitivity label currently assigned to a drive item. Returns the 
 #### Human Readable Output
 
 >### Sensitivity Label
+>
 >|Item Id|Display Name|Id|Protection Enabled|
 >|---|---|---|---|
 >| 01EXAMPLE | Confidential | 08973045-2fd6-4014-9177-9f2a3e55c29e | false |
@@ -1087,6 +1088,7 @@ Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as
 #### Human Readable Output
 
 >### Assigned Sensitivity Label
+>
 >|Item Id|Sensitivity Label Id|Location|
 >|---|---|---|
 >| 01EXAMPLE | 08973045-2fd6-4014-9177-9f2a3e55c29e | https://contoso.sharepoint.com/_api/v2.0/monitor/MyMonitorJobId |
