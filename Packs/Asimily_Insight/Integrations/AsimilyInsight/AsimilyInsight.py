@@ -1,5 +1,6 @@
 from typing import Any, TypeAlias
 from collections.abc import Callable
+import urllib.parse
 import urllib3
 import copy
 import dateparser
@@ -1105,11 +1106,20 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
+    parsed_url = urllib.parse.urlparse(base_url)
+    source = parsed_url.hostname.split(".")[0] if parsed_url.hostname else ""
+
     processed_args = process_params_and_args(params, args, command)
 
     print_debug_msg(f"Command being called is {command}")
     try:
-        client = Client(base_url=base_url, verify=verify_certificate, auth=(user_name, api_key), proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            auth=(user_name, api_key),
+            proxy=proxy,
+            headers={"source": source},
+        )
 
         if command == "test-module":
             result = test_module(client, params)
