@@ -801,7 +801,7 @@ script:
       description: 'The request ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.notify_technician
-      description: 'notify technician or not.'
+      description: 'Whether to notify the technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.show_to_requester
       description: 'show to requester or not.'
