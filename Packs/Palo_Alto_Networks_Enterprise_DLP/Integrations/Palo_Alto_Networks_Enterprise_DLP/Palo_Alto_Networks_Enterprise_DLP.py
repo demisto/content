@@ -15,7 +15,6 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
-MAX_LAST_FETCHED_IDS = 200
 DEFAULT_MAX_FETCH = 50
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
@@ -37,7 +36,8 @@ END_TIME_BUFFER = 30  # seconds
 # Last run
 LAST_RUN_KEY = "last_run"
 START_TIMESTAMP_KEY = "start_timestamp"
-LAST_IDS_KEY = "last_ids"
+LAST_IDS_KEY = "last_ids"  # Legacy key (list[str]) — kept for migration only
+LAST_IDS_TIMESTAMPS_KEY = "last_ids_timestamps"  # New key: dict[str, int] mapping incident_id → committedAt epoch
 LOCAL_LAST_RUN: dict[str, Any] = {}  # In memory last run object during long running execution
 
 
@@ -496,37 +496,45 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
     }
 
 
-def compute_next_run(incident_ids_committed_timestamps: dict[str, int], last_run: dict[str, Any]) -> dict[str, Any]:
+def compute_next_run(
+    incident_ids_committed_timestamps: dict[str, int],
+    last_run: dict[str, Any],
+    look_back_minutes: int = 0,
+) -> dict[str, Any]:
     """
     Compute the next run state based on fetched incidents using their committed timestamps.
 
+    Retains incident IDs within the lookback retention window
+    `[max_ts - (look_back_minutes * 60 + END_TIME_BUFFER), max_ts]` so that the next
+    fetch can deduplicate incidents re-queried due to lookback.
+
     Args:
-        incident_ids_committed_timestamps (dict[str, int]): Dictionary mapping incident IDs to their committedAt timestamps.
-        last_run (dict[str, Any]): Previous last run state to return if no incidents were fetched.
+        incident_ids_committed_timestamps (dict[str, int]): Mapping of incident ID → committedAt
+            epoch timestamp (seconds). Must include carry-over IDs from the previous last run.
+        last_run (dict[str, Any]): Previous last run state, returned unchanged when no incidents
+            were fetched.
+        look_back_minutes (int): Minutes of lookback configured for the integration. Determines
+            how wide the ID retention window is. Defaults to 0.
 
     Returns:
-        dict[str, Any]: Dictionary with start_timestamp (latest committedAt) and last_ids
-                        (all incident IDs with that timestamp) for next fetch.
+        dict[str, Any]: Next run state with `start_timestamp` and `last_ids_timestamps`.
     """
     if not incident_ids_committed_timestamps:
         return last_run
 
     new_last_committed_timestamp = max(incident_ids_committed_timestamps.values())
-    # Filter incidents within buffer window, sort by timestamp (oldest to newest), keep newest MAX_LAST_FETCHED_IDS
-    # 30 seconds buffer taken as a safety margin to account for resolution of filtering start_timestamp
-    new_last_incident_ids = [
-        _id
-        for _id, _ in sorted(
-            (
-                (_id, ts)
-                for _id, ts in incident_ids_committed_timestamps.items()
-                if ts >= new_last_committed_timestamp - END_TIME_BUFFER
-            ),
-            key=lambda x: x[1],
-        )[-MAX_LAST_FETCHED_IDS:]
-    ]
 
-    return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_KEY: new_last_incident_ids}
+    # Retain IDs within (look_back_minutes * 60 + END_TIME_BUFFER) seconds of the latest timestamp
+    # so they are available for deduplication on the next fetch that re-queries the lookback window.
+    retention_cutoff = new_last_committed_timestamp - (look_back_minutes * 60 + END_TIME_BUFFER)
+    demisto.debug(f"Computing next run: {new_last_committed_timestamp=}, {look_back_minutes=}, {retention_cutoff=}.")
+
+    new_last_ids_timestamps: dict[str, int] = {
+        _id: ts for _id, ts in incident_ids_committed_timestamps.items() if ts >= retention_cutoff
+    }
+
+    demisto.debug(f"Retaining {len(new_last_ids_timestamps)} incident IDs in last run for deduplication.")
+    return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_TIMESTAMPS_KEY: new_last_ids_timestamps}
 
 
 def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> list[tuple[int, int]]:
@@ -556,22 +564,51 @@ def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> li
     return intervals
 
 
+def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[str, int]:
+    """
+    Migrate the legacy `last_ids` list schema to the new `last_ids_timestamps` dict schema.
+
+    Legacy IDs are seeded with `start_timestamp` as a conservative deduplication baseline.
+
+    Args:
+        last_run (dict[str, Any]): Raw last run object from `demisto.getLastRun()`.
+        start_timestamp (int): Epoch timestamp (seconds) to assign to each migrated ID.
+
+    Returns:
+        dict[str, int]: Mapping of incident_id → committedAt epoch timestamp.
+    """
+    if LAST_IDS_TIMESTAMPS_KEY in last_run:
+        return dict(last_run[LAST_IDS_TIMESTAMPS_KEY])
+
+    # Legacy schema: plain list of IDs — migrate by seeding with start_timestamp
+    legacy_ids: list[str] = last_run.get(LAST_IDS_KEY) or []
+    if legacy_ids:
+        demisto.debug(
+            f"Migrating {len(legacy_ids)} legacy incident IDs from '{LAST_IDS_KEY}' "
+            f"to '{LAST_IDS_TIMESTAMPS_KEY}' schema, seeding with {start_timestamp=}."
+        )
+    return {incident_id: start_timestamp for incident_id in legacy_ids}
+
+
 def fetch_notifications(
     client: Client,
     regions: str,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
     max_fetch: int = DEFAULT_MAX_FETCH,
+    look_back_minutes: int = 0,
 ) -> tuple[dict, list[dict]]:
     """
-    Fetch DLP notifications using time-based queries with ID-based deduplication.
+    Fetch DLP notifications using time-based queries with ID-based deduplication and optional lookback.
 
     Args:
-        client: DLP API client.
-        regions: Comma-separated DLP regions to fetch from.
-        first_fetch_timestamp: Timestamp to use for first fetch (unix epoch seconds).
-        incident_type: Type of incident to create (default: "Data Loss Prevention").
-        max_fetch: Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
+        client (Client): DLP API client.
+        regions (str): Comma-separated DLP regions to fetch from.
+        first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
+        incident_type (str): Type of incident to create (default: "Data Loss Prevention").
+        max_fetch (int): Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
+        look_back_minutes (int): Minutes to look back from the last committed timestamp to catch
+            late-indexed incidents. Defaults to 0 (no lookback).
 
     Returns:
         tuple[dict, list[dict]]: Next run state and list of new incidents.
@@ -583,20 +620,28 @@ def fetch_notifications(
 
     last_run = demisto.getLastRun() or {}  # May return as "None" on the first fetch
     demisto.debug(f"Got {last_run=}.")
-    last_incident_ids = last_run.get(LAST_IDS_KEY) or []
     start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
+
+    # Apply lookback: re-query from (start_timestamp - look_back_minutes) to catch late-indexed incidents
+    effective_start_timestamp = start_timestamp - look_back_minutes * 60
+    demisto.debug(f"Lookback applied: {look_back_minutes=}, {start_timestamp=}, {effective_start_timestamp=}.")
+
     # Provide buffer to account for minor indexing delays
     end_timestamp = int(datetime.now(tz=UTC).timestamp()) - END_TIME_BUFFER
 
-    new_incidents: list[dict] = []
-    fetched_incident_ids_committed_timestamps: dict[str, int] = {
-        incident_id: start_timestamp for incident_id in last_incident_ids
-    }
+    # Migrate legacy schema and seed the deduplication accumulator with previously seen IDs
+    fetched_incident_ids_committed_timestamps: dict[str, int] = _migrate_last_run(last_run, start_timestamp)
 
-    demisto.debug(f"Starting to fetch incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
-    demisto.debug(f"Deduplicating using {len(last_incident_ids)} IDs: {last_incident_ids}.")
+    demisto.debug(f"Starting to fetch incidents using {max_fetch=} between {effective_start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(
+        f"Deduplicating using {len(fetched_incident_ids_committed_timestamps)} IDs: "
+        f"{list(fetched_incident_ids_committed_timestamps.keys())}."
+    )
+
+    new_incidents: list[dict] = []
+
     # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
-    for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
+    for start_time, end_time in get_start_end_time_intervals(effective_start_timestamp, end_timestamp, seconds_delta=180):
         if len(new_incidents) >= max_fetch:
             demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
             break
@@ -630,13 +675,13 @@ def fetch_notifications(
             new_incidents.append(incident)
             fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
-    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {effective_start_timestamp=} and {end_timestamp=}.")
     demisto.debug(f"Fetched {len(new_incidents)} deduplicated incidents: {[inc.get('name') for inc in new_incidents]}.")
 
     demisto.debug("Updating integration context with access token.")
     demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
 
-    next_run = compute_next_run(fetched_incident_ids_committed_timestamps, last_run)
+    next_run = compute_next_run(fetched_incident_ids_committed_timestamps, last_run, look_back_minutes)
     demisto.debug(f"Computed updated {next_run=}.")
     return next_run, new_incidents
 
@@ -646,8 +691,8 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
     Fetch incidents from Palo Alto Networks Enterprise DLP using time-based queries with deduplication.
 
     Args:
-        client: DLP API client instance.
-        params: Integration instance configuration parameters.
+        client (Client): DLP API client instance.
+        params (dict): Integration instance configuration parameters.
 
     Returns:
         tuple[dict, list[dict]]: Next run state and list of fetched incidents.
@@ -660,6 +705,7 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
     first_fetch_timestamp = int(first_fetch_datetime.timestamp())  # type: ignore
 
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    look_back_minutes = arg_to_number(params.get("look_back")) or 0
 
     return fetch_notifications(
         client=client,
@@ -667,6 +713,7 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
         first_fetch_timestamp=first_fetch_timestamp,
         incident_type=incident_type,
         max_fetch=max_fetch,
+        look_back_minutes=look_back_minutes,
     )
 
 

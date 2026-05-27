@@ -17,6 +17,6 @@ args:
   description: Value to search.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (auto formatted)
