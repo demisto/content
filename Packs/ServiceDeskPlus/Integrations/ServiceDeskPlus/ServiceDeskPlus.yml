@@ -608,7 +608,7 @@ script:
       description: 'The email ID of the request note creator.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_technician
-      description: 'Whether the creator is technician or not.'
+      description: 'Whether the request note creator is a technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_by.sms_mail
       description: 'Creator sms mail.'
