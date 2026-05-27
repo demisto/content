@@ -17,7 +17,7 @@ VENDOR = "Menlo"
 PRODUCT = "Security IP"
 
 DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE = 5000
-MAX_EVENTS_PER_PAGE = 1000  # API default limit per request
+MAX_EVENTS_PER_PAGE = 10000
 DEFAULT_FIRST_FETCH = "3 hours"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -119,9 +119,13 @@ class Client(ContentClient):
         # Use resp_type="response" to handle empty 200s and non-JSON bodies (e.g. HTML auth errors)
         # explicitly. Per Menlo docs: "The API may occasionally return an empty 200 response when
         # a JSON object is expected... Content-Length: 0."
-        response = self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="response")
+        try:
+            response = self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="response")
+        except Exception as e:
+            demisto.error(f"[{log_type}] HTTP request FAILED with limit={limit}: {e}")
+            raise
 
-        demisto.debug(f"[{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}")
+        demisto.debug(f"[{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}, requested limit={limit}")
 
         # Empty body (Content-Length: 0) means "no data" — not an error.
         if not response.content:
@@ -249,7 +253,15 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] No more events.")
             break
 
-        demisto.debug(f"[{thread_name}] Got {len(page_events)} events.")
+        # If the API returned fewer events than requested but still gave us a next-page cursor,
+        # the server is capping page size below our MAX_EVENTS_PER_PAGE — surface this loudly.
+        if len(page_events) < page_limit and next_paging:
+            demisto.info(
+                f"[{thread_name}] API returned {len(page_events)} events but we requested limit={page_limit} "
+                f"(server may be capping page size below {MAX_EVENTS_PER_PAGE})."
+            )
+
+        demisto.debug(f"[{thread_name}] Got {len(page_events)} events (requested limit={page_limit}).")
 
         # Per the API docs, each element in the events list is {"event": {...}}.
         source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
@@ -394,9 +406,7 @@ def _fetch_log_type_task(
             last_event_time = events[-1].get("event_time") or events[-1].get("_time", "")
             next_fetch_time = last_event_time or end_timestamp
             next_boundary_hashes = get_boundary_hashes(events, last_event_time)
-            demisto.debug(
-                f"[{thread_name}] next fetch from {next_fetch_time} " f"({len(next_boundary_hashes)} boundary hash(es))"
-            )
+            demisto.debug(f"[{thread_name}] next fetch from {next_fetch_time} ({len(next_boundary_hashes)} boundary hash(es))")
             result.next_run_state = {"last_fetch_time": next_fetch_time, "boundary_hashes": next_boundary_hashes}
         else:
             # No events — preserve previous state so the next cycle retries from the same point.
@@ -562,7 +572,8 @@ def main() -> None:
         arg_to_number(params.get("max_events_per_fetch_per_type", DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE))
         or DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE
     )
-
+    # TODO remove before release
+    demisto.info(f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE} ***")
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
