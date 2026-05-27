@@ -314,3 +314,97 @@ def test_unzip_with_space_in_path(mocker):
 
     assert isinstance(cmd_list, list)
     assert zip_path in cmd_list
+
+
+class TestUploadFilesSafeHandling:
+    """Tests for safe file handling in upload_files."""
+
+    def test_symlinks_are_skipped(self, mocker):
+        """
+        Given
+        - An extracted directory containing a symbolic link
+        When
+        - upload_files processes the directory
+        Then
+        - The symbolic link is skipped and not uploaded
+        """
+        dir_path = mkdtemp()
+        try:
+            # Create a real file and a symlink to it
+            real_file = os.path.join(dir_path, "real_file.txt")
+            link_file = os.path.join(dir_path, "link_file.txt")
+            with open(real_file, "w") as f:
+                f.write("real content")
+            os.symlink(real_file, link_file)
+
+            mock_debug = mocker.patch.object(demisto, "debug")
+            mocker.patch.object(demisto, "results")
+
+            upload_files([], [], dir_path)
+
+            # The symlink should be skipped - check debug was called with skip message
+            debug_messages = [str(c) for c in mock_debug.call_args_list]
+            assert any("Skipping" in msg for msg in debug_messages)
+        finally:
+            shutil.rmtree(dir_path)
+
+    def test_files_outside_extraction_dir_are_skipped(self, mocker):
+        """
+        Given
+        - An extracted file whose real path resolves outside the extraction directory
+        When
+        - upload_files processes the directory
+        Then
+        - The file is skipped and not uploaded
+        """
+        dir_path = mkdtemp()
+        outside_dir = mkdtemp()
+        try:
+            # Create a file outside the extraction directory
+            outside_file = os.path.join(outside_dir, "outside.txt")
+            with open(outside_file, "w") as f:
+                f.write("outside content")
+            # Create a symlink inside dir_path pointing to the outside file
+            link_path = os.path.join(dir_path, "escape_link.txt")
+            os.symlink(outside_file, link_path)
+
+            mock_debug = mocker.patch.object(demisto, "debug")
+            mocker.patch.object(demisto, "results")
+
+            upload_files([], [], dir_path)
+
+            # The out-of-tree symlink should be skipped
+            debug_messages = [str(c) for c in mock_debug.call_args_list]
+            assert any("Skipping" in msg for msg in debug_messages)
+        finally:
+            shutil.rmtree(dir_path)
+            shutil.rmtree(outside_dir)
+
+    def test_normal_files_within_dir_are_processed(self, mocker):
+        """
+        Given
+        - A normal file within the extraction directory
+        When
+        - upload_files processes the directory
+        Then
+        - The file is read and results are returned
+        """
+        dir_path = mkdtemp()
+        try:
+            # Create a normal file inside the extraction directory
+            normal_file = os.path.join(dir_path, "normal_file.txt")
+            with open(normal_file, "wb") as f:
+                f.write(b"file content")
+
+            mock_results = mocker.patch.object(demisto, "results")
+
+            upload_files([], [], dir_path)
+
+            # demisto.results should have been called at least twice:
+            # once for fileResult and once for the summary
+            assert mock_results.call_count >= 1
+            # Verify the file was included in the extracted files list
+            all_calls_str = str(mock_results.call_args_list)
+            assert "normal_file.txt" in all_calls_str
+        finally:
+            shutil.rmtree(dir_path)

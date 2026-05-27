@@ -77,7 +77,7 @@ class Client(BaseClient):
             "Object": creds_object,
         }
 
-        return self._http_request("POST", url_suffix, json=body, auth=self.auth, cert=self.crt)
+        return self._http_request("POST", url_suffix, json_data=body, auth=self.auth, cert=self.crt)
 
     def list_credentials(self):
         credential_result = [self.get_credentials(credentials) for credentials in self._credentials_list]
