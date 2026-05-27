@@ -895,7 +895,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "36"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -957,8 +957,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 1120
+          "x": 1207,
+          "y": 1230
         }
       }
     note: false
@@ -981,7 +981,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1025,8 +1025,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 1270
+          "x": 1207,
+          "y": 1400
         }
       }
     note: false
@@ -1293,7 +1293,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1892,8 +1892,6 @@ view: |-
     "linkLabelsPosition": {
       "10_11_yes": 0.9,
       "33_5_yes": 0.83,
-      "35_36_yes": 0.5,
-      "37_17_yes": 0.5,
       "6_7_yes": 0.48,
       "8_9_yes": 0.87
     },
