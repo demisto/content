@@ -645,7 +645,7 @@ script:
       predefined:
         - "true"
         - "false"
-    - description: whether to add to linked requests or not.
+    - description: Whether to add notes from a specific request to its linked requests.
       name: add_to_linked_requests
       auto: PREDEFINED
       defaultValue: "false"
