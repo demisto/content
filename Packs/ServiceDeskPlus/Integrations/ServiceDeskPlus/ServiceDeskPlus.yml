@@ -572,7 +572,7 @@ script:
     description: Get a request specific note, or list all of its notes.
     outputs:
     - contextPath: ServiceDeskPlus.Request.Note.mark_first_response
-      description: 'Mark first response or not.'
+      description: 'Whether to mark the request note first response.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_time.display_value
       description: 'Created time display value.'
