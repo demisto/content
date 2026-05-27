@@ -1048,6 +1048,7 @@ Retrieves the sensitivity label currently assigned to a drive item. Returns the 
 #### Human Readable Output
 
 >### Sensitivity Label
+>
 >|Item Id|Display Name|Id|Protection Enabled|
 >|---|---|---|---|
 >| 01EXAMPLE | Confidential | 08973045-2fd6-4014-9177-9f2a3e55c29e | false |
@@ -1087,145 +1088,7 @@ Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as
 #### Human Readable Output
 
 >### Assigned Sensitivity Label
+>
 >|Item Id|Sensitivity Label Id|Location|
 >|---|---|---|
 >| 01EXAMPLE | 08973045-2fd6-4014-9177-9f2a3e55c29e | https://contoso.sharepoint.com/_api/v2.0/monitor/MyMonitorJobId |
-### msgraph-driveitem-update
-
-***
-Updates a driveItem (move within or across drives, rename, or update metadata) by issuing PATCH on the driveItem.
-At least one of new_parent_id, new_parent_drive_id, new_name, description, or conflict_behavior must be provided.
-
-#### Base Command
-
-`msgraph-driveitem-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
-| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
-| item_id | The ID of the driveItem to update.<br/>To get the ID, use the msgraph-list-drive-content command. | Required | 
-| new_parent_id | New parent folder ID for a move operation. Sets parentReference.id in the request body.<br/>To get a folder ID, use the msgraph-list-drive-content command. | Optional | 
-| new_parent_drive_id | New parent drive ID for a cross-drive move. Sets parentReference.driveId in the request body.<br/>Use together with new_parent_id when moving the item to a folder on a different drive. | Optional | 
-| new_name | New name for the driveItem (rename). Sets the top-level name field in the request body. | Optional | 
-| description | New description for the driveItem. Sets the description field in the request body. | Optional | 
-| conflict_behavior | Conflict resolution behavior when a destination item with the same name already exists.<br/>Sets the @microsoft.graph.conflictBehavior field in the request body. If omitted, Microsoft Graph's default applies (fail). Possible values are: fail, replace, rename. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.UpdatedItem.ID | String | The unique identifier of the driveItem. | 
-| MsGraphFiles.UpdatedItem.Name | String | The name of the driveItem. | 
-| MsGraphFiles.UpdatedItem.WebUrl | String | URL to the driveItem in the browser. | 
-| MsGraphFiles.UpdatedItem.Size | Number | The size of the driveItem in bytes. | 
-| MsGraphFiles.UpdatedItem.LastModifiedDateTime | Date | Timestamp of when the driveItem was last modified. | 
-| MsGraphFiles.UpdatedItem.CreatedDateTime | Date | Timestamp of when the driveItem was created. | 
-| MsGraphFiles.UpdatedItem.ParentReference.DriveId | String | Unique identifier of the drive that contains the driveItem. | 
-| MsGraphFiles.UpdatedItem.ParentReference.DriveType | String | Identifies the drive type. | 
-| MsGraphFiles.UpdatedItem.ParentReference.ID | String | Unique identifier of the parent folder. | 
-| MsGraphFiles.UpdatedItem.ParentReference.Path | String | The path of the parent folder. | 
-| MsGraphFiles.UpdatedItem.LastModifiedBy.DisplayName | String | Display name of the identity that last modified the driveItem. | 
-| MsGraphFiles.UpdatedItem.LastModifiedBy.Type | String | The identity type that last modified the driveItem \(user, application, or device\). | 
-| MsGraphFiles.UpdatedItem.File.MimeType | String | The MIME type of the file. | 
-| MsGraphFiles.UpdatedItem.OdataContext | String | The OData context. | 
-### msgraph-driveitem-copy
-
-***
-Initiates an asynchronous copy of a driveItem (file or folder) within or across drives. Microsoft Graph processes the copy asynchronously and responds 202 Accepted with a monitor URL. Poll the returned MonitorUrl directly against Microsoft Graph (using the same access token) until the body reports status `completed` or `failed`.
-
-#### Base Command
-
-`msgraph-driveitem-copy`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
-| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
-| item_id | The ID of the source driveItem to copy.<br/>To get the ID, use the msgraph-list-drive-content command. | Required | 
-| destination_parent_id | Destination parent folder ID. Sets parentReference.id in the request body.<br/>To get a folder ID, use the msgraph-list-drive-content command. | Optional | 
-| destination_drive_id | Destination drive ID. Sets parentReference.driveId in the request body.<br/>Use together with destination_parent_id when copying to a folder on a different drive. | Optional | 
-| new_name | New name for the copied driveItem. Sets the name field in the request body. | Optional | 
-| conflict_behavior | Conflict resolution behavior when a destination item with the same name already exists.<br/>Sets the @microsoft.graph.conflictBehavior query parameter. If omitted, Microsoft Graph's default applies (fail). Possible values are: fail, replace, rename. | Optional | 
-| children_only | When true, only the children of the source folder are copied (the folder itself is not created at the destination). Sets the childrenOnly field in the request body. Possible values are: true, false. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.CopyOperation.MonitorUrl | String | URL to poll for the asynchronous copy status. Issue an HTTP GET against this URL using the same Microsoft Graph access token. The response body returns fields including status \(\`notStarted\`, \`inProgress\`, \`completed\`, \`failed\`\), percentageComplete, resourceId, and resourceLocation. Terminal states are \`completed\` and \`failed\`. | 
-| MsGraphFiles.CopyOperation.ItemId | String | Echo of the source driveItem ID supplied to the command \(for context joining\). | 
-| MsGraphFiles.CopyOperation.ObjectType | String | Echo of the object_type argument supplied to the command. | 
-| MsGraphFiles.CopyOperation.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
-### msgraph-driveitem-permissions-list
-
-***
-Lists the sharing permissions on a driveItem. Returns both link-style permissions (anyone-with-link, organization-wide-link, scoped link) and direct grants (per-user / per-group / per-application). The InheritedFrom field is non-null when the permission is inherited from a parent folder.
-
-#### Base Command
-
-`msgraph-driveitem-permissions-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
-| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
-| item_id | The ID of the driveItem whose sharing permissions to list.<br/>To get the ID, use the msgraph-list-drive-content command. | Required | 
-| limit | The maximum number of permissions to return per page. Sets the $top query parameter. | Optional | 
-| next_page_url | The URL for the next results page (the @odata.nextLink value from a previous response, surfaced under MsGraphFiles.ItemPermission.NextToken). | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.ItemPermission.Value.ID | String | The unique identifier of the permission on the driveItem. | 
-| MsGraphFiles.ItemPermission.Value.Roles | Unknown | The roles granted by this permission \(for example, read, write, owner\). | 
-| MsGraphFiles.ItemPermission.Value.Link.Scope | String | The sharing scope of a link permission. One of anonymous, organization, users. | 
-| MsGraphFiles.ItemPermission.Value.Link.Type | String | The sharing link type. One of view, edit, embed. | 
-| MsGraphFiles.ItemPermission.Value.Link.WebUrl | String | The shareable URL of the sharing link. | 
-| MsGraphFiles.ItemPermission.Value.GrantedToV2.User.DisplayName | String | Display name of the user the permission is granted to. | 
-| MsGraphFiles.ItemPermission.Value.GrantedToV2.User.Email | String | Email of the user the permission is granted to. | 
-| MsGraphFiles.ItemPermission.Value.GrantedToV2.User.ID | String | ID of the user the permission is granted to. | 
-| MsGraphFiles.ItemPermission.Value.GrantedToV2.Group.Email | String | Email of the group the permission is granted to. | 
-| MsGraphFiles.ItemPermission.Value.GrantedToV2.SiteUser.LoginName | String | Login name of the SharePoint site user the permission is granted to. | 
-| MsGraphFiles.ItemPermission.Value.GrantedToIdentitiesV2 | Unknown | List of identities the permission is granted to. Populated when more than one identity holds the permission. | 
-| MsGraphFiles.ItemPermission.Value.InheritedFrom.ID | String | When non-null, indicates the permission is inherited from a parent driveItem. Inherited permissions cannot be deleted directly. | 
-| MsGraphFiles.ItemPermission.Value.ExpirationDateTime | Date | The timestamp when this permission expires. | 
-| MsGraphFiles.ItemPermission.Value.HasPassword | Boolean | When true, the link permission is password protected. | 
-| MsGraphFiles.ItemPermission.ItemId | String | Echo of the item_id argument supplied to the command \(for context joining\). | 
-| MsGraphFiles.ItemPermission.ObjectType | String | Echo of the object_type argument supplied to the command. | 
-| MsGraphFiles.ItemPermission.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
-| MsGraphFiles.ItemPermission.OdataContext | String | The OData context. | 
-| MsGraphFiles.ItemPermission.NextToken | String | The @odata.nextLink value. Pass this to next_page_url to fetch the next page. | 
-### msgraph-driveitem-permission-delete
-
-***
-Deletes (revokes) a single sharing permission from a driveItem. Returns success when Microsoft Graph responds 204. For bulk-delete loops where intermittent 404s (already removed) are acceptable, enable "Continue on error" on the calling task.
-
-#### Base Command
-
-`msgraph-driveitem-permission-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
-| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
-| item_id | The ID of the driveItem whose permission to delete.<br/>To get the ID, use the msgraph-list-drive-content command. | Required | 
-| permission_id | The ID of the permission to delete.<br/>To get the permission ID, use the msgraph-driveitem-permissions-list command.<br/>Note: Inherited permissions (where InheritedFrom is non-null in the listing) cannot be deleted directly; strip the permission on the parent driveItem instead. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.RemovedItemPermission.ItemId | String | Echo of the item_id argument supplied to the command. | 
-| MsGraphFiles.RemovedItemPermission.PermissionId | String | Echo of the permission_id argument that was deleted. | 
-| MsGraphFiles.RemovedItemPermission.ObjectType | String | Echo of the object_type argument supplied to the command. | 
-| MsGraphFiles.RemovedItemPermission.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
