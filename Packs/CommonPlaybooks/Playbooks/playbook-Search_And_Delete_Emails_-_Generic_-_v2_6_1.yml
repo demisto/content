@@ -1,17 +1,15 @@
 id: Search And Delete Emails - Generic v2
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Search And Delete Emails - Generic v2
-description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense.'
+description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Microsoft Graph Security * Gmail * Agari Phishing Defense.'
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 808e9cce-8112-49d4-8624-907a6fbeb394
+    taskid: 9d36f834-c317-4754-8b4f-99b0f343ee99
     type: start
     task:
-      id: 808e9cce-8112-49d4-8624-907a6fbeb394
+      id: 9d36f834-c317-4754-8b4f-99b0f343ee99
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 0a7ca589-107b-48e4-8705-2becca697165
+    taskid: ec7c3830-586e-4e30-8f24-344bae4d0384
     type: playbook
     task:
-      id: 0a7ca589-107b-48e4-8705-2becca697165
+      id: ec7c3830-586e-4e30-8f24-344bae4d0384
       version: -1
       name: Search And Delete Emails - EWS
       description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
@@ -77,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
-          "y": 1740
+          "x": 1720,
+          "y": 1850
         }
       }
     note: false
@@ -91,10 +89,10 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
+    taskid: 354d75ed-3942-4bb1-8aa3-0f663e17dbc5
     type: title
     task:
-      id: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
+      id: 354d75ed-3942-4bb1-8aa3-0f663e17dbc5
       version: -1
       name: Done
       type: title
@@ -105,8 +103,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 1910
+          "x": 1145,
+          "y": 2020
         }
       }
     note: false
@@ -117,79 +115,12 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  "3":
-    id: "3"
-    taskid: 86fc3213-5a75-41dc-8c9b-b924335c28a1
-    type: playbook
-    task:
-      id: 86fc3213-5a75-41dc-8c9b-b924335c28a1
-      version: -1
-      name: O365 - Security And Compliance - Search And Delete
-      description: |-
-        This playbook performs the following steps:
-        1. Creates a compliance search.
-        2. Starts a compliance search.
-        3. Waits for the compliance search to complete.
-        4. Gets the results of the compliance search.
-        5. Gets the preview results, if specified.
-        6. Deletes the search results (Hard/Soft).
-      type: playbook
-      iscommand: false
-      brand: ""
-      playbookId: O365 - Security And Compliance - Search And Delete
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      allow_not_found_exchange_locations:
-        complex:
-          root: inputs.O365AllowNotFoundExchangeLocations
-      delete_type:
-        complex:
-          root: inputs.O365DeleteType
-      exchange_location:
-        complex:
-          root: ExchangeLocation
-      exchange_location_exclusion:
-        complex:
-          root: inputs.O365ExchangeLocationExclusion
-      force:
-        simple: "false"
-      kql:
-        simple: ${KQLQuery}
-      preview:
-        simple: "true"
-      search_action_polling_interval:
-        simple: "3"
-      search_action_polling_timeout:
-        simple: "45"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 421d875d-ff1a-4808-8451-228e23cd6605
+    taskid: 5d3bcbb8-6d33-4586-b6fb-2e8512c4b930
     type: condition
     task:
-      id: 421d875d-ff1a-4808-8451-228e23cd6605
+      id: 5d3bcbb8-6d33-4586-b6fb-2e8512c4b930
       version: -1
       name: In what integration should emails be searched and deleted?
       description: Checks which integration and playbook should run the search and delete action, by checking the SearchAndDeleteIntegration playbook input.
@@ -202,18 +133,18 @@ tasks:
       Agari Phishing Defense:
       - "15"
       Both Enabled, input is EWS:
-      - "9"
-      Both Enabled, input is O365:
-      - "12"
+      - "10"
       Gmail:
       - "13"
       Only EWS enabled:
       - "10"
-      Only O365 Enabled:
+      Both Enabled, input is MS Graph:
+      - "12"
+      Only MS Graph Enabled:
       - "11"
     separatecontext: false
     conditions:
-    - label: Both Enabled, input is O365
+    - label: Both Enabled, input is MS Graph
       condition:
       - - operator: isNotEmpty
           left:
@@ -255,16 +186,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SecurityAndCompliance
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SecurityAndComplianceV2
+                        simple: Microsoft Graph
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -284,9 +206,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: O365
+              simple: MS Graph
           ignorecase: true
-    - label: Only O365 Enabled
+    - label: Only MS Graph Enabled
       condition:
       - - operator: isNotEmpty
           left:
@@ -301,16 +223,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SecurityAndCompliance
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SecurityAndComplianceV2
+                        simple: Microsoft Graph
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -355,7 +268,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: O365
+              simple: MS Graph
           ignorecase: true
     - label: Both Enabled, input is EWS
       condition:
@@ -397,16 +310,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SecurityAndCompliance
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SecurityAndComplianceV2
+                        simple: Microsoft Graph
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -467,16 +371,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SecurityAndCompliance
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SecurityAndComplianceV2
+                        simple: Microsoft Graph
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -589,51 +484,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7db64c69-57c5-4457-8779-2363bcdd4714
+    taskid: 05817b01-c9a3-4780-88e7-39224fb61aff
     type: condition
     task:
-      id: 7db64c69-57c5-4457-8779-2363bcdd4714
+      id: 05817b01-c9a3-4780-88e7-39224fb61aff
       version: -1
-      name: From where should emails be searched and deleted?
-      description: Checks whether a target to search and delete emails from was specified. Determined by the O365ExchangeLocation playbook input.
+      name: Is mailbox scope specified?
+      description: Checks whether MsgMailboxScope is provided. If empty, prompts the analyst to select manually.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "6"
-      All Mailboxes:
-      - "7"
-      Recipient's Mailbox:
-      - "8"
+      "yes":
+      - "19"
     separatecontext: false
     conditions:
-    - label: Recipient's Mailbox
+    - label: "yes"
       condition:
-      - - operator: greaterThan
+      - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: inputs.O365ExchangeLocation
-                transformers:
-                - operator: ExtractEmailTransformer
-                - operator: count
+              simple: inputs.MsgMailboxScope
             iscontext: true
-          right:
-            value:
-              simple: "0"
-          ignorecase: true
-    - label: All Mailboxes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.O365ExchangeLocation
-            iscontext: true
-          right:
-            value:
-              simple: All
           ignorecase: true
     view: |-
       {
@@ -652,27 +526,29 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 25801150-ef91-4ccc-8275-5ca5225fc857
+    taskid: 65e328bb-ea91-46b6-8354-7d8341a98710
     type: condition
     task:
-      id: 25801150-ef91-4ccc-8275-5ca5225fc857
+      id: 65e328bb-ea91-46b6-8354-7d8341a98710
       version: -1
-      name: Manually decide where to search & delete the email
+      name: Manually select mailbox scope
       description: Allows the analyst to decide where to search for and delete the email - from the recipient's mailbox, or from all available mailboxes?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      All Mailboxes:
-      - "7"
-      Recipients Mailbox:
+      '#default#':
+      - "2"
+      allTenantMailboxes:
       - "8"
+      recipientsOnly:
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 500,
-          "y": 710
+          "y": 670
         }
       }
     note: false
@@ -685,31 +561,31 @@ tasks:
     continueonerrortype: ""
   "7":
     id: "7"
-    taskid: d4e2df0d-57ad-45e8-8def-023393fdc1b3
+    taskid: caaa2ac0-9a61-4b68-82a9-3b920f4948b6
     type: regular
     task:
-      id: d4e2df0d-57ad-45e8-8def-023393fdc1b3
+      id: caaa2ac0-9a61-4b68-82a9-3b920f4948b6
       version: -1
-      name: Set all mailboxes to be searched
+      name: Set MsgMailboxScope = recipientsOnly
       description: Set a value in context under the key you entered.
       type: regular
       iscommand: false
       brand: ""
-      script: Set
+      scriptName: Set
     nexttasks:
       '#none#':
       - "19"
     scriptarguments:
       key:
-        simple: ExchangeLocation
+        simple: MsgMailboxScope
       value:
-        simple: All
+        simple: recipientsOnly
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 180,
-          "y": 880
+          "y": 850
         }
       }
     note: false
@@ -722,40 +598,31 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: b1056daa-1e07-41e9-883b-19aa4fc847fa
+    taskid: 4a9fa05f-ff6f-49d3-8425-1f78679c51dd
     type: regular
     task:
-      id: b1056daa-1e07-41e9-883b-19aa4fc847fa
+      id: 4a9fa05f-ff6f-49d3-8425-1f78679c51dd
       version: -1
-      name: Set the "email to" as the mailbox to search
+      name: Set MsgMailboxScope = allTenantMailboxes
       description: Set a value in context under the key you entered.
       type: regular
       iscommand: false
       brand: ""
-      script: Set
+      scriptName: Set
     nexttasks:
       '#none#':
       - "19"
     scriptarguments:
       key:
-        simple: ExchangeLocation
+        simple: MsgMailboxScope
       value:
-        complex:
-          root: inputs.O365ExchangeLocation
-          transformers:
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
-                value:
-                  simple: ' '
+        simple: allTenantMailboxes
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 820,
-          "y": 880
+          "y": 850
         }
       }
     note: false
@@ -768,25 +635,36 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: eca8ae30-ebfa-4f62-82c9-5586e000e431
-    type: title
+    taskid: 78f1f59a-8602-41cd-984c-fa27fa78c96a
+    type: playbook
     task:
-      id: eca8ae30-ebfa-4f62-82c9-5586e000e431
+      id: 78f1f59a-8602-41cd-984c-fa27fa78c96a
       version: -1
-      name: Use EWS
-      type: title
+      name: Microsoft Graph Security - Search And Delete Emails
+      type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        This playbook performs the following steps:
+          1. Checks that the Microsoft Graph integration is available and active.
+          2. Lists existing eDiscovery cases and finds the specified case, or creates it if missing.
+          3. Composes the KQL content query based on the mailbox scope (recipientsOnly, allTenantMailboxes, or other).
+          4. Creates a new eDiscovery search with the composed query, or reuses an existing search based on the force input.
+          5. Runs an estimate statistics operation to count emails matching the query.
+          6. Waits for the estimate operation to complete and checks whether any emails were found.
+          7. Optionally previews the results (statistics summary or full export), based on the preview input.
+          8. Purges the matching emails (Hard delete / Soft delete / manual analyst approval).
+          9. Cleans up the eDiscovery search based on the cleanup input.
+      playbookName: Microsoft Graph Security - Search And Delete Emails
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
+      - "2"
+    separatecontext: true
     view: |-
       {
         "position": {
-          "x": 1955,
-          "y": 370
+          "x": 510,
+          "y": 1850
         }
       }
     note: false
@@ -797,12 +675,40 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+    scriptarguments:
+      case:
+        simple: ${inputs.MsgCase}
+      cleanup:
+        simple: auto
+      delete_type:
+        simple: ${inputs.MsgDeleteType}
+      export_format:
+        simple: msg
+      force:
+        simple: "false"
+      kql:
+        simple: ${KQLQuery}
+      mailbox_exclusion:
+        simple: ${inputs.MsgMailboxExclusion}
+      mailbox_scope:
+        simple: ${inputs.MsgMailboxScope}
+      preview:
+        simple: "true"
+      preview_mode:
+        simple: statistics
+      recipients:
+        simple: ${inputs.MsgRecipients}
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
   "10":
     id: "10"
-    taskid: 43de9303-2031-43bc-8c5c-0f88a25a78f4
+    taskid: cc0f7aec-cf1d-4a99-8fa7-eb15de2da600
     type: title
     task:
-      id: 43de9303-2031-43bc-8c5c-0f88a25a78f4
+      id: cc0f7aec-cf1d-4a99-8fa7-eb15de2da600
       version: -1
       name: Use EWS
       type: title
@@ -830,12 +736,12 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: afe381a2-655b-4dd3-8b22-2561451fcee2
+    taskid: 8040a8a1-5ab9-4f77-8364-414650858628
     type: title
     task:
-      id: afe381a2-655b-4dd3-8b22-2561451fcee2
+      id: 8040a8a1-5ab9-4f77-8364-414650858628
       version: -1
-      name: Use O365
+      name: Use MS Graph
       type: title
       iscommand: false
       brand: ""
@@ -861,12 +767,12 @@ tasks:
     continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 60128cf4-a622-4411-87b3-1bb25b0b14d2
+    taskid: 40d6be8a-cafc-4489-8599-69a39d2c213c
     type: title
     task:
-      id: 60128cf4-a622-4411-87b3-1bb25b0b14d2
+      id: 40d6be8a-cafc-4489-8599-69a39d2c213c
       version: -1
-      name: Use O365
+      name: Use MS Graph
       type: title
       iscommand: false
       brand: ""
@@ -892,10 +798,10 @@ tasks:
     continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 86139d40-fef3-485f-86e9-fc99d4203c7b
+    taskid: c24f2f3c-b0e8-4791-8d89-0a3087630dd7
     type: title
     task:
-      id: 86139d40-fef3-485f-86e9-fc99d4203c7b
+      id: c24f2f3c-b0e8-4791-8d89-0a3087630dd7
       version: -1
       name: Use Gmail
       type: title
@@ -923,37 +829,20 @@ tasks:
     continueonerrortype: ""
   "14":
     id: "14"
-    taskid: d46dc80f-b44e-4a16-8c42-0e0645017299
+    taskid: 154c126e-d9a8-4bd8-872f-a302a6e18158
     type: playbook
     task:
-      id: d46dc80f-b44e-4a16-8c42-0e0645017299
+      id: 154c126e-d9a8-4bd8-872f-a302a6e18158
       version: -1
       name: Search And Delete Emails - Gmail
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
       playbookId: Search And Delete Emails - Gmail
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      AttachmentName:
-        complex:
-          root: inputs.AttachmentName
-      DeleteType:
-        simple: "False"
-      From:
-        complex:
-          root: inputs.From
-      Limit:
-        simple: "50"
-      SearchThisWeek:
-        complex:
-          root: inputs.SearchThisWeek
-      Subject:
-        complex:
-          root: inputs.Subject
     separatecontext: false
     loop:
       iscommand: false
@@ -963,8 +852,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -275,
-          "y": 1740
+          "x": -265,
+          "y": 1850
         }
       }
     note: false
@@ -977,10 +866,10 @@ tasks:
     continueonerrortype: ""
   "15":
     id: "15"
-    taskid: bfa45743-9c08-4aba-8df6-cbff71d46bed
+    taskid: 2d02540f-1081-4a38-88fe-a028ffc6640a
     type: title
     task:
-      id: bfa45743-9c08-4aba-8df6-cbff71d46bed
+      id: 2d02540f-1081-4a38-88fe-a028ffc6640a
       version: -1
       name: Agari Phishing Defense
       type: title
@@ -1008,10 +897,10 @@ tasks:
     continueonerrortype: ""
   "16":
     id: "16"
-    taskid: b622809c-289a-413c-8019-3d5bafda95cc
+    taskid: 470c2cb1-a79b-4240-8021-886fc7e5a9cd
     type: regular
     task:
-      id: b622809c-289a-413c-8019-3d5bafda95cc
+      id: 470c2cb1-a79b-4240-8021-886fc7e5a9cd
       version: -1
       name: Search And Delete Emails - Agari Phishing Defense
       description: Remediates the suspected message.
@@ -1033,8 +922,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2445,
-          "y": 1740
+          "x": 2455,
+          "y": 1850
         }
       }
     note: false
@@ -1071,20 +960,20 @@ tasks:
       brand: ""
       description: |
         Retrieves the current date and time.
-      id: 0cf3ef64-05e3-4b66-8fab-3cb76afff41b
+      id: 44d8e9c2-5138-4ffd-80e5-3f0f27014f4a
       iscommand: false
       name: Get time 7 days ago
-      script: GetTime
       type: regular
       version: -1
-    taskid: 0cf3ef64-05e3-4b66-8fab-3cb76afff41b
+      scriptName: GetTime
+    taskid: 44d8e9c2-5138-4ffd-80e5-3f0f27014f4a
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 1230
+          "x": 190,
+          "y": 1340
         }
       }
   "18":
@@ -1095,33 +984,33 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     note: false
     quietmode: 0
     scriptarguments:
       key:
         simple: KQLQuery
       value:
-        simple: (${inputs.O365KQL}) AND LastModifiedTime>=${Time7DaysAgo}
+        simple: (${inputs.MsgKQL}) AND Received>=${Time7DaysAgo}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 868ccba1-d67f-4118-8f01-1f8cedc910ee
+      id: a56e76ce-59af-4c25-8ced-de4a75525aa7
       iscommand: false
       name: Create KQL query - provided query + search last 7 days
-      script: Set
       type: regular
       version: -1
-    taskid: 868ccba1-d67f-4118-8f01-1f8cedc910ee
+      scriptName: Set
+    taskid: a56e76ce-59af-4c25-8ced-de4a75525aa7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 1570
+          "x": 190,
+          "y": 1680
         }
       }
   "19":
@@ -1138,11 +1027,11 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: inputs.O365KQL
+              simple: inputs.MsgKQL
           operator: notContainsString
           right:
             value:
-              simple: LastModifiedTime
+              simple: Received
       label: "yes"
     continueonerrortype: ""
     id: "19"
@@ -1153,7 +1042,7 @@ tasks:
       '#default#':
       - "20"
       "yes":
-      - "17"
+      - "23"
     note: false
     quietmode: 0
     separatecontext: false
@@ -1161,12 +1050,12 @@ tasks:
     task:
       brand: ""
       description: Check whether to modify KQL to search this week (the last 7 days) only. Only modify the KQL if the SearchThisWeek input is set to true AND the provided KQL query is not already time-bounded (it does not already contain LastModifiedTime).
-      id: 027d5ff5-7e8e-41c0-8184-b33789251d51
+      id: 0b48e7f2-3db3-416f-8b46-a4183316217e
       iscommand: false
       name: Search this week only and query not already time-bounded?
       type: condition
       version: -1
-    taskid: 027d5ff5-7e8e-41c0-8184-b33789251d51
+    taskid: 0b48e7f2-3db3-416f-8b46-a4183316217e
     timertriggers: []
     type: condition
     view: |-
@@ -1184,33 +1073,33 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     note: false
     quietmode: 0
     scriptarguments:
       key:
         simple: KQLQuery
       value:
-        simple: ${inputs.O365KQL}
+        simple: ${inputs.MsgKQL}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 5cbef4d7-8839-469e-8021-6e1d73ffa07e
+      id: 0df0eb77-44e1-4694-8f06-4573ab19cf47
       iscommand: false
       name: Set the non-modified KQL query
-      script: Set
       type: regular
       version: -1
-    taskid: 5cbef4d7-8839-469e-8021-6e1d73ffa07e
+      scriptName: Set
+    taskid: 0df0eb77-44e1-4694-8f06-4573ab19cf47
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 1220
+          "x": 830,
+          "y": 1210
         }
       }
   "21":
@@ -1219,8 +1108,10 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: inputs.O365KQL
+              simple: inputs.MsgKQL
           operator: isNotEmpty
+          right:
+            value: {}
       label: "yes"
     continueonerrortype: ""
     id: "21"
@@ -1238,20 +1129,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
+      id: 561b42bf-a339-4ef0-8563-55c568c0117e
       iscommand: false
       description: Checks whether a KQL query is provided or not.
       name: KQL query provided?
       type: condition
       version: -1
-    taskid: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
+    taskid: 561b42bf-a339-4ef0-8563-55c568c0117e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 1385
+          "x": 190,
+          "y": 1495
         }
       }
   "22":
@@ -1262,51 +1153,82 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     note: false
     quietmode: 0
     scriptarguments:
       key:
         simple: KQLQuery
       value:
-        simple: LastModifiedTime>=${Time7DaysAgo}
+        simple: Received>=${Time7DaysAgo}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: b631cc61-9aae-45ae-8e63-1fc6cba0af2a
+      id: 858817e1-f175-4b51-8f0b-9635330c0898
       iscommand: false
       name: Create KQL query - search last 7 days
-      script: Set
       type: regular
       version: -1
-    taskid: b631cc61-9aae-45ae-8e63-1fc6cba0af2a
+      scriptName: Set
+    taskid: 858817e1-f175-4b51-8f0b-9635330c0898
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 1555
+          "x": 830,
+          "y": 1680
         }
       }
+  "23":
+    id: "23"
+    taskid: 710dfa56-a795-496f-a742-f338c29040e8
+    type: regular
+    task:
+      id: 710dfa56-a795-496f-a742-f338c29040e8
+      version: -1
+      name: Delete Time7DaysAgo from Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: Time7DaysAgo
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "21_22_#default#": 0.41,
       "4_13_Gmail": 0.81,
       "4_15_Agari Phishing Defense": 0.86,
-      "4_2_#default#": 0.9,
-      "5_7_All Mailboxes": 0.71,
-      "5_8_Recipient's Mailbox": 0.73,
-      "6_7_All Mailboxes": 0.37,
-      "6_8_Recipients Mailbox": 0.63
+      "4_2_#default#": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 1925,
-        "width": 3100,
+        "height": 2030,
+        "width": 3110,
         "x": -275,
         "y": 50
       }
@@ -1338,38 +1260,10 @@ inputs:
   description: The value of the malicious email's "AttachmentName" attribute.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
-  value: {}
+  value:
+    simple: EWS
   required: true
-  description: The integration in which to run the search and delete action. Can be O365, Gmail, EWS, or Agari Phishing Defense.
-  playbookInputQuery:
-- key: O365ExchangeLocation
-  value:
-    complex:
-      root: incident
-      accessor: emailto
-  required: false
-  description: Used only in O365. A comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
-  playbookInputQuery:
-- key: O365KQL
-  value: {}
-  required: false
-  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL). Note that if you are using the LastModifiedTime filter in your KQL query, the SearchThisWeek input will not be taken into consideration.
-  playbookInputQuery:
-- key: O365AllowNotFoundExchangeLocations
-  value:
-    simple: "False"
-  required: false
-  description: Used only in O365. Whether to include mailboxes other than regular user mailboxes in the compliance search.
-  playbookInputQuery:
-- key: O365DeleteType
-  value: {}
-  required: false
-  description: Used only in O365. The delete type to perform on the search results. Possible values are Hard or Soft, or leave empty to select manually (Hard = Unrecoverable, Soft=Recoverable).
-  playbookInputQuery:
-- key: O365ExchangeLocationExclusion
-  value: {}
-  required: false
-  description: 'Used only when searching and deleting emails in O365. The exchange location. Determines where to search and delete emails searched using O365 playbooks. Use the value ''All'' to search all mailboxes, use ''SingleMailbox'' to search and delete the email only from the recipient''s inbox, or use ''Manual'' to decide manually for every incident. Note: Searching all mailboxes may take a significant amount of time.'
+  description: The integration in which to run the search and delete action. Can be MS Graph, Gmail, EWS, or Agari Phishing Defense.
   playbookInputQuery:
 - key: SearchThisWeek
   value:
@@ -1377,9 +1271,68 @@ inputs:
   required: false
   description: Whether to limit the search to the current week.
   playbookInputQuery:
+- key: MsgCase
+  value:
+    simple: XSOAR Auto Phishing
+  required: true
+  description: Used only with Microsoft Graph Security. The eDiscovery case name to use. Looked up by name and created if missing.
+  playbookInputQuery:
+- key: MsgKQL
+  value: {}
+  required: false
+  description: Used only with Microsoft Graph Security. KQL query identifying the emails to search and delete. Built automatically from the From, Subject, and AttachmentName inputs if left empty.
+  playbookInputQuery:
+- key: MsgRecipients
+  value:
+    complex:
+      root: incident
+      accessor: emailto
+  required: false
+  description: Used only with Microsoft Graph Security. CSV of recipient email addresses to scope the search when MsgMailboxScope is recipientsOnly.
+  playbookInputQuery:
+- key: MsgMailboxScope
+  value: {}
+  required: false
+  description: 'Used only with Microsoft Graph Security. Determines which mailboxes to search. Use recipientsOnly to limit to specific recipients, allTenantMailboxes to search the entire tenant.'
+  playbookInputQuery:
+- key: MsgDeleteType
+  value: {}
+  required: false
+  description: Used only with Microsoft Graph Security. The delete type to perform on the search results. Possible values are Hard or Soft, or leave empty to select manually (Hard = unrecoverable, Soft = recoverable).
+  playbookInputQuery:
+- key: MsgMailboxExclusion
+  value: {}
+  required: false
+  description: 'Used only with Microsoft Graph Security. CSV of mailboxes to exclude from the search. Honored only when MsgMailboxScope is allTenantMailboxes. Note: exclusion works at the message level, not the mailbox level — see subplaybook description for details.'
+  playbookInputQuery:
 outputs: []
 tests:
-- No tests
+- Containment Plan - Test
+- Calculate Severity - Generic v2 - Test
+- Endpoint Enrichment - Generic v2.1.6.8 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
+- Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- Eradication plan - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Enrichment for Verdict - Test
+- Generic Polling Test
+- Retrieve File from Endpoint - Generic V3 Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Context Polling - DT - Test
+- Detonate File - Generic Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Isolate and unisolate endpoint - test
+- Block IP - Generic V3_Test
+- Endpoint Investigation Plan - Test
 fromversion: 6.1.0
 inputSections:
 - description: Generic group for inputs
@@ -1388,14 +1341,16 @@ inputSections:
   - Subject
   - AttachmentName
   - SearchAndDeleteIntegration
-  - O365ExchangeLocation
-  - O365KQL
-  - O365AllowNotFoundExchangeLocations
-  - O365DeleteType
-  - O365ExchangeLocationExclusion
   - SearchThisWeek
+  - MsgCase
+  - MsgKQL
+  - MsgRecipients
+  - MsgMailboxScope
+  - MsgDeleteType
+  - MsgMailboxExclusion
   name: General (Inputs group)
 outputSections:
 - description: Generic group for outputs
   name: General (Outputs group)
   outputs: []
+system: true

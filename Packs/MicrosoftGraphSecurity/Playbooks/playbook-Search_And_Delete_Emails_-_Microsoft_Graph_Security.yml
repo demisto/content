@@ -1,0 +1,2617 @@
+id: Microsoft Graph Security - Search And Delete Emails
+version: -1
+name: Microsoft Graph Security - Search And Delete Emails
+description: |-
+  This playbook performs the following steps:
+    1. Checks that the Microsoft Graph integration is available and active.
+    2. Lists existing eDiscovery cases and finds the specified case, or creates it if missing.
+    3. Composes the KQL content query based on the mailbox scope (recipientsOnly, allTenantMailboxes, or other).
+    4. Creates a new eDiscovery search with the composed query, or reuses an existing search based on the force input.
+    5. Runs an estimate statistics operation to count emails matching the query.
+    6. Waits for the estimate operation to complete and checks whether any emails were found.
+    7. Optionally previews the results (statistics summary or full export), based on the preview input.
+    8. Purges the matching emails (Hard delete / Soft delete / manual analyst approval).
+    9. Cleans up the eDiscovery search based on the cleanup input.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7151238b-5451-4006-8266-d61b065a77c9
+    type: start
+    task:
+      id: 7151238b-5451-4006-8266-d61b065a77c9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2ff93d39-d51f-4c3d-8780-9797e07eac4d
+    type: condition
+    task:
+      id: 2ff93d39-d51f-4c3d-8780-9797e07eac4d
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft Graph
+          accessor: brand
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: cb216bf9-6f61-40b5-86dd-d7cd348fd6a3
+    type: title
+    task:
+      id: cb216bf9-6f61-40b5-86dd-d7cd348fd6a3
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 7450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b4d9ab83-1eba-4aae-8198-35a5bf9f253b
+    type: regular
+    task:
+      id: b4d9ab83-1eba-4aae-8198-35a5bf9f253b
+      version: -1
+      name: List eDiscovery cases
+      description: Get a list of the eDiscovery cases.
+      script: '|||msg-list-ediscovery-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all_results:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c8abcd74-7d88-4c04-9bc9-3124287d4c29
+    type: condition
+    task:
+      id: c8abcd74-7d88-4c04-9bc9-3124287d4c29
+      version: -1
+      name: Is the eDiscovery case exist?
+      description: Checks whether the eDiscovery case specified by the case input already exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: inputs.case
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e4da15b6-a414-4da3-85dc-61f162596974
+    type: regular
+    task:
+      id: e4da15b6-a414-4da3-85dc-61f162596974
+      version: -1
+      name: Create eDiscovery case
+      description: Create a new eDiscovery case. This command only creates an eDiscovery (Premium) case using the new case format. To learn more about the new case format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format.
+      script: '|||msg-create-ediscovery-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      description:
+        simple: Case created by XSOAR Search and Delete (MS Graph Security) playbook.
+      display_name:
+        simple: ${inputs.case}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ab1a86b8-d7b0-446a-9a9b-1b5853c04816
+    type: condition
+    task:
+      id: ab1a86b8-d7b0-446a-9a9b-1b5853c04816
+      version: -1
+      name: Route by mailbox scope
+      description: Routes the flow based on the mailbox_scope input to compose the appropriate KQL content query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      allTenantMailboxes:
+      - "9"
+      recipientsOnly:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: recipientsOnly
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.mailbox_scope
+            iscontext: true
+          right:
+            value:
+              simple: recipientsOnly
+    - label: allTenantMailboxes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.mailbox_scope
+            iscontext: true
+          right:
+            value:
+              simple: allTenantMailboxes
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6524c0a7-03c1-4d5a-9872-5ec26c2e6ab2
+    type: regular
+    task:
+      id: 6524c0a7-03c1-4d5a-9872-5ec26c2e6ab2
+      version: -1
+      name: Build participants clause
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        simple: ParticipantsClause
+      value:
+        complex:
+          root: inputs.recipients
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR participants:'
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: '(participants:'
+              suffix:
+                value:
+                  simple: )
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1205,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d5882adf-bb32-49d8-9e32-fce48273e269
+    type: condition
+    task:
+      id: d5882adf-bb32-49d8-9e32-fce48273e269
+      version: -1
+      name: Is inputs.mailbox_exclusion supplied?
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.mailbox_exclusion
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a2890025-78e2-4e7f-9605-a6451427577b
+    type: condition
+    task:
+      id: a2890025-78e2-4e7f-9605-a6451427577b
+      version: -1
+      name: Is inputs.search_name supplied?
+      description: Checks whether a custom search name was provided, or if one should be auto-generated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.search_name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f3b76db3-c57f-4fca-891b-167c29f67839
+    type: regular
+    task:
+      id: f3b76db3-c57f-4fca-891b-167c29f67839
+      version: -1
+      name: List eDiscovery searches in case
+      description: Get a list of eDiscoverySearch resources from an eDiscovery case.
+      script: '|||msg-list-ediscovery-searchs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 2f9412df-b71c-49ec-841f-07a1eb147309
+    type: condition
+    task:
+      id: 2f9412df-b71c-49ec-841f-07a1eb147309
+      version: -1
+      name: Is eDiscovery search exist?
+      description: Checks whether an existing eDiscovery search with the specified name was found in the case.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.SearchId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6846fbc7-2708-4fd1-85bb-d77456cff3af
+    type: condition
+    task:
+      id: 6846fbc7-2708-4fd1-85bb-d77456cff3af
+      version: -1
+      name: Re-create or reuse existing search?
+      description: Determines whether to delete and recreate the existing search or reuse it, based on the force input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "false":
+      - "58"
+      "true":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.force
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: "false"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.force
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f837e198-90d0-4fe5-853b-70febd8b7911
+    type: regular
+    task:
+      id: f837e198-90d0-4fe5-853b-70febd8b7911
+      version: -1
+      name: Delete existing search
+      description: Delete an eDiscoverySearch object.
+      script: '|||msg-delete-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      search_id:
+        simple: ${ExistingSearchID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 3535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c6e368dd-ad43-4cca-8135-07a1392a9d27
+    type: regular
+    task:
+      id: c6e368dd-ad43-4cca-8135-07a1392a9d27
+      version: -1
+      name: Set SearchID by SearchDisplayName
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: ExistingSearchID
+      value:
+        complex:
+          root: MsGraph.eDiscoverySearch
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MsGraph.eDiscoverySearch.DisplayName
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.search_name
+                iscontext: true
+          accessor: SearchId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ca61b7a6-d4bd-4206-8a2c-744f0366e4c1
+    type: regular
+    task:
+      id: ca61b7a6-d4bd-4206-8a2c-744f0366e4c1
+      version: -1
+      name: Create eDiscovery search
+      description: Create a new eDiscoverySearch object.
+      script: '|||msg-create-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      content_query:
+        simple: ${ContentQuery}
+      data_source_scopes:
+        simple: ${DataSourceScopes}
+      description:
+        simple: ${ResolvedDescription}
+      display_name:
+        simple: ${ResolvedSearchName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 24e9faef-506d-4df3-8ada-aa2107dbe932
+    type: regular
+    task:
+      id: 24e9faef-506d-4df3-8ada-aa2107dbe932
+      version: -1
+      name: Run estimate statistics
+      description: Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
+      script: '|||msg-run-estimate-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 5ae321bb-7205-48d1-8525-c69394caafe6
+    type: condition
+    task:
+      id: 5ae321bb-7205-48d1-8525-c69394caafe6
+      version: -1
+      name: Route by Preview mode
+      description: Determines the preview mode (statistics or export) based on the preview_mode input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      export:
+      - "63"
+      statistics:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: statistics
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.preview_mode
+            iscontext: true
+          right:
+            value:
+              simple: statistics
+    - label: export
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.preview_mode
+            iscontext: true
+          right:
+            value:
+              simple: export
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 5080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c6d965ea-ba83-40b1-a8e7-20f59f373f8d
+    type: regular
+    task:
+      id: c6d965ea-ba83-40b1-a8e7-20f59f373f8d
+      version: -1
+      name: Display estimate statistics
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      value:
+        simple: |-
+          eDiscovery search estimate:
+          - Items count: ${MsGraph.eDiscovery.EstimateStatistics.mailboxCount}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a8d6fd01-5940-440c-94a6-e2b4acc786ec
+    type: regular
+    task:
+      id: a8d6fd01-5940-440c-94a6-e2b4acc786ec
+      version: -1
+      name: Start export task
+      description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
+      script: '|||msg-export-result-ediscovery-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "2"
+      '#none#':
+      - "23"
+    scriptarguments:
+      additional_options:
+        simple: advancedIndexing
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      display_name:
+        simple: XSOAR-Export-${incident.id}
+      export_criteria:
+        simple: searchHits
+      export_format:
+        simple: ${inputs.export_format}
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c6936b6f-a3fe-4492-b8eb-8f1212c6bc53
+    type: regular
+    task:
+      id: c6936b6f-a3fe-4492-b8eb-8f1212c6bc53
+      version: -1
+      name: Download export file
+      description: Get a list of the caseOperation objects and their properties, or retrieve a specific operation by ID. When operation_id is provided, you can set download_file=true to download the export report (if available).
+      script: '|||msg-list-case-operation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "2"
+      '#none#':
+      - "62"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      download_file:
+        simple: "true"
+      operation_id:
+        simple: ${MsGraph.eDiscoveryCase.Export.OperationID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a5d1c85d-814e-4802-9312-7de1e88e1b42
+    type: condition
+    task:
+      id: a5d1c85d-814e-4802-9312-7de1e88e1b42
+      version: -1
+      name: Route by Delete type for found emails
+      description: Determines the purge type based on the delete_type input - Hard, Soft, or manual analyst selection.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      hard:
+      - "25"
+      manual:
+      - "29"
+      soft:
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: hard
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.delete_type
+            iscontext: true
+          right:
+            value:
+              simple: Hard
+    - label: soft
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.delete_type
+            iscontext: true
+          right:
+            value:
+              simple: Soft
+    - label: manual
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.delete_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 6125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4cdc0118-0a86-49cc-8495-5bd6209fa211
+    type: regular
+    task:
+      id: 4cdc0118-0a86-49cc-8495-5bd6209fa211
+      version: -1
+      name: Hard purge
+      description: |-
+        Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
+
+        You can collect and purge the following categories of Teams content:
+
+        Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
+        Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
+        Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
+        Private channels - Message posts, replies, and attachments shared in a private Teams channel.
+        Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
+      script: '|||msg-purge-ediscovery-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "2"
+      '#none#':
+      - "33"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      purge_areas:
+        simple: mailboxes
+      purge_type:
+        simple: permanentlyDelete
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ab4650e1-aafa-4acb-8aaf-7fc03f9c3ea8
+    type: regular
+    task:
+      id: ab4650e1-aafa-4acb-8aaf-7fc03f9c3ea8
+      version: -1
+      name: Soft purge
+      description: |-
+        Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
+
+        You can collect and purge the following categories of Teams content:
+
+        Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
+        Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
+        Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
+        Private channels - Message posts, replies, and attachments shared in a private Teams channel.
+        Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
+      script: '|||msg-purge-ediscovery-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "2"
+      '#none#':
+      - "33"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      purge_areas:
+        simple: mailboxes
+      purge_type:
+        simple: recoverable
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 6530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2d6b537c-2036-4b5b-a812-8a22ec4b041c
+    type: condition
+    task:
+      id: 2d6b537c-2036-4b5b-a812-8a22ec4b041c
+      version: -1
+      name: Route by cleanup search
+      description: Determines whether to delete the eDiscovery search after purge, based on the cleanup input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      auto:
+      - "50"
+      delete:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.cleanup
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: auto
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.cleanup
+            iscontext: true
+          right:
+            value:
+              simple: auto
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.search_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 6890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f3686f25-49ad-4d05-8d39-8f186d9f5f54
+    type: regular
+    task:
+      id: f3686f25-49ad-4d05-8d39-8f186d9f5f54
+      version: -1
+      name: Delete search
+      description: Delete an eDiscoverySearch object.
+      script: '|||msg-delete-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 7065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ec769d8e-e86b-4300-8c4b-5922b54f6131
+    type: condition
+    task:
+      id: ec769d8e-e86b-4300-8c4b-5922b54f6131
+      version: -1
+      name: Manual - Hard / Soft / Skip
+      description: 'Manually select the purge type: Hard (permanently delete), Soft (move to recoverable items), or skip.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      hard:
+      - "25"
+      soft:
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 07785368-3f53-4c17-b4fe-497362543e47
+    type: regular
+    task:
+      id: 07785368-3f53-4c17-b4fe-497362543e47
+      version: -1
+      name: Wait search to finish
+      description: Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
+      script: '|||msg-get-last-estimate-statistics-operation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "2"
+      '#none#':
+      - "34"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4f5d4f48-d49f-41c4-81e3-ecf4b923bf28
+    type: title
+    task:
+      id: 4f5d4f48-d49f-41c4-81e3-ecf4b923bf28
+      version: -1
+      name: purge
+      description: Proceeds to delete-type decision (Hard / Soft / manual).
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 5985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a936349c-253f-4bd7-8b58-b6dff6dfbee8
+    type: title
+    task:
+      id: a936349c-253f-4bd7-8b58-b6dff6dfbee8
+      version: -1
+      name: Preview
+      description: Proceeds to preview mode (statistics display or export).
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 3cb1b99e-1b30-4c9e-88e7-4eaa83535a29
+    type: title
+    task:
+      id: 3cb1b99e-1b30-4c9e-88e7-4eaa83535a29
+      version: -1
+      name: Cleanup search
+      description: Proceeds to cleanup the eDiscovery search based on the cleanup input.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 6690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 88e49c06-aaf9-4c6c-8039-199bfbba5a0a
+    type: condition
+    task:
+      id: 88e49c06-aaf9-4c6c-8039-199bfbba5a0a
+      version: -1
+      name: Is any email found?
+      description: Checks whether the estimate statistics operation found any matching emails.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: MsGraph.eDiscovery.EstimateStatistics.mailboxCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 7baeb44e-0084-4841-953a-729355cefaa5
+    type: regular
+    task:
+      id: 7baeb44e-0084-4841-953a-729355cefaa5
+      version: -1
+      name: Print no emails found
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: No emails found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 7250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 715a6f21-03b7-4630-8e14-f022f01d39ae
+    type: regular
+    task:
+      id: 715a6f21-03b7-4630-8e14-f022f01d39ae
+      version: -1
+      name: Set final ContentQuery
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: ContentQuery
+      value:
+        complex:
+          root: inputs.kql
+          transformers:
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1205,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 21da0377-b628-41fd-8cf7-aebb5126b86e
+    type: regular
+    task:
+      id: 21da0377-b628-41fd-8cf7-aebb5126b86e
+      version: -1
+      name: Set DataSourceScopes
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      key:
+        simple: DataSourceScopes
+      value:
+        simple: allTenantMailboxes
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1205,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 81b840a2-bde5-4a30-98fe-267eef2eaa91
+    type: regular
+    task:
+      id: 81b840a2-bde5-4a30-98fe-267eef2eaa91
+      version: -1
+      name: Set ContentQuery as-is
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: ContentQuery
+      value:
+        simple: ${inputs.kql}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 53f4067d-32d6-450d-b57a-017f00600c7d
+    type: regular
+    task:
+      id: 53f4067d-32d6-450d-b57a-017f00600c7d
+      version: -1
+      name: Build exclusion clause
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      key:
+        simple: ScopeClause
+      value:
+        complex:
+          root: inputs.mailbox_exclusion
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR participants:'
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: 'NOT (participants:'
+              suffix:
+                value:
+                  simple: )
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: d94873ac-cb30-4406-87d2-f8a3ef435c3b
+    type: regular
+    task:
+      id: d94873ac-cb30-4406-87d2-f8a3ef435c3b
+      version: -1
+      name: Set ContentQuery
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      key:
+        simple: ContentQuery
+      value:
+        complex:
+          root: inputs.kql
+          transformers:
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 2d6195c1-1d25-46e5-81ac-7b5dc6a7f67c
+    type: regular
+    task:
+      id: 2d6195c1-1d25-46e5-81ac-7b5dc6a7f67c
+      version: -1
+      name: Set DataSourceScopes
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      key:
+        simple: DataSourceScopes
+      value:
+        simple: allTenantMailboxes
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: e202d747-4b1d-4502-868e-561580405422
+    type: regular
+    task:
+      id: e202d747-4b1d-4502-868e-561580405422
+      version: -1
+      name: Set DataSourceScopes
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      key:
+        simple: DataSourceScopes
+      value:
+        simple: allTenantMailboxes
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bb2e9599-97e7-4a92-aa14-99bfe84888a8
+    type: regular
+    task:
+      id: bb2e9599-97e7-4a92-aa14-99bfe84888a8
+      version: -1
+      name: Set ContentQuery as-is
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: ContentQuery
+      value:
+        simple: ${inputs.kql}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 3e2d5e48-fff0-4c09-847e-762bd0a1375f
+    type: regular
+    task:
+      id: 3e2d5e48-fff0-4c09-847e-762bd0a1375f
+      version: -1
+      name: Set DataSourceScopes
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      key:
+        simple: DataSourceScopes
+      value:
+        simple: ${inputs.mailbox_scope}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e673ffea-1a46-4f7f-802f-86bad2df2f01
+    type: regular
+    task:
+      id: e673ffea-1a46-4f7f-802f-86bad2df2f01
+      version: -1
+      name: Set MsGraph.eDiscoveryCase.CaseId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: MsGraph.eDiscoveryCase.CaseId
+      value:
+        complex:
+          root: MsGraph.eDiscoveryCase
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MsGraph.eDiscoveryCase.DisplayName
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.case
+                iscontext: true
+          accessor: CaseId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 5728604d-b9b9-43da-82ad-d11eee1fb8a9
+    type: regular
+    task:
+      id: 5728604d-b9b9-43da-82ad-d11eee1fb8a9
+      version: -1
+      name: Set ContentQuery
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: ContentQuery
+      value:
+        simple: ${ContentQuery} AND ${ParticipantsClause}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1205,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 4f77c0e6-dad2-4e20-a9bc-606116d1c1f9
+    type: regular
+    task:
+      id: 4f77c0e6-dad2-4e20-a9bc-606116d1c1f9
+      version: -1
+      name: Set ContentQuery
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: ContentQuery
+      value:
+        simple: ${ContentQuery} AND ${ScopeClause}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 463594a8-f074-4f1d-88ff-fbcc3d0c7ec9
+    type: regular
+    task:
+      id: 463594a8-f074-4f1d-88ff-fbcc3d0c7ec9
+      version: -1
+      name: Auto-generation of search_name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: ResolvedSearchName
+      value:
+        simple: XSOAR-Search-${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -12.5,
+          "y": 3535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 74c77d2a-eaf1-4a8f-8df6-9249218b6183
+    type: regular
+    task:
+      id: 74c77d2a-eaf1-4a8f-8df6-9249218b6183
+      version: -1
+      name: Delete search
+      description: Delete an eDiscoverySearch object.
+      script: '|||msg-delete-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      case_id:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+      search_id:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 7065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 35ee1b50-0eda-49b7-89b6-a36dd37636c7
+    type: condition
+    task:
+      id: 35ee1b50-0eda-49b7-89b6-a36dd37636c7
+      version: -1
+      name: Route by preview setting
+      description: Determines whether to preview results before purging, based on the preview input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "false":
+      - "31"
+      manual:
+      - "52"
+      "true":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.preview
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: "false"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.preview
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    - label: manual
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.preview
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 4735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: bf3a374b-4879-4281-8c95-c4d132a2e3d8
+    type: condition
+    task:
+      id: bf3a374b-4879-4281-8c95-c4d132a2e3d8
+      version: -1
+      name: Do you want to preview the found emails?
+      description: Asks the analyst whether to preview the found emails before proceeding with deletion.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "false":
+      - "31"
+      "true":
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 365,
+          "y": 4917.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 1e6a86e2-a8ec-46a5-8282-4987e0a9096a
+    type: regular
+    task:
+      id: 1e6a86e2-a8ec-46a5-8282-4987e0a9096a
+      version: -1
+      name: Set ResolvedSearchName
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: ResolvedSearchName
+      value:
+        simple: ${inputs.search_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 365,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: d8460de8-cdf9-4f03-a62e-a882966b90d3
+    type: condition
+    task:
+      id: d8460de8-cdf9-4f03-a62e-a882966b90d3
+      version: -1
+      name: Is inputs.description supplied?
+      description: Checks whether a custom search description was provided, or if a default one should be generated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.description
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 69a31b11-e6fc-4b8a-811a-ca9b5126cb0a
+    type: regular
+    task:
+      id: 69a31b11-e6fc-4b8a-811a-ca9b5126cb0a
+      version: -1
+      name: Generate ResolvedDescription
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: ResolvedDescription
+      value:
+        simple: Created by XSOAR for incident ${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 1765e3f3-361c-42b2-8641-e89f33ab10ab
+    type: regular
+    task:
+      id: 1765e3f3-361c-42b2-8641-e89f33ab10ab
+      version: -1
+      name: Set ResolvedDescription
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: ResolvedDescription
+      value:
+        simple: ${inputs.description}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: c6ab5da4-f274-4cc7-8c6d-f2437c9fe966
+    type: regular
+    task:
+      id: c6ab5da4-f274-4cc7-8c6d-f2437c9fe966
+      version: -1
+      name: Set MsGraph.eDiscoverySearch.SearchId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: MsGraph.eDiscoverySearch.SearchId
+      value:
+        simple: ${ExistingSearchID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: c9f21723-0652-4af3-9a17-12999b6c3be4
+    type: regular
+    task:
+      id: c9f21723-0652-4af3-9a17-12999b6c3be4
+      version: -1
+      name: Set MsGraph.eDiscoveryCase.CaseId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: MsGraph.eDiscoveryCase.CaseId
+      value:
+        complex:
+          root: MsGraph.eDiscoveryCase
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MsGraph.eDiscoveryCase.DisplayName
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.case
+                iscontext: true
+          accessor: CaseId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 18da5433-9d45-4161-aa43-bea6e4ea1991
+    type: regular
+    task:
+      id: 18da5433-9d45-4161-aa43-bea6e4ea1991
+      version: -1
+      name: Set MsGraph.eDiscoverySearch.SearchId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: MsGraph.eDiscoverySearch.SearchId
+      value:
+        complex:
+          root: MsGraph.eDiscoverySearch
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MsGraph.eDiscoverySearch.DisplayName
+                iscontext: true
+              right:
+                value:
+                  simple: ResolvedSearchName
+                iscontext: true
+          accessor: SearchId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 3885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b5761fb4-1028-46a0-99b5-ae3eda229abd
+    type: regular
+    task:
+      id: b5761fb4-1028-46a0-99b5-ae3eda229abd
+      version: -1
+      name: Print export not ready
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      value:
+        simple: |-
+          ### Export Still In Progress
+
+          The eDiscovery export task is still running, and the file is not ready yet.
+
+          Please wait a few minutes and then re-run the **Download export file** task manually to retrieve the results.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6405a7a3-8692-400f-83db-913fed6895cc
+    type: regular
+    task:
+      id: 6405a7a3-8692-400f-83db-913fed6895cc
+      version: -1
+      name: Delete operationID from context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: ${MsGraph.eDiscoveryCase.Export.OperationID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.53,
+      "20_21_statistics": 0.52,
+      "26_2_#error#": 0.85,
+      "27_28_delete": 0.61,
+      "34_35_#default#": 0.1,
+      "51_31_false": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 7460,
+        "width": 2045,
+        "x": -460,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: case
+  value: {}
+  required: true
+  description: eDiscovery case to use. Looked up by name; created if missing.
+  playbookInputQuery:
+- key: mailbox_scope
+  value:
+    simple: allTenantMailboxes
+  required: false
+  description: 'One of: recipientsOnly, allTenantMailboxes, allCaseCustodians, allCaseNoncustodialDataSources, allTenantSites. Drives data_source_scopes and KQL composition.'
+  playbookInputQuery:
+- key: kql
+  value: {}
+  required: false
+  description: KQL query identifying the emails to search/delete. Additional clauses are composed around it depending on mailbox_scope.
+  playbookInputQuery:
+- key: recipients
+  value: {}
+  required: false
+  description: CSV of email addresses. Required when mailbox_scope=recipientsOnly. Optional when mailbox_scope=allCaseCustodians.
+  playbookInputQuery:
+- key: mailbox_exclusion
+  value: {}
+  required: false
+  description: CSV of mailboxes to exclude. Honored only when mailbox_scope=allTenantMailboxes.
+  playbookInputQuery:
+- key: search_name
+  value: {}
+  required: false
+  description: When provided, plays into the force semantics (force=true delete-and-recreate, force=false reuse). When omitted, an auto-name like XSOAR-Search-${incident.id}-${ts} is generated.
+  playbookInputQuery:
+- key: description
+  value: {}
+  required: false
+  description: eDiscovery search description. Defaults to "Created by XSOAR for incident ${incident.id}" when empty.
+  playbookInputQuery:
+- key: force
+  value:
+    simple: "false"
+  required: false
+  description: Only meaningful when search_name is provided. true ⇒ delete-and-recreate. false ⇒ reuse existing.
+  playbookInputQuery:
+- key: preview
+  value:
+    simple: "true"
+  required: false
+  description: '"true" / "false" / empty=manual. Whether to pause for analyst review before delete.'
+  playbookInputQuery:
+- key: preview_mode
+  value:
+    simple: statistics
+  required: false
+  description: '"statistics" (count + size from estimate) or "export" (run export job, download report).'
+  playbookInputQuery:
+- key: export_format
+  value:
+    simple: msg
+  required: false
+  description: File format for the export when preview_mode=export. "msg" produces individual .msg files inside a ZIP (preferred for analyst review). "pst" produces a single PST archive. Ignored when preview_mode=statistics.
+  playbookInputQuery:
+- key: delete_type
+  value:
+    simple: Soft
+  required: false
+  description: '"Hard" / "Soft" / empty=manual (also lets analyst pick Skip).'
+  playbookInputQuery:
+- key: cleanup
+  value:
+    simple: auto
+  required: false
+  description: '"auto" / "true" / "false". auto ⇒ delete the search only if it was auto-generated.'
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - case
+  - mailbox_scope
+  - kql
+  - recipients
+  - mailbox_exclusion
+  - search_name
+  - description
+  - force
+  - preview
+  - preview_mode
+  - export_format
+  - delete_type
+  - cleanup
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true
+fromversion: 6.10.0
