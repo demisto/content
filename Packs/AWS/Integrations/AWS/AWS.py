@@ -10141,7 +10141,7 @@ def test_module(params: dict) -> str:
         config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
     )
     sts_client.get_caller_identity()
-    demisto.info("[AWS Automation] test-module: sts.GetCallerIdentity succeeded")
+    demisto.info("[AWS] test-module: sts.GetCallerIdentity succeeded")
     return "ok"
 
 
@@ -10226,7 +10226,7 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
     event_system.register_last("before-send.*.*", _add_proxydome_header)
 
 
-def assume_role_credentials(
+def _assume_role_credentials(
     params: dict,
     access_key_id: str,
     secret_access_key: str,
@@ -10262,7 +10262,7 @@ def assume_role_credentials(
     if session_duration:
         assume_kwargs["DurationSeconds"] = session_duration
 
-    demisto.debug(f"[AWS Automation] Calling sts.AssumeRole with {assume_kwargs=}")
+    demisto.debug(f"[AWS] Calling sts.AssumeRole with {assume_kwargs=}")
     return sts_client.assume_role(**assume_kwargs)["Credentials"]
 
 
@@ -10320,7 +10320,7 @@ def get_service_client(
             )
 
         if params.get("role_arn"):
-            tmp_creds = assume_role_credentials(
+            tmp_creds = _assume_role_credentials(
                 params=params,
                 access_key_id=access_key_id,
                 secret_access_key=secret_access_key,
@@ -10371,12 +10371,10 @@ def get_service_client(
     if is_platform_path:
         register_proxydome_header(client)
 
-    return client, session
+    return client, aws_session
 
 
-def execute_aws_command(
-    command: str, args: dict, params: dict
-) -> CommandResults | list[CommandResults] | None:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | list[CommandResults] | None:
     """
     Execute an AWS command, routing to the appropriate service handler.
 
@@ -10391,7 +10389,7 @@ def execute_aws_command(
 
     if role_name and accounts:
         max_workers = arg_to_number(params.get("max_workers")) or 5
-        demisto.debug(f"[AWS Automation] Multi-account fan-out: {command=}, {len(accounts)=}, {max_workers=}")
+        demisto.debug(f"[AWS] Multi-account fan-out: {command=}, {len(accounts)=}, {max_workers=}")
 
         def _run_for_account(account_id: str) -> CommandResults:
             per_account_params = params | {"role_arn": f"arn:aws:iam::{account_id}:role/{role_name}"}
@@ -10415,7 +10413,7 @@ def execute_aws_command(
                     result.outputs.setdefault("AccountId", account_id)
                 return result
             except Exception as e:
-                demisto.error(f"[AWS Automation] Error for account {account_id}: {e}")
+                demisto.error(f"[AWS] Error for account {account_id}: {e}")
                 return CommandResults(
                     readable_output=f"#### Error for account `{account_id}`\n{e}",
                     entry_type=EntryType.ERROR,
@@ -10452,7 +10450,7 @@ def main():  # pragma: no cover
                 if (connector_id := get_connector_id())
                 else test_module(params)
             )
-            demisto.info(f"[AWS Automation] Health Check Results: {results}")
+            demisto.info(f"[AWS] Health Check Results: {results}")
             return_results(results)
 
         elif command in COMMANDS_MAPPING:
