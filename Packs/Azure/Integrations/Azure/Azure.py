@@ -94,6 +94,31 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": [
         "azure-storage-blob-containers-update",
         "azure-storage-blob-container-update",
+        "azure-storage-container-create",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action": ["azure-storage-container-public-access-block"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/read": ["azure-storage-container-property-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
+        "azure-storage-container-blob-create",
+        "azure-storage-blob-create",
+        "azure-storage-container-blob-property-set",
+        "azure-storage-blob-property-set",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
+        "azure-storage-container-blob-get",
+        "azure-storage-blob-get",
+        "azure-storage-container-blob-property-get",
+        "azure-storage-blob-property-get",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
+        "azure-storage-container-blob-tag-get",
+        "azure-storage-blob-tag-get",
+        "azure-storage-container-blob-tag-set",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
+        "azure-storage-container-blob-tag-set",
+        "azure-storage-blob-tag-set",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
@@ -148,6 +173,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-auth-update-quick-action",
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
+        "azure-appservice-webapp-auth-settings-update",
+        "azure-appservice-webapp-auth-settings-update-quick-action",
+        "azure-appservice-webapp-config-update",
+        "azure-appservice-webapp-config-update-http2-quick-action",
+        "azure-appservice-webapp-config-disable-remote-debugging-quick-action",
+        "azure-appservice-webapp-config-update-min-tls-version-quick-action",
     ],
     "Microsoft.Web/sites/config/write": [
         "azure-webapp-config-set",
@@ -158,6 +189,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-auth-update-quick-action",
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
+        "azure-appservice-webapp-auth-settings-update",
+        "azure-appservice-webapp-auth-settings-update-quick-action",
+        "azure-appservice-webapp-config-update",
+        "azure-appservice-webapp-config-update-http2-quick-action",
+        "azure-appservice-webapp-config-disable-remote-debugging-quick-action",
+        "azure-appservice-webapp-config-update-min-tls-version-quick-action",
     ],
     "Microsoft.Web/sites/read": [
         "azure-webapp-update",
@@ -165,6 +202,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update-assign-managed-identity-quick-action",
         "azure-webapp-set-webapp-to-https-only-quick-action",
         "azure-webapp-enable-client-cert-quick-action",
+        "azure-appservice-webapp-update",
+        "azure-appservice-webapp-update-quick-action",
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
@@ -172,6 +211,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update-assign-managed-identity-quick-action",
         "azure-webapp-set-webapp-to-https-only-quick-action",
         "azure-webapp-enable-client-cert-quick-action",
+        "azure-appservice-webapp-update",
+        "azure-appservice-webapp-update-quick-action",
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
@@ -193,13 +234,24 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-ad-quick-action",
+        "azure-compute-disk-update",
+        "azure-disable-public-n-private-access-vm-disk-quick-action",
+        "azure-compute-disk-update-data-access-ad-quick-action",
     ],
     "Microsoft.Compute/disks/write": [
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-ad-quick-action",
+        "azure-compute-disk-update",
+        "azure-disable-public-n-private-access-vm-disk-quick-action",
+        "azure-compute-disk-update-data-access-ad-quick-action",
     ],
-    "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get", "azure-compute-vm-get", "azure-compute-vm-list"],
+    "Microsoft.Compute/virtualMachines/read": [
+        "azure-vm-instance-details-get",
+        "azure-vm-instance-start",
+        "azure-vm-instance-power-off",
+        "azure-compute-vm-get",
+    ],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start", "azure-compute-vm-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off", "azure-compute-vm-power-off"],
     "Microsoft.ContainerRegistry/registries/read": [
@@ -207,12 +259,20 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-acr-disable-public-private-access-quick-action",
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
+        "azure-cr-registry-update",
+        "azure-cr-disable-authentication-as-arm-quick-action",
+        "azure-cr-disable-public-private-access-quick-action",
+        "azure-cr-disable-anonymous-pull-quick-action",
     ],
     "Microsoft.ContainerRegistry/registries/write": [
         "azure-acr-update",
         "azure-acr-disable-public-private-access-quick-action",
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
+        "azure-cr-registry-update",
+        "azure-cr-disable-authentication-as-arm-quick-action",
+        "azure-cr-disable-public-private-access-quick-action",
+        "azure-cr-disable-anonymous-pull-quick-action",
     ],
     "Microsoft.KeyVault/vaults/read": [
         "azure-key-vault-update",
@@ -259,30 +319,8 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/virtualNetworks/subnets/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/publicIPAddresses/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
-    "Microsoft.Network/loadBalancers/backendAddressPools/join/action": [
-        "Microsoft.Network/loadBalancers/backendAddressPools/join/action"
-    ],
+    "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
-        "azure-storage-container-blob-property-get",
-        "azure-storage-blob-property-get",
-        "azure-storage-container-blob-get",
-        "azure-storage-blob-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
-        "azure-storage-container-blob-tag-get",
-        "azure-storage-blob-tag-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
-        "azure-storage-container-blob-create",
-        "azure-storage-blob-create",
-        "azure-storage-container-blob-property-set",
-        "azure-storage-blob-property-set",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
-        "azure-storage-container-blob-tag-set",
-        "azure-storage-blob-tag-set",
-    ],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -327,11 +365,25 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Storage/storageAccounts/blobServices/read",
         "Microsoft.Storage/storageAccounts/blobServices/write",
     ],
+    "storage_container_create_blob_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
+    "get_storage_container_properties_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "create_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/write"],
+    "delete_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/delete"],
+    "storage_container_blob_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_tag_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read"],
+    "storage_container_blob_tags_set_request": [
+        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
+        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
+    ],
+    "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
+    "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
-    "start_vm_request": ["Microsoft.Compute/virtualMachines/start/action"],
-    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/poweroff/action"],
+    "start_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/start/action"],
+    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/poweroff/action"],
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
@@ -470,6 +522,29 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-vn-network-interface-get": "Azure.VirtualNetworks.NetworkInterfaces",
     "azure-vm-public-ip-details-get": "Azure.Network.IPConfigurations",
     "azure-vn-public-ip-address-get": "Azure.VirtualNetworks.PublicIPAddresses",
+    "azure-webapp-config-set": "Azure.WebAppConfig",
+    "azure-webapp-set-http2-quick-action": "Azure.WebAppConfig",
+    "azure-set-function-app-http-version2-0-quick-action": "Azure.WebAppConfig",
+    "azure-webapp-disable-remote-debugging-quick-action": "Azure.WebAppConfig",
+    "azure-webapp-set-min-tls-version-quick-action": "Azure.WebAppConfig",
+    "azure-function-app-set-min-tls-version-quick-action": "Azure.WebAppConfig",
+    "azure-appservice-webapp-config-update": "Azure.AppService.WebAppConfiguration",
+    "azure-webapp-auth-update": "Azure.WebAppAuth",
+    "azure-appservice-webapp-auth-settings-update": "Azure.AppService.WebAppAuthSettings",
+    "azure-webapp-auth-update-quick-action": "Azure.WebAppAuth",
+    "azure-disk-update": "Azure.Disk",
+    "azure-disk-set-data-access-ad-quick-action": "Azure.Disk",
+    "azure-disable-public-private-access-vm-disk-quick-action": "Azure.Disk",
+    "azure-compute-disk-update": "Azure.Compute.Disks",
+    "azure-webapp-update": "Azure.WebApp",
+    "azure-appservice-webapp-update": "Azure.AppService.WebApp",
+    "azure-webapp-assign-managed-identity-quick-action": "Azure.WebApp",
+    "azure-webapp-update-assign-managed-identity-quick-action": "Azure.WebApp",
+    "azure-acr-update": "Azure.ACR",
+    "azure-cr-registry-update": "Azure.ContainerRegistry.Registries",
+    "azure-acr-disable-public-private-access-quick-action": "Azure.ACR",
+    "azure-acr-disable-authentication-as-arm-quick-action": "Azure.ACR",
+    "azure-acr-disable-anonymous-pull-quick-action": "Azure.ACR",
 }
 
 
@@ -3613,12 +3688,15 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         ["Name", "Http20 Enabled", "Remote Debugging Enabled", "Min Tls Version", "ID"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.AppService.WebAppConfiguration")
     return CommandResults(
-        outputs_prefix="Azure.WebAppConfig",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3652,12 +3730,15 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         ["Name", "Enabled", "ID"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.AppService.WebAppAuthSettings")
     return CommandResults(
-        outputs_prefix="Azure.WebAppAuth",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3771,12 +3852,15 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Public Network Access", "Network Access Policy", "Data Access Auth Mode"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.Disks")
     return CommandResults(
-        outputs_prefix="Azure.Disk",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3814,12 +3898,15 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Identity", "Https Only", "Client Cert Enabled"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.AppService.WebApp")
     return CommandResults(
-        outputs_prefix="Azure.WebApp",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3876,12 +3963,15 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Public Network Access", "Anonymous Pull Enabled", "Allow Exports", "Authentication As Arm Policy"],
         removeNull=True,
     )
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.ContainerRegistry.Registries")
     return CommandResults(
-        outputs_prefix="Azure.ACR",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -4846,25 +4936,24 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     demisto.debug(f"[Azure] Get the current state of the network interface {network_interface_name}")
 
     # Get the current network interface configuration
-    current_nic = client.get_network_interface_request(subscription_id, resource_group_name, network_interface_name)
-    demisto.debug(f"[Azure] Current network interface: {current_nic}")
+    nic = client.get_network_interface_request(subscription_id, resource_group_name, network_interface_name)
+    demisto.debug(f"[Azure] Current network interface: {nic}")
 
     # Update properties based on user arguments
-    properties = current_nic.get("properties", {})
+    properties = nic.get("properties", {})
     update_nic_properties(args, params, properties)
 
-    updated_nic = current_nic
-    updated_nic["properties"] = remove_empty_elements(properties)
-    updated_nic["location"] = location or updated_nic["location"]
+    nic["properties"] = remove_empty_elements(properties)
+    nic["location"] = location or nic["location"]
 
-    demisto.debug(f"[Azure] Updating the network interface {network_interface_name}: {updated_nic}")
+    demisto.debug(f"[Azure] Updating the network interface {network_interface_name}: {nic}")
 
     # Send the updated network interface
     response = client.update_network_interface_request(
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
         interface_name=network_interface_name,
-        network_interface_data=updated_nic,
+        network_interface_data=nic,
     )
 
     # Clean up etag format
@@ -5424,14 +5513,19 @@ def main():  # pragma: no cover
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
             "azure-webapp-config-set": set_webapp_config_command,
+            "azure-appservice-webapp-config-update": set_webapp_config_command,
             "azure-webapp-auth-update": update_webapp_auth_command,
+            "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
+            "azure-compute-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
             "azure-webapp-set-webapp-to-https-only-quick-action": webapp_update_command,
             "azure-webapp-enable-client-cert-quick-action": webapp_update_command,
+            "azure-appservice-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
+            "azure-cr-registry-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-key-vault-purge-and-soft-delete-enable-quick-action": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
@@ -5473,15 +5567,20 @@ def main():  # pragma: no cover
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
             "azure-vn-public-ip-address-get": get_public_ip_details_command,
             "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-appservice-webapp-update-quick-action": webapp_update_command,
             "azure-storage-allow-access-quick-action": storage_account_update_command,
             "azure-webapp-set-http2-quick-action": set_webapp_config_command,
+            "azure-appservice-webapp-config-update-http2-quick-action": set_webapp_config_command,
             "azure-webapp-auth-update-quick-action": update_webapp_auth_command,
+            "azure-appservice-webapp-auth-settings-update-quick-action": update_webapp_auth_command,
             "azure-storage-disable-cross-tenant-replication-quick-action": storage_account_update_command,
             "azure-set-function-app-http-version2-0-quick-action": set_webapp_config_command,
             "azure-storage-disable-storage-account-public-access-quick-action": storage_account_update_command,
             "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command,
+            "azure-appservice-webapp-config-disable-remote-debugging-quick-action": set_webapp_config_command,
             "azure-nsg-security-rule-delete-quick-action": nsg_security_rule_delete_command,
             "azure-webapp-set-min-tls-version-quick-action": set_webapp_config_command,
+            "azure-appservice-webapp-config-update-min-tls-version-quick-action": set_webapp_config_command,
             "azure-function-app-set-min-tls-version-quick-action": set_webapp_config_command,
             "azure-mysql-set-secure-transport-quick-action": mysql_flexible_server_param_set_command,
             "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
@@ -5490,9 +5589,14 @@ def main():  # pragma: no cover
             "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
             "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
             "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
-            "azure-disk-set-data-access-aa-quick-action": disk_update_command,
+            "azure-disable-public-n-private-access-vm-disk-quick-action": disk_update_command,
+            "azure-disk-set-data-access-ad-quick-action": disk_update_command,
+            "azure-compute-disk-update-data-access-ad-quick-action": disk_update_command,
             "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+            "azure-cr-disable-public-private-access-quick-action": acr_update_command,
             "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+            "azure-cr-disable-anonymous-pull-quick-action": acr_update_command,
+            "azure-cr-disable-authentication-as-arm-quick-action": acr_update_command,
             "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
             "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
             "azure-postgres-config-set-disconnection-logging-quick-action": set_postgres_config_command,
