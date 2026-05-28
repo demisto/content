@@ -485,6 +485,13 @@ def fetch_events(
     all_events: list[dict] = []
     next_run: dict = dict(last_run)
 
+    # Track per-type saturation for nextTrigger decision (ANY saturated → fire immediately).
+    # Saturation accounts for max possible dedup: a cycle that fetched the API cap then removed
+    # N duplicates ends with (cap - N) events, but is still saturated. Compare against
+    # (cap - boundary_hashes_count) to avoid false negatives.
+    any_saturated = False
+    saturation_details: list[str] = []
+
     for result in fetch_results:
         if result.error:
             demisto.error(f"[fetch-events] {result.log_type_ui}: error — previous state preserved.")
@@ -492,6 +499,22 @@ def fetch_events(
         all_events.extend(result.events)
         if result.next_run_state is not None:
             next_run[result.log_type_ui] = result.next_run_state
+
+        boundary_count = len(result.next_run_state.get("boundary_hashes", [])) if result.next_run_state else 0
+        threshold = max(0, max_events_per_fetch_per_type - boundary_count)
+        is_saturated = len(result.events) >= threshold
+        saturation_details.append(
+            f"{result.log_type_ui}={len(result.events)}/{threshold}{'(SAT)' if is_saturated else ''}"
+        )
+        if is_saturated:
+            any_saturated = True
+
+    if any_saturated:
+        next_run["nextTrigger"] = "0"
+        demisto.debug(f"[fetch-events] nextTrigger=0 (any saturated) — {', '.join(saturation_details)}")
+    else:
+        next_run.pop("nextTrigger", None)
+        demisto.debug(f"[fetch-events] no nextTrigger (none saturated) — {', '.join(saturation_details)}")
 
     demisto.debug(f"[fetch-events] Total events: {len(all_events)}")
     return next_run, all_events
@@ -578,7 +601,9 @@ def main() -> None:
         or DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE
     )
     # TODO remove before release
-    demisto.info(f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, fast_time_parse=on ***")
+    demisto.info(
+        f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, fast_time_parse=on, next_trigger=on ***"
+    )
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
