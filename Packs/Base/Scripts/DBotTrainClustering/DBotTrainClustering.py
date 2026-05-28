@@ -19,8 +19,8 @@ from sklearn.pipeline import Pipeline
 from CommonServerUserPython import *
 
 
-# Site-specific allowlist for safe pickle loading — exact (module, class) pairs this site needs.
-_ALLOWED_CLASSES: set[tuple[str, str]] = {
+# Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
+_ALLOWED_CLASSES: set[tuple[str, str]] = _BASE_PICKLE_ALLOWED_CLASSES | {
     # Custom schema classes (defined in this script)
     ("__main__", "PostProcessing"),
     ("__main__", "Clustering"),
@@ -29,36 +29,8 @@ _ALLOWED_CLASSES: set[tuple[str, str]] = {
     # Scikit-learn
     ("sklearn.cluster._dbscan", "DBSCAN"),
     ("sklearn.cluster._kmeans", "KMeans"),
-    # Pandas
-    ("pandas.core.frame", "DataFrame"),
-    ("pandas.core.series", "Series"),
-    ("pandas.core.indexes.base", "Index"),
-    ("pandas.core.indexes.range", "RangeIndex"),
-    # Numpy
-    ("numpy.core.multiarray", "_reconstruct"),
-    ("numpy", "ndarray"),
-    ("numpy", "dtype"),
-    ("numpy.core.multiarray", "scalar"),
-    # Python builtins
-    ("builtins", "dict"),
-    ("builtins", "list"),
-    ("builtins", "tuple"),
-    ("builtins", "set"),
-    ("builtins", "frozenset"),
-    ("builtins", "str"),
-    ("builtins", "int"),
-    ("builtins", "float"),
-    ("builtins", "bool"),
-    ("builtins", "bytes"),
-    ("builtins", "bytearray"),
-    ("builtins", "complex"),
-    ("builtins", "slice"),
-    ("builtins", "range"),
-    # Python internals used by pickle protocol
-    ("collections", "OrderedDict"),
+    # Datetime
     ("datetime", "datetime"),
-    ("_codecs", "encode"),
-    ("copyreg", "_reconstructor"),
 }
 
 # Safe top-level modules whose internal submodules are all data-science code.

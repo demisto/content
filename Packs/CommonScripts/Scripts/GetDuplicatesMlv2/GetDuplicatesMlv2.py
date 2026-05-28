@@ -17,36 +17,16 @@ from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime, timedelta
 
 
-# Site-specific allowlist for safe pickle loading -- only loads pd.DataFrame
-_ALLOWED_CLASSES = {
-    # Pandas
-    ("pandas.core.frame", "DataFrame"),
-    ("pandas.core.series", "Series"),
-    ("pandas.core.indexes.base", "Index"),
-    ("pandas.core.indexes.range", "RangeIndex"),
+# Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
+_ALLOWED_CLASSES = _BASE_PICKLE_ALLOWED_CLASSES | {
+    # Pandas internals (legacy BlockManager-based format)
     ("pandas.core.internals.managers", "BlockManager"),
     ("pandas.core.internals.blocks", "IntBlock"),
     ("pandas.core.internals.blocks", "FloatBlock"),
     ("pandas.core.internals.blocks", "ObjectBlock"),
     ("pandas.core.internals.blocks", "new_block"),
     ("pandas._libs.internals", "_unpickle_block"),
-
-    # Numpy
-    ("numpy.core.multiarray", "_reconstruct"),
-    ("numpy", "ndarray"),
-    ("numpy", "dtype"),
-    ("numpy.core.multiarray", "scalar"),
-
-    # Python builtins
-    ("builtins", "dict"),
-    ("builtins", "list"),
-    ("builtins", "tuple"),
-    ("builtins", "set"),
-    ("builtins", "str"),
-    ("builtins", "int"),
-    ("builtins", "float"),
-    ("builtins", "bool"),
-    ("builtins", "bytes"),
+    # Python 2 compatibility aliases
     ("__builtin__", "dict"),
     ("__builtin__", "list"),
     ("__builtin__", "tuple"),
@@ -56,12 +36,7 @@ _ALLOWED_CLASSES = {
     ("__builtin__", "float"),
     ("__builtin__", "bool"),
     ("__builtin__", "bytes"),
-
-    # Python internals
-    ("_codecs", "encode"),
-    ("copyreg", "_reconstructor"),
     ("copy_reg", "_reconstructor"),
-    ("collections", "OrderedDict"),
 }
 
 # Safe top-level modules whose internal submodules are all data-science code.

@@ -13961,6 +13961,40 @@ def invalidate_ucp_credentials(method_unique_id):
 # Layer 1 RestrictedUnpickler: allowlist of safe (module, class) pairs + safe module prefixes.
 # Layer 2 Opcode validator: blocks legacy/rare pickle opcodes that legitimate models never use.
 
+# Common (module, class) pairs shared by all ML-model loading sites.
+# Each script extends this base with its own site-specific entries via set union.
+_BASE_PICKLE_ALLOWED_CLASSES = {
+    # Numpy
+    ("numpy.core.multiarray", "_reconstruct"),
+    ("numpy", "ndarray"),
+    ("numpy", "dtype"),
+    ("numpy.core.multiarray", "scalar"),
+    # Pandas
+    ("pandas.core.frame", "DataFrame"),
+    ("pandas.core.series", "Series"),
+    ("pandas.core.indexes.base", "Index"),
+    ("pandas.core.indexes.range", "RangeIndex"),
+    # Python builtins
+    ("builtins", "dict"),
+    ("builtins", "list"),
+    ("builtins", "tuple"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "str"),
+    ("builtins", "int"),
+    ("builtins", "float"),
+    ("builtins", "bool"),
+    ("builtins", "bytes"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("builtins", "slice"),
+    ("builtins", "range"),
+    # Python internals used by pickle protocol
+    ("collections", "OrderedDict"),
+    ("_codecs", "encode"),
+    ("copyreg", "_reconstructor"),
+}
+
 
 class UnsafePickleError(Exception):
     """Raised when a pickle payload contains unsafe opcodes or classes.

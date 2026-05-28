@@ -13,8 +13,8 @@ from typing import Literal
 dill.settings["recurse"] = True
 
 
-# Site-specific allowlist for safe pickle loading — loads a Model with sklearn Pipeline
-_ALLOWED_CLASSES: set[tuple[str, str]] = {
+# Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
+_ALLOWED_CLASSES: set[tuple[str, str]] = _BASE_PICKLE_ALLOWED_CLASSES | {
     # The Model class (defined in this script)
     ("__main__", "Model"),
     # Scikit-learn pipeline and estimators
@@ -28,35 +28,6 @@ _ALLOWED_CLASSES: set[tuple[str, str]] = {
     ("sklearn.base", "BaseEstimator"),
     ("sklearn.base", "TransformerMixin"),
     ("sklearn.utils.deprecation", "DeprecationDict"),
-    # Numpy
-    ("numpy.core.multiarray", "_reconstruct"),
-    ("numpy", "ndarray"),
-    ("numpy", "dtype"),
-    ("numpy.core.multiarray", "scalar"),
-    # Pandas
-    ("pandas.core.frame", "DataFrame"),
-    ("pandas.core.series", "Series"),
-    ("pandas.core.indexes.base", "Index"),
-    ("pandas.core.indexes.range", "RangeIndex"),
-    # Python builtins
-    ("builtins", "dict"),
-    ("builtins", "list"),
-    ("builtins", "tuple"),
-    ("builtins", "set"),
-    ("builtins", "frozenset"),
-    ("builtins", "str"),
-    ("builtins", "int"),
-    ("builtins", "float"),
-    ("builtins", "bool"),
-    ("builtins", "bytes"),
-    ("builtins", "bytearray"),
-    ("builtins", "complex"),
-    ("builtins", "slice"),
-    ("builtins", "range"),
-    # Python internals
-    ("_codecs", "encode"),
-    ("copyreg", "_reconstructor"),
-    ("collections", "OrderedDict"),
     # Dill internals (for legacy dill-serialized models)
     ("dill._dill", "_create_function"),
     ("dill._dill", "_create_code"),
