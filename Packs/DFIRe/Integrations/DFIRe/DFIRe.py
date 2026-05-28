@@ -34,25 +34,18 @@ class Client(BaseClient):
         created_at__lte: str | None = None,
         ordering: str | None = None,
     ) -> dict[str, Any]:
-        params: dict[str, Any] = {"page_size": page_size}
-        if page is not None:
-            params["page"] = page
-        if status:
-            params["status"] = status
-        if status__in:
-            params["status__in"] = status__in
-        if severity:
-            params["severity"] = severity
-        if case_mode:
-            params["case_mode"] = case_mode
-        if lead_investigator is not None:
-            params["lead_investigator"] = lead_investigator
-        if created_at__gte:
-            params["created_at__gte"] = created_at__gte
-        if created_at__lte:
-            params["created_at__lte"] = created_at__lte
-        if ordering:
-            params["ordering"] = ordering
+        params = assign_params(
+            page_size=page_size,
+            page=page,
+            status=status,
+            status__in=status__in,
+            severity=severity,
+            case_mode=case_mode,
+            lead_investigator=lead_investigator,
+            created_at__gte=created_at__gte,
+            created_at__lte=created_at__lte,
+            ordering=ordering,
+        )
         return self._http_request("GET", "/cases/", params=params)
 
     def get_case(self, case_id: int) -> dict[str, Any]:
@@ -101,25 +94,19 @@ class Client(BaseClient):
         parent: int | None = None,
         ordering: str | None = None,
     ) -> dict[str, Any]:
-        params: dict[str, Any] = {"limit": limit, "offset": offset}
-        if search:
-            params["search"] = search
-        if stix_type:
-            params["stix_type"] = stix_type
-        if classification:
-            params["classification"] = classification
-        if confidence:
-            params["confidence"] = confidence
-        if tlp:
-            params["tlp"] = tlp
-        if is_published is not None:
-            params["is_published"] = is_published
-        if is_revoked is not None:
-            params["is_revoked"] = is_revoked
-        if parent is not None:
-            params["parent"] = parent
-        if ordering:
-            params["ordering"] = ordering
+        params = assign_params(
+            limit=limit,
+            offset=offset,
+            search=search,
+            stix_type=stix_type,
+            classification=classification,
+            confidence=confidence,
+            tlp=tlp,
+            is_published=is_published,
+            is_revoked=is_revoked,
+            parent=parent,
+            ordering=ordering,
+        )
         return self._http_request("GET", "/indicators/", params=params)
 
     def get_indicator(self, indicator_id: int) -> dict[str, Any]:
@@ -863,7 +850,12 @@ def attachment_upload_command(client: Client, args: dict[str, Any]) -> CommandRe
             chunk = f.read(chunk_size)
             if not chunk:
                 break
-            client.chunked_upload_chunk(session_id, chunk_index, chunk)
+            try:
+                client.chunked_upload_chunk(session_id, chunk_index, chunk)
+            except Exception as e:
+                raise DemistoException(
+                    f"Failed to upload chunk {chunk_index} of '{file_name}' (session {session_id}): {e}"
+                ) from e
             chunk_index += 1
 
     # Step 3: Complete
@@ -1678,7 +1670,7 @@ COMMANDS: dict[str, Any] = {
 
 def main():
     params = demisto.params()
-    base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
+    base_url = f"{params.get('url', '').rstrip('/')}/api"
     credentials = params.get("apikey") or {}
     api_key = credentials.get("password", "")
     if not api_key:
@@ -1705,6 +1697,8 @@ def main():
             return_results(COMMANDS[command](client, demisto.args()))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
+    except DemistoException as e:
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}\n\n{traceback.format_exc()}")
 

@@ -2,7 +2,7 @@
 
 [DFIRe](https://dfire.fi/) is a self-hosted Digital Forensics and Incident Response (DFIR) case management platform built for security professionals. It provides structured case management, evidence tracking with chain of custody, IOC indicator management, and incident response workflows aligned with the NIST Incident Response framework — all running on your own infrastructure with AES-256 encryption.
 
-This integration connects Cortex XSIAM to a DFIRe instance, enabling automated case creation and updates, bi-directional IOC indicator synchronisation, evidence item tracking, file attachment uploads, and timeline enrichment directly from playbooks.
+This integration connects Cortex XSIAM and Cortex XSOAR to a DFIRe instance, enabling automated case creation and updates, bi-directional IOC indicator synchronization, evidence item tracking, file attachment uploads, and timeline enrichment directly from playbooks.
 
 ## Configure DFIRe in Cortex
 
@@ -56,8 +56,7 @@ List available case types and their IDs.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -457,8 +456,7 @@ List available evidence item types and their IDs.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -479,8 +477,7 @@ List available item flags and their IDs.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -746,8 +743,7 @@ List users in the DFIRe tenant. Useful for looking up user IDs for assignments.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1075,8 +1071,7 @@ List indicators that appear in multiple cases.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1740,8 +1735,7 @@ List ENISA incident categories (useful for picklists).
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1761,8 +1755,7 @@ List configured incident-response phases.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1782,8 +1775,7 @@ List case outcome verdicts (true positive, false positive, etc.).
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1803,8 +1795,7 @@ List projects.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1824,8 +1815,7 @@ List available runbooks (used for todo runbook attachments).
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -1845,8 +1835,7 @@ List user groups.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
