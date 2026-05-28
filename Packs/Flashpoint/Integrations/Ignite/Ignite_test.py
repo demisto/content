@@ -1265,6 +1265,50 @@ def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact
 
 
 @patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_domain_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `domain_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    domain_lookup_reputation = util_load_json("test_data/domain_lookup_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=domain_lookup_reputation, status_code=200)
+
+    domain_value = "dummy_domain.com"
+    args: dict = {"domain": domain_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="domain")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{domain_value}"' if expected_quoted else domain_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
+
+
+@patch("demistomock.results")
 def test_domain_lookup_command_success_when_empty_response(mock_return, requests_mock, mocker):
     """
     Test case for successful execution of domain look up command through main function
@@ -1361,6 +1405,51 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker, exact_mat
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert ip_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert ip_lookup_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_ip_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `ip_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    ip_lookup_reputation = util_load_json("test_data/ip_lookup_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=ip_lookup_reputation, status_code=200)
+
+    ip_value = "0.0.0.1"
+    args: dict = {"ip": ip_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="ip")
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+
+    main()
+
+    expected_value = f'"{ip_value}"' if expected_quoted else ip_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -1824,6 +1913,50 @@ def test_url_lookup_command_success(mock_return, requests_mock, mocker, exact_ma
 
 
 @patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_url_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `url_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    url_reputation = util_load_json("test_data/url_reputation.json")
+    mock_url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(mock_url, json=url_reputation, status_code=200)
+
+    url_value = "https://dummy_url.com"
+    args: dict = {"url": url_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="url")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{url_value}"' if expected_quoted else url_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
+
+
+@patch("demistomock.results")
 def test_url_lookup_command_success_when_empty_response(mock_return, requests_mock, mocker):
     """
     Test case for successful execution of url lookup command through main function
@@ -1918,6 +2051,50 @@ def test_file_lookup_command_success(mock_return, requests_mock, mocker, exact_m
     assert file_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert file_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert file_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_file_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `file_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    file_reputation = util_load_json("test_data/file_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=file_reputation, status_code=200)
+
+    file_value = "00000000000000000000000000000001"
+    args: dict = {"file": file_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="file")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{file_value}"' if expected_quoted else file_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
