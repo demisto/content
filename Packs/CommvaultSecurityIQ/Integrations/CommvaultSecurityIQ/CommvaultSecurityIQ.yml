@@ -87,7 +87,8 @@ configuration:
   displaypassword: Private Key
   required: false
 - name: credentials
-  display: Webhook Listener Credentials
+  display: Webhook Listener Username
+  displaypassword: Webhook Listener Password
   additionalinfo: The username and password used to authenticate inbound webhook requests. Required when the Forwarding Rule is set to Webhook. Use `_header:<HeaderName>` as the username for custom-header API tokens.
   type: 9
   required: false
