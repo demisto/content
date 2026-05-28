@@ -3178,3 +3178,144 @@ class TestAnalyzeIntegrationDiagnosticsOptIn:
             with_diagnostics=True,
         )
         assert "diagnostics" not in result
+
+
+# =============================================================================
+# Fix A — call-graph depth bump + class-constructor resolution
+# =============================================================================
+
+
+class TestFixA_CallGraphDepth:
+    """Fix A: ``trace_params_in_function`` default depth bumped 2→3,
+    ``_resolve_call_target`` resolves ``ast.ClassDef`` to its
+    ``__init__``, and ``build_function_map`` walks ClassDefs into the
+    map. CLI knob ``--call-graph-depth`` (range [1, 5]) overrides.
+    """
+
+    def test_depth_3_picks_up_two_levels_deep(self) -> None:
+        # handler -> wrapper -> leaf(params.get("X")). At the legacy
+        # depth=2 ceiling this would be missed; at the new default
+        # depth=3 it MUST be recovered.
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def leaf(params):
+                return params.get("deep_param")
+
+            def wrapper(params):
+                return leaf(params)
+
+            def handler(params):
+                return wrapper(params)
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "do-thing":
+                    handler(params)
+            '''
+        ).lstrip()
+        _scope_1, scope_2 = ccp.analyze_static(
+            src, command="do-thing", verbose=False
+        )
+        assert "deep_param" in scope_2
+
+    def test_class_constructor_resolved_to_init(self) -> None:
+        # ``UserMappingObject(params)`` resolved via _resolve_call_target
+        # must land on the class's __init__ and read its params.get()
+        # calls. Reads in main()'s pre-dispatch body land in scope_1.
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            class UserMappingObject:
+                def __init__(self, params):
+                    self.user_field = params.get("xsoar_user_field")
+
+            def handler(mapper):
+                return None
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                mapper = UserMappingObject(params)
+                if command == "do-thing":
+                    handler(mapper)
+            '''
+        ).lstrip()
+        scope_1, scope_2 = ccp.analyze_static(
+            src, command="do-thing", verbose=False
+        )
+        # Direct unit-level proof: _resolve_call_target now resolves
+        # the constructor call to __init__.
+        tree = ast.parse(src)
+        func_map = ccp.build_function_map(tree)
+        # Find the UserMappingObject(...) Call inside main().
+        main_fn = func_map["main"]
+        assert isinstance(main_fn, ast.FunctionDef)
+        ctor_call = None
+        for sub in ast.walk(main_fn):
+            if (
+                isinstance(sub, ast.Call)
+                and isinstance(sub.func, ast.Name)
+                and sub.func.id == "UserMappingObject"
+            ):
+                ctor_call = sub
+                break
+        assert ctor_call is not None, "ctor Call should be findable"
+        target = ccp._resolve_call_target(ctor_call, func_map)
+        assert target is not None
+        assert target.name == "__init__"
+        # And the pre-dispatch xsoar_user_field read in __init__ is
+        # visible somewhere in the merged static union for this command
+        # (scope_1 covers pre-dispatch reads via the binding-narrowing
+        # path; either union must surface the param).
+        assert "xsoar_user_field" in (scope_1 | scope_2)
+
+    def test_max_depth_5_does_not_hang(self) -> None:
+        # 6-level chain; depth=5 should reach exactly through level 5,
+        # never blow recursion, and complete in <1s.
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def lvl6(params):
+                return params.get("p6")
+
+            def lvl5(params):
+                return lvl6(params)
+
+            def lvl4(params):
+                return lvl5(params)
+
+            def lvl3(params):
+                return lvl4(params)
+
+            def lvl2(params):
+                return lvl3(params)
+
+            def lvl1(params):
+                return lvl2(params)
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "do-thing":
+                    lvl1(params)
+            '''
+        ).lstrip()
+        import time as _t
+
+        t0 = _t.time()
+        _scope_1, scope_2 = ccp.analyze_static(
+            src, command="do-thing", verbose=False, call_graph_depth=5
+        )
+        elapsed = _t.time() - t0
+        assert elapsed < 1.0, f"depth=5 took {elapsed:.2f}s; expected <1s"
+        # depth=5 reaches lvl1, lvl2, lvl3, lvl4, lvl5, lvl6 — but the
+        # call from lvl5 -> lvl6 is at recursion depth 5 from the
+        # handler call site (lvl1 itself is depth-1, so the chain
+        # consumes 5 budget steps to reach lvl6). The param at the
+        # deepest reachable level MUST appear.
+        assert "p6" in scope_2

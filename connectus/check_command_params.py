@@ -761,18 +761,39 @@ def _extract_field_alias(value: ast.AST | None) -> str | None:
     return None
 
 
-def build_function_map(tree: ast.AST) -> dict[str, ast.FunctionDef]:
-    """Map top-level + nested function names to their FunctionDef nodes."""
-    out: dict[str, ast.FunctionDef] = {}
+def build_function_map(
+    tree: ast.AST,
+) -> dict[str, ast.FunctionDef | ast.ClassDef]:
+    """Map top-level + nested function/class names to their AST nodes.
+
+    Fix A: ``ClassDef`` entries are included alongside ``FunctionDef`` /
+    ``AsyncFunctionDef`` so that :func:`_resolve_call_target` can resolve
+    a constructor call ``UserMappingObject(...)`` to the class's
+    ``__init__`` method (via :func:`_class_init_or_none`). Callers that
+    only want function-shaped entries (e.g. :func:`find_main`) must
+    narrow with ``isinstance(entry, ast.FunctionDef)``.
+    """
+    out: dict[str, ast.FunctionDef | ast.ClassDef] = {}
     for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             # First definition wins; ignore later overrides.
             out.setdefault(node.name, node)  # type: ignore[arg-type]
     return out
 
 
-def find_main(func_map: dict[str, ast.FunctionDef]) -> ast.FunctionDef | None:
-    return func_map.get("main")
+def find_main(
+    func_map: dict[str, ast.FunctionDef | ast.ClassDef],
+) -> ast.FunctionDef | None:
+    """Return the top-level ``main()`` ``FunctionDef`` or ``None``.
+
+    Fix A: ``func_map`` may carry ``ClassDef`` entries now, so we narrow
+    explicitly. A class accidentally named ``main`` is ignored — only a
+    function is acceptable.
+    """
+    entry = func_map.get("main")
+    if isinstance(entry, ast.FunctionDef):
+        return entry
+    return None
 
 
 def _is_demisto_params_assign(stmt: ast.stmt) -> str | None:
@@ -1060,7 +1081,7 @@ def _collect_param_reads_in_expr(
 
 def _params_consumed_by_function(
     fn: ast.FunctionDef,
-    func_map: dict[str, ast.FunctionDef],
+    func_map: dict[str, ast.FunctionDef | ast.ClassDef],
     params_vars: set[str],
     aliases: dict[str, str],
     depth: int = 2,
@@ -1129,7 +1150,7 @@ def build_binding_maps(
     params_vars: set[str],
     aliases: dict[str, str],
     dispatch_line: int,
-    func_map: dict[str, ast.FunctionDef] | None = None,
+    func_map: dict[str, ast.FunctionDef | ast.ClassDef] | None = None,
 ) -> dict[str, set[str]]:
     """Map every pre-dispatch local var to the set of YML param names it carries.
 
@@ -1653,13 +1674,22 @@ def _iter_calls(stmts: list[ast.stmt]) -> list[ast.Call]:
 
 def trace_params_in_function(
     fn: ast.FunctionDef,
-    func_map: dict[str, ast.FunctionDef],
+    func_map: dict[str, ast.FunctionDef | ast.ClassDef],
     aliases: dict[str, str],
-    depth: int,
-    visited: set[str],
+    depth: int = 3,
+    visited: set[str] | None = None,
     module_params_vars: set[str] | None = None,
 ) -> set[str]:
     """Recursively collect param accesses in ``fn`` up to ``depth`` levels deep.
+
+    Fix A: default ``depth`` bumped from 2 to **3** to recover
+    transitive helper reads (``handler → wrapper → leaf_helper``) that
+    integrations like SplunkPy v2 hit (e.g. ``update_remote_system``
+    sitting at depth-3 below ``fetch_incidents``). The CLI flag
+    ``--call-graph-depth`` (validated [1, 5]) overrides this default
+    end-to-end. The hard cap at 5 keeps pathological call graphs from
+    blowing recursion or wall time — empirically REST integrations have
+    call-graph fan-out under 3.
 
     ``module_params_vars`` are names bound to ``demisto.params()`` at module
     scope (e.g. a global ``PARAMS = demisto.params()``). They're seeded
@@ -1669,6 +1699,8 @@ def trace_params_in_function(
     also recognized via :func:`_is_demisto_params_call` inside the visitor
     and does not require any candidate name to be present.
     """
+    if visited is None:
+        visited = set()
     if depth < 0 or fn.name in visited:
         return set()
     visited = visited | {fn.name}
@@ -1744,12 +1776,43 @@ def _function_reads_params_directly(
     return False
 
 
-def _resolve_call_target(call: ast.Call, func_map: dict[str, ast.FunctionDef]) -> ast.FunctionDef | None:
+def _class_init_or_none(class_def: ast.ClassDef) -> ast.FunctionDef | None:
+    """Return ``class_def``'s ``__init__`` ``FunctionDef``, or ``None``.
+
+    Fix A helper: lets :func:`_resolve_call_target` model
+    constructor calls (``UserMappingObject(...)``) as a call into the
+    class's ``__init__`` body, so reads of ``params.get(...)`` inside
+    that constructor become reachable from a handler that receives the
+    constructed instance — or from ``main()`` itself for the
+    pre-dispatch case.
+    """
+    for stmt in class_def.body:
+        if isinstance(stmt, ast.FunctionDef) and stmt.name == "__init__":
+            return stmt
+    return None
+
+
+def _resolve_call_target(
+    call: ast.Call, func_map: dict[str, ast.FunctionDef | ast.ClassDef]
+) -> ast.FunctionDef | None:
+    """Resolve a ``Call`` node to its target ``FunctionDef``.
+
+    Fix A: when the lookup lands on an :class:`ast.ClassDef` (i.e. the
+    call site is a constructor, ``Cls(...)``), return that class's
+    ``__init__`` method via :func:`_class_init_or_none`. Returns
+    ``None`` when the call target isn't resolvable to a function defined
+    in this module (or when the class has no ``__init__``).
+    """
     func = call.func
+    target: ast.FunctionDef | ast.ClassDef | None = None
     if isinstance(func, ast.Name):
-        return func_map.get(func.id)
-    if isinstance(func, ast.Attribute):
-        return func_map.get(func.attr)
+        target = func_map.get(func.id)
+    elif isinstance(func, ast.Attribute):
+        target = func_map.get(func.attr)
+    if isinstance(target, ast.ClassDef):
+        return _class_init_or_none(target)
+    if isinstance(target, ast.FunctionDef):
+        return target
     return None
 
 
@@ -1769,6 +1832,7 @@ def analyze_static(
     language: str | None = None,
     integration_name: str = "",
     verbose: bool = True,
+    call_graph_depth: int = 3,
 ) -> tuple[set[str], set[str]]:
     """Run scope-1 + scope-2 static analysis for one command. Returns YML names.
 
@@ -1921,11 +1985,15 @@ def analyze_static(
         if target is None:
             continue
         resolved_targets.append(target.name)
+        # Fix A: depth threaded from the CLI ``--call-graph-depth`` knob
+        # (default 3, max 5). Was hard-coded to 2 — that's the depth
+        # ceiling SplunkPy v2's ``update_remote_system`` (depth-3 below
+        # ``fetch_incidents``) tripped over.
         scope_2 |= trace_params_in_function(
             target,
             func_map,
             aliases,
-            depth=2,
+            depth=call_graph_depth,
             visited=set(),
             module_params_vars=module_params_vars,
         )
@@ -3667,6 +3735,7 @@ def analyze_integration(
     auto_retry_integration_docker: bool = True,
     seed_overrides: dict[str, str] | None = None,
     with_diagnostics: bool = False,
+    call_graph_depth: int = 3,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline for one integration.
 
@@ -3721,7 +3790,11 @@ def analyze_integration(
     static_results: dict[str, tuple[set[str], set[str]]] = {}
     for cmd in commands:
         static_results[cmd] = analyze_static(
-            py_source, cmd, language=language, integration_name=integration_name
+            py_source,
+            cmd,
+            language=language,
+            integration_name=integration_name,
+            call_graph_depth=call_graph_depth,
         )
 
     # Detect known structural limitations once per integration. Currently
@@ -4388,6 +4461,21 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "recovery loop."
         ),
     )
+    # Fix A: --call-graph-depth knob (default 3, clamped [1, 5]).
+    # Bumped from the implicit hard-coded depth=2 so transitive helper
+    # reads at depth-3 (SplunkPy v2 ``update_remote_system`` shape) are
+    # recovered. Validation lives in :func:`main` so argparse can keep
+    # emitting friendly error text.
+    parser.add_argument(
+        "--call-graph-depth",
+        type=int,
+        default=3,
+        metavar="N",
+        help=(
+            "Max recursion depth when tracing params.get() calls "
+            "through helper functions (default: 3, max: 5)."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -4466,6 +4554,16 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
+    # Fix A: validate --call-graph-depth (range [1, 5]). Reject loud
+    # so a typo of 0 or 10 surfaces immediately instead of silently
+    # producing trash output.
+    if not 1 <= args.call_graph_depth <= 5:
+        print(
+            f"ERROR: --call-graph-depth must be in [1, 5]; got "
+            f"{args.call_graph_depth}",
+            file=sys.stderr,
+        )
+        return 2
     docker_cfg = DockerConfig(
         mode=args.docker,
         default_image=args.docker_image,
@@ -4489,6 +4587,7 @@ def main(argv: list[str] | None = None) -> int:
             auto_retry_integration_docker=args.auto_retry_integration_docker,
             seed_overrides=seed_overrides,
             with_diagnostics=args.with_diagnostics,
+            call_graph_depth=args.call_graph_depth,
         )
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
