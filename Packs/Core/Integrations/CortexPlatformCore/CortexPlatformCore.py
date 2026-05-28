@@ -2307,7 +2307,7 @@ def search_assets_command(client: Client, args):
     if page_size > SEARCH_ASSETS_MAX_LIMIT:
         raise ValueError(f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}")
 
-    if page_size == 0: # 0 Maps to max in the API, we will maintain this behavior with our max value instead
+    if page_size == 0:  # 0 Maps to max in the API, we will maintain this behavior with our max value instead
         page_size = SEARCH_ASSETS_MAX_LIMIT
 
     page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
