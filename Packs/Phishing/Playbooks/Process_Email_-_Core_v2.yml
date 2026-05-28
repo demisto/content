@@ -286,7 +286,7 @@ tasks:
       emailfrom:
         complex:
           root: Email
-          accessor: From
+          accessor: From 
           transformers:
           - operator: uniq
           - operator: Stringify
