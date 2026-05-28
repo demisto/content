@@ -1,7 +1,7 @@
 import functools
 import json
 import re
-import sys
+import traceback
 import time
 from datetime import datetime
 from typing import Any
@@ -40,11 +40,11 @@ ROLE_ID_DICT = {
 }
 
 # Asset and vulnerability fetch constants
-VENDOR = "tenable"
+VENDOR = "Tenable"
 PRODUCT = "sc"
 ASSETS_PAGE_SIZE = 500
 VULNS_PAGE_SIZE = 500
-MIN_ASSETS_INTERVAL = 60  # Minimum minutes between full fetch cycles
+MIN_ASSETS_INTERVAL = 720  # Minimum minutes between full fetch cycles
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
 HOST_FIELDS = (
     "id,uuid,tenableUUID,name,ipAddress,os,firstSeen,lastSeen,"
@@ -53,7 +53,7 @@ HOST_FIELDS = (
 )
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     def __init__(
         self,
         verify_ssl: bool = True,
@@ -65,13 +65,10 @@ class Client(BaseClient):
         url: str = "",
     ):
         if not proxy:
-            try:
-                del os.environ["HTTP_PROXY"]
-                del os.environ["HTTPS_PROXY"]
-                del os.environ["http_proxy"]
-                del os.environ["https_proxy"]
-            except Exception as e:
-                demisto.debug(f"encountered the following issue: {e}")
+            os.environ.pop("HTTP_PROXY", None)
+            os.environ.pop("HTTPS_PROXY", None)
+            os.environ.pop("http_proxy", None)
+            os.environ.pop("https_proxy", None)
 
         self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
@@ -82,7 +79,7 @@ class Client(BaseClient):
             raise DemistoException("Please provide either user_name and password or secret_key and access_key")
         if secret_key and access_key:
             self.headers["x-apikey"] = f"accesskey={access_key}; secretkey={secret_key}"
-            BaseClient.__init__(self, base_url=self.url, headers=self.headers, verify=verify_ssl, proxy=proxy)
+            ContentClient.__init__(self, base_url=self.url, headers=self.headers, verify=verify_ssl, proxy=proxy)
             self.send_request = self.send_request_api_key_auth
         else:
             self.session = Session()
@@ -3191,25 +3188,29 @@ def parse_vulnerabilities(vulns: list) -> list:
     if not isinstance(vulns, list):
         demisto.debug(f"result is of type: {type(vulns)}")
         vulns = list(vulns)
+    truncated_count = 0
+    skipped_count = 0
     for vuln in vulns:
         # Set _time from lastSeen or firstSeen (Tenable.sc uses these fields)
-        vuln["_time"] = vuln.get("lastSeen") or vuln.get("firstSeen")
+        vuln["_time"] = vuln.get("firstSeen") or vuln.get("lastSeen")
         vuln_str = json.dumps(vuln)
-        if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug(f"found oversized vulnerability object: {sys.getsizeof(vuln_str)} bytes")
+        vuln_size = len(vuln_str.encode("utf-8"))
+        if vuln_size > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
             if vuln.get("pluginText"):
-                demisto.debug("truncating pluginText field")
                 vuln["pluginText"] = ""
                 vuln["isTruncated"] = True
+                truncated_count += 1
             elif vuln.get("pluginDescription"):
-                demisto.debug("truncating pluginDescription field")
                 vuln["pluginDescription"] = ""
                 vuln["isTruncated"] = True
+                truncated_count += 1
             else:
-                demisto.debug("skipping oversized object...")
+                skipped_count += 1
                 continue
         else:
             vuln["isTruncated"] = False
+    if truncated_count or skipped_count:
+        demisto.debug(f"Vulnerability parsing: truncated={truncated_count}, skipped={skipped_count}")
     return vulns
 
 
@@ -3241,20 +3242,26 @@ def run_vulns_fetch(client: Client, last_run: dict) -> list:  # pragma: no cover
     return fetch_vulnerabilities_page(client, last_run)
 
 
-def test_module(client: Client, args: dict[str, Any]):
+def test_module(client: Client, args: dict[str, Any], params: dict[str, Any]):
     """
     Test the connection to the Tenable.sc server.
     Args:
         client (Client): The tenable.sc client object.
         args (Dict): demisto.args() object.
+        params (Dict): demisto.params() object.
     Returns:
         str: 'ok' if the connection is successful.
     """
     try:
         # Validate assets fetch interval if configured
-        params = demisto.params()
         assets_fetch_interval = params.get("assetsFetchInterval") or MIN_ASSETS_INTERVAL
-        if int(assets_fetch_interval) < MIN_ASSETS_INTERVAL:
+        try:
+            assets_fetch_interval_int = int(assets_fetch_interval)
+        except ValueError:
+            raise DemistoException(
+                f"Invalid assets fetch interval value: '{assets_fetch_interval}'. Must be a numeric value."
+            )
+        if assets_fetch_interval_int < MIN_ASSETS_INTERVAL:
             raise DemistoException(f"Assets fetch interval must be at least {MIN_ASSETS_INTERVAL} minutes (1 hour).")
         client.get_users()
         return "ok"

@@ -1,9 +1,13 @@
+import copy
 import json
 import time
 
 import pytest
+from CommonServerPython import DemistoException
 from Tenable_sc import (
     Client,
+    MIN_ASSETS_INTERVAL,
+    XSIAM_EVENT_CHUNK_SIZE_LIMIT,
     create_asset_command,
     create_get_device_request_params_and_path,
     create_policy_request_body,
@@ -43,6 +47,7 @@ from Tenable_sc import (
     list_zones_command,
     parse_vulnerabilities,
     skip_fetch_assets,
+    test_module,
     update_asset_command,
     validate_create_scan_inputs,
     validate_user_body_params,
@@ -1448,22 +1453,8 @@ def test_parse_vulnerabilities_normal():
     Then:
     - Should set isTruncated to False for normal-sized entries.
     """
-    vulns = [
-        {
-            "pluginID": "10001",
-            "name": "Test Vuln",
-            "lastSeen": "1709654400",
-            "firstSeen": "1709568000",
-            "pluginDescription": "Short description",
-        },
-        {
-            "pluginID": "10002",
-            "name": "Test Vuln 2",
-            "lastSeen": "1709654400",
-            "firstSeen": "1709568000",
-            "pluginDescription": "Another description",
-        },
-    ]
+    test_data = load_json("./test_data/test_parse_vulnerabilities.json")
+    vulns = copy.deepcopy(test_data["normal_vulns"])
     result = parse_vulnerabilities(vulns)
 
     assert len(result) == 2
@@ -1484,17 +1475,167 @@ def test_parse_vulnerabilities_uses_firstseen_fallback():
     Then:
     - Should use firstSeen as the _time field.
     """
+    test_data = load_json("./test_data/test_parse_vulnerabilities.json")
+    vulns = copy.deepcopy(test_data["firstseen_fallback_vuln"])
+    result = parse_vulnerabilities(vulns)
+
+    assert result[0]["_time"] == "1709568000"
+
+
+def test_parse_vulnerabilities_truncates_plugin_text():
+    """
+    Given:
+    - A vulnerability record with a pluginText field that exceeds the XSIAM chunk size limit.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - Should truncate pluginText to empty string and set isTruncated to True.
+    """
+    oversized_text = "x" * (XSIAM_EVENT_CHUNK_SIZE_LIMIT + 1)
     vulns = [
         {
             "pluginID": "10001",
-            "name": "Test Vuln",
+            "name": "Oversized Vuln",
+            "lastSeen": "1709654400",
             "firstSeen": "1709568000",
-            "pluginDescription": "Description",
+            "pluginText": oversized_text,
+            "pluginDescription": "desc",
         },
     ]
     result = parse_vulnerabilities(vulns)
 
-    assert result[0]["_time"] == "1709568000"
+    assert len(result) == 1
+    assert result[0]["pluginText"] == ""
+    assert result[0]["isTruncated"] is True
+
+
+def test_parse_vulnerabilities_truncates_plugin_description():
+    """
+    Given:
+    - A vulnerability record with no pluginText but a pluginDescription field
+      that causes the record to exceed the XSIAM chunk size limit.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - Should truncate pluginDescription to empty string and set isTruncated to True.
+    """
+    oversized_desc = "y" * (XSIAM_EVENT_CHUNK_SIZE_LIMIT + 1)
+    vulns = [
+        {
+            "pluginID": "10001",
+            "name": "Oversized Vuln",
+            "lastSeen": "1709654400",
+            "firstSeen": "1709568000",
+            "pluginDescription": oversized_desc,
+        },
+    ]
+    result = parse_vulnerabilities(vulns)
+
+    assert len(result) == 1
+    assert result[0]["pluginDescription"] == ""
+    assert result[0]["isTruncated"] is True
+
+
+def test_parse_vulnerabilities_skips_oversized_without_truncatable_fields():
+    """
+    Given:
+    - A vulnerability record that exceeds the XSIAM chunk size limit
+      but has no pluginText or pluginDescription to truncate.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - Should skip the oversized record entirely.
+    """
+    oversized_name = "z" * (XSIAM_EVENT_CHUNK_SIZE_LIMIT + 1)
+    vulns = [
+        {
+            "pluginID": "10001",
+            "name": oversized_name,
+            "lastSeen": "1709654400",
+            "firstSeen": "1709568000",
+        },
+    ]
+    result = parse_vulnerabilities(vulns)
+
+    assert len(result) == 0
+
+
+def test_test_module_valid_interval(mocker):
+    """
+    Given:
+    - A valid assets fetch interval of 120 minutes (above minimum).
+
+    When:
+    - Calling test_module.
+
+    Then:
+    - Should return 'ok'.
+    """
+    mocker.patch.object(client_mocker, "get_users", return_value={"response": []})
+    params = {"assetsFetchInterval": "120"}
+
+    result = test_module(client_mocker, {}, params=params)
+
+    assert result == "ok"
+
+
+def test_test_module_default_interval(mocker):
+    """
+    Given:
+    - No assets fetch interval configured (uses default 720).
+
+    When:
+    - Calling test_module.
+
+    Then:
+    - Should return 'ok' since 720 >= MIN_ASSETS_INTERVAL.
+    """
+    mocker.patch.object(client_mocker, "get_users", return_value={"response": []})
+    params = {}
+
+    result = test_module(client_mocker, {}, params=params)
+
+    assert result == "ok"
+
+
+def test_test_module_interval_too_low(mocker):
+    """
+    Given:
+    - An assets fetch interval of 30 minutes (below minimum of 60).
+
+    When:
+    - Calling test_module.
+
+    Then:
+    - Should raise DemistoException with appropriate message.
+    """
+    params = {"assetsFetchInterval": "30"}
+
+    with pytest.raises(DemistoException, match=f"at least {MIN_ASSETS_INTERVAL} minutes"):
+        test_module(client_mocker, {}, params=params)
+
+
+def test_test_module_invalid_interval_value(mocker):
+    """
+    Given:
+    - A non-numeric assets fetch interval value.
+
+    When:
+    - Calling test_module.
+
+    Then:
+    - Should raise DemistoException about invalid value.
+    """
+    params = {"assetsFetchInterval": "abc"}
+
+    with pytest.raises(DemistoException, match="Invalid assets fetch interval value"):
+        test_module(client_mocker, {}, params=params)
 
 
 def test_fetch_vulnerabilities_analysis_client_method(mocker):

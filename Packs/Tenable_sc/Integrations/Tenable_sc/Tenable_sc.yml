@@ -66,6 +66,7 @@ configuration:
 - defaultvalue: '720'
   display: Assets fetch interval in minutes
   name: assetsFetchInterval
+  description: The interval in minutes between asset fetches. Minimum is 60 minutes.
   type: 19
   required: false
   advanced: true

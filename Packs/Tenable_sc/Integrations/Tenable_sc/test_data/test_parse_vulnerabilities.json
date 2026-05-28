@@ -1,0 +1,26 @@
+{
+    "normal_vulns": [
+        {
+            "pluginID": "10001",
+            "name": "Test Vuln",
+            "lastSeen": "1709654400",
+            "firstSeen": "1709568000",
+            "pluginDescription": "Short description"
+        },
+        {
+            "pluginID": "10002",
+            "name": "Test Vuln 2",
+            "lastSeen": "1709654400",
+            "firstSeen": "1709568000",
+            "pluginDescription": "Another description"
+        }
+    ],
+    "firstseen_fallback_vuln": [
+        {
+            "pluginID": "10001",
+            "name": "Test Vuln",
+            "firstSeen": "1709568000",
+            "pluginDescription": "Description"
+        }
+    ]
+}
