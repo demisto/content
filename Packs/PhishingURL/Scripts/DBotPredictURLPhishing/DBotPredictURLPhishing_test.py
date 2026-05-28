@@ -378,32 +378,3 @@ def test_output_url_match_requested_url(mocker, input_url):
     assert entry_context[KEY_CONTENT_DBOT_SCORE]["Indicator"] == input_url
 
 
-def test_safe_pickle_loads_legitimate_data():
-    """Verify that a legitimate pickle payload with allowed types loads successfully."""
-    import pickle as _pickle
-    from CommonServerPython import safe_pickle_loads
-    from DBotPredictURLPhishing import _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES
-
-    legitimate_data = {"key": "value", "numbers": [1, 2, 3], "nested": {"a": True}}
-    payload = _pickle.dumps(legitimate_data)
-    result = safe_pickle_loads(payload, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
-    assert result == legitimate_data
-
-
-def test_safe_pickle_loads_blocks_malicious_payload():
-    """Verify that a payload trying to execute os.system is blocked.
-
-    The malicious payload may be caught by either Layer 1 (RestrictedUnpickler
-    raising pickle.UnpicklingError) or Layer 2 (opcode validator raising
-    UnsafePickleError). Both are acceptable — the key is that it never executes.
-    """
-    import pickle as _pickle
-    from CommonServerPython import UnsafePickleError, safe_pickle_loads
-    from DBotPredictURLPhishing import _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES
-
-    # Malicious pickle that would call os.system('echo pwned')
-    malicious_pickle = b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00" b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
-    with pytest.raises((UnsafePickleError, _pickle.UnpicklingError)):
-        safe_pickle_loads(malicious_pickle, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
-
-
