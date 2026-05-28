@@ -362,72 +362,72 @@ script:
     - description: Value list ID to delete. Find with "kibana-get-value-lists".
       name: list_id
       required: true
-    description: Used to delete a value list given the list ID as input.
+    description: Deletes a value list given the list ID as input.
     name: kibana-value-list-delete
   - arguments: []
     description: Check Kibana's operational status.
     name: kibana-status-get
     outputs:
     - contextPath: Kibana.OperationalStatus.core.elasticsearch.level
-      description: Connection health between Kibana and Elasticsearch.
+      description: The connection health between Kibana and Elasticsearch.
     - contextPath: Kibana.OperationalStatus.overall.level
-      description: Aggregated health status of the Kibana instance.
+      description: The aggregated health status of the Kibana instance.
     - contextPath: Kibana.OperationalStatus.core.savedObjects.level
-      description: Health status of the Saved Objects repository.
+      description: The health status of the Saved Objects repository.
   - arguments: []
-    description: Get the health status of the Kibana task manager.
+    description: Retrieves the health status of the Kibana task manager.
     name: kibana-task-manager-health-get
     outputs:
     - contextPath: Kibana.TaskManagerHealth.capacity_estimation.status
-      description: Kibana ability to handle scheduled tasks.
+      description: The ability to handle scheduled tasks in Kibana.
     - contextPath: Kibana.TaskManagerHealth.configuration.status
-      description: Tracks configuration status of Kibana task manager.
+      description: The configuration status of Kibana task manager.
     - contextPath: Kibana.TaskManagerHealth.runtime.status
-      description: Tracks performance, drift, and load of Kibana task execution.
+      description: The performance, drift, and load of Kibana task execution.
     - contextPath: Kibana.TaskManagerHealth.workload.status
-      description: Status of tasks running to identify potential overload.
+      description: The status of tasks running, to identify potential overload.
   - arguments: []
     description: Check the status of your cluster.
     name: kibana-upgrade-readiness-status-get
     outputs:
     - contextPath: Kibana.UpgradeReadinessStatus.details
-      description: Details for what is needed prior to Kibana upgrades.
+      description: The details for what is needed prior to Kibana upgrades.
     - contextPath: Kibana.UpgradeReadinessStatus.readyForUpgrade
-      description: Whether Kibana is ready for upgrade or not.
+      description: Whether Kibana is ready for upgrade.
   - arguments:
-    - description: Case ID to delete comment on. Retrieve case IDs with "kibana-find-cases".
+    - description: The case ID to delete comment on. Retrieve case IDs with "kibana-find-cases" command.
       name: case_id
       required: true
-    - description: Identifier for the comment. To retrieve comment IDs use kibana-find-case-comments.
+    - description: The identifier for the comment. Find comment IDs with the "kibana-find-case-comments" command.
       name: comment_id
       required: true
     description: Delete a case comment.
     name: kibana-case-comment-delete
   - arguments:
-    - description: Case ID to attach the file to. Locate with "kibana-find-cases".
+    - description: The case ID to attach the file to. Locate with "kibana-find-cases" command.
       name: case_id
       required: true
-    - description: File entry ID from XSOAR context data to add to the case.
+    - description: The file entry ID from XSOAR context data to add to the case.
       name: file_id
       required: true
-    description: 'Attach a file to a case. '
+    description: Attaches a file to a case.
     name: kibana-case-file-add
   - arguments:
-    - description: Full or partial email address to search for user with. (i.e. william.smith@*).
+    - description: The full or partial email address to search for user with. (i.e. william.smith@*).
       name: email_wildcard
       required: true
-    description: Search for a single user's UID in Kibana by email address filter.
+    description: Searches for a single user's UID in Kibana by email address filter.
     name: kibana-user-by-email-get
     outputs:
     - contextPath: Kibana.UserData.profile_uid
-      description: User ID for tracking user activity and checking privileges.
+      description: The user ID for tracking user activity and checking privileges.
     - contextPath: Kibana.UserData.roles
       description: Roles tied to the user account.
   - arguments:
-    - description: The case ID to retrieve information for. View available case IDs with kibana-cases-find.
+    - description: The case ID to retrieve information for. View available case IDs with kibana-cases-find command.
       name: case_id
       required: true
-    description: Retrieve information for a specific case in Kibana.
+    description: Retrieves information for a specific case in Kibana.
     name: kibana-case-information-get
     outputs:
     - contextPath: Kibana.CaseInfo.status
@@ -435,9 +435,9 @@ script:
     - contextPath: Kibana.CaseInfo.owner
       description: The application that created the case.
     - contextPath: Kibana.CaseInfo.version
-      description: When updating case settings, version is required.
+      description: The version of the case being updated.
     - contextPath: Kibana.CaseInfo.id
-      description: Unique identifier for a case.
+      description: The unique identifier for a case.
   dockerimage: demisto/elasticsearch:1.0.0.8425368
   ismappable: true
   runonce: false
