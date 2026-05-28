@@ -227,7 +227,7 @@ The status output shows:
 - **Assignee** — who is working on it
 - **File Path** — path to the integration's source files (data column). If you need every related file (YML + code + description + README + test), don't infer sibling names — run `python3 connectus/workflow_state.py files "<Integration ID>"` (see [§1.1](#11-locate-integration-files)).
 - **Connector ID** — the ConnectUs connector this integration belongs to (data column)
-- **Auth Details** — authentication detail JSON (`auth_types[]` + optional `other_connection`; profile relations are implicit — see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression))
+- **Auth Details** — authentication detail JSON (`auth_types[]` + required `other_connection` — may be an empty list `[]`, but the key MUST be present or the parser raises; profile relations are implicit — see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression))
 - **Params to Commands** — JSON mapping of commands → param ids
 - **Workflow Checkpoints** — which checkpoints are done, which remain
 - **Current step** — what to work on next
@@ -321,7 +321,7 @@ For background only: integration files conventionally live at `Packs/<PackName>/
 
 #### 1.2 Researching `Auth Details` — the four sources of truth
 
-Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_details()`](auth_config_parser/validator.py:47) (called via the [`workflow_state.validators.validate_auth_detail()`](workflow_state/validators.py:25) wrapper). The validator hard-rejects the pre-2026-05 `config` expression key and the pre-2026-05 `xsoar_params` key with migration-help guidance; profile relations are now implicit from `len(auth_types)` (see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression)). Wrong input is rejected at the CLI — better to catch it at research time.
+Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_details()`](auth_config_parser/validator.py:24) (called via the [`workflow_state.validators.validate_auth_detail()`](workflow_state/validators.py:25) wrapper). The validator enforces the post-cleanup schema: top-level keys `auth_types` (list) and `other_connection` (list — required; the legacy migration-help error for pre-2026-05 `config` / `xsoar_params` keys was removed in commit `cd09e3ff`, so any unknown top-level keys are now silently ignored). Profile relations are implicit from `len(auth_types)` (see [§1.2.3](#123-profile-relations-are-implicit-no-config-expression)). Wrong input is rejected at the CLI — better to catch it at research time.
 
 Read these four files **in this order**, treating each one as a cross-check on the previous:
 
@@ -362,7 +362,7 @@ Before you actually use the `set_auth` command, present the evidence to the user
 
 #### 1.2.1 Classification decision table
 
-Map "what you saw in the source" → "auth-type enum value" (the values are derived from the [`AuthType`](auth_config_parser/types.py:11) enum and re-exported from `workflow_state` as `VALID_AUTH_TYPES`):
+Map "what you saw in the source" → "auth-type enum value" (the values are the members of the [`AuthType`](auth_config_parser/types.py:11) enum — import it directly with `from auth_config_parser.types import AuthType` and use `[e.value for e in AuthType]` when you need the string list):
 
 | You see... | Use type |
 |---|---|
@@ -458,10 +458,7 @@ and order** of `auth_types[]`:
 | `1` | A single profile, always used. |
 | `>= 2` | **Exclusive-OR.** The user picks exactly one profile at configuration time. There is no AND between profiles, no OPTIONAL, no clause-joining. |
 
-`set-auth` **hard-rejects** any payload that still contains a `config`
-key with a migration-help error. Drop the key from any pre-2026-05
-payload and re-shape `auth_types[]` per
-[`column-schemas.md`](column-schemas.md:1) §"Migration from `config`".
+The pre-2026-05 `config` expression key and the per-entry `xsoar_params` key are no longer recognized at all (the migration-help rejection was removed in commit `cd09e3ff`); any such legacy key is silently ignored by the parser, so its presence does NOT cause `set-auth` to fail but it also has no effect. Strip such keys from any pre-2026-05 payload and re-shape `auth_types[]` per [`column-schemas.md`](column-schemas.md:1).
 
 > **Don't strictly stick to whether the corresponding XSOAR parameters are marked `required: true`.** Some integrations leave a legacy hidden alternative in the YML that makes the visible param appear optional even when it is in practice the only configurable path. Treat the visible parameter as required if there is no alternate visible auth path the user could pick.
 
@@ -948,17 +945,17 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
 
 After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md:16). The same rules are enforced at runtime by [`validate_auth_details()`](auth_config_parser/validator.py:47):
 
-1. Must be valid JSON with top-level key `auth_types` (array). The `other_connection` key (array of strings) is optional but recommended for new writes. The pre-2026-05 `config` expression key was removed and is hard-rejected — see `connectus/column-schemas.md` §"Migration from `config`".
-2. Each `auth_types[]` entry has a `type` (one of the [`AuthType`](auth_config_parser/types.py:11) enum values, also re-exported as `VALID_AUTH_TYPES`), a unique `name`, and a non-empty `xsoar_param_map` JSON object (the empty object `{}` is rejected; `NoneRequired` integrations have no entries in `auth_types[]` at all so the requirement is moot for them).
+1. Must be valid JSON with top-level keys `auth_types` (array) AND `other_connection` (array of strings — required; may be `[]`). Both keys are required; a missing `other_connection` raises `Missing required key: other_connection`. Any other top-level key is silently ignored (the pre-2026-05 `config` expression key was removed in commit `cd09e3ff`; it no longer triggers a migration-help error).
+2. Each `auth_types[]` entry has a `type` (one of the [`AuthType`](auth_config_parser/types.py:11) enum members — import via `from auth_config_parser.types import AuthType`), a unique `name`, and a non-empty `xsoar_param_map` JSON object (the empty object `{}` is rejected; `NoneRequired` integrations have no entries in `auth_types[]` at all so the requirement is moot for them).
 3. Every `xsoar_param_map` key is a non-empty string (the XSOAR field path); every value is a non-empty string (the role). The **role enum is constrained per `type`**:
    - `APIKey` → values MUST be `"key"`.
    - `Plain` → values MUST be in `{"username", "password"}`.
    - `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` → any non-empty string (enum deliberately undefined for now; typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`).
-4. **Legacy `xsoar_params` key is rejected.** Any payload that still contains the pre-2026-05 `xsoar_params: list[str]` field on any entry is hard-rejected by `set-auth` with a migration-help error pointing at [`column-schemas.md`](column-schemas.md:171) §"Migration from `xsoar_params`".
+4. Per-entry keys outside `{type, name, xsoar_param_map, interpolated, verify_connection_skip}` are silently ignored. The pre-2026-05 `xsoar_params: list[str]` field on an entry is no longer recognized at all (the dedicated migration-help error was removed in commit `cd09e3ff`); rewrite any such field as `xsoar_param_map`.
 5. `auth_types[]` entries are sorted by `(type, name)` ascending. Map keys, by contrast, are an unordered dict — no sort requirement applies.
-6. The pre-2026-05 `config` expression key is **hard-rejected**. The relationship between profiles is now implicit (len(auth_types): 0 → no auth, 1 → single required, ≥2 → exclusive-OR). See `column-schemas.md` §"Migration from `config`".
+6. Profile relations are implicit from `len(auth_types)`: 0 → no auth, 1 → single required, ≥2 → exclusive-OR. The pre-2026-05 top-level `config` expression key is no longer recognized (removed in commit `cd09e3ff`); strip it from any pre-2026-05 payload.
 7. `auth_types[].verify_connection_skip` is optional; when present it MUST be a JSON boolean. Defaults to `false` when absent. Set `true` for profiles whose `test-module` code path manually raises (`raise DemistoException(...)` / `return_error(...)`) so the connection-test button cannot exercise the auth. Most common for OAuth Authorization Code and Device Code flows that require an out-of-band `!auth-start`-style command.
-9. `other_connection` must be a list of **non-empty unique strings, sorted ascending**. Empty list `[]` is valid. The validator rejects unsorted input with a message that suggests the sorted form. See [1.2.5](#125-building-the-other_connection-list) for what belongs here.
+9. `other_connection` must be a list of **non-empty unique strings, sorted ascending**. Empty list `[]` is valid (but the key MUST be present). The validator rejects unsorted input with a message that suggests the sorted form. See [1.2.5](#125-building-the-other_connection-list) for what belongs here.
 
 ---
 
@@ -1008,10 +1005,10 @@ python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details J
 
 This command:
 
-- Validates the Auth Details JSON against the schema (`auth_types[]` + optional `other_connection`) — see [`validate_auth_details()`](auth_config_parser/validator.py:47).
+- Validates the Auth Details JSON against the schema (`auth_types[]` + required `other_connection`) — see [`validate_auth_details()`](auth_config_parser/validator.py:24).
 - Sets the `Auth Details` workflow data column in the CSV.
 - Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag. **This includes wiping the `Params to Commands` data column**, even though it carries `preserve_on_reset: true` for `reset-to`/`fail` — `set-auth` deliberately ignores that flag because auth-classification changes invalidate every downstream artifact (in particular, the per-command param contract validated by `params_to_commands_no_auth_overlap`).
-- Rejects invalid JSON with specific error messages — including unsorted `auth_types[]`, role-enum violations (e.g. `APIKey` entries whose role isn't `"key"`), and any payload still using the pre-2026-05 `config` or `xsoar_params` keys (which short-circuits with a migration-help message).
+- Rejects invalid JSON with specific error messages — including unsorted `auth_types[]`, role-enum violations (e.g. `APIKey` entries whose role isn't `"key"`), missing `other_connection`, and unknown enum values. Unknown top-level keys (including the legacy pre-2026-05 `config` / `xsoar_params` keys) are silently ignored — they no longer short-circuit with a dedicated migration-help message (that behaviour was removed in commit `cd09e3ff`).
 
 Example:
 
@@ -1043,10 +1040,9 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
 - [ ] Every entry whose `type` is NOT `Plain` or `APIKey` has `interpolated: true`. Only `Plain` and `APIKey` entries may be non-interpolated.
 - [ ] Every `auth_types[]` entry whose test-module path manually raises (`raise DemistoException(...)` / `return_error(...)`) for this auth — e.g. OAuth Authorization Code, Device Code, ROPC flows that require an out-of-band `!auth-start` command before the connection-test button can succeed — has `"verify_connection_skip": true`. Profiles whose test-module reaches an actual HTTP call leave `verify_connection_skip` at its default (`false`) or omit the key.
-- [ ] No `xsoar_params` key is present in any entry — only `xsoar_param_map` is accepted.
-- [ ] Every name referenced in `config` exists as some `auth_types[].name`.
+- [ ] No `xsoar_params` key is present in any entry — only `xsoar_param_map` is read (any stale `xsoar_params` field is silently ignored, so leaving it in is a silent footgun).
 - [ ] `auth_types[]` entries are sorted by `(type, name)` ascending. (Map keys are unordered — no sort requirement.)
-- [ ] If there is genuinely no auth, `auth_types` is `[]` (the pre-2026-05 `config: "NoneRequired"` key is no longer used; see column-schemas.md §"Migration from `config`").
+- [ ] If there is genuinely no auth, `auth_types` is `[]` (the pre-2026-05 `config: "NoneRequired"` key is no longer used).
 - [ ] Connection metadata (URL, instance host, region) is intentionally NOT in `auth_types` — it goes in `other_connection` instead (see [1.2.5](#125-building-the-other_connection-list)).
 - [ ] `other_connection` lists every connection-adjacent YML param (`url`, `proxy`, `insecure`, `port`, `host`, `region`, etc.).
 - [ ] `other_connection` does NOT contain any auth-secret param (those are keyed in `auth_types[].xsoar_param_map`).

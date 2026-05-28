@@ -7,11 +7,15 @@ should be read alongside it.
 
 > **Status (2026-05 rewrite).** This document was rewritten to match the
 > current implementation after the auth-schema simplification. The pre-
-> 2026-05 design carried a `config` expression in `Auth Details`, the
-> `OAuth2AuthCode` and `Other` enum members, a per-row `requires auth
-> parity test` flag column, and a planned cell-lookup model where the
-> analyzer read `Auth Details` directly from the workflow CSV. All of
-> those were removed. See
+> 2026-05 design carried a `config` expression in `Auth Details`, a
+> richer `AuthType` enum (additional members for browser-redirect
+> Authorization Code and a catch-all `Other` that was renamed to
+> `Passthrough`), a per-row `requires auth parity test` flag column,
+> and a planned cell-lookup model where the analyzer read `Auth Details`
+> directly from the workflow CSV. All of those were removed. The
+> surviving `AuthType` enum members are `OAuth2ClientCreds`, `OAuth2JWT`,
+> `APIKey`, `Plain`, `Passthrough`, `NoneRequired` — see
+> [`auth_config_parser/types.py`](auth_config_parser/types.py:11). See
 > [Appendix A — Historical design notes](#appendix-a--historical-design-notes)
 > for the short version of what changed. The canonical Auth Details
 > schema lives at [`column-schemas.md`](column-schemas.md:1).
@@ -383,12 +387,13 @@ The pre-2026-05 design carried these now-removed concepts:
   clauses). The analyzer originally parsed it via
   `parse_config()`. Removed because the only inter-profile relation
   is exclusive-OR, fully encoded by `len(auth_types)`.
-- **`AuthType.OAuth2AuthCode`** — explicit enum for browser-redirect
-  Authorization Code flow. Folded into `Passthrough` because the
-  user-facing config lives on the profile rather than in
-  `metadata.auth.parameter`, so it has no canonical field shape.
-- **`AuthType.Other`** — renamed to `Passthrough` (no back-compat
-  alias).
+- **`AuthType.Passthrough`** (formerly two members: an explicit
+  enum for browser-redirect OAuth Authorization Code flow, and a
+  catch-all `Other`). Both pre-2026-05 members were folded into
+  the single `Passthrough` value with no back-compat alias —
+  Authorization Code has no canonical field shape (the user-facing
+  config lives on the profile rather than in
+  `metadata.auth.parameter`) and `Other` was simply renamed.
 - **`requires auth parity test` flag column** in the pipeline CSV —
   removed in 2026-05; the analyzer is now unconditional.
 - **`skipped_other_type`** per-connection status — renamed to
