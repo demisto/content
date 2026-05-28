@@ -227,8 +227,8 @@ def fetch_incidents(aws_client):
 def main():
     params = demisto.params()
     aws_default_region = params.get("defaultRegion")
-    aws_role_arn = params.get("role_arn")
-    aws_role_session_name = params.get("role_session_name")
+    aws_role_arn = params.get("roleArn")
+    aws_role_session_name = params.get("roleSessionName")
     aws_role_session_duration = params.get("sessionDuration")
     aws_role_policy = None
     aws_access_key_id = params.get("credentials", {}).get("identifier") or params.get("access_key")
