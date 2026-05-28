@@ -3193,7 +3193,7 @@ def parse_vulnerabilities(vulns: list) -> list:
         vulns = list(vulns)
     for vuln in vulns:
         # Set _time from lastSeen or firstSeen (Tenable.sc uses these fields)
-        vuln["_time"] = vuln.get("lastSeen") or vuln.get("firstSeen")
+        vuln["_time"] = vuln.get("firstSeen") or vuln.get("lastSeen")
         vuln_str = json.dumps(vuln)
         if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
             demisto.debug(f"found oversized vulnerability object: {sys.getsizeof(vuln_str)} bytes")

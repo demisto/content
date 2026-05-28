@@ -63,8 +63,9 @@ configuration:
   required: false
   type: 19
   section: Collect
-- defaultvalue: '720'
-  display: Assets fetch interval in minutes
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 12 hours. Interval lower then 1 hour is not supported.
+  defaultvalue: '720'
+  display: Assets fetch interval in minutes.
   name: assetsFetchInterval
   type: 19
   required: false
