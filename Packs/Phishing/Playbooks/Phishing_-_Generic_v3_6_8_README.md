@@ -87,4 +87,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
+![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3_6_8.png)
