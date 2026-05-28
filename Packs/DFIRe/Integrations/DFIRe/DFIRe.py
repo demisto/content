@@ -1670,7 +1670,7 @@ COMMANDS: dict[str, Any] = {
 
 def main():
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}/api"
+    base_url = urljoin(params.get("url", ""), "/api")
     credentials = params.get("apikey") or {}
     api_key = credentials.get("password", "")
     if not api_key:
