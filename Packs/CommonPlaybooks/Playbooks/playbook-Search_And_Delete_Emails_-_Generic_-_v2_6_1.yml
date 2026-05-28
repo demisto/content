@@ -635,10 +635,10 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 78f1f59a-8602-41cd-984c-fa27fa78c96a
+    taskid: 11423dc0-0239-45fd-b3af-33098fff4df7
     type: playbook
     task:
-      id: 78f1f59a-8602-41cd-984c-fa27fa78c96a
+      id: 11423dc0-0239-45fd-b3af-33098fff4df7
       version: -1
       name: Microsoft Graph Security - Search And Delete Emails
       type: playbook
@@ -670,7 +670,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1273,7 +1273,7 @@ inputs:
 - key: MsgCase
   value:
     simple: XSOAR Auto Phishing
-  required: true
+  required: false
   description: Used only with Microsoft Graph Security. The eDiscovery case name to use. Looked up by name and created if missing.
   playbookInputQuery:
 - key: MsgKQL
