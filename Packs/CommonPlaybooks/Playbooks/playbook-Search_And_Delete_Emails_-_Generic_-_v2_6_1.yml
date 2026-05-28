@@ -678,24 +678,14 @@ tasks:
     scriptarguments:
       case:
         simple: ${inputs.MsgCase}
-      cleanup:
-        simple: auto
       delete_type:
         simple: ${inputs.MsgDeleteType}
-      export_format:
-        simple: msg
-      force:
-        simple: "false"
       kql:
         simple: ${KQLQuery}
       mailbox_exclusion:
         simple: ${inputs.MsgMailboxExclusion}
       mailbox_scope:
         simple: ${inputs.MsgMailboxScope}
-      preview:
-        simple: "true"
-      preview_mode:
-        simple: statistics
       recipients:
         simple: ${inputs.MsgRecipients}
     loop:
