@@ -176,6 +176,11 @@ class TabLifecycleManager:
         except Exception as ex:
             demisto.info(f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable a new tab due to {ex}")
             raise ex
+
+        if BLOCKED_URLS:
+            patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
+            self.tab.Fetch.enable(patterns=patterns)
+
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: F841
@@ -377,19 +382,19 @@ class PychromeEventHandler:
             demisto.info(
                 f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
             )
-            self.tab.Fetch.enable()
-            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
         request_url = kwargs.get("request", {}).get("url")
 
         # abort the request if the url inside blocked_urls param and its redirect request
-        if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
+        if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request paused: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
-            self.tab.Fetch.disable()
-            demisto.debug(f"Fetch events disabled. {self.tab.id=}, {self.path=}")
+            demisto.debug(f"Request aborted: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+        else:
+            # Safety check in case the fetch enable patterns paused requests that shouldn't be blocked
+            demisto.debug(f"Request continued: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+            self.tab.Fetch.continueRequest(requestId=request_id)
 
 
 # endregion
