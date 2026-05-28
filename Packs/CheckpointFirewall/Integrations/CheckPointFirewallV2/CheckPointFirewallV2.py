@@ -2833,7 +2833,7 @@ def checkpoint_update_access_rule_command(
         destination_add (str or list): Adds to the collection of destination network objects.
         destination_remove (str or list): Removes from the collection of destination network objects.
     """
-    new_position_obj = None
+    new_position_obj: str | int | dict | None = None
     if new_position is not None:
         if new_position in ("above", "below") and not new_position_rule:
             raise DemistoException(
@@ -2841,7 +2841,7 @@ def checkpoint_update_access_rule_command(
                 f"Provide the name of the rule or section to position relative to."
             )
         if new_position_rule:
-            new_position_obj: str | int | dict = {new_position: new_position_rule}
+            new_position_obj = {new_position: new_position_rule}
         elif new_position.isdigit():
             new_position_obj = int(new_position)
         else:
@@ -4775,7 +4775,7 @@ def checkpoint_nat_rule_update_command(
     demisto.debug(f"checkpoint-nat-rule-update command called with args: {demisto.args()}")
 
     # Build new_position object
-    new_position_obj = None
+    new_position_obj: str | int | dict | None = None
     if new_position is not None:
         if new_position in ("above", "below") and not new_position_rule:
             raise DemistoException(
@@ -4783,7 +4783,7 @@ def checkpoint_nat_rule_update_command(
                 f"Provide the name of the rule or section to position relative to."
             )
         if new_position_rule:
-            new_position_obj: str | int | dict = {new_position: new_position_rule}
+            new_position_obj = {new_position: new_position_rule}
         elif new_position.isdigit():
             new_position_obj = int(new_position)
         else:
@@ -5950,4 +5950,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

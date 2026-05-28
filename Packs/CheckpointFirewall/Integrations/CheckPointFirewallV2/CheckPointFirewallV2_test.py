@@ -2134,9 +2134,7 @@ def test_nat_rule_add_with_position_rule_above(mocker):
     mocked_client = mocker.Mock()
     mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
 
-    checkpoint_nat_rule_add_command(
-        mocked_client, package="Standard", position="above", position_rule="rule-1"
-    )
+    checkpoint_nat_rule_add_command(mocked_client, package="Standard", position="above", position_rule="rule-1")
 
     call_kwargs = mocked_client.add_nat_rule.call_args
     assert call_kwargs[1]["position"] == {"above": "rule-1"}
@@ -2156,9 +2154,7 @@ def test_nat_rule_add_with_position_rule_below(mocker):
     mocked_client = mocker.Mock()
     mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
 
-    checkpoint_nat_rule_add_command(
-        mocked_client, package="Standard", position="below", position_rule="section-1"
-    )
+    checkpoint_nat_rule_add_command(mocked_client, package="Standard", position="below", position_rule="section-1")
 
     call_kwargs = mocked_client.add_nat_rule.call_args
     assert call_kwargs[1]["position"] == {"below": "section-1"}
@@ -2232,9 +2228,7 @@ def test_nat_rule_add_top_with_position_rule(mocker):
     mocked_client = mocker.Mock()
     mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
 
-    checkpoint_nat_rule_add_command(
-        mocked_client, package="Standard", position="top", position_rule="section-1"
-    )
+    checkpoint_nat_rule_add_command(mocked_client, package="Standard", position="top", position_rule="section-1")
 
     call_kwargs = mocked_client.add_nat_rule.call_args
     assert call_kwargs[1]["position"] == {"top": "section-1"}
@@ -2282,8 +2276,7 @@ def test_nat_rule_update_with_new_position_rule_above(mocker):
     mocked_client.update_nat_rule.return_value = mock_response
 
     checkpoint_nat_rule_update_command(
-        mocked_client, identifier="rule1", package="Standard",
-        new_position="above", new_position_rule="rule-2"
+        mocked_client, identifier="rule1", package="Standard", new_position="above", new_position_rule="rule-2"
     )
 
     call_kwargs = mocked_client.update_nat_rule.call_args
@@ -2305,9 +2298,7 @@ def test_nat_rule_update_with_new_position_integer(mocker):
     mock_response = util_load_json("test_data/show_nat_rule.json")
     mocked_client.update_nat_rule.return_value = mock_response
 
-    checkpoint_nat_rule_update_command(
-        mocked_client, identifier="rule1", package="Standard", new_position="3"
-    )
+    checkpoint_nat_rule_update_command(mocked_client, identifier="rule1", package="Standard", new_position="3")
 
     call_kwargs = mocked_client.update_nat_rule.call_args
     assert call_kwargs[1]["new_position"] == 3
@@ -2327,9 +2318,7 @@ def test_nat_rule_update_above_without_new_position_rule(mocker):
     mocked_client = mocker.Mock()
 
     with pytest.raises(CheckPointFirewallV2.DemistoException, match="'new_position_rule' argument is required"):
-        checkpoint_nat_rule_update_command(
-            mocked_client, identifier="rule1", package="Standard", new_position="above"
-        )
+        checkpoint_nat_rule_update_command(mocked_client, identifier="rule1", package="Standard", new_position="above")
 
 
 def test_nat_rule_update_below_without_new_position_rule(mocker):
@@ -2346,9 +2335,7 @@ def test_nat_rule_update_below_without_new_position_rule(mocker):
     mocked_client = mocker.Mock()
 
     with pytest.raises(CheckPointFirewallV2.DemistoException, match="'new_position_rule' argument is required"):
-        checkpoint_nat_rule_update_command(
-            mocked_client, identifier="rule1", package="Standard", new_position="below"
-        )
+        checkpoint_nat_rule_update_command(mocked_client, identifier="rule1", package="Standard", new_position="below")
 
 
 def test_checkpoint_nat_rule_delete_command(mocker):
@@ -3297,9 +3284,7 @@ def test_add_access_rule_with_position_rule(mocker):
     mock_response = util_load_json("test_data/add_access_rule.json")
     mocked_client.add_rule.return_value = mock_response
 
-    checkpoint_add_access_rule_command(
-        mocked_client, "Network", "above", position_rule="rule-1"
-    )
+    checkpoint_add_access_rule_command(mocked_client, "Network", "above", position_rule="rule-1")
 
     call_args = mocked_client.add_rule.call_args
     assert call_args[0][1] == {"above": "rule-1"}
@@ -3320,9 +3305,7 @@ def test_add_access_rule_with_position_below_and_position_rule(mocker):
     mock_response = util_load_json("test_data/add_access_rule.json")
     mocked_client.add_rule.return_value = mock_response
 
-    checkpoint_add_access_rule_command(
-        mocked_client, "Network", "below", position_rule="section-1"
-    )
+    checkpoint_add_access_rule_command(mocked_client, "Network", "below", position_rule="section-1")
 
     call_args = mocked_client.add_rule.call_args
     assert call_args[0][1] == {"below": "section-1"}
@@ -3398,9 +3381,7 @@ def test_add_access_rule_top_with_position_rule(mocker):
     mock_response = util_load_json("test_data/add_access_rule.json")
     mocked_client.add_rule.return_value = mock_response
 
-    checkpoint_add_access_rule_command(
-        mocked_client, "Network", "top", position_rule="section-1"
-    )
+    checkpoint_add_access_rule_command(mocked_client, "Network", "top", position_rule="section-1")
 
     call_args = mocked_client.add_rule.call_args
     assert call_args[0][1] == {"top": "section-1"}
@@ -3475,9 +3456,7 @@ def test_update_access_rule_with_new_position_rule_above(mocker):
     mock_response = util_load_json("test_data/update_access_rule.json")
     mocked_client.update_rule.return_value = mock_response
 
-    checkpoint_update_access_rule_command(
-        mocked_client, "rule1", "Network", new_position="above", new_position_rule="rule-2"
-    )
+    checkpoint_update_access_rule_command(mocked_client, "rule1", "Network", new_position="above", new_position_rule="rule-2")
 
     call_kwargs = mocked_client.update_rule.call_args
     assert call_kwargs[1]["new_position"] == {"above": "rule-2"}
