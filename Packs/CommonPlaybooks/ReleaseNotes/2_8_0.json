@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The **Search And Delete Emails - Generic v2** playbook no longer uses the deprecated O365 Security & Compliance (Search And Delete Emails - Office 365) sub-playbook. It has been replaced with the new **Search And Delete Emails - Microsoft Graph Security ** sub-playbook, which uses the Microsoft Graph eDiscovery API. Installations relying on the O365 S&C integration for email deletion must migrate to the Microsoft Graph Security integration."
+    "breakingChangesNotes": "The **Search And Delete Emails - Generic v2** playbook no longer uses the deprecated O365 Security & Compliance (Search And Delete Emails - Office 365) sub-playbook. It has been replaced with the new **Search And Delete Emails - Microsoft Graph Security** sub-playbook, which uses the Microsoft Graph eDiscovery API. Installations relying on the O365 S&C integration for email deletion must migrate to the Microsoft Graph Security integration."
 }

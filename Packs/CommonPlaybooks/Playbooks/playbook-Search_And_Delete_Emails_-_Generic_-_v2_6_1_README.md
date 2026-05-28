@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Search And Delete Emails - Microsoft Graph Security 
+* Search And Delete Emails - Microsoft Graph Security
 * Search And Delete Emails - EWS
 * Search And Delete Emails - Gmail
 
