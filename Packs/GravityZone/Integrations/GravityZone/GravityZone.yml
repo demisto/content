@@ -200,7 +200,7 @@ script:
       description: The connection type for the session.
       type: String
     - contextPath: GravityZone.Endpoint.ActiveSessions.StartTime
-      description: The session start time.
+      description: The session start time, if available.
       type: Date
     - contextPath: GravityZone.Endpoint.ActiveSessions.UserSID
       description: The user SID for the session, if available.
@@ -518,7 +518,7 @@ script:
       default: false
     - name: pid
       isArray: false
-      description: The ID of the processs to kill.
+      description: The ID of the process to kill.
       required: true
       secret: false
       default: false
