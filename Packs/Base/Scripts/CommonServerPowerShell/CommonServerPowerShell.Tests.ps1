@@ -770,6 +770,60 @@ Describe 'UCP-Helpers' {
         $creds.password | Should -Be 'p1'
     }
 
+    It 'Get-UcpCredentials preserves extra fields beyond the standard credential keys' {
+        # Given - a UCP 'plain' profile that carries additional connection fields (certificate,
+        # app_id, organization, url, custom_flag) alongside the standard username/password.
+        # This mirrors the EWS Extension Online PowerShell V3 / ps_demo connector where the
+        # connection profile binds certificate + organization + app_id + url through the plain
+        # auth profile.
+        class DemistoObject {
+            DemistoObject () {}
+            [object] UnifiedConnectorMetadata () { return $script:UcpTestMetadata }
+            [object] GetUCPCredentials ([string]$id, [bool]$fc) {
+                if ($script:UcpTestCredentials.Contains($id)) { return $script:UcpTestCredentials[$id] }
+                return $null
+            }
+            [string] GetCommand () { return $script:UcpTestCurrentCmd }
+            [void]   Debug ([object]$m) {}
+            [void]   Info  ([object]$m) {}
+            [void]   Error ([object]$m) {}
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $script:UcpTestMetadata = @{
+            connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
+        }
+        $script:UcpTestCredentials = @{
+            'm1' = @{
+                type         = 'plain'
+                # Extra fields at the top level of the credentials object.
+                certificate  = 'BASE64-CERT-DATA'
+                app_id       = 'app-xyz'
+                organization = 'contoso.onmicrosoft.com'
+                url          = 'https://outlook.office365.com'
+                custom_flag  = $true
+                plain        = @{
+                    username = 'u1'
+                    password = 'p1'
+                    # Extra fields nested under the type-specific sub-object.
+                    nested_extra = 'kept'
+                }
+            }
+        }
+        # When - Get-UcpCredentials is called.
+        # Then - the standard plain fields plus all extra fields (from both top level and the
+        #        nested 'plain' sub-object) are present on the flattened result.
+        $creds = Get-UcpCredentials
+        $creds.type         | Should -Be 'plain'
+        $creds.username     | Should -Be 'u1'
+        $creds.password     | Should -Be 'p1'
+        $creds.certificate  | Should -Be 'BASE64-CERT-DATA'
+        $creds.app_id       | Should -Be 'app-xyz'
+        $creds.organization | Should -Be 'contoso.onmicrosoft.com'
+        $creds.url          | Should -Be 'https://outlook.office365.com'
+        $creds.custom_flag  | Should -Be $true
+        $creds.nested_extra | Should -Be 'kept'
+    }
+
     It 'Invalidate-UcpCredentialsCache forces a re-fetch on the next call' {
         # Given - one credentials fetch has already populated the client-side TTL cache.
         class DemistoObject {

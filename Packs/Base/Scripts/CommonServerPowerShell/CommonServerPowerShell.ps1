@@ -1312,11 +1312,86 @@ function Get-UcpMethodUniqueId {
 
 <#
 .DESCRIPTION
+Enumerate the property names of a hashtable or PSCustomObject as a string[].
+
+Internal helper used by Flatten-UcpCredentials to copy any "extra" fields a
+UCP connection profile may carry beyond the standard credential fields (e.g.
+certificate, app_id, organization, url for plain profiles used by Exchange
+Online PowerShell V3).
+#>
+function script:Get-UcpPropNames($obj) {
+    if ($null -eq $obj) { return @() }
+    if ($obj -is [System.Collections.IDictionary]) {
+        return @($obj.Keys | ForEach-Object { "$_" })
+    }
+    if ($obj.PSObject -and $obj.PSObject.Properties) {
+        return @($obj.PSObject.Properties | ForEach-Object { $_.Name })
+    }
+    return @()
+}
+
+<#
+.DESCRIPTION
+Copy any "extra" fields from a UCP credentials object into the flattened
+result hashtable.
+
+The standard Flatten-UcpCredentials output for each credential type only
+carries the well-known fields (oauth2 -> access_token/token_type/expires_at;
+api_key -> key; plain -> username/password). Some connection profiles
+(notably the EWS Extension Online PowerShell V3 / ps_demo connector) bind
+additional fields like 'certificate', 'app_id', 'organization', 'url' to a
+'plain' profile. Without preserving these, integrations that read them from
+$demisto.Params() will get empty values and fail at runtime (e.g. X509
+certificate ctor throws "Array may not be empty or null").
+
+This helper copies any field on $creds or $creds.<type> that is NOT already
+in $result and NOT one of the reserved meta keys.
+
+.PARAMETER result
+The flattened result hashtable to mutate.
+
+.PARAMETER creds
+The original UCP credentials object (top-level).
+
+.PARAMETER nested
+The type-specific nested sub-object (e.g. $creds.plain). May be $null.
+#>
+function script:Copy-UcpExtraFields([hashtable]$result, $creds, $nested) {
+    # Reserved keys we do not propagate verbatim - they are either already
+    # set by the caller or are UCP-internal metadata.
+    $reserved = @('type', 'oauth2', 'oauth2_client_credentials',
+                  'oauth2_authorization_code', 'api_key', 'plain',
+                  'expires_at', 'access_token', 'token_type', 'key',
+                  'username', 'password')
+
+    foreach ($source in @($nested, $creds)) {
+        if ($null -eq $source) { continue }
+        foreach ($name in (Get-UcpPropNames $source)) {
+            if ($reserved -contains $name) { continue }
+            if ($result.Contains($name)) { continue }
+            $value = Get-UcpProp $source $name
+            # Skip null values but allow empty strings - the integration may
+            # legitimately receive an empty optional field.
+            if ($null -eq $value) { continue }
+            $result[$name] = $value
+        }
+    }
+}
+
+<#
+.DESCRIPTION
 Flatten a nested UCP credentials response into a flat hashtable.
 
 $demisto.GetUCPCredentials() returns nested structures like
 `@{oauth2 = @{access_token = '...'; ...}; type = 'oauth2'}`. This function
 flattens them to `@{type = 'oauth2'; access_token = '...'; ...}`.
+
+In addition to the well-known fields per credential type, any extra fields
+present on the credentials object (or its type-specific sub-object) are
+preserved on the flattened result. This allows connection profiles to carry
+integration-specific fields (e.g. certificate, app_id, organization, url for
+the EWS Extension Online PowerShell V3 connector) without requiring
+integration-side UCP awareness.
 
 After flattening, validates that the essential credential field is non-empty.
 Throws when empty (fail-fast) - matching the JS/Python behavior.
@@ -1349,6 +1424,7 @@ function script:Flatten-UcpCredentials($creds) {
             $demisto.Error("[UCP][CommonServerPowerShell.ps1] Flatten-UcpCredentials: empty access_token for type=$credType")
             throw "[UCP] Authentication failed - the UCP response returned empty credentials. Please verify the authentication profile is correctly configured and the credentials are valid."
         }
+        script:Copy-UcpExtraFields $result $creds $data
         return $result
     }
 
@@ -1363,17 +1439,21 @@ function script:Flatten-UcpCredentials($creds) {
             $demisto.Error("[UCP][CommonServerPowerShell.ps1] Flatten-UcpCredentials: empty key for type=$credType")
             throw "[UCP] Authentication failed - the UCP response returned empty credentials. Please verify the authentication profile is correctly configured and the credentials are valid."
         }
-        return @{ type = $credType; key = $key }
+        $result = @{ type = $credType; key = $key }
+        script:Copy-UcpExtraFields $result $creds $data
+        return $result
     }
 
     if ($credType -eq 'plain') {
         $data = Get-UcpProp $creds 'plain'
         if ($null -eq $data) { $data = $creds }
-        return @{
+        $result = @{
             type     = $credType
             username = "$(Get-UcpProp $data 'username')"
             password = "$(Get-UcpProp $data 'password')"
         }
+        script:Copy-UcpExtraFields $result $creds $data
+        return $result
     }
 
     return $creds
