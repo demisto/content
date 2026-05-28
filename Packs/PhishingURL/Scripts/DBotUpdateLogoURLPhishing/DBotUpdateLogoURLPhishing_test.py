@@ -151,5 +151,3 @@ def test_load_data_from_xsoar_old_data(mocker: MockerFixture):
     load_data_from_xsoar()
 
     mock_loader.assert_called_once_with("model_data")
-
-

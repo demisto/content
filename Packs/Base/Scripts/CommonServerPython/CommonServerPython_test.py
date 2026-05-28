@@ -13457,11 +13457,13 @@ class TestSafePickleLoads:
     def test_blocks_unauthorized_module(self):
         """Verify that a class from an unauthorized module is blocked by Layer 1."""
         import pickle as _pickle
+        from collections import OrderedDict
         allowed_classes = {("builtins", "dict")}
         safe_module_prefixes = set()  # type: set
 
-        # Pickle a set — ("builtins", "set") is NOT in allowed_classes
-        payload = _pickle.dumps({1, 2, 3})
+        # Pickle an OrderedDict — ("collections", "OrderedDict") is NOT in allowed_classes.
+        # Unlike built-in set/list/tuple, OrderedDict goes through find_class (STACK_GLOBAL opcode).
+        payload = _pickle.dumps(OrderedDict([("a", 1)]))
         with pytest.raises(_pickle.UnpicklingError, match="Blocked unauthorized class"):
             safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
 

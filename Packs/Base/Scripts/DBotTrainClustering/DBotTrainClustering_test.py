@@ -7,7 +7,6 @@ from DBotTrainClustering import (
     MESSAGE_INCORRECT_FIELD,
     MESSAGE_INVALID_FIELD,
     MESSAGE_NO_FIELD_NAME_OR_CLUSTERING,
-    _ALLOWED_CLASSES,
     base64,
     check_list_of_dict,
     datetime,
@@ -515,5 +514,3 @@ def test_get_model_if_not_expired(mocker, force_retrain, model_expiration, model
     result = get_model_if_not_expired(force_retrain, model_expiration, "name")
 
     assert isinstance(result, expected_result_obj)
-
-

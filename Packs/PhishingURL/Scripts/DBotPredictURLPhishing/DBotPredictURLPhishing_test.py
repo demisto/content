@@ -376,5 +376,3 @@ def test_output_url_match_requested_url(mocker, input_url):
     # Check indicator matches requested url
     entry_context = return_results_mock.mock_calls[1].args[0]["EntryContext"]
     assert entry_context[KEY_CONTENT_DBOT_SCORE]["Indicator"] == input_url
-
-
