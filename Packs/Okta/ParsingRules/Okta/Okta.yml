@@ -4,6 +4,5 @@ name: Okta Parsing Rule
 rules: ''
 samples: ''
 supportedModules:
-- agentix
 - xsiam
 tags: []

@@ -9656,3 +9656,36 @@ def test_get_hitcounts_vsys_specific_enrichment(mocker):
     # PanoramaRule_v2 should NOT appear in vsys1 results
     vsys1_rule_names = {r.name for r in vsys1_results}
     assert "PanoramaRule_v2" not in vsys1_rule_names
+
+
+def test_panorama_upload_content_update_file_command_uses_basename(mocker):
+    """
+    Given: A file entry whose name contains directory components (e.g. 'subdir/firmware.bin').
+    When: panorama_upload_content_update_file_command is called.
+    Then: Only the basename is used for the local copy destination and os.remove is called for cleanup.
+    """
+    import Panorama
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/fake_path/firmware.bin", "name": "subdir/firmware.bin"},
+    )
+    copy_mock = mocker.patch("shutil.copy")
+    mock_file = mocker.mock_open(read_data=b"fake content")
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch(
+        "Panorama.http_request",
+        return_value={"response": {"@status": "success", "msg": "upload succeeded"}},
+    )
+    remove_mock = mocker.patch("os.remove")
+    mocker.patch("os.path.isfile", return_value=True)
+    mocker.patch.object(Panorama, "API_KEY", "test_key")
+    mocker.patch.object(Panorama, "URL", "https://test.example.com")
+
+    Panorama.panorama_upload_content_update_file_command({"category": "content", "entryID": "entry123"})
+
+    # Assert shutil.copy was called with basename only (not the full subdir/firmware.bin)
+    assert copy_mock.call_args[0][1] == "firmware.bin"
+    # Assert os.remove was called
+    remove_mock.assert_called_once_with("firmware.bin")

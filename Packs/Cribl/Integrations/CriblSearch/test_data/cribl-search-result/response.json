@@ -1,0 +1,39 @@
+{
+  "isFinished": true,
+  "limit": 5,
+  "offset": 0,
+  "persistedEventCount": 33,
+  "totalEventCount": 33,
+  "job": {
+    "id": "1777207075060.cCPnVx",
+    "query": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr",
+    "earliest": "-1h",
+    "latest": "now",
+    "timeCreated": 1777207075060,
+    "timeStarted": 1777207075512,
+    "timeCompleted": 1777207082580,
+    "status": "completed"
+  },
+  "events": [
+    {
+      "srcaddr": "192.0.2.10",
+      "cnt": 2601
+    },
+    {
+      "srcaddr": "192.0.2.11",
+      "cnt": 2592
+    },
+    {
+      "srcaddr": "192.0.2.12",
+      "cnt": 2512
+    },
+    {
+      "srcaddr": "192.0.2.13",
+      "cnt": 2464
+    },
+    {
+      "srcaddr": "192.0.2.14",
+      "cnt": 5063
+    }
+  ]
+}
