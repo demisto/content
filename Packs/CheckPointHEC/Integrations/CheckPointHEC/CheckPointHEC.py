@@ -85,11 +85,10 @@ class Client(BaseClient):
 
     def _generate_infinity_token(self):
         if self._should_refresh_token():
-            payload = {"accessKey": self.client_secret}
-            headers = {"cloudinfra-external-client-id": self.client_id}
+            payload = {"accessKey": self.client_secret, "clientId": self.client_id}
             timestamp = time.time()
 
-            res = self._http_request(method="POST", url_suffix="/v2/auth/external", json_data=payload, headers=headers)
+            res = self._http_request(method="POST", url_suffix="/v2/auth/external", json_data=payload)
             data = res["data"]
             self.token = data.get("token")
             self.token_expiry = timestamp + float(data.get("expiresIn"))

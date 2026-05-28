@@ -59,18 +59,24 @@ def util_load_json(path):
 def test_generate_infinity_token(mocker):
     client = Client(
         base_url="https://smart-api-example-1-us.avanan-example.net",
-        client_id="****",
-        client_secret="****",
+        client_id="my-client-id",
+        client_secret="my-client-secret",
         verify=False,
         proxy=False,
     )
 
     _token = "infinity token"
     _inf_token = {"data": {"token": _token, "expiresIn": 1000}}
-    mocker.patch.object(Client, "_http_request", return_value=_inf_token)
+    mock_http = mocker.patch.object(Client, "_http_request", return_value=_inf_token)
 
     assert client._generate_infinity_token() == _token
     assert client.token == _token
+
+    mock_http.assert_called_once_with(
+        method="POST",
+        url_suffix="/v2/auth/external",
+        json_data={"accessKey": "my-client-secret", "clientId": "my-client-id"},
+    )
 
 
 def test_generate_signature_with_request_string():
