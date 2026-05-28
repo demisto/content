@@ -7,21 +7,24 @@ from ContentClientApiModule import *
 from CommonServerPython import *  # noqa: F401
 
 # region Constants
-# =================================
-# Constants
-# =================================
 INTEGRATION_NAME = "SecurityScorecard Event Collector"
 
-VENDOR = "SecurityScorecard"
-PRODUCT = "SecurityScorecard"
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-DEFAULT_MAX_FETCH = 1000
-DEFAULT_FIRST_FETCH = "3 days"
-RATE_LIMIT_STATUS_CODE = 429
+class Config:
+    """Global static configuration."""
 
+    VENDOR = "SecurityScorecard"
+    PRODUCT = "SecurityScorecard"
 
-# endregion
+    # Date format for API requests (ISO 8601)
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+    # Fetch defaults
+    DEFAULT_MAX_FETCH = 1000
+    DEFAULT_FIRST_FETCH = "1 day"
+
+    # API status codes
+    RATE_LIMIT_STATUS_CODE = 429
 
 
 # region Client
@@ -82,7 +85,7 @@ class Client(ContentClient):
         """
         params = assign_params(date_from=date_from, date_to=date_to)
 
-        demisto.debug(f"[API] Fetching history events for '{self.scorecard_identifier}' " f"from {date_from} to {date_to}")
+        demisto.debug(f"[API] Fetching history events for '{self.scorecard_identifier}' from {date_from} to {date_to}")
 
         response = self._http_request(
             method="GET",
@@ -92,7 +95,7 @@ class Client(ContentClient):
             ok_codes=(200, 429),
         )
 
-        if response.status_code == RATE_LIMIT_STATUS_CODE:
+        if response.status_code == Config.RATE_LIMIT_STATUS_CODE:
             retry_after = response.headers.get("Retry-After", "60")
             demisto.debug(f"[API] Rate limit hit on history events. Retry-After: {retry_after}")
             raise RateLimitError(retry_after=retry_after)
@@ -123,7 +126,7 @@ class Client(ContentClient):
             ok_codes=(200, 429),
         )
 
-        if response.status_code == RATE_LIMIT_STATUS_CODE:
+        if response.status_code == Config.RATE_LIMIT_STATUS_CODE:
             retry_after = response.headers.get("Retry-After", "60")
             demisto.debug(f"[API] Rate limit hit on detail URL. Retry-After: {retry_after}")
             raise RateLimitError(retry_after=retry_after)
@@ -258,14 +261,14 @@ def get_fetch_start_time(params: dict[str, Any], last_run: dict[str, Any]) -> st
         demisto.debug(f"[Fetch] Continuing from last run: {last_fetch}")
         return last_fetch
 
-    first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
+    first_fetch = params.get("first_fetch", Config.DEFAULT_FIRST_FETCH)
     demisto.debug(f"[Fetch] First run - using first_fetch parameter: {first_fetch}")
 
     first_fetch_dt = arg_to_datetime(arg=first_fetch, arg_name="first_fetch", required=True)
     if first_fetch_dt is None:
         raise DemistoException(f"Failed to parse first_fetch parameter: {first_fetch}")
 
-    return first_fetch_dt.strftime(DATE_FORMAT)
+    return first_fetch_dt.strftime(Config.DATE_FORMAT)
 
 
 # endregion
@@ -289,8 +292,8 @@ def test_module(client: Client) -> str:
     demisto.debug("[Test Module] Starting...")
     try:
         now = datetime.now(timezone.utc)  # noqa: UP017
-        date_from = (now - timedelta(days=1)).strftime(DATE_FORMAT)
-        date_to = now.strftime(DATE_FORMAT)
+        date_from = (now - timedelta(days=1)).strftime(Config.DATE_FORMAT)
+        date_to = now.strftime(Config.DATE_FORMAT)
 
         client.get_history_events(date_from=date_from, date_to=date_to)
         demisto.debug("[Test Module] Success.")
@@ -333,7 +336,7 @@ def get_events_command(
     """
     demisto.debug("[Command] get-events triggered.")
 
-    limit = arg_to_number(args.get("limit", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
+    limit = arg_to_number(args.get("limit", Config.DEFAULT_MAX_FETCH)) or Config.DEFAULT_MAX_FETCH
     should_push_events = argToBoolean(args.get("should_push_events", False))
     event_type_filter = args.get("event_type")
 
@@ -343,19 +346,19 @@ def get_events_command(
     start_time_dt = arg_to_datetime(arg=start_time_input, arg_name="start_time", required=True)
     if start_time_dt is None:
         raise DemistoException(f"Failed to parse start_time: {start_time_input}")
-    date_from = start_time_dt.strftime(DATE_FORMAT)
+    date_from = start_time_dt.strftime(Config.DATE_FORMAT)
 
     if end_time_input:
         end_time_dt = arg_to_datetime(arg=end_time_input, arg_name="end_time")
         if end_time_dt is None:
             raise DemistoException(f"Failed to parse end_time: {end_time_input}")
-        date_to = end_time_dt.strftime(DATE_FORMAT)
+        date_to = end_time_dt.strftime(Config.DATE_FORMAT)
     else:
-        date_to = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+        date_to = datetime.now(timezone.utc).strftime(Config.DATE_FORMAT)  # noqa: UP017
 
     demisto.debug(
-        f"[Command] Params - from: {date_from}, to: {date_to}, "
-        f"limit: {limit}, event_type: {event_type_filter}, push: {should_push_events}"
+        f"[Command Params] From: {date_from}, To: {date_to}, "
+        f"Limit: {limit}, EventType: {event_type_filter}, Push: {should_push_events}"
     )
 
     events = client.get_history_events(date_from=date_from, date_to=date_to)
@@ -381,7 +384,7 @@ def get_events_command(
     add_time_to_events(events)
 
     if should_push_events and events:
-        send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM.")
         return f"Successfully retrieved and pushed {len(events)} events to XSIAM."
 
@@ -411,18 +414,17 @@ def fetch_events_command(client: Client, params: dict[str, Any]) -> None:
         client: The SecurityScorecard API client.
         params: Integration parameters from demisto.params().
     """
-    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
+    max_fetch = arg_to_number(params.get("max_fetch", Config.DEFAULT_MAX_FETCH)) or Config.DEFAULT_MAX_FETCH
 
     last_run = demisto.getLastRun()
     raw_ids = last_run.get("last_fetched_ids")
     last_fetched_ids: list[int] = raw_ids if isinstance(raw_ids, list) else []
 
     date_from = get_fetch_start_time(params, last_run)
-    date_to = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+    date_to = datetime.now(timezone.utc).strftime(Config.DATE_FORMAT)  # noqa: UP017
 
     demisto.debug(
-        f"[Fetch] Starting fetch. From: {date_from}, To: {date_to}, "
-        f"Max: {max_fetch}, Previous IDs count: {len(last_fetched_ids)}"
+        f"[Command Params] From: {date_from}, To: {date_to}, " f"Max: {max_fetch}, Previous IDs count: {len(last_fetched_ids)}"
     )
 
     # Step 1: Fetch history events
@@ -445,12 +447,17 @@ def fetch_events_command(client: Client, params: dict[str, Any]) -> None:
     events = deduplicate_events(events, last_fetched_ids)
 
     if not events:
-        demisto.debug("[Fetch] All events were duplicates.")
+        demisto.debug("[Fetch] All events were duplicates. Preserving last_run with existing dedup IDs.")
+        demisto.setLastRun({"last_fetch": date_from, "last_fetched_ids": last_fetched_ids})
         return
 
     # Step 4: Apply max_fetch limit
     if len(events) > max_fetch:
-        demisto.debug(f"[Fetch] Trimming {len(events)} events to max_fetch={max_fetch}.")
+        overflow = len(events) - max_fetch
+        demisto.debug(
+            f"[Fetch] Overflow: API returned {len(events)} events, max_fetch={max_fetch}. "
+            f"{overflow} events deferred to the next fetch cycle."
+        )
         events = events[:max_fetch]
 
     # Step 5: Enrich events with detail URL responses
@@ -461,7 +468,7 @@ def fetch_events_command(client: Client, params: dict[str, Any]) -> None:
     # Step 6: Send events to XSIAM
     if enriched_events:
         add_time_to_events(enriched_events)
-        send_events_to_xsiam(events=enriched_events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(events=enriched_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Pushed {len(enriched_events)} events to XSIAM.")
 
         # Step 7: Update last run based on what was actually sent

@@ -5,7 +5,7 @@ commonfields:
   version: -1
 category: Data Enrichment & Threat Intelligence
 provider: SecurityScorecard
-description: Collects history events from SecurityScorecard for Cortex XSIAM.
+description: This integration collects history events from SecurityScorecard for Cortex XSIAM.  
 sectionorder:
 - Connect
 - Collect
@@ -42,13 +42,6 @@ configuration:
   section: Collect
   defaultvalue: '1000'
   additionalinfo: The maximum number of events to fetch per cycle.
-- name: first_fetch
-  display: First fetch time
-  required: false
-  type: 0
-  section: Collect
-  defaultvalue: 3 days
-  additionalinfo: 'The time to fetch events from on the first run (e.g., 3 days, 7 days, 1 day).'
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -67,7 +60,7 @@ script:
   commands:
   - name: securityscorecard-get-events
     description: |-
-      Gets history events from SecurityScorecard. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+      Retrieves history events from SecurityScorecard. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.  
     deprecated: false
     arguments:
     - name: start_time
