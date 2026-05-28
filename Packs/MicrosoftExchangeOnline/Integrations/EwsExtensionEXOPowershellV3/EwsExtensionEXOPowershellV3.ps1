@@ -2663,74 +2663,6 @@ function TestModuleCommand($client)
     }
 
 }
-<#
-.DESCRIPTION
-Read a value from a hashtable or PSCustomObject by name, returning $null when the
-property is absent.
-
-Used by ResolveExoConfigValue to probe multiple candidate keys without throwing.
-#>
-function script:GetExoProp($obj, [string]$name) {
-    if ($null -eq $obj) { return $null }
-    if ($obj -is [System.Collections.IDictionary] -and $obj.Contains($name)) {
-        return $obj[$name]
-    }
-    if ($obj.PSObject -and $obj.PSObject.Properties[$name]) {
-        return $obj.$name
-    }
-    return $null
-}
-
-<#
-.DESCRIPTION
-Resolve a single configuration value for the EXO client by probing a list of
-candidate keys (in order) across $integration_params first, then UCP
-credentials, returning the first non-empty match.
-
-This makes the integration robust against the multiple shapes the value may
-arrive in:
-  - Pre-UCP (standard XSOAR install): $integration_params.<key> or
-    $integration_params.<key>.password (when the value is wrapped in a
-    "credentials" object).
-  - UCP injected directly into params: $integration_params.<auth.parameter>
-    (e.g. 'credentials_file' for the certificate, 'client_key' for app_id,
-    'username' for organization).
-  - UCP fetched via Get-UcpCredentials: $ucpCreds.<auth.parameter> or
-    $ucpCreds.<original_id> (preserved as an extra field by
-    Flatten-UcpCredentials).
-
-.PARAMETER ParamsHash
-The integration params hashtable.
-
-.PARAMETER UcpCreds
-The flattened UCP credentials hashtable (or $null when not in UCP mode).
-
-.PARAMETER Candidates
-String[] of candidate key names to try, in priority order. Each candidate may
-be either a flat key ('certificate') or a dotted path ('certificate.password')
-to dereference a nested credentials object.
-
-.OUTPUTS
-[string] The first non-empty value found, or '' when nothing matched.
-#>
-function script:ResolveExoConfigValue([hashtable]$ParamsHash, $UcpCreds, [string[]]$Candidates) {
-    foreach ($key in $Candidates) {
-        foreach ($source in @($ParamsHash, $UcpCreds)) {
-            if ($null -eq $source) { continue }
-            $parts = $key -split '\.'
-            $current = $source
-            foreach ($p in $parts) {
-                $current = script:GetExoProp $current $p
-                if ($null -eq $current) { break }
-            }
-            if ($null -ne $current -and "$current" -ne '') {
-                return "$current"
-            }
-        }
-    }
-    return ''
-}
-
 function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
@@ -2738,29 +2670,12 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-
-    # ----- UCP credentials integration -----
-    # The integration may run in two UCP-related shapes:
-    #
-    # 1. UCP-aware path: the server reports UnifiedConnectorMetadata() and we
-    #    fetch credentials explicitly via Get-UcpCredentials (preferred for
-    #    fresh/short-lived tokens).
-    #
-    # 2. UCP-injected-params path: the server pre-injects the auth profile's
-    #    credentials into a 'ucp_credentials' sub-hashtable of $integration_params,
-    #    keyed by the profile hash (a method_unique_id), with all the connection
-    #    fields nested underneath (e.g. certificate, password, organization,
-    #    app_id). In this case UnifiedConnectorMetadata() may report no
-    #    connectionProfiles so Test-UcpEnabled returns $false, but the
-    #    credentials are still present under integration_params.ucp_credentials.
-    #
-    # We support both: prefer Get-UcpCredentials when UCP is enabled, otherwise
-    # extract the first inner profile hashtable from integration_params.ucp_credentials.
     $ucp_creds = $null
     try {
-        if (Test-UcpEnabled) {
+        if (Test-ShouldUseUcpAuth) {
             $ucp_creds = Get-UcpCredentials
             $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Retrieved UCP credentials via Get-UcpCredentials (type=$(script:GetExoProp $ucp_creds 'type'))")
+            Write-Output $ucp_creds
         }
     } catch {
         # Surface the failure but continue with the fallback path so legacy
@@ -2768,98 +2683,20 @@ function Main
         $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Get-UcpCredentials failed: $_")
         $ucp_creds = $null
     }
-    if ($null -eq $ucp_creds) {
-        # Fallback: inspect integration_params.ucp_credentials.<profile-hash>.
-        $ucp_envelope = script:GetExoProp $integration_params 'ucp_credentials'
-        if ($null -ne $ucp_envelope -and $ucp_envelope -is [System.Collections.IDictionary] -and $ucp_envelope.Count -gt 0) {
-            # When a single profile is injected, use it directly. When multiple,
-            # use the first deterministic-ordered key (callers can override the
-            # selection by adjusting the connector profile metadata).
-            $profileKey = @($ucp_envelope.Keys | Sort-Object)[0]
-            $ucp_creds = $ucp_envelope[$profileKey]
-            $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Falling back to integration_params.ucp_credentials['$profileKey'] (count=$($ucp_envelope.Count))")
-        }
-    }
-    # ----- end UCP credentials integration -----
-
-    # Resolve each config value across multiple candidate keys. Order in each
-    # candidate list reflects priority: standard XSOAR params first, then the
-    # UCP auth.parameter alias, then the original UCP field id (preserved as
-    # an extra field by Flatten-UcpCredentials).
-    $url          = script:ResolveExoConfigValue $integration_params $ucp_creds @('url')
-    $app_id       = script:ResolveExoConfigValue $integration_params $ucp_creds @('app_id', 'client_key')
-    $organization = script:ResolveExoConfigValue $integration_params $ucp_creds @('organization', 'username')
-    $certificate  = script:ResolveExoConfigValue $integration_params $ucp_creds @('certificate.password', 'certificate', 'credentials_file')
-
-    # Cert password: pre-UCP it lives at $integration_params.password.password
-    # (credentials object); under UCP it arrives as the top-level 'password' on
-    # the plain auth profile.
-    $cert_password_str = script:ResolveExoConfigValue $integration_params $ucp_creds @('password.password', 'password')
-
-    if ([string]::IsNullOrEmpty($cert_password_str))
+    if ($integration_params.password.password)
     {
-        $password = $null
+        $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
     }
     else
     {
-        $password = ConvertTo-SecureString $cert_password_str -AsPlainText -Force
-    }
-
-    if ([string]::IsNullOrEmpty($certificate)) {
-        # Build a self-describing error so we can see (in production logs)
-        # which keys are actually available without leaking secret values.
-        # For each value we report only its type and length, never the value.
-        $describe = {
-            param($obj, $label)
-            if ($null -eq $obj) { return "$label = <null>" }
-            if ($obj -is [System.Collections.IDictionary]) {
-                $parts = @()
-                foreach ($k in ($obj.Keys | Sort-Object)) {
-                    $v = $obj[$k]
-                    if ($null -eq $v) {
-                        $parts += "$k=<null>"
-                    } elseif ($v -is [string]) {
-                        $parts += "$k=<str:len=$($v.Length)>"
-                    } elseif ($v -is [System.Collections.IDictionary]) {
-                        $subKeys = @($v.Keys | Sort-Object) -join ','
-                        $parts += "$k=<dict:[$subKeys]>"
-                    } else {
-                        $parts += "$k=<$($v.GetType().Name)>"
-                    }
-                }
-                return "$label keys: { $($parts -join '; ') }"
-            }
-            if ($obj.PSObject -and $obj.PSObject.Properties) {
-                $parts = @()
-                foreach ($p in ($obj.PSObject.Properties | Sort-Object Name)) {
-                    $v = $p.Value
-                    if ($null -eq $v) {
-                        $parts += "$($p.Name)=<null>"
-                    } elseif ($v -is [string]) {
-                        $parts += "$($p.Name)=<str:len=$($v.Length)>"
-                    } else {
-                        $parts += "$($p.Name)=<$($v.GetType().Name)>"
-                    }
-                }
-                return "$label PSObject: { $($parts -join '; ') }"
-            }
-            return "$label = <$($obj.GetType().FullName)>"
-        }
-        $paramsDesc = & $describe $integration_params 'integration_params'
-        $ucpDesc = & $describe $ucp_creds 'ucp_creds'
-        $ucpEnabled = $false
-        try { $ucpEnabled = (Test-UcpEnabled) } catch {}
-        $msg = "Certificate is empty. Tried keys: ['certificate.password','certificate','credentials_file']. UCP_enabled=$ucpEnabled. $paramsDesc. $ucpDesc. Please share this message so the integration's UCP key-mapping can be corrected."
-        $demisto.Error($msg)
-        ReturnError $msg | Out-Null
-        return
+        $password = $null
     }
 
     $exo_client = [ExchangeOnlinePowershellV3Client]::new(
-            $url,
-            $app_id,
-            $organization,
-            $certificate,
+            $integration_params.url,
+            $integration_params.app_id,
+            $integration_params.organization,
+            $integration_params.certificate.password,
             $password
     )
     try

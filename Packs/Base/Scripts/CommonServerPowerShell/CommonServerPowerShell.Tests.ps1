@@ -465,7 +465,7 @@ Describe 'UCP-Helpers' {
         $script:UcpTestCurrentCmd  = ''
     }
 
-    It 'Test-UcpEnabled returns False when metadata is null' {
+    It 'Is-UcpEnabled returns False when metadata is null' {
         # Given - a DemistoObject whose UnifiedConnectorMetadata returns $null (UCP not configured).
         class DemistoObject {
             DemistoObject () {}
@@ -476,12 +476,12 @@ Describe 'UCP-Helpers' {
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
         $script:UcpTestMetadata = $null
-        # When - Test-UcpEnabled is called.
+        # When - Is-UcpEnabled is called.
         # Then - it reports UCP as disabled.
-        Test-UcpEnabled | Should -BeFalse
+        Is-UcpEnabled | Should -BeFalse
     }
 
-    It 'Test-UcpEnabled returns False when connectionProfiles is empty' {
+    It 'Is-UcpEnabled returns False when connectionProfiles is empty' {
         # Given - a DemistoObject whose UnifiedConnectorMetadata returns a descriptor with an empty profile list.
         class DemistoObject {
             DemistoObject () {}
@@ -492,12 +492,12 @@ Describe 'UCP-Helpers' {
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
         $script:UcpTestMetadata = @{ connectionProfiles = @() }
-        # When - Test-UcpEnabled is called.
+        # When - Is-UcpEnabled is called.
         # Then - it reports UCP as disabled because no auth profiles are present.
-        Test-UcpEnabled | Should -BeFalse
+        Is-UcpEnabled | Should -BeFalse
     }
 
-    It 'Test-UcpEnabled returns True when connectionProfiles is non-empty' {
+    It 'Is-UcpEnabled returns True when connectionProfiles is non-empty' {
         # Given - a DemistoObject whose UnifiedConnectorMetadata returns at least one connection profile.
         class DemistoObject {
             DemistoObject () {}
@@ -510,9 +510,9 @@ Describe 'UCP-Helpers' {
         $script:UcpTestMetadata = @{
             connectionProfiles = @(@{ method_unique_id = 'm1'; capability = 'automation-and-remediation' })
         }
-        # When - Test-UcpEnabled is called.
+        # When - Is-UcpEnabled is called.
         # Then - it reports UCP as enabled.
-        Test-UcpEnabled | Should -BeTrue
+        Is-UcpEnabled | Should -BeTrue
     }
 
     It 'Test-ShouldUseUcpAuth honors the UCP_AUTH_PARAMS_INJECTED flag' {

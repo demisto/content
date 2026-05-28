@@ -486,8 +486,8 @@ class DemistoObject {
     .OUTPUTS
     Hashtable representing the credentials, or $null when not available.
     #>
-    [object] GetUCPCredentials ([string]$method_unique_id, [bool]$from_cache) {
-        $res = $this.ServerRequest(@{type = "getUCPCredentials"; args = @{method_unique_id = $method_unique_id; from_cache = $from_cache } })
+    [object] GetUCPCredentials ([string]$method_unique_id) {
+        $res = $this.ServerRequest(@{type = "getUCPCredentials"; args = @{method_unique_id = $method_unique_id; from_cache = $false } })
         # ServerRequest may wrap a single credentials object in a 1-element array;
         # unwrap so downstream credential-flattening sees a single object.
         if ($res -is [System.Array] -and $res.Count -eq 1) {
@@ -496,9 +496,6 @@ class DemistoObject {
         return $res
     }
 
-    [object] GetUCPCredentials ([string]$method_unique_id) {
-        return $this.GetUCPCredentials($method_unique_id, $true)
-    }
 }
 
 [DemistoObject]$demisto = [DemistoObject]::New()
@@ -1120,7 +1117,7 @@ Prefer Test-ShouldUseUcpAuth instead.
 .OUTPUTS
 [bool] True if UCP metadata is present, False otherwise.
 #>
-function Test-UcpEnabled {
+function Is-UcpEnabled {
     [OutputType([bool])]
     Param()
     try {
@@ -1154,7 +1151,7 @@ into integration params by the server (the
 function Test-ShouldUseUcpAuth {
     [OutputType([bool])]
     Param()
-    return ((Test-UcpEnabled) -and (-not $script:UCP_AUTH_PARAMS_INJECTED))
+    return ((Is-UcpEnabled) -and (-not $script:UCP_AUTH_PARAMS_INJECTED))
 }
 
 <#
@@ -1197,9 +1194,6 @@ Throws when UCP metadata is missing or no connection profiles are defined.
 function script:Get-UcpProfiles {
     $info = $demisto.UnifiedConnectorMetadata()
     $demisto.Debug("[UCP][CommonServerPowerShell.ps1] UCP Metadata: $($info | ConvertTo-Json -Compress -Depth 10)")
-    if ($null -eq $info) {
-        throw "[Unified Connector] Connector metadata is not available. Please verify that this integration instance is configured to use a Unified Connector."
-    }
 
     $profiles = $null
     if ($info -is [System.Collections.IDictionary] -and $info.Contains('connectionProfiles')) {
@@ -1490,7 +1484,7 @@ function Get-UcpCredentials {
         [string]$Capability,
         [string]$SubCapability
     )
-    if (-not (Test-UcpEnabled)) {
+    if (-not (Is-UcpEnabled)) {
         return $null
     }
 
@@ -1513,9 +1507,9 @@ function Get-UcpCredentials {
 
     try {
         $demisto.Debug("[UCP][CommonServerPowerShell.ps1] Get-UcpCredentials: fetching fresh credentials for method_unique_id=$methodId")
-        $creds = $demisto.GetUCPCredentials($methodId, $false)
+        $creds = $demisto.GetUCPCredentials($methodId)
         if ($null -eq $creds) {
-            $demisto.Debug("[UCP][CommonServerPowerShell.ps1] Get-UcpCredentials: $demisto.GetUCPCredentials() returned `$null.")
+            $demisto.Error("[UCP][CommonServerPowerShell.ps1] Get-UcpCredentials: $demisto.GetUCPCredentials() returned `$null.")
             return $null
         }
 
@@ -1534,7 +1528,7 @@ function Get-UcpCredentials {
 
 # camelCase aliases so PowerShell integrations can call the same names used by
 # the JS/Python UCP helpers (e.g. isUcpEnabled, getUcpCredentials).
-Set-Alias -Name isUcpEnabled                -Value Test-UcpEnabled
+Set-Alias -Name isUcpEnabled                -Value Is-UcpEnabled
 Set-Alias -Name shouldUseUcpAuth            -Value Test-ShouldUseUcpAuth
 Set-Alias -Name resolveUcpCapability        -Value Resolve-UcpCapability
 Set-Alias -Name getUcpMethodUniqueId        -Value Get-UcpMethodUniqueId
