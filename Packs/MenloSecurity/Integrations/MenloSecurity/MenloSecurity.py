@@ -503,9 +503,7 @@ def fetch_events(
         boundary_count = len(result.next_run_state.get("boundary_hashes", [])) if result.next_run_state else 0
         threshold = max(0, max_events_per_fetch_per_type - boundary_count)
         is_saturated = len(result.events) >= threshold
-        saturation_details.append(
-            f"{result.log_type_ui}={len(result.events)}/{threshold}{'(SAT)' if is_saturated else ''}"
-        )
+        saturation_details.append(f"{result.log_type_ui}={len(result.events)}/{threshold}{'(SAT)' if is_saturated else ''}")
         if is_saturated:
             any_saturated = True
 
