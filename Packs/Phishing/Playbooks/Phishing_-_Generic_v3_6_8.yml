@@ -3894,8 +3894,6 @@ inputSections:
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
-- playbook-checkEmailAuthenticity-test
-- Phishing v3 - Get Original Email + Search & Delete - Test
 fromversion: 6.8.0
 system: true
 outputSections:

@@ -1049,13 +1049,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether to modify KQL to search this week (the last 7 days) only. Only modify the KQL if the SearchThisWeek input is set to true AND the provided KQL query is not already time-bounded (it does not already contain LastModifiedTime).
-      id: 0b48e7f2-3db3-416f-8b46-a4183316217e
+      description: Check whether to modify KQL to search this week (the last 7 days) only. Only modify the KQL if the SearchThisWeek input is set to true AND the provided KQL query is not already time-bounded (it does not already contain Received).
+      id: 0ba16dcb-d66f-49d8-8a0f-2a3dd9dfe3dc
       iscommand: false
       name: Search this week only and query not already time-bounded?
       type: condition
       version: -1
-    taskid: 0b48e7f2-3db3-416f-8b46-a4183316217e
+    taskid: 0ba16dcb-d66f-49d8-8a0f-2a3dd9dfe3dc
     timertriggers: []
     type: condition
     view: |-
@@ -1260,8 +1260,7 @@ inputs:
   description: The value of the malicious email's "AttachmentName" attribute.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
-  value:
-    simple: EWS
+  value: {}
   required: true
   description: The integration in which to run the search and delete action. Can be MS Graph, Gmail, EWS, or Agari Phishing Defense.
   playbookInputQuery:
@@ -1269,7 +1268,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to limit the search to the current week.
+  description: Whether to limit the search to the current week. Disabling this may increase search scope, execution time, and risk of timeout for large mailboxes.
   playbookInputQuery:
 - key: MsgCase
   value:

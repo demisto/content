@@ -34,7 +34,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Subject | The value of the malicious email's "Subject" attribute. | incident.emailsubject | Optional |
 | AttachmentName | The value of the malicious email's "AttachmentName" attribute. | incident.attachmentname | Optional |
 | SearchAndDeleteIntegration | The integration in which to run the search and delete action. Can be MS Graph, Gmail, EWS, or Agari Phishing Defense. |  | Required |
-| SearchThisWeek | Whether to limit the search to the current week. | true | Optional |
+| SearchThisWeek | Whether to limit the search to the current week. Disabling this may increase search scope, execution time, and risk of timeout for large mailboxes. | true | Optional |
 | MsgCase | Used only with Microsoft Graph Security. The eDiscovery case name to use. Looked up by name and created if missing. | XSOAR Auto Phishing | Required |
 | MsgKQL | Used only with Microsoft Graph Security. KQL query identifying the emails to search and delete. Built automatically from the From, Subject, and AttachmentName inputs if left empty. |  | Optional |
 | MsgRecipients | Used only with Microsoft Graph Security. CSV of recipient email addresses to scope the search when MsgMailboxScope is recipientsOnly. | incident.emailto | Optional |

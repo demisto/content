@@ -34,7 +34,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 50
+          "y": 100
         }
       }
     note: false
@@ -46,12 +46,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2ff93d39-d51f-4c3d-8780-9797e07eac4d
+    taskid: d44d516f-6273-47b6-a953-c8873802f5fe
     type: condition
     task:
-      id: 2ff93d39-d51f-4c3d-8780-9797e07eac4d
+      id: d44d516f-6273-47b6-a953-c8873802f5fe
       version: -1
-      name: IsIntegrationAvailable
+      name: Check Microsoft Graph integration is available
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
@@ -89,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
-          "y": 210
+          "x": 695,
+          "y": 250
         }
       }
     note: false
@@ -118,7 +118,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 7450
+          "y": 7400
         }
       }
     note: false
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 355
+          "y": 405
         }
       }
     note: false
@@ -165,24 +165,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c8abcd74-7d88-4c04-9bc9-3124287d4c29
+    taskid: 5dde716e-d84c-4769-a2f6-b91f7add5972
     type: condition
     task:
-      id: c8abcd74-7d88-4c04-9bc9-3124287d4c29
+      id: 5dde716e-d84c-4769-a2f6-b91f7add5972
       version: -1
-      name: Is the eDiscovery case exist?
+      name: Does the specified eDiscovery case exist?
       description: Checks whether the eDiscovery case specified by the case input already exists.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
+      - "2"
+      Create new case:
       - "6"
-      "yes":
+      Reuse existing case:
       - "45"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Reuse existing case
       condition:
       - - operator: isEqualString
           left:
@@ -193,12 +195,22 @@ tasks:
             value:
               simple: inputs.case
             iscontext: true
+    - label: Create new case
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: inputs.case
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 367.5,
-          "y": 500
+          "y": 550
         }
       }
     note: false
@@ -365,24 +377,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d5882adf-bb32-49d8-9e32-fce48273e269
+    taskid: 26697752-8b49-4ec3-9393-347610a400f8
     type: condition
     task:
-      id: d5882adf-bb32-49d8-9e32-fce48273e269
+      id: 26697752-8b49-4ec3-9393-347610a400f8
       version: -1
-      name: Is inputs.mailbox_exclusion supplied?
+      name: Is a mailbox exclusion list provided?
       description: Set a value in context under the key you entered.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "39"
-      "yes":
+      Exclusion not provided:
       - "38"
+      Exclusion provided:
+      - "39"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Exclusion not provided
       condition:
       - - operator: isEmpty
           left:
@@ -391,6 +403,13 @@ tasks:
             iscontext: true
           right:
             value: {}
+    - label: Exclusion provided
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.mailbox_exclusion
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -408,24 +427,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a2890025-78e2-4e7f-9605-a6451427577b
+    taskid: c9c7de29-6dfd-4fb4-9809-8e24b90c51fe
     type: condition
     task:
-      id: a2890025-78e2-4e7f-9605-a6451427577b
+      id: c9c7de29-6dfd-4fb4-9809-8e24b90c51fe
       version: -1
-      name: Is inputs.search_name supplied?
+      name: Was a custom search name provided?
       description: Checks whether a custom search name was provided, or if one should be auto-generated.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      Create new search:
       - "48"
-      "yes":
+      Reuse existing search:
       - "53"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Reuse existing search
       condition:
       - - operator: isNotEmpty
           left:
@@ -434,6 +453,13 @@ tasks:
             iscontext: true
           right:
             value: {}
+    - label: Create new search
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.search_name
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -488,12 +514,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 2f9412df-b71c-49ec-841f-07a1eb147309
+    taskid: a6da48dc-3164-49aa-87db-4aaec172be9b
     type: condition
     task:
-      id: 2f9412df-b71c-49ec-841f-07a1eb147309
+      id: a6da48dc-3164-49aa-87db-4aaec172be9b
       version: -1
-      name: Is eDiscovery search exist?
+      name: 'Does a matching eDiscovery search already exist? '
       description: Checks whether an existing eDiscovery search with the specified name was found in the case.
       type: condition
       iscommand: false
@@ -531,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6846fbc7-2708-4fd1-85bb-d77456cff3af
+    taskid: 956ad573-7bc7-45ac-82cc-adf60e76ad46
     type: condition
     task:
-      id: 6846fbc7-2708-4fd1-85bb-d77456cff3af
+      id: 956ad573-7bc7-45ac-82cc-adf60e76ad46
       version: -1
       name: Re-create or reuse existing search?
       description: Determines whether to delete and recreate the existing search or reuse it, based on the force input.
@@ -544,13 +570,13 @@ tasks:
     nexttasks:
       '#default#':
       - "16"
+      Delete existing search:
+      - "14"
       "false":
       - "58"
-      "true":
-      - "14"
     separatecontext: false
     conditions:
-    - label: "true"
+    - label: Delete existing search
       condition:
       - - operator: isEqualString
           left:
@@ -574,7 +600,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
+          "x": 695,
           "y": 3370
         }
       }
@@ -611,7 +637,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
+          "x": 695,
           "y": 3535
         }
       }
@@ -624,12 +650,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c6e368dd-ad43-4cca-8135-07a1392a9d27
+    taskid: abf029f6-833c-484b-9a24-08c6da5a1f66
     type: regular
     task:
-      id: c6e368dd-ad43-4cca-8135-07a1392a9d27
+      id: abf029f6-833c-484b-9a24-08c6da5a1f66
       version: -1
-      name: Set SearchID by SearchDisplayName
+      name: Retrieve search ID from existing search
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -660,7 +686,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
+          "x": 695,
           "y": 3195
         }
       }
@@ -741,7 +767,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 4100
+          "y": 4200
         }
       }
     note: false
@@ -753,12 +779,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5ae321bb-7205-48d1-8525-c69394caafe6
+    taskid: 0ad5456f-26d3-4084-bd50-14182e11359f
     type: condition
     task:
-      id: 5ae321bb-7205-48d1-8525-c69394caafe6
+      id: 0ad5456f-26d3-4084-bd50-14182e11359f
       version: -1
-      name: Route by Preview mode
+      name: Should results be previewed before purging?
       description: Determines the preview mode (statistics or export) based on the preview_mode input.
       type: condition
       iscommand: false
@@ -767,7 +793,7 @@ tasks:
       '#default#':
       - "31"
       export:
-      - "63"
+      - "22"
       statistics:
       - "21"
     separatecontext: false
@@ -797,7 +823,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 5080
+          "y": 5180
         }
       }
     note: false
@@ -834,7 +860,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5300
+          "y": 5400
         }
       }
     note: false
@@ -846,10 +872,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a8d6fd01-5940-440c-94a6-e2b4acc786ec
+    taskid: 96bac542-774f-458a-8224-8a3322f1754d
     type: regular
     task:
-      id: a8d6fd01-5940-440c-94a6-e2b4acc786ec
+      id: 96bac542-774f-458a-8224-8a3322f1754d
       version: -1
       name: Start export task
       description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
@@ -882,7 +908,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 5470
+          "y": 5400
         }
       }
     note: false
@@ -894,10 +920,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: c6936b6f-a3fe-4492-b8eb-8f1212c6bc53
+    taskid: cbc0af3c-d378-446d-91c0-b455162c983d
     type: regular
     task:
-      id: c6936b6f-a3fe-4492-b8eb-8f1212c6bc53
+      id: cbc0af3c-d378-446d-91c0-b455162c983d
       version: -1
       name: Download export file
       description: Get a list of the caseOperation objects and their properties, or retrieve a specific operation by ID. When operation_id is provided, you can set download_file=true to download the export report (if available).
@@ -916,7 +942,7 @@ tasks:
       download_file:
         simple: "true"
       operation_id:
-        simple: ${MsGraph.eDiscoveryCase.Export.OperationID}
+        simple: ${ResolvedOperationID}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -924,7 +950,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 5635
+          "y": 5565
         }
       }
     note: false
@@ -936,12 +962,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: a5d1c85d-814e-4802-9312-7de1e88e1b42
+    taskid: 1c372dd7-6952-4567-a5d5-d2de73837bce
     type: condition
     task:
-      id: a5d1c85d-814e-4802-9312-7de1e88e1b42
+      id: 1c372dd7-6952-4567-a5d5-d2de73837bce
       version: -1
-      name: Route by Delete type for found emails
+      name: How should the matched emails be purged?
       description: Determines the purge type based on the delete_type input - Hard, Soft, or manual analyst selection.
       type: condition
       iscommand: false
@@ -989,7 +1015,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 6125
+          "y": 6055
         }
       }
     note: false
@@ -1001,12 +1027,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4cdc0118-0a86-49cc-8495-5bd6209fa211
+    taskid: 0a3b2c32-3eb7-43c4-9c37-72eafe16a651
     type: regular
     task:
-      id: 4cdc0118-0a86-49cc-8495-5bd6209fa211
+      id: 0a3b2c32-3eb7-43c4-9c37-72eafe16a651
       version: -1
-      name: Hard purge
+      name: Permanently delete matched emails
       description: |-
         Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
 
@@ -1042,7 +1068,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 6530
+          "y": 6420
         }
       }
     note: false
@@ -1054,12 +1080,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: ab4650e1-aafa-4acb-8aaf-7fc03f9c3ea8
+    taskid: 68963d83-9521-435d-967a-3c300a92462e
     type: regular
     task:
-      id: ab4650e1-aafa-4acb-8aaf-7fc03f9c3ea8
+      id: 68963d83-9521-435d-967a-3c300a92462e
       version: -1
-      name: Soft purge
+      name: Move matched emails to recoverable items
       description: |-
         Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
 
@@ -1095,7 +1121,7 @@ tasks:
       {
         "position": {
           "x": 675,
-          "y": 6530
+          "y": 6420
         }
       }
     note: false
@@ -1107,12 +1133,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 2d6b537c-2036-4b5b-a812-8a22ec4b041c
+    taskid: 01dac98c-072e-444c-b985-5dd20af2c49c
     type: condition
     task:
-      id: 2d6b537c-2036-4b5b-a812-8a22ec4b041c
+      id: 01dac98c-072e-444c-b985-5dd20af2c49c
       version: -1
-      name: Route by cleanup search
+      name: Should the eDiscovery search be cleaned up?
       description: Determines whether to delete the eDiscovery search after purge, based on the cleanup input.
       type: condition
       iscommand: false
@@ -1121,7 +1147,7 @@ tasks:
       '#default#':
       - "2"
       auto:
-      - "50"
+      - "66"
       delete:
       - "28"
     separatecontext: false
@@ -1146,17 +1172,12 @@ tasks:
           right:
             value:
               simple: auto
-      - - operator: isEmpty
-          left:
-            value:
-              simple: inputs.search_name
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 367.5,
-          "y": 6890
+          "y": 6730
         }
       }
     note: false
@@ -1168,12 +1189,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: f3686f25-49ad-4d05-8d39-8f186d9f5f54
+    taskid: a876aa6f-b1ef-4710-9276-83c9cf4c6ba6
     type: regular
     task:
-      id: f3686f25-49ad-4d05-8d39-8f186d9f5f54
+      id: a876aa6f-b1ef-4710-9276-83c9cf4c6ba6
       version: -1
-      name: Delete search
+      name: Delete eDiscovery search
       description: Delete an eDiscoverySearch object.
       script: '|||msg-delete-ediscovery-search'
       type: regular
@@ -1192,8 +1213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 7065
+          "x": 367.5,
+          "y": 7055
         }
       }
     note: false
@@ -1205,12 +1226,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ec769d8e-e86b-4300-8c4b-5922b54f6131
+    taskid: f9813592-c76e-4b7f-b773-f1d539f59160
     type: condition
     task:
-      id: ec769d8e-e86b-4300-8c4b-5922b54f6131
+      id: f9813592-c76e-4b7f-b773-f1d539f59160
       version: -1
-      name: Manual - Hard / Soft / Skip
+      name: 'Analyst: select purge type or skip'
       description: 'Manually select the purge type: Hard (permanently delete), Soft (move to recoverable items), or skip.'
       type: condition
       iscommand: false
@@ -1228,7 +1249,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 6330
+          "y": 6220
         }
       }
     note: false
@@ -1240,12 +1261,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 07785368-3f53-4c17-b4fe-497362543e47
+    taskid: 64c14229-83ca-4c03-ae14-f660dc64517e
     type: regular
     task:
-      id: 07785368-3f53-4c17-b4fe-497362543e47
+      id: 64c14229-83ca-4c03-ae14-f660dc64517e
       version: -1
-      name: Wait search to finish
+      name: Wait for estimate statistics to complete
       description: Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
       script: '|||msg-get-last-estimate-statistics-operation'
       type: regular
@@ -1268,7 +1289,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 4245
+          "y": 4345
         }
       }
     note: false
@@ -1280,12 +1301,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 4f5d4f48-d49f-41c4-81e3-ecf4b923bf28
+    taskid: 9aa42b1b-5c2b-43d4-a282-5946b11b02d0
     type: title
     task:
-      id: 4f5d4f48-d49f-41c4-81e3-ecf4b923bf28
+      id: 9aa42b1b-5c2b-43d4-a282-5946b11b02d0
       version: -1
-      name: purge
+      name: Purge Emails
       description: Proceeds to delete-type decision (Hard / Soft / manual).
       type: title
       iscommand: false
@@ -1299,7 +1320,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 5985
+          "y": 5915
         }
       }
     note: false
@@ -1311,12 +1332,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: a936349c-253f-4bd7-8b58-b6dff6dfbee8
+    taskid: 5dfcc1b9-f036-4128-bf12-4ad829d0a809
     type: title
     task:
-      id: a936349c-253f-4bd7-8b58-b6dff6dfbee8
+      id: 5dfcc1b9-f036-4128-bf12-4ad829d0a809
       version: -1
-      name: Preview
+      name: Preview Results
       description: Proceeds to preview mode (statistics display or export).
       type: title
       iscommand: false
@@ -1330,7 +1351,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 4575
+          "y": 4675
         }
       }
     note: false
@@ -1342,12 +1363,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3cb1b99e-1b30-4c9e-88e7-4eaa83535a29
+    taskid: 0dea4413-56d2-40fd-a5ac-75fdbfa5dfa5
     type: title
     task:
-      id: 3cb1b99e-1b30-4c9e-88e7-4eaa83535a29
+      id: 0dea4413-56d2-40fd-a5ac-75fdbfa5dfa5
       version: -1
-      name: Cleanup search
+      name: Cleanup eDiscovery Search
       description: Proceeds to cleanup the eDiscovery search based on the cleanup input.
       type: title
       iscommand: false
@@ -1361,7 +1382,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 6690
+          "y": 6580
         }
       }
     note: false
@@ -1373,10 +1394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 88e49c06-aaf9-4c6c-8039-199bfbba5a0a
+    taskid: ac28ee48-9886-4b01-8e3a-c0816eecab78
     type: condition
     task:
-      id: 88e49c06-aaf9-4c6c-8039-199bfbba5a0a
+      id: ac28ee48-9886-4b01-8e3a-c0816eecab78
       version: -1
       name: Is any email found?
       description: Checks whether the estimate statistics operation found any matching emails.
@@ -1386,11 +1407,11 @@ tasks:
     nexttasks:
       '#default#':
       - "35"
-      "yes":
+      Email found:
       - "32"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Email found
       condition:
       - - operator: greaterThan
           left:
@@ -1405,7 +1426,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 4390
+          "y": 4490
         }
       }
     note: false
@@ -1439,8 +1460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -290,
-          "y": 7250
+          "x": -270,
+          "y": 7240
         }
       }
     note: false
@@ -1452,12 +1473,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 715a6f21-03b7-4630-8e14-f022f01d39ae
+    taskid: 865d4ce7-87b5-40ad-8abc-c6133ea01611
     type: regular
     task:
-      id: 715a6f21-03b7-4630-8e14-f022f01d39ae
+      id: 865d4ce7-87b5-40ad-8abc-c6133ea01611
       version: -1
-      name: Set final ContentQuery
+      name: Finalize the email search query
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1504,12 +1525,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 21da0377-b628-41fd-8cf7-aebb5126b86e
+    taskid: 8d35f52e-2886-47f1-8130-228dbdca7bda
     type: regular
     task:
-      id: 21da0377-b628-41fd-8cf7-aebb5126b86e
+      id: 8d35f52e-2886-47f1-8130-228dbdca7bda
       version: -1
-      name: Set DataSourceScopes
+      name: 'Set scope: all tenant mailboxes (recipients filter)'
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1541,12 +1562,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 81b840a2-bde5-4a30-98fe-267eef2eaa91
+    taskid: f6c5a22f-4426-453c-89fb-c455c0852063
     type: regular
     task:
-      id: 81b840a2-bde5-4a30-98fe-267eef2eaa91
+      id: f6c5a22f-4426-453c-89fb-c455c0852063
       version: -1
-      name: Set ContentQuery as-is
+      name: Use provided KQL query as-is (no exclusion)
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1640,12 +1661,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: d94873ac-cb30-4406-87d2-f8a3ef435c3b
+    taskid: 4d20c77e-8215-4b9a-a297-d572c2e18bf0
     type: regular
     task:
-      id: d94873ac-cb30-4406-87d2-f8a3ef435c3b
+      id: 4d20c77e-8215-4b9a-a297-d572c2e18bf0
       version: -1
-      name: Set ContentQuery
+      name: Wrap KQL query for exclusion filtering
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1729,12 +1750,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: e202d747-4b1d-4502-868e-561580405422
+    taskid: ca0bca0b-daa6-43b8-bcfe-bd9b408d3e6f
     type: regular
     task:
-      id: e202d747-4b1d-4502-868e-561580405422
+      id: ca0bca0b-daa6-43b8-bcfe-bd9b408d3e6f
       version: -1
-      name: Set DataSourceScopes
+      name: 'Set scope: all tenant mailboxes (no exclusion)'
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1766,12 +1787,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: bb2e9599-97e7-4a92-aa14-99bfe84888a8
+    taskid: 63b997cb-bb9c-4232-b473-195f512e09f4
     type: regular
     task:
-      id: bb2e9599-97e7-4a92-aa14-99bfe84888a8
+      id: 63b997cb-bb9c-4232-b473-195f512e09f4
       version: -1
-      name: Set ContentQuery as-is
+      name: Use provided KQL query as-is (whole-tenant scope)
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1790,7 +1811,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
+          "x": 695,
           "y": 1795
         }
       }
@@ -1803,12 +1824,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 3e2d5e48-fff0-4c09-847e-762bd0a1375f
+    taskid: 30ff0c96-f2d4-4cb9-9ef7-fce35b84a0b8
     type: regular
     task:
-      id: 3e2d5e48-fff0-4c09-847e-762bd0a1375f
+      id: 30ff0c96-f2d4-4cb9-9ef7-fce35b84a0b8
       version: -1
-      name: Set DataSourceScopes
+      name: 'Set scope: custom mailbox scope from input'
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1827,7 +1848,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
+          "x": 695,
           "y": 1965
         }
       }
@@ -1840,12 +1861,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: e673ffea-1a46-4f7f-802f-86bad2df2f01
+    taskid: 4386ec01-1ada-420c-a33d-3cd1155f0eae
     type: regular
     task:
-      id: e673ffea-1a46-4f7f-802f-86bad2df2f01
+      id: 4386ec01-1ada-420c-a33d-3cd1155f0eae
       version: -1
-      name: Set MsGraph.eDiscoveryCase.CaseId
+      name: Store found case ID
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1889,12 +1910,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 5728604d-b9b9-43da-82ad-d11eee1fb8a9
+    taskid: 4e05ced4-64d2-4420-9142-f973a0ffc8d3
     type: regular
     task:
-      id: 5728604d-b9b9-43da-82ad-d11eee1fb8a9
+      id: 4e05ced4-64d2-4420-9142-f973a0ffc8d3
       version: -1
-      name: Set ContentQuery
+      name: Add recipients filter to KQL query
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1926,12 +1947,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 4f77c0e6-dad2-4e20-a9bc-606116d1c1f9
+    taskid: df7ea8d5-3b82-4cd2-ae70-b8836bd27455
     type: regular
     task:
-      id: 4f77c0e6-dad2-4e20-a9bc-606116d1c1f9
+      id: df7ea8d5-3b82-4cd2-ae70-b8836bd27455
       version: -1
-      name: Set ContentQuery
+      name: Add exclusion clause to KQL query
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1963,12 +1984,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 463594a8-f074-4f1d-88ff-fbcc3d0c7ec9
+    taskid: aed47801-15d1-4a27-a24a-1ccba376f185
     type: regular
     task:
-      id: 463594a8-f074-4f1d-88ff-fbcc3d0c7ec9
+      id: aed47801-15d1-4a27-a24a-1ccba376f185
       version: -1
-      name: Auto-generation of search_name
+      name: Generate search name automatically
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1998,51 +2019,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 74c77d2a-eaf1-4a8f-8df6-9249218b6183
-    type: regular
-    task:
-      id: 74c77d2a-eaf1-4a8f-8df6-9249218b6183
-      version: -1
-      name: Delete search
-      description: Delete an eDiscoverySearch object.
-      script: '|||msg-delete-ediscovery-search'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
-      search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 7065
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 35ee1b50-0eda-49b7-89b6-a36dd37636c7
+    taskid: c8983c79-3fd9-488d-bb60-7963afe28fec
     type: condition
     task:
-      id: 35ee1b50-0eda-49b7-89b6-a36dd37636c7
+      id: c8983c79-3fd9-488d-bb60-7963afe28fec
       version: -1
-      name: Route by preview setting
+      name: Which preview mode should be used?
       description: Determines whether to preview results before purging, based on the preview input.
       type: condition
       iscommand: false
@@ -2050,15 +2034,15 @@ tasks:
     nexttasks:
       '#default#':
       - "2"
+      Preview:
+      - "20"
       "false":
       - "31"
       manual:
       - "52"
-      "true":
-      - "20"
     separatecontext: false
     conditions:
-    - label: "true"
+    - label: Preview
       condition:
       - - operator: isEqualString
           left:
@@ -2090,7 +2074,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 4735
+          "y": 4835
         }
       }
     note: false
@@ -2102,30 +2086,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: bf3a374b-4879-4281-8c95-c4d132a2e3d8
+    taskid: 0047d740-5682-4985-b3d7-9e14a0a1e73f
     type: condition
     task:
-      id: bf3a374b-4879-4281-8c95-c4d132a2e3d8
+      id: 0047d740-5682-4985-b3d7-9e14a0a1e73f
       version: -1
-      name: Do you want to preview the found emails?
+      name: 'Analyst: confirm whether to preview found emails'
       description: Asks the analyst whether to preview the found emails before proceeding with deletion.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "2"
+      Preview:
+      - "20"
+      export:
+      - "22"
       "false":
       - "31"
-      "true":
-      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 365,
-          "y": 4917.5
+          "x": 40,
+          "y": 5010
         }
       }
     note: false
@@ -2137,12 +2121,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 1e6a86e2-a8ec-46a5-8282-4987e0a9096a
+    taskid: 650d1a69-fb93-4dd2-824f-cc544cd67925
     type: regular
     task:
-      id: 1e6a86e2-a8ec-46a5-8282-4987e0a9096a
+      id: 650d1a69-fb93-4dd2-824f-cc544cd67925
       version: -1
-      name: Set ResolvedSearchName
+      name: Save resolved search name
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2174,24 +2158,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: d8460de8-cdf9-4f03-a62e-a882966b90d3
+    taskid: f766c27d-3a2b-4921-9ea8-c1350a1c5009
     type: condition
     task:
-      id: d8460de8-cdf9-4f03-a62e-a882966b90d3
+      id: f766c27d-3a2b-4921-9ea8-c1350a1c5009
       version: -1
-      name: Is inputs.description supplied?
+      name: Was a custom search description provided?
       description: Checks whether a custom search description was provided, or if a default one should be generated.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "57"
-      "yes":
+      Generate new description:
       - "56"
+      Reuse existing description:
+      - "57"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Generate new description
       condition:
       - - operator: isEmpty
           left:
@@ -2200,6 +2184,13 @@ tasks:
             iscontext: true
           right:
             value: {}
+    - label: Reuse existing description
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.description
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2217,12 +2208,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 69a31b11-e6fc-4b8a-811a-ca9b5126cb0a
+    taskid: 989beff6-8095-48b2-87cc-1599230e4bc2
     type: regular
     task:
-      id: 69a31b11-e6fc-4b8a-811a-ca9b5126cb0a
+      id: 989beff6-8095-48b2-87cc-1599230e4bc2
       version: -1
-      name: Generate ResolvedDescription
+      name: Generate default search description
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2242,7 +2233,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2320
+          "y": 2340
         }
       }
     note: false
@@ -2254,12 +2245,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 1765e3f3-361c-42b2-8641-e89f33ab10ab
+    taskid: 70aa15dc-26b3-44ee-8777-ff15897db1fe
     type: regular
     task:
-      id: 1765e3f3-361c-42b2-8641-e89f33ab10ab
+      id: 70aa15dc-26b3-44ee-8777-ff15897db1fe
       version: -1
-      name: Set ResolvedDescription
+      name: Save provided search description
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2279,7 +2270,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 2320
+          "y": 2340
         }
       }
     note: false
@@ -2291,12 +2282,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: c6ab5da4-f274-4cc7-8c6d-f2437c9fe966
+    taskid: 6c92b496-19da-4a83-ab01-ff8b2eec9c10
     type: regular
     task:
-      id: c6ab5da4-f274-4cc7-8c6d-f2437c9fe966
+      id: 6c92b496-19da-4a83-ab01-ff8b2eec9c10
       version: -1
-      name: Set MsGraph.eDiscoverySearch.SearchId
+      name: Store newly created search ID
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2304,7 +2295,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "64"
     scriptarguments:
       key:
         simple: MsGraph.eDiscoverySearch.SearchId
@@ -2328,12 +2319,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: c9f21723-0652-4af3-9a17-12999b6c3be4
+    taskid: 98de5b3d-4935-47d6-9edb-20f48b576adf
     type: regular
     task:
-      id: c9f21723-0652-4af3-9a17-12999b6c3be4
+      id: 98de5b3d-4935-47d6-9edb-20f48b576adf
       version: -1
-      name: Set MsGraph.eDiscoveryCase.CaseId
+      name: Store newly created case ID
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2377,12 +2368,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 18da5433-9d45-4161-aa43-bea6e4ea1991
+    taskid: 2e248804-90d1-44c9-95f6-ec6f3e1e6e7d
     type: regular
     task:
-      id: 18da5433-9d45-4161-aa43-bea6e4ea1991
+      id: 2e248804-90d1-44c9-95f6-ec6f3e1e6e7d
       version: -1
-      name: Set MsGraph.eDiscoverySearch.SearchId
+      name: Store found search ID
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2390,7 +2381,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "64"
     scriptarguments:
       key:
         simple: MsGraph.eDiscoverySearch.SearchId
@@ -2426,12 +2417,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: b5761fb4-1028-46a0-99b5-ae3eda229abd
+    taskid: ff45c5db-b918-44ae-a7e2-18322177c397
     type: regular
     task:
-      id: b5761fb4-1028-46a0-99b5-ae3eda229abd
+      id: ff45c5db-b918-44ae-a7e2-18322177c397
       version: -1
-      name: Print export not ready
+      name: 'Notify: export results are not yet ready'
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -2454,7 +2445,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 5790
+          "y": 5720
         }
       }
     note: false
@@ -2464,32 +2455,68 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: 6405a7a3-8692-400f-83db-913fed6895cc
-    type: regular
+  "64":
+    id: "64"
+    taskid: e2964f4a-40fc-4dad-9f23-bad2f2ba6c03
+    type: title
     task:
-      id: 6405a7a3-8692-400f-83db-913fed6895cc
+      id: e2964f4a-40fc-4dad-9f23-bad2f2ba6c03
       version: -1
-      name: Delete operationID from context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
+      name: Run Search Statistics
+      type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "22"
-    scriptarguments:
-      key:
-        simple: ${MsGraph.eDiscoveryCase.Export.OperationID}
+      - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 5300
+          "x": 367.5,
+          "y": 4060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 15a86865-bfe8-49be-a04f-5696e778e9f0
+    type: condition
+    task:
+      id: 15a86865-bfe8-49be-a04f-5696e778e9f0
+      version: -1
+      name: Was the search auto-generated?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.search_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6900
         }
       }
     note: false
@@ -2505,16 +2532,15 @@ view: |-
       "1_2_#default#": 0.53,
       "20_21_statistics": 0.52,
       "26_2_#error#": 0.85,
-      "27_28_delete": 0.61,
-      "34_35_#default#": 0.1,
+      "34_35_#default#": 0.38,
       "51_31_false": 0.32
     },
     "paper": {
       "dimensions": {
-        "height": 7460,
+        "height": 7360,
         "width": 2045,
         "x": -460,
-        "y": 50
+        "y": 100
       }
     }
   }

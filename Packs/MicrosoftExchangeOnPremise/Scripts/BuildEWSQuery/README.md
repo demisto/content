@@ -19,7 +19,7 @@ Returns an EWS query according to the automation's arguments.
 | subject | The value of the email's **Subject** attribute. |
 | attachmentName | The value of the email's **attachmentName** attribute. |
 | body | The value of the email's **Body** attribute. |
-| searchThisWeek | Whether to limit the search to the current week. Must be "true" or "false". |
+| searchThisWeek | Whether to limit the search to the current week. Disabling this may increase search scope, execution time, and risk of timeout for large mailboxes. Must be "true" or "false". |
 | stripSubject | Removes the prefix from the subject of reply and forward messages (e.g., FW:). |
 | escapeSemicolons | Whether to escape the semicolons. Must be "true" or "false". |
 
