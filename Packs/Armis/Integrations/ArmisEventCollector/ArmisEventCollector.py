@@ -21,7 +21,9 @@ EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
 MAX_PAGINATION_DURATION_SECONDS = 90  # Lowered from 120 to leave more margin within the 5-min Docker timeout
-MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
+# Halved from 10000 to bound per-thread peak memory (~150MB vs ~300MB) when
+# the 3 worker threads overlap during ship. ~10s slower per 100K events.
+MAX_PAGE_SIZE = 5000
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
@@ -553,25 +555,6 @@ class Client(BaseClient):
             raise DemistoException("Could not generate access token.")
 
 
-""" SHIPPING HELPERS """
-
-
-# Single global lock that serializes calls to ``send_events_to_xsiam`` across all
-# worker threads (ArmisWorker-1 Activities, ArmisWorker-2 Devices, ArmisEnrich-0 chunks).
-# Each ``send_events_to_xsiam`` call holds the input list AND a JSON-serialized
-# duplicate AND HTTP chunk buffers for the duration of the send (multi-second on slow
-# XSIAM responses). When 3 workers send in parallel, their transient allocations stack
-# and OOM the 1GB worker-runner. The lock spreads the sends out so peak memory equals
-# one send's allocation, not three.
-_xsiam_send_lock = threading.Lock()
-
-
-def _send_to_xsiam(events: list[dict], product: str) -> None:
-    """Lock-serialized ``send_events_to_xsiam`` to bound peak memory under parallelism."""
-    with _xsiam_send_lock:
-        send_events_to_xsiam(events, vendor=VENDOR, product=product)
-
-
 """ TEST MODULE """
 
 
@@ -815,7 +798,7 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
         product = f"{PRODUCT}_{event_type.type}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
 
         send_start = time.monotonic()
-        _send_to_xsiam(new_events, product=product)
+        send_events_to_xsiam(new_events, vendor=VENDOR, product=product)
         send_secs = time.monotonic() - send_start
 
         running_state["total_shipped"] += len(new_events)
@@ -1131,7 +1114,7 @@ def _enrich_and_ship_in_chunks(client: Client, alerts: list[dict], chunk_size: i
         chunk = alerts[offset : offset + chunk_size]
         bulk_enrich_alerts(client, chunk)
         add_time_to_events(chunk, EVENT_TYPE_ALERTS)
-        _send_to_xsiam(chunk, product=PRODUCT)
+        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT)
         safe_debug(f"[{tname}] enrich+ship: chunk {chunk_idx}/{total_chunks} shipped {len(chunk)}")
         del chunk
         gc.collect()
@@ -1477,14 +1460,14 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
             add_time_to_events(events_list, event_type)
             demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
             product = f"{PRODUCT}_{event_type}" if event_type != EVENT_TYPE_ALERTS else PRODUCT
-            _send_to_xsiam(events_list, product=product)
+            send_events_to_xsiam(events_list, vendor=VENDOR, product=product)
             demisto.debug(f"{len(events_list)} events of type: {event_type} were sent to XSIAM.")
     else:
         # Either no events were fetched, or all event types were streamed inside the
         # fetch loop (Activities/Devices). Send an empty heartbeat so XSIAM knows the
         # collector is alive.
         demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
-        _send_to_xsiam([], product=PRODUCT)
+        send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f"setting {next_run=}")
     next_run["nextTrigger"] = "1"
