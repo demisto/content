@@ -22,12 +22,14 @@ args:
   description: Minimal Vulnerability Count an item in the report needs to reach in
     order to trigger an incident. Leave empty to trigger for any count.
 - name: defaultNexposeSeverity
-  description: Severity to be set on triggered incidents
+  description: Severity to be set on triggered incidents.
 scripttarget: 0
 dependson:
   must:
   - nexpose
 timeout: 0s
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0
 supportedModules:
 - agentix
