@@ -54,8 +54,10 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Analysis and listing of Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
 - Enable outgoing mirroring for DTM Alerts, maintaining synchronized alert status and tags with XSOAR.
 - Enable outgoing mirroring for ASM Issues, maintaining synchronized status, tags, and notes with XSOAR.
+- Enable bi-directional mirroring for RS Alerts to maintain synchronized alert status with XSOAR.
 - Fetch DTM Alerts using filter parameters supported by the Google Threat Intelligence API.
 - Fetch ASM Issues into XSOAR as incidents for centralized incident management.
+- Fetch RS Alerts into XSOAR as incidents using the filter parameters supported by the Google Threat Intelligence API.
 
 **Popular tasks**
 
@@ -73,6 +75,7 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Enrich Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
 - Ingest DTM Alerts into XSOAR as incidents with supported outgoing mirroring of status and tags.
 - Ingest ASM Issues into XSOAR as incidents with supported outgoing mirroring of status, tags, and notes.
+- Ingest RS Alerts into XSOAR as incidents with supported bi-directional mirroring for alert status synchronization.
 
 **Additional information**
 
