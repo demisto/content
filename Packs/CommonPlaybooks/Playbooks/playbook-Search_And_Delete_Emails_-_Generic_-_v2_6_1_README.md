@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Search And Delete Emails - Generic v2](../doc_files/Search_And_Delete_Emails_-_Generic_v2.png)
+![Search And Delete Emails - Generic v2](../doc_files/Search_And_Delete_Emails_-_Generic_v2_6_0.png)
