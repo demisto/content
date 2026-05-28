@@ -1,6 +1,6 @@
-id: Microsoft Graph Security - Search And Delete Emails
+id: Search And Delete Emails - Microsoft Graph Security 
 version: -1
-name: Microsoft Graph Security - Search And Delete Emails
+name: Search And Delete Emails - Microsoft Graph Security 
 description: |-
   This playbook performs the following steps:
     1. Checks that the Microsoft Graph integration is available and active.

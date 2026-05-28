@@ -640,7 +640,7 @@ tasks:
     task:
       id: 11423dc0-0239-45fd-b3af-33098fff4df7
       version: -1
-      name: Microsoft Graph Security - Search And Delete Emails
+      name: Search And Delete Emails - Microsoft Graph Security 
       type: playbook
       iscommand: false
       brand: ""
@@ -655,7 +655,7 @@ tasks:
           7. Optionally previews the results (statistics summary or full export), based on the preview input.
           8. Purges the matching emails (Hard delete / Soft delete / manual analyst approval).
           9. Cleans up the eDiscovery search based on the cleanup input.
-      playbookName: Microsoft Graph Security - Search And Delete Emails
+      playbookName: Search And Delete Emails - Microsoft Graph Security 
     nexttasks:
       '#none#':
       - "2"
