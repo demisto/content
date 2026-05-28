@@ -20,10 +20,13 @@ This integration was integrated and tested with version 6.9.0 of CommvaultSecuri
    | Forwarding Rule| False|
    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)| False|
    | Max events to fetch| False|
+   | Webhook Listener Credentials| Required only when Forwarding Rule = Webhook|
 
 ##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled
 
 ##### Note :- Set Mapper (incoming) to "Commvault Suspicious File Activity Mapper"
+
+##### Note :- When using `Forwarding Rule = Webhook`, you must set **Webhook Listener Credentials** (username + password). The Commvault Cloud webhook sender must be configured to present these same credentials using HTTP Basic Auth. To use a custom header API token instead of Basic Auth, set the username to `_header:<HeaderName>` (for example, `_header:X-Commvault-Token`) and put the token in the password field
 
 ## Commands
 

@@ -86,6 +86,11 @@ configuration:
   section: Connect
   displaypassword: Private Key
   required: false
+- name: credentials
+  display: Webhook Listener Credentials
+  additionalinfo: Username and password used to authenticate inbound webhook requests. Required when the Forwarding Rule is set to Webhook. Use `_header:<HeaderName>` as the username for custom-header API tokens.
+  type: 9
+  required: false
 description: Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 display: Commvault Cloud
 name: CommvaultSecurityIQ

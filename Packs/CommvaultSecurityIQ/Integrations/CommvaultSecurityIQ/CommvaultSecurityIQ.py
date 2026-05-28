@@ -5,6 +5,7 @@ import time
 from copy import copy
 from dataclasses import dataclass
 from datetime import datetime
+from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from typing import Any
@@ -15,7 +16,7 @@ import requests
 import syslogmp
 import urllib3
 import uvicorn
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from gevent.server import StreamServer
@@ -79,6 +80,55 @@ class GenericWebhookAccessFormatter(AccessFormatter):
         return super().formatMessage(recordcopy)
 
 
+def _authenticate_webhook_request(
+    credentials: HTTPBasicCredentials | None,
+    token: APIKey | None,
+) -> Response | None:
+    """
+    Validate inbound webhook credentials against the configured listener credentials.
+
+    Returns a 401 Response when authentication fails, or None when authentication succeeds.
+
+    Supports two modes (mirrors the Generic Webhook reference implementation):
+      * HTTP Basic Auth: username + password from the `credentials` integration parameter.
+      * Custom-header API token: username `_header:<HeaderName>`; the password is the
+        expected token value. The header name is rebound at startup by `setup_credentials()`.
+    """
+    credentials_param = demisto.params().get("credentials") or {}
+    username = credentials_param.get("identifier") or ""
+    password = credentials_param.get("password", "") or ""
+    if not username:
+        # Defense in depth: validate_inputs should have prevented this state, but if we ever
+        # reach handle_post without configured listener credentials, reject the request.
+        demisto.debug("Webhook authentication rejected: listener credentials not configured.")
+        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Authorization failed.")
+    if username.startswith("_header:"):
+        if not token or not compare_digest(str(token), password):
+            demisto.debug("Webhook authentication failed: invalid custom-header token.")
+            return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Authorization failed.")
+    elif (not credentials) or (
+        not (compare_digest(credentials.username, username) and compare_digest(credentials.password, password))
+    ):
+        demisto.debug("Webhook authentication failed: invalid Basic Auth credentials.")
+        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Authorization failed.")
+    return None
+
+
+def setup_credentials() -> None:
+    """
+    If the operator configured a custom-header API token (username `_header:<HeaderName>`),
+    rebind the FastAPI APIKeyHeader to read from that header instead of `Authorization`.
+    Mirrors `GenericWebhook.setup_credentials()`. Called from `main()` immediately before
+    `uvicorn.run(...)`.
+    """
+    credentials_param = demisto.params().get("credentials") or {}
+    username = credentials_param.get("identifier")
+    if username and username.startswith("_header:"):
+        header_name = username.split(":", 1)[1]
+        demisto.debug(f"Webhook listener will read API token from header: {header_name}")
+        token_auth.model.name = header_name
+
+
 @app.post("/")
 async def handle_post(
     incident: dict,
@@ -86,7 +136,10 @@ async def handle_post(
     credentials: HTTPBasicCredentials = Depends(basic_auth),
     token: APIKey = Depends(token_auth),
 ):
-    del credentials, token
+    # Enforce listener authentication before touching the payload.
+    auth_response = _authenticate_webhook_request(credentials, token)
+    if auth_response is not None:
+        return auth_response
     global client
     incident_type: str | None = demisto.params().get("incidentType", "Commvault Suspicious File Activity")
     incident_body = handle_post_helper(client, incident, request)
@@ -1417,6 +1470,17 @@ def validate_inputs(portno, client, is_valid_cv_token, is_fetch, is_long_running
                 and is_fetch
             ):
                 raise DemistoException("Fetch incidents can not be used with forwarding rule.")
+        # The Webhook forwarding rule must have listener credentials configured.
+        # An unauthenticated webhook listener allows arbitrary incident injection.
+        if forwarding_rule_type == Constants.source_webhook:
+            listener_creds = demisto.params().get("credentials") or {}
+            if not listener_creds.get("identifier"):
+                raise DemistoException(
+                    "The Webhook forwarding rule requires 'Webhook Listener Credentials' to be "
+                    "configured. Set a username and password (or '_header:<HeaderName>' for a "
+                    "custom-header API token), and configure the matching credentials on the "
+                    "Commvault Cloud webhook sender."
+                )
         if not client.validate_azure_keyvault_configuration():
             raise DemistoException("Invalid Azure Keyvault configuration. Please provide correct parameters.")
 
@@ -1507,6 +1571,8 @@ def main() -> None:
                     server: StreamServer = client.prepare_globals_and_create_server(port, certificate_path, private_key_path)
                     server.serve_forever()
                 if forwarding_rule_type == Constants.source_webhook:
+                    # Rebind APIKeyHeader name when operator uses _header:<HeaderName>.
+                    setup_credentials()
                     client.run_uvicorn_server(port, certificate_path, private_key_path)
             except Exception as error:
                 demisto.error(f"An error occurred in the long running loop: {str(error)} - {format_exc()}")
