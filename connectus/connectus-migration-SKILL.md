@@ -1053,7 +1053,7 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 
 #### 1.12 Auth-parity gate inside `set-auth`
 
-`set-auth` is no longer a pure CSV write. As of schema_version=2 (2026-05), the call invokes [`check_auth_parity.check_auth_parity`](check_auth_parity.py) against the **candidate** `Auth Details` payload before the cell is committed. The result is evaluated as follows:
+`set-auth` is no longer a pure CSV write. As of schema_version=2 (2026-05), the call invokes [`check_auth_parity.check_auth_parity`](check_auth_parity.py) against the **candidate** `Auth Details` payload before the cell is committed. The parity gate **does not consult the `Params for test with default in code` CSV cell** — per-param value seeding for the analyzer is supplied per-invocation via [`--seed-param NAME=VALUE`](#1.12.A.bis-per-param-value-seeding-via---seed-param) (see below). The persisted `Params for test with default in code` cell still exists, is still set during Step 3a, and is still consumed downstream by the Step 3b manifest generator — it is purely a record consumed by the connector-param mapper, not by the parity gate. The result is evaluated as follows:
 
 | Analyzer outcome | Gate decision | What happens |
 |---|---|---|
@@ -1066,6 +1066,88 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 When the gate blocks, the api/CLI returns the full analyzer envelope under `result["parity"]` so the skill can attribute the failure to a specific connection / sentinel.
 
 > **Escape hatch (tests only).** Set the env var `CONNECTUS_SKIP_AUTH_PARITY=1` to bypass the gate entirely. This is for unit tests and one-off debugging — do **not** use it as part of the normal migration workflow.
+
+<a id="1.12.A.bis-per-param-value-seeding-via---seed-param"></a>
+
+##### Per-param value seeding via `--seed-param NAME=VALUE` (operator escape hatch)
+
+Some YML params have **format validators** that fire at integration module-load time and reject the analyzer's auto-generated `SENTINEL_PARAM_<name>` placeholder before any HTTP call. The analyzer already auto-coerces a few well-known patterns — params whose NAME (case-insensitive substring match) contains `thumbprint`, `certificate`, or `private_key` get a syntactically-valid stub (40-char hex thumbprint, stub PEM cert, stub PEM private key) instead of the generic sentinel string. That covers the Microsoft cert-thumbprint slot but **does not** cover every format validator in the wild. For example:
+
+- **JWT secrets with a regex format validator** — the integration's `BaseClient.__init__` calls `jwt.decode(secret, …)` at startup; the sentinel string fails the JOSE format check.
+- **OIDC issuer URLs** — startup code does `urlparse(issuer).scheme == "https"` and refuses to construct the client when the sentinel doesn't parse as `https://…`.
+- **Custom hex / regex-validated tokens** beyond the auto-coerced `thumbprint` substring (e.g. a 64-char hex API token whose YML name is `api_token`).
+- **Cert thumbprint validators in `MicrosoftClient`** whose YML name doesn't match the substring (e.g. `cert_fingerprint` — `thumbprint` substring miss).
+
+The escape hatch is the repeatable `--seed-param NAME=VALUE` flag on the `set-auth` verb (and on the standalone [`check_auth_parity.py`](check_auth_parity.py:1) CLI when iterating manually):
+
+```bash
+python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>' \
+    --seed-param NAME=VALUE [--seed-param NAME=VALUE ...]
+```
+
+**Semantics:**
+
+- Repeatable; each `--seed-param` appends to an in-memory dict that is forwarded **only** to the parity gate for this single `set-auth` invocation. The dict is **never** persisted to the CSV.
+- Values ≥4 chars long act as ad-hoc traceable sentinels (they appear verbatim in captured HTTP, exactly like the auto-generated sentinels).
+- The override takes effect inside the type-aware placeholder pass in [`check_command_params.build_param_values`](check_command_params.py:1) — wins over the YML `defaultvalue`, the auto-coercion (cert/thumbprint/private_key), and the generic `SENTINEL_PARAM_<name>` string.
+
+**Dotted-leaf rule for YML `type:9` (credentials) widgets:**
+
+- `--seed-param creds.identifier=<v>` sets the identifier leaf.
+- `--seed-param creds.password=<v>` sets the password leaf.
+- Either leaf may be omitted — the omitted leaf keeps its default sentinel.
+- **Flat `--seed-param creds=<value>` on a `type:9` widget is rejected with exit code 2** and an actionable error pointing at the dotted-leaf form (the integration expects a dict-shaped value at runtime; a flat string would have the wrong shape).
+- Stray dotted-leaf overrides (unknown parent param, parent param is the wrong type, leaf is neither `identifier` nor `password`) surface as `[seed] WARNING` lines on stderr and do **NOT** abort the run.
+
+**Auth-overlap rejection (hard error before the parity gate runs):**
+
+If a `--seed-param` key (or its dotted-leaf parent) references a param that is already declared in the candidate `Auth Details` — projected from `auth_types[].xsoar_param_map.keys()` (with dotted leaves collapsing to the segment before the first `.`) unioned with every `other_connection` entry — the `set-auth` call is hard-rejected **before** the parity gate runs with the error envelope:
+
+```
+{"error": {"code": "ERROR_SEED_AUTH_OVERLAP", "message": "...", "exit_code": 2}}
+```
+
+The reason: any param already declared in `Auth Details` is supplied via UCP credential injection (not via `demisto.params()`) in the new run anyway, so the seed value would be silently discarded by the UCP injection seam — masking real auth-routing bugs. The fix is to either drop the override (the analyzer already routes the secret via UCP; you don't need a sentinel value for it) or, if the param is genuinely NOT an auth param and was misclassified, revert to Step 1 with `set-auth` and remove it from `auth_types[].xsoar_param_map` / `other_connection` first.
+
+**Worked example — Microsoft cert-thumbprint integration:**
+
+```bash
+# 40-char hex thumbprint — required by the MicrosoftClient startup validator
+# even when the actual cert is supplied via UCP credential injection.
+python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>' \
+    --seed-param certificate_thumbprint=0123456789ABCDEF0123456789ABCDEF01234567
+```
+
+**Worked example — JWT secret with format validation:**
+
+```bash
+python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>' \
+    --seed-param jwt_secret=real-jwt-format-secret-12345
+```
+
+**Worked example — OIDC issuer URL:**
+
+```bash
+python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>' \
+    --seed-param oidc_issuer=https://login.microsoftonline.com/common/v2.0
+```
+
+**Worked example — `type:9` credentials with format-validated password:**
+
+```bash
+# Note the dotted-leaf form. Flat 'service_account=<v>' would be rejected
+# with exit code 2.
+python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>' \
+    --seed-param service_account.identifier=test@example.com \
+    --seed-param service_account.password=p@ssw0rd-with-special-chars-12
+```
+
+**Recovery loop:** when the parity gate fails with `RUN_FAILED_OLD` and the stderr_excerpt is a format-validator crash at module-load time:
+
+1. Identify the offending param from the stderr excerpt (`ValueError: invalid thumbprint`, `jwt.exceptions.InvalidTokenError`, etc.).
+2. Read the integration's `.py` to see what format the validator expects.
+3. Re-run `set-auth` with `--seed-param <name>=<a-value-that-passes-the-validator>`.
+4. If the auth-overlap rejection fires, the param is actually an auth param — re-classify `Auth Details` to remove the bad seed target (or drop the seed; UCP will route the real secret per-request).
 
 ##### Troubleshooting playbook — when the parity gate blocks
 
@@ -1214,16 +1296,17 @@ Parity sentinels encode both the XSOAR path AND the **role** the secret plays, i
 
 ##### Manual re-runs of `check_auth_parity.py` (for debugging only)
 
-The parity gate inside `set-auth` is the canonical entry point. If you want to inspect the analyzer's output without committing the cell — for instance, while iterating on a UCP override — you can run it directly:
+The parity gate inside `set-auth` is the canonical entry point. If you want to inspect the analyzer's output without committing the cell — for instance, while iterating on a UCP override or a `--seed-param` recovery — you can run it directly:
 
 ```bash
 AUTH='{"auth_types":[...]}'  # the candidate payload
 python3 connectus/check_auth_parity.py Packs/<PackName>/Integrations/<IntegrationName> \
     --integration-id "<id>" \
-    --auth-details "$AUTH"
+    --auth-details "$AUTH" \
+    [--seed-param NAME=VALUE ...]   # mirror whatever set-auth would receive
 ```
 
-The same JSON envelope is what `set-auth` evaluates internally. Once the manual run goes green, re-run `set-auth` with the same payload.
+The same JSON envelope is what `set-auth` evaluates internally. Once the manual run goes green, re-run `set-auth` with the same payload (and the same `--seed-param` flags, if any).
 
 ---
 

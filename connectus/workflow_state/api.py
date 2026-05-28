@@ -41,6 +41,7 @@ from workflow_state.state_machine import (
 from workflow_state.validators import (
     auth_param_sources as _auth_param_sources,
     validate_auth_detail,
+    validate_seed_overrides_no_auth_overlap as _validate_seed_overrides_no_auth_overlap,
 )
 
 
@@ -545,6 +546,7 @@ def set_integration_auth(
     *,
     skip_parity: bool | None = None,
     parity_timeout: int = 60,
+    seed_overrides: dict | None = None,
 ) -> dict:
     """Commit the ``Auth Details`` cell, gated on a passing parity test.
 
@@ -563,6 +565,17 @@ def set_integration_auth(
             requires parity to pass.**
         parity_timeout: Per-command wall-clock timeout for the parity run
             (seconds). Defaults to 60s.
+        seed_overrides: Optional per-param seed-value overrides forwarded
+            to the parity gate's
+            :func:`check_auth_parity.check_auth_parity` call. Use for
+            params whose auto-generated placeholder trips a format
+            validator the analyzer cannot sentinel itself (cert
+            thumbprints, JWT secrets with format validation, OIDC
+            issuer URLs, etc.). The dict is NEVER persisted to the
+            CSV — it only flows through to the parity gate for this
+            single ``set-auth`` invocation. Overlap with the candidate
+            ``Auth Details`` is rejected up front with
+            ``ERROR_SEED_AUTH_OVERLAP``.
 
     Returns:
         On success::
@@ -573,7 +586,8 @@ def set_integration_auth(
               "parity": {<full check_auth_parity result>}  # or {"skipped": "..."}
             }
 
-        On failure (parity blocked OR schema error OR not-found)::
+        On failure (parity blocked OR schema error OR not-found OR
+        seed-overlap)::
 
             {"error": "<message>", "parity": {...}}  # parity present iff it ran
     """
@@ -592,6 +606,34 @@ def set_integration_auth(
 
     row = rows[idx]
 
+    # ----- Seed-overrides ∩ Auth Details overlap check ---------------------
+    # Computed off the CANDIDATE payload (not the persisted cell — we are
+    # in the middle of writing a NEW cell). Hard-reject before the parity
+    # gate runs, because such a param is supplied via UCP credential
+    # injection in the new run anyway and the seed value would be silently
+    # discarded by the UCP injection seam.
+    if seed_overrides:
+        try:
+            candidate_for_overlap = json.loads(auth_detail_json)
+        except json.JSONDecodeError:
+            candidate_for_overlap = {}
+        overlap_errors = _validate_seed_overrides_no_auth_overlap(
+            seed_overrides,
+            candidate_for_overlap if isinstance(candidate_for_overlap, dict) else {},
+        )
+        if overlap_errors:
+            return {
+                "error": {
+                    "code": "ERROR_SEED_AUTH_OVERLAP",
+                    "message": (
+                        "--seed-param key(s) overlap with the candidate "
+                        "Auth Details:\n"
+                        + "\n".join(f"  - {e}" for e in overlap_errors)
+                    ),
+                    "exit_code": 2,
+                },
+            }
+
     # ----- Parity gate ------------------------------------------------------
     if skip_parity is None:
         skip_parity = os.environ.get("CONNECTUS_SKIP_AUTH_PARITY", "").strip() == "1"
@@ -604,6 +646,7 @@ def set_integration_auth(
             integration_id=row.get("Integration ID", integration_id),
             auth_detail_json=auth_detail_json,
             timeout=parity_timeout,
+            seed_overrides=seed_overrides,
         )
         gate = _evaluate_parity_for_set_auth(parity_payload)
         if not gate["allow"]:
@@ -676,6 +719,7 @@ def _run_auth_parity_for_set_auth(
     integration_id: str,
     auth_detail_json: str,
     timeout: int,
+    seed_overrides: dict | None = None,
 ) -> dict:
     """Invoke ``check_auth_parity.check_auth_parity`` against a candidate payload.
 
@@ -743,11 +787,11 @@ def _run_auth_parity_for_set_auth(
             integration_path=Path(abs_dir).resolve(),
             integration_id=integration_id,
             auth_details=candidate,
-            param_defaults={},  # set-auth wipes this column anyway
             commands_filter=None,
             connection_filter=None,
             timeout=timeout,
             docker_cfg=docker_cfg,
+            seed_overrides=seed_overrides,
         )
     except Exception as exc:  # noqa: BLE001 — top-level guard
         return {

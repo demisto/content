@@ -280,7 +280,7 @@ Hard-error checks fire in this order inside
 python3 connectus/check_auth_parity.py <integration_path> \
     --integration-id <id> \
     --auth-details '<json>' | --auth-details-file <path> \
-    [--param-defaults '<json>' | --param-defaults-file <path>] \
+    [--seed-param NAME=VALUE [--seed-param NAME=VALUE ...]] \
     [--display-name <human name>] \
     [--commands <cmd> [<cmd> ...]] \
     [--connection <auth_types[].name>] \
@@ -296,10 +296,58 @@ in the CSV — passing the cell value at the CLI keeps the analyzer
 stateless and re-runnable outside the pipeline. Empty input is an
 exit-2 error; pass `-` to read from stdin.
 
-`--param-defaults` is optional and defaults to `{}`. (The pre-2026-05
-`Params for test with default in code` CSV column that used to feed
-this flag was removed. Operators needing specific defaults pass an
-inline JSON object.)
+### Per-param seed-value overrides (`--seed-param NAME=VALUE`)
+
+Repeatable per-invocation escape hatch for params whose
+auto-generated placeholder trips a format validator the analyzer
+cannot sentinel itself — cert-thumbprint hex validators in
+`MicrosoftClient`, JWT secrets with format validation, OIDC issuer
+URLs, custom regex-validated tokens, etc.
+
+The auto-coercion in [`check_command_params.build_param_values`](check_command_params.py:1)
+already covers the common cases (cert / thumbprint / private_key for
+the Microsoft slot via case-insensitive substring match on the param
+name). `--seed-param` is the override hatch for everything else.
+
+Value-precedence for a non-auth YML param is:
+
+1. The per-invocation `--seed-param NAME=VALUE` override (when
+   supplied) — wins for the named param, taking effect inside the
+   type-aware placeholder pass below.
+2. [`_ccp.build_param_values()`](check_command_params.py:1) auto-generated
+   placeholder — sentinels for non-cert params, cert/PEM/thumbprint
+   coercion for the Microsoft slot.
+
+Dotted-leaf rule for YML `type:9` credentials widgets:
+
+- `--seed-param creds.identifier=<value>` sets the identifier leaf.
+- `--seed-param creds.password=<value>` sets the password leaf.
+- Either leaf may be omitted; omitted leaves keep their default
+  sentinel.
+- **Flat `--seed-param creds=<value>` on a `type:9` widget is rejected
+  with exit code 2** and an actionable error pointing at the
+  dotted-leaf form.
+- Stray dotted-leaf overrides (unknown parent, wrong-type parent,
+  leaf not in `{identifier, password}`) surface as `[seed] WARNING`
+  lines on stderr and do **NOT** abort the run.
+
+Values ≥4 chars long act as ad-hoc traceable sentinels — they appear
+verbatim in captured HTTP, exactly the same as the auto-generated
+sentinels do, so post-hoc attribution still works.
+
+The skill's auth-parity playbook (`connectus/connectus-migration-SKILL.md`
+§1.12) documents the recovery loop.
+
+> The pre-2026-05 `--param-defaults` / `--param-defaults-file` flags
+> were removed in this revision. They never produced useful semantics
+> at the parity-gate layer (the cell value was hard-coded to `{}` by
+> `set-auth` anyway). Per-param value overrides now come from
+> `--seed-param NAME=VALUE` at every layer — the standalone analyzer
+> CLI, the in-process `check_auth_parity()` API, and the `set-auth`
+> verb that wraps it. The persisted `Params for test with default in
+> code` CSV column still exists, is still set during Step 3a, and is
+> still consumed downstream by the Step 3b manifest generator — but
+> the parity gate no longer reads it.
 
 Output: a single JSON object on stdout with these top-level keys:
 
