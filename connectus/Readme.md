@@ -1,6 +1,6 @@
 Note, this folder should not be merged to master.
 
-> **Architecture note.** [`connectus/workflow_state.py`](workflow_state.py:1) is now a thin backward-compatible shim that re-exports the real package at [`connectus/workflow_state/`](workflow_state/__init__.py:1). The CLI entrypoint, validators, state machine, CSV I/O, display helpers, and config loader live there. Behavior is identical; the file split is purely for maintainability. The canonical Python import is `from workflow_state import …`.
+> **Architecture note.** The CLI entry script [`connectus/workflow_state.py`](workflow_state.py:1) delegates to the package at [`connectus/workflow_state/`](workflow_state/__init__.py:1), which hosts the CLI entrypoint, validators, state machine, CSV I/O, display helpers, and config loader. The canonical Python import is `from workflow_state import …`.
 
 ## Authentication Type Catalog
 
@@ -41,9 +41,7 @@ Each value maps onto one of the canonical UCP authentication profile types (see 
 | `Passthrough` | n/a (no canonical profile) | Catch-all: OAuth2 **Authorization Code** (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's 3 tokens, GitHub App), custom HMAC schemes. **When in doubt, prefer `Passthrough`.** | Lansweeper (Authorization Code), Azure WAF (Managed Identity), Datadog (dual-key) |
 | `NoneRequired` | n/a | No authentication needed | AlienVault Reputation Feed |
 
-> **Enum history (2026-05).** The previous `OAuth2AuthCode` value was removed (Authorization Code flows are now classified as `Passthrough`), and the previous `Other` value was renamed to `Passthrough`. There is no backward-compatibility alias — payloads using either old name are rejected by `set-auth`.
-
-#### Worked Examples (post-2026-05 profile model)
+#### Worked Examples
 
 | Integration | `auth_types[]` shape | Why |
 |---|---|---|
@@ -346,9 +344,6 @@ cascade-reset engine (`test_state_machine.py`); the 1-based
 column-number addressability shared by `show-step`/`markpass`/`skip`/
 `fail`/`reset-to` (`test_column_addressability.py`); and the destructive
 schema-alignment `wipe-workflow-data` verb (`test_wipe_workflow_data.py`).
-The legacy top-level [`workflow_state_test.py`](workflow_state_test.py)
-is intentionally empty — see its module docstring for the migration map.
-
 Run from the repo root:
 
 ```bash

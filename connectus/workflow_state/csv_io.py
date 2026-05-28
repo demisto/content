@@ -26,14 +26,14 @@ from workflow_state.state_machine import _normalize_rows_with_warning
 
 
 # This file is connectus/workflow_state/csv_io.py — go up TWO dirs to
-# reach the workspace root, matching the legacy module's BASE_DIR.
+# reach the workspace root.
 BASE_DIR = _os_module.path.dirname(
     _os_module.path.dirname(_os_module.path.dirname(_os_module.path.abspath(__file__)))
 )
 CSV_PATH = _os_module.path.join(BASE_DIR, "connectus", "connectus-migration-pipeline.csv")
 
-# Re-exposed for monkey-patch parity with the legacy module
-# (tests do ``monkeypatch.setattr(workflow_state.os, "replace", _boom)``).
+# Re-exposed at the package namespace so tests can monkey-patch e.g.
+# ``workflow_state.os.replace``.
 os = _os_module
 
 

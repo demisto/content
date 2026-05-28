@@ -2,9 +2,9 @@
 
 Verifies that for each non-interpolated connection declared in an
 integration's ``Auth Details``, secret values land in the **same
-wire location** whether they are supplied the legacy way (via
+wire location** whether they are supplied the non-UCP way (via
 ``demisto.params()`` → integration code → ``BaseClient``) or the
-new way (UCP credential injection through
+UCP way (credential injection through
 ``demisto.getUCPCredentials()`` — and the
 ``CommonServerPython.get_ucp_credentials()`` wrapper that delegates
 to it).
@@ -72,13 +72,7 @@ EXIT_INTEGRATION_REJECTS_HTTP = 14
 
 # Parseable substrings the migration skill greps for. Do NOT reword.
 _LITERAL_MARK_AUTH = "Mark its auth as interpolated"
-# Historical name — schema_version=2 (2026-05) removed the standalone
-# "auth parity test passes" checkpoint and folded the parity check into
-# set-auth itself. This message is now surfaced by set-auth's parity
-# gate (it short-circuits the same way as before) but no longer points
-# at a separate workflow step. The constant name is preserved for
-# backward compatibility with the test suite.
-_LITERAL_MARKPASS_STEP_11 = (
+_LITERAL_PARITY_GATE_SKIPPED = (
     "Auth parity gate inside set-auth: structurally skipped — re-run "
     "set-auth to commit the Auth Details cell."
 )
@@ -812,7 +806,7 @@ def _msg_all_interpolated() -> str:
     return (
         f"All auth types are interpolated. Auth parity test is not "
         f"applicable — interpolated connections are handled by "
-        f"infrastructure, not integration code. {_LITERAL_MARKPASS_STEP_11}"
+        f"infrastructure, not integration code. {_LITERAL_PARITY_GATE_SKIPPED}"
     )
 
 
@@ -1318,11 +1312,11 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
     against a hypothetical future where some integration's
     import-time code flips that flag.
 
-    When ``AUTH_PARITY_UCP_ENABLED`` is "0" (old / legacy run), we do
+    When ``AUTH_PARITY_UCP_ENABLED`` is "0" (non-UCP run), we do
     NOT install ``demisto.getUCPCredentials`` at all — it stays
     whatever ``demistomock`` provides natively (or raises
-    AttributeError), so legacy-path code that accidentally tries UCP
-    fails the same way it would in real legacy execution.
+    AttributeError), so non-UCP-path code that accidentally tries UCP
+    fails the same way it would in real non-UCP execution.
     """
     import os as _os
     import json as _json
@@ -1897,7 +1891,7 @@ def _connection_rejects_http(diagnostics: dict[str, Any]) -> bool:
 
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Auth Parity Test — verify legacy vs UCP secret placement parity.",
+        description="Auth Parity Test — verify non-UCP vs UCP secret placement parity.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("integration_path", help="Path to the integration directory.")

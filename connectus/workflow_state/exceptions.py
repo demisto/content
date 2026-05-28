@@ -3,12 +3,7 @@ from __future__ import annotations
 
 
 class WorkflowError(Exception):
-    """User-facing workflow violation. Caller prints `.message` and exits 1.
-
-    Preserved verbatim from the legacy ``workflow_state.py`` module so that
-    external consumers (notably ``connectus/check_command_params.py``)
-    that catch this exception continue to work after the refactor.
-    """
+    """User-facing workflow violation. Caller prints `.message` and exits 1."""
 
     def __init__(self, message: str) -> None:
         super().__init__(message)

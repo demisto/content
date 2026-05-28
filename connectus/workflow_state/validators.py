@@ -26,14 +26,11 @@ from auth_config_parser import (
 def validate_auth_detail(value: str) -> list[str]:
     """Validate Auth Details JSON shape. Returns list of errors ([] = valid).
 
-    Backward-compatible wrapper that delegates to
-    :func:`auth_config_parser.validate_auth_details`.
-
-    The schema rules (including the per-``type`` role-enum table that
-    constrains the values of ``auth_types[].xsoar_param_map``) live in
-    ``connectus/column-schemas.md`` § "Auth Details". The legacy
-    ``xsoar_params`` key (pre-2026-05) is hard-rejected by the
-    delegated validator with a migration-help error.
+    Thin wrapper that delegates to
+    :func:`auth_config_parser.validate_auth_details`. The schema rules
+    (including the per-``type`` role-enum table that constrains the
+    values of ``auth_types[].xsoar_param_map``) live in
+    ``connectus/column-schemas.md`` § "Auth Details".
     """
     return _pkg_validate_auth_details(value)
 
@@ -270,7 +267,7 @@ def validate_params_to_capabilities(value: str) -> list[str]:
 # Allowed characters in a renamed command name. Mirrors the convention used
 # elsewhere in the migration: letters, digits, dot, underscore,
 # hyphen. The original command name has no shape check beyond non-empty
-# string (some legacy XSOAR commands use mixed case / underscores).
+# string (some XSOAR commands use mixed case / underscores).
 _SHADOWED_COMMAND_RENAMED_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 
 

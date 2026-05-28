@@ -37,13 +37,6 @@ class AuthType(str, enum.Enum):
     - ``NoneRequired`` → no profile; used when the integration has
       no authentication at all.
 
-    The previous ``OAuth2AuthCode`` value was removed in 2026-05;
-    Authorization Code flows are now classified as ``Passthrough``.
-    The previous ``Other`` value was renamed to ``Passthrough`` in
-    the same revision. There is no backward-compatibility alias —
-    in-flight payloads using the old names are rejected by
-    :func:`auth_config_parser.validator.validate_auth_details`.
-
     Examples:
         >>> AuthType("APIKey")
         <AuthType.APIKey: 'APIKey'>
@@ -129,8 +122,7 @@ class AuthEntry:
 class AuthDetails:
     """Fully parsed Auth Details JSON object.
 
-    The 2026-05 schema simplification removed the ``config`` expression
-    field. Each entry in ``auth_types`` is one profile = one mutually-
+    Each entry in ``auth_types`` is one profile = one mutually-
     exclusive way to authenticate the integration. The relationship
     between profiles is implicit:
 
@@ -148,8 +140,8 @@ class AuthDetails:
         auth_types: List of profile entries, sorted by (type, name).
         other_connection: Sorted list of YML param ids for
             connection-adjacent non-auth params (purely transport /
-            network: URL, port, proxy, insecure, …). None when the
-            key is absent (legacy rows).
+            network: URL, port, proxy, insecure, …). Required; may
+            be an empty list when the integration has no such params.
 
     Examples:
         >>> details = AuthDetails(
@@ -166,7 +158,7 @@ class AuthDetails:
     """
 
     auth_types: list[AuthEntry]
-    other_connection: list[str] | None = None
+    other_connection: list[str]
 
     @property
     def auth_type_names(self) -> set[str]:

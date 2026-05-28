@@ -1,11 +1,4 @@
-"""Tests for auth_config_parser.parser — parse_auth_details().
-
-The 2026-05 schema simplification removed the ``config`` expression
-field entirely. ``parse_config()`` no longer exists; the only public
-parser entry point is :func:`parse_auth_details`. Tests below cover
-the new (config-less) shape plus the two legacy rejections:
-``config`` key and ``xsoar_params`` key.
-"""
+"""Tests for auth_config_parser.parser — parse_auth_details()."""
 from __future__ import annotations
 
 import json
@@ -64,6 +57,7 @@ class TestParseAuthDetails:
                 {"type": "APIKey", "name": "b",
                  "xsoar_param_map": {"b": "key"}},
             ],
+            "other_connection": [],
         })
         assert details.requires_choice is True
         assert details.is_none_required is False
@@ -125,6 +119,7 @@ class TestParseAuthDetails:
                 {"type": "APIKey", "name": "x",
                  "xsoar_param_map": {"p": "key"}}
             ],
+            "other_connection": [],
         })
         assert details.auth_types[0].interpolated is False
 
@@ -138,18 +133,20 @@ class TestParseAuthDetails:
                     "interpolated": True,
                 }
             ],
+            "other_connection": [],
         })
         assert details.auth_types[0].interpolated is True
 
-    def test_parse_no_other_connection_tolerated(self) -> None:
-        """``other_connection`` is optional; absence yields ``None``."""
-        details = parse_auth_details({
-            "auth_types": [
-                {"type": "APIKey", "name": "x",
-                 "xsoar_param_map": {"p": "key"}}
-            ],
-        })
-        assert details.other_connection is None
+    def test_parse_missing_other_connection_raises(self) -> None:
+        """``other_connection`` is required; absence raises."""
+        with pytest.raises(AuthConfigParseError) as exc_info:
+            parse_auth_details({
+                "auth_types": [
+                    {"type": "APIKey", "name": "x",
+                     "xsoar_param_map": {"p": "key"}}
+                ],
+            })
+        assert "other_connection" in exc_info.value.message
 
     def test_parse_auth_types_not_list_raises(self) -> None:
         with pytest.raises(AuthConfigParseError) as exc_info:
@@ -180,6 +177,7 @@ class TestParseAuthDetails:
                     {"type": at.value, "name": "x",
                      "xsoar_param_map": {"p": "anyrole"}}
                 ],
+                "other_connection": [],
             })
             assert details.auth_types[0].type == at
 
@@ -209,6 +207,7 @@ class TestParseAuthDetails:
                 {"type": "APIKey", "name": "x",
                  "xsoar_param_map": {"p": "key"}}
             ],
+            "other_connection": [],
         })
         assert details.auth_types[0].verify_connection_skip is False
 
@@ -222,6 +221,7 @@ class TestParseAuthDetails:
                     "verify_connection_skip": True,
                 }
             ],
+            "other_connection": [],
         })
         assert details.auth_types[0].verify_connection_skip is True
 
@@ -235,6 +235,7 @@ class TestParseAuthDetails:
                     "verify_connection_skip": False,
                 }
             ],
+            "other_connection": [],
         })
         assert details.auth_types[0].verify_connection_skip is False
 
@@ -253,6 +254,7 @@ class TestParseAuthDetails:
                  "interpolated": True,
                  "verify_connection_skip": True},
             ],
+            "other_connection": [],
         })
         # Sorted by (type, name): OAuth2ClientCreds < Passthrough.
         assert details.auth_types[0].name == "client_creds"
@@ -331,6 +333,7 @@ class TestXsoarParamMap:
                     },
                 }
             ],
+            "other_connection": [],
         })
         assert details.auth_types[0].xsoar_param_map == {
             "credentials.identifier": "username",
@@ -418,93 +421,3 @@ class TestXsoarParamMap:
         joined = "\n".join(exc_info.value.errors)
         assert "xsoar_param_map" in joined
         assert "non-empty string" in joined
-
-
-# ---------------------------------------------------------------------------
-# Legacy `xsoar_params` rejection (pre-2026-05 shape)
-# ---------------------------------------------------------------------------
-
-
-class TestLegacyXsoarParamsRejection:
-    def test_legacy_xsoar_params_rejected_with_migration_hint(self) -> None:
-        """Old-shape input is rejected; the error names the new key
-        and points at the schema doc."""
-        with pytest.raises(AuthConfigParseError) as exc_info:
-            parse_auth_details({
-                "auth_types": [
-                    {
-                        "type": "APIKey",
-                        "name": "x",
-                        "xsoar_params": ["api_key"],
-                    }
-                ],
-            })
-        joined = "\n".join(exc_info.value.errors)
-        assert "legacy key 'xsoar_params' is no longer supported" in joined
-        assert "xsoar_param_map" in joined
-        assert "connectus/column-schemas.md" in joined
-        assert "auth_types[0].xsoar_params" in joined
-
-    def test_legacy_xsoar_params_rejected_even_when_new_key_present(self) -> None:
-        """When BOTH old and new keys are present, the legacy
-        rejection still fires."""
-        with pytest.raises(AuthConfigParseError) as exc_info:
-            parse_auth_details({
-                "auth_types": [
-                    {
-                        "type": "APIKey",
-                        "name": "x",
-                        "xsoar_params": ["p"],
-                        "xsoar_param_map": {"p": "key"},
-                    }
-                ],
-            })
-        joined = "\n".join(exc_info.value.errors)
-        assert "legacy key 'xsoar_params' is no longer supported" in joined
-
-
-# ---------------------------------------------------------------------------
-# Legacy `config` rejection (2026-05 schema simplification)
-# ---------------------------------------------------------------------------
-
-
-class TestLegacyConfigKeyRejection:
-    def test_legacy_config_required_rejected(self) -> None:
-        """The pre-2026-05 ``config`` key is no longer accepted by the
-        parser — payloads using it raise with migration-help guidance."""
-        with pytest.raises(AuthConfigParseError) as exc_info:
-            parse_auth_details({
-                "auth_types": [
-                    {"type": "APIKey", "name": "x",
-                     "xsoar_param_map": {"p": "key"}}
-                ],
-                "config": "REQUIRED(x)",
-                "other_connection": [],
-            })
-        msg = exc_info.value.message
-        assert "'config'" in msg
-        assert "2026-05" in msg
-        assert "removed" in msg
-
-    def test_legacy_config_none_required_rejected(self) -> None:
-        with pytest.raises(AuthConfigParseError) as exc_info:
-            parse_auth_details({
-                "auth_types": [],
-                "config": "NoneRequired",
-            })
-        assert "'config'" in exc_info.value.message
-        assert "removed" in exc_info.value.message
-
-    def test_legacy_config_choice_rejected(self) -> None:
-        with pytest.raises(AuthConfigParseError) as exc_info:
-            parse_auth_details({
-                "auth_types": [
-                    {"type": "APIKey", "name": "a",
-                     "xsoar_param_map": {"p": "key"}},
-                    {"type": "APIKey", "name": "b",
-                     "xsoar_param_map": {"q": "key"}},
-                ],
-                "config": "CHOICE(a, b)",
-            })
-        assert "'config'" in exc_info.value.message
-        assert "removed" in exc_info.value.message

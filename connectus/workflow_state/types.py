@@ -135,8 +135,7 @@ class WorkflowConfig:
     @property
     def json_valued_columns(self) -> set[str]:
         # A "JSON-valued column" is any data step that has a named
-        # json_schema validator. This deliberately matches the legacy
-        # `JSON_VALUED_COLUMNS` (data steps minus the `assignee` step,
+        # json_schema validator (data steps minus the `assignee` step,
         # which has no json_schema in YAML).
         return {
             s.name for s in self.steps
@@ -160,8 +159,7 @@ class WorkflowConfig:
     def auth_parity_flag_column(self) -> Optional[str]:
         """The ``when_step`` of the (single) ``flag_auto_na_target`` interaction.
 
-        Returns None if no such interaction is configured. The legacy
-        constant ``AUTH_PARITY_FLAG_COLUMN`` is derived from this.
+        Returns None if no such interaction is configured.
         """
         for inter in self.step_interactions:
             if inter.kind == "flag_auto_na_target":

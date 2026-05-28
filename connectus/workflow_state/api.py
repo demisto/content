@@ -88,12 +88,10 @@ def auth_param_ids(integration_id: str) -> list[str]:
         )
 
     if "other_connection" not in parsed:
-        print(
-            f"WARNING: Auth Details for '{integration_id}' is missing "
-            f"'other_connection' (legacy shape). Re-run 'set-auth' to "
-            f"populate it; auth_param_ids() returning only the "
-            f"auth_types-derived ids in the meantime.",
-            file=sys.stderr,
+        raise WorkflowError(
+            f"'Auth Details' for integration '{integration_id}' is "
+            f"missing required key 'other_connection'. Re-run "
+            f"'set-auth' with a corrected payload."
         )
 
     sources = _auth_param_sources(parsed)
@@ -875,7 +873,7 @@ def _check_params_to_commands_overlap(integration_id: str, payload: dict) -> Non
         else:
             lines.append(
                 f"  - param {p!r} overlaps with Auth Details "
-                f"(source not attributable; legacy row?)"
+                f"(source not attributable)"
             )
 
     lines.extend([

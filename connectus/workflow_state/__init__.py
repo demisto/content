@@ -8,9 +8,7 @@ interactions) is declared in
 (cascade reset, normalization, CSV I/O, CLI dispatch) lives in this
 package.
 
-External callers should keep using ``from workflow_state import …``
-(via the thin shim at ``connectus/workflow_state.py``); every public
-name is re-exported here for back-compat.
+External callers should use ``from workflow_state import …``.
 """
 from __future__ import annotations
 
@@ -48,17 +46,14 @@ from workflow_state.state_machine import (
     _normalize_rows_with_warning,
     apply_step_action,
     current_step,
-    get_current_step,
     get_step,
     get_step_index,
     has_workflow_progress,
     is_checked,
     is_done,
-    markpass_step,
     normalize_row,
     read_step_value,
     reset_after,
-    reset_from_step,
     step_flag_values,
 )
 
@@ -170,42 +165,8 @@ from workflow_state.cli import (
 )
 
 
-# ---- Derived legacy module-level constants ------------------------------
-# These are computed once at import time from the loaded config so that
-# `from workflow_state import STEPS` and friends keep working unchanged.
-# (Tests at workflow_state_test.py:22 import all of these by name.)
-
-from auth_config_parser import AuthType  # re-exported for back-compat
-
-
-def _compute_legacy_constants() -> None:
-    """Populate module-level legacy constants from the loaded config.
-
-    Triggers the YAML load. If the YAML is malformed, ``ConfigLoadError``
-    is raised here, fast — no `cmd_*` will run.
-    """
-    cfg = get_config()
-    g = globals()
-    g["CHECK"] = cfg.markers.check
-    g["FAIL_MARK"] = cfg.markers.fail
-    g["NA_MARK"] = cfg.markers.na
-    g["VALID_FLAG_VALUES"] = set(cfg.markers.flag_values)
-    g["VALID_AUTH_TYPES"] = {t.value for t in AuthType}
-    g["DATA_COLUMNS"] = list(cfg.identity_column_names)
-    g["STEPS"] = list(cfg.steps)
-    g["STEP_BY_NAME"] = dict(cfg.step_by_name)
-    g["STEP_BY_INDEX"] = dict(cfg.step_by_index)
-    g["WORKFLOW_COLUMNS"] = list(cfg.workflow_columns)
-    g["WORKFLOW_DATA_COLUMNS"] = list(cfg.workflow_data_columns)
-    g["CHECKPOINT_COLUMNS"] = list(cfg.checkpoint_columns)
-    g["JSON_VALUED_COLUMNS"] = set(cfg.json_valued_columns)
-    g["AUTH_PARITY_FLAG_COLUMN"] = cfg.auth_parity_flag_column or ""
-    g["ALL_COLUMNS"] = list(cfg.all_columns)
-    g["EXPECTED_COLUMN_COUNT"] = cfg.expected_column_count
-    g["NON_CHECKPOINT_STEPS"] = dict(cfg.non_checkpoint_steps)
-
-
-_compute_legacy_constants()
+# Re-export AuthType for callers that want it from the package namespace.
+from auth_config_parser import AuthType
 
 
 __all__ = [
@@ -226,17 +187,14 @@ __all__ = [
     # State engine
     "apply_step_action",
     "current_step",
-    "get_current_step",
     "get_step",
     "get_step_index",
     "has_workflow_progress",
     "is_checked",
     "is_done",
-    "markpass_step",
     "normalize_row",
     "read_step_value",
     "reset_after",
-    "reset_from_step",
     "step_flag_values",
     # CSV I/O
     "BASE_DIR",
@@ -307,22 +265,4 @@ __all__ = [
     "cmd_status_all",
     "cmd_test_module_params",
     "cmd_wipe_workflow_data",
-    # Derived legacy constants
-    "CHECK",
-    "FAIL_MARK",
-    "NA_MARK",
-    "VALID_FLAG_VALUES",
-    "VALID_AUTH_TYPES",
-    "DATA_COLUMNS",
-    "STEPS",
-    "STEP_BY_NAME",
-    "STEP_BY_INDEX",
-    "WORKFLOW_COLUMNS",
-    "WORKFLOW_DATA_COLUMNS",
-    "CHECKPOINT_COLUMNS",
-    "JSON_VALUED_COLUMNS",
-    "AUTH_PARITY_FLAG_COLUMN",
-    "ALL_COLUMNS",
-    "EXPECTED_COLUMN_COUNT",
-    "NON_CHECKPOINT_STEPS",
 ]

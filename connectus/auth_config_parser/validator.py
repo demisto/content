@@ -1,17 +1,9 @@
 """Validation functions for the auth_config_parser package.
 
-Returns error lists (empty = valid). Never raises. Matches the current
+Returns error lists (empty = valid). Never raises. Matches the
 ``validate_auth_detail()`` contract in
 :mod:`workflow_state.validators` (which is a thin wrapper around
 :func:`validate_auth_details` defined here).
-
-The 2026-05 schema simplification removed the ``config`` expression
-field entirely (the only inter-profile relation is exclusive OR, which
-is fully encoded by ``auth_types``'s length and entries). Payloads
-that still contain a ``config`` key are hard-rejected with a
-migration-help error. See
-:func:`auth_config_parser.parser.parse_auth_details` for the parsing-
-side equivalent.
 """
 from __future__ import annotations
 
@@ -20,8 +12,6 @@ import json
 from auth_config_parser.parser import (
     _ROLE_ENUM_BY_TYPE,
     _VALID_AUTH_TYPE_VALUES,
-    _legacy_config_key_error,
-    _legacy_xsoar_params_error,
 )
 from auth_config_parser.types import AuthType
 
@@ -34,8 +24,7 @@ from auth_config_parser.types import AuthType
 def validate_auth_details(data: str | dict) -> list[str]:
     """Validate Auth Details JSON shape. Returns list of errors ([] = valid).
 
-    Performs ALL validation currently done by ``workflow_state.py``'s
-    ``validate_auth_detail()``, including:
+    Performs ALL validation:
 
     - JSON parsing
     - Required keys: ``auth_types`` (a list)
@@ -51,16 +40,9 @@ def validate_auth_details(data: str | dict) -> list[str]:
         any non-empty string (enum deliberately undefined for now;
         to be narrowed in a future PR).
       * ``NoneRequired`` → no entries in ``auth_types[]``; rule moot.
-    - Legacy ``xsoar_params`` key is **rejected** with a
-      migration-help error pointing at
-      ``connectus/column-schemas.md`` §Auth Details.
-    - **Legacy ``config`` key is rejected** with a migration-help
-      error. The 2026-05 schema removed the ``config`` expression
-      entirely; the relationship between profiles is now implicit
-      (0 entries → no auth, 1 → always used, ≥2 → exclusive OR).
     - ``auth_types[]`` sort order by ``(type, name)``
     - ``other_connection``: list of non-empty unique sorted strings
-      (optional key; absence is tolerated for legacy rows)
+      (required; may be an empty list)
 
     Args:
         data: JSON string or pre-parsed dict.
@@ -69,7 +51,7 @@ def validate_auth_details(data: str | dict) -> list[str]:
         List of error strings (empty = valid).
 
     Examples:
-        >>> # NoneRequired equivalent: empty auth_types, no config key.
+        >>> # NoneRequired equivalent: empty auth_types.
         >>> validate_auth_details('{"auth_types":[],"other_connection":[]}')
         []
     """
@@ -86,14 +68,6 @@ def validate_auth_details(data: str | dict) -> list[str]:
 
     if not isinstance(detail, dict):
         return [f"Expected a JSON object, got {type(detail).__name__}"]
-
-    # --- Legacy ``config`` key (2026-05 removal): hard-reject ---
-    if "config" in detail:
-        errors.append(_legacy_config_key_error())
-        # Return immediately — every downstream check assumes the
-        # caller has migrated to the new shape; piling on additional
-        # errors here would just obscure the migration message.
-        return errors
 
     # --- Required keys ---
     if "auth_types" not in detail:
@@ -145,30 +119,20 @@ def validate_auth_details(data: str | dict) -> list[str]:
                 seen_names.add(entry["name"])
                 entry_name_ok = True
             # --- xsoar_param_map validation ---
-            # Legacy key: hard-reject with migration-help guidance.
-            # The rejection fires whether or not xsoar_param_map is
-            # also present.
-            legacy_present = "xsoar_params" in entry
-            if legacy_present:
-                errors.append(_legacy_xsoar_params_error(i))
             if "xsoar_param_map" not in entry:
-                # Only emit the missing-key error when the legacy key
-                # is absent — otherwise the legacy-rejection message
-                # is the more informative signal.
-                if not legacy_present:
-                    errors.append(
-                        f"auth_types[{i}].xsoar_param_map: missing "
-                        "'xsoar_param_map' (required and non-empty). "
-                        "See connectus/column-schemas.md §Auth Details "
-                        "for the new shape."
-                    )
+                errors.append(
+                    f"auth_types[{i}].xsoar_param_map: missing "
+                    "'xsoar_param_map' (required and non-empty). "
+                    "See connectus/column-schemas.md §Auth Details "
+                    "for the shape."
+                )
             elif not isinstance(entry["xsoar_param_map"], dict):
                 errors.append(
                     f"auth_types[{i}].xsoar_param_map: must be an "
                     f"object, got "
                     f"{type(entry['xsoar_param_map']).__name__}. See "
                     "connectus/column-schemas.md §Auth Details for "
-                    "the new shape."
+                    "the shape."
                 )
             elif len(entry["xsoar_param_map"]) == 0:
                 errors.append(
@@ -252,8 +216,10 @@ def validate_auth_details(data: str | dict) -> list[str]:
                 )
                 break
 
-    # --- other_connection (optional; tolerated absence for legacy rows) ---
-    if "other_connection" in detail:
+    # --- other_connection (required) ---
+    if "other_connection" not in detail:
+        errors.append("Missing required key: other_connection")
+    else:
         other_connection = detail["other_connection"]
         if not isinstance(other_connection, list):
             errors.append(

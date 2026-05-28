@@ -3,9 +3,7 @@
 All step-shape decisions (which step indices exist, which are flags,
 which are checkpoints, which markers count as "done") flow from the
 :class:`~workflow_state.types.WorkflowConfig` returned by
-:func:`~workflow_state.config_loader.get_config`. The legacy module-level
-constants (``STEPS``, ``CHECK``, …) are derived from it via
-:mod:`workflow_state.api`.
+:func:`~workflow_state.config_loader.get_config`.
 """
 from __future__ import annotations
 
@@ -52,8 +50,7 @@ def _is_flag_value_match(step: Step, candidate: str) -> bool:
 
     Per-step enums (declared via a step's own ``flag_values`` list)
     are matched case-sensitively. The global YES/NO/N/A enum is
-    matched case-insensitively to keep backwards-compatible CLI
-    behaviour.
+    matched case-insensitively for friendlier CLI behaviour.
     """
     values = step_flag_values(step)
     if step.flag_values is not None:
@@ -95,12 +92,6 @@ def current_step(row: dict[str, str]) -> Optional[Step]:
     return None
 
 
-def get_current_step(row: dict[str, str]) -> Optional[str]:
-    """Legacy wrapper: returns the current step's name (or None)."""
-    s = current_step(row)
-    return s.name if s is not None else None
-
-
 def get_step(name: str) -> Step:
     """Look up a Step by name; raise :class:`WorkflowError` if unknown."""
     cfg = get_config()
@@ -116,7 +107,7 @@ def get_step(name: str) -> Step:
 
 def get_step_index(step_name: str) -> int:
     """Return the 0-based index of a checkpoint step within
-    ``CHECKPOINT_COLUMNS`` (preserves old API for any external callers).
+    the checkpoint columns list.
     """
     cfg = get_config()
     checkpoint_columns = cfg.checkpoint_columns
@@ -150,9 +141,9 @@ def reset_after(
             names are returned in the second tuple element so the
             caller can warn the user). When ``False`` (the default),
             preserve flags are ignored and every later step is cleared.
-            This default keeps the legacy ``set-auth``/``apply_step_action``
-            cascade behavior unchanged: auth changes invalidate every
-            downstream artifact and must wipe Params* too.
+            This default matches the ``set-auth``/``apply_step_action``
+            cascade behavior: auth changes invalidate every downstream
+            artifact and must wipe Params* too.
 
     Returns:
         ``(cleared, preserved)`` — both lists of column names. ``cleared``
@@ -267,9 +258,9 @@ def apply_step_action(
     if target.kind == "flag":
         existing_raw = row.get(target.name, "").strip()
         new_raw = new_value.strip()
-        # Compare with per-step enum awareness. For the legacy global
-        # YES/NO/N/A enum we keep case-insensitive parity; per-step
-        # enums are case-sensitive (matching their declared spelling).
+        # Compare with per-step enum awareness. The global YES/NO/N/A
+        # enum is matched case-insensitively; per-step enums are
+        # case-sensitive (matching their declared spelling).
         if target.flag_values is not None:
             same = existing_raw == new_raw and existing_raw in target.flag_values
         else:
@@ -308,93 +299,3 @@ def has_workflow_progress(row: dict[str, str]) -> bool:
         for s in cfg.steps
         if s.name != "assignee"
     )
-
-
-# ---------------------------------------------------------------------------
-# Backward-compat shims (for old call sites and tests)
-# ---------------------------------------------------------------------------
-
-def reset_from_step(row: dict[str, str], step_name: str) -> None:
-    """Legacy API: clear ``step_name`` and every later step.
-
-    NOTE: This legacy helper is the unmodified pre-``preserve_on_reset``
-    behaviour — it wipes blindly. New callers should use the CLI
-    ``reset-to`` / ``fail`` commands (which honour ``preserve_on_reset``)
-    or call :func:`reset_after` directly with ``respect_preserve=True``.
-    """
-    cfg = get_config()
-    step = cfg.step_by_name.get(step_name)
-    if step is None:
-        raise ValueError(
-            f"Unknown step: '{step_name}'. "
-            f"Valid steps: {', '.join(cfg.workflow_columns)}"
-        )
-    prev_index = step.index - 1
-    if prev_index < 1:
-        for s in cfg.steps:
-            row[s.name] = ""
-        return
-    prev = cfg.step_by_index[prev_index]
-    row[step.name] = ""
-    reset_after(row, prev)
-
-
-def markpass_step(row: dict[str, str], step_name: str) -> str:
-    """Legacy API: mark a checkpoint step as passed. Returns a status message."""
-    cfg = get_config()
-    integration_id = row.get("Integration ID", "")
-    non_checkpoint = cfg.non_checkpoint_steps
-
-    if step_name in non_checkpoint:
-        correct_cmd = non_checkpoint[step_name]
-        return (
-            f"ERROR: '{step_name}' is not a pass/fail checkpoint.\n"
-            f"  Use '{correct_cmd}' instead.\n"
-            f"  Example: workflow_state.py {correct_cmd} "
-            f"\"{integration_id}\" <value>"
-        )
-
-    step = cfg.step_by_name.get(step_name)
-    if step is None:
-        raise ValueError(
-            f"Unknown checkpoint step: '{step_name}'. "
-            f"Valid steps: {', '.join(cfg.checkpoint_columns)}"
-        )
-
-    if is_done(row, step):
-        return f"'{step_name}' is already marked as passed for '{integration_id}'."
-
-    # Honour any configured flag_auto_na_target interaction whose
-    # target_step matches. (Currently none are configured; kept as a
-    # generic mechanism for future per-flag auto-fill rules.)
-    for inter in cfg.step_interactions:
-        if inter.kind == "flag_auto_na_target" and inter.target_step == step_name:
-            flag = row.get(inter.when_step, "").strip().upper()
-            if flag in {v.upper() for v in inter.when_value_in}:
-                row[step_name] = inter.write_value
-                return (
-                    f"'{step_name}' set to {inter.write_value} "
-                    f"(auto-filled via {inter.when_step!r} flag)."
-                )
-            if flag == "":
-                step_obj = cfg.step_by_name.get(inter.when_step)
-                setter = step_obj.setter if step_obj and step_obj.setter else "<setter>"
-                return (
-                    f"ERROR: Cannot mark '{step_name}' as passed — "
-                    f"'{inter.when_step}' flag is not set.\n"
-                    f"  Use {setter!r} first."
-                )
-
-    ok, reason = _can_advance_to(row, step)
-    if not ok:
-        cur = current_step(row)
-        cur_name = cur.name if cur else "(none)"
-        return (
-            f"ERROR: Cannot mark '{step_name}' as passed — "
-            f"you are not up to that step yet.\n"
-            f"  Current step: '{cur_name}'\n"
-            f"  {reason}"
-        )
-
-    row[step.name] = cfg.markers.check
-    return f"✅ '{step_name}' marked as passed for '{integration_id}'."

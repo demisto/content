@@ -4,8 +4,7 @@ Converts raw input (strings, dicts, JSON) into typed data model objects.
 Raises :class:`~auth_config_parser.exceptions.AuthConfigParseError` on
 invalid input.
 
-The 2026-05 schema simplification removed the ``config`` expression
-entirely. The relationship between profiles is implicit (see
+The relationship between profiles is implicit (see
 :class:`auth_config_parser.types.AuthDetails`): 0 entries → no auth, 1
 entry → the single profile is always used, ≥2 entries → exclusive-OR.
 """
@@ -35,8 +34,8 @@ _VALID_AUTH_TYPE_VALUES = {t.value for t in AuthType}
 # the canonical reference and is re-used by validator.py.
 # ---------------------------------------------------------------------------
 
-# Canonical role-name sets per profile type. Per the 2026-05
-# "AND-ed secrets go in one profile" rule, these sets are NO LONGER
+# Canonical role-name sets per profile type. Per the
+# "AND-ed secrets go in one profile" rule, these sets are NOT
 # exhaustive — the validator privileges them (at least one canonical
 # role MUST appear in the map) but accepts ANY non-empty string for
 # additional "extras" keys (vendor-required certs, HMAC salts, etc.).
@@ -48,54 +47,8 @@ _CANONICAL_ROLES_BY_TYPE: dict[AuthType, set[str]] = {
     AuthType.Plain: {"username", "password"},
 }
 
-# Back-compat alias (read by validator.py).
+# Alias used by validator.py.
 _ROLE_ENUM_BY_TYPE = _CANONICAL_ROLES_BY_TYPE
-
-
-def _legacy_xsoar_params_error(index: int) -> str:
-    """Build the standard migration-help error for the legacy key.
-
-    Fired by both the parser and the validator whenever an
-    ``auth_types[]`` entry still uses the old ``xsoar_params`` field.
-    The message names the offending field path, the new field name,
-    points the reader at the schema doc, and inlines a copy-paste
-    example so the migration is mechanical.
-    """
-    return (
-        f"auth_types[{index}].xsoar_params: legacy key 'xsoar_params' "
-        "is no longer supported. Migrate to 'xsoar_param_map' (a "
-        "dict mapping each XSOAR field path to the role that secret "
-        "plays for this connection). For 'APIKey' the only allowed "
-        "value is \"key\"; for 'Plain' values must be in "
-        '{"username", "password"}; for OAuth2*/Passthrough any non-empty '
-        "string is accepted. See connectus/column-schemas.md "
-        "§Auth Details for examples. Example: "
-        '{"type": "APIKey", "name": "credentials", '
-        '"xsoar_param_map": {"credentials.password": "key"}}.'
-    )
-
-
-def _legacy_config_key_error() -> str:
-    """Build the standard migration-help error for the legacy ``config`` key.
-
-    Fired by both the parser and the validator whenever an ``Auth
-    Details`` payload still contains the pre-2026-05 ``config``
-    expression field. The error names the offending key, explains
-    why it was removed (the only inter-profile relation is exclusive
-    OR, so ``config`` carried no information beyond ``auth_types``),
-    and tells the caller exactly what to do (drop the key).
-    """
-    return (
-        "'config': the 'config' expression key was removed in the "
-        "2026-05 schema simplification and is no longer accepted. "
-        "The relationship between profiles is now implicit: "
-        "len(auth_types) == 0 means no auth, == 1 means the single "
-        "profile is always used, >= 2 means the user picks exactly "
-        "one (exclusive OR). AND-ed secrets within one auth flow "
-        "live inside one profile's xsoar_param_map. Drop the "
-        "'config' key from the payload. See connectus/column-schemas.md "
-        "§Auth Details for the new shape."
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -141,25 +94,18 @@ def _parse_auth_entry(index: int, raw_dict: dict) -> tuple[AuthEntry | None, lis
 
     # --- xsoar_param_map ---
     xsoar_param_map: dict[str, str] | None = None
-    if "xsoar_params" in raw_dict:
-        # Legacy key — hard-reject with migration-help guidance.
-        errors.append(_legacy_xsoar_params_error(index))
     if "xsoar_param_map" not in raw_dict:
-        # Only emit the missing-key error when the legacy key isn't
-        # present — otherwise the legacy-rejection message is the more
-        # informative signal.
-        if "xsoar_params" not in raw_dict:
-            errors.append(
-                f"auth_types[{index}].xsoar_param_map: missing "
-                "'xsoar_param_map' (required and non-empty). See "
-                "connectus/column-schemas.md §Auth Details for the new "
-                "shape."
-            )
+        errors.append(
+            f"auth_types[{index}].xsoar_param_map: missing "
+            "'xsoar_param_map' (required and non-empty). See "
+            "connectus/column-schemas.md §Auth Details for the "
+            "shape."
+        )
     elif not isinstance(raw_dict["xsoar_param_map"], dict):
         errors.append(
             f"auth_types[{index}].xsoar_param_map: must be an object "
             f"(dict), got {type(raw_dict['xsoar_param_map']).__name__}. "
-            "See connectus/column-schemas.md §Auth Details for the new "
+            "See connectus/column-schemas.md §Auth Details for the "
             "shape."
         )
     elif len(raw_dict["xsoar_param_map"]) == 0:
@@ -244,23 +190,17 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
     :func:`~auth_config_parser.validator.validate_auth_details` for
     full validation.
 
-    The 2026-05 schema removed the ``config`` expression field. If a
-    payload still contains it, the parser raises with a migration-help
-    error pointing at this fact — do not pass through pre-2026-05
-    rows without first stripping the ``config`` key.
-
     Args:
         data: Either a JSON string or an already-parsed dict. Must
-            contain the key ``auth_types`` (a list). ``other_connection``
-            is optional. The legacy ``config`` key is hard-rejected.
+            contain the keys ``auth_types`` (a list) and
+            ``other_connection`` (a list — may be empty).
 
     Returns:
         An :class:`~auth_config_parser.types.AuthDetails` object.
 
     Raises:
         AuthConfigParseError: If the input is not valid JSON, not a
-            dict, is missing required keys, has wrong types, or still
-            contains the removed ``config`` key.
+            dict, is missing required keys, or has wrong types.
 
     Examples:
         >>> details = parse_auth_details({
@@ -289,13 +229,6 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
             f"Expected a JSON object, got {type(data).__name__}"
         )
 
-    # --- Legacy config key (2026-05): hard-reject with migration help ---
-    if "config" in data:
-        raise AuthConfigParseError(
-            _legacy_config_key_error(),
-            errors=[_legacy_config_key_error()],
-        )
-
     # --- Required keys ---
     if "auth_types" not in data:
         raise AuthConfigParseError(
@@ -317,9 +250,11 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
         if entry is not None:
             auth_entries.append(entry)
 
-    # --- Parse other_connection (optional) ---
-    other_connection: list[str] | None = None
-    if "other_connection" in data:
+    # --- Parse other_connection (required) ---
+    other_connection: list[str] = []
+    if "other_connection" not in data:
+        errors.append("Missing required key: other_connection")
+    else:
         oc = data["other_connection"]
         if not isinstance(oc, list):
             errors.append(
@@ -327,7 +262,6 @@ def parse_auth_details(data: str | dict) -> AuthDetails:
                 f"{type(oc).__name__}"
             )
         else:
-            other_connection = []
             for j, item in enumerate(oc):
                 if not isinstance(item, str):
                     errors.append(

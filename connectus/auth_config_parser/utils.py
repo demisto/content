@@ -74,10 +74,9 @@ def auth_param_ids(details: AuthDetails) -> set[str]:
             if yml_id:
                 result.add(yml_id)
 
-    if details.other_connection is not None:
-        for item in details.other_connection:
-            if isinstance(item, str) and item:
-                result.add(item)
+    for item in details.other_connection:
+        if isinstance(item, str) and item:
+            result.add(item)
 
     return result
 
@@ -143,9 +142,8 @@ def auth_param_ids_with_sources(
             seen_for_entry.add(yml_id)
             sources.setdefault(yml_id, []).append(descriptor)
 
-    if details.other_connection is not None:
-        for item in details.other_connection:
-            if isinstance(item, str) and item:
-                sources.setdefault(item, []).append("other_connection")
+    for item in details.other_connection:
+        if isinstance(item, str) and item:
+            sources.setdefault(item, []).append("other_connection")
 
     return sources

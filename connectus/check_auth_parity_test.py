@@ -665,7 +665,7 @@ class TestHardErrors:
         )
         assert rc == cap.EXIT_ALL_INTERPOLATED
         assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
-        assert cap._LITERAL_MARKPASS_STEP_11 in payload["error"]["message"]
+        assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
 
     def test_error_connection_interpolated(self, tmp_path: Path) -> None:
         pack = _make_python_integration(tmp_path)

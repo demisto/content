@@ -14,7 +14,7 @@ in Python. Only the *declarative* parts move out.
 
 ## 1. Current State Analysis
 
-> *This section describes the codebase before the refactor; preserved for historical context. Today the package is split as described in §3 and the implementation lives in [`connectus/workflow_state/`](workflow_state/__init__.py:1) — `connectus/workflow_state.py` is now a thin backward-compatibility shim.*
+> *This section describes the codebase before the refactor; preserved for historical context. Today the package is split as described in §3 and the implementation lives in [`connectus/workflow_state/`](workflow_state/__init__.py:1).*
 
 [`connectus/workflow_state.py`](workflow_state.py) is a single ~2 585-line
 script (historical; today's implementation is split across the
@@ -390,7 +390,7 @@ change.
 | [`WORKFLOW_DATA_COLUMNS`](workflow_state.py:213) | list | derived |
 | [`CHECKPOINT_COLUMNS`](workflow_state.py:214) | list | derived |
 | [`JSON_VALUED_COLUMNS`](workflow_state.py:215) | set | derived (`s.json_schema is not None`) |
-| [`AUTH_PARITY_FLAG_COLUMN`](workflow_state.py:219) | str literal | derived: the `when_step` of the single `flag_auto_na_target` interaction (asserted unique). Falls back to the literal name on legacy YAML. |
+| [`AUTH_PARITY_FLAG_COLUMN`](workflow_state.py:219) | str literal | derived: the `when_step` of the single `flag_auto_na_target` interaction (asserted unique). |
 | [`ALL_COLUMNS`](workflow_state.py:220) | list | derived |
 | [`EXPECTED_COLUMN_COUNT`](workflow_state.py:221) | int | `len(ALL_COLUMNS)` |
 | [`NON_CHECKPOINT_STEPS`](workflow_state.py:224) | dict | derived (`{s.name: s.setter for s in steps if s.setter}`) |
@@ -408,14 +408,11 @@ State engine:
 - [`is_checked(value: str) -> bool`](workflow_state.py:247)
 - [`is_done(row, step) -> bool`](workflow_state.py:253)
 - [`current_step(row) -> Optional[Step]`](workflow_state.py:265)
-- [`get_current_step(row) -> Optional[str]`](workflow_state.py:275) (legacy alias)
 - [`get_step(name) -> Step`](workflow_state.py:281)
 - [`get_step_index(name) -> int`](workflow_state.py:292)
 - [`reset_after(row, step) -> list[str]`](workflow_state.py:308)
 - [`normalize_row(row) -> list[str]`](workflow_state.py:319)
 - [`apply_step_action(row, target, new_value, *, verb) -> tuple[list[str], bool]`](workflow_state.py:704)
-- [`reset_from_step(row, step_name) -> None`](workflow_state.py:961) (legacy)
-- [`markpass_step(row, step_name) -> str`](workflow_state.py:987) (legacy)
 - [`has_workflow_progress(row) -> bool`](workflow_state.py:900)
 
 CSV I/O:
@@ -914,9 +911,9 @@ flowchart LR
    was met (562/562 tests pass against the split package via the shim);
    a per-module test split remains open as future cleanup.
 
-   **UPDATE (2026-05):** the legacy top-level
-   [`workflow_state_test.py`](workflow_state_test.py) was emptied to a
-   migration-map stub in the schema-simplification pass below; the active
+    **UPDATE (2026-05):** the top-level
+   `connectus/workflow_state_test.py` was removed in the
+   schema-simplification pass below; the active
    test suite now lives entirely under
    [`workflow_state/tests/`](workflow_state/tests/).
 
@@ -965,9 +962,7 @@ flowchart LR
   [`test_verify_button_placement.py`](workflow_state/tests/test_verify_button_placement.py)
   and
   [`test_column_addressability.py`](workflow_state/tests/test_column_addressability.py)
-  cover the new behaviour; legacy
-  [`connectus/workflow_state_test.py`](workflow_state_test.py) is now a
-  stub.
+  cover the new behaviour.
 
 ### 2026-05Q3 — `verify button placement` removed; `verify_connection_skip` added to `Auth Details`
 

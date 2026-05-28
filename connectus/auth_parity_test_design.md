@@ -24,9 +24,9 @@ Verify that for **each non-interpolated `auth_types[]` profile** in an
 integration's `Auth Details`, the secret values reach the wire in the
 **same location** whether they were supplied via:
 
-- the **legacy path** — `demisto.params()` → integration code →
+- the **non-UCP path** — `demisto.params()` → integration code →
   `BaseClient.__init__` → `BaseClient._http_request`; or
-- the **new path** — UCP credential injection via
+- the **UCP path** — credential injection via
   `demisto.getUCPCredentials()` (and the
   `CommonServerPython.get_ucp_credentials()` wrapper that delegates to
   it) → `BaseClient._inject_ucp_credentials` →
@@ -143,7 +143,7 @@ The mock callable itself is built by
 `method_unique_id` argument the real `getUCPCredentials` takes —
 there is exactly one connection in scope per parity run.
 
-For the legacy old-side seeding, [`build_old_params`](check_auth_parity.py:389)
+For the non-UCP-side seeding, [`build_old_params`](check_auth_parity.py:389)
 deep-copies the base param dict and writes each sentinel into the
 exact XSOAR path the integration would normally read from. Dotted
 paths (`credentials.password`) expand into nested dicts.
@@ -259,8 +259,8 @@ Hard-error checks fire in this order inside
 1. `ERROR_NON_PYTHON` — YML-level check first (cheapest).
 2. `ERROR_NO_BASECLIENT` — Python-source grep.
 3. `validate_auth_details` — short-circuits with `ValueError` on any
-   schema problem (including the legacy `config` key). The wrapping
-   `try` in `main()` converts this to `ERROR_UNHANDLED` (exit 3).
+   schema problem. The wrapping `try` in `main()` converts this to
+   `ERROR_UNHANDLED` (exit 3).
 4. `ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED` — only
    after the schema is known valid.
 5. Per-connection skip codes (`skipped_*`) — emitted per entry, never
@@ -344,8 +344,8 @@ recipe inside [`set_integration_auth`](workflow_state/api.py) is roughly:
      are the well-defined "not parity-testable" cases. The grep literal
      in the message still helps operators: `_LITERAL_MARK_AUTH` flags
      the integration as a permanent `interpolated: true` candidate;
-     `_LITERAL_MARKPASS_STEP_11` (legacy constant name) still appears
-     in the all-interpolated message.
+     `_LITERAL_PARITY_GATE_SKIPPED` still appears in the
+     all-interpolated message.
 
 Twelve copy-paste demos covering every status code live in
 [`connectus/demo_check_auth_parity.md`](demo_check_auth_parity.md).

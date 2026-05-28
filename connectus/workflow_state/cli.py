@@ -1538,9 +1538,8 @@ def main() -> None:
     COMMANDS[command](args)
 
 
-# Re-exports for back-compat: tests and external callers can import
-# `validate_auth_detail` / `validate_params_to_commands` from the module
-# (both were CLI-side names in the legacy file).
+# Re-exports so tests and external callers can import
+# `validate_auth_detail` / `validate_params_to_commands` from this module.
 __all__ = sorted({
     *COMMANDS.keys(),
     "main",
