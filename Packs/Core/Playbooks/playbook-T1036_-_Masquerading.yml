@@ -1,6 +1,6 @@
 id: T1036 - Masquerading
 version: -1
-name: T1036 - Masquerading
+name: T1036 - Masquerading 
 description: |-
   This playbook handles masquerading alerts based on the MITRE T1036 technique.
   An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
